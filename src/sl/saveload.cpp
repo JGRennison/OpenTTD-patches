@@ -148,6 +148,10 @@ void ReadBuffer::SkipBytesSlowPath(size_t bytes)
 
 void ReadBuffer::AcquireBytes(size_t bytes)
 {
+	if (this->flags.Test(ReadBufferFlag::InhibitAcquireBytes)) {
+		SlErrorCorruptWithChunk("Unexpected end of sub-chunk");
+	}
+
 	size_t remainder = this->bufe - this->bufp;
 	if (remainder) {
 		memmove(this->buf, this->bufp, remainder);
@@ -2691,8 +2695,10 @@ SlLoadFromBufferState SlLoadFromBufferSetup(const uint8_t *buffer, size_t length
 	ReadBuffer *reader = ReadBuffer::GetCurrent();
 	state.old_bufp = reader->bufp;
 	state.old_bufe = reader->bufe;
+	state.old_flags = reader->flags.base();
 	reader->bufp = const_cast<uint8_t *>(buffer);
 	reader->bufe = const_cast<uint8_t *>(buffer) + length;
+	reader->flags.Set(ReadBufferFlag::InhibitAcquireBytes);
 
 	return state;
 }
@@ -2707,6 +2713,7 @@ void SlLoadFromBufferRestore(const SlLoadFromBufferState &state, const uint8_t *
 	_sl.obj_len = state.old_obj_len;
 	reader->bufp = state.old_bufp;
 	reader->bufe = state.old_bufe;
+	reader->flags.edit_base() = state.old_flags;
 }
 
 /*

@@ -13,6 +13,7 @@
 #include "../core/alignment.hpp"
 #include "../core/alloc_func.hpp"
 #include "../core/endian_func.hpp"
+#include "../core/enum_type.hpp"
 #include "../core/math_func.hpp"
 
 #include <vector>
@@ -87,12 +88,19 @@ struct RawReadBuffer {
 	}
 };
 
+enum class ReadBufferFlag : uint8_t {
+	InhibitAcquireBytes,
+};
+
+using ReadBufferFlags = EnumBitSet<ReadBufferFlag, uint8_t>;
+
 /** A buffer for reading (and buffering) savegame data. */
 struct ReadBuffer {
 	uint8_t *bufp;                      ///< Location we're at reading the buffer.
 	uint8_t *bufe;                      ///< End of the buffer we can read from.
 	std::shared_ptr<LoadFilter> reader; ///< The filter used to actually read.
 	size_t read;                        ///< The amount of read bytes so far from the filter.
+	ReadBufferFlags flags{};            ///< Flags.
 	uint8_t buf[MEMORY_CHUNK_SIZE];     ///< Buffer we're going to read from.
 
 	/**
@@ -211,6 +219,11 @@ struct ReadBuffer {
 	inline size_t GetSize() const
 	{
 		return this->read - (this->bufe - this->bufp);
+	}
+
+	inline size_t RemainingInBuffer() const
+	{
+		return this->bufe - this->bufp;
 	}
 };
 

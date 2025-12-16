@@ -1133,6 +1133,7 @@ struct SlLoadFromBufferState {
 	size_t old_obj_len;
 	uint8_t *old_bufp;
 	uint8_t *old_bufe;
+	uint8_t old_flags;
 };
 
 /**
