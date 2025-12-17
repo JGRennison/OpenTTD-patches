@@ -853,56 +853,38 @@ void ScriptList::SwapList(ScriptList *list)
 	if (list->sorter != nullptr) list->sorter->Retarget(list);
 }
 
-void ScriptList::RemoveAboveValue(SQInteger value)
+template <class ValueFilter>
+void ScriptList::RemoveItems(ValueFilter value_filter)
 {
 	this->modifications++;
 
 	for (ScriptListMap::iterator iter = this->items.begin(); iter != this->items.end();) {
-		if (iter->second > value) {
+		if (value_filter(iter->first, iter->second)) {
 			iter = this->RemoveIter(iter);
 		} else {
 			++iter;
 		}
 	}
+}
+
+void ScriptList::RemoveAboveValue(SQInteger value)
+{
+	this->RemoveItems([&](const SQInteger &, const SQInteger &v) { return v > value; });
 }
 
 void ScriptList::RemoveBelowValue(SQInteger value)
 {
-	this->modifications++;
-
-	for (ScriptListMap::iterator iter = this->items.begin(); iter != this->items.end();) {
-		if (iter->second < value) {
-			iter = this->RemoveIter(iter);
-		} else {
-			++iter;
-		}
-	}
+	this->RemoveItems([&](const SQInteger &, const SQInteger &v) { return v < value; });
 }
 
 void ScriptList::RemoveBetweenValue(SQInteger start, SQInteger end)
 {
-	this->modifications++;
-
-	for (ScriptListMap::iterator iter = this->items.begin(); iter != this->items.end();) {
-		if (iter->second > start && iter->second < end) {
-			iter = this->RemoveIter(iter);
-		} else {
-			++iter;
-		}
-	}
+	this->RemoveItems([&](const SQInteger &, const SQInteger &v) { return v > start && v < end; });
 }
 
 void ScriptList::RemoveValue(SQInteger value)
 {
-	this->modifications++;
-
-	for (ScriptListMap::iterator iter = this->items.begin(); iter != this->items.end();) {
-		if (iter->second == value) {
-			iter = this->RemoveIter(iter);
-		} else {
-			++iter;
-		}
-	}
+	this->RemoveItems([&](const SQInteger &, const SQInteger &v) { return v == value; });
 }
 
 void ScriptList::RemoveTop(SQInteger count)
@@ -972,7 +954,7 @@ void ScriptList::RemoveList(ScriptList *list)
 	this->modifications++;
 
 	if (list == this) {
-		Clear();
+		this->Clear();
 	} else {
 		ScriptListMap &list_items = list->items;
 		for (ScriptListMap::iterator iter = list_items.begin(); iter != list_items.end(); iter++) {
@@ -983,54 +965,22 @@ void ScriptList::RemoveList(ScriptList *list)
 
 void ScriptList::KeepAboveValue(SQInteger value)
 {
-	this->modifications++;
-
-	for (ScriptListMap::iterator iter = this->items.begin(); iter != this->items.end();) {
-		if (iter->second <= value) {
-			iter = this->RemoveIter(iter);
-		} else {
-			++iter;
-		}
-	}
+	this->RemoveItems([&](const SQInteger &, const SQInteger &v) { return v <= value; });
 }
 
 void ScriptList::KeepBelowValue(SQInteger value)
 {
-	this->modifications++;
-
-	for (ScriptListMap::iterator iter = this->items.begin(); iter != this->items.end();) {
-		if (iter->second >= value) {
-			iter = this->RemoveIter(iter);
-		} else {
-			++iter;
-		}
-	}
+	this->RemoveItems([&](const SQInteger &, const SQInteger &v) { return v >= value; });
 }
 
 void ScriptList::KeepBetweenValue(SQInteger start, SQInteger end)
 {
-	this->modifications++;
-
-	for (ScriptListMap::iterator iter = this->items.begin(); iter != this->items.end();) {
-		if (iter->second <= start || iter->second >= end) {
-			iter = this->RemoveIter(iter);
-		} else {
-			++iter;
-		}
-	}
+	this->RemoveItems([&](const SQInteger &, const SQInteger &v) { return v <= start && v >= end; });
 }
 
 void ScriptList::KeepValue(SQInteger value)
 {
-	this->modifications++;
-
-	for (ScriptListMap::iterator iter = this->items.begin(); iter != this->items.end();) {
-		if (iter->second != value) {
-			iter = this->RemoveIter(iter);
-		} else {
-			++iter;
-		}
-	}
+	this->RemoveItems([&](const SQInteger &, const SQInteger &v) { return v != value; });
 }
 
 void ScriptList::KeepTop(SQInteger count)
@@ -1050,13 +1000,7 @@ void ScriptList::KeepBottom(SQInteger count)
 void ScriptList::KeepList(ScriptList *list)
 {
 	if (list == this) return;
-
-	this->modifications++;
-
-	ScriptList tmp;
-	tmp.AddList(this);
-	tmp.RemoveList(list);
-	this->RemoveList(&tmp);
+	this->RemoveItems([&](const SQInteger &k, const SQInteger &) { return !list->HasItem(k); });
 }
 
 SQInteger ScriptList::_get(HSQUIRRELVM vm)

@@ -211,6 +211,9 @@ protected:
 	 */
 	void CopyList(const ScriptList *list);
 
+	template <class ValueFilter>
+	void RemoveItems(ValueFilter value_filter);
+
 public:
 	ScriptListMap items;       ///< The items in the list
 	ScriptListValueSet values; ///< The items in the list, sorted by value
