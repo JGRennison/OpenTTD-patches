@@ -803,7 +803,7 @@ public:
 		return false;
 	}
 
-	template <typename T = uint16_t>
+	template <typename T>
 	bool TryApplyTimetableCommand(std::string_view field, ModifyTimetableFlags mtf,
 			JsonOrderImportErrorType error_type, VehicleOrderID oid = INVALID_VEH_ORDER_ID)
 	requires (TMode == JSONToVehicleMode::Order)
@@ -986,13 +986,13 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order>
 
 	json_importer.TryApplyModifyOrder<Colours>(OFName::COLOUR, MOF_COLOUR, JOIET_MINOR);
 
-	json_importer.TryApplyTimetableCommand(OFName::MAX_SPEED, MTF_TRAVEL_SPEED, JOIET_MINOR);
-	json_importer.TryApplyTimetableCommand(OFName::WAIT_TIME, MTF_WAIT_TIME, JOIET_MINOR);
+	json_importer.TryApplyTimetableCommand<uint16_t>(OFName::MAX_SPEED, MTF_TRAVEL_SPEED, JOIET_MINOR);
+	json_importer.TryApplyTimetableCommand<TimetableTicks>(OFName::WAIT_TIME, MTF_WAIT_TIME, JOIET_MINOR);
 	json_importer.TryApplyTimetableCommand<bool>(OFName::WAIT_FIXED, MTF_SET_WAIT_FIXED, JOIET_MINOR);
-	json_importer.TryApplyTimetableCommand(OFName::TRAVEL_TIME, MTF_TRAVEL_TIME, JOIET_MINOR);
+	json_importer.TryApplyTimetableCommand<TimetableTicks>(OFName::TRAVEL_TIME, MTF_TRAVEL_TIME, JOIET_MINOR);
 	json_importer.TryApplyTimetableCommand<bool>(OFName::TRAVEL_FIXED, MTF_SET_TRAVEL_FIXED, JOIET_MINOR);
 	json_importer.TryApplyTimetableCommand<OrderLeaveType>(OFName::TIMETABLE_LEAVE_TYPE, MTF_SET_LEAVE_TYPE, JOIET_MINOR);
-	json_importer.TryApplyTimetableCommand(OFName::JUMP_TAKEN_TRAVEL_TIME, MTF_WAIT_TIME, JOIET_MINOR);
+	json_importer.TryApplyTimetableCommand<TimetableTicks>(OFName::JUMP_TAKEN_TRAVEL_TIME, MTF_WAIT_TIME, JOIET_MINOR);
 	json_importer.TryApplyTimetableCommand<bool>(OFName::JUMP_TAKEN_TRAVEL_FIXED, MTF_SET_WAIT_FIXED, JOIET_MINOR);
 
 	json_importer.TryApplyModifyOrder<OrderStopLocation>(OFName::STOP_LOCATION, MOF_STOP_LOCATION, JOIET_MINOR, json_importer.import_settings.stop_location);
