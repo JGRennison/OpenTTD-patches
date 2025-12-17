@@ -35,7 +35,7 @@ SQRESULT sq_stackinfos(HSQUIRRELVM v, SQInteger level, SQStackInfos *si)
 {
 	SQInteger cssize = v->_callsstacksize;
 	if (cssize > level) {
-		memset(si, 0, sizeof(SQStackInfos));
+		*si = {};
 		SQVM::CallInfo &ci = v->_callsstack[cssize-level-1];
 		switch (type(ci._closure)) {
 		case OT_CLOSURE:{
@@ -63,7 +63,7 @@ SQRESULT sq_stackinfos(HSQUIRRELVM v, SQInteger level, SQStackInfos *si)
 
 void SQVM::Raise_Error(std::string_view str)
 {
-	_lasterror = SQString::Create(_ss(this),str.data(),str.size());
+	_lasterror = SQString::Create(_ss(this),str);
 }
 
 void SQVM::Raise_Error(SQObjectPtr &desc)
@@ -78,12 +78,12 @@ SQString *SQVM::PrintObjVal(const SQObject &o)
 	case OT_INTEGER: {
 		format_buffer_sized<64> buf;
 		buf.format("{}", _integer(o));
-		return SQString::Create(_ss(this), buf.data(), buf.size());
+		return SQString::Create(_ss(this), buf);
 	}
 	case OT_FLOAT: {
 		format_buffer_sized<64> buf;
 		buf.format("{:.14g}", _float(o));
-		return SQString::Create(_ss(this), buf.data(), buf.size());
+		return SQString::Create(_ss(this), buf);
 	}
 	default:
 		return SQString::Create(_ss(this), GetTypeName(o));
@@ -105,15 +105,15 @@ void SQVM::Raise_CompareError(const SQObject &o1, const SQObject &o2)
 
 void SQVM::Raise_ParamTypeError(SQInteger nparam,SQInteger typemask,SQInteger type)
 {
-	SQObjectPtr exptypes = SQString::Create(_ss(this), "", -1);
+	SQObjectPtr exptypes = SQString::Create(_ss(this), "");
 	SQInteger found = 0;
 	for(SQInteger i=0; i<16; i++)
 	{
 		SQInteger mask = 0x00000001LL << i;
 		if(typemask & (mask)) {
-			if(found>0) StringCat(exptypes,SQString::Create(_ss(this), "|", -1), exptypes);
+			if(found>0) StringCat(exptypes,SQString::Create(_ss(this), "|"), exptypes);
 			found ++;
-			StringCat(exptypes,SQString::Create(_ss(this), IdType2Name((SQObjectType)mask), -1), exptypes);
+			StringCat(exptypes,SQString::Create(_ss(this), IdType2Name((SQObjectType)mask)), exptypes);
 		}
 	}
 	Raise_Error(fmt::format("parameter {} has an invalid type '{}' ; expected: '{}'", nparam, IdType2Name((SQObjectType)type), _stringval(exptypes)));

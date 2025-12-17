@@ -116,7 +116,6 @@ SQVM::SQVM(SQSharedState *ss)
 	_in_stackoverflow = false;
 	_ops_till_suspend = 0;
 	_ops_till_suspend_error_threshold = INT64_MIN;
-	_ops_till_suspend_error_label = nullptr;
 	_callsstack = nullptr;
 	_callsstacksize = 0;
 	_alloccallsstacksize = 0;
@@ -292,7 +291,7 @@ void SQVM::ToString(const SQObjectPtr &o,SQObjectPtr &res)
 	default:
 		buf.format("({} : 0x{:08X})",GetTypeName(o),(size_t)(void*)_rawval(o));
 	}
-	res = SQString::Create(_ss(this),buf.data(),buf.size());
+	res = SQString::Create(_ss(this),buf);
 }
 
 
@@ -301,11 +300,7 @@ bool SQVM::StringCat(const SQObjectPtr &str,const SQObjectPtr &obj,SQObjectPtr &
 	SQObjectPtr a, b;
 	ToString(str, a);
 	ToString(obj, b);
-	SQInteger l = _string(a)->_len , ol = _string(b)->_len;
-	SQChar *s = _sp(l + ol + 1);
-	memcpy(s, _stringval(a), (size_t)l);
-	memcpy(s + l, _stringval(b), (size_t)ol);
-	dest = SQString::Create(_ss(this), _spval, l + ol);
+	dest = SQString::Create(_ss(this), fmt::format("{}{}", _stringval(a), _stringval(b)));
 	return true;
 }
 

@@ -13,7 +13,7 @@ struct SQStringTable
 {
 	SQStringTable();
 	~SQStringTable();
-	SQString *Add(const SQChar *,SQInteger len);
+	SQString *Add(std::string_view str);
 	void Remove(SQString *);
 private:
 	void Resize(SQInteger size);
@@ -49,9 +49,6 @@ private:
 	RefNode **_buckets;
 };
 
-#define ADD_STRING(ss,str,len) ss->_stringtable->Add(str,len)
-#define REMOVE_STRING(ss,bstr) ss->_stringtable->Remove(bstr)
-
 struct SQObjectPtr;
 
 struct SQSharedState
@@ -59,7 +56,7 @@ struct SQSharedState
 	SQSharedState();
 	~SQSharedState();
 public:
-	SQChar* GetScratchPad(SQInteger size);
+	std::span<char> GetScratchPad(SQInteger size);
 	SQInteger GetMetaMethodIdxByName(const SQObjectPtr &name);
 	void DelayFinalFree(SQCollectable *collectable);
 #ifndef NO_GARBAGE_COLLECTOR
@@ -109,8 +106,7 @@ public:
 	bool _debuginfo;
 	bool _notifyallexceptions;
 private:
-	SQChar *_scratchpad;
-	SQInteger _scratchpadsize;
+	std::vector<char> _scratchpad;
 };
 
 #define _sp(s) (_sharedstate->GetScratchPad(s))

@@ -99,7 +99,7 @@ protected:
 	/**
 	 * The CompileError handler.
 	 */
-	static void CompileError(HSQUIRRELVM vm, const SQChar *desc, const SQChar *source, SQInteger line, SQInteger column);
+	static void CompileError(HSQUIRRELVM vm, std::string_view desc, std::string_view source, SQInteger line, SQInteger column);
 
 	/**
 	 * The RunError handler.
@@ -263,7 +263,7 @@ public:
 	/**
 	 * Convert a Squirrel-object to a string.
 	 */
-	static std::string_view ObjectToString(HSQOBJECT *ptr) { return sq_objtostring(ptr); }
+	static std::optional<std::string_view> ObjectToString(HSQOBJECT *ptr) { return sq_objtostring(ptr); }
 
 	/**
 	 * Convert a Squirrel-object to an integer.

@@ -65,7 +65,7 @@ public:
 		uint8_t data[]; ///< Data, all zoomlevels.
 	};
 
-	Sprite *Encode(const SpriteLoader::SpriteCollection &sprite, SpriteAllocator &allocator);
+	Sprite *Encode(SpriteType sprite_type, const SpriteLoader::SpriteCollection &sprite, SpriteAllocator &allocator);
 };
 
 /** The SSE2 32 bpp blitter (without palette animation). */
@@ -80,8 +80,9 @@ public:
 	template <BlitterMode mode, Blitter_32bppSSE_Base::ReadMode read_mode, Blitter_32bppSSE_Base::BlockType bt_last, bool translucent>
 	void Draw(const Blitter::BlitterParams *bp, ZoomLevel zoom);
 
-	Sprite *Encode(const SpriteLoader::SpriteCollection &sprite, SpriteAllocator &allocator) override {
-		return Blitter_32bppSSE_Base::Encode(sprite, allocator);
+	Sprite *Encode(SpriteType sprite_type, const SpriteLoader::SpriteCollection &sprite, SpriteAllocator &allocator) override
+	{
+		return Blitter_32bppSSE_Base::Encode(sprite_type, sprite, allocator);
 	}
 
 	const char *GetName() override { return "32bpp-sse2"; }

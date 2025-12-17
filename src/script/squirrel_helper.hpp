@@ -63,7 +63,7 @@ namespace SQConvert {
 		static inline int Set(HSQUIRRELVM vm, std::optional<std::string> res)
 		{
 			if (res.has_value()) {
-				sq_pushstring(vm, res.value(), -1);
+				sq_pushstring(vm, res.value());
 			} else {
 				sq_pushnull(vm);
 			}
@@ -75,7 +75,7 @@ namespace SQConvert {
 		static inline int Set(HSQUIRRELVM vm, std::optional<std::string_view> res)
 		{
 			if (res.has_value()) {
-				sq_pushstring(vm, res->data(), res->size());
+				sq_pushstring(vm, res.value());
 			} else {
 				sq_pushnull(vm);
 			}
@@ -257,7 +257,7 @@ namespace SQConvert {
 		/* Protect against calls to a non-static method in a static way */
 		sq_pushroottable(vm);
 		const char *className = GetClassName<Tcls, Ttype>();
-		sq_pushstring(vm, className, -1);
+		sq_pushstring(vm, className);
 		sq_get(vm, -2);
 		sq_pushobject(vm, instance);
 		if (sq_instanceof(vm) != SQTrue) return sq_throwerror(vm, "class method is non-static");
@@ -301,7 +301,7 @@ namespace SQConvert {
 		/* Protect against calls to a non-static method in a static way */
 		sq_pushroottable(vm);
 		const char *className = GetClassName<Tcls, Ttype>();
-		sq_pushstring(vm, className, -1);
+		sq_pushstring(vm, className);
 		sq_get(vm, -2);
 		sq_pushobject(vm, instance);
 		if (sq_instanceof(vm) != SQTrue) return sq_throwerror(vm, "class method is non-static");

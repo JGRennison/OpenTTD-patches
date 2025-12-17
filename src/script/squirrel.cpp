@@ -185,7 +185,7 @@ void Squirrel::SetMemoryAllocationLimit(size_t limit) noexcept
 }
 
 
-void Squirrel::CompileError(HSQUIRRELVM vm, const SQChar *desc, const SQChar *source, SQInteger line, SQInteger column)
+void Squirrel::CompileError(HSQUIRRELVM vm, std::string_view desc, std::string_view source, SQInteger line, SQInteger column)
 {
 	std::string msg = fmt::format("Error {}:{}/{}: {}", source, line, column, desc);
 
@@ -263,7 +263,7 @@ void Squirrel::AddMethod(std::string_view method_name, SQFUNCTION proc, std::str
 {
 	ScriptAllocatorScope alloc_scope(this);
 
-	sq_pushstring(this->vm, method_name, -1);
+	sq_pushstring(this->vm, method_name);
 
 	if (size != 0) {
 		void *ptr = sq_newuserdata(vm, size);
@@ -280,7 +280,7 @@ void Squirrel::AddConst(std::string_view var_name, SQInteger value)
 {
 	ScriptAllocatorScope alloc_scope(this);
 
-	sq_pushstring(this->vm, var_name, -1);
+	sq_pushstring(this->vm, var_name);
 	sq_pushinteger(this->vm, value);
 	sq_newslot(this->vm, -3, SQTrue);
 }
@@ -289,7 +289,7 @@ void Squirrel::AddConst(std::string_view var_name, bool value)
 {
 	ScriptAllocatorScope alloc_scope(this);
 
-	sq_pushstring(this->vm, var_name, -1);
+	sq_pushstring(this->vm, var_name);
 	sq_pushbool(this->vm, value);
 	sq_newslot(this->vm, -3, SQTrue);
 }
@@ -299,7 +299,7 @@ void Squirrel::AddClassBegin(std::string_view class_name)
 	ScriptAllocatorScope alloc_scope(this);
 
 	sq_pushroottable(this->vm);
-	sq_pushstring(this->vm, class_name, -1);
+	sq_pushstring(this->vm, class_name);
 	sq_newclass(this->vm, SQFalse);
 }
 
@@ -308,8 +308,8 @@ void Squirrel::AddClassBegin(std::string_view class_name, std::string_view paren
 	ScriptAllocatorScope alloc_scope(this);
 
 	sq_pushroottable(this->vm);
-	sq_pushstring(this->vm, class_name, -1);
-	sq_pushstring(this->vm, parent_class, -1);
+	sq_pushstring(this->vm, class_name);
+	sq_pushstring(this->vm, parent_class);
 	if (SQ_FAILED(sq_get(this->vm, -3))) {
 		Debug(script, 0, "[squirrel] Failed to initialize class '{}' based on parent class '{}'", class_name, parent_class);
 		Debug(script, 0, "[squirrel] Make sure that '{}' exists before trying to define '{}'", parent_class, class_name);
@@ -335,7 +335,7 @@ bool Squirrel::MethodExists(HSQOBJECT instance, std::string_view method_name)
 	/* Go to the instance-root */
 	sq_pushobject(this->vm, instance);
 	/* Find the function-name inside the script */
-	sq_pushstring(this->vm, method_name, -1);
+	sq_pushstring(this->vm, method_name);
 	if (SQ_FAILED(sq_get(this->vm, -2))) {
 		sq_settop(this->vm, top);
 		return false;
@@ -394,7 +394,7 @@ bool Squirrel::CallMethod(HSQOBJECT instance, std::string_view method_name, HSQO
 	/* Go to the instance-root */
 	sq_pushobject(this->vm, instance);
 	/* Find the function-name inside the script */
-	sq_pushstring(this->vm, method_name, -1);
+	sq_pushstring(this->vm, method_name);
 	if (SQ_FAILED(sq_get(this->vm, -2))) {
 		Debug(script, 0, "[squirrel] Could not find '{}' in the class", method_name);
 		sq_settop(this->vm, top);
@@ -417,8 +417,11 @@ bool Squirrel::CallStringMethod(HSQOBJECT instance, std::string_view method_name
 {
 	HSQOBJECT ret;
 	if (!this->CallMethod(instance, method_name, &ret, suspend)) return false;
-	if (ret._type != OT_STRING) return false;
-	*res = StrMakeValid(ObjectToString(&ret));
+
+	auto str = ObjectToString(&ret);
+	if (!str.has_value()) return false;
+
+	*res = StrMakeValid(*str);
 	return true;
 }
 
@@ -451,9 +454,9 @@ bool Squirrel::CallBoolMethod(HSQOBJECT instance, std::string_view method_name, 
 
 	if (prepend_API_name) {
 		std::string prepended_class_name = fmt::format("{}{}", engine->GetAPIName(), class_name);
-		sq_pushstring(vm, prepended_class_name, -1);
+		sq_pushstring(vm, prepended_class_name);
 	} else {
-		sq_pushstring(vm, class_name, -1);
+		sq_pushstring(vm, class_name);
 	}
 
 	if (SQ_FAILED(sq_get(vm, -2))) {

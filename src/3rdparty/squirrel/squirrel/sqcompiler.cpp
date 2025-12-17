@@ -59,7 +59,7 @@ typedef sqvector<ExpState> ExpStateVec;
 class SQCompiler
 {
 public:
-	SQCompiler(SQVM *v, SQLEXREADFUNC rg, SQUserPointer up, const SQChar* sourcename, bool raiseerror, bool lineinfo) : _token(0), _fs(nullptr), _lex(_ss(v), rg, up), _debugline(0), _debugop(0)
+	SQCompiler(SQVM *v, SQLEXREADFUNC rg, SQUserPointer up, std::string_view sourcename, bool raiseerror, bool lineinfo) : _token(0), _fs(nullptr), _lex(_ss(v), rg, up), _debugline(0), _debugop(0)
 	{
 		_vm=v;
 		_sourcename = SQString::Create(_ss(v), sourcename);
@@ -126,7 +126,7 @@ public:
 			ret = _fs->CreateString(_lex._svalue);
 			break;
 		case TK_STRING_LITERAL:
-			ret = _fs->CreateString(_lex._svalue,_lex._longstr.size()-1);
+			ret = _fs->CreateString(std::string_view(_lex._svalue,_lex._longstr.size()-1));
 			break;
 		case TK_INTEGER:
 			ret = SQObjectPtr(_lex._nvalue);
@@ -601,7 +601,7 @@ public:
 		switch(_token)
 		{
 		case TK_STRING_LITERAL: {
-				_fs->AddInstruction(_OP_LOAD, _fs->PushTarget(), _fs->GetConstant(_fs->CreateString(_lex._svalue,_lex._longstr.size()-1)));
+				_fs->AddInstruction(_OP_LOAD, _fs->PushTarget(), _fs->GetConstant(_fs->CreateString(std::string_view(_lex._svalue,_lex._longstr.size()-1))));
 				Lex();
 			}
 			break;
@@ -1106,7 +1106,7 @@ public:
 				val._unVal.fFloat = _lex._fvalue;
 				break;
 			case TK_STRING_LITERAL:
-				val = _fs->CreateString(_lex._svalue,_lex._longstr.size()-1);
+				val = _fs->CreateString(std::string_view(_lex._svalue,_lex._longstr.size()-1));
 				break;
 			case '-':
 				Lex();
@@ -1349,7 +1349,7 @@ private:
 	SQVM *_vm;
 };
 
-bool Compile(SQVM *vm,SQLEXREADFUNC rg, SQUserPointer up, const SQChar *sourcename, SQObjectPtr &out, bool raiseerror, bool lineinfo)
+bool Compile(SQVM *vm,SQLEXREADFUNC rg, SQUserPointer up, std::string_view sourcename, SQObjectPtr &out, bool raiseerror, bool lineinfo)
 {
 	SQCompiler p(vm, rg, up, sourcename, raiseerror, lineinfo);
 	return p.Compile(out);

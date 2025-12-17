@@ -47,9 +47,9 @@ SQInteger sq_aux_throwobject(HSQUIRRELVM v,SQObjectPtr &e)
 
 SQInteger sq_aux_invalidtype(HSQUIRRELVM v,SQObjectType type)
 {
-	fmt::memory_buffer buf;
-	fmt::format_to(std::back_inserter(buf), "unexpected type {}", IdType2Name(type));
-	return sq_throwerror(v, buf.data(), buf.size());
+	format_buffer_sized<128> buf;
+	buf.format("unexpected type {}", IdType2Name(type));
+	return sq_throwerror(v, buf);
 }
 
 HSQUIRRELVM sq_open(SQInteger initialstacksize)
@@ -130,7 +130,7 @@ void sq_close(HSQUIRRELVM v)
 	sq_delete(ss, SQSharedState);
 }
 
-SQRESULT sq_compile(HSQUIRRELVM v,SQLEXREADFUNC read,SQUserPointer p,const SQChar *sourcename,SQBool raiseerror)
+SQRESULT sq_compile(HSQUIRRELVM v,SQLEXREADFUNC read,SQUserPointer p,std::string_view sourcename,SQBool raiseerror)
 {
 	SQObjectPtr o;
 	if(Compile(v, read, p, sourcename, o, raiseerror != 0, _ss(v)->_debuginfo)) {
@@ -171,12 +171,12 @@ SQBool sq_release(HSQUIRRELVM v,HSQOBJECT *po)
 #endif
 }
 
-const SQChar *sq_objtostring(HSQOBJECT *o)
+std::optional<std::string_view> sq_objtostring(HSQOBJECT *o)
 {
 	if(sq_type(*o) == OT_STRING) {
 		return _stringval(*o);
 	}
-	return nullptr;
+	return std::nullopt;
 }
 
 SQInteger sq_objtointeger(HSQOBJECT *o)
@@ -208,11 +208,9 @@ void sq_pushnull(HSQUIRRELVM v)
 	v->Push(_null_);
 }
 
-void sq_pushstring(HSQUIRRELVM v,const SQChar *s,SQInteger len)
+void sq_pushstring(HSQUIRRELVM v,std::string_view s)
 {
-	if(s)
-		v->Push(SQObjectPtr(SQString::Create(_ss(v), s, len)));
-	else v->Push(_null_);
+	v->Push(SQObjectPtr(SQString::Create(_ss(v), s)));
 }
 
 void sq_pushinteger(HSQUIRRELVM v,SQInteger n)
@@ -895,7 +893,7 @@ SQRESULT sq_getstackobj(HSQUIRRELVM v,SQInteger idx,HSQOBJECT *po)
 	return SQ_OK;
 }
 
-const SQChar *sq_getlocal(HSQUIRRELVM v,SQUnsignedInteger level,SQUnsignedInteger idx)
+std::optional<std::string_view> sq_getlocal(HSQUIRRELVM v,SQUnsignedInteger level,SQUnsignedInteger idx)
 {
 	SQUnsignedInteger cstksize=v->_callsstacksize;
 	SQUnsignedInteger lvl=(cstksize-level)-1;
@@ -907,7 +905,7 @@ const SQChar *sq_getlocal(HSQUIRRELVM v,SQUnsignedInteger level,SQUnsignedIntege
 		}
 		SQVM::CallInfo &ci=v->_callsstack[lvl];
 		if(type(ci._closure)!=OT_CLOSURE)
-			return nullptr;
+			return std::nullopt;
 		SQClosure *c=_closure(ci._closure);
 		SQFunctionProto *func=_funcproto(c->_function);
 		if(func->_noutervalues > (SQInteger)idx) {
@@ -917,7 +915,7 @@ const SQChar *sq_getlocal(HSQUIRRELVM v,SQUnsignedInteger level,SQUnsignedIntege
 		idx -= func->_noutervalues;
 		return func->GetLocal(v,stackbase,idx,(SQInteger)(ci._ip-func->_instructions)-1);
 	}
-	return nullptr;
+	return std::nullopt;
 }
 
 void sq_pushobject(HSQUIRRELVM v,HSQOBJECT obj)
@@ -930,9 +928,9 @@ void sq_resetobject(HSQOBJECT *po)
 	po->_unVal.pUserPointer=nullptr;po->_type=OT_NULL;
 }
 
-SQRESULT sq_throwerror(HSQUIRRELVM v,const SQChar *err, SQInteger len)
+SQRESULT sq_throwerror(HSQUIRRELVM v,std::string_view error)
 {
-	v->_lasterror=SQString::Create(_ss(v),err, len);
+	v->_lasterror=SQString::Create(_ss(v),error);
 	return -1;
 }
 
@@ -1078,7 +1076,7 @@ SQRESULT sq_readclosure(HSQUIRRELVM v,SQREADFUNC r,SQUserPointer up)
 	return SQ_OK;
 }
 
-SQChar *sq_getscratchpad(HSQUIRRELVM v,SQInteger minsize)
+std::span<char> sq_getscratchpad(HSQUIRRELVM v,SQInteger minsize)
 {
 	return _ss(v)->GetScratchPad(minsize);
 }
@@ -1092,19 +1090,18 @@ SQInteger sq_collectgarbage(HSQUIRRELVM v)
 #endif
 }
 
-const SQChar *sq_getfreevariable(HSQUIRRELVM v,SQInteger idx,SQUnsignedInteger nval)
+std::optional<std::string_view> sq_getfreevariable(HSQUIRRELVM v,SQInteger idx,SQUnsignedInteger nval)
 {
 	SQObjectPtr &self = stack_get(v,idx);
-	const SQChar *name = nullptr;
 	if(type(self) == OT_CLOSURE) {
 		if(_closure(self)->_outervalues.size()>nval) {
 			v->Push(_closure(self)->_outervalues[nval]);
 			SQFunctionProto *fp = _funcproto(_closure(self)->_function);
 			SQOuterVar &ov = fp->_outervalues[nval];
-			name = _stringval(ov._name);
+			return _stringval(ov._name);
 		}
 	}
-	return name;
+	return std::nullopt;
 }
 
 SQRESULT sq_setfreevariable(HSQUIRRELVM v,SQInteger idx,SQUnsignedInteger nval)
@@ -1263,8 +1260,8 @@ char32_t buf_lexfeed(SQUserPointer file)
 	return consumer.AnyBytesLeft() ? consumer.ReadUtf8(-1) : 0;
 }
 
-SQRESULT sq_compilebuffer(HSQUIRRELVM v,const SQChar *s,SQInteger size,const SQChar *sourcename,SQBool raiseerror) {
-	StringConsumer consumer(std::string_view(s, size));
+SQRESULT sq_compilebuffer(HSQUIRRELVM v,std::string_view buffer,std::string_view sourcename,SQBool raiseerror) {
+	StringConsumer consumer{buffer};
 	return sq_compile(v, buf_lexfeed, &consumer, sourcename, raiseerror);
 }
 
@@ -1298,7 +1295,7 @@ void sq_free(void *p,SQUnsignedInteger size)
 	SQ_FREE(p,size);
 }
 
-SQOpsLimiter::SQOpsLimiter(HSQUIRRELVM v, SQInteger ops, const char *label) : _v(v)
+SQOpsLimiter::SQOpsLimiter(HSQUIRRELVM v, SQInteger ops, std::string_view label) : _v(v)
 {
 	this->_ops = v->_ops_till_suspend_error_threshold;
 	if (this->_ops == INT64_MIN) {

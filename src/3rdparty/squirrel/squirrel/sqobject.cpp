@@ -51,16 +51,16 @@ const SQChar *GetTypeName(const SQObjectPtr &obj1)
 	return IdType2Name(type(obj1));
 }
 
-SQString *SQString::Create(SQSharedState *ss,const SQChar *s,SQInteger len)
+SQString *SQString::Create(SQSharedState *ss,std::string_view s)
 {
-	SQString *str=ADD_STRING(ss,s,len);
+	SQString *str=ss->_stringtable->Add(s);
 	str->_sharedstate=ss;
 	return str;
 }
 
 void SQString::Release()
 {
-	REMOVE_STRING(_sharedstate,this);
+	_sharedstate->_stringtable->Remove(this);
 }
 
 SQInteger SQString::Next(const SQObjectPtr &refpos, SQObjectPtr &outkey, SQObjectPtr &outval)
@@ -202,24 +202,21 @@ void SQArray::Extend(const SQArray *a){
 			Append(a->_values[i]);
 }
 
-const SQChar* SQFunctionProto::GetLocal(SQVM *vm,SQUnsignedInteger stackbase,SQUnsignedInteger nseq,SQUnsignedInteger nop)
+std::optional<std::string_view> SQFunctionProto::GetLocal(SQVM *vm,SQUnsignedInteger stackbase,SQUnsignedInteger nseq,SQUnsignedInteger nop)
 {
 	SQUnsignedInteger nvars=_nlocalvarinfos;
-	const SQChar *res=nullptr;
 	if(nvars>=nseq){
 		for(SQUnsignedInteger i=0;i<nvars;i++){
-			if(_localvarinfos[i]._start_op<=nop && _localvarinfos[i]._end_op>=nop)
-			{
+			if(_localvarinfos[i]._start_op<=nop && _localvarinfos[i]._end_op>=nop) {
 				if(nseq==0){
 					vm->Push(vm->_stack[stackbase+_localvarinfos[i]._pos]);
-					res=_stringval(_localvarinfos[i]._name);
-					break;
+					return _stringval(_localvarinfos[i]._name);
 				}
 				nseq--;
 			}
 		}
 	}
-	return res;
+	return std::nullopt;
 }
 
 SQInteger SQFunctionProto::GetLine(SQInstruction *curr)
@@ -298,8 +295,8 @@ bool ReadObject(HSQUIRRELVM v,SQUserPointer up,SQREADFUNC read,SQObjectPtr &o)
 	case OT_STRING:{
 		SQInteger len;
 		_CHECK_IO(SafeRead(v,read,up,&len,sizeof(SQInteger)));
-		_CHECK_IO(SafeRead(v,read,up,_ss(v)->GetScratchPad(len),len));
-		o=SQString::Create(_ss(v),_ss(v)->GetScratchPad(-1),len);
+		_CHECK_IO(SafeRead(v,read,up,_ss(v)->GetScratchPad(len).data(),len));
+		o=SQString::Create(_ss(v),std::string_view(_ss(v)->GetScratchPad(-1).data(),len));
 				   }
 		break;
 	case OT_INTEGER:{
