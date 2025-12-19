@@ -99,8 +99,8 @@ struct ReadBuffer {
 	uint8_t *bufp;                      ///< Location we're at reading the buffer.
 	uint8_t *bufe;                      ///< End of the buffer we can read from.
 	std::shared_ptr<LoadFilter> reader; ///< The filter used to actually read.
-	size_t read;                        ///< The amount of read bytes so far from the filter.
 	ReadBufferFlags flags{};            ///< Flags.
+	size_t read;                        ///< The amount of read bytes so far from the filter.
 	uint8_t buf[MEMORY_CHUNK_SIZE];     ///< Buffer we're going to read from.
 
 	/**
