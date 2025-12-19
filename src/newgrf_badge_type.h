@@ -13,9 +13,9 @@
 #include "core/enum_type.hpp"
 #include "core/strong_typedef_type.hpp"
 
-struct BadgeIDTag : public StrongType::TypedefTraits<uint16_t, StrongType::Compare> {};
+struct BadgeIDTag : public StrongType::TypedefTraits<uint32_t, StrongType::Compare> {};
 using BadgeID = StrongType::Typedef<BadgeIDTag>;
-struct BadgeClassIDTag : public StrongType::TypedefTraits<uint16_t, StrongType::Compare> {};
+struct BadgeClassIDTag : public StrongType::TypedefTraits<uint32_t, StrongType::Compare> {};
 using BadgeClassID = StrongType::Typedef<BadgeClassIDTag>;
 
 template <> struct std::hash<BadgeClassID> {
