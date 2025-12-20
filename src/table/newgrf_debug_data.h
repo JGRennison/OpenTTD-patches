@@ -2039,6 +2039,9 @@ class NIHStationStruct : public NIHelper {
 		output.Print("  Index: {}", index);
 		const BaseStation *bst = BaseStation::GetIfValid(index);
 		if (!bst) return;
+		if (bst->town != nullptr) {
+			output.Print("  Local Authority: {} ({})", bst->town->GetCachedName(), bst->town->index);
+		}
 		output.Print("  Tile: {}", bst->xy);
 		if (bst->rect.IsEmpty()) {
 			output.Print("  rect: empty");
