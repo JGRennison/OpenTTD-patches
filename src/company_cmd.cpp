@@ -1344,6 +1344,8 @@ CommandCost CmdRenameCompany(DoCommandFlags flags, const std::string &text)
 		} else {
 			c->name = text;
 		}
+
+		InvalidateWindowClassesData(WC_COMPANY, WID_C_COMPANY_NAME);
 		MarkWholeScreenDirty();
 		CompanyAdminUpdate(c);
 
@@ -1397,7 +1399,7 @@ CommandCost CmdRenamePresident(DoCommandFlags flags, const std::string &text)
 			}
 		}
 
-		InvalidateWindowClassesData(WC_COMPANY, 1);
+		InvalidateWindowClassesData(WC_COMPANY, WID_C_PRESIDENT_NAME);
 		MarkWholeScreenDirty();
 		CompanyAdminUpdate(c);
 
