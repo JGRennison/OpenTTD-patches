@@ -44,6 +44,8 @@ public:
 
 	const char *GetInfoString() const override { return this->driver_info.c_str(); }
 
+	void SetScreensaverInhibited(bool inhibited) override;
+
 protected:
 	struct SDL_Window *sdl_window = nullptr; ///< Main SDL window.
 	Palette local_palette{}; ///< Current palette to use for drawing.
