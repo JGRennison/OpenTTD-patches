@@ -622,6 +622,14 @@ STR_GRAPH_COMPANY_VALUES_CAPTION                                :{WHITE}회사�
 
 STR_GRAPH_LAST_24_MINUTES_TIME_LABEL                            :{TINY_FONT}{BLACK}최근 24분
 STR_GRAPH_LAST_72_MINUTES_TIME_LABEL                            :{TINY_FONT}{BLACK}최근 72분
+STR_GRAPH_LAST_288_MINUTES_TIME_LABEL                           :{TINY_FONT}{BLACK}최근 288분
+
+STR_GRAPH_LAST_24_MONTHS                                        :{TINY_FONT}{BLACK}2년 (월별)
+STR_GRAPH_LAST_24_QUARTERS                                      :{TINY_FONT}{BLACK}6년 (분기별)
+STR_GRAPH_LAST_24_YEARS                                         :{TINY_FONT}{BLACK}24년 (연도별)
+
+STR_GRAPH_TOGGLE_RANGE                                          :이 데이터 범위에 대한 그래프 전환
+STR_GRAPH_SELECT_SCALE                                          :그래프 가로 축척 변경
 
 STR_GRAPH_CARGO_PAYMENT_RATES_CAPTION                           :{WHITE}화물 운송단가 비율
 STR_GRAPH_CARGO_PAYMENT_RATES_DAYS                              :{TINY_FONT}{BLACK}운송 시간(일)
@@ -634,9 +642,15 @@ STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}화물 �
 STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}이 화물의 그래프를 표시하거나 숨깁니다
 STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLACK}{STRING}
 
-STR_GRAPH_INDUSTRY_PRODUCTION_CAPTION                           :{WHITE}{INDUSTRY} - 생산량 이력
+STR_GRAPH_INDUSTRY_CAPTION                                      :{WHITE}{INDUSTRY} - 화물 그래프
 STR_GRAPH_INDUSTRY_RANGE_PRODUCED                               :생산량
 STR_GRAPH_INDUSTRY_RANGE_TRANSPORTED                            :수송량
+STR_GRAPH_INDUSTRY_RANGE_DELIVERED                              :수송됨
+STR_GRAPH_INDUSTRY_RANGE_WAITING                                :대기 중
+
+STR_GRAPH_TOWN_CARGO_CAPTION                                    :{WHITE}{TOWN} - 화물 이력
+STR_GRAPH_TOWN_RANGE_PRODUCED                                   :공급
+STR_GRAPH_TOWN_RANGE_TRANSPORTED                                :수송됨
 
 STR_GRAPH_PERFORMANCE_DETAIL_TOOLTIP                            :{BLACK}상세 성취도를 봅니다.
 
@@ -2855,6 +2869,8 @@ STR_HOUSE_PICKER_CLASS_ZONE5                                    :도시 중심
 STR_HOUSE_PICKER_PROTECT                                        :업그레이드 방지
 STR_HOUSE_PICKER_PROTECT_TOOLTIP                                :이 건물이 도시가 성장함에 따라 교체되는 것을 막을지 여부를 선택합니다
 
+STR_HOUSE_PICKER_REPLACE                                        :이미 설치된 것 교체
+STR_HOUSE_PICKER_REPLACE_TOOLTIP                                :이 건물이 배치된 칸에서 기존 건물을 자동으로 제거할지 여부를 선택합니다
 
 STR_STATION_CLASS_DFLT                                          :기본
 STR_STATION_CLASS_DFLT_STATION                                  :기본 역
@@ -3659,6 +3675,7 @@ STR_EDIT_SIGN_CAPTION                                           :{WHITE}팻말 �
 STR_EDIT_SIGN_LOCATION_TOOLTIP                                  :{BLACK}이 팻말의 위치로 이동합니다. CTRL+클릭하면 이 팻말 위치를 기준으로 새로운 외부 화면을 엽니다
 STR_EDIT_SIGN_NEXT_SIGN_TOOLTIP                                 :{BLACK}다음 팻말로 가기
 STR_EDIT_SIGN_PREVIOUS_SIGN_TOOLTIP                             :{BLACK}이전 팻말로 가기
+STR_EDIT_SIGN_TEXT_COLOUR_TOOLTIP                               :{BLACK}팻말 글씨의 색상
 
 STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}팻말 이름을 입력하세요
 
@@ -3690,6 +3707,8 @@ STR_TOWN_VIEW_CENTER_TOOLTIP                                    :{BLACK}이 도�
 STR_TOWN_VIEW_LOCAL_AUTHORITY_BUTTON                            :{BLACK}지역 당국
 STR_TOWN_VIEW_LOCAL_AUTHORITY_TOOLTIP                           :{BLACK}지역 당국의 정보를 보여줍니다
 STR_TOWN_VIEW_RENAME_TOOLTIP                                    :{BLACK}이 도시 이름을 변경합니다.
+STR_TOWN_VIEW_CARGO_GRAPH                                       :화물 그래프
+STR_TOWN_VIEW_CARGO_GRAPH_TOOLTIP                               :도시의 화물 이력 그래프를 보여줍니다
 
 STR_TOWN_VIEW_EXPAND_BUTTON                                     :{BLACK}확장
 STR_TOWN_VIEW_EXPAND_TOOLTIP                                    :{BLACK}도시의 크기를 키웁니다.
@@ -4022,8 +4041,8 @@ STR_INDUSTRY_VIEW_PRODUCTION_LAST_MONTH_TITLE                   :{BLACK}지난�
 STR_INDUSTRY_VIEW_PRODUCTION_LAST_MINUTE_TITLE                  :{BLACK}지난 1분간 생산량:
 STR_INDUSTRY_VIEW_TRANSPORTED                                   :{YELLOW}{CARGO_LONG}{STRING}{BLACK} ({COMMA}% 수송됨)
 STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}이 산업시설로 이동합니다. CTRL+클릭하면 이 산업시설을 기준으로 새로운 외부 화면을 엽니다
-STR_INDUSTRY_VIEW_PRODUCTION_GRAPH                              :{BLACK}생산량 그래프
-STR_INDUSTRY_VIEW_PRODUCTION_GRAPH_TOOLTIP                      :{BLACK}산업시설 생산량 이력 그래프를 보여줍니다
+STR_INDUSTRY_VIEW_CARGO_GRAPH                                   :{BLACK}화물 그래프
+STR_INDUSTRY_VIEW_CARGO_GRAPH_TOOLTIP                           :{BLACK}산업시설 화물 이력 그래프를 보여줍니다
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}생산 수준: {YELLOW}{COMMA}%
 STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}산업시설이 곧 폐쇄됩니다!
 

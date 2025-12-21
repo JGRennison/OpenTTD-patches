@@ -620,6 +620,8 @@ STR_GRAPH_COMPANY_VALUES_CAPTION                                :{WHITE}Grafico 
 STR_GRAPH_LAST_24_MINUTES_TIME_LABEL                            :{TINY_FONT}{BLACK}Ultimi 24 minuti
 STR_GRAPH_LAST_72_MINUTES_TIME_LABEL                            :{TINY_FONT}{BLACK}Ultimi 72 minuti
 
+
+
 STR_GRAPH_CARGO_PAYMENT_RATES_CAPTION                           :{WHITE}Tariffe di pagamento carichi
 STR_GRAPH_CARGO_PAYMENT_RATES_DAYS                              :{TINY_FONT}{BLACK}Giorni in transito
 STR_GRAPH_CARGO_PAYMENT_RATES_SECONDS                           :{TINY_FONT}{BLACK}Secondi in transito
@@ -631,8 +633,13 @@ STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}Non most
 STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}Attiva/disattiva il grafico per il tipo di carico
 STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLACK}{STRING}
 
+STR_GRAPH_INDUSTRY_CAPTION                                      :{WHITE}{INDUSTRY} - Storico delle merci
 STR_GRAPH_INDUSTRY_RANGE_PRODUCED                               :Prodotto
 STR_GRAPH_INDUSTRY_RANGE_TRANSPORTED                            :Trasportato
+STR_GRAPH_INDUSTRY_RANGE_DELIVERED                              :Consegnato
+STR_GRAPH_INDUSTRY_RANGE_WAITING                                :In attesa
+
+STR_GRAPH_TOWN_RANGE_TRANSPORTED                                :Trasportato
 
 STR_GRAPH_PERFORMANCE_DETAIL_TOOLTIP                            :{BLACK}Mostra valutazione dettagliata prestazioni
 
@@ -3699,6 +3706,7 @@ STR_TOWN_VIEW_CENTER_TOOLTIP                                    :{BLACK}Centra l
 STR_TOWN_VIEW_LOCAL_AUTHORITY_BUTTON                            :{BLACK}Autorità locale
 STR_TOWN_VIEW_LOCAL_AUTHORITY_TOOLTIP                           :{BLACK}Mostra informazioni sull'autorità locale
 STR_TOWN_VIEW_RENAME_TOOLTIP                                    :{BLACK}Cambia il nome della città
+STR_TOWN_VIEW_CARGO_GRAPH                                       :Grafo delle merci
 
 STR_TOWN_VIEW_EXPAND_BUTTON                                     :{BLACK}Espandi
 STR_TOWN_VIEW_EXPAND_TOOLTIP                                    :{BLACK}Aumenta la dimensione della città

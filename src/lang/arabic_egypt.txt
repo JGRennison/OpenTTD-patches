@@ -580,6 +580,8 @@ STR_GRAPH_COMPANY_PERFORMANCE_RATINGS_CAPTION                   :{WHITE}تقيي
 STR_GRAPH_COMPANY_VALUES_CAPTION                                :{WHITE}قيمة الشركة
 
 
+
+
 STR_GRAPH_CARGO_PAYMENT_RATES_CAPTION                           :{WHITE}النسبة التنازلية لقيمة نقل البضائع
 STR_GRAPH_CARGO_PAYMENT_RATES_TITLE                             :{TINY_FONT}{BLACK}الدخل من نقل 10 وحدات (او 10,000 لتر) من البضاعة مسافة 20 مربع
 STR_GRAPH_CARGO_ENABLE_ALL                                      :{TINY_FONT}{BLACK}فعل الكل
@@ -588,6 +590,7 @@ STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL                              :{BLACK}اعرض
 STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}لا تعرض البضائع في جدول اسعار النقل.
 STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}اظهار / اخفاء الشحن
 STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLACK}{STRING}
+
 
 
 STR_GRAPH_PERFORMANCE_DETAIL_TOOLTIP                            :{BLACK}عرض كامل تفاصيل الأداء

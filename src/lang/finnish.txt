@@ -621,6 +621,14 @@ STR_GRAPH_COMPANY_VALUES_CAPTION                                :{WHITE}Yhtiöid
 
 STR_GRAPH_LAST_24_MINUTES_TIME_LABEL                            :{TINY_FONT}{BLACK}Viime 24 minuuttia
 STR_GRAPH_LAST_72_MINUTES_TIME_LABEL                            :{TINY_FONT}{BLACK}Viime 72 minuuttia
+STR_GRAPH_LAST_288_MINUTES_TIME_LABEL                           :{TINY_FONT}{BLACK}Viime 288 minuuttia
+
+STR_GRAPH_LAST_24_MONTHS                                        :{TINY_FONT}{BLACK}2 vuotta (kuukausittain)
+STR_GRAPH_LAST_24_QUARTERS                                      :{TINY_FONT}{BLACK}6 vuotta (neljännesvuosittain)
+STR_GRAPH_LAST_24_YEARS                                         :{TINY_FONT}{BLACK}24 vuotta (vuosittain)
+
+STR_GRAPH_TOGGLE_RANGE                                          :Valitse, näytetäänkö tämän osion kuvaaja
+STR_GRAPH_SELECT_SCALE                                          :Muuta kuvaajan vaaka-asteikkoa
 
 STR_GRAPH_CARGO_PAYMENT_RATES_CAPTION                           :{WHITE}Rahtitaksat
 STR_GRAPH_CARGO_PAYMENT_RATES_DAYS                              :{TINY_FONT}{BLACK}Vuorokausia kuljetuksessa
@@ -633,9 +641,15 @@ STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}Älä n�
 STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}Valitse, näytetäänkö tämän rahdin kuvaaja
 STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLACK}{STRING}
 
-STR_GRAPH_INDUSTRY_PRODUCTION_CAPTION                           :{WHITE}{INDUSTRY} – Tuotantohistoria
+STR_GRAPH_INDUSTRY_CAPTION                                      :{WHITE}{INDUSTRY} – rahtihistoria
 STR_GRAPH_INDUSTRY_RANGE_PRODUCED                               :Tuotettu
 STR_GRAPH_INDUSTRY_RANGE_TRANSPORTED                            :Kuljetettu
+STR_GRAPH_INDUSTRY_RANGE_DELIVERED                              :Toimitettu
+STR_GRAPH_INDUSTRY_RANGE_WAITING                                :Odottava
+
+STR_GRAPH_TOWN_CARGO_CAPTION                                    :{WHITE}{TOWN} – rahtihistoria
+STR_GRAPH_TOWN_RANGE_PRODUCED                                   :Tarjonta
+STR_GRAPH_TOWN_RANGE_TRANSPORTED                                :Kuljetettu
 
 STR_GRAPH_PERFORMANCE_DETAIL_TOOLTIP                            :{BLACK}Näytä tarkat suorituskykyarviot
 
@@ -2851,9 +2865,11 @@ STR_HOUSE_PICKER_CLASS_ZONE3                                    :Ulommat lähiö
 STR_HOUSE_PICKER_CLASS_ZONE4                                    :Sisemmät lähiöt
 STR_HOUSE_PICKER_CLASS_ZONE5                                    :Keskusta
 
-STR_HOUSE_PICKER_PROTECT                                        :Estä uudistaminen
+STR_HOUSE_PICKER_PROTECT                                        :Estä parannukset
 STR_HOUSE_PICKER_PROTECT_TOOLTIP                                :Valitse, suojataanko tämä talo korvaamiselta kunnan kasvaessa
 
+STR_HOUSE_PICKER_REPLACE                                        :Korvaa entinen
+STR_HOUSE_PICKER_REPLACE_TOOLTIP                                :Valitse, poistetaanko olemassa oleva talo automaattisesti ruudulta, jolle taloa sijoitetaan
 
 STR_STATION_CLASS_DFLT                                          :Oletus
 STR_STATION_CLASS_DFLT_STATION                                  :Oletusasema
@@ -3658,6 +3674,7 @@ STR_EDIT_SIGN_CAPTION                                           :{WHITE}Muokkaa 
 STR_EDIT_SIGN_LOCATION_TOOLTIP                                  :{BLACK}Keskitä päänäkymä kyltin sijaintiin. Ctrl+napsautus avaa uuden näkymäikkunan kyltin sijaintiin
 STR_EDIT_SIGN_NEXT_SIGN_TOOLTIP                                 :{BLACK}Siirry seuraavaan kylttiin
 STR_EDIT_SIGN_PREVIOUS_SIGN_TOOLTIP                             :{BLACK}Siirry edelliseen kylttiin
+STR_EDIT_SIGN_TEXT_COLOUR_TOOLTIP                               :{BLACK}Merkin tekstin väri
 
 STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}Syötä kyltin nimi
 
@@ -3689,6 +3706,8 @@ STR_TOWN_VIEW_CENTER_TOOLTIP                                    :{BLACK}Keskitä
 STR_TOWN_VIEW_LOCAL_AUTHORITY_BUTTON                            :{BLACK}Paikallisviranomaiset
 STR_TOWN_VIEW_LOCAL_AUTHORITY_TOOLTIP                           :{BLACK}Näytä tietoja paikallisviranomaisista
 STR_TOWN_VIEW_RENAME_TOOLTIP                                    :{BLACK}Vaihda kunnan nimeä.
+STR_TOWN_VIEW_CARGO_GRAPH                                       :Rahdin kuvaaja
+STR_TOWN_VIEW_CARGO_GRAPH_TOOLTIP                               :Näytä kunnan rahtihistoria kuvaajana
 
 STR_TOWN_VIEW_EXPAND_BUTTON                                     :{BLACK}Laajenna
 STR_TOWN_VIEW_EXPAND_TOOLTIP                                    :{BLACK}Laajenna kuntaa
@@ -4021,8 +4040,8 @@ STR_INDUSTRY_VIEW_PRODUCTION_LAST_MONTH_TITLE                   :{BLACK}Tuotanto
 STR_INDUSTRY_VIEW_PRODUCTION_LAST_MINUTE_TITLE                  :{BLACK}Tuotanto viime minuutissa:
 STR_INDUSTRY_VIEW_TRANSPORTED                                   :{YELLOW}{CARGO_LONG}{STRING}{BLACK} ({COMMA}{NBSP}% kuljetettu)
 STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}Keskitä päänäkymä tuotantolaitoksen sijaintiin. Ctrl+napsautus avataksesi uuden näkymäikkunan laitoksen sijaintiin
-STR_INDUSTRY_VIEW_PRODUCTION_GRAPH                              :{BLACK}Tuotannon kuvaaja
-STR_INDUSTRY_VIEW_PRODUCTION_GRAPH_TOOLTIP                      :{BLACK}Näyttää tuotantohistorian kuvaajana
+STR_INDUSTRY_VIEW_CARGO_GRAPH                                   :{BLACK}Rahdin kuvaaja
+STR_INDUSTRY_VIEW_CARGO_GRAPH_TOOLTIP                           :{BLACK}Näyttää tuotantolaitoksen rahtihistorian kuvaajana
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Tuotantotaso: {YELLOW}{COMMA}{NBSP}%
 STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}Teollisuuslaitos ilmoittaa välittömästä lakkautuksesta!
 
@@ -4602,10 +4621,10 @@ STR_ORDER_GO_VIA                                                :Mene kautta
 STR_ORDER_GO_NON_STOP_VIA                                       :Mene pysähtymättä kautta
 STR_ORDER_TOOLTIP_NON_STOP                                      :{BLACK}Muuta korostetun käskyn pysähtymiskäyttäytymistä
 
-STR_ORDER_TOGGLE_FULL_LOAD                                      :{BLACK}Lastaa täyteen mikä tahansa rahtityyppi
+STR_ORDER_TOGGLE_FULL_LOAD                                      :{BLACK}Lastaa täyteen mitä tahansa rahtia
 STR_ORDER_DROP_LOAD_IF_POSSIBLE                                 :Lastaa jos saatavilla
 STR_ORDER_DROP_FULL_LOAD_ALL                                    :Lastaa täyteen kaikki rahtityypit
-STR_ORDER_DROP_FULL_LOAD_ANY                                    :Lastaa täyteen mikä tahansa rahtityyppi
+STR_ORDER_DROP_FULL_LOAD_ANY                                    :Lastaa täyteen mitä tahansa rahtia
 STR_ORDER_DROP_NO_LOADING                                       :Älä lastaa rahtia
 STR_ORDER_TOOLTIP_FULL_LOAD                                     :{BLACK}Muuta korostetun käskyn lastauskäyttäytymistä
 
@@ -4677,7 +4696,7 @@ STR_ORDER_GO_TO_NEAREST_DEPOT                                   :Mene lähimmäl
 STR_ORDER_GO_TO_NEAREST_HANGAR                                  :Mene lähimpään lentokonehalliin
 STR_ORDER_CONDITIONAL                                           :Ehdollinen hyppykäsky
 STR_ORDER_SHARE                                                 :Jaa käskyt
-STR_ORDERS_GO_TO_TOOLTIP                                        :{BLACK}Lisää uuden käskyn ennen valittua, tai lisää listan viimeiseksi. Ctrl+napsautuksella asemakäskyistä tulee ”lastaa täyteen mikä tahansa rahti”, reittipistekäskyille ”oletuksena pysähtymättä” -asetuksen vastakohta, ja veturitallikäskyistä tulee ”sumanpurku”. Napsauta toista kulkuneuvoa kopioidaksesi sen käskyt tai Ctrl+napsauta luodaksesi jaetun käskyn. Tallikäsky poistaa automaattiset huollot
+STR_ORDERS_GO_TO_TOOLTIP                                        :{BLACK}Lisää uuden käskyn ennen valittua, tai lisää listan viimeiseksi. Ctrl+napsautuksella asemakäskyistä tulee ”lastaa täyteen mitä tahansa rahtia”, reittipistekäskyillä ”oletuksena pysähtymättä” -asetuksen vastakohta, ja varikkokäskyistä tulee ”sumanpurku”. Napsauta toista kulkuneuvoa kopioidaksesi sen käskyt tai Ctrl+napsauta luodaksesi jaetun käskyn. Varikkokäsky poistaa kulkuneuvon automaattiset huollot käytöstä
 
 STR_ORDERS_VEH_WITH_SHARED_ORDERS_LIST_TOOLTIP                  :{BLACK}Näytä kaikki kulkuneuvot, jotka jakavat nämä käskyt
 
@@ -4727,7 +4746,7 @@ STR_ORDER_NO_UNLOAD_NO_LOAD                                     :{SPACE}(Ei purk
 
 STR_ORDER_AUTO_REFIT                                            :{SPACE}(Sovita rahdille {STRING})
 STR_ORDER_FULL_LOAD_REFIT                                       :{SPACE}(Sovita rahdille {STRING} ja lastaa täyteen)
-STR_ORDER_FULL_LOAD_ANY_REFIT                                   :{SPACE}(Sovita rahdille {STRING} ja lastaa täyteen mitä tahansa rahtia)
+STR_ORDER_FULL_LOAD_ANY_REFIT                                   :{SPACE}(Sovita rahdille {STRING} ja lastaa täyteen)
 STR_ORDER_UNLOAD_REFIT                                          :{SPACE}(Pura lasti, sovita rahdille {STRING}, ota rahti)
 STR_ORDER_UNLOAD_FULL_LOAD_REFIT                                :{SPACE}(Pura lasti, sovita rahdille {STRING}, odota täyttä lastia)
 STR_ORDER_UNLOAD_FULL_LOAD_ANY_REFIT                            :{SPACE}(Pura lasti, sovita rahdille {STRING}, odota mitä tahansa täyttä lastia)

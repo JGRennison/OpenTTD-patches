@@ -622,6 +622,14 @@ STR_GRAPH_COMPANY_VALUES_CAPTION                                :{WHITE}Graphiqu
 
 STR_GRAPH_LAST_24_MINUTES_TIME_LABEL                            :{TINY_FONT}{BLACK}24 dernières minutes
 STR_GRAPH_LAST_72_MINUTES_TIME_LABEL                            :{TINY_FONT}{BLACK}72 dernières minutes
+STR_GRAPH_LAST_288_MINUTES_TIME_LABEL                           :{TINY_FONT}{BLACK}288 dernières minutes
+
+STR_GRAPH_LAST_24_MONTHS                                        :{TINY_FONT}{BLACK}2 ans (mensuel)
+STR_GRAPH_LAST_24_QUARTERS                                      :{TINY_FONT}{BLACK}6 ans (trimestriel)
+STR_GRAPH_LAST_24_YEARS                                         :{TINY_FONT}{BLACK}24 ans (annuel)
+
+STR_GRAPH_TOGGLE_RANGE                                          :Basculer le graphique pour les données de cette échelle
+STR_GRAPH_SELECT_SCALE                                          :Modifier l'échelle horizontale du graphique
 
 STR_GRAPH_CARGO_PAYMENT_RATES_CAPTION                           :{WHITE}Valeur des marchandises
 STR_GRAPH_CARGO_PAYMENT_RATES_DAYS                              :{TINY_FONT}{BLACK}Jours de trajet
@@ -634,9 +642,15 @@ STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}N'affich
 STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}Afficher/Cacher le type de marchandise
 STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLACK}{STRING}
 
-STR_GRAPH_INDUSTRY_PRODUCTION_CAPTION                           :{WHITE}{INDUSTRY} - Historique de production
+STR_GRAPH_INDUSTRY_CAPTION                                      :{WHITE}{INDUSTRY} - Historique des cargaisons
 STR_GRAPH_INDUSTRY_RANGE_PRODUCED                               :Produit
 STR_GRAPH_INDUSTRY_RANGE_TRANSPORTED                            :Transporté
+STR_GRAPH_INDUSTRY_RANGE_DELIVERED                              :Livré
+STR_GRAPH_INDUSTRY_RANGE_WAITING                                :En attente
+
+STR_GRAPH_TOWN_CARGO_CAPTION                                    :{WHITE}{TOWN} - Historique des cargaisons
+STR_GRAPH_TOWN_RANGE_PRODUCED                                   :Production
+STR_GRAPH_TOWN_RANGE_TRANSPORTED                                :Transporté
 
 STR_GRAPH_PERFORMANCE_DETAIL_TOOLTIP                            :{BLACK}Afficher le détail de l'évaluation de la performance
 
@@ -2852,9 +2866,11 @@ STR_HOUSE_PICKER_CLASS_ZONE3                                    :Banlieue extér
 STR_HOUSE_PICKER_CLASS_ZONE4                                    :Banlieue intérieure
 STR_HOUSE_PICKER_CLASS_ZONE5                                    :Centre-ville
 
-STR_HOUSE_PICKER_PROTECT                                        :Empêcher les améliorations
+STR_HOUSE_PICKER_PROTECT                                        :Protéger
 STR_HOUSE_PICKER_PROTECT_TOOLTIP                                :Définit si cette maison sera protégée contre son remplacement lors de la croissance de la ville
 
+STR_HOUSE_PICKER_REPLACE                                        :Remplacer l'existant
+STR_HOUSE_PICKER_REPLACE_TOOLTIP                                :Définit si ce bâtiment remplace automatiquement le bâtiment existant sur la case où il est placé
 
 STR_STATION_CLASS_DFLT                                          :Par défaut
 STR_STATION_CLASS_DFLT_STATION                                  :Stations par défaut
@@ -3659,6 +3675,7 @@ STR_EDIT_SIGN_CAPTION                                           :{WHITE}Éditer 
 STR_EDIT_SIGN_LOCATION_TOOLTIP                                  :{BLACK}Centrer la vue sur le panneau. Ctrl-clic pour ouvrir une nouvelle vue sur le panneau
 STR_EDIT_SIGN_NEXT_SIGN_TOOLTIP                                 :{BLACK}Aller au panneau suivant
 STR_EDIT_SIGN_PREVIOUS_SIGN_TOOLTIP                             :{BLACK}Aller au panneau précédent
+STR_EDIT_SIGN_TEXT_COLOUR_TOOLTIP                               :{BLACK}Couleur du texte de ce panneau
 
 STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}Entrer un nom pour le panneau
 
@@ -3690,6 +3707,8 @@ STR_TOWN_VIEW_CENTER_TOOLTIP                                    :{BLACK}Centrer 
 STR_TOWN_VIEW_LOCAL_AUTHORITY_BUTTON                            :{BLACK}Municipalité
 STR_TOWN_VIEW_LOCAL_AUTHORITY_TOOLTIP                           :{BLACK}Afficher des informations sur la municipalité
 STR_TOWN_VIEW_RENAME_TOOLTIP                                    :{BLACK}Renommer la ville
+STR_TOWN_VIEW_CARGO_GRAPH                                       :Graphe des cargaisons
+STR_TOWN_VIEW_CARGO_GRAPH_TOOLTIP                               :Affiche le graphe de l'historique des cargaisons de la ville
 
 STR_TOWN_VIEW_EXPAND_BUTTON                                     :{BLACK}Agrandir
 STR_TOWN_VIEW_EXPAND_TOOLTIP                                    :{BLACK}Augmenter la taille de la ville
@@ -4022,8 +4041,8 @@ STR_INDUSTRY_VIEW_PRODUCTION_LAST_MONTH_TITLE                   :{BLACK}Producti
 STR_INDUSTRY_VIEW_PRODUCTION_LAST_MINUTE_TITLE                  :{BLACK}Production la minute précédente{NBSP}:
 STR_INDUSTRY_VIEW_TRANSPORTED                                   :{YELLOW}{CARGO_LONG}{STRING}{BLACK} ({COMMA}{NBSP}% transporté{P "" s})
 STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}Centrer la vue sur l'industrie. Ctrl-clic pour ouvrir une nouvelle vue sur l'industrie.
-STR_INDUSTRY_VIEW_PRODUCTION_GRAPH                              :{BLACK}Graphe de production
-STR_INDUSTRY_VIEW_PRODUCTION_GRAPH_TOOLTIP                      :{BLACK}Affiche le graphe de l'historique de la production des industries
+STR_INDUSTRY_VIEW_CARGO_GRAPH                                   :{BLACK}Graphe des cargaisons
+STR_INDUSTRY_VIEW_CARGO_GRAPH_TOOLTIP                           :{BLACK}Affiche le graphe de l'historique des cargaisons des industries
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Niveau de production{NBSP}: {YELLOW}{COMMA}{NBSP}%
 STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}L'industrie a annoncé sa fermeture imminente{NBSP}!
 

@@ -759,6 +759,14 @@ STR_GRAPH_COMPANY_VALUES_CAPTION                                :{WHITE}Граф
 
 STR_GRAPH_LAST_24_MINUTES_TIME_LABEL                            :{TINY_FONT}{BLACK}Последние 24 минуты
 STR_GRAPH_LAST_72_MINUTES_TIME_LABEL                            :{TINY_FONT}{BLACK}Последние 72 минуты
+STR_GRAPH_LAST_288_MINUTES_TIME_LABEL                           :{TINY_FONT}{BLACK}Последние 288 минут
+
+STR_GRAPH_LAST_24_MONTHS                                        :{TINY_FONT}{BLACK}2 года (помесячно)
+STR_GRAPH_LAST_24_QUARTERS                                      :{TINY_FONT}{BLACK}6 лет (поквартально)
+STR_GRAPH_LAST_24_YEARS                                         :{TINY_FONT}{BLACK}24 года
+
+STR_GRAPH_TOGGLE_RANGE                                          :Включить/отключить отображение графика
+STR_GRAPH_SELECT_SCALE                                          :Сменить горизонтальный масштаб графика
 
 STR_GRAPH_CARGO_PAYMENT_RATES_CAPTION                           :{WHITE}Оплата за перевозку грузов
 STR_GRAPH_CARGO_PAYMENT_RATES_DAYS                              :{TINY_FONT}{BLACK}Дней в пути
@@ -771,9 +779,15 @@ STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}Скры
 STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}Включить/отключить отображение груза на графике
 STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLACK}{STRING}
 
-STR_GRAPH_INDUSTRY_PRODUCTION_CAPTION                           :{WHITE}График производительности: {INDUSTRY}
+STR_GRAPH_INDUSTRY_CAPTION                                      :{WHITE}{INDUSTRY} - Продукция
 STR_GRAPH_INDUSTRY_RANGE_PRODUCED                               :Произведено
 STR_GRAPH_INDUSTRY_RANGE_TRANSPORTED                            :Перевезено
+STR_GRAPH_INDUSTRY_RANGE_DELIVERED                              :Доставлено
+STR_GRAPH_INDUSTRY_RANGE_WAITING                                :В ожидании
+
+STR_GRAPH_TOWN_CARGO_CAPTION                                    :{WHITE}{TOWN} - Пассажиры и грузы
+STR_GRAPH_TOWN_RANGE_PRODUCED                                   :Запрос
+STR_GRAPH_TOWN_RANGE_TRANSPORTED                                :Перевезено
 
 STR_GRAPH_PERFORMANCE_DETAIL_TOOLTIP                            :{BLACK}Показать составляющие части рейтинга
 
@@ -2075,11 +2089,11 @@ STR_CONFIG_SETTING_NEWS_MESSAGES_SUMMARY                        :кратко
 STR_CONFIG_SETTING_NEWS_MESSAGES_FULL                           :полностью
 
 STR_CONFIG_SETTING_COLOURED_NEWS_YEAR                           :Цветные газеты появляются в {STRING} году
-STR_CONFIG_SETTING_COLOURED_NEWS_YEAR_HELPTEXT                  :Обычно в газетах печатают чёрно-белые изображения, а начиная с указанного года - цветные
+STR_CONFIG_SETTING_COLOURED_NEWS_YEAR_HELPTEXT                  :В старых газетах печатают чёрно-белые изображения, а начиная с указанного года - цветные
 STR_CONFIG_SETTING_STARTING_YEAR                                :Год начала игры: {STRING}
 
 STR_CONFIG_SETTING_ENDING_YEAR                                  :Последний год игры: {STRING}
-STR_CONFIG_SETTING_ENDING_YEAR_HELPTEXT                         :По прошествии указанного года рейтинг компании рассчитывается, записывается и выводится таблица рекордов. После этого игру можно продолжить.{}Если указанный год предшествует году начала игры, то таблица рекордов не отображается.
+STR_CONFIG_SETTING_ENDING_YEAR_HELPTEXT                         :Год окончания игры. В конце указанного года рейтинг компании рассчитывается, записывается и выводится таблица рекордов. После этого игру можно продолжить.{}Если указанный год предшествует году начала игры, то таблица рекордов не отображается.
 STR_CONFIG_SETTING_ENDING_YEAR_VALUE                            :{NUM}
 ###setting-zero-is-special
 STR_CONFIG_SETTING_ENDING_YEAR_ZERO                             :Никогда
@@ -3022,9 +3036,11 @@ STR_HOUSE_PICKER_CLASS_ZONE3                                    :Перифер�
 STR_HOUSE_PICKER_CLASS_ZONE4                                    :Центральные районы
 STR_HOUSE_PICKER_CLASS_ZONE5                                    :Центр
 
-STR_HOUSE_PICKER_PROTECT                                        :Запрет улучшений
+STR_HOUSE_PICKER_PROTECT                                        :Запретить обновление
 STR_HOUSE_PICKER_PROTECT_TOOLTIP                                :Вы можете указать, что это здание нельзя заменять другим, несмотря на рост и расширение города.
 
+STR_HOUSE_PICKER_REPLACE                                        :Автозамена
+STR_HOUSE_PICKER_REPLACE_TOOLTIP                                :Укажите, заменять ли автоматически уже стоящие здания
 
 STR_STATION_CLASS_DFLT                                          :Стандартная станция
 STR_STATION_CLASS_DFLT_STATION                                  :Стандартная ж/д станция
@@ -3833,6 +3849,7 @@ STR_EDIT_SIGN_CAPTION                                           :{WHITE}Изме
 STR_EDIT_SIGN_LOCATION_TOOLTIP                                  :{BLACK}Показать метку в основном окне. Ctrl+щелчок - показать в дополнительном окне.
 STR_EDIT_SIGN_NEXT_SIGN_TOOLTIP                                 :{BLACK}К следующей табличке
 STR_EDIT_SIGN_PREVIOUS_SIGN_TOOLTIP                             :{BLACK}К предыдущей табличке
+STR_EDIT_SIGN_TEXT_COLOUR_TOOLTIP                               :{BLACK}Цвет текста табличек
 
 STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}Введите название таблички
 
@@ -3864,6 +3881,8 @@ STR_TOWN_VIEW_CENTER_TOOLTIP                                    :{BLACK}Пока
 STR_TOWN_VIEW_LOCAL_AUTHORITY_BUTTON                            :{BLACK}Администрация
 STR_TOWN_VIEW_LOCAL_AUTHORITY_TOOLTIP                           :{BLACK}Взаимодействие с администрацией города
 STR_TOWN_VIEW_RENAME_TOOLTIP                                    :{BLACK}Переименовать город
+STR_TOWN_VIEW_CARGO_GRAPH                                       :График доставки
+STR_TOWN_VIEW_CARGO_GRAPH_TOOLTIP                               :Показать график пассажиропотоков и объёмов грузоперевозок в городе
 
 STR_TOWN_VIEW_EXPAND_BUTTON                                     :{BLACK}Расширить
 STR_TOWN_VIEW_EXPAND_TOOLTIP                                    :{BLACK}Увеличить размер города
@@ -4196,8 +4215,8 @@ STR_INDUSTRY_VIEW_PRODUCTION_LAST_MONTH_TITLE                   :{BLACK}Прои
 STR_INDUSTRY_VIEW_PRODUCTION_LAST_MINUTE_TITLE                  :{BLACK}Произведено за минуту:
 STR_INDUSTRY_VIEW_TRANSPORTED                                   :{YELLOW}{CARGO_LONG}{STRING}{BLACK} ({COMMA}% перевезено)
 STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}Показать предприятие в основном окне. Ctrl+щелчок{NBSP}- показать в дополнительном окне.
-STR_INDUSTRY_VIEW_PRODUCTION_GRAPH                              :{BLACK}График производительности
-STR_INDUSTRY_VIEW_PRODUCTION_GRAPH_TOOLTIP                      :{BLACK}Показать график производительности этого предприятия
+STR_INDUSTRY_VIEW_CARGO_GRAPH                                   :{BLACK}Графики грузоперевозок
+STR_INDUSTRY_VIEW_CARGO_GRAPH_TOOLTIP                           :{BLACK}Показать график объёмов грузоперевозок для предприятия
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Производительность: {YELLOW}{COMMA}%
 STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}Предприятие скоро закрывается!
 
@@ -5241,7 +5260,7 @@ STR_ERROR_CAN_T_EXPAND_TOWN                                     :{WHITE}Нево
 STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP_SUB                          :{WHITE}... слишком близко к краю карты
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN                             :{WHITE}... слишком близко к другому городу
 STR_ERROR_TOO_MANY_TOWNS                                        :{WHITE}... слишком много городов
-STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}... нет места на карте
+STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}... на карте нет места
 STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :{WHITE}Идут дорожные работы...
 STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}Невозможно снести город.{}{}К нему относится станция или депо, либо невозможно очистить одну из занимаемых им клеток.
 STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :{WHITE}... в центре города нет места для статуи
@@ -5436,7 +5455,7 @@ STR_ERROR_BRIDGE_THROUGH_MAP_BORDER                             :{WHITE}Мост
 STR_ERROR_CAN_T_BUILD_TUNNEL_HERE                               :{WHITE}Здесь невозможно построить туннель...
 STR_ERROR_SITE_UNSUITABLE_FOR_TUNNEL                            :{WHITE}Неподходящее место для строительства туннеля
 STR_ERROR_MUST_DEMOLISH_TUNNEL_FIRST                            :{WHITE}Сначала снесите туннель
-STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY                             :{WHITE}Другой туннель на пути
+STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY                             :{WHITE}Туннели не могут пересекаться
 STR_ERROR_TUNNEL_THROUGH_MAP_BORDER                             :{WHITE}Туннель заканчивается за пределами карты
 STR_ERROR_UNABLE_TO_EXCAVATE_LAND                               :{WHITE}Невозможно поднять/опустить землю для другого конца туннеля
 STR_ERROR_TUNNEL_TOO_LONG                                       :{WHITE}... туннель слишком длинный
@@ -5543,7 +5562,7 @@ STR_ERROR_NO_VEHICLES_AVAILABLE_YET_EXPLANATION                 :{WHITE}Уста
 STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_AT_ALL                    :{WHITE}Отсутствуют типы дорог, которые могла бы прокладывать городская администрация
 STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_AT_ALL_EXPLANATION        :{WHITE}Измените конфигурацию установленных модулей NewGRF
 STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_YET                       :{WHITE}Пока что отсутствуют типы дорог, которые могла бы прокладывать городская администрация
-STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_YET_EXPLANATION           :{WHITE}Установите дату начала игры не ранее {DATE_SHORT} или установите модуль NewGRF, добавляющий типы дорог, которые будут доступны администрациям городов на выбранную вами дату.
+STR_ERROR_NO_TOWN_ROADTYPES_AVAILABLE_YET_EXPLANATION           :{WHITE}Установите дату начала игры не ранее {DATE_SHORT} или установите модуль NewGRF, добавляющий типы дорог, которые будут доступны для строительства на выбранную вами дату.
 
 # Specific vehicle errors
 STR_ERROR_CAN_T_MAKE_TRAIN_PASS_SIGNAL                          :{WHITE}Невозможно игнорировать светофор. Опасно...

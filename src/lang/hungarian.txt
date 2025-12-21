@@ -684,6 +684,14 @@ STR_GRAPH_COMPANY_VALUES_CAPTION                                :{WHITE}Vállala
 
 STR_GRAPH_LAST_24_MINUTES_TIME_LABEL                            :{TINY_FONT}{BLACK}Utolsó 24 perc
 STR_GRAPH_LAST_72_MINUTES_TIME_LABEL                            :{TINY_FONT}{BLACK}Utolsó 72 perc
+STR_GRAPH_LAST_288_MINUTES_TIME_LABEL                           :{TINY_FONT}{BLACK}Az utolsó 288 perc
+
+STR_GRAPH_LAST_24_MONTHS                                        :{TINY_FONT}{BLACK}2 év (havonta)
+STR_GRAPH_LAST_24_QUARTERS                                      :{TINY_FONT}{BLACK}6 év (negyedévente)
+STR_GRAPH_LAST_24_YEARS                                         :{TINY_FONT}{BLACK}24 év (évente)
+
+STR_GRAPH_TOGGLE_RANGE                                          :Grafikon megjelenítése ehhez az adatsorhoz
+STR_GRAPH_SELECT_SCALE                                          :A grafikon vízszintes skálájának módosítása
 
 STR_GRAPH_CARGO_PAYMENT_RATES_CAPTION                           :{WHITE}Rakományok szállítási díja
 STR_GRAPH_CARGO_PAYMENT_RATES_DAYS                              :{TINY_FONT}{BLACK}Napok szállítás közben
@@ -696,9 +704,15 @@ STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}Ne mutas
 STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}Adott rakomány grafikonjának mutatása be/ki
 STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLACK}{STRING}
 
-STR_GRAPH_INDUSTRY_PRODUCTION_CAPTION                           :{WHITE}{INDUSTRY} - Termelési előzmények
+STR_GRAPH_INDUSTRY_CAPTION                                      :{WHITE}{INDUSTRY} - Rakománytörténet
 STR_GRAPH_INDUSTRY_RANGE_PRODUCED                               :Előállított
 STR_GRAPH_INDUSTRY_RANGE_TRANSPORTED                            :Szállítva
+STR_GRAPH_INDUSTRY_RANGE_DELIVERED                              :Leszállítva
+STR_GRAPH_INDUSTRY_RANGE_WAITING                                :Várakozik
+
+STR_GRAPH_TOWN_CARGO_CAPTION                                    :{WHITE}{TOWN} - Rakománytörténet
+STR_GRAPH_TOWN_RANGE_PRODUCED                                   :Ellátás
+STR_GRAPH_TOWN_RANGE_TRANSPORTED                                :Elszállítva
 
 STR_GRAPH_PERFORMANCE_DETAIL_TOOLTIP                            :{BLACK}Részletes teljesítményértékelés mutatása
 
@@ -2915,9 +2929,11 @@ STR_HOUSE_PICKER_CLASS_ZONE3                                    :Külső kertvá
 STR_HOUSE_PICKER_CLASS_ZONE4                                    :Belső kertváros
 STR_HOUSE_PICKER_CLASS_ZONE5                                    :Városközpont
 
-STR_HOUSE_PICKER_PROTECT                                        :Frissítések megelőzése
+STR_HOUSE_PICKER_PROTECT                                        :Növekedés megakadályozása
 STR_HOUSE_PICKER_PROTECT_TOOLTIP                                :Válaszd ki, hogy a város növekedésével ez a ház védve legyen-e a cserétől
 
+STR_HOUSE_PICKER_REPLACE                                        :Meglévő kicserélése
+STR_HOUSE_PICKER_REPLACE_TOOLTIP                                :Válaszd ki, hogy automatikusan eltávolítsa-e a meglévő házat arról a mezőről, ahova ez a ház lerakásra kerül
 
 STR_STATION_CLASS_DFLT                                          :Alapértelmezett
 STR_STATION_CLASS_DFLT_STATION                                  :Alapértelmezett állomás
@@ -3722,6 +3738,7 @@ STR_EDIT_SIGN_CAPTION                                           :{WHITE}Felirat 
 STR_EDIT_SIGN_LOCATION_TOOLTIP                                  :{BLACK}A fő nézetet a felirat helyére állítja. Ctrl+kattintással új nézet nyílik a felirat helyzeténél
 STR_EDIT_SIGN_NEXT_SIGN_TOOLTIP                                 :{BLACK}Következő felirat
 STR_EDIT_SIGN_PREVIOUS_SIGN_TOOLTIP                             :{BLACK}Előző felirat
+STR_EDIT_SIGN_TEXT_COLOUR_TOOLTIP                               :{BLACK}A tábla szövegének színe
 
 STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}Felirat szövegének szerkesztése
 
@@ -3753,6 +3770,8 @@ STR_TOWN_VIEW_CENTER_TOOLTIP                                    :{BLACK}A fő n�
 STR_TOWN_VIEW_LOCAL_AUTHORITY_BUTTON                            :{BLACK}Önkormányzat
 STR_TOWN_VIEW_LOCAL_AUTHORITY_TOOLTIP                           :{BLACK}Az önkormányzat adatainak megmutatása
 STR_TOWN_VIEW_RENAME_TOOLTIP                                    :{BLACK}A város nevének megváltoztatása
+STR_TOWN_VIEW_CARGO_GRAPH                                       :Rakomány grafikon
+STR_TOWN_VIEW_CARGO_GRAPH_TOOLTIP                               :Megmutatja a város rakománytörténetének grafikonját
 
 STR_TOWN_VIEW_EXPAND_BUTTON                                     :{BLACK}Növelés
 STR_TOWN_VIEW_EXPAND_TOOLTIP                                    :{BLACK}A település méretének növelése
@@ -4085,8 +4104,8 @@ STR_INDUSTRY_VIEW_PRODUCTION_LAST_MONTH_TITLE                   :{BLACK}Múlt ha
 STR_INDUSTRY_VIEW_PRODUCTION_LAST_MINUTE_TITLE                  :{BLACK}Termelés az elmúlt percben:
 STR_INDUSTRY_VIEW_TRANSPORTED                                   :{YELLOW}{CARGO_LONG}{STRING}{BLACK} ({COMMA}% elszállítva)
 STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}A fő nézetet a gazdasági épületre állítja. Ctrl+kattintással új nézet nyílik a gazdasági épület helyzeténél
-STR_INDUSTRY_VIEW_PRODUCTION_GRAPH                              :{BLACK}Termelési grafikon
-STR_INDUSTRY_VIEW_PRODUCTION_GRAPH_TOOLTIP                      :{BLACK}Megjeleníti az ipar termelési történetének grafikonját
+STR_INDUSTRY_VIEW_CARGO_GRAPH                                   :{BLACK}Rakomány grafikon
+STR_INDUSTRY_VIEW_CARGO_GRAPH_TOOLTIP                           :{BLACK}Megmutatja az iparág rakománytörténetének grafikonját
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Termelési szint: {YELLOW}{COMMA}%
 STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}A gyár bejelentette a közelgő bezárását!
 

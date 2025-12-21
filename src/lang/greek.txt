@@ -714,6 +714,14 @@ STR_GRAPH_COMPANY_VALUES_CAPTION                                :{WHITE}Γράφ
 
 STR_GRAPH_LAST_24_MINUTES_TIME_LABEL                            :{TINY_FONT}{BLACK}Τελευταία 24 λεπτά
 STR_GRAPH_LAST_72_MINUTES_TIME_LABEL                            :{TINY_FONT}{BLACK}Τελευταία 72 λεπτά
+STR_GRAPH_LAST_288_MINUTES_TIME_LABEL                           :{TINY_FONT}{BLACK}Τελευταία 288 λεπτά
+
+STR_GRAPH_LAST_24_MONTHS                                        :{TINY_FONT}{BLACK}2 έτη (μηνιαία)
+STR_GRAPH_LAST_24_QUARTERS                                      :{TINY_FONT}{BLACK}6 έτη (τετραμηνιαία)
+STR_GRAPH_LAST_24_YEARS                                         :{TINY_FONT}{BLACK}24 έτη (ετήσια)
+
+STR_GRAPH_TOGGLE_RANGE                                          :Εναλλαγή γραφήματος για αυτό το εύρος στοιχείων
+STR_GRAPH_SELECT_SCALE                                          :Αλλαγή οριζόντιας κλίμακας γραφήματος
 
 STR_GRAPH_CARGO_PAYMENT_RATES_CAPTION                           :{WHITE}Ποσοστά Πληρωμής Φορτίων
 STR_GRAPH_CARGO_PAYMENT_RATES_DAYS                              :{TINY_FONT}{BLACK}Ημέρες σε μετάβαση
@@ -726,9 +734,15 @@ STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}Εμφά
 STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}Εναλλαγή γραφήματος αυτού του τύπου φορτίου
 STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLACK}{STRING}
 
-STR_GRAPH_INDUSTRY_PRODUCTION_CAPTION                           :{WHITE}{INDUSTRY} - Ιστορικό Παραγωγής
+STR_GRAPH_INDUSTRY_CAPTION                                      :{WHITE}{INDUSTRY} - Ιστορικό Εμπορευμάτων
 STR_GRAPH_INDUSTRY_RANGE_PRODUCED                               :Παράχθηκε/αν
 STR_GRAPH_INDUSTRY_RANGE_TRANSPORTED                            :Μεταφέρθηκε/αν
+STR_GRAPH_INDUSTRY_RANGE_DELIVERED                              :Παραδόθηκε
+STR_GRAPH_INDUSTRY_RANGE_WAITING                                :Αναμονή
+
+STR_GRAPH_TOWN_CARGO_CAPTION                                    :{WHITE}{TOWN} - Ιστορικό Εμπορευμάτων
+STR_GRAPH_TOWN_RANGE_PRODUCED                                   :Προσφορά
+STR_GRAPH_TOWN_RANGE_TRANSPORTED                                :Μεταφέρθηκε/αν
 
 STR_GRAPH_PERFORMANCE_DETAIL_TOOLTIP                            :{BLACK}Εμφάνιση λεπτομεριών αποδόσεων
 
@@ -2947,6 +2961,8 @@ STR_HOUSE_PICKER_CLASS_ZONE5                                    :Κέντρο τ
 STR_HOUSE_PICKER_PROTECT                                        :Αποτροπή αναβαθμίσεων
 STR_HOUSE_PICKER_PROTECT_TOOLTIP                                :Επιλέξτε αν αυτό το σπίτι θα προστατεύεται από αντικατάσταση καθώς η πόλη μεγαλώνει
 
+STR_HOUSE_PICKER_REPLACE                                        :Αντικατάσταση υπάρχοντος
+STR_HOUSE_PICKER_REPLACE_TOOLTIP                                :Επιλέξτε εάν θα αφαιρεθεί αυτόματα ένα υπάρχον σπίτι στο πλακίδιο όπου τοποθετείται αυτό το σπίτι
 
 STR_STATION_CLASS_DFLT                                          :Προεπιλεγμένος
 STR_STATION_CLASS_DFLT_STATION                                  :Προεπιλεγμένος σταθμός
@@ -3751,6 +3767,7 @@ STR_EDIT_SIGN_CAPTION                                           :{WHITE}Επεξ
 STR_EDIT_SIGN_LOCATION_TOOLTIP                                  :{BLACK}Κεντράρισμα της κύριας προβολής στη τοποθεσία της πινακίδας. Ctrl+Κλικ για άνοιγμα νέου παραθύρου προβολής στην τοποθεσία της πινακίδας
 STR_EDIT_SIGN_NEXT_SIGN_TOOLTIP                                 :{BLACK}Μετάβαση στην επόμενη πινακίδα
 STR_EDIT_SIGN_PREVIOUS_SIGN_TOOLTIP                             :{BLACK}Μετάβαση στη προηγούμενη πινακίδα
+STR_EDIT_SIGN_TEXT_COLOUR_TOOLTIP                               :{BLACK}Χρώμα κειμένου της πινακίδας
 
 STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}Δώστε ένα όνομα για την πινακίδα
 
@@ -3782,6 +3799,8 @@ STR_TOWN_VIEW_CENTER_TOOLTIP                                    :{BLACK}Κεντ
 STR_TOWN_VIEW_LOCAL_AUTHORITY_BUTTON                            :{BLACK}Τοπική Αρχή
 STR_TOWN_VIEW_LOCAL_AUTHORITY_TOOLTIP                           :{BLACK}Εμφάνιση πληροφοριών για την τοπική αρχή
 STR_TOWN_VIEW_RENAME_TOOLTIP                                    :{BLACK}Αλλαγή του ονόματος της πόλης
+STR_TOWN_VIEW_CARGO_GRAPH                                       :Γράφημα εμπορευμάτων
+STR_TOWN_VIEW_CARGO_GRAPH_TOOLTIP                               :Εμφανίζει το γράφημα του ιστορικού των εμπορευμάτων της πόλης
 
 STR_TOWN_VIEW_EXPAND_BUTTON                                     :{BLACK}Επέκταση
 STR_TOWN_VIEW_EXPAND_TOOLTIP                                    :{BLACK}Αύξηση μεγέθους της πόλης
@@ -4115,8 +4134,8 @@ STR_INDUSTRY_VIEW_PRODUCTION_LAST_MONTH_TITLE                   :{BLACK}Παρα
 STR_INDUSTRY_VIEW_PRODUCTION_LAST_MINUTE_TITLE                  :{BLACK}Παραγωγή τελευταίου λεπτού:
 STR_INDUSTRY_VIEW_TRANSPORTED                                   :{YELLOW}{CARGO_LONG}{STRING}{BLACK} ({COMMA}% μεταφέρθηκαν)
 STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}Κεντράρισμα εικόνας στην περιοχή της βιομηχανίας. Ctrl+Κλικ για άνοιγμα νέου παραθύρου προβολής στην περιοχή της βιομηχανίας
-STR_INDUSTRY_VIEW_PRODUCTION_GRAPH                              :{BLACK}Γράφημα Παραγωγής
-STR_INDUSTRY_VIEW_PRODUCTION_GRAPH_TOOLTIP                      :{BLACK}Εμφανίζει το γράφημα ιστορικού παραγωγής της βιομηχανίας
+STR_INDUSTRY_VIEW_CARGO_GRAPH                                   :{BLACK}Γράφημα φορτίου
+STR_INDUSTRY_VIEW_CARGO_GRAPH_TOOLTIP                           :{BLACK}Εμφανίζει το γράφημα του ιστορικού των εμπορευμάτων της βιομηχανίας
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Επίπεδο παραγωγής: {YELLOW}{COMMA}%
 STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}Η βιομηχανία έχει ανακοινώσει άμεσο κλείσιμο!
 

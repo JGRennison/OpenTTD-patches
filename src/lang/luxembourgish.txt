@@ -621,6 +621,14 @@ STR_GRAPH_COMPANY_VALUES_CAPTION                                :{WHITE}Firmewä
 
 STR_GRAPH_LAST_24_MINUTES_TIME_LABEL                            :{TINY_FONT}{BLACK}Lescht 24 Minuten
 STR_GRAPH_LAST_72_MINUTES_TIME_LABEL                            :{TINY_FONT}{BLACK}Dauert 72 Minutten
+STR_GRAPH_LAST_288_MINUTES_TIME_LABEL                           :{TINY_FONT}{BLACK}Lescht 288 Minuten
+
+STR_GRAPH_LAST_24_MONTHS                                        :{TINY_FONT}{BLACK}2 Joer (pro Mount)
+STR_GRAPH_LAST_24_QUARTERS                                      :{TINY_FONT}{BLACK}6 Joer (véirelsjähreg)
+STR_GRAPH_LAST_24_YEARS                                         :{TINY_FONT}{BLACK}24 Joer (jährleg)
+
+STR_GRAPH_TOGGLE_RANGE                                          :Grafik emschalte fir des Data Range
+STR_GRAPH_SELECT_SCALE                                          :Horizontal Skala vun der Grafik änneren
 
 STR_GRAPH_CARGO_PAYMENT_RATES_CAPTION                           :{WHITE}Luedungs Bezuelraten
 STR_GRAPH_CARGO_PAYMENT_RATES_DAYS                              :{TINY_FONT}{BLACK}Deeg am Transit
@@ -633,9 +641,15 @@ STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}Keng Wue
 STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}Schalt d'Grafik fir de Wuerentyp em
 STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLACK}{STRING}
 
-STR_GRAPH_INDUSTRY_PRODUCTION_CAPTION                           :{WHITE}{INDUSTRY} - Produktiounshistorie
+STR_GRAPH_INDUSTRY_CAPTION                                      :{WHITE}{INDUSTRY} - Wuerenhistorie
 STR_GRAPH_INDUSTRY_RANGE_PRODUCED                               :Produzéiert
 STR_GRAPH_INDUSTRY_RANGE_TRANSPORTED                            :Transportéiert
+STR_GRAPH_INDUSTRY_RANGE_DELIVERED                              :Geliwwert
+STR_GRAPH_INDUSTRY_RANGE_WAITING                                :Warden
+
+STR_GRAPH_TOWN_CARGO_CAPTION                                    :{WHITE}{TOWN} - Wuerenhistorie
+STR_GRAPH_TOWN_RANGE_PRODUCED                                   :Angebot
+STR_GRAPH_TOWN_RANGE_TRANSPORTED                                :Transportéiert
 
 STR_GRAPH_PERFORMANCE_DETAIL_TOOLTIP                            :{BLACK}Weis detailléiert Leeschtungsastellungen
 
@@ -2854,6 +2868,8 @@ STR_HOUSE_PICKER_CLASS_ZONE5                                    :Stadzentrum
 STR_HOUSE_PICKER_PROTECT                                        :Upgrades verhënneren
 STR_HOUSE_PICKER_PROTECT_TOOLTIP                                :Wiel aus ob dëst Haus firun engem Ersetze geschützt gëtt wann d'Stad wiisst
 
+STR_HOUSE_PICKER_REPLACE                                        :Existéiernt ersetzen
+STR_HOUSE_PICKER_REPLACE_TOOLTIP                                :Wiel aus fir d'existéierend Haus automatesch ewech ze huele wann dëst Haus placéiert gëtt
 
 STR_STATION_CLASS_DFLT                                          :Standard
 STR_STATION_CLASS_DFLT_STATION                                  :Standardstatioun
@@ -3658,6 +3674,7 @@ STR_EDIT_SIGN_CAPTION                                           :{WHITE}Schëldt
 STR_EDIT_SIGN_LOCATION_TOOLTIP                                  :{BLACK}Zentréiert d'Usiicht op d'Schëld. Ctrl+Klick erstellt eng nei Usiicht op d'Schëld
 STR_EDIT_SIGN_NEXT_SIGN_TOOLTIP                                 :{BLACK}Géi bei d'nächst Schëld
 STR_EDIT_SIGN_PREVIOUS_SIGN_TOOLTIP                             :{BLACK}Géi bei d'Schëld firdrun
+STR_EDIT_SIGN_TEXT_COLOUR_TOOLTIP                               :{BLACK}Faarw vum Text vun de Schëlder
 
 STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}Gëff en Numm fir d'Schëld an
 
@@ -3689,6 +3706,8 @@ STR_TOWN_VIEW_CENTER_TOOLTIP                                    :{BLACK}Zentréi
 STR_TOWN_VIEW_LOCAL_AUTHORITY_BUTTON                            :{BLACK}Gemeng
 STR_TOWN_VIEW_LOCAL_AUTHORITY_TOOLTIP                           :{BLACK}Weist d'Informatiounen zu der Gemeng
 STR_TOWN_VIEW_RENAME_TOOLTIP                                    :{BLACK}Wiesselt de Stadnumm
+STR_TOWN_VIEW_CARGO_GRAPH                                       :Wueregrafik
+STR_TOWN_VIEW_CARGO_GRAPH_TOOLTIP                               :Grafik vun der Stad hierer Wuerenhistorie uweisen
 
 STR_TOWN_VIEW_EXPAND_BUTTON                                     :{BLACK}Erweideren
 STR_TOWN_VIEW_EXPAND_TOOLTIP                                    :{BLACK}Stad méi grouss maachen
@@ -4021,8 +4040,8 @@ STR_INDUSTRY_VIEW_PRODUCTION_LAST_MONTH_TITLE                   :{BLACK}Produkti
 STR_INDUSTRY_VIEW_PRODUCTION_LAST_MINUTE_TITLE                  :{BLACK}Produktioun déi läscht Minutt:
 STR_INDUSTRY_VIEW_TRANSPORTED                                   :{YELLOW}{CARGO_LONG}{STRING}{BLACK} ({COMMA}% transportéiert)
 STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}Zentréiert d'Siicht op d'Industrie. Ctrl+Klick erstellt eng nei Usiicht op d'Industrie
-STR_INDUSTRY_VIEW_PRODUCTION_GRAPH                              :{BLACK}Produktiounsgrafik
-STR_INDUSTRY_VIEW_PRODUCTION_GRAPH_TOOLTIP                      :{BLACK}Weist d'Grafik vun der Industrieproduktiounshistorie un
+STR_INDUSTRY_VIEW_CARGO_GRAPH                                   :{BLACK}Wueregrafik
+STR_INDUSTRY_VIEW_CARGO_GRAPH_TOOLTIP                           :{BLACK}Weist d'Grafik vun der Industriewuerenhistorie un
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Produktiounsniveau: {YELLOW}{COMMA}%
 STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}D'Industrie annoncéiert dass se zougemaach gëtt
 

@@ -621,6 +621,14 @@ STR_GRAPH_COMPANY_VALUES_CAPTION                                :{WHITE}Biểu �
 
 STR_GRAPH_LAST_24_MINUTES_TIME_LABEL                            :{TINY_FONT}{BLACK}24 phút cuối
 STR_GRAPH_LAST_72_MINUTES_TIME_LABEL                            :{TINY_FONT}{BLACK}72 phút cuối
+STR_GRAPH_LAST_288_MINUTES_TIME_LABEL                           :{TINY_FONT}{BLACK}288 phút cuối
+
+STR_GRAPH_LAST_24_MONTHS                                        :{TINY_FONT}{BLACK}2 năm (theo từng tháng)
+STR_GRAPH_LAST_24_QUARTERS                                      :{TINY_FONT}{BLACK}6 năm (theo từng quý)
+STR_GRAPH_LAST_24_YEARS                                         :{TINY_FONT}{BLACK}24 năm (theo từng năm)
+
+STR_GRAPH_TOGGLE_RANGE                                          :Bật/tắt đồ thị cho khoảng dữ liệu này
+STR_GRAPH_SELECT_SCALE                                          :Chỉnh tỷ lệ chiều ngang của đồ thị
 
 STR_GRAPH_CARGO_PAYMENT_RATES_CAPTION                           :{WHITE}Bảng Giá Cước Vận Chuyển Hàng Hóa
 STR_GRAPH_CARGO_PAYMENT_RATES_DAYS                              :{TINY_FONT}{BLACK}Số ngày trong trung chuyển
@@ -633,9 +641,15 @@ STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}Không h
 STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}Bật/tắt đồ thị cho hàng hóa này
 STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLACK}{STRING}
 
-STR_GRAPH_INDUSTRY_PRODUCTION_CAPTION                           :{WHITE}{INDUSTRY} - Lịch Sử Sản Xuất
+STR_GRAPH_INDUSTRY_CAPTION                                      :{WHITE}{INDUSTRY} - Lịch sử hàng hóa
 STR_GRAPH_INDUSTRY_RANGE_PRODUCED                               :Đã cung cấp
 STR_GRAPH_INDUSTRY_RANGE_TRANSPORTED                            :Đã vận chuyển
+STR_GRAPH_INDUSTRY_RANGE_DELIVERED                              :Đã giao
+STR_GRAPH_INDUSTRY_RANGE_WAITING                                :Đang chờ...
+
+STR_GRAPH_TOWN_CARGO_CAPTION                                    :{WHITE}{TOWN} - Lịch sử hàng hoá
+STR_GRAPH_TOWN_RANGE_PRODUCED                                   :Nguồn cung
+STR_GRAPH_TOWN_RANGE_TRANSPORTED                                :Đã vận chuyển
 
 STR_GRAPH_PERFORMANCE_DETAIL_TOOLTIP                            :{BLACK}Hiện chi tiết đánh giá chỉ số năng suất
 
@@ -2854,6 +2868,8 @@ STR_HOUSE_PICKER_CLASS_ZONE5                                    :Nội thành
 STR_HOUSE_PICKER_PROTECT                                        :Ngăn chặn nâng cấp
 STR_HOUSE_PICKER_PROTECT_TOOLTIP                                :Chọn nếu ngôi nhà này có được bảo vệ khỏi việc bị thay thế hay không khi thị trấn phát triển
 
+STR_HOUSE_PICKER_REPLACE                                        :Thay thế hiện trạng
+STR_HOUSE_PICKER_REPLACE_TOOLTIP                                :Bật/tắt tùy chọn tự động xóa công trình cũ trên ô khi đặt công trình mới
 
 STR_STATION_CLASS_DFLT                                          :Mặc định
 STR_STATION_CLASS_DFLT_STATION                                  :Trạm mặc định
@@ -3658,6 +3674,7 @@ STR_EDIT_SIGN_CAPTION                                           :{WHITE}Sửa bi
 STR_EDIT_SIGN_LOCATION_TOOLTIP                                  :{BLACK}Xem trung tâm của đèn tín hiệu. Ctrl+Click mở cửa sổ mới để xem
 STR_EDIT_SIGN_NEXT_SIGN_TOOLTIP                                 :{BLACK}Biển hiệu kế tiếp
 STR_EDIT_SIGN_PREVIOUS_SIGN_TOOLTIP                             :{BLACK}Biển hiệu kế trước
+STR_EDIT_SIGN_TEXT_COLOUR_TOOLTIP                               :{BLACK}Màu chữ trên biển hiệu
 
 STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}Nhập tên của biển hiệu
 
@@ -3689,6 +3706,8 @@ STR_TOWN_VIEW_CENTER_TOOLTIP                                    :{BLACK}Xem trun
 STR_TOWN_VIEW_LOCAL_AUTHORITY_BUTTON                            :{BLACK}Chính quyền địa phương
 STR_TOWN_VIEW_LOCAL_AUTHORITY_TOOLTIP                           :{BLACK}Xem thông tin về Chính quyền địa phương
 STR_TOWN_VIEW_RENAME_TOOLTIP                                    :{BLACK}Đổi tên đô thị
+STR_TOWN_VIEW_CARGO_GRAPH                                       :Đồ thị hàng hoá
+STR_TOWN_VIEW_CARGO_GRAPH_TOOLTIP                               :Hiển thị đồ thị lịch sử hàng hoá của thị trấn
 
 STR_TOWN_VIEW_EXPAND_BUTTON                                     :{BLACK}Mở rộng
 STR_TOWN_VIEW_EXPAND_TOOLTIP                                    :{BLACK}Tăng quy mô đô thị
@@ -4021,8 +4040,8 @@ STR_INDUSTRY_VIEW_PRODUCTION_LAST_MONTH_TITLE                   :{BLACK}Sản l�
 STR_INDUSTRY_VIEW_PRODUCTION_LAST_MINUTE_TITLE                  :{BLACK}Sản lượng phút trước:
 STR_INDUSTRY_VIEW_TRANSPORTED                                   :{YELLOW}{CARGO_LONG}{STRING}{BLACK} ({COMMA}% đã vận chuyển)
 STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}Xem vị trí trung tâm của nhà máy. Ctrl+Click mở cửa sổ mới để xem
-STR_INDUSTRY_VIEW_PRODUCTION_GRAPH                              :{BLACK}Biểu Đồ Sản Xuất
-STR_INDUSTRY_VIEW_PRODUCTION_GRAPH_TOOLTIP                      :{BLACK}Hiển thị biểu đồ lịch sử sản xuất của nhà máy
+STR_INDUSTRY_VIEW_CARGO_GRAPH                                   :{BLACK}Đồ thị hàng hóa
+STR_INDUSTRY_VIEW_CARGO_GRAPH_TOOLTIP                           :{BLACK}Xem đồ thị lịch sử kinh doanh hàng hóa
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Mức sản lượng: {YELLOW}{COMMA}%
 STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}Nhà máy này đã thông báo sắp đóng cửa!
 
