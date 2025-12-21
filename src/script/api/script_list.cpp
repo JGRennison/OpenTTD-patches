@@ -752,6 +752,32 @@ void ScriptList::RemoveItems(ValueFilter value_filter)
 {
 	this->modifications++;
 
+	if (!this->initialized || this->sorter->IsEnd()) {
+		/* Fast path */
+		const size_t old_size = this->items.size();
+
+		for (ScriptListMap::iterator iter = this->items.begin(); iter != this->items.end();) {
+			if (value_filter(iter->first, iter->second)) {
+				iter = this->items.erase(iter);
+			} else {
+				++iter;
+			}
+		}
+		if (this->values_inited) {
+			for (ScriptListValueSet::iterator iter = this->values.begin(); iter != this->values.end();) {
+				if (value_filter(iter->second, iter->first)) {
+					iter = this->values.erase(iter);
+				} else {
+					++iter;
+				}
+			}
+			assert(this->values.size() == this->items.size());
+		}
+
+		Squirrel::DecreaseAllocatedSize((old_size - this->items.size()) * SCRIPT_LIST_BYTES_PER_ITEM);
+		return;
+	}
+
 	for (ScriptListMap::iterator iter = this->items.begin(); iter != this->items.end();) {
 		if (value_filter(iter->first, iter->second)) {
 			iter = this->RemoveIter(iter);
