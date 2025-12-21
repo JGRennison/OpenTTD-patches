@@ -255,6 +255,8 @@ protected:
 	std::span<const GraphScale> scales{};
 	uint8_t selected_scale = 0;
 
+	WidgetID dataset_mouseover_widget = WID_GRAPH_MATRIX;
+
 	struct BaseFiller {
 		DataSet &dataset; ///< Dataset to fill.
 
@@ -832,7 +834,7 @@ public:
 
 		/* Test if a dataset should be highlighted. */
 		uint8_t new_highlight_data = UINT8_MAX;
-		if (widget == WID_GRAPH_MATRIX) {
+		if (widget == this->dataset_mouseover_widget) {
 			auto dataset_index = this->GetDatasetIndex(pt.y);
 			if (dataset_index.has_value() && !HasBit(this->excluded_data, *dataset_index)) new_highlight_data = *dataset_index;
 		}
@@ -1079,7 +1081,7 @@ struct ExcludingCargoBaseGraphWindow : BaseCompanyGraphWindow {
 	void OnInit() override
 	{
 		/* Width of the legend blob. */
-		this->legend_width = (GetCharacterHeight(FS_SMALL) - ScaleGUITrad(1)) * 9 / 6;
+		this->legend_width = GetCharacterHeight(FS_SMALL) * 9 / 6;
 	}
 
 	virtual void UpdateWidgetSize(WidgetID widget, Dimension &size, const Dimension &padding, Dimension &fill, Dimension &resize) override
@@ -1130,7 +1132,9 @@ struct ExcludingCargoBaseGraphWindow : BaseCompanyGraphWindow {
 			/* Cargo-colour box with outline */
 			const Rect cargo = text.WithWidth(this->legend_width, rtl);
 			GfxFillRect(cargo, PC_BLACK);
-			GfxFillRect(cargo.Shrink(WidgetDimensions::scaled.bevel), cs->legend_colour);
+			uint8_t pc = cs->legend_colour;
+			if (this->highlight_data == cs->Index()) pc = this->highlight_state ? PC_WHITE : PC_BLACK;
+			GfxFillRect(cargo.Shrink(WidgetDimensions::scaled.bevel), pc);
 
 			/* Cargo name */
 			DrawString(text.Indent(this->legend_width + WidgetDimensions::scaled.hsep_normal, rtl), GetString(STR_GRAPH_CARGO_PAYMENT_CARGO, cs->name));
@@ -1198,6 +1202,7 @@ struct DeliveredCargoGraphWindow : ExcludingCargoBaseGraphWindow {
 		this->num_on_x_axis = GRAPH_NUM_MONTHS;
 		this->num_vert_lines = GRAPH_NUM_MONTHS;
 		this->draw_dates = !EconTime::UsingWallclockUnits();
+		this->dataset_mouseover_widget = WID_ECBG_MATRIX;
 
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_ECBG_MATRIX_SCROLLBAR);
@@ -1332,6 +1337,22 @@ struct DeliveredCargoGraphWindow : ExcludingCargoBaseGraphWindow {
 				i++;
 			}
 		}
+	}
+
+	std::optional<uint8_t> GetDatasetIndex(int y) override
+	{
+		if (!graph_by_cargo_mode) return std::nullopt;
+
+		int row = this->vscroll->GetScrolledRowFromWidget(y, this, WID_ECBG_MATRIX);
+		if (row >= this->vscroll->GetCount()) return std::nullopt;
+
+		for (const CargoSpec *cs : _sorted_cargo_specs) {
+			if (row-- > 0) continue;
+
+			return cs->Index();
+		}
+
+		return std::nullopt;
 	}
 };
 
@@ -2552,7 +2573,7 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 	void OnInit() override
 	{
 		/* Width of the legend blob. */
-		this->legend_width = (GetCharacterHeight(FS_SMALL) - ScaleGUITrad(1)) * 9 / 6;
+		this->legend_width = GetCharacterHeight(FS_SMALL) * 9 / 6;
 		this->legend_excluded_cargo = 0;
 	}
 
@@ -2602,17 +2623,12 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 			return;
 		}
 
-		Rect ir = r.Shrink(WidgetDimensions::scaled.framerect);
-
 		const bool rtl = _current_text_dir == TD_RTL;
-
-		int x = ir.left;
-		int y = ir.top;
-		const uint row_height = GetCharacterHeight(FS_SMALL);
-		const int padding = ScaleGUITrad(1);
 
 		int pos = this->vscroll->GetPosition();
 		int max = pos + this->vscroll->GetCapacity();
+
+		Rect line = r.WithHeight(this->line_height);
 
 		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 			if (!HasBit(this->present_cargoes, cs->Index())) continue;
@@ -2621,17 +2637,22 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 
 			const bool lowered = !HasBit(legend_excluded_cargo, cs->Index());
 
-			/* Redraw box if lowered */
-			if (lowered) DrawFrameRect(r.left, y, r.right, y + this->line_height - 1, COLOUR_BROWN, lowered ? FrameFlag::Lowered : FrameFlags{});
+			/* Redraw frame if lowered */
+			if (lowered) DrawFrameRect(line, COLOUR_BROWN, FrameFlag::Lowered);
 
-			const uint8_t clk_dif = lowered ? 1 : 0;
-			const int rect_x = clk_dif + (rtl ? ir.right - this->legend_width : ir.left);
+			const Rect text = line.Shrink(WidgetDimensions::scaled.framerect);
 
-			GfxFillRect(rect_x, y + padding + clk_dif, rect_x + this->legend_width, y + row_height - 1 + clk_dif, PC_BLACK);
-			GfxFillRect(rect_x + 1, y + padding + 1 + clk_dif, rect_x + this->legend_width - 1, y + row_height - 2 + clk_dif, cs->legend_colour);
-			DrawString(rtl ? ir.left : x + this->legend_width + 4 + clk_dif, (rtl ? ir.right - this->legend_width - 4 + clk_dif : ir.right), y + clk_dif, GetString(STR_GRAPH_CARGO_PAYMENT_CARGO, cs->name));
+			/* Cargo-colour box with outline */
+			const Rect cargo = text.WithWidth(this->legend_width, rtl);
+			GfxFillRect(cargo, PC_BLACK);
+			uint8_t pc = cs->legend_colour;
+			if (this->highlight_data == cs->Index()) pc = this->highlight_state ? PC_WHITE : PC_BLACK;
+			GfxFillRect(cargo.Shrink(WidgetDimensions::scaled.bevel), pc);
 
-			y += this->line_height;
+			/* Cargo name */
+			DrawString(text.Indent(this->legend_width + WidgetDimensions::scaled.hsep_normal, rtl), GetString(STR_GRAPH_CARGO_PAYMENT_CARGO, cs->name));
+
+			line = line.Translate(0, this->line_height);
 		}
 	}
 
@@ -2725,6 +2746,21 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 		}
 
 		this->SetDirty();
+	}
+
+	std::optional<uint8_t> GetDatasetIndex(int y) override
+	{
+		int row = this->vscroll->GetScrolledRowFromWidget(y, this, WID_GRAPH_MATRIX);
+		if (row >= this->vscroll->GetCount()) return std::nullopt;
+
+		for (const CargoSpec *cs : _sorted_cargo_specs) {
+			if (!HasBit(this->present_cargoes, cs->Index())) continue;
+			if (row-- > 0) continue;
+
+			return cs->Index();
+		}
+
+		return std::nullopt;
 	}
 };
 
