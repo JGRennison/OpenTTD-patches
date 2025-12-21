@@ -454,7 +454,17 @@ static void Load_TOWN()
 
 		if (!SlIsTableChunk()) {
 			for (CargoType i = 0; i < num_cargo; i++) {
-				SlObjectLoadFiltered(&t->supplied[i], supplied_desc);
+				TransportedCargoStat<uint32_t> cargo_stat{};
+				SlObjectLoadFiltered(&cargo_stat, supplied_desc);
+
+				/* Ignore empty statistics. */
+				if (cargo_stat.new_act == 0 && cargo_stat.new_max == 0 && cargo_stat.old_act == 0 && cargo_stat.old_max == 0) continue;
+
+				auto &s = t->supplied.emplace_back(static_cast<CargoType>(i));
+				s.history[LAST_MONTH].production = cargo_stat.old_max;
+				s.history[LAST_MONTH].transported = cargo_stat.old_act;
+				s.history[THIS_MONTH].production = cargo_stat.new_max;
+				s.history[THIS_MONTH].transported = cargo_stat.new_act;
 			}
 			for (int i = TAE_BEGIN; i < NUM_TAE; i++) {
 				SlObjectLoadFiltered(&t->received[i], received_desc);
