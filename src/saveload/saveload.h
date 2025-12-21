@@ -22,8 +22,6 @@
 
 extern SaveLoadVersion _sl_version;
 extern uint8_t         _sl_minor_version;
-extern const SaveLoadVersion SAVEGAME_VERSION;
-extern const SaveLoadVersion MAX_LOAD_SAVEGAME_VERSION;
 
 namespace upstream_sl {
 

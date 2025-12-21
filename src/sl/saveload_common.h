@@ -424,9 +424,6 @@ enum SaveLoadVersion : uint16_t {
 	SLV_INDUSTRY_NUM_VALID_HISTORY,         ///< 356  PR#14416 Store number of valid history records for industries.
 	SLV_INDUSTRY_ACCEPTED_HISTORY,          ///< 357  PR#14321 Add per-industry history of cargo delivered and waiting.
 	SLV_TOWN_SUPPLY_HISTORY,                ///< 358  PR#14461 Town supply history.
-
-	/* NB: below version are supported for upstream load only (i.e. field discard), see SL_UPSTREAM_VERSION */
-
 	SLV_STATIONS_UNDER_BRIDGES,             ///< 359  PR#14477 Allow stations under bridges.
 
 	SLV_DOCKS_UNDER_BRIDGES,                ///< 360  PR#14594 Allow docks under bridges.
@@ -435,8 +432,6 @@ enum SaveLoadVersion : uint16_t {
 	SLV_SIGN_TEXT_COLOURS,                  ///< 363  PR#14743 Configurable sign text colors in scenario editor.
 
 	SL_MAX_VERSION,                         ///< Highest possible saveload version
-
-	SL_UPSTREAM_VERSION = SLV_TOWN_SUPPLY_HISTORY, ///< Savegame version to save/load in XSLFI_UPSTREAM_VERSION sub-chunk
 
 	SL_SPRING_2013_v2_0_102 = 220,
 	SL_SPRING_2013_v2_1_108 = 221,
@@ -462,6 +457,10 @@ enum SaveLoadVersion : uint16_t {
 	SL_CHILLPP_232 = 232,
 	SL_CHILLPP_233 = 233,
 };
+
+static constexpr SaveLoadVersion SAVEGAME_VERSION = SLV_CUSTOM_SUBSIDY_DURATION;                    ///< Current savegame version of OpenTTD.
+static constexpr SaveLoadVersion MAX_LOAD_SAVEGAME_VERSION = (SaveLoadVersion)(SL_MAX_VERSION - 1); ///< Max loadable savegame version of OpenTTD.
+static constexpr SaveLoadVersion SL_UPSTREAM_VERSION = MAX_LOAD_SAVEGAME_VERSION;                   ///< Savegame version to save/load in XSLFI_UPSTREAM_VERSION sub-chunk
 
 uint8_t SlReadByte();
 void SlReadString(std::string &str, size_t length);

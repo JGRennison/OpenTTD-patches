@@ -21,8 +21,6 @@
 
 #include "safeguards.h"
 
-extern const SaveLoadVersion SAVEGAME_VERSION;  ///< current savegame version
-
 extern SavegameType _savegame_type; ///< type of savegame we are loading
 
 extern uint32_t _ttdp_version;        ///< version of TTDP savegame (if applicable)
