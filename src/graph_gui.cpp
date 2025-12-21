@@ -190,22 +190,35 @@ protected:
 
 	struct GraphScale {
 		StringID label = STR_NULL;
+		uint32_t label_param = 0;
 		uint8_t month_increment = 0;
 		int16_t x_values_increment = 0;
 		const HistoryRange *history_range = nullptr;
 	};
 
 	static inline constexpr GraphScale MONTHLY_SCALE_WALLCLOCK[] = {
-		{STR_GRAPH_LAST_24_MINUTES_TIME_LABEL, HISTORY_MONTH.total_division, ECONOMY_MONTH_MINUTES, &HISTORY_MONTH},
-		{STR_GRAPH_LAST_72_MINUTES_TIME_LABEL, HISTORY_QUARTER.total_division, ECONOMY_QUARTER_MINUTES, &HISTORY_QUARTER},
-		{STR_GRAPH_LAST_288_MINUTES_TIME_LABEL, HISTORY_YEAR.total_division, ECONOMY_YEAR_MINUTES, &HISTORY_YEAR},
+		{STR_GRAPH_LAST_24_MINUTES_TIME_LABEL, 0, HISTORY_MONTH.total_division, ECONOMY_MONTH_MINUTES, &HISTORY_MONTH},
+		{STR_GRAPH_LAST_72_MINUTES_TIME_LABEL, 0, HISTORY_QUARTER.total_division, ECONOMY_QUARTER_MINUTES, &HISTORY_QUARTER},
+		{STR_GRAPH_LAST_288_MINUTES_TIME_LABEL, 0, HISTORY_YEAR.total_division, ECONOMY_YEAR_MINUTES, &HISTORY_YEAR},
+	};
+
+	static inline constexpr GraphScale MONTHLY_SCALE_WALLCLOCK_REPLACE[] = {
+		{STR_GRAPH_LAST_N_LABEL, 24, HISTORY_MONTH.total_division, ECONOMY_MONTH_MINUTES, &HISTORY_MONTH},
+		{STR_GRAPH_LAST_N_LABEL, 72, HISTORY_QUARTER.total_division, ECONOMY_QUARTER_MINUTES, &HISTORY_QUARTER},
+		{STR_GRAPH_LAST_N_LABEL, 288, HISTORY_YEAR.total_division, ECONOMY_YEAR_MINUTES, &HISTORY_YEAR},
 	};
 
 	static inline constexpr GraphScale MONTHLY_SCALE_CALENDAR[] = {
-		{STR_GRAPH_LAST_24_MONTHS, HISTORY_MONTH.total_division, ECONOMY_MONTH_MINUTES, &HISTORY_MONTH},
-		{STR_GRAPH_LAST_24_QUARTERS, HISTORY_QUARTER.total_division, ECONOMY_QUARTER_MINUTES, &HISTORY_QUARTER},
-		{STR_GRAPH_LAST_24_YEARS, HISTORY_YEAR.total_division, ECONOMY_YEAR_MINUTES, &HISTORY_YEAR},
+		{STR_GRAPH_LAST_24_MONTHS, 0, HISTORY_MONTH.total_division, ECONOMY_MONTH_MINUTES, &HISTORY_MONTH},
+		{STR_GRAPH_LAST_24_QUARTERS, 0, HISTORY_QUARTER.total_division, ECONOMY_QUARTER_MINUTES, &HISTORY_QUARTER},
+		{STR_GRAPH_LAST_24_YEARS, 0, HISTORY_YEAR.total_division, ECONOMY_YEAR_MINUTES, &HISTORY_YEAR},
 	};
+
+	static std::span<const GraphScale> GetMonthlyScales()
+	{
+		if (!EconTime::UsingWallclockUnits()) return MONTHLY_SCALE_CALENDAR;
+		return ReplaceWallclockMinutesUnit() ? MONTHLY_SCALE_WALLCLOCK_REPLACE : MONTHLY_SCALE_WALLCLOCK;
+	}
 
 	uint64_t excluded_data = 0; ///< bitmask of datasets hidden by the player.
 	uint64_t excluded_range = 0; ///< bitmask of ranges hidden by the player.
@@ -625,35 +638,41 @@ protected:
 		this->invalidation_policy = WindowInvalidationPolicy::QueueSingle;
 	}
 
-	void UpdateMatrixSize(WidgetID widget, Dimension &size, Dimension &resize, auto labels)
+	void UpdateMatrixSize(WidgetID widget, Dimension &size, Dimension &resize, Dimension label_max_size, size_t label_count)
 	{
-		size = {};
-		for (const StringID &str : labels) {
-			size = maxdim(size, GetStringBoundingBox(str, FS_SMALL));
-		}
-
+		size = label_max_size;
 		size.width += WidgetDimensions::scaled.framerect.Horizontal();
 		size.height += WidgetDimensions::scaled.framerect.Vertical();
 
 		/* Set fixed height for number of ranges. */
-		size.height *= static_cast<uint>(std::size(labels));
+		size.height *= static_cast<uint>(label_count);
 
 		resize.width = 0;
 		resize.height = 0;
-		this->GetWidget<NWidgetCore>(widget)->SetMatrixDimension(1, ClampTo<uint32_t>(std::size(labels)));
+		this->GetWidget<NWidgetCore>(widget)->SetMatrixDimension(1, ClampTo<uint32_t>(label_count));
 	}
 
 public:
 	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		switch (widget) {
-			case WID_GRAPH_RANGE_MATRIX:
-				this->UpdateMatrixSize(widget, size, resize, this->ranges);
+			case WID_GRAPH_RANGE_MATRIX: {
+				Dimension label_max_size = {};
+				for (StringID str : this->ranges) {
+					label_max_size = maxdim(label_max_size, GetStringBoundingBox(str, FS_SMALL));
+				}
+				this->UpdateMatrixSize(widget, size, resize, label_max_size, this->ranges.size());
 				break;
+			}
 
-			case WID_GRAPH_SCALE_MATRIX:
-				this->UpdateMatrixSize(widget, size, resize, this->scales | std::views::transform(&GraphScale::label));
+			case WID_GRAPH_SCALE_MATRIX: {
+				Dimension label_max_size = {};
+				for (const GraphScale &scale : this->scales) {
+					label_max_size = maxdim(label_max_size, GetStringBoundingBox(GetString(scale.label, scale.label_param), FS_SMALL));
+				}
+				this->UpdateMatrixSize(widget, size, resize, label_max_size, this->scales.size());
 				break;
+			}
 
 			case WID_GRAPH_GRAPH: {
 				uint x_label_width = 0;
@@ -726,7 +745,7 @@ public:
 					/* Redraw frame if selected */
 					if (selected_month_increment == scale.month_increment) DrawFrameRect(line, COLOUR_BROWN, FrameFlag::Lowered);
 
-					DrawString(line.Shrink(WidgetDimensions::scaled.framerect), scale.label, TC_BLACK, SA_CENTER, false, FS_SMALL);
+					DrawString(line.Shrink(WidgetDimensions::scaled.framerect), GetString(scale.label, scale.label_param), TC_BLACK, SA_CENTER, false, FS_SMALL);
 
 					line = line.Translate(0, line_height);
 				}
@@ -799,15 +818,17 @@ public:
 		this->UpdateStatistics(true);
 
 		this->CreateNestedTree();
+		this->FinishInitNested(number);
+	}
 
-		if (EconTime::UsingWallclockUnits()) {
-			auto *wid = this->GetWidget<NWidgetCore>(WID_GRAPH_FOOTER);
-			if (wid != nullptr) {
-				wid->SetString(ReplaceWallclockMinutesUnit() ? STR_GRAPH_LAST_72_PRODUCTION_INTERVALS_TIME_LABEL : STR_GRAPH_LAST_72_MINUTES_TIME_LABEL);
-			}
+	std::string GetWidgetString(WidgetID widget, StringID stringid) const override
+	{
+		if (widget == WID_GRAPH_FOOTER && EconTime::UsingWallclockUnits()) {
+			if (ReplaceWallclockMinutesUnit()) return GetString(STR_GRAPH_LAST_N_PRODUCTION_INTERVALS_TIME_LABEL, 72);
+			return GetString(STR_GRAPH_LAST_72_MINUTES_TIME_LABEL);
 		}
 
-		this->FinishInitNested(number);
+		return this->Window::GetWidgetString(widget, stringid);
 	}
 
 	/**
@@ -1423,7 +1444,7 @@ struct BaseCargoGraphWindow : BaseGraphWindow {
 
 	BaseCargoGraphWindow(WindowDesc &desc, StringID format_str_y_axis) : BaseGraphWindow(desc, format_str_y_axis) {}
 
-	void InitializeWindow(WindowNumber number, StringID footer)
+	void InitializeWindow(WindowNumber number)
 	{
 		this->CreateNestedTree();
 
@@ -1432,11 +1453,6 @@ struct BaseCargoGraphWindow : BaseGraphWindow {
 
 		this->vscroll = this->GetScrollbar(WID_GRAPH_MATRIX_SCROLLBAR);
 		this->vscroll->SetCount(CountBits(this->cargo_types));
-
-		if (footer != STR_NULL) {
-			auto *wid = this->GetWidget<NWidgetCore>(WID_GRAPH_FOOTER);
-			wid->SetString(footer);
-		}
 
 		this->FinishInitNested(number);
 
@@ -1577,7 +1593,7 @@ struct PaymentRatesGraphWindow : BaseCargoGraphWindow {
 		this->draw_dates = false;
 		this->SetXAxis();
 
-		this->InitializeWindow(window_number, STR_NULL);
+		this->InitializeWindow(window_number);
 
 		this->SetWidgetLoweredState(WID_CPR_DAYS, _cargo_payment_x_mode == 0);
 		this->SetWidgetLoweredState(WID_CPR_SPEED, _cargo_payment_x_mode == 1);
@@ -2048,14 +2064,14 @@ struct IndustryProductionGraphWindow : BaseCargoGraphWindow {
 		if (!i->IsCargoProduced()) this->masked_range = (1U << 0) | (1U << 1);
 		if (!i->IsCargoAccepted()) this->masked_range = (1U << 2) | (1U << 3);
 
-		this->InitializeWindow(window_number, EconTime::UsingWallclockUnits() ? (ReplaceWallclockMinutesUnit() ? STR_GRAPH_LAST_24_PRODUCTION_INTERVALS_TIME_LABEL : STR_GRAPH_LAST_24_MINUTES_TIME_LABEL) : STR_EMPTY);
+		this->InitializeWindow(window_number);
 	}
 
 	void OnInit() override
 	{
 		this->BaseCargoGraphWindow::OnInit();
 
-		this->scales = EconTime::UsingWallclockUnits() ? MONTHLY_SCALE_WALLCLOCK : MONTHLY_SCALE_CALENDAR;
+		this->scales = GetMonthlyScales();
 	}
 
 	CargoTypes GetCargoTypes(WindowNumber window_number) const override
@@ -2079,6 +2095,12 @@ struct IndustryProductionGraphWindow : BaseCargoGraphWindow {
 	std::string GetWidgetString(WidgetID widget, StringID stringid) const override
 	{
 		if (widget == WID_GRAPH_CAPTION) return GetString(STR_GRAPH_INDUSTRY_CAPTION, this->window_number);
+
+		if (widget == WID_GRAPH_FOOTER) {
+			if (!EconTime::UsingWallclockUnits()) return {};
+			if (ReplaceWallclockMinutesUnit()) return GetString(STR_GRAPH_LAST_N_PRODUCTION_INTERVALS_TIME_LABEL, 24);
+			return GetString(STR_GRAPH_LAST_24_MINUTES_TIME_LABEL);
+		}
 
 		return this->Window::GetWidgetString(widget, stringid);
 	}
@@ -2222,14 +2244,14 @@ struct TownCargoGraphWindow : BaseCargoGraphWindow {
 		this->draw_dates = !EconTime::UsingWallclockUnits();
 		this->ranges = RANGE_LABELS;
 
-		this->InitializeWindow(window_number, EconTime::UsingWallclockUnits() ? (ReplaceWallclockMinutesUnit() ? STR_GRAPH_LAST_24_PRODUCTION_INTERVALS_TIME_LABEL : STR_GRAPH_LAST_24_MINUTES_TIME_LABEL) : STR_EMPTY);
+		this->InitializeWindow(window_number);
 	}
 
 	void OnInit() override
 	{
 		this->BaseCargoGraphWindow::OnInit();
 
-		this->scales = EconTime::UsingWallclockUnits() ? MONTHLY_SCALE_WALLCLOCK : MONTHLY_SCALE_CALENDAR;
+		this->scales = GetMonthlyScales();
 	}
 
 	CargoTypes GetCargoTypes(WindowNumber window_number) const override
@@ -2250,6 +2272,12 @@ struct TownCargoGraphWindow : BaseCargoGraphWindow {
 	std::string GetWidgetString(WidgetID widget, StringID stringid) const override
 	{
 		if (widget == WID_GRAPH_CAPTION) return GetString(STR_GRAPH_TOWN_CARGO_CAPTION, this->window_number);
+
+		if (widget == WID_GRAPH_FOOTER) {
+			if (!EconTime::UsingWallclockUnits()) return {};
+			if (ReplaceWallclockMinutesUnit()) return GetString(STR_GRAPH_LAST_N_PRODUCTION_INTERVALS_TIME_LABEL, 24);
+			return GetString(STR_GRAPH_LAST_24_MINUTES_TIME_LABEL);
+		}
 
 		return this->Window::GetWidgetString(widget, stringid);
 	}
