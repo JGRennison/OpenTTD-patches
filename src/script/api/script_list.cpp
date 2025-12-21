@@ -807,6 +807,74 @@ void ScriptList::RemoveValue(SQInteger value)
 	this->RemoveItems([&](const SQInteger &, const SQInteger &v) { return v == value; });
 }
 
+template <bool KEEP_BOTTOM>
+bool ScriptList::KeepTopBottomFastPath(SQInteger count)
+{
+	if ((this->initialized && !this->sorter->IsEnd()) || count * 5 <= static_cast<SQInteger>(this->items.size() * 4)) return false;
+
+	/* Fast path: keeping <= 20% of list, and don't need to update the sorter, just create new container(s) */
+	SQInteger keep = this->Count() - count;
+
+	ScriptListMap new_items;       ///< The items in the list
+	ScriptListValueSet new_values; ///< The items in the list, sorted by value
+
+	switch (this->sorter_type) {
+		default: NOT_REACHED();
+		case SORT_BY_VALUE:
+			if (this->values_inited) {
+				ScriptListValueSet::iterator iter;
+				if constexpr (KEEP_BOTTOM) {
+					iter = std::prev(this->values.end(), keep);
+				} else {
+					iter = this->values.begin();
+				}
+				while (true) {
+					new_values.insert(new_values.end(), *iter);
+					new_items.emplace(iter->second, iter->first);
+					if (--keep <= 0) break;
+					++iter;
+				}
+			} else {
+				for (const auto &iter : this->items) {
+					new_values.insert(std::make_pair(iter.second, iter.first));
+					if (static_cast<SQInteger>(new_values.size()) > keep) {
+						if constexpr (KEEP_BOTTOM) {
+							new_values.erase(new_values.begin());
+						} else {
+							new_values.erase(std::prev(new_values.end()));
+						}
+					}
+				}
+				for (const auto &it : new_values) {
+					new_items.emplace(it.second, it.first);
+				}
+			}
+			break;
+
+		case SORT_BY_ITEM: {
+			ScriptListMap::iterator iter;
+			if constexpr (KEEP_BOTTOM) {
+				iter = std::prev(this->items.end(), keep);
+			} else {
+				iter = this->items.begin();
+			}
+			while (true) {
+				new_items.insert(new_items.end(), *iter);
+				if (--keep <= 0) break;
+				++iter;
+			}
+			break;
+		}
+	}
+
+	Squirrel::DecreaseAllocatedSize((this->items.size() - new_items.size()) * SCRIPT_LIST_BYTES_PER_ITEM);
+	this->items = std::move(new_items);
+	this->values = std::move(new_values);
+	this->values_inited = !this->values.empty();
+
+	return true;
+}
+
 void ScriptList::RemoveTop(SQInteger count)
 {
 	this->modifications++;
@@ -817,6 +885,14 @@ void ScriptList::RemoveTop(SQInteger count)
 		this->Sort(this->sorter_type, !this->sort_ascending);
 		return;
 	}
+
+	if (count <= 0) return;
+	if (count >= this->Count()) {
+		this->Clear();
+		return;
+	}
+
+	if (this->KeepTopBottomFastPath<true>(count)) return;
 
 	switch (this->sorter_type) {
 		default: NOT_REACHED();
@@ -847,6 +923,14 @@ void ScriptList::RemoveBottom(SQInteger count)
 		this->Sort(this->sorter_type, !this->sort_ascending);
 		return;
 	}
+
+	if (count <= 0) return;
+	if (count >= this->Count()) {
+		this->Clear();
+		return;
+	}
+
+	if (this->KeepTopBottomFastPath<false>(count)) return;
 
 	switch (this->sorter_type) {
 		default: NOT_REACHED();

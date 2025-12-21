@@ -215,6 +215,10 @@ protected:
 	template <class ValueFilter>
 	void RemoveItems(ValueFilter value_filter);
 
+private:
+	template <bool KEEP_BOTTOM>
+	bool KeepTopBottomFastPath(SQInteger count);
+
 public:
 	ScriptListMap items;       ///< The items in the list
 	ScriptListValueSet values; ///< The items in the list, sorted by value
