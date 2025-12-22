@@ -869,7 +869,7 @@ void ScriptList::KeepBelowValue(SQInteger value)
 
 void ScriptList::KeepBetweenValue(SQInteger start, SQInteger end)
 {
-	this->RemoveItems([&](const SQInteger &, const SQInteger &v) { return v <= start && v >= end; });
+	this->RemoveItems([&](const SQInteger &, const SQInteger &v) { return v <= start || v >= end; });
 }
 
 void ScriptList::KeepValue(SQInteger value)
