@@ -717,9 +717,6 @@ STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES            :Permitir parada
 STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES_HELPTEXT   :Permitir paradas de estrada/tranvía baixo as pontes. As paradas non terminais requiren 1 nivel despexado, as terminais requiren dous nivels despexados.
 STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES_HELPTEXT_EXTRA :{STRING}{}{}As paradas de estrada/tranvía poden sobrescribir esta opción e permitir ou prohibir as paradas personalizadas baixo as pontes e establecer requisitos de altura mínimos.
 
-STR_CONFIG_SETTING_ALLOW_DOCKS_UNDER_BRIDGES                    :Permitir portos baixo as pontes: {STRING}
-STR_CONFIG_SETTING_ALLOW_DOCKS_UNDER_BRIDGES_HELPTEXT           :Permitir portos baixo as pontes. Os portos requiren dous niveis de altura despexados.{}Isto pode ter problemas gráficos.
-
 STR_CONFIG_SETTING_PURCHASE_LAND_PERMITTED                      :Permitir comprar terras: {STRING}
 STR_CONFIG_SETTING_PURCHASE_LAND_PERMITTED_HELPTEXT             :Indica se se permite as compañías mercar cadros de terreo, e que cantidade
 

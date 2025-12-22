@@ -700,9 +700,6 @@ STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES            :允许在桥下
 STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES_HELPTEXT   :允许在桥梁下建设道路或有轨电车车站。{}载具通过桥梁而不停站需要桥梁的高度至少为一格，要让载具停靠在此类站点则要求桥梁的高度至少为两格
 STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES_HELPTEXT_EXTRA :{STRING}{}{}NewGRF 道路/电车站可以覆盖这一设置，并允许或不允许在桥下建设车站，并设置自定义的高度空间要求
 
-STR_CONFIG_SETTING_ALLOW_DOCKS_UNDER_BRIDGES                    :允许在桥下建设船坞：{STRING}
-STR_CONFIG_SETTING_ALLOW_DOCKS_UNDER_BRIDGES_HELPTEXT           :允许把船坞建在桥下，船坞需要两格高度的净空{}这可能导致图像错误
-
 STR_CONFIG_SETTING_PURCHASE_LAND_PERMITTED                      :购买土地行为：{STRING}
 STR_CONFIG_SETTING_PURCHASE_LAND_PERMITTED_HELPTEXT             :设置是否允许公司购买土地，并规定单次购买数量
 

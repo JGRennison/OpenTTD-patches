@@ -765,9 +765,6 @@ STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES            :Allow road/tram
 STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES_HELPTEXT   :Allow road/tram stops under bridges. Drive through stops require 1 height level of clearance, drive in bays require 2 height levels of clearance.
 STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES_HELPTEXT_EXTRA :{STRING}{}{}NewGRF road/tram stops may override this setting and allow or disallow custom stops under bridges, and set custom height clearance requirements.
 
-STR_CONFIG_SETTING_ALLOW_DOCKS_UNDER_BRIDGES                    :Allow docks under bridges: {STRING2}
-STR_CONFIG_SETTING_ALLOW_DOCKS_UNDER_BRIDGES_HELPTEXT           :Allow docks under bridges. Docks require 2 height levels of clearance.{}This may result in graphical issues.
-
 STR_CONFIG_SETTING_PURCHASE_LAND_PERMITTED                      :Permit purchasing land: {STRING2}
 STR_CONFIG_SETTING_PURCHASE_LAND_PERMITTED_HELPTEXT             :Set whether companies are permitted to purchase tiles of land, and in what quantity
 

@@ -1038,6 +1038,18 @@ CommandCost IsRoadStopBridgeAboveOK(TileIndex tile, const RoadStopSpec *spec, St
 	}
 }
 
+CommandCost IsDockBridgeAboveOK(TileIndex tile, TileIndex northern_bridge_end, TileIndex southern_bridge_end, int bridge_height,
+		BridgeType bridge_type, TransportType bridge_transport_type)
+{
+	const int tile_min_z = GetTileZ(tile); // Height of lower/water level
+	const int height_clearance = 3;
+	if (tile_min_z + height_clearance > bridge_height) {
+		return CommandCostWithParam(GetBridgeTooLowMessageForStationType(StationType::Dock), (tile_min_z + height_clearance - bridge_height) * TILE_HEIGHT_STEP);
+	}
+
+	return CommandCost();
+}
+
 /**
  * Checks if a rail station can be built at the given area.
  * @param tile_area Area to check.
@@ -3046,6 +3058,14 @@ static const TileIndexDiffC _dock_tileoffs_chkaround[] = {
 static const uint8_t _dock_w_chk[4] = { 2, 1, 2, 1 };
 static const uint8_t _dock_h_chk[4] = { 1, 2, 1, 2 };
 
+static CommandCost IsDockBridgeAboveOK(TileIndex tile)
+{
+	TileIndex southern_bridge_end = GetSouthernBridgeEnd(tile);
+	TileIndex northern_bridge_end = GetNorthernBridgeEnd(tile);
+	return IsDockBridgeAboveOK(tile, northern_bridge_end, southern_bridge_end, GetBridgeHeight(southern_bridge_end),
+			GetBridgeType(southern_bridge_end), GetTunnelBridgeTransportType(southern_bridge_end));
+}
+
 /**
  * Build a dock/haven.
  * @param flags operation to perform
@@ -3072,7 +3092,10 @@ CommandCost CmdBuildDock(DoCommandFlags flags, TileIndex tile, StationID station
 	CommandCost ret = CheckIfAuthorityAllowsNewStation(tile, flags);
 	if (ret.Failed()) return ret;
 
-	if (IsBridgeAbove(tile) && !_settings_game.construction.allow_docks_under_bridges) return CommandCost(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
+	if (IsBridgeAbove(tile)) {
+		ret = IsDockBridgeAboveOK(tile);
+		if (ret.Failed()) return ret;
+	}
 
 	CommandCost cost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_STATION_DOCK]);
 	ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
@@ -3085,7 +3108,10 @@ CommandCost CmdBuildDock(DoCommandFlags flags, TileIndex tile, StationID station
 		return CommandCost(STR_ERROR_SITE_UNSUITABLE);
 	}
 
-	if (IsBridgeAbove(flat_tile) && !_settings_game.construction.allow_docks_under_bridges) return CommandCost(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
+	if (IsBridgeAbove(flat_tile)) {
+		ret = IsDockBridgeAboveOK(flat_tile);
+		if (ret.Failed()) return ret;
+	}
 
 	/* Get the water class of the water tile before it is cleared.*/
 	WaterClass wc = GetWaterClass(flat_tile);

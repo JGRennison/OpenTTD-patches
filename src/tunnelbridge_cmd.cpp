@@ -80,6 +80,9 @@ extern CommandCost IsRoadStopBridgeAboveOK(TileIndex tile, const RoadStopSpec *s
 		TileIndex northern_bridge_end, TileIndex southern_bridge_end, int bridge_height,
 		BridgeType bridge_type, TransportType bridge_transport_type);
 
+extern CommandCost IsDockBridgeAboveOK(TileIndex tile, TileIndex northern_bridge_end, TileIndex southern_bridge_end, int bridge_height,
+		BridgeType bridge_type, TransportType bridge_transport_type);
+
 /**
  * Mark bridge tiles dirty.
  * Note: The bridge does not need to exist, everything is passed via parameters.
@@ -550,12 +553,21 @@ CommandCost CmdBuildBridge(DoCommandFlags flags, TileIndex tile_end, TileIndex t
 						/* Buoys are always allowed */
 						break;
 
-					default:
-						if (!(GetStationType(tile) == StationType::Dock && _settings_game.construction.allow_docks_under_bridges)) {
-							CommandCost ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
+					case StationType::Dock: {
+						CommandCost ret = IsDockBridgeAboveOK(tile, tile_start, tile_end, z_start + 1, bridge_type, transport_type);
+						if (ret.Failed()) {
+							if (ret.GetErrorMessage() != INVALID_STRING_ID) return ret;
+							ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
 							if (ret.Failed()) return ret;
 						}
 						break;
+					}
+
+					default: {
+						CommandCost ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
+						if (ret.Failed()) return ret;
+						break;
+					}
 				}
 			}
 		}
@@ -674,9 +686,17 @@ CommandCost CmdBuildBridge(DoCommandFlags flags, TileIndex tile_end, TileIndex t
 							/* Buoys are always allowed */
 							break;
 
-						default:
-							if (!(GetStationType(tile) == StationType::Dock && _settings_game.construction.allow_docks_under_bridges)) goto not_valid_below;
+						case StationType::Dock: {
+							CommandCost ret = IsDockBridgeAboveOK(tile, tile_start, tile_end, z_start + 1, bridge_type, transport_type);
+							if (ret.Failed()) {
+								if (ret.GetErrorMessage() != INVALID_STRING_ID) return ret;
+								goto not_valid_below;
+							}
 							break;
+						}
+
+						default:
+							goto not_valid_below;
 					}
 					break;
 				}

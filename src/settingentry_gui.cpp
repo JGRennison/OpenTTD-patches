@@ -1100,7 +1100,6 @@ SettingsContainer &GetSettingsTree()
 			limitations->Add(new SettingEntry("construction.allow_grf_objects_under_bridges"));
 			limitations->Add(new SettingEntry("construction.allow_stations_under_bridges"));
 			limitations->Add(new SettingEntry("construction.allow_road_stops_under_bridges"));
-			limitations->Add(new SettingEntry("construction.allow_docks_under_bridges"));
 			limitations->Add(new SettingEntry("construction.purchase_land_permitted"));
 			limitations->Add(new SettingEntry("construction.build_object_area_permitted"));
 			limitations->Add(new SettingEntry("construction.no_expire_objects_after"));

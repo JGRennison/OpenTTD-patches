@@ -620,7 +620,6 @@ struct ConstructionSettings {
 	bool     allow_grf_objects_under_bridges;///< allow all NewGRF objects under bridges
 	bool     allow_stations_under_bridges;   ///< allow NewGRF rail station/waypoint tiles that do not specify clearance under bridges
 	bool     allow_road_stops_under_bridges; ///< allow road/tram stops under bridges
-	bool     allow_docks_under_bridges;      ///< allow docks under bridges
 	uint8_t  purchase_land_permitted;        ///< whether and how purchasing land is permitted
 	bool     build_object_area_permitted;    ///< whether building objects by area is permitted
 	CalTime::Year no_expire_objects_after;   ///< do not expire objects after this year
