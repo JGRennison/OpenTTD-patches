@@ -384,11 +384,11 @@ struct CommandLogEntry {
 
 	CommandLogEntry() { }
 
-	CommandLogEntry(TileIndex tile, Commands cmd, CommandLogEntryFlag log_flags, std::string summary) :
+	CommandLogEntry(TileIndex tile, Commands cmd, CommandLogEntryFlag log_flags, std::string &&summary) :
 			date(EconTime::CurDate()), date_fract(EconTime::CurDateFract()), tick_skip_counter(TickSkipCounter()), frame_counter(_frame_counter),
 			current_company(_current_company), local_company(_local_company), client_id(_cmd_client_id),
 			log_flags(log_flags),
-			cmd(cmd), tile(tile), summary(summary) {}
+			cmd(cmd), tile(tile), summary(std::move(summary)) {}
 };
 
 struct CommandLog {
