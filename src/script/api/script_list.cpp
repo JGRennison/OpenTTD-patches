@@ -752,10 +752,10 @@ void ScriptList::RemoveItems(ValueFilter value_filter)
 {
 	this->modifications++;
 
+	const size_t old_size = this->items.size();
+
 	if (!this->initialized || this->sorter->IsEnd()) {
 		/* Fast path */
-		const size_t old_size = this->items.size();
-
 		for (ScriptListMap::iterator iter = this->items.begin(); iter != this->items.end();) {
 			if (value_filter(iter->first, iter->second)) {
 				iter = this->items.erase(iter);
@@ -775,6 +775,7 @@ void ScriptList::RemoveItems(ValueFilter value_filter)
 		}
 
 		Squirrel::DecreaseAllocatedSize((old_size - this->items.size()) * SCRIPT_LIST_BYTES_PER_ITEM);
+		ScriptController::DecreaseOps(old_size / 16 + (old_size - this->items.size()) * 4);
 		return;
 	}
 
@@ -785,6 +786,8 @@ void ScriptList::RemoveItems(ValueFilter value_filter)
 			++iter;
 		}
 	}
+
+	ScriptController::DecreaseOps(old_size / 16 + (old_size - this->items.size()) * 4);
 }
 
 void ScriptList::RemoveAboveValue(SQInteger value)
@@ -892,6 +895,8 @@ void ScriptList::RemoveTop(SQInteger count)
 		return;
 	}
 
+	ScriptController::DecreaseOps(count * 3);
+
 	if (this->KeepTopBottomFastPath<true>(count)) return;
 
 	switch (this->sorter_type) {
@@ -929,6 +934,8 @@ void ScriptList::RemoveBottom(SQInteger count)
 		this->Clear();
 		return;
 	}
+
+	ScriptController::DecreaseOps(count * 3);
 
 	if (this->KeepTopBottomFastPath<false>(count)) return;
 
