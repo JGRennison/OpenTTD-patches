@@ -389,7 +389,7 @@ void ShowBuildBridgeWindow(TileIndex start, TileIndex end, TransportType transpo
 	 * returns CMD_ERROR on failure, and price on success */
 	CommandCost ret = Command<CMD_BUILD_BRIDGE>::Do(CommandFlagsToDCFlags(GetCommandFlags<CMD_BUILD_BRIDGE>()).Set(DoCommandFlag::QueryCost), end, start, transport_type, 0, road_rail_type, BuildBridgeFlags::None);
 
-	const bool query_per_bridge_type = ret.Failed() && (ret.GetErrorMessage() == STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION || ret.GetErrorMessage() == STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_STATION);
+	const bool query_per_bridge_type = ret.Failed() && ret.GetErrorMessage() == STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_STATION;
 
 	GUIBridgeList bl;
 	if (ret.Succeeded() || query_per_bridge_type) {
@@ -425,7 +425,7 @@ void ShowBuildBridgeWindow(TileIndex start, TileIndex end, TransportType transpo
 		for (BridgeType brd_type = 0; brd_type != MAX_BRIDGES; brd_type++) {
 			CommandCost type_check = CheckBridgeAvailability(brd_type, bridge_len);
 			if (type_check.Succeeded()) {
-				/* Re-check bridge building possibility is initial bridge builindg query indicated a bridge type dependent failure */
+				/* Re-check bridge building possibility if initial bridge building query indicated a bridge type dependent failure */
 				if (query_per_bridge_type && Command<CMD_BUILD_BRIDGE>::Do(CommandFlagsToDCFlags(GetCommandFlags<CMD_BUILD_BRIDGE>()).Set(DoCommandFlag::QueryCost), end, start, transport_type, brd_type, road_rail_type, BuildBridgeFlags::None).Failed()) continue;
 				/* bridge is accepted, add to list */
 				BuildBridgeData &item = bl.emplace_back();

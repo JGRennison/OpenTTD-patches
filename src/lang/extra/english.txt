@@ -2065,7 +2065,6 @@ STR_ERROR_TOO_MANY_DOCKS                                        :{WHITE}Too many
 STR_ERROR_UNSUITABLE_SIGNAL_TYPE                                :{WHITE}... unsuitable signal type
 STR_ERROR_RESTRICTED_SIGNAL                                     :{WHITE}... signal has attached routing restriction program
 
-STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}Bridge is too low for station
 STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_STATION                       :{WHITE}Bridge pillars obstruct station
 STR_ERROR_CHUNNEL_THROUGH_MAP_BORDER                            :{WHITE}Tunnel under water would end out of the map
 STR_ERROR_CHUNNEL_RAMP                                          :{WHITE}... tunnels under water require the gap between tunnel and coast tiles to be between {NUM} and {NUM} tiles.

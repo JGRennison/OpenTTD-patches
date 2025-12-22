@@ -2001,7 +2001,6 @@ STR_ERROR_TOO_MANY_DOCKS                                        :{WHITE}Demasiad
 STR_ERROR_UNSUITABLE_SIGNAL_TYPE                                :{WHITE}... tipo de sinal non axeitado
 STR_ERROR_RESTRICTED_SIGNAL                                     :{WHITE}... o sinal ten un programa de restrición de ruta adxunto
 
-STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}A pont é demasiado baixa para unha estación
 STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_STATION                       :{WHITE}Os piares da ponte obstrúen a estación
 STR_ERROR_CHUNNEL_THROUGH_MAP_BORDER                            :{WHITE}O túnel baixo a auga remataría fora do mapa
 STR_ERROR_CHUNNEL_RAMP                                          :{WHITE}... só se permite a lonxitude de rampa entre {NUM} e {NUM} cadros para túneis baixo a auga.

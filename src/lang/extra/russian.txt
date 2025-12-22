@@ -1868,7 +1868,6 @@ STR_ERROR_TOO_MANY_DOCKS                                        :{WHITE}Слиш
 STR_ERROR_UNSUITABLE_SIGNAL_TYPE                                :{WHITE}... неподходящий тип сигнала
 STR_ERROR_RESTRICTED_SIGNAL                                     :{WHITE}... сигнал прикреплён программу ограничения маршрутизации
 
-STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}Мост слишком низкий для станции
 STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_STATION                       :{WHITE}Опоры моста загораживают станцию
 STR_ERROR_CHUNNEL_THROUGH_MAP_BORDER                            :{WHITE}Подводный туннель будет заканчиваться за пределами карты
 STR_ERROR_CHUNNEL_RAMP                                          :{WHITE}... Подводные туннели требуют, чтобы зазор между клетками туннеля и берега был между {NUM} и {NUM} клеток.

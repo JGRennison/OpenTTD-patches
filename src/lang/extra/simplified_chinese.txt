@@ -1985,7 +1985,6 @@ STR_ERROR_TOO_MANY_DOCKS                                        :{WHITE}船坞�
 STR_ERROR_UNSUITABLE_SIGNAL_TYPE                                :{WHITE}……不适合的信号类型
 STR_ERROR_RESTRICTED_SIGNAL                                     :{WHITE}……信号已配置寻路限制程序
 
-STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}桥梁相对车站太低
 STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_STATION                       :{WHITE}桥柱与车站冲突
 STR_ERROR_CHUNNEL_THROUGH_MAP_BORDER                            :{WHITE}水下隧道出口将超出地图边界
 STR_ERROR_CHUNNEL_RAMP                                          :{WHITE}……水下隧道的建设需要隧道与海岸之间的间隙在 {NUM} 与 {NUM} 格之间

@@ -1987,7 +1987,6 @@ STR_ERROR_TOO_MANY_DOCKS                                        :{WHITE}항구�
 STR_ERROR_UNSUITABLE_SIGNAL_TYPE                                :{WHITE}... 적절하지 않은 신호기 종류입니다
 STR_ERROR_RESTRICTED_SIGNAL                                     :{WHITE}... 신호기에 경로 제한 프로그램이 있습니다
 
-STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}여기에 역을 짓기에는 다리가 너무 낮습니다
 STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_STATION                       :{WHITE}다리의 기둥이 역과 겹칩니다
 STR_ERROR_CHUNNEL_THROUGH_MAP_BORDER                            :{WHITE}해저 터널이 지도 맨끝을 통과합니다
 STR_ERROR_CHUNNEL_RAMP                                          :{WHITE}... 해저 터널을 만들기 위해서는 {NUM}칸에서 {NUM}칸 사이 길이의 여유 공간이 필요합니다

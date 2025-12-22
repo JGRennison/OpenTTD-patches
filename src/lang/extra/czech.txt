@@ -1653,7 +1653,6 @@ STR_ERROR_ONLY_ONE_BUILDING_ALLOWED_PER_TOWN                    :{WHITE}... ve m
 STR_ERROR_TOO_MANY_DOCKS                                        :{WHITE}Příliš mnoho přístavů
 STR_ERROR_UNSUITABLE_SIGNAL_TYPE                                :{WHITE}... nevhodný typ návěstidla
 
-STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}Most je na stanici příliš nízký
 STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_STATION                       :{WHITE}Pilíře mostu překáží stanici
 STR_ERROR_CHUNNEL_THROUGH_MAP_BORDER                            :{WHITE}Podmořský tunel by končil mimo mapu
 STR_ERROR_CHUNNEL_RAMP                                          :{WHITE}... podmořské tunely musí mít nájezdovou rampu v délce od {NUM} do {NUM} políček.

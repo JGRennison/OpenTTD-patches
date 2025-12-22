@@ -923,19 +923,48 @@ CommandCost CheckBuildableTile(TileIndex tile, uint invalid_dirs, int &allowed_z
 	return cost;
 }
 
-CommandCost IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statspec, uint8_t layout, TileIndex northern_bridge_end, TileIndex southern_bridge_end, int bridge_height,
+/**
+ * Get station-type-specific string for a bridge that is too low.
+ * @param type Station type.
+ * @return bridge too low string.
+ */
+static StringID GetBridgeTooLowMessageForStationType(StationType type)
+{
+	static constexpr std::array<StringID, to_underlying(StationType::End)> too_low_msgs = {
+		STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION, // Rail
+		INVALID_STRING_ID, // Airport
+		STR_ERROR_BRIDGE_TOO_LOW_FOR_ROADSTOP, // Truck
+		STR_ERROR_BRIDGE_TOO_LOW_FOR_ROADSTOP, // Bus
+		INVALID_STRING_ID, // Oilrig
+		STR_ERROR_BRIDGE_TOO_LOW_FOR_DOCK, // Dock
+		STR_ERROR_BRIDGE_TOO_LOW_FOR_BUOY, // Buoy
+		STR_ERROR_BRIDGE_TOO_LOW_FOR_RAIL_WAYPOINT, // RailWaypoint
+		STR_ERROR_BRIDGE_TOO_LOW_FOR_ROAD_WAYPOINT, // RoadWaypoint
+	};
+	return too_low_msgs[to_underlying(type)];
+};
+
+static int GetBridgeTooLowHeightDifference(TileIndex tile, int height_clearance, int bridge_height)
+{
+	const int tile_z = GetTileMaxZ(tile);
+	if (tile_z + height_clearance > bridge_height) {
+		return (tile_z + height_clearance - bridge_height) * TILE_HEIGHT_STEP;
+	}
+	return 0;
+}
+
+CommandCost IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statspec, StationType station_type, uint8_t layout, TileIndex northern_bridge_end, TileIndex southern_bridge_end, int bridge_height,
 		BridgeType bridge_type, TransportType bridge_transport_type)
 {
 	if (statspec != nullptr && statspec->internal_flags.Test(StationSpecIntlFlag::BridgeHeightsSet)) {
 		int height_above = statspec->GetBridgeAboveFlags(layout).height;
 		if (height_above == 0) return CommandCost(INVALID_STRING_ID);
-		if (GetTileMaxZ(tile) + height_above > bridge_height) {
-			return CommandCost(STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION);
-		}
+		const int too_low = GetBridgeTooLowHeightDifference(tile, height_above, bridge_height);
+		if (too_low > 0) return CommandCostWithParam(GetBridgeTooLowMessageForStationType(station_type), too_low);
 	} else if (!statspec) {
 		/* Default stations/waypoints */
-		const int height = layout < 4 ? 2 : 5;
-		if (GetTileMaxZ(tile) + height > bridge_height) return CommandCost(STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION);
+		const int too_low = GetBridgeTooLowHeightDifference(tile, layout < 4 ? 2 : 5, bridge_height);
+		if (too_low > 0) return CommandCostWithParam(GetBridgeTooLowMessageForStationType(station_type), too_low);
 	} else {
 		if (!_settings_game.construction.allow_stations_under_bridges) return CommandCost(INVALID_STRING_ID);
 	}
@@ -968,32 +997,30 @@ CommandCost IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statsp
 	}
 }
 
-CommandCost IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statspec, uint8_t layout)
+CommandCost IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statspec, StationType station_type, uint8_t layout)
 {
 	if (!IsBridgeAbove(tile)) return CommandCost();
 
 	TileIndex southern_bridge_end = GetSouthernBridgeEnd(tile);
 	TileIndex northern_bridge_end = GetNorthernBridgeEnd(tile);
-	return IsRailStationBridgeAboveOk(tile, statspec, layout, northern_bridge_end, southern_bridge_end, GetBridgeHeight(southern_bridge_end),
+	return IsRailStationBridgeAboveOk(tile, statspec, station_type, layout, northern_bridge_end, southern_bridge_end, GetBridgeHeight(southern_bridge_end),
 			GetBridgeType(southern_bridge_end), GetTunnelBridgeTransportType(southern_bridge_end));
 }
 
-CommandCost IsRoadStopBridgeAboveOK(TileIndex tile, const RoadStopSpec *spec, bool drive_through, DiagDirection entrance,
+CommandCost IsRoadStopBridgeAboveOK(TileIndex tile, const RoadStopSpec *spec, StationType station_type, bool drive_through, DiagDirection entrance,
 		TileIndex northern_bridge_end, TileIndex southern_bridge_end, int bridge_height,
 		BridgeType bridge_type, TransportType bridge_transport_type)
 {
 	if (spec != nullptr && spec->internal_flags.Test(RoadStopSpecIntlFlag::BridgeHeightsSet)) {
 		int height = spec->bridge_height[drive_through ? (GFX_TRUCK_BUS_DRIVETHROUGH_OFFSET + DiagDirToAxis(entrance)) : entrance];
 		if (height == 0) return CommandCost(INVALID_STRING_ID);
-		if (GetTileMaxZ(tile) + height > bridge_height) {
-			return CommandCost(STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION);
-		}
+		const int too_low = GetBridgeTooLowHeightDifference(tile, height, bridge_height);
+		if (too_low > 0) return CommandCostWithParam(GetBridgeTooLowMessageForStationType(station_type), too_low);
 	} else {
 		if (!_settings_game.construction.allow_road_stops_under_bridges) return CommandCost(INVALID_STRING_ID);
 
-		if (GetTileMaxZ(tile) + (drive_through ? 1 : 2) > bridge_height) {
-			return CommandCost(STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION);
-		}
+		const int too_low = GetBridgeTooLowHeightDifference(tile, drive_through ? 1 : 2, bridge_height);
+		if (too_low > 0) return CommandCostWithParam(GetBridgeTooLowMessageForStationType(station_type), too_low);
 	}
 
 	BridgePiecePillarFlags disallowed_pillar_flags = (BridgePiecePillarFlags) 0;
@@ -1131,7 +1158,7 @@ CommandCost CheckFlatLandRoadStop(TileArea tile_area, const RoadStopSpec *spec, 
 		if (allow_under_bridge && IsBridgeAbove(cur_tile)) {
 			TileIndex southern_bridge_end = GetSouthernBridgeEnd(cur_tile);
 			TileIndex northern_bridge_end = GetNorthernBridgeEnd(cur_tile);
-			CommandCost bridge_ret = IsRoadStopBridgeAboveOK(cur_tile, spec, is_drive_through, (DiagDirection) FindFirstBit(invalid_dirs),
+			CommandCost bridge_ret = IsRoadStopBridgeAboveOK(cur_tile, spec, station_type, is_drive_through, (DiagDirection) FindFirstBit(invalid_dirs),
 					northern_bridge_end, southern_bridge_end, GetBridgeHeight(southern_bridge_end),
 					GetBridgeType(southern_bridge_end), GetTunnelBridgeTransportType(southern_bridge_end));
 			if (bridge_ret.Failed()) return bridge_ret;
@@ -1556,7 +1583,7 @@ CommandCost CmdBuildRailStation(DoCommandFlags flags, TileIndex tile_org, RailTy
 		for (uint i = 0; i < numtracks; i++) {
 			TileIndex tile = tile_track;
 			for (uint j = 0; j < plat_len; j++) {
-				CommandCost ret = IsRailStationBridgeAboveOk(tile, statspec, *check_layout_ptr++);
+				CommandCost ret = IsRailStationBridgeAboveOk(tile, statspec, StationType::Rail, *check_layout_ptr++);
 				if (ret.Failed()) {
 					return CommandCost::DualErrorMessage(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST, ret.GetErrorMessage());
 				}
