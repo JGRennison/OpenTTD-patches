@@ -156,6 +156,9 @@ class Layouter : public std::vector<const ParagraphLayouter::Line *> {
 	struct LineCacheKey {
 		FontState state_before;  ///< Font state at the beginning of the line.
 		std::string str;         ///< Source string of the line (including colour and font size codes).
+
+		LineCacheKey() = default;
+		LineCacheKey(const FontState &state_before, std::string_view str) : state_before(state_before), str(str) {}
 	};
 
 	struct LineCacheQuery {

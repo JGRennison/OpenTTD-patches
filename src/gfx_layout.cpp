@@ -397,16 +397,8 @@ Layouter::LineCacheItem &Layouter::GetCachedParagraphLayout(std::string_view str
 		linecache = new LineCache();
 	}
 
-	if (auto match = linecache->find(LineCacheQuery{state, str});
-		match != linecache->end()) {
-		return match->second;
-	}
-
-	/* Create missing entry */
-	LineCacheKey key;
-	key.state_before = state;
-	key.str.assign(str);
-	return (*linecache)[std::move(key)];
+	auto match = linecache->try_emplace_heterogenous(LineCacheQuery{state, str}, std::piecewise_construct, std::forward_as_tuple(state, str), std::forward_as_tuple());
+	return match.first->second;
 }
 
 /**
