@@ -307,6 +307,23 @@ static CommandCost RemoveShipDepot(TileIndex tile, DoCommandFlags flags)
 	return CommandCost(EXPENSES_CONSTRUCTION, _price[PR_CLEAR_DEPOT_SHIP]);
 }
 
+CommandCost IsLockBridgeAboveOK(TileIndex tile, LockPart lock_part, DiagDirection dir,
+		TileIndex northern_bridge_end, TileIndex southern_bridge_end, int bridge_height,
+		BridgeType bridge_type, TransportType bridge_transport_type)
+{
+	extern int GetBridgeTooLowHeightDifference(TileIndex tile, int height_clearance, int bridge_height);
+
+	const int too_low = GetBridgeTooLowHeightDifference(tile, lock_part == LOCK_PART_LOWER ? 3 : 2, bridge_height);
+	if (too_low > 0) return CommandCostWithParam(STR_ERROR_BRIDGE_TOO_LOW_FOR_LOCK, too_low);
+
+	BridgePiecePillarFlags disallowed_pillar_flags = (BridgePiecePillarFlags) (DiagDirToAxis(dir) == AXIS_X ? 0x50 : 0xA0);
+	if ((GetBridgeTilePillarFlags(tile, northern_bridge_end, southern_bridge_end, bridge_type, bridge_transport_type) & disallowed_pillar_flags) == 0) {
+		return CommandCost();
+	} else {
+		return CommandCost(STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_LOCKS);
+	}
+}
+
 /**
  * Builds a lock.
  * @param tile Central tile of the lock.
@@ -354,8 +371,21 @@ static CommandCost DoBuildLock(TileIndex tile, DiagDirection dir, DoCommandFlags
 	}
 	WaterClass wc_upper = IsWaterTile(tile + delta) ? GetWaterClass(tile + delta) : WATER_CLASS_CANAL;
 
-	if (IsBridgeAbove(tile) || IsBridgeAbove(tile - delta) || IsBridgeAbove(tile + delta)) {
-		return CommandCost(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
+	{
+		CommandCost ret;
+		auto check_bridge = [dir, &ret](TileIndex t, LockPart lock_part) {
+			if (ret.Failed()) return;
+			if (!IsBridgeAbove(t)) return;
+
+			TileIndex southern_bridge_end = GetSouthernBridgeEnd(t);
+			TileIndex northern_bridge_end = GetNorthernBridgeEnd(t);
+			ret = IsLockBridgeAboveOK(t, lock_part, dir, northern_bridge_end, southern_bridge_end, GetBridgeHeight(southern_bridge_end),
+					GetBridgeType(southern_bridge_end), GetTunnelBridgeTransportType(southern_bridge_end));
+		};
+		check_bridge(tile, LOCK_PART_MIDDLE);
+		check_bridge(tile - delta, LOCK_PART_LOWER);
+		check_bridge(tile + delta, LOCK_PART_UPPER);
+		if (ret.Failed()) return ret;
 	}
 
 	if (flags.Test(DoCommandFlag::Execute)) {
@@ -981,6 +1011,7 @@ static void DrawTile_Water(TileInfo *ti, DrawTileProcParams params)
 
 		case WATER_TILE_LOCK:
 			DrawWaterLock(ti);
+			DrawBridgeMiddle(ti);
 			break;
 
 		case WATER_TILE_DEPOT:

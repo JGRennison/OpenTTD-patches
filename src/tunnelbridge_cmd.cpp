@@ -83,6 +83,10 @@ extern CommandCost IsRoadStopBridgeAboveOK(TileIndex tile, const RoadStopSpec *s
 extern CommandCost IsDockBridgeAboveOK(TileIndex tile, TileIndex northern_bridge_end, TileIndex southern_bridge_end, int bridge_height,
 		BridgeType bridge_type, TransportType bridge_transport_type);
 
+extern CommandCost IsLockBridgeAboveOK(TileIndex tile, LockPart lock_part, DiagDirection dir,
+		TileIndex northern_bridge_end, TileIndex southern_bridge_end, int bridge_height,
+		BridgeType bridge_type, TransportType bridge_transport_type);
+
 /**
  * Mark bridge tiles dirty.
  * Note: The bridge does not need to exist, everything is passed via parameters.
@@ -570,6 +574,15 @@ CommandCost CmdBuildBridge(DoCommandFlags flags, TileIndex tile_end, TileIndex t
 					}
 				}
 			}
+
+			if (IsTileType(tile, MP_WATER) && IsLock(tile)) {
+				CommandCost ret = IsLockBridgeAboveOK(tile, (LockPart)GetLockPart(tile), GetLockDirection(tile), tile_start, tile_end, z_start + 1, bridge_type, transport_type);
+				if (ret.Failed()) {
+					if (ret.GetErrorMessage() != INVALID_STRING_ID) return ret;
+					ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
+					if (ret.Failed()) return ret;
+				}
+			}
 		}
 
 		is_upgrade = true;
@@ -629,7 +642,15 @@ CommandCost CmdBuildBridge(DoCommandFlags flags, TileIndex tile_end, TileIndex t
 
 			switch (GetTileType(tile)) {
 				case MP_WATER:
-					if (!IsWater(tile) && !IsCoast(tile)) goto not_valid_below;
+					if (IsLock(tile)) {
+						CommandCost ret = IsLockBridgeAboveOK(tile, (LockPart)GetLockPart(tile), GetLockDirection(tile), tile_start, tile_end, z_start + 1, bridge_type, transport_type);
+						if (ret.Failed()) {
+							if (ret.GetErrorMessage() != INVALID_STRING_ID) return ret;
+							goto not_valid_below;
+						}
+					} else if (!IsWater(tile) && !IsCoast(tile)) {
+						goto not_valid_below;
+					}
 					break;
 
 				case MP_RAILWAY:

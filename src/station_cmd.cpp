@@ -944,7 +944,7 @@ static StringID GetBridgeTooLowMessageForStationType(StationType type)
 	return too_low_msgs[to_underlying(type)];
 };
 
-static int GetBridgeTooLowHeightDifference(TileIndex tile, int height_clearance, int bridge_height)
+int GetBridgeTooLowHeightDifference(TileIndex tile, int height_clearance, int bridge_height)
 {
 	const int tile_z = GetTileMaxZ(tile);
 	if (tile_z + height_clearance > bridge_height) {
