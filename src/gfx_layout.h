@@ -12,12 +12,13 @@
 
 #include "fontcache.h"
 #include "gfx_func.h"
+#include "core/hash_func.hpp"
 #include "core/math_func.hpp"
 
 #include "3rdparty/cpp-btree/btree_map.h"
+#include "3rdparty/robin_hood/robin_hood.h"
 #include "3rdparty/svector/svector.h"
 
-#include <map>
 #include <string>
 #include <stack>
 #include <string_view>
@@ -32,7 +33,13 @@ struct FontState {
 	FontSize fontsize;       ///< Current font size.
 	TextColour cur_colour;   ///< Current text colour.
 
-	std::stack<TextColour, ankerl::svector<TextColour, 3>> colour_stack; ///< Stack of colours to assist with colour switching.
+	struct ColourStack : public std::stack<TextColour, ankerl::svector<TextColour, 3>> {
+		typedef std::stack<TextColour, ankerl::svector<TextColour, 3>> Stack;
+		using Stack::Stack;
+		using Stack::operator=;
+		using Stack::c; // expose underlying container
+	};
+	ColourStack colour_stack; ///< Stack of colours to assist with colour switching.
 
 	FontState() : fontsize(FS_END), cur_colour(TC_INVALID) {}
 	FontState(TextColour colour, FontSize fontsize) : fontsize(fontsize), cur_colour(colour) {}
@@ -156,20 +163,46 @@ class Layouter : public std::vector<const ParagraphLayouter::Line *> {
 		std::string_view str;    ///< Source string of the line (including colour and font size codes).
 	};
 
-	/** Comparator for std::map */
-	struct LineCacheCompare {
+	/** Equality for robin_hood map */
+	struct LineCacheEqual {
 		using is_transparent = void; ///< Enable map queries with various key types
 
-		/** Comparison operator for LineCacheKey and LineCacheQuery */
+		/** Equality operator for LineCacheKey and LineCacheQuery */
 		template <typename Key1, typename Key2>
 		bool operator()(const Key1 &lhs, const Key2 &rhs) const
 		{
-			if (lhs.state_before.fontsize != rhs.state_before.fontsize) return lhs.state_before.fontsize < rhs.state_before.fontsize;
-			if (lhs.state_before.cur_colour != rhs.state_before.cur_colour) return lhs.state_before.cur_colour < rhs.state_before.cur_colour;
-			if (lhs.state_before.colour_stack != rhs.state_before.colour_stack) return lhs.state_before.colour_stack < rhs.state_before.colour_stack;
-			return lhs.str < rhs.str;
+			if (lhs.state_before.fontsize != rhs.state_before.fontsize) return false;
+			if (lhs.state_before.cur_colour != rhs.state_before.cur_colour) return false;
+			if (lhs.state_before.colour_stack != rhs.state_before.colour_stack) return false;
+			return lhs.str == rhs.str;
 		}
 	};
+
+	/** Hash for robin_hood map */
+	struct LineCacheHash {
+		using is_transparent = void; ///< Enable map queries with various key types
+
+		size_t hash_font_state(const FontState &fs) const noexcept
+		{
+			size_t result = 0;
+			HashCombine(result, robin_hood::hash_int(fs.fontsize << 16 | fs.cur_colour));
+			const auto &colour_stack = fs.colour_stack.c;
+			if (!colour_stack.empty()) {
+				HashCombine(result, robin_hood::hash_bytes(colour_stack.data(), colour_stack.size() * sizeof(colour_stack[0])));
+			}
+			return result;
+		}
+
+		/** Hash operator for LineCacheKey and LineCacheQuery */
+		template <typename Key>
+		size_t operator()(const Key &obj) const noexcept
+		{
+			size_t result = this->hash_font_state(obj.state_before);
+			HashCombine(result, robin_hood::hash_bytes(obj.str.data(), obj.str.size()));
+			return result;
+		}
+	};
+
 public:
 	/** Item in the linecache */
 	struct LineCacheItem {
@@ -186,7 +219,7 @@ public:
 		int cached_width = 0; ///< Width used for the cached layout.
 	};
 private:
-	typedef std::map<LineCacheKey, LineCacheItem, LineCacheCompare> LineCache;
+	typedef robin_hood::unordered_node_map<LineCacheKey, LineCacheItem, LineCacheHash, LineCacheEqual> LineCache;
 	static LineCache *linecache;
 
 	static LineCacheItem &GetCachedParagraphLayout(std::string_view str, const FontState &state);
