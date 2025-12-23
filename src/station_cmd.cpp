@@ -1017,8 +1017,6 @@ CommandCost IsRoadStopBridgeAboveOK(TileIndex tile, const RoadStopSpec *spec, St
 		const int too_low = GetBridgeTooLowHeightDifference(tile, height, bridge_height);
 		if (too_low > 0) return CommandCostWithParam(GetBridgeTooLowMessageForStationType(station_type), too_low);
 	} else {
-		if (!_settings_game.construction.allow_road_stops_under_bridges) return CommandCost(INVALID_STRING_ID);
-
 		const int too_low = GetBridgeTooLowHeightDifference(tile, drive_through ? 1 : 2, bridge_height);
 		if (too_low > 0) return CommandCostWithParam(GetBridgeTooLowMessageForStationType(station_type), too_low);
 	}
@@ -1162,12 +1160,11 @@ CommandCost CheckFlatLandRoadStop(TileArea tile_area, const RoadStopSpec *spec, 
 	int allowed_z = -1;
 
 	for (TileIndex cur_tile : tile_area) {
-		bool allow_under_bridge = _settings_game.construction.allow_road_stops_under_bridges || (spec != nullptr && spec->internal_flags.Test(RoadStopSpecIntlFlag::BridgeHeightsSet));
-		CommandCost ret = CheckBuildableTile(cur_tile, invalid_dirs, allowed_z, !is_drive_through, !allow_under_bridge);
+		CommandCost ret = CheckBuildableTile(cur_tile, invalid_dirs, allowed_z, !is_drive_through, false);
 		if (ret.Failed()) return ret;
 		cost.AddCost(ret.GetCost());
 
-		if (allow_under_bridge && IsBridgeAbove(cur_tile)) {
+		if (IsBridgeAbove(cur_tile)) {
 			TileIndex southern_bridge_end = GetSouthernBridgeEnd(cur_tile);
 			TileIndex northern_bridge_end = GetNorthernBridgeEnd(cur_tile);
 			CommandCost bridge_ret = IsRoadStopBridgeAboveOK(cur_tile, spec, station_type, is_drive_through, (DiagDirection) FindFirstBit(invalid_dirs),

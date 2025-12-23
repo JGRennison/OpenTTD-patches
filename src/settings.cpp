@@ -2281,19 +2281,6 @@ static bool LinkGraphDistributionSettingGUI(SettingOnGuiCtrlData &data)
 	}
 }
 
-static bool AllowRoadStopsUnderBridgesSettingGUI(SettingOnGuiCtrlData &data)
-{
-	switch (data.type) {
-		case SOGCT_DESCRIPTION_TEXT:
-			_temp_special_strings[0] = GetString(STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES_HELPTEXT_EXTRA, data.text);
-			data.text = SPECSTR_TEMP_START;
-			return true;
-
-		default:
-			return false;
-	}
-}
-
 static bool ZoomMaxCfgName(SettingOnGuiCtrlData &data)
 {
 	switch (data.type) {

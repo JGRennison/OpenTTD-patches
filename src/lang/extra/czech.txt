@@ -582,10 +582,6 @@ STR_CONFIG_SETTING_ALLOW_GRF_OBJECTS_UNDER_BRIDGES_HELPTEXT     :Pokud je zapnut
 STR_CONFIG_SETTING_ALLOW_GRF_STATIONS_UNDER_BRIDGES             :Povolit všechny železniční stanice a směrovací body z NewGRF pod mosty: {STRING}
 STR_CONFIG_SETTING_ALLOW_GRF_STATIONS_UNDER_BRIDGES_HELPTEXT    :Pokud je zapnuto, železniční stanice anebo směrovací body, u nichž není určeno, zda mohou být stavěny pod mosty, bude možné postavit pod most bez omezení.{}Může to vést ke grafickým problémům.
 
-STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES            :Povolit silniční a tramvajové zastávky pod mosty: {STRING}
-STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES_HELPTEXT   :Pokud je zapnuto, silniční a tramvajové zastávky mohou být stavěny pod mosty. Průjezdné zastávky vyžadují 1 volnou výškovou úroveň, koncové zastávky vyžadují 2 úrovně.
-STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES_HELPTEXT_EXTRA :{STRING}{}{}Grafiky se silničními/tramvajovými stanovišti mohou překonat toto nastavení a povolit nebo nepovolit vlastní zastávky pod mosty, případně stanovit vlastní požadavky na výšku volného prostoru nad zastávkou.
-
 STR_CONFIG_SETTING_PURCHASE_LAND_PERMITTED                      :Povolit nákup pozemků: {STRING}
 STR_CONFIG_SETTING_PURCHASE_LAND_PERMITTED_HELPTEXT             :Nastaví, zda společnosti mohou kupovat pozemky a v jakém množství
 

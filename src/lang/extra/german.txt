@@ -511,10 +511,6 @@ STR_CONFIG_SETTING_ALLOW_GRF_OBJECTS_UNDER_BRIDGES_HELPTEXT     :Erlaube den Bau
 STR_CONFIG_SETTING_ALLOW_GRF_STATIONS_UNDER_BRIDGES             :Erlaube NewGRF-Bahnhöfe/Wegpunkte unter Brücken: {STRING}
 STR_CONFIG_SETTING_ALLOW_GRF_STATIONS_UNDER_BRIDGES_HELPTEXT    :Falls aktiviert, wird selbst der Bau von NewGRF-Bahnhöfen/Wegpunkten, welche nicht angeben unter Brücken gebaut werden zu können, unter Brücken ohne Einschränkungen erlaubt.{}Dies kann zu Grafikfehlern führen.
 
-STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES            :Erlaube Straßen(bahn)haltestellen unter Brücken: {STRING}
-STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES_HELPTEXT   :Erlaube den Bau von Straßen(bahn)haltestellen unter Brücken. Durchfahrts-Haltestellen erfordern 1 freie Höhenebene, Halteplätze erfordern hingegen 2 freie Höhenebenen.
-STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES_HELPTEXT_EXTRA :{STRING}{}{}NewGRF Straßenfahrzeug- und Straßenbahnhaltestellen können diese Einstellung überschreiben und die eigenen Haltestellen unter Brücken erlauben oder verbieten sowie für diese eigene Mindesthöhen definieren.
-
 STR_CONFIG_SETTING_PURCHASE_LAND_PERMITTED                      :Erlaube den Kauf von Land: {STRING}
 STR_CONFIG_SETTING_PURCHASE_LAND_PERMITTED_HELPTEXT             :Legt fest, in welchem Umfang Firmen Land kaufen können
 

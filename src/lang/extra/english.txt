@@ -761,10 +761,6 @@ STR_CONFIG_SETTING_ALLOW_GRF_OBJECTS_UNDER_BRIDGES_HELPTEXT     :Allow all NewGR
 STR_CONFIG_SETTING_ALLOW_GRF_STATIONS_UNDER_BRIDGES             :Allow NewGRF rail stations/waypoints under bridges: {STRING2}
 STR_CONFIG_SETTING_ALLOW_GRF_STATIONS_UNDER_BRIDGES_HELPTEXT    :If enabled, NewGRF rail stations/waypoints which do not specify whether they may be built under bridges will be allowed under bridges with no restrictions.{}This may result in graphical issues.
 
-STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES            :Allow road/tram stops under bridges: {STRING2}
-STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES_HELPTEXT   :Allow road/tram stops under bridges. Drive through stops require 1 height level of clearance, drive in bays require 2 height levels of clearance.
-STR_CONFIG_SETTING_ALLOW_ROAD_STATIONS_UNDER_BRIDGES_HELPTEXT_EXTRA :{STRING}{}{}NewGRF road/tram stops may override this setting and allow or disallow custom stops under bridges, and set custom height clearance requirements.
-
 STR_CONFIG_SETTING_PURCHASE_LAND_PERMITTED                      :Permit purchasing land: {STRING2}
 STR_CONFIG_SETTING_PURCHASE_LAND_PERMITTED_HELPTEXT             :Set whether companies are permitted to purchase tiles of land, and in what quantity
 
