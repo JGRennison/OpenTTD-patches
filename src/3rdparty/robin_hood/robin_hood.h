@@ -829,6 +829,26 @@ struct hash<T, typename std::enable_if<enable_hash_as_base<T>>::type> {
 
 /* StrongType support ends */
 
+/* Inline hash method support */
+
+struct hash_method_tag{};
+
+template <typename T>
+concept HasHashMethod = requires(const T &obj)
+{
+    { obj.hash(hash_method_tag{}) } -> std::same_as<size_t>;
+};
+
+template <typename T> requires HasHashMethod<T>
+struct hash<T> {
+    size_t operator()(const T &obj) const noexcept(noexcept(std::declval<T>().hash(hash_method_tag{})))
+    {
+        return obj.hash(hash_method_tag{});
+    }
+};
+
+/* Inline hash method support ends */
+
 #define ROBIN_HOOD_HASH_INT(T)                           \
     template <>                                          \
     struct hash<T> {                                     \
