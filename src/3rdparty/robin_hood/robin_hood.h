@@ -1882,6 +1882,34 @@ public:
         return try_emplace_impl(std::move(key), std::forward<Args>(args)...).first;
     }
 
+/* try_emplace_heterogenous */
+    template <typename OtherKey, typename... Args>
+    std::pair<iterator, bool> try_emplace_heterogenous(const OtherKey& key, Args&&... args) {
+        ROBIN_HOOD_TRACE(this)
+        auto idxAndState = insertKeyPrepareEmptySpot(key);
+        switch (idxAndState.second) {
+        case InsertionState::key_found:
+            break;
+
+        case InsertionState::new_node:
+            ::new (static_cast<void*>(&mKeyVals[idxAndState.first])) Node(
+                *this, std::forward<Args>(args)...);
+            break;
+
+        case InsertionState::overwrite_node:
+            mKeyVals[idxAndState.first] = Node(*this, std::forward<Args>(args)...);
+            break;
+
+        case InsertionState::overflow_error:
+            throwOverflowError();
+            break;
+        }
+
+        return std::make_pair(iterator(mKeyVals + idxAndState.first, mInfo + idxAndState.first),
+                              InsertionState::key_found != idxAndState.second);
+    }
+/* try_emplace_heterogenous ends */
+
     template <typename Mapped>
     std::pair<iterator, bool> insert_or_assign(const key_type& key, Mapped&& obj) {
         return insertOrAssignImpl(key, std::forward<Mapped>(obj));
