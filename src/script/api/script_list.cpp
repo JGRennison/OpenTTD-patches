@@ -813,7 +813,7 @@ void ScriptList::RemoveValue(SQInteger value)
 template <bool KEEP_BOTTOM>
 bool ScriptList::KeepTopBottomFastPath(SQInteger count)
 {
-	if ((this->initialized && !this->sorter->IsEnd()) || count * 5 <= static_cast<SQInteger>(this->items.size() * 4)) return false;
+	if (count * 5 <= static_cast<SQInteger>(this->items.size() * 4)) return false;
 
 	/* Fast path: keeping <= 20% of list, and don't need to update the sorter, just create new container(s) */
 	SQInteger keep = this->Count() - count;
@@ -888,6 +888,7 @@ void ScriptList::RemoveTop(SQInteger count)
 		this->Sort(this->sorter_type, !this->sort_ascending);
 		return;
 	}
+	if (this->sorter != nullptr) this->sorter->End();
 
 	if (count <= 0) return;
 	if (count >= this->Count()) {
@@ -928,6 +929,7 @@ void ScriptList::RemoveBottom(SQInteger count)
 		this->Sort(this->sorter_type, !this->sort_ascending);
 		return;
 	}
+	if (this->sorter != nullptr) this->sorter->End();
 
 	if (count <= 0) return;
 	if (count >= this->Count()) {
