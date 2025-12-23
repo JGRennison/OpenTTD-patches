@@ -40,4 +40,16 @@ inline uint64_t SimpleHash64(uint64_t h)
 	return h;
 }
 
+/**
+ * Combine a hashed value into an existing hash.
+ *
+ * See: boost::hash_combine
+ * See: https://github.com/martinus/robin-hood-hashing/issues/140
+ */
+template <typename T>
+void HashCombine(T &result, T value)
+{
+	result ^= (value + 0x9e3779b9 + (result << 6) + (result >> 2));
+}
+
 #endif /* HASH_FUNC_HPP */
