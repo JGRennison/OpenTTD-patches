@@ -2522,6 +2522,7 @@ void PostAcquireCompany(Company *c)
 	InvalidateWindowClassesData(WC_ROADVEH_LIST, 0);
 	InvalidateWindowClassesData(WC_AIRCRAFT_LIST, 0);
 	InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
+	InvalidateWindowData(WC_CLIENT_LIST, 0);
 
 	delete c;
 
