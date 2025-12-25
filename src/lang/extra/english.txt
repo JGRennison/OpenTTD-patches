@@ -2547,3 +2547,7 @@ STR_ORDERLIST_JSON_CONFIRM_OVERRIDE_QUERY_CAPTION               :{WHITE}Confirm 
 
 STR_ORDER_UNKNOWN_ERROR                                         :[Error] Unknown error
 STR_ORDER_PARSE_ERROR                                           :[Error] This order could not be parsed
+
+STR_CONFIG_SETTING_BETTER_TOWN_PLACEMENT                        :Better town placement
+STR_CONFIG_SETTING_BETTER_TOWN_PLACEMENT_HELPTEXT               :When placing a town, prefer locations near sea, lakes or rivers, or in a valley.
+STR_CONFIG_SETTING_BETTER_TOWN_PLACEMENT_RADIUS                 :Search radius for better town placement: {STRING2}

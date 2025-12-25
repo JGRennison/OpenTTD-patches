@@ -2572,6 +2572,53 @@ HouseZones GetClimateMaskForLandscape()
 }
 
 /**
+ * Scout arround the original tile to find a better place for town
+ * @param tile The original tile
+ * @param city Are we building a city?
+ * @param layout The road layout to build.
+ * @return The best tile suitable to create the town.
+ */
+static TileIndex BetterTownPlacementTile(TileIndex tile, bool city, TownLayout layout)
+{
+	const int current_height = GetTileZ(tile);
+
+	struct CandidateTile {
+		int score;
+		TileIndex tile;
+	};
+	std::vector<CandidateTile> candidates;
+
+	/* Look arround for a better place */
+	for (TileIndex test_tile : SpiralTileSequence(tile, _settings_game.game_creation.better_town_placement_radius, 1, 1)) {
+		if (!(IsTileType(test_tile, MP_CLEAR) || IsTileType(test_tile, MP_TREES)) || !IsTileFlat(test_tile) || !IsTileAlignedToGrid(test_tile, layout)) continue;
+
+		/* Check elevation : is higher, the place isn't suitable */
+		int points = (current_height - GetTileZ(test_tile));
+		if (points < 0) continue;
+
+		/* Check for water at 2 tiles far */
+		for (TileIndex water_tile : SpiralTileSequence(test_tile, 2, 3, 3)) {
+			if (IsTileType(water_tile, MP_WATER)) {
+				points++;
+			}
+		}
+
+		candidates.emplace_back(points, test_tile);
+	}
+
+	std::stable_sort(candidates.begin(), candidates.end(), [](const CandidateTile &a, const CandidateTile &b) {
+		/* Sort descending */
+		return a.score > b.score;
+	});
+	for (const auto &candidate : candidates) {
+		if (TownCanBePlacedHere(candidate.tile, city).Succeeded()) return candidate.tile;
+	}
+
+	/* No successful candidates */
+	return INVALID_TILE;
+}
+
+/**
  * Create a random town somewhere in the world.
  * @param attempts How many times should we try?
  * @param townnameparts The name of the town.
@@ -2597,8 +2644,13 @@ static Town *CreateRandomTown(uint attempts, uint32_t townnameparts, TownSize si
 			if (tile == INVALID_TILE) continue;
 		}
 
-		/* Make sure town can be placed here */
-		if (TownCanBePlacedHere(tile, city).Failed()) continue;
+		if (_settings_game.game_creation.better_town_placement) {
+			tile = BetterTownPlacementTile(tile, city, layout);
+			if (tile == INVALID_TILE) continue;
+		} else {
+			/* Make sure town can be placed here */
+			if (TownCanBePlacedHere(tile, city).Failed()) continue;
+		}
 
 		/* Allocate a town struct */
 		Town *t = new Town(tile);

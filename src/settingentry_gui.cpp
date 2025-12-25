@@ -1152,6 +1152,9 @@ SettingsContainer &GetSettingsTree()
 			genworld->Add(new SettingEntry("game_creation.amount_of_rocks"));
 			genworld->Add(new SettingEntry("game_creation.height_affects_rocks"));
 			genworld->Add(new SettingEntry("game_creation.build_public_roads"));
+			genworld->Add(new SettingEntry("game_creation.better_town_placement"));
+			auto better_town_placement_hide = []() -> bool { return !GetGameSettings().game_creation.better_town_placement; };
+			genworld->Add(new ConditionallyHiddenSettingEntry("game_creation.better_town_placement_radius", better_town_placement_hide));
 		}
 
 		SettingsPage *environment = main->Add(new SettingsPage(STR_CONFIG_SETTING_ENVIRONMENT));

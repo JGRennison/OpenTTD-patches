@@ -109,3 +109,7 @@ STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Permet d
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Choisir le mot de passe de la compagnie
 
 # JSON messages
+
+STR_CONFIG_SETTING_BETTER_TOWN_PLACEMENT                        :Meilleur emplacement pour les villes
+STR_CONFIG_SETTING_BETTER_TOWN_PLACEMENT_HELPTEXT               :Lors de la construction d'une ville, recherche dans le voisinage un endroit plus propice. Privilégie les vallées et endroits proche de l'eau.
+STR_CONFIG_SETTING_BETTER_TOWN_PLACEMENT_RADIUS                 :Rayon dans lequel rechercher un meilleur emplacement : {STRING}

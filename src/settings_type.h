@@ -589,6 +589,8 @@ struct GameCreationSettings {
 	uint8_t  amount_of_rocks;                ///< the amount of rocks
 	uint8_t  height_affects_rocks;           ///< the affect that map height has on rocks
 	PublicRoadsConstruction build_public_roads; ///< build public roads connecting towns
+	bool     better_town_placement;             ///< use better town placement?
+	uint8_t  better_town_placement_radius;      ///< search radius for better town placement
 };
 
 /** Settings related to construction in-game */
