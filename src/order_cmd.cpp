@@ -3963,7 +3963,7 @@ bool UpdateOrderDest(Vehicle *v, const Order *order, int conditional_depth, bool
 {
 	if (conditional_depth > std::min<int>(64, v->GetNumOrders())) {
 		v->current_order.Free();
-		v->SetDestTile({});
+		v->SetDestTile(INVALID_TILE);
 		return false;
 	}
 
@@ -3983,7 +3983,7 @@ bool UpdateOrderDest(Vehicle *v, const Order *order, int conditional_depth, bool
 			if (v->current_order.GetDepotActionType() & ODATFB_NEAREST_DEPOT) {
 				/* If the vehicle can't find its destination, delay its next search.
 				 * In case many vehicles are in this state, use the vehicle index to spread out pathfinder calls. */
-				if (v->dest_tile == 0 && (_state_ticks.base() & 0x3F) != (v->index.base() & 0x3F)) break;
+				if (v->dest_tile == INVALID_TILE && (_state_ticks.base() & 0x3F) != (v->index.base() & 0x3F)) break;
 
 				/* We need to search for the nearest depot (hangar). */
 				ClosestDepot closest_depot = v->FindClosestDepot();
@@ -4112,7 +4112,7 @@ bool UpdateOrderDest(Vehicle *v, const Order *order, int conditional_depth, bool
 			break;
 
 		default:
-			v->SetDestTile({});
+			v->SetDestTile(INVALID_TILE);
 			return false;
 	}
 
@@ -4128,7 +4128,7 @@ bool UpdateOrderDest(Vehicle *v, const Order *order, int conditional_depth, bool
 
 	if (order == nullptr) {
 		v->current_order.Free();
-		v->SetDestTile({});
+		v->SetDestTile(INVALID_TILE);
 		return false;
 	}
 
@@ -4212,12 +4212,12 @@ bool ProcessOrders(Vehicle *v)
 		}
 
 		v->current_order.Free();
-		v->SetDestTile({});
+		v->SetDestTile(INVALID_TILE);
 		return false;
 	}
 
 	/* If it is unchanged, keep it. */
-	if (order->Equals(v->current_order) && (v->type == VEH_AIRCRAFT || v->dest_tile != 0) &&
+	if (order->Equals(v->current_order) && (v->type == VEH_AIRCRAFT || v->dest_tile != INVALID_TILE) &&
 			(v->type != VEH_SHIP || !order->IsType(OT_GOTO_STATION) || Station::Get(order->GetDestination().ToStationID())->facilities.Test(StationFacility::Dock))) {
 		return false;
 	}
