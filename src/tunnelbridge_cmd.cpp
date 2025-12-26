@@ -2438,12 +2438,14 @@ static void DrawTile_TunnelBridge(TileInfo *ti, DrawTileProcParams params)
 			EndSpriteCombine();
 		} else if (transport_type == TRANSPORT_RAIL) {
 			const RailTypeInfo *rti = GetRailTypeInfo(GetRailType(ti->tile));
-			SpriteID surface = rti->UsesOverlay() ? GetCustomRailSprite(rti, ti->tile, RTSG_BRIDGE) : rti->base_sprites.bridge_deck;
-			if (surface != 0) {
-				if (HasBridgeFlatRamp(ti->tileh, DiagDirToAxis(tunnelbridge_direction))) {
-					AddSortableSpriteToDraw(surface + ((DiagDirToAxis(tunnelbridge_direction) == AXIS_X) ? RTBO_X : RTBO_Y), PAL_NONE, ti->x, ti->y, 16, 16, 0, ti->z + 8);
-				} else {
-					AddSortableSpriteToDraw(surface + RTBO_SLOPE + tunnelbridge_direction, PAL_NONE, ti->x, ti->y, 16, 16, 8, ti->z);
+			if (is_custom_layout || rti->UsesOverlay()) {
+				SpriteID surface = rti->UsesOverlay() ? GetCustomRailSprite(rti, ti->tile, RTSG_BRIDGE) : rti->base_sprites.bridge_deck;
+				if (surface != 0) {
+					if (HasBridgeFlatRamp(ti->tileh, DiagDirToAxis(tunnelbridge_direction))) {
+						AddSortableSpriteToDraw(surface + ((DiagDirToAxis(tunnelbridge_direction) == AXIS_X) ? RTBO_X : RTBO_Y), PAL_NONE, ti->x, ti->y, 16, 16, 0, ti->z + 8);
+					} else {
+						AddSortableSpriteToDraw(surface + RTBO_SLOPE + tunnelbridge_direction, PAL_NONE, ti->x, ti->y, 16, 16, 8, ti->z);
+					}
 				}
 			}
 
@@ -2645,7 +2647,7 @@ void DrawBridgeMiddle(const TileInfo *ti)
 		DrawBridgeRoadBits(rampsouth, x, y, bridge_z, axis ^ 1, false, is_custom_layout);
 	} else if (transport_type == TRANSPORT_RAIL) {
 		const RailTypeInfo *rti = GetRailTypeInfo(GetRailType(rampsouth));
-		if (!IsInvisibilitySet(TO_BRIDGES)) {
+		if ((is_custom_layout || rti->UsesOverlay()) && !IsInvisibilitySet(TO_BRIDGES)) {
 			SpriteID surface = rti->UsesOverlay() ? GetCustomRailSprite(rti, rampsouth, RTSG_BRIDGE, TCX_ON_BRIDGE) : rti->base_sprites.bridge_deck;
 			if (surface != 0) {
 				AddSortableSpriteToDraw(surface + axis, PAL_NONE, x, y, 16, 16, 0, bridge_z, IsTransparencySet(TO_BRIDGES));
