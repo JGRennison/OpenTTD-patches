@@ -4533,6 +4533,10 @@ bool AfterLoadGame()
 		}
 	}
 
+	if (!IsSavegameVersionBefore(SLV_ENGINE_MULTI_RAILTYPE)) {
+		_settings_game.construction.map_edge_mode = _settings_game.construction.freeform_edges ? 0 : 2;
+	}
+
 	for (Company *c : Company::Iterate()) {
 		UpdateCompanyLiveries(c);
 	}
