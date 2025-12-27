@@ -361,6 +361,9 @@ static inline void GfxDoDrawLine(Blitter *blitter, void *video, int x, int y, in
 		margin  *= 2; // account for rounding errors
 	}
 
+	/* Prevent division by zero. */
+	if (grade_x == 0) grade_x = 1;
+
 	/* Imagine that the line is infinitely long and it intersects with
 	 * infinitely long left and right edges of the clipping rectangle.
 	 * If both intersection points are outside the clipping rectangle
