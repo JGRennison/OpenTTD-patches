@@ -147,7 +147,7 @@ struct DumpTarget {
 
 	format_buffer m_out;                  ///< the output string
 	int m_indent;                         ///< current indent/nesting level
-	std::stack<std::string> m_cur_struct; ///< here we will track the current structure name
+	std::stack<std::string, std::vector<std::string>> m_cur_struct; ///< here we will track the current structure name
 	KNOWN_NAMES m_known_names;            ///< map of known object instances and their structured names
 
 	DumpTarget()
