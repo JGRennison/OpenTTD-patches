@@ -780,6 +780,8 @@ function Regression::List()
 		print("    " + i + " => " + list.GetValue(i));
 	}
 
+	local listb = clone list;
+
 	list.KeepTop(10);
 	print("  KeepTop(10):");
 	for (local i = list.Begin(); !list.IsEnd(); i = list.Next()) {
@@ -799,6 +801,29 @@ function Regression::List()
 	print("  RemoveTop(2):");
 	for (local i = list.Begin(); !list.IsEnd(); i = list.Next()) {
 		print("    " + i + " => " + list.GetValue(i));
+	}
+
+	listb.Sort(AIList.SORT_BY_VALUE, AIList.SORT_ASCENDING);
+
+	listb.KeepTop(10);
+	print("  KeepTop(10):");
+	for (local i = listb.Begin(); !listb.IsEnd(); i = listb.Next()) {
+		print("    " + i + " => " + listb.GetValue(i));
+	}
+	listb.KeepBottom(8);
+	print("  KeepBottom(8):");
+	for (local i = listb.Begin(); !listb.IsEnd(); i = listb.Next()) {
+		print("    " + i + " => " + listb.GetValue(i));
+	}
+	listb.RemoveBottom(2);
+	print("  RemoveBottom(2):");
+	for (local i = listb.Begin(); !listb.IsEnd(); i = listb.Next()) {
+		print("    " + i + " => " + listb.GetValue(i));
+	}
+	listb.RemoveTop(2);
+	print("  RemoveTop(2):");
+	for (local i = listb.Begin(); !listb.IsEnd(); i = listb.Next()) {
+		print("    " + i + " => " + listb.GetValue(i));
 	}
 
 	local list2 = AIList();
