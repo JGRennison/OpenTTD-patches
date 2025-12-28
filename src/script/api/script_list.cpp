@@ -839,14 +839,21 @@ bool ScriptList::KeepTopBottomFastPath(SQInteger count)
 				}
 			} else {
 				for (const auto &iter : this->items) {
-					new_values.insert(std::make_pair(iter.second, iter.first));
-					if (static_cast<SQInteger>(new_values.size()) > keep) {
-						if constexpr (KEEP_BOTTOM) {
-							new_values.erase(new_values.begin());
-						} else {
-							new_values.erase(std::prev(new_values.end()));
-						}
+					auto to_insert = std::make_pair(iter.second, iter.first);
+					if (static_cast<SQInteger>(new_values.size()) < keep) {
+						new_values.insert(to_insert);
+						continue;
 					}
+
+					if constexpr (KEEP_BOTTOM) {
+						if (to_insert < *new_values.begin()) continue;
+						new_values.erase(new_values.begin());
+					} else {
+						if (to_insert > *std::prev(new_values.end())) continue;
+						new_values.erase(std::prev(new_values.end()));
+					}
+
+					new_values.insert(to_insert);
 				}
 				for (const auto &it : new_values) {
 					new_items.emplace(it.second, it.first);
