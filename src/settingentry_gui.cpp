@@ -1134,6 +1134,7 @@ SettingsContainer &GetSettingsTree()
 				rivers->Add(new SettingEntry("game_creation.coast_tropics_width"));
 				rivers->Add(new SettingEntry("game_creation.lake_size"));
 				rivers->Add(new SettingEntry("game_creation.lakes_allowed_in_deserts"));
+				rivers->Add(new SettingEntry("game_creation.wetlands_percentage"));
 			}
 			genworld->Add(new SettingEntry("game_creation.landscape"));
 			genworld->Add(new SettingEntry("game_creation.land_generator"));

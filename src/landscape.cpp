@@ -1394,10 +1394,10 @@ static bool FlowRiver(TileIndex spring, TileIndex begin, uint min_river_length)
 
 			/* Checks successful, time to build.
 			 * Chance of water feature is split evenly between a lake, a wetland with trees, and a wetland with grass. */
-			if (Chance16(1, 3)) {
-				MakeLake(lake_centre, height_begin);
-			} else {
+			if (Chance16(_settings_game.game_creation.wetlands_percentage, 100)) {
 				MakeWetlands(lake_centre, height_begin, DistanceManhattan(begin, end));
+			} else {
+				MakeLake(lake_centre, height_begin);
 			}
 		}
 	}

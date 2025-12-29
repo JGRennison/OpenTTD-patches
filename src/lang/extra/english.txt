@@ -424,6 +424,9 @@ STR_CONFIG_SETTING_LAKE_SIZE_ZERO                               :No lakes
 STR_CONFIG_SETTING_LAKES_ALLOWED_IN_DESERTS                     :Lakes and rivers can be generated in sub-tropic climate deserts: {STRING2}
 STR_CONFIG_SETTING_LAKES_ALLOWED_IN_DESERTS_HELPTEXT            :Choose whether lakes and rivers are allowed to spawn in sub-tropic climate deserts.
 
+STR_CONFIG_SETTING_WETLANDS_PERCENTAGE                          :Wetlands percentage: {STRING2}
+STR_CONFIG_SETTING_WETLANDS_PERCENTAGE_HELPTEXT                 :What percentage of lakes are instead generated as wetlands.
+
 STR_CONFIG_SETTING_ROCKS_AMOUNT                                 :Size of rocky patches: {STRING2}
 STR_CONFIG_SETTING_ROCKS_AMOUNT_HELPTEXT                        :Determines the size of rocky patches. High values can cover a significant portion of the map.
 

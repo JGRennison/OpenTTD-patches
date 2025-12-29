@@ -585,6 +585,7 @@ struct GameCreationSettings {
 	uint8_t  coast_tropics_width;            ///< the configured width of tropics around coasts
 	uint8_t  lake_size;                      ///< how large can lakes get?
 	bool     lakes_allowed_in_deserts;       ///< are lakes allowed in deserts?
+	uint8_t  wetlands_percentage;            ///< what percentage of lakes are instead created as wetlands
 	uint8_t  amount_of_rocks;                ///< the amount of rocks
 	uint8_t  height_affects_rocks;           ///< the affect that map height has on rocks
 	PublicRoadsConstruction build_public_roads; ///< build public roads connecting towns
