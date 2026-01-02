@@ -95,6 +95,7 @@ STR_GRAPH_DELIVERED_CARGO_BY_COMPANY_MODE_TOOLTIP               :{BLACK}선택�
 STR_GRAPH_DELIVERED_CARGO_BY_CARGO_MODE_TOOLTIP                 :{BLACK}선택한 화물를 각각 하나의 선으로 표시합니다
 
 STR_GRAPH_LAST_N_PRODUCTION_INTERVALS_TIME_LABEL                :{TINY_FONT}{BLACK}지난 {NUM} 생산기간
+STR_GRAPH_LAST_N_LABEL                                          :{TINY_FONT}{BLACK}지난 {NUM}
 
 STR_SMALLMAP_SCREENSHOT                                         :{BLACK}스크린샷
 
@@ -383,6 +384,9 @@ STR_CONFIG_SETTING_LAKE_SIZE_ZERO                               :없음
 STR_CONFIG_SETTING_LAKES_ALLOWED_IN_DESERTS                     :아열대 기후에서 호수가 만들어질 수 있음: {STRING}
 STR_CONFIG_SETTING_LAKES_ALLOWED_IN_DESERTS_HELPTEXT            :사막에서 강을 따라 호수가 생길 수 있는지 설정합니다
 
+STR_CONFIG_SETTING_WETLANDS_PERCENTAGE                          :습지 비율: {STRING}
+STR_CONFIG_SETTING_WETLANDS_PERCENTAGE_HELPTEXT                 :호수 중에서 습지로 생성되는 비율을 설정합니다.
+
 STR_CONFIG_SETTING_ROCKS_AMOUNT                                 :바위 더미 크기: {STRING}
 STR_CONFIG_SETTING_ROCKS_AMOUNT_HELPTEXT                        :바위 더미의 크기를 결정합니다. 값을 높게 설정하면 지도의 많은 부분을 바위가 덮을 것입니다
 
@@ -446,6 +450,14 @@ STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_HELPTEXT        :차량 경로 �
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_VALUE           :{COMMA} 픽셀 간격의 점선
 STR_CONFIG_SETTING_VIEWPORT_MAP_DRAW_ROUTE_DASH_DISABLED        :실선
 
+STR_CONFIG_SETTING_VIEWPORT_PLANS_DRAW_ROUTE_DASH               :계획 선 표시 방식: {STRING}
+STR_CONFIG_SETTING_VIEWPORT_PLANS_DRAW_ROUTE_DASH_HELPTEXT      :외부 화면에서 계획 선을 그리는 방식을 설정합니다.
+
+STR_CONFIG_SETTING_VIEWPORT_PLANS_SELECTED_MODE                 :선택한 계획 선 표시 방식: {STRING}
+STR_CONFIG_SETTING_VIEWPORT_PLANS_SELECTED_MODE_HELPTEXT        :현재 선택된 계획 선을 그리는 방식을 설정합니다.
+STR_CONFIG_SETTING_VIEWPORT_PLANS_SELECTED_RED_LINE             :빨간 선
+STR_CONFIG_SETTING_VIEWPORT_PLANS_SELECTED_RED_HIGHLIGHT        :빨간 색으로 강조
+
 STR_CONFIG_SETTING_AUTOSAVE                                     :자동 저장: {STRING}
 STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :게임을 자동으로 저장할 간격을 선택하세요
 
@@ -467,6 +479,11 @@ STR_CONFIG_SETTING_AUTO_TIMETABLE_BY_DEFAULT_HELPTEXT           :새 차량에 �
 
 STR_CONFIG_SETTING_TIMETABLE_SEPARATION_BY_DEFAULT              :배차 간격 조절을 위해 시간표를 기본으로 사용: {STRING}
 STR_CONFIG_SETTING_TIMETABLE_SEPARATION_BY_DEFAULT_HELPTEXT     :배차 간격 조절을 위해 시간표를 사용하는 것을 새 차량에 대해 기본적으로 활성화할지 선택합니다
+
+STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TIME                      :시간표에 남은 시간 표시: {STRING}
+STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TIME_HELPTEXT             :시간표에서 틱을 일/분으로 변환할 때, 남은 틱이나 초도 함께 표시합니다
+STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TIME_TICKS                :틱
+STR_CONFIG_SETTING_TIMETABLE_LEFTOVER_TIME_SECONDS              :초
 
 STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS                       :세이브 파일 시간 설정 대신 클라이언트의 시간 설정을 사용: {STRING}
 STR_CONFIG_SETTING_OVERRIDE_TIME_SETTINGS_HELPTEXT              :시간을 표시할 때 세이브 파일의 시간 설정 대신, 로컬 클라이언트 설정을 사용할 지 선택합니다
@@ -684,6 +701,7 @@ STR_CONFIG_SETTING_INTERFACE_VEHICLE_WINDOWS                    :{ORANGE}차량 
 STR_CONFIG_SETTING_GENWORLD_RIVERS_LAKES                        :{ORANGE}강 & 호수
 STR_CONFIG_SETTING_ENVIRONMENT_CARGODIST_PER_CARGO_OVERRIDE     :{ORANGE}화물 분배 - 화물별
 STR_CONFIG_SETTING_VIEWPORT_MAP_OPTIONS                         :{ORANGE}지도 모드
+STR_CONFIG_SETTING_PLANS                                        :{ORANGE}계획
 STR_CONFIG_SETTING_VEHICLE_ROUTE_OVERLAY                        :{ORANGE}차량 경로 오버레이
 STR_CONFIG_SETTING_SHARING                                      :{ORANGE}시설 공유
 
@@ -1843,7 +1861,8 @@ STR_TIMETABLE_HOURS                                             :{COMMA}시간
 STR_TIMETABLE_HOURS_MINUTES                                     :{COMMA}시간 {COMMA}분
 STR_TIMETABLE_MINUTES_SUFFIX                                    : ({STRING})
 
-STR_TIMETABLE_LEFTOVER_TICKS                                    : + {COMMA} 틱
+STR_TIMETABLE_LEFTOVER_TICKS                                    : + {COMMA}틱
+STR_TIMETABLE_LEFTOVER_SECONDS                                  : {COMMA}초
 
 STR_TIMETABLE_AUTOMATE                                          :{BLACK}자동
 STR_TIMETABLE_AUTOMATE_TOOLTIP                                  :{BLACK}각 운행마다 자동으로 값을 얻어 시간표를 만듭니다
@@ -1981,6 +2000,7 @@ STR_ERROR_UNSUITABLE_SIGNAL_TYPE                                :{WHITE}... 적�
 STR_ERROR_RESTRICTED_SIGNAL                                     :{WHITE}... 신호기에 경로 제한 프로그램이 있습니다
 
 STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_STATION                       :{WHITE}다리의 기둥이 역과 겹칩니다
+STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_LOCKS                         :{WHITE}다리의 기둥이 수문과 겹칩니다
 STR_ERROR_CHUNNEL_THROUGH_MAP_BORDER                            :{WHITE}해저 터널이 지도 맨끝을 통과합니다
 STR_ERROR_CHUNNEL_RAMP                                          :{WHITE}... 해저 터널을 만들기 위해서는 {NUM}칸에서 {NUM}칸 사이 길이의 여유 공간이 필요합니다
 STR_ERROR_TUNNEL_TOO_MANY                                       :{WHITE}... 터널이 너무 많습니다
