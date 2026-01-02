@@ -263,6 +263,7 @@ void PickerWindow::ConstructWindow()
 
 		SetWidgetDisabledState(WID_PW_MODE_ALL, !this->callbacks.HasClassChoice());
 		this->GetWidget<NWidgetStacked>(WID_PW_TYPE_RAND_SEL)->SetDisplayedPlane(this->callbacks.IsCollectionRandomisationSupported() ? 0 : SZSP_HORIZONTAL);
+		this->callbacks.place_collection = HasBit(this->callbacks.mode, PFM_SAVED) && IsWidgetLowered(WID_PW_TYPE_RANDOM);
 
 		this->GetWidget<NWidgetCore>(WID_PW_TYPE_ITEM)->SetToolTip(this->callbacks.GetTypeTooltip());
 		this->GetWidget<NWidgetCore>(WID_PW_TYPE_RANDOM)->SetToolTip(this->callbacks.GetRandomTooltip());
@@ -379,10 +380,26 @@ DropDownList PickerWindow::BuildCollectionDropDownList()
 void PickerWindow::SetDisabledRandomItemButton()
 {
 	if (!this->callbacks.IsCollectionRandomisationSupported()) return;
-	if (this->GetWidget<NWidgetBase>(WID_PW_TYPE_RANDOM) == nullptr) return;
 
-	this->SetWidgetDisabledState(WID_PW_TYPE_RANDOM, !HasBit(this->callbacks.mode, PFM_SAVED) || (this->callbacks.saved.contains(this->callbacks.sel_collection) ? !this->callbacks.IsCollectionValidForRandom(this->callbacks.saved[this->callbacks.sel_collection], this) : true));
-	if (this->IsWidgetDisabled(WID_PW_TYPE_RANDOM)) this->RaiseWidgetWhenLowered(WID_PW_TYPE_RANDOM);
+	NWidgetCore *random_widget = this->GetWidget<NWidgetCore>(WID_PW_TYPE_RANDOM);
+	if (random_widget == nullptr) return;
+
+	bool disabled = true;
+	btree::btree_set<PickerItem> *saved = nullptr;
+	if (HasBit(this->callbacks.mode, PFM_SAVED)) {
+		saved = this->callbacks.GetSelectedSavedCollection();
+		disabled = (saved == nullptr) || !this->callbacks.IsCollectionValidForRandom(*saved, this);
+	}
+	if (random_widget->IsDisabled() != disabled) {
+		random_widget->SetDisabled(disabled);
+		if (disabled) if (random_widget->IsLowered()) random_widget->SetLowered(false);
+		random_widget->SetDirty(this);
+	}
+	if (disabled) {
+		this->callbacks.place_collection = false;
+	} else {
+		this->callbacks.SetSelectedCollection(*saved);
+	}
 }
 
 void PickerWindow::DrawWidget(const Rect &r, WidgetID widget) const
@@ -495,6 +512,7 @@ void PickerWindow::OnClick(Point pt, WidgetID widget, int)
 				SetBit(this->callbacks.mode, PFM_ALL);
 			}
 			this->SetDisabledRandomItemButton();
+			this->callbacks.place_collection = HasBit(this->callbacks.mode, PFM_SAVED) && IsWidgetLowered(WID_PW_TYPE_RANDOM);
 			this->InvalidateData({PickerInvalidation::Class, PickerInvalidation::Type, PickerInvalidation::Position});
 			SndClickBeep();
 			break;
@@ -542,6 +560,7 @@ void PickerWindow::OnClick(Point pt, WidgetID widget, int)
 				this->callbacks.SetSelectedClass(item.class_index);
 				this->callbacks.SetSelectedType(item.index);
 				this->InvalidateData(PickerInvalidation::Position);
+				this->callbacks.place_collection = false;
 				this->RaiseWidgetWhenLowered(WID_PW_TYPE_RANDOM);
 			}
 			SndClickBeep();
@@ -551,6 +570,12 @@ void PickerWindow::OnClick(Point pt, WidgetID widget, int)
 
 		case WID_PW_TYPE_RANDOM: {
 			this->ToggleWidgetLoweredState(widget);
+			if (IsWidgetLowered(widget)) {
+				this->callbacks.SetSelectedCollection(this->callbacks.saved.at(this->callbacks.sel_collection));
+				this->callbacks.place_collection = true;
+			} else {
+				this->callbacks.place_collection = false;
+			}
 			SndClickBeep();
 			this->ReInit();
 			break;

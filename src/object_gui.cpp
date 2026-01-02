@@ -106,6 +106,8 @@ public:
 		}
 	}
 
+	void SetSelectedCollection([[maybe_unused]] const btree::btree_set<PickerItem> &items) const override { return; }
+
 	void FillUsedItems(btree::btree_set<PickerItem> &items) override
 	{
 		for (const Object *o : Object::Iterate()) {

@@ -1245,6 +1245,8 @@ public:
 		}
 	}
 
+	void SetSelectedCollection([[maybe_unused]] const btree::btree_set<PickerItem> &items) const override { return; }
+
 	void FillUsedItems(btree::btree_set<PickerItem> &items) override
 	{
 		bool default_added = false;
@@ -2303,6 +2305,8 @@ public:
 	{
 		DrawWaypointSprite(x, y, this->GetClassIndex(cls_id), id, _cur_railtype);
 	}
+
+	void SetSelectedCollection([[maybe_unused]] const btree::btree_set<PickerItem> &items) const override { return; }
 
 	void FillUsedItems(btree::btree_set<PickerItem> &items) override
 	{

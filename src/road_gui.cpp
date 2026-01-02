@@ -1293,6 +1293,8 @@ public:
 		}
 	}
 
+	void SetSelectedCollection([[maybe_unused]] const btree::btree_set<PickerItem> &items) const override { return; }
+
 	void FillUsedItems(btree::btree_set<PickerItem> &items) override
 	{
 		for (const Station *st : Station::Iterate()) {
@@ -1714,6 +1716,8 @@ public:
 	{
 		return IsRoadStopAvailable(this->GetSpec(cls_id, id), StationType::RoadWaypoint);
 	}
+
+	void SetSelectedCollection([[maybe_unused]] const btree::btree_set<PickerItem> &items) const override { return; }
 
 	void DrawType(int x, int y, int cls_id, int id) const override
 	{

@@ -93,6 +93,8 @@ public:
 	/* Collection Callbacks */
 	/** Get the tooltip string for the collection list. */
 	virtual StringID GetCollectionTooltip() const = 0;
+	/** Set the selected collection. */
+	virtual void SetSelectedCollection([[maybe_unused]] const btree::btree_set<PickerItem> &items) const = 0;
 	/** Is collection randomisation supported at all for this picker type? */
 	virtual bool IsCollectionRandomisationSupported() const { return false; }
 	/** Is this contents of this collection suitable for randomisation? */
@@ -143,6 +145,7 @@ public:
 
 	const std::string ini_group; ///< Ini Group for saving favourites.
 	uint8_t mode = 0; ///< Bitmask of \c PickerFilterModes.
+	bool place_collection = false;       ///< Are we placing a collection?
 	bool rename_collection = false;      ///< Are we renaming a collection?
 	std::string sel_collection;          ///< Currently selected collection of saved items.
 	std::string edit_collection;         ///< Collection to rename or delete.
