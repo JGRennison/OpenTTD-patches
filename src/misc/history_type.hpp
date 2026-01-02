@@ -10,6 +10,8 @@
 #ifndef HISTORY_TYPE_HPP
 #define HISTORY_TYPE_HPP
 
+#include <array>
+
 struct HistoryRange {
 	const HistoryRange *hr;
 	const uint8_t periods; ///< Number of periods for this range.

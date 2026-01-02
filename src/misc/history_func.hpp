@@ -15,6 +15,9 @@
 #include "../date_type.h"
 #include "history_type.hpp"
 
+#include <algorithm>
+#include <iterator>
+
 void UpdateValidHistory(ValidHistoryMask &valid_history, const HistoryRange &hr, uint cur_month);
 bool IsValidHistory(ValidHistoryMask valid_history, const HistoryRange &hr, uint age);
 
