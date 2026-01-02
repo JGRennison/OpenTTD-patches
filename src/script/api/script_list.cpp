@@ -775,7 +775,7 @@ void ScriptList::RemoveItems(ValueFilter value_filter)
 		}
 
 		Squirrel::DecreaseAllocatedSize((old_size - this->items.size()) * SCRIPT_LIST_BYTES_PER_ITEM);
-		ScriptController::DecreaseOps(old_size / 16 + (old_size - this->items.size()) * 4);
+		ScriptController::DecreaseOps(static_cast<int>(old_size / 16 + (old_size - this->items.size()) * 4));
 		return;
 	}
 
@@ -787,7 +787,7 @@ void ScriptList::RemoveItems(ValueFilter value_filter)
 		}
 	}
 
-	ScriptController::DecreaseOps(old_size / 16 + (old_size - this->items.size()) * 4);
+	ScriptController::DecreaseOps(static_cast<int>(old_size / 16 + (old_size - this->items.size()) * 4));
 }
 
 void ScriptList::RemoveAboveValue(SQInteger value)
