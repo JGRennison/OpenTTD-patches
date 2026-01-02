@@ -2004,27 +2004,36 @@ public:
 		}
 	}
 
-	btree::btree_set<PickerItem> UpdateSavedItems(const btree::btree_set<PickerItem> &src) override
+	PickerItemsCollection UpdateSavedItems(const PickerItemsCollection &src) override
 	{
-		if (src.empty()) return src;
+		if (src.empty()) return {};
 
 		const auto &specs = HouseSpec::Specs();
-		btree::btree_set<PickerItem> dst;
-		for (const auto &item : src) {
-			if (item.grfid == 0) {
-				const HouseSpec *hs = HouseSpec::Get(item.local_id);
-				if (hs == nullptr) continue;
-				int class_index = GetClassIdFromHouseZone(hs->building_availability);
-				dst.emplace(item.grfid, item.local_id, class_index, item.local_id);
-			} else {
-				/* Search for spec by grfid and local index. */
-				auto it = std::ranges::find_if(specs, [&item](const HouseSpec &spec) { return spec.grf_prop.grfid == item.grfid && spec.grf_prop.local_id == item.local_id; });
-				if (it == specs.end()) {
-					/* Not preset, hide from UI. */
-					dst.emplace(item.grfid, item.local_id, -1, -1);
+
+		PickerItemsCollection dst;
+		for (const auto &group_it : src) {
+			btree::btree_set<PickerItem> &dst_items = dst[group_it.first];
+
+			if (group_it.second.empty() || (group_it.second.size() == 1 && group_it.second.contains({}))) {
+				continue;
+			}
+
+			for (const auto &item : group_it.second) {
+				if (item.grfid == 0) {
+					const HouseSpec *hs = HouseSpec::Get(item.local_id);
+					if (hs == nullptr) continue;
+					int class_index = GetClassIdFromHouseZone(hs->building_availability);
+					dst_items.emplace(item.grfid, item.local_id, class_index, item.local_id);
 				} else {
-					int class_index = GetClassIdFromHouseZone(it->building_availability);
-					dst.emplace(item.grfid, item.local_id, class_index, it->Index());
+					/* Search for spec by grfid and local index. */
+					auto it = std::ranges::find_if(specs, [&item](const HouseSpec &spec) { return spec.grf_prop.grfid == item.grfid && spec.grf_prop.local_id == item.local_id; });
+					if (it == specs.end()) {
+						/* Not preset, hide from UI. */
+						dst_items.emplace(item.grfid, item.local_id, -1, -1);
+					} else {
+						int class_index = GetClassIdFromHouseZone(it->building_availability);
+						dst_items.emplace(item.grfid, item.local_id, class_index, it->Index());
+					}
 				}
 			}
 		}
