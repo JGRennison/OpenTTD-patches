@@ -1334,10 +1334,7 @@ struct SpecializedVehicle : public Vehicle {
 	typedef SpecializedVehicle<T, Type> SpecializedVehicleBase; ///< Our type
 
 #if OTTD_UPPER_TAGGED_PTR
-	inline void *operator new(size_t size)
-	{
-		return Vehicle::NewWithParam(size, Type);
-	}
+	inline void *operator new(size_t) = delete;
 
 	inline void *operator new(size_t size, VehicleID index)
 	{
@@ -1470,6 +1467,22 @@ struct SpecializedVehicle : public Vehicle {
 	static inline T *GetIfValid(auto index)
 	{
 		return IsValidID(index) ? Get(index) : nullptr;
+	}
+
+	/**
+	 * Creates a new T-object in the vehicle pool.
+	 * @param args... The arguments to the constructor.
+	 * @return The created object.
+	 */
+	template <typename... Targs>
+	static inline T *Create(Targs &&... args)
+	{
+#if OTTD_UPPER_TAGGED_PTR
+		void *data = Vehicle::NewWithParam(sizeof(T), Type);
+		return ::new (data) T(std::forward<Targs&&>(args)...);
+#else
+		return Vehicle::Create<T>(std::forward<Targs&&>(args)...);
+#endif
 	}
 
 	/**

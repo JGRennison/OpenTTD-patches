@@ -1124,7 +1124,7 @@ CommandCost CmdBuildShip(TileIndex tile, DoCommandFlags flags, const Engine *e, 
 
 		const ShipVehicleInfo *svi = &e->VehInfo<ShipVehicleInfo>();
 
-		Ship *v = new Ship();
+		Ship *v = Ship::Create();
 		*ret = v;
 
 		v->owner = _current_company;

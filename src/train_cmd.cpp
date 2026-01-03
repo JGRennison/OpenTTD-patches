@@ -1496,7 +1496,7 @@ static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlags flags, const
 	if (!IsCompatibleRail(rvi->railtypes, GetRailType(tile))) return CommandCost(STR_ERROR_DEPOT_HAS_WRONG_RAIL_TYPE);
 
 	if (flags.Test(DoCommandFlag::Execute)) {
-		Train *v = new Train();
+		Train *v = Train::Create();
 		*ret = v;
 		v->spritenum = rvi->image_index;
 
@@ -1603,7 +1603,7 @@ void NormalizeTrainVehInDepot(const Train *u)
 
 static void AddRearEngineToMultiheadedTrain(Train *v)
 {
-	Train *u = new Train();
+	Train *u = Train::Create();
 	v->value >>= 1;
 	u->value = v->value;
 	u->direction = v->direction;
@@ -1665,7 +1665,7 @@ CommandCost CmdBuildRailVehicle(TileIndex tile, DoCommandFlags flags, const Engi
 		int x = TileX(tile) * TILE_SIZE + _vehicle_initial_x_fract[dir];
 		int y = TileY(tile) * TILE_SIZE + _vehicle_initial_y_fract[dir];
 
-		Train *v = new Train();
+		Train *v = Train::Create();
 		*ret = v;
 		v->direction = DiagDirToDir(dir);
 		v->tile = tile;
@@ -7082,7 +7082,7 @@ static Train *CmdBuildVirtualRailWagon(const Engine *e, ClientID user, bool no_c
 {
 	const RailVehicleInfo &rvi = e->VehInfo<RailVehicleInfo>();
 
-	Train *v = new Train();
+	Train *v = Train::Create();
 
 	v->x_pos = 0;
 	v->y_pos = 0;
@@ -7156,7 +7156,7 @@ Train *BuildVirtualRailVehicle(EngineID eid, StringID &error, ClientID user, boo
 		return CmdBuildVirtualRailWagon(e, user, no_consist_change);
 	}
 
-	Train *v = new Train();
+	Train *v = Train::Create();
 
 	v->x_pos = 0;
 	v->y_pos = 0;

@@ -1537,7 +1537,7 @@ void PrepareUnload(Vehicle *front_v)
 	 * limit in number of CargoPayments. Can't go wrong. */
 	static_assert(CargoPaymentPool::MAX_SIZE == VehiclePool::MAX_SIZE);
 	assert(CargoPayment::CanAllocateItem());
-	front_v->cargo_payment = new CargoPayment(front_v);
+	front_v->cargo_payment = CargoPayment::Create(front_v);
 
 	CargoStationIDVectorSet next_station = front_v->GetNextStoppingStation();
 	if (front_v->orders == nullptr || (front_v->current_order.GetUnloadType() & OUFB_NO_UNLOAD) == 0) {

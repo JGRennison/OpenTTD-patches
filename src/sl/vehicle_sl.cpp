@@ -335,7 +335,7 @@ void AfterLoadVehiclesPhase1(bool part_of_load)
 					 * allowed in these savegames matches the number of OrderLists. As
 					 * such each vehicle can get an OrderList and it will (still) fit. */
 					assert(OrderList::CanAllocateItem());
-					v->orders = mapping_order_list = new OrderList(old_orders, v);
+					v->orders = mapping_order_list = OrderList::Create(old_orders, v);
 				} else {
 					v->orders = mapping_order_list;
 					/* For old games (case a) we must create the shared vehicle chain */
@@ -376,7 +376,7 @@ void AfterLoadVehiclesPhase1(bool part_of_load)
 
 				/* As above, allocating OrderList here is safe. */
 				assert(OrderList::CanAllocateItem());
-				v->orders = new OrderList(nullptr, v);
+				v->orders = OrderList::Create(nullptr, v);
 				for (Vehicle *u = v; u != nullptr; u = u->next_shared) {
 					u->orders = v->orders;
 				}
@@ -1459,7 +1459,7 @@ void Load_VEHS()
 
 		if (_cargo_count != 0 && IsCompanyBuildableVehicleType(v) && CargoPacket::CanAllocateItem()) {
 			/* Don't construct the packet with station here, because that'll fail with old savegames */
-			CargoPacket *cp = new CargoPacket(_cargo_count, _cargo_periods, StationID(_cargo_source), TileIndex{_cargo_source_xy}, _cargo_feeder_share);
+			CargoPacket *cp = CargoPacket::Create(_cargo_count, _cargo_periods, StationID(_cargo_source), TileIndex{_cargo_source_xy}, _cargo_feeder_share);
 			v->cargo.Append(cp);
 		}
 

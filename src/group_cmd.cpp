@@ -414,7 +414,7 @@ CommandCost CmdCreateGroup(DoCommandFlags flags, VehicleType vt, GroupID parent_
 	CommandCost cost;
 
 	if (flags.Test(DoCommandFlag::Execute)) {
-		Group *g = new Group(_current_company, vt);
+		Group *g = Group::Create(_current_company, vt);
 
 		Company *c = Company::Get(g->owner);
 		g->number = c->freegroups.UseID(c->freegroups.NextID());

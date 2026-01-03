@@ -281,16 +281,8 @@ protected:
 		}
 
 public:
-		/**
-		 * Allocates space for new Titem
-		 * @param size size of Titem
-		 * @return pointer to allocated memory
-		 * @note can never fail (return nullptr), use CanAllocate() to check first!
-		 */
-		inline void *operator new(size_t size)
-		{
-			return NewWithParam(size, Tops::DefaultItemParam());
-		}
+		/** Do not use new PoolItem, but rather PoolItem::Create. */
+		inline void *operator new(size_t) = delete;
 
 		/**
 		 * Marks Titem as free. Its memory is released
@@ -339,6 +331,19 @@ public:
 			return ptr;
 		}
 
+
+		/**
+		 * Creates a new T-object in the associated pool.
+		 * @param args... The arguments to the constructor.
+		 * @return The created object.
+		 */
+		template <typename T = Titem, typename... Targs>
+		requires std::is_base_of_v<Titem, T>
+		static inline T *Create(Targs &&... args)
+		{
+			void *data = Tpool->GetNew(sizeof(T), Tops::DefaultItemParam());
+			return ::new (data) T(std::forward<Targs&&>(args)...);
+		}
 
 		/** Helper functions so we can use PoolItem::Function() instead of _poolitem_pool.Function() */
 

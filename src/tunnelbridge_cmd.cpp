@@ -1178,7 +1178,7 @@ CommandCost CmdBuildTunnel(DoCommandFlags flags, TileIndex start_tile, Transport
 
 		if (!Tunnel::CanAllocateItem()) return CommandCost(STR_ERROR_TUNNEL_TOO_MANY);
 		const int height = TileHeight(tn);
-		const Tunnel *t = new Tunnel(tn, ts, height, is_chunnel);
+		const Tunnel *t = Tunnel::Create(tn, ts, height, is_chunnel);
 		ViewportMapStoreTunnel(tn, ts, height, true);
 
 		if (transport_type == TRANSPORT_RAIL) {

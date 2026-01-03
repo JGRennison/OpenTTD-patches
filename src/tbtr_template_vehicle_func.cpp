@@ -149,7 +149,7 @@ TemplateVehicle *TemplateVehicleFromVirtualTrain(Train *virt)
 	TemplateVehicle *tmp = nullptr;
 	TemplateVehicle *prev = nullptr;
 	for (; virt != nullptr; virt = virt->Next()) {
-		tmp = new TemplateVehicle(virt->engine_type);
+		tmp = TemplateVehicle::Create(virt->engine_type);
 		SetupTemplateVehicleFromVirtual(tmp, prev, virt);
 		prev = tmp;
 	}

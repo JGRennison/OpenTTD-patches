@@ -1399,7 +1399,7 @@ void InsertOrder(Vehicle *v, Order &&new_o, VehicleOrderID sel_ord)
 {
 	/* Create new order and link in list */
 	if (v->orders == nullptr) {
-		v->orders = new OrderList(std::move(new_o), v);
+		v->orders = OrderList::Create(std::move(new_o), v);
 	} else {
 		v->orders->InsertOrderAt(std::move(new_o), sel_ord);
 	}
@@ -2912,7 +2912,7 @@ CommandCost CmdCloneOrder(DoCommandFlags flags, CloneOptions action, VehicleID v
 					dst->orders = nullptr;
 				}
 				assert(OrderList::CanAllocateItem());
-				dst->orders = new OrderList(std::move(dst_orders), dst);
+				dst->orders = OrderList::Create(std::move(dst_orders), dst);
 
 				/* Copy over scheduled dispatch data */
 				assert(dst->orders != nullptr);
@@ -3010,7 +3010,7 @@ CommandCost CmdInsertOrdersFromVehicle(DoCommandFlags flags, VehicleID veh_dst, 
 	/* Copy over scheduled dispatch data */
 	if (flags.Test(DoCommandFlag::Execute)) {
 		if (dst->orders == nullptr) {
-			dst->orders = new OrderList(nullptr, dst);
+			dst->orders = OrderList::Create(nullptr, dst);
 		}
 
 		const std::vector<DispatchSchedule> &src_scheds = src->orders->GetScheduledDispatchScheduleSet();
@@ -4435,7 +4435,7 @@ CommandCost CmdBulkOrder(DoCommandFlags flags, const BulkOrderCmdData &cmd_data)
 
 		if (v->orders == nullptr) {
 			if (!OrderList::CanAllocateItem()) return CommandCost(STR_ERROR_NO_MORE_SPACE_FOR_ORDERS);
-			v->orders = new OrderList(nullptr, v);
+			v->orders = OrderList::Create(nullptr, v);
 		}
 
 		VehicleOrderID insert_pos = INVALID_VEH_ORDER_ID;

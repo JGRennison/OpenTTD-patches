@@ -1423,7 +1423,7 @@ CommandCost CmdBuildTrainDepot(DoCommandFlags flags, TileIndex tile, RailType ra
 	if (!Depot::CanAllocateItem()) return CMD_ERROR;
 
 	if (flags.Test(DoCommandFlag::Execute)) {
-		Depot *d = new Depot(tile);
+		Depot *d = Depot::Create(tile);
 		d->build_date = CalTime::CurDate();
 
 		MakeRailDepot(tile, _current_company, d->index, dir, railtype);

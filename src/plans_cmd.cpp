@@ -30,7 +30,7 @@ CommandCost CmdAddPlan(DoCommandFlags flags)
 	if (!Plan::CanAllocateItem()) return CommandCost(STR_ERROR_TOO_MANY_PLANS);
 	CommandCost cost;
 	if (flags.Test(DoCommandFlag::Execute)) {
-		Plan *plan = new Plan(_current_company);
+		Plan *plan = Plan::Create(_current_company);
 		cost.SetResultData(plan->index);
 	}
 	return cost;

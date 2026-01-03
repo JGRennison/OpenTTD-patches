@@ -2089,7 +2089,7 @@ TraceRestrictProgram *GetTraceRestrictProgram(TraceRestrictRefId ref, bool creat
 		if (!TraceRestrictProgram::CanAllocateItem()) {
 			return nullptr;
 		}
-		TraceRestrictProgram *prog = new TraceRestrictProgram();
+		TraceRestrictProgram *prog = TraceRestrictProgram::Create();
 
 		/* Create new mapping to pool item */
 		TraceRestrictCreateProgramMapping(ref, prog);
@@ -3464,7 +3464,7 @@ CommandCost CmdCreateTraceRestrictSlot(DoCommandFlags flags, const TraceRestrict
 	CommandCost result;
 
 	if (flags.Test(DoCommandFlag::Execute)) {
-		TraceRestrictSlot *slot = new TraceRestrictSlot(_current_company, data.vehtype);
+		TraceRestrictSlot *slot = TraceRestrictSlot::Create(_current_company, data.vehtype);
 		slot->name = data.name;
 		slot->max_occupancy = data.max_occupancy;
 		if (pg != nullptr) {
@@ -3485,7 +3485,7 @@ CommandCost CmdCreateTraceRestrictSlot(DoCommandFlags flags, const TraceRestrict
 		InvalidateWindowClassesData(WC_TRACE_RESTRICT);
 		InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
 	} else if (data.follow_up_cmd.has_value()) {
-		TraceRestrictSlot *slot = new TraceRestrictSlot(_current_company, data.vehtype);
+		TraceRestrictSlot *slot = TraceRestrictSlot::Create(_current_company, data.vehtype);
 		CommandCost follow_up_res = data.follow_up_cmd->ExecuteWithValue(slot->index.base(), flags);
 		delete slot;
 		if (follow_up_res.Failed()) return follow_up_res;
@@ -3700,7 +3700,7 @@ CommandCost CmdCreateTraceRestrictSlotGroup(DoCommandFlags flags, VehicleType ve
 
 	CommandCost result;
 	if (flags.Test(DoCommandFlag::Execute)) {
-		TraceRestrictSlotGroup *slot_group = new TraceRestrictSlotGroup(_current_company, vehtype);
+		TraceRestrictSlotGroup *slot_group = TraceRestrictSlotGroup::Create(_current_company, vehtype);
 		slot_group->name = name;
 		if (pg != nullptr) slot_group->parent = pg->index;
 		result.SetResultData(slot_group->index);
@@ -3929,7 +3929,7 @@ CommandCost CmdCreateTraceRestrictCounter(DoCommandFlags flags, const TraceRestr
 	CommandCost result;
 
 	if (flags.Test(DoCommandFlag::Execute)) {
-		TraceRestrictCounter *ctr = new TraceRestrictCounter(_current_company);
+		TraceRestrictCounter *ctr = TraceRestrictCounter::Create(_current_company);
 		ctr->name = data.name;
 		result.SetResultData(ctr->index);
 
@@ -3945,7 +3945,7 @@ CommandCost CmdCreateTraceRestrictCounter(DoCommandFlags flags, const TraceRestr
 		InvalidateWindowClassesData(WC_TRACE_RESTRICT);
 		InvalidateWindowClassesData(WC_TRACE_RESTRICT_COUNTERS);
 	} else if (data.follow_up_cmd.has_value()) {
-		TraceRestrictCounter *ctr = new TraceRestrictCounter(_current_company);
+		TraceRestrictCounter *ctr = TraceRestrictCounter::Create(_current_company);
 		CommandCost follow_up_res = data.follow_up_cmd->ExecuteWithValue(ctr->index.base(), flags);
 		delete ctr;
 		if (follow_up_res.Failed()) return follow_up_res;

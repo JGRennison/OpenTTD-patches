@@ -1192,7 +1192,7 @@ bool AfterLoadGame()
 							/* From this version on there can be multiple road stops of the
 							 * same type per station. Convert the existing stops to the new
 							 * internal data structure. */
-							RoadStop *rs = new RoadStop(t);
+							RoadStop *rs = RoadStop::Create(t);
 
 							RoadStop **head =
 								IsTruckStop(t) ? &st->truck_stops : &st->bus_stops;
@@ -2470,7 +2470,7 @@ bool AfterLoadGame()
 						return false;
 					}
 
-					const Tunnel *t = new Tunnel(start_tile, end_tile, TileHeight(start_tile), false);
+					const Tunnel *t = Tunnel::Create(start_tile, end_tile, TileHeight(start_tile), false);
 
 					SetTunnelIndex(start_tile, t->index);
 					SetTunnelIndex(end_tile, t->index);
@@ -2625,7 +2625,7 @@ bool AfterLoadGame()
 						SlError(STR_ERROR_TOO_MANY_OBJECTS);
 					}
 
-					Object *o = new Object();
+					Object *o = Object::Create();
 					o->location.tile = t;
 					o->location.w    = size;
 					o->location.h    = size;
@@ -2724,7 +2724,7 @@ bool AfterLoadGame()
 				 * assert() in Pool::GetNew() happy by calling CanAllocateItem(). */
 				static_assert(CargoPaymentPool::MAX_SIZE == VehiclePool::MAX_SIZE);
 				assert(CargoPayment::CanAllocateItem());
-				if (v->cargo_payment == nullptr) v->cargo_payment = new CargoPayment(v);
+				if (v->cargo_payment == nullptr) v->cargo_payment = CargoPayment::Create(v);
 			}
 		}
 	}

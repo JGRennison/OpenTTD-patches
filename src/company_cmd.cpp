@@ -637,7 +637,7 @@ Company *DoStartupNewCompany(DoStartupNewCompanyFlag flags, CompanyID company)
 
 	Company *c;
 	if (company == CompanyID::Invalid()) {
-		c = new Company(STR_SV_UNNAMED, is_ai);
+		c = Company::Create(STR_SV_UNNAMED, is_ai);
 	} else {
 		if (Company::IsValidID(company)) return nullptr;
 		c = new (company) Company(STR_SV_UNNAMED, is_ai);

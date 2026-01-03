@@ -333,7 +333,7 @@ CommandCost CmdSchDispatchAddNewSchedule(DoCommandFlags flags, VehicleID veh, St
 
 	if (flags.Test(DoCommandFlag::Execute)) {
 		if (v->orders == nullptr) {
-			v->orders = new OrderList(nullptr, v);
+			v->orders = OrderList::Create(nullptr, v);
 		}
 		v->orders->GetScheduledDispatchScheduleSet().emplace_back();
 		DispatchSchedule &ds = v->orders->GetScheduledDispatchScheduleSet().back();

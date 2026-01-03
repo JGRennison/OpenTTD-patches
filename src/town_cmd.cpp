@@ -2467,7 +2467,7 @@ CommandCost CmdFoundTown(DoCommandFlags flags, TileIndex tile, TownSize size, bo
 		if (random_location) {
 			t = CreateRandomTown(20, townnameparts, size, city, layout);
 		} else {
-			t = new Town(tile);
+			t = Town::Create(tile);
 			DoCreateTown(t, tile, townnameparts, size, city, layout, true);
 		}
 
@@ -2676,7 +2676,7 @@ static Town *CreateRandomTown(uint attempts, uint32_t townnameparts, TownSize si
 		}
 
 		/* Allocate a town struct */
-		Town *t = new Town(tile);
+		Town *t = Town::Create(tile);
 
 		DoCreateTown(t, tile, townnameparts, size, city, layout, false);
 

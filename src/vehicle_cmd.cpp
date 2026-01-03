@@ -1250,7 +1250,7 @@ CommandCost CmdTemplateVehicleFromTrain(DoCommandFlags flags, VehicleID veh_id)
 		TemplateVehicle *tmp = nullptr;
 		TemplateVehicle *prev = nullptr;
 		for (; clicked != nullptr; clicked = clicked->Next()) {
-			tmp = new TemplateVehicle(clicked->engine_type);
+			tmp = TemplateVehicle::Create(clicked->engine_type);
 			SetupTemplateVehicleFromVirtual(tmp, prev, clicked);
 			tmp->owner = _current_company;
 			prev = tmp;

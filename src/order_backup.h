@@ -60,11 +60,12 @@ private:
 
 	static uint update_counter;
 
+	void DoRestore(Vehicle *v);
+
+	friend OrderBackupPool::PoolItem<&_order_backup_pool>;
 	/** Creation for savegame restoration. */
 	OrderBackup() {}
 	OrderBackup(const Vehicle *v, uint32_t user);
-
-	void DoRestore(Vehicle *v);
 
 public:
 	~OrderBackup();

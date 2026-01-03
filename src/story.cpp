@@ -229,7 +229,7 @@ CommandCost CmdCreateStoryPage(DoCommandFlags flags, CompanyID company, const En
 			_story_page_next_sort_value = 0;
 		}
 
-		StoryPage *s = new StoryPage(_story_page_next_sort_value, CalTime::CurDate(), company, text);
+		StoryPage *s = StoryPage::Create(_story_page_next_sort_value, CalTime::CurDate(), company, text);
 
 		InvalidateWindowClassesData(WC_STORY_BOOK, -1);
 		if (StoryPage::GetNumItems() == 1) InvalidateWindowData(WC_MAIN_TOOLBAR, 0);
@@ -276,7 +276,7 @@ CommandCost CmdCreateStoryPageElement(DoCommandFlags flags, TileIndex tile, Stor
 			_story_page_element_next_sort_value = 0;
 		}
 
-		StoryPageElement *pe = new StoryPageElement(_story_page_element_next_sort_value, type, page_id);
+		StoryPageElement *pe = StoryPageElement::Create(_story_page_element_next_sort_value, type, page_id);
 		UpdateElement(*pe, tile, reference, text);
 
 		InvalidateWindowClassesData(WC_STORY_BOOK, page_id);

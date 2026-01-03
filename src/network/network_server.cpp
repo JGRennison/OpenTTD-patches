@@ -1030,7 +1030,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_IDENTIFY(Packet
 	}
 
 	assert(NetworkClientInfo::CanAllocateItem());
-	NetworkClientInfo *ci = new NetworkClientInfo(this->client_id);
+	NetworkClientInfo *ci = NetworkClientInfo::Create(this->client_id);
 	this->SetInfo(ci);
 	ci->join_date = EconTime::CurDate();
 	ci->join_date_fract = EconTime::CurDateFract();

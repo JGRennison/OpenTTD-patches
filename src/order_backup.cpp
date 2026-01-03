@@ -73,7 +73,7 @@ void OrderBackup::DoRestore(Vehicle *v)
 	if (this->clone != nullptr) {
 		Command<CMD_CLONE_ORDER>::Do(DoCommandFlag::Execute, CO_SHARE, v->index, this->clone->index);
 	} else if (!this->orders.empty() && OrderList::CanAllocateItem()) {
-		v->orders = new OrderList(std::move(this->orders), v);
+		v->orders = OrderList::Create(std::move(this->orders), v);
 		this->orders.clear();
 
 		v->orders->GetScheduledDispatchScheduleSet() = std::move(this->dispatch_schedules);
@@ -110,7 +110,7 @@ void OrderBackup::DoRestore(Vehicle *v)
 		if (ob->user == user) delete ob;
 	}
 	if (OrderBackup::CanAllocateItem()) {
-		new OrderBackup(v, user);
+		OrderBackup::Create(v, user);
 	}
 }
 

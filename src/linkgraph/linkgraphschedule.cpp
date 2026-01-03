@@ -80,7 +80,7 @@ void LinkGraphSchedule::SpawnNext()
 		used_budget += cost;
 		if (LinkGraphJob::CanAllocateItem()) {
 			uint duration_multiplier = CeilDivT<uint64_t>(lg->Size(), 500);
-			std::unique_ptr<LinkGraphJob> job(new LinkGraphJob(*lg, duration_multiplier));
+			std::unique_ptr<LinkGraphJob> job(LinkGraphJob::Create(*lg, duration_multiplier));
 			jobs_to_execute.emplace_back(job.get(), cost);
 			if (this->running.empty() || job->JoinTick() >= this->running.back()->JoinTick()) {
 				this->running.push_back(std::move(job));
