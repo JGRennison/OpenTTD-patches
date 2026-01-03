@@ -19,7 +19,7 @@
 
 #include "../safeguards.h"
 
-Engine *GetTempDataEngine(EngineID index);
+Engine *GetTempDataEngine(EngineID index, VehicleType type, uint16_t local_id);
 
 namespace upstream_sl {
 
@@ -68,7 +68,7 @@ struct ENGNChunkHandler : ChunkHandler {
 		 * engine pool after processing NewGRFs by CopyTempEngineData(). */
 		int index;
 		while ((index = SlIterateArray()) != -1) {
-			Engine *e = GetTempDataEngine(static_cast<EngineID>(index));
+			Engine *e = GetTempDataEngine(static_cast<EngineID>(index), VEH_INVALID, 0);
 			SlObject(e, slt);
 
 			if (IsSavegameVersionBefore(SLV_179)) {

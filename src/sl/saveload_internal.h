@@ -48,7 +48,7 @@ void ConvertOldMultiheadToNew();
 void ConnectMultiheadedTrains();
 
 void ResetTempEngineData();
-Engine *GetTempDataEngine(EngineID index);
+Engine *GetTempDataEngine(EngineID index, VehicleType type = VEH_INVALID, uint16_t local_id = 0);
 void CopyTempEngineData();
 
 void AfterLoadTemplateVehiclesUpdate();
