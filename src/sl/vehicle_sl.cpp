@@ -1445,12 +1445,12 @@ void Load_VEHS()
 		VehicleID index = static_cast<VehicleID>(idx);
 
 		switch (vtype) {
-			case VEH_TRAIN:    v = new (index) Train();           break;
-			case VEH_ROAD:     v = new (index) RoadVehicle();     break;
-			case VEH_SHIP:     v = new (index) Ship();            break;
-			case VEH_AIRCRAFT: v = new (index) Aircraft();        break;
-			case VEH_EFFECT:   v = new (index) EffectVehicle();   break;
-			case VEH_DISASTER: v = new (index) DisasterVehicle(); break;
+			case VEH_TRAIN:    v = Train::CreateAtIndex(index);           break;
+			case VEH_ROAD:     v = RoadVehicle::CreateAtIndex(index);     break;
+			case VEH_SHIP:     v = Ship::CreateAtIndex(index);            break;
+			case VEH_AIRCRAFT: v = Aircraft::CreateAtIndex(index);        break;
+			case VEH_EFFECT:   v = EffectVehicle::CreateAtIndex(index);   break;
+			case VEH_DISASTER: v = DisasterVehicle::CreateAtIndex(index); break;
 			case VEH_INVALID: // Savegame shouldn't contain invalid vehicles
 			default: SlErrorCorrupt("Invalid vehicle type");
 		}

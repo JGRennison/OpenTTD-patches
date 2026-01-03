@@ -199,7 +199,7 @@ static void Load_CAPA()
 
 	int index;
 	while ((index = SlIterateArray()) != -1) {
-		CargoPacket *cp = new (CargoPacketID(index)) CargoPacket();
+		CargoPacket *cp = CargoPacket::CreateAtIndex(CargoPacketID(index));
 		SlObjectLoadFiltered(cp, slt);
 	}
 }

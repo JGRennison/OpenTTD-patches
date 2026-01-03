@@ -73,7 +73,7 @@ static void Load_PLAN()
 	if (SlIsTableChunk()) {
 		int index;
 		while ((index = SlIterateArray()) != -1) {
-			Plan *p = new (PlanID(index)) Plan();
+			Plan *p = Plan::CreateAtIndex(PlanID(index));
 			SlObjectLoadFiltered(p, slt);
 			p->SetVisibility(false);
 		}
@@ -82,7 +82,7 @@ static void Load_PLAN()
 
 	int index;
 	while ((index = SlIterateArray()) != -1) {
-		Plan *p = new (PlanID(index)) Plan();
+		Plan *p = Plan::CreateAtIndex(PlanID(index));
 		SlObjectLoadFiltered(p, slt);
 		if (SlXvIsFeaturePresent(XSLFI_ENH_VIEWPORT_PLANS, 2)) {
 			const size_t line_count = SlReadUint32();

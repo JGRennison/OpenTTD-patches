@@ -71,7 +71,7 @@ static void Load_TMPLS()
 
 	int index;
 	while ((index = SlIterateArray()) != -1) {
-		TemplateVehicle *tv = new (TemplateID(index)) TemplateVehicle();
+		TemplateVehicle *tv = TemplateVehicle::CreateAtIndex(TemplateID(index));
 		SlObjectLoadFiltered(tv, slt);
 	}
 }

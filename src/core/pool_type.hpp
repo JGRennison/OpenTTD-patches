@@ -284,6 +284,9 @@ public:
 		/** Do not use new PoolItem, but rather PoolItem::Create. */
 		inline void *operator new(size_t) = delete;
 
+		/** Do not use new (index) PoolItem(...), but rather PoolItem::CreateAtIndex(index, ...). */
+		inline void *operator new(size_t size, Tindex index) = delete;
+
 		/**
 		 * Marks Titem as free. Its memory is released
 		 * @param p memory to free
@@ -295,19 +298,6 @@ public:
 			Titem *pn = static_cast<Titem *>(p);
 			dbg_assert_msg(pn == Tpool->Get(Pool::GetRawIndex(pn->index)), "name: {}", Tpool->name);
 			Tpool->FreeItem(Pool::GetRawIndex(pn->index));
-		}
-
-		/**
-		 * Allocates space for new Titem with given index
-		 * @param size size of Titem
-		 * @param index index of item
-		 * @return pointer to allocated memory
-		 * @note can never fail (return nullptr), use CanAllocate() to check first!
-		 * @pre index has to be unused! Else it will crash
-		 */
-		inline void *operator new(size_t size, Tindex index)
-		{
-			return NewWithParam(size, Pool::GetRawIndex(index), Tops::DefaultItemParam());
 		}
 
 		/**
@@ -342,6 +332,20 @@ public:
 		static inline T *Create(Targs &&... args)
 		{
 			void *data = Tpool->GetNew(sizeof(T), Tops::DefaultItemParam());
+			return ::new (data) T(std::forward<Targs&&>(args)...);
+		}
+
+		/**
+		 * Creates a new T-object in the associated pool.
+		 * @param index The to allocate the object at.
+		 * @param args... The arguments to the constructor.
+		 * @return The created object.
+		 */
+		template <typename T = Titem, typename... Targs>
+		requires std::is_base_of_v<Titem, T>
+		static inline T *CreateAtIndex(Tindex index, Targs &&... args)
+		{
+			void *data = Tpool->GetNew(sizeof(T), Pool::GetRawIndex(index), Tops::DefaultItemParam());
 			return ::new (data) T(std::forward<Targs&&>(args)...);
 		}
 

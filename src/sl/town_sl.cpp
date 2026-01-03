@@ -445,7 +445,7 @@ static void Load_TOWN()
 
 	int index;
 	while ((index = SlIterateArray()) != -1) {
-		Town *t = new (TownID(index)) Town();
+		Town *t = Town::CreateAtIndex(TownID(index));
 		SlObjectLoadFiltered(t, slt);
 
 		if (t->townnamegrfid == 0 && !IsInsideMM(t->townnametype, SPECSTR_TOWNNAME_START, SPECSTR_TOWNNAME_END) && GetStringTab(t->townnametype) != TEXT_TAB_OLD_CUSTOM) {

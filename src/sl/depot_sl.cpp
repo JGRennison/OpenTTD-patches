@@ -33,7 +33,7 @@ static void Load_DEPT()
 	int index;
 
 	while ((index = SlIterateArray()) != -1) {
-		Depot *depot = new (DepotID(index)) Depot();
+		Depot *depot = Depot::CreateAtIndex(DepotID(index));
 		SlObject(depot, _depot_desc);
 
 		/* Set the town 'pointer' so we can restore it later. */

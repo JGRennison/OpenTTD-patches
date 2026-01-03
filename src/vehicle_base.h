@@ -1333,22 +1333,6 @@ struct SpecializedVehicle : public Vehicle {
 
 	typedef SpecializedVehicle<T, Type> SpecializedVehicleBase; ///< Our type
 
-#if OTTD_UPPER_TAGGED_PTR
-	inline void *operator new(size_t) = delete;
-
-	inline void *operator new(size_t size, VehicleID index)
-	{
-		return Vehicle::NewWithParam(size, index.base(), Type);
-	}
-
-	inline void operator delete(void *p)
-	{
-		Vehicle::operator delete(p);
-	}
-
-	void *operator new(size_t, void *ptr) = delete;
-#endif
-
 	/**
 	 * Set vehicle type correctly
 	 */
@@ -1482,6 +1466,23 @@ struct SpecializedVehicle : public Vehicle {
 		return ::new (data) T(std::forward<Targs&&>(args)...);
 #else
 		return Vehicle::Create<T>(std::forward<Targs&&>(args)...);
+#endif
+	}
+
+	/**
+	 * Creates a new T-object in the vehicle pool.
+	 * @param index The index allocate the object at.
+	 * @param args... The arguments to the constructor.
+	 * @return The created object.
+	 */
+	template <typename... Targs>
+	static inline T *CreateAtIndex(VehicleID index, Targs &&... args)
+	{
+#if OTTD_UPPER_TAGGED_PTR
+		void *data = Vehicle::NewWithParam(sizeof(T), index.base(), Type);
+		return ::new (data) T(std::forward<Targs&&>(args)...);
+#else
+		return Vehicle::CreateAtIndex<T>(index, std::forward<Targs&&>(args)...);
 #endif
 	}
 

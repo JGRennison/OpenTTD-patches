@@ -100,7 +100,7 @@ static void Load_TRRP()
 
 	int index;
 	while ((index = SlIterateArray()) != -1) {
-		TraceRestrictProgram *prog = new (TraceRestrictProgramID(index)) TraceRestrictProgram();
+		TraceRestrictProgram *prog = TraceRestrictProgram::CreateAtIndex(TraceRestrictProgramID(index));
 		SlObjectLoadFiltered(prog, slt);
 
 		if (SlXvIsFeaturePresent(XSLFI_JOKERPP)) {
@@ -180,7 +180,7 @@ static void Load_TRRS()
 
 	int index;
 	while ((index = SlIterateArray()) != -1) {
-		TraceRestrictSlot *slot = new (TraceRestrictSlotID(index)) TraceRestrictSlot();
+		TraceRestrictSlot *slot = TraceRestrictSlot::CreateAtIndex(TraceRestrictSlotID(index));
 		SlObjectLoadFiltered(slot, slt);
 	}
 	TraceRestrictSlot::RebuildVehicleIndex();
@@ -215,7 +215,7 @@ static void Load_TRRG()
 
 	int index;
 	while ((index = SlIterateArray()) != -1) {
-		TraceRestrictSlotGroup *slot_group = new (TraceRestrictSlotGroupID(index)) TraceRestrictSlotGroup();
+		TraceRestrictSlotGroup *slot_group = TraceRestrictSlotGroup::CreateAtIndex(TraceRestrictSlotGroupID(index));
 		SlObjectLoadFiltered(slot_group, slt);
 	}
 }
@@ -249,7 +249,7 @@ static void Load_TRRC()
 
 	int index;
 	while ((index = SlIterateArray()) != -1) {
-		TraceRestrictCounter *ctr = new (TraceRestrictCounterID(index)) TraceRestrictCounter();
+		TraceRestrictCounter *ctr = TraceRestrictCounter::CreateAtIndex(TraceRestrictCounterID(index));
 		SlObjectLoadFiltered(ctr, slt);
 	}
 }

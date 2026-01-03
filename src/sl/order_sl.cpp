@@ -214,7 +214,7 @@ static void Load_ORDR()
 			SlArray(orders, len, SLE_UINT16);
 
 			for (uint32_t i = 0; i < (uint32_t)len; ++i) {
-				OrderPoolItem *o = new (OrderID(i)) OrderPoolItem();
+				OrderPoolItem *o = OrderPoolItem::CreateAtIndex(OrderID(i));
 				o->order.AssignOrder(UnpackVersion4Order(orders[i]));
 			}
 
@@ -226,7 +226,7 @@ static void Load_ORDR()
 			SlArray(orders, len, SLE_UINT32);
 
 			for (uint32_t i = 0; i < (uint32_t)len; ++i) {
-				OrderPoolItem *o = new (OrderID(i)) OrderPoolItem();
+				OrderPoolItem *o = OrderPoolItem::CreateAtIndex(OrderID(i));
 				o->order.AssignOrder(UnpackVersion5Order(orders[i]));
 			}
 
@@ -251,7 +251,7 @@ static void Load_ORDR()
 
 		int index;
 		while ((index = SlIterateArray()) != -1) {
-			OrderPoolItem *item = new (OrderID(index)) OrderPoolItem();
+			OrderPoolItem *item = OrderPoolItem::CreateAtIndex(OrderID(index));
 			SlObjectLoadFiltered(&item->order, slt);
 			item->next_ref = _order_item_ref;
 		}
@@ -589,7 +589,7 @@ static void Load_ORDL()
 	int index;
 	while ((index = SlIterateArray()) != -1) {
 		/* set num_orders to 0 so it's a valid OrderList */
-		OrderList *list = new (OrderListID(index)) OrderList();
+		OrderList *list = OrderList::CreateAtIndex(OrderListID(index));
 		SlObjectLoadFiltered(list, slt);
 		if (SlXvIsFeaturePresent(XSLFI_JOKERPP)) {
 			if (_jokerpp_separation_mode == 0) {
@@ -648,7 +648,7 @@ void Load_BKOR()
 		int index;
 		while ((index = SlIterateArray()) != -1) {
 			/* set num_orders to 0 so it's a valid OrderList */
-			OrderBackup *ob = new (OrderBackupID(index)) OrderBackup();
+			OrderBackup *ob = OrderBackup::CreateAtIndex(OrderBackupID(index));
 			SlObjectLoadFiltered(ob, slt);
 		}
 		return;
@@ -660,7 +660,7 @@ void Load_BKOR()
 	int index;
 	while ((index = SlIterateArray()) != -1) {
 		/* set num_orders to 0 so it's a valid OrderList */
-		OrderBackup *ob = new (OrderBackupID(index)) OrderBackup();
+		OrderBackup *ob = OrderBackup::CreateAtIndex(OrderBackupID(index));
 		SlObjectLoadFiltered(ob, slt);
 		if (SlXvIsFeaturePresent(XSLFI_SCHEDULED_DISPATCH, 3)) {
 			uint count = SlReadUint32();

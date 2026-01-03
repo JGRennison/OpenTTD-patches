@@ -654,13 +654,12 @@ void SetupEngines()
 	_engine_pool.CleanPool();
 
 	assert(_engine_mngr.mappings.size() >= EngineOverrideManager::NUM_DEFAULT_ENGINES);
-	[[maybe_unused]] EngineID index = EngineID::Begin();
+	EngineID index = EngineID::Begin();
 	for (const EngineIDMapping &eid : _engine_mngr.mappings) {
 		/* Assert is safe; there won't be more than 256 original vehicles
 		 * in any case, and we just cleaned the pool. */
 		assert(Engine::CanAllocateItem());
-		[[maybe_unused]] const Engine *e = Engine::Create(eid.type, eid.internal_id);
-		assert(e->index == index);
+		Engine::CreateAtIndex(index, eid.type, eid.internal_id);
 		++index;
 	}
 }

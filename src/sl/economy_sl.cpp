@@ -68,7 +68,7 @@ static void Load_CAPY()
 	int index;
 
 	while ((index = SlIterateArray()) != -1) {
-		CargoPayment *cp = new (CargoPaymentID(index)) CargoPayment();
+		CargoPayment *cp = CargoPayment::CreateAtIndex(CargoPaymentID(index));
 		SlObject(cp, _cargopayment_desc);
 	}
 }
