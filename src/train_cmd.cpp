@@ -7144,7 +7144,7 @@ Train *BuildVirtualRailVehicle(EngineID eid, StringID &error, ClientID user, boo
 
 	const RailVehicleInfo &rvi = e->VehInfo<RailVehicleInfo>();
 
-	int num_vehicles = (rvi.railveh_type == RAILVEH_MULTIHEAD ? 2 : 1) + CountArticulatedParts(eid, false);
+	uint num_vehicles = (rvi.railveh_type == RAILVEH_MULTIHEAD ? 2 : 1) + CountArticulatedParts(eid);
 	if (!Train::CanAllocateItem(num_vehicles)) {
 		error = STR_ERROR_TOO_MANY_VEHICLES_IN_GAME;
 		return nullptr;

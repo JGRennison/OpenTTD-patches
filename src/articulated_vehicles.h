@@ -14,7 +14,7 @@
 #include "engine_type.h"
 #include <vector>
 
-uint CountArticulatedParts(EngineID engine_type, bool purchase_window);
+uint CountArticulatedParts(EngineID engine_type);
 CargoArray GetCapacityOfArticulatedParts(EngineID engine, CargoType attempt_refit = INVALID_CARGO);
 CargoTypes GetCargoTypesOfArticulatedParts(EngineID engine);
 void AddArticulatedParts(Vehicle *first);
