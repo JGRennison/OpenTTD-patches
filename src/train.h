@@ -176,8 +176,7 @@ struct Train final : public GroundVehicle<Train, VEH_TRAIN> {
 	uint16_t signal_speed_restriction = 0;
 	uint16_t crash_anim_pos = 0; ///< Crash animation counter, also used for realistic braking train brake overheating
 
-	/** We don't want GCC to zero our struct! It already is zeroed and has an index! */
-	Train() : GroundVehicleBase() {}
+	Train(VehicleID index) : GroundVehicleBase(index) {}
 	/** We want to 'destruct' the right class. */
 	virtual ~Train() { this->PreDestructor(); }
 

@@ -30,9 +30,9 @@ struct Object : ObjectPool::PoolItem<&_object_pool> {
 	uint8_t view = 0;                      ///< The view setting for this object
 
 	/** Make sure the object isn't zeroed. */
-	Object() {}
-	Object(ObjectType type, Town *town, TileArea location, CalTime::Date build_date, uint8_t view) :
-		type(type), town(town), location(location), build_date(build_date), view(view) {}
+	Object(ObjectID index) : PoolItemBase(index) {}
+	Object(ObjectID index, ObjectType type, Town *town, TileArea location, CalTime::Date build_date, uint8_t view) :
+		PoolItemBase(index), type(type), town(town), location(location), build_date(build_date), view(view) {}
 	/** Make sure the right destructor is called as well! */
 	~Object() {}
 

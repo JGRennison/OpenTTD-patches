@@ -74,8 +74,8 @@ BaseStation::~BaseStation()
 	CloseStationDeparturesWindow(this->index);
 }
 
-Station::Station(TileIndex tile) :
-	SpecializedStation<Station, false>(tile),
+Station::Station(StationID index, TileIndex tile) :
+	SpecializedStation<Station, false>(index, tile),
 	bus_station(INVALID_TILE, 0, 0),
 	truck_station(INVALID_TILE, 0, 0),
 	ship_station(INVALID_TILE, 0, 0),

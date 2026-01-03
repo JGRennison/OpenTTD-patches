@@ -397,7 +397,7 @@ public:
 		return 0;
 	}
 
-	Vehicle(VehicleType type = VEH_INVALID);
+	Vehicle(VehicleID index, VehicleType type = VEH_INVALID);
 
 	void PreDestructor();
 	/** We want to 'destruct' the right class. */
@@ -1335,8 +1335,9 @@ struct SpecializedVehicle : public Vehicle {
 
 	/**
 	 * Set vehicle type correctly
+	 * @param index The index into the vehicle pool.
 	 */
-	inline SpecializedVehicle() : Vehicle(Type)
+	inline SpecializedVehicle(VehicleID index) : Vehicle(index, Type)
 	{
 		this->sprite_seq.count = 1;
 	}
@@ -1462,8 +1463,8 @@ struct SpecializedVehicle : public Vehicle {
 	static inline T *Create(Targs &&... args)
 	{
 #if OTTD_UPPER_TAGGED_PTR
-		void *data = Vehicle::NewWithParam(sizeof(T), Type);
-		return ::new (data) T(std::forward<Targs&&>(args)...);
+		auto [data, index] = Vehicle::NewWithParam(sizeof(T), Type);
+		return ::new (data) T(index, std::forward<Targs&&>(args)...);
 #else
 		return Vehicle::Create<T>(std::forward<Targs&&>(args)...);
 #endif
@@ -1480,7 +1481,7 @@ struct SpecializedVehicle : public Vehicle {
 	{
 #if OTTD_UPPER_TAGGED_PTR
 		void *data = Vehicle::NewWithParam(sizeof(T), index.base(), Type);
-		return ::new (data) T(std::forward<Targs&&>(args)...);
+		return ::new (data) T(index, std::forward<Targs&&>(args)...);
 #else
 		return Vehicle::CreateAtIndex<T>(index, std::forward<Targs&&>(args)...);
 #endif

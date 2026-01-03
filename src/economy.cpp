@@ -1406,9 +1406,11 @@ static void TriggerIndustryProduction(Industry *i)
 
 /**
  * Makes us a new cargo payment helper.
+ * @param index The index into the cargo payment pool
  * @param front The front of the train
  */
-CargoPayment::CargoPayment(Vehicle *front) :
+CargoPayment::CargoPayment(CargoPaymentID index, Vehicle *front) :
+	PoolItemBase(index),
 	current_station(front->last_station_visited),
 	front(front)
 {

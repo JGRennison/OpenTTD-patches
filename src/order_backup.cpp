@@ -39,10 +39,12 @@ OrderBackup::~OrderBackup()
 
 /**
  * Create an order backup for the given vehicle.
+ * @param index The index of the order backup pool.
  * @param v    The vehicle to make a backup of.
  * @param user The user that is requesting the backup.
  */
-OrderBackup::OrderBackup(const Vehicle *v, uint32_t user) : user(user), tile(v->tile), group(v->group_id)
+OrderBackup::OrderBackup(OrderBackupID index, const Vehicle *v, uint32_t user) :
+	PoolItemBase(index), user(user), tile(v->tile), group(v->group_id)
 {
 	this->CopyConsistPropertiesFrom(v);
 

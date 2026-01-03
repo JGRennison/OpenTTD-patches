@@ -96,8 +96,9 @@ struct GroundVehicle : public SpecializedVehicle<T, Type> {
 
 	/**
 	 * The constructor at SpecializedVehicle must be called.
+	 * @param index The index into the vehicle pool.
 	 */
-	GroundVehicle() : SpecializedVehicle<T, Type>() {}
+	GroundVehicle(VehicleID index) : SpecializedVehicle<T, Type>(index) {}
 
 	void PowerChanged();
 	void CargoChanged();

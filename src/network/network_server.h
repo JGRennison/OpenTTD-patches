@@ -101,8 +101,8 @@ public:
 	uint rcon_auth_failures = 0;
 	uint settings_auth_failures = 0;
 
-	ServerNetworkGameSocketHandler(SOCKET s);
-	~ServerNetworkGameSocketHandler();
+	ServerNetworkGameSocketHandler(ClientPoolID index, SOCKET s);
+	~ServerNetworkGameSocketHandler() override;
 
 	std::unique_ptr<Packet> ReceivePacket() override;
 	NetworkRecvStatus CloseConnection(NetworkRecvStatus status) override;

@@ -762,7 +762,7 @@ struct OrderPoolItem : OrderPool::PoolItem<&_order_pool> {
 	uint32_t next_ref = 0;
 
 	/** Make sure the item isn't zeroed. */
-	OrderPoolItem() {}
+	OrderPoolItem(OrderID index) : PoolItemBase(index) {}
 	/** Make sure the right destructor is called as well! */
 	~OrderPoolItem() {}
 };
@@ -1105,14 +1105,15 @@ private:
 
 public:
 	/** Default constructor producing an invalid order list. */
-	OrderList() {}
+	OrderList(OrderListID index) : PoolItemBase(index) {}
 
 	/**
 	 * Create an order list with the given order chain for the given vehicle.
-	 *  @param chain pointer to the first order of the order chain
-	 *  @param v any vehicle using this orderlist
+	 * @param index index of the list within the order list pool
+	 * @param chain pointer to the first order of the order chain
+	 * @param v any vehicle using this orderlist
 	 */
-	OrderList(OrderPoolItem *chain, Vehicle *v)
+	OrderList(OrderListID index, OrderPoolItem *chain, Vehicle *v) : PoolItemBase(index)
 	{
 		for (OrderPoolItem *o = chain; o != nullptr; o = o->next) {
 			this->orders.emplace_back(std::move(o->order)); // Move order contents into vector
@@ -1125,7 +1126,7 @@ public:
 	 *  @param order single order to use
 	 *  @param v any vehicle using this orderlist
 	 */
-	OrderList(Order &&order, Vehicle *v)
+	OrderList(OrderListID index, Order &&order, Vehicle *v) : PoolItemBase(index)
 	{
 		this->orders.emplace_back(std::move(order)); // Move order contents into vector
 		this->Initialize(v);
@@ -1136,7 +1137,7 @@ public:
 	 *  @param order single order to use
 	 *  @param v any vehicle using this orderlist
 	 */
-	OrderList(std::vector<Order> &&orders, Vehicle *v)
+	OrderList(OrderListID index, std::vector<Order> &&orders, Vehicle *v) : PoolItemBase(index)
 	{
 		this->orders = std::move(orders);
 		this->Initialize(v);
@@ -1144,6 +1145,8 @@ public:
 
 	/** Destructor. Invalidates OrderList for re-usage by the pool. */
 	~OrderList() {}
+
+	void CopyOrderListContents(const OrderList &other);
 
 	void Initialize(Vehicle *v);
 

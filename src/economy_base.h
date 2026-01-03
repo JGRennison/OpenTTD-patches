@@ -29,9 +29,8 @@ struct CargoPayment : CargoPaymentPool::PoolItem<&_cargo_payment_pool> {
 	Money visual_profit = 0; ///< The visual profit to show
 	Money visual_transfer = 0; ///< The transfer credits to be shown
 
-	/** Constructor for pool saveload */
-	CargoPayment() {}
-	CargoPayment(Vehicle *front);
+	CargoPayment(CargoPaymentID index) : PoolItemBase(index) {}
+	CargoPayment(CargoPaymentID index, Vehicle *front);
 	~CargoPayment();
 
 	Money PayTransfer(CargoType cargo, CargoPacket *cp, uint count, TileIndex current_tile);

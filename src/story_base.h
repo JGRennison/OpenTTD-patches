@@ -150,12 +150,9 @@ struct StoryPageElement : StoryPageElementPool::PoolItem<&_story_page_element_po
 	uint32_t referenced_id = 0;  ///< Id of referenced object (location, goal etc.)
 	EncodedString text{};        ///< Static content text of page element
 
-	/**
-	 * We need an (empty) constructor so struct isn't zeroed (as C++ standard states)
-	 */
-	StoryPageElement() { }
-	StoryPageElement(uint32_t sort_value, StoryPageElementType type, StoryPageID page) :
-		sort_value(sort_value), page(page), type(type) { }
+	StoryPageElement(StoryPageElementID index) : PoolItemBase(index) {}
+	StoryPageElement(StoryPageElementID index, uint32_t sort_value, StoryPageElementType type, StoryPageID page) :
+		PoolItemBase(index), sort_value(sort_value), page(page), type(type) {}
 
 	/**
 	 * (Empty) destructor has to be defined else operator delete might be called with nullptr parameter
@@ -174,9 +171,9 @@ struct StoryPage : StoryPagePool::PoolItem<&_story_page_pool> {
 	/**
 	 * We need an (empty) constructor so struct isn't zeroed (as C++ standard states)
 	 */
-	StoryPage() { }
-	StoryPage(uint32_t sort_value, CalTime::Date date, CompanyID company, const EncodedString &title) :
-		sort_value(sort_value), date(date), company(company), title(title) {}
+	StoryPage(StoryPageID index) : PoolItemBase(index) {}
+	StoryPage(StoryPageID index, uint32_t sort_value, CalTime::Date date, CompanyID company, const EncodedString &title) :
+		PoolItemBase(index), sort_value(sort_value), date(date), company(company), title(title) {}
 
 	~StoryPage();
 };

@@ -64,8 +64,8 @@ private:
 
 	friend OrderBackupPool::PoolItem<&_order_backup_pool>;
 	/** Creation for savegame restoration. */
-	OrderBackup() {}
-	OrderBackup(const Vehicle *v, uint32_t user);
+	OrderBackup(OrderBackupID index) : PoolItemBase(index) {}
+	OrderBackup(OrderBackupID index, const Vehicle *v, uint32_t user);
 
 public:
 	~OrderBackup();

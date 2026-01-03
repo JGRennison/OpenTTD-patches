@@ -25,8 +25,7 @@ struct Depot : DepotPool::PoolItem<&_depot_pool> {
 	TinyString name{};
 	CalTime::Date build_date{}; ///< Date of construction
 
-	Depot() {}
-	Depot(TileIndex xy) : xy(xy), build_date(CalTime::CurDate()) {}
+	Depot(DepotID index, TileIndex xy = INVALID_TILE) : PoolItemBase(index), xy(xy), build_date(CalTime::CurDate()) {}
 	~Depot();
 
 	static inline Depot *GetByTile(TileIndex tile)

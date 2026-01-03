@@ -78,7 +78,7 @@ DECLARE_ENUM_AS_BIT_SET(SpriteGroupFlags)
 /* Common wrapper for all the different sprite group types */
 struct SpriteGroup : SpriteGroupPool::PoolItem<&_spritegroup_pool> {
 protected:
-	SpriteGroup(SpriteGroupType type) : type(type) {}
+	SpriteGroup(SpriteGroupID index, SpriteGroupType type) : PoolItemBase(index), type(type) {}
 	/** Base sprite group resolver */
 	virtual const SpriteGroup *Resolve([[maybe_unused]] ResolverObject &object) const { return this; };
 
@@ -101,7 +101,7 @@ public:
  */
 template <class T>
 struct SpecializedSpriteGroup : public SpriteGroup {
-	inline SpecializedSpriteGroup() : SpriteGroup(T::TYPE) {}
+	inline SpecializedSpriteGroup(SpriteGroupID index) : SpriteGroup(index, T::TYPE) {}
 
 	/**
 	 * Creates a new T-object in the SpriteGroup pool.
@@ -122,7 +122,7 @@ struct SpecializedSpriteGroup : public SpriteGroup {
 struct RealSpriteGroup final : SpecializedSpriteGroup<RealSpriteGroup> {
 	static constexpr SpriteGroupType TYPE = SGT_REAL;
 
-	RealSpriteGroup() : SpecializedSpriteGroup<RealSpriteGroup>() {}
+	RealSpriteGroup(SpriteGroupID index) : SpecializedSpriteGroup<RealSpriteGroup>(index) {}
 
 	/* Loaded = in motion, loading = not moving
 	 * Each group contains several spritesets, for various loading stages */
@@ -513,7 +513,7 @@ DECLARE_ENUM_AS_BIT_SET(DeterministicSpriteGroupFlags)
 struct DeterministicSpriteGroup final : SpecializedSpriteGroup<DeterministicSpriteGroup> {
 	static constexpr SpriteGroupType TYPE = SGT_DETERMINISTIC;
 
-	DeterministicSpriteGroup() : SpecializedSpriteGroup<DeterministicSpriteGroup>() {}
+	DeterministicSpriteGroup(SpriteGroupID index) : SpecializedSpriteGroup<DeterministicSpriteGroup>(index) {}
 
 	VarSpriteGroupScope var_scope{};
 	VarSpriteGroupScopeOffset var_scope_count{};
@@ -547,7 +547,7 @@ enum RandomizedSpriteGroupCompareMode : uint8_t {
 struct RandomizedSpriteGroup final : SpecializedSpriteGroup<RandomizedSpriteGroup> {
 	static constexpr SpriteGroupType TYPE = SGT_RANDOMIZED;
 
-	RandomizedSpriteGroup() : SpecializedSpriteGroup<RandomizedSpriteGroup>() {}
+	RandomizedSpriteGroup(SpriteGroupID index) : SpecializedSpriteGroup<RandomizedSpriteGroup>(index) {}
 
 	VarSpriteGroupScope var_scope{};  ///< Take this object:
 	VarSpriteGroupScopeOffset var_scope_count{};
@@ -574,8 +574,12 @@ struct CallbackResultSpriteGroup final : SpecializedSpriteGroup<CallbackResultSp
 	 * Creates a spritegroup representing a callback result
 	 * @param result The result as returned from TransformResultValue
 	 */
+	CallbackResultSpriteGroup(SpriteGroupID index, uint16_t result) :
+		SpecializedSpriteGroup<CallbackResultSpriteGroup>(index),
+		result(result) {}
+
 	CallbackResultSpriteGroup(uint16_t result) :
-		SpecializedSpriteGroup<CallbackResultSpriteGroup>(),
+		SpecializedSpriteGroup<CallbackResultSpriteGroup>(SpriteGroupID::Invalid()),
 		result(result) {}
 
 	/**
@@ -601,7 +605,7 @@ struct CallbackResultSpriteGroup final : SpecializedSpriteGroup<CallbackResultSp
 struct CalculatedResultSpriteGroup final : SpriteGroup {
 	static constexpr SpriteGroupType TYPE = SGT_CALCULATED_RESULT;
 
-	CalculatedResultSpriteGroup() : SpriteGroup(SGT_CALCULATED_RESULT) {}
+	CalculatedResultSpriteGroup() : SpriteGroup(SpriteGroupID::Invalid(), SGT_CALCULATED_RESULT) {}
 };
 
 /* A result sprite group returns the first SpriteID and the number of
@@ -615,12 +619,10 @@ struct ResultSpriteGroup final : SpecializedSpriteGroup<ResultSpriteGroup> {
 	 * @param num_sprites The number of sprites per set.
 	 * @return A spritegroup representing the sprite number result.
 	 */
-	ResultSpriteGroup(SpriteID sprite, uint8_t num_sprites) :
-		SpecializedSpriteGroup<ResultSpriteGroup>(),
+	ResultSpriteGroup(SpriteGroupID index, SpriteID sprite, uint8_t num_sprites) :
+		SpecializedSpriteGroup<ResultSpriteGroup>(index),
 		num_sprites(num_sprites),
-		sprite(sprite)
-	{
-	}
+		sprite(sprite) {}
 
 	uint8_t num_sprites = 0;
 	SpriteID sprite = 0;
@@ -632,7 +634,7 @@ struct ResultSpriteGroup final : SpecializedSpriteGroup<ResultSpriteGroup> {
 struct TileLayoutSpriteGroup final : SpecializedSpriteGroup<TileLayoutSpriteGroup> {
 	static constexpr SpriteGroupType TYPE = SGT_TILELAYOUT;
 
-	TileLayoutSpriteGroup() : SpecializedSpriteGroup<TileLayoutSpriteGroup>() {}
+	TileLayoutSpriteGroup(SpriteGroupID index) : SpecializedSpriteGroup<TileLayoutSpriteGroup>(index) {}
 
 	NewGRFSpriteLayout dts{};
 
@@ -642,7 +644,7 @@ struct TileLayoutSpriteGroup final : SpecializedSpriteGroup<TileLayoutSpriteGrou
 struct IndustryProductionSpriteGroup final : SpecializedSpriteGroup<IndustryProductionSpriteGroup> {
 	static constexpr SpriteGroupType TYPE = SGT_INDUSTRY_PRODUCTION;
 
-	IndustryProductionSpriteGroup() : SpecializedSpriteGroup<IndustryProductionSpriteGroup>() {}
+	IndustryProductionSpriteGroup(SpriteGroupID index) : SpecializedSpriteGroup<IndustryProductionSpriteGroup>(index) {}
 
 	uint8_t version = 0; ///< Production callback version used, or 0xFF if marked invalid
 	uint8_t num_input = 0; ///< How many subtract_input values are valid

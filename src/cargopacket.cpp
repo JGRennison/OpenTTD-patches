@@ -103,20 +103,23 @@ std::string DumpCargoPacketDeferredPaymentStats()
 
 /**
  * Create a new packet for savegame loading.
+ * @param index Index into the cargo packet pool.
  */
-CargoPacket::CargoPacket()
+CargoPacket::CargoPacket(CargoPacketID index) : PoolItemBase(index)
 {
 }
 
 /**
  * Creates a new cargo packet.
  *
+ * @param index Index into the cargo packet pool.
  * @param first_station Source station of the packet.
  * @param count         Number of cargo entities to put in this packet.
  * @param source        Source of the packet (for subsidies).
  * @pre count != 0
  */
-CargoPacket::CargoPacket(StationID first_station,uint16_t count, Source source) :
+CargoPacket::CargoPacket(CargoPacketID index, StationID first_station,uint16_t count, Source source) :
+		PoolItemBase(index),
 		count(count),
 		source(source),
 		first_station(first_station)
@@ -127,13 +130,15 @@ CargoPacket::CargoPacket(StationID first_station,uint16_t count, Source source) 
 /**
  * Create a new cargo packet. Used for older savegames to load in their partial data.
  *
+ * @param index Index into the cargo packet pool.
  * @param count              Number of cargo entities to put in this packet.
  * @param periods_in_transit Number of cargo aging periods the cargo has been in transit.
  * @param first_station      Station the cargo was initially loaded.
  * @param source_xy          Station location the cargo was initially loaded.
  * @param feeder_share       Feeder share the packet has already accumulated.
  */
-CargoPacket::CargoPacket(uint16_t count, uint16_t periods_in_transit, StationID first_station, TileIndex source_xy, Money feeder_share) :
+CargoPacket::CargoPacket(CargoPacketID index, uint16_t count, uint16_t periods_in_transit, StationID first_station, TileIndex source_xy, Money feeder_share) :
+		PoolItemBase(index),
 		count(count),
 		periods_in_transit(periods_in_transit),
 		feeder_share(feeder_share),
@@ -146,11 +151,13 @@ CargoPacket::CargoPacket(uint16_t count, uint16_t periods_in_transit, StationID 
 /**
  * Creates a new cargo packet. Used when loading or splitting packets.
  *
+ * @param index Index into the cargo packet pool.
  * @param count         Number of cargo entities to put in this packet.
  * @param feeder_share  Feeder share the packet has already accumulated.
  * @param original      The original packet we are splitting.
  */
-CargoPacket::CargoPacket(uint16_t count, Money feeder_share, const CargoPacket &original) :
+CargoPacket::CargoPacket(CargoPacketID index, uint16_t count, Money feeder_share, const CargoPacket &original) :
+		PoolItemBase(index),
 		count(count),
 		periods_in_transit(original.periods_in_transit),
 		feeder_share(feeder_share),

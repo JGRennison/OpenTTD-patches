@@ -121,9 +121,9 @@ public:
 	TemplateVehicleImageDimensions image_dimensions{}; ///< NOSAVE: image dimensions
 	SpriteID colourmap{};                              ///< NOSAVE: cached colour mapping
 
-	TemplateVehicle(VehicleType type = VEH_INVALID, EngineID e = EngineID::Invalid(), Owner = _local_company);
+	TemplateVehicle(TemplateID index, VehicleType type = VEH_INVALID, EngineID e = EngineID::Invalid(), Owner = _local_company);
 
-	TemplateVehicle(EngineID eid) : first(this), engine_type(eid)
+	TemplateVehicle(TemplateID index, EngineID eid) : PoolItemBase(index), first(this), engine_type(eid)
 	{
 		this->sprite_seq.count = 1;
 	}

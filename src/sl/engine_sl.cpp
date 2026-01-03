@@ -27,10 +27,10 @@ static TypedIndexContainer<std::vector<Engine *>, EngineID> _temp_engine;
  * The allocated Engine must be freed using FreeEngine;
  * @return Allocated engine.
  */
-static Engine *CallocEngine()
+static Engine *CallocEngine(EngineID index)
 {
 	uint8_t *zero = CallocT<uint8_t>(sizeof(Engine));
-	Engine *engine = new (zero) Engine();
+	Engine *engine = new (zero) Engine(index);
 	return engine;
 }
 
@@ -51,7 +51,7 @@ Engine *GetTempDataEngine(EngineID index)
 	if (index < _temp_engine.size()) {
 		return _temp_engine[index];
 	} else if (index == _temp_engine.size()) {
-		_temp_engine.push_back(CallocEngine());
+		_temp_engine.push_back(CallocEngine(index));
 		return _temp_engine[index];
 	} else {
 		NOT_REACHED();

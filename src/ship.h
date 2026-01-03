@@ -40,8 +40,7 @@ struct Ship final : public SpecializedVehicle<Ship, VEH_SHIP> {
 	uint8_t lost_count = 0;               ///< Count of number of failed pathfinder attempts
 	uint8_t critical_breakdown_count = 0; ///< Counter for the number of critical breakdowns since last service
 
-	/** We don't want GCC to zero our struct! It already is zeroed and has an index! */
-	Ship() : SpecializedVehicleBase() {}
+	Ship(VehicleID index) : SpecializedVehicleBase(index) {}
 	/** We want to 'destruct' the right class. */
 	virtual ~Ship() { this->PreDestructor(); }
 

@@ -26,10 +26,11 @@ struct Tunnel : TunnelPool::PoolItem<&_tunnel_pool> {
 	uint8_t style_n = 0;             ///< Style (new signals) of north tile of tunnel.
 	uint8_t style_s = 0;             ///< Style (new signals) of south tile of tunnel.
 
-	Tunnel() {}
+	Tunnel(TunnelID index) : PoolItemBase(index) {}
 	~Tunnel();
 
-	Tunnel(TileIndex tile_n, TileIndex tile_s, uint8_t height, bool is_chunnel) : tile_n(tile_n), tile_s(tile_s), height(height), is_chunnel(is_chunnel)
+	Tunnel(TunnelID index, TileIndex tile_n, TileIndex tile_s, uint8_t height, bool is_chunnel) :
+		PoolItemBase(index), tile_n(tile_n), tile_s(tile_s), height(height), is_chunnel(is_chunnel)
 	{
 		this->UpdateIndexes();
 	}

@@ -482,6 +482,18 @@ void CargoStationIDVectorSet::FillNextStoppingStation(const Vehicle *v, const Or
 	}
 }
 
+void OrderList::CopyOrderListContents(const OrderList &other)
+{
+	this->orders = other.orders;
+	this->route_overlay_colour = other.route_overlay_colour;
+	this->num_manual_orders = other.num_manual_orders;
+	this->num_vehicles = other.num_vehicles;
+	this->first_shared = other.first_shared;
+	this->timetable_duration = other.timetable_duration;
+	this->total_duration = other.total_duration;
+	this->dispatch_schedules = other.dispatch_schedules;
+}
+
 /**
  * Recomputes everything.
  * @param v one of vehicle that is using this orderlist

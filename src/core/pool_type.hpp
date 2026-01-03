@@ -28,6 +28,9 @@ static constexpr PoolTypes PT_ALL = {PoolType::Normal, PoolType::NetworkClient, 
 
 typedef std::vector<struct PoolBase *> PoolVector; ///< Vector of pointers to PoolBase
 
+template <typename Tindex>
+using AllocationResult = std::pair<void *, Tindex>;
+
 /** Base class for base of all pools. */
 struct PoolBase {
 	const PoolType type; ///< Type of this pool.
@@ -95,6 +98,7 @@ requires std::is_base_of_v<PoolIDBase, Tindex>
 struct Pool : PoolBase {
 	using ParamType = typename Tops::Tparam_type;
 	using PtrType = typename Tops::Tptr;
+	using IndexType = Tindex;
 
 private:
 	/** Some helper functions to get the maximum value of the provided index. */
@@ -264,13 +268,21 @@ public:
 	 */
 	template <struct Pool<Titem, Tindex, Tgrowth_step, Tpool_type, Tcache, Tops> *Tpool>
 	struct PoolItem {
-		Tindex index; ///< Index of this pool item
+		using PoolItemBase = PoolItem<Tpool>;
+
+		const Tindex index; ///< Index of this pool item
+
+		/**
+		 * Construct the item.
+		 * @param index The index of this PoolItem in the pool.
+		 */
+		PoolItem(Tindex index) : index(index) {}
 
 		/** Type of the pool this item is going to be part of */
 		typedef struct Pool<Titem, Tindex, Tgrowth_step, Tpool_type, Tcache, Tops> Pool;
 
 protected:
-		static inline void *NewWithParam(size_t size, ParamType param)
+		static inline AllocationResult<Tindex> NewWithParam(size_t size, ParamType param)
 		{
 			return Tpool->GetNew(size, param);
 		}
@@ -278,6 +290,12 @@ protected:
 		static inline void *NewWithParam(size_t size, size_t index, ParamType param)
 		{
 			return Tpool->GetNew(size, index, param);
+		}
+
+		static inline Tindex AsIndexType(size_t index)
+		{
+			/* MSVC complains about casting to narrower type, so first cast to the base type... then to the strong type. */
+			static_cast<Tindex>(static_cast<Tindex::BaseType>(index));
 		}
 
 public:
@@ -331,8 +349,8 @@ public:
 		requires std::is_base_of_v<Titem, T>
 		static inline T *Create(Targs &&... args)
 		{
-			void *data = Tpool->GetNew(sizeof(T), Tops::DefaultItemParam());
-			return ::new (data) T(std::forward<Targs&&>(args)...);
+			auto [data, index] = Tpool->GetNew(sizeof(T), Tops::DefaultItemParam());
+			return ::new (data) T(index, std::forward<Targs&&>(args)...);
 		}
 
 		/**
@@ -346,7 +364,7 @@ public:
 		static inline T *CreateAtIndex(Tindex index, Targs &&... args)
 		{
 			void *data = Tpool->GetNew(sizeof(T), Pool::GetRawIndex(index), Tops::DefaultItemParam());
-			return ::new (data) T(std::forward<Targs&&>(args)...);
+			return ::new (data) T(index, std::forward<Targs&&>(args)...);
 		}
 
 		/** Helper functions so we can use PoolItem::Function() instead of _poolitem_pool.Function() */
@@ -464,7 +482,7 @@ private:
 	void ResizeFor(size_t index);
 	size_t FindFirstFree();
 
-	void *GetNew(size_t size, ParamType param);
+	AllocationResult<Tindex> GetNew(size_t size, ParamType param);
 	void *GetNew(size_t size, size_t index, ParamType param);
 
 	void FreeItem(size_t index);

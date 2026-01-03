@@ -30,8 +30,9 @@ struct Subsidy : SubsidyPool::PoolItem<&_subsidy_pool> {
 	/**
 	 * We need an (empty) constructor so struct isn't zeroed (as C++ standard states)
 	 */
-	Subsidy() {}
-	Subsidy(CargoType cargo_type, Source src, Source dst, uint16_t remaining) : cargo_type(cargo_type), remaining(remaining), src(src), dst(dst) {}
+	Subsidy(SubsidyID index) : PoolItemBase(index) {}
+	Subsidy(SubsidyID index, CargoType cargo_type, Source src, Source dst, uint16_t remaining) :
+		PoolItemBase(index), cargo_type(cargo_type), remaining(remaining), src(src), dst(dst) {}
 
 	/**
 	 * (Empty) destructor has to be defined else operator delete might be called with nullptr parameter

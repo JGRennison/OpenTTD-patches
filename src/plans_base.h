@@ -154,7 +154,7 @@ struct Plan : PlanPool::PoolItem<&_plan_pool> { // todo
 	bool visible_by_all = false;
 	bool show_lines = false;
 
-	Plan(Owner owner = INVALID_OWNER) : owner(owner), creation_date(CalTime::CurDate()) {}
+	Plan(PlanID index, Owner owner = INVALID_OWNER) : PoolItemBase(index), owner(owner), creation_date(CalTime::CurDate()) {}
 
 	void SetFocus(bool focused)
 	{

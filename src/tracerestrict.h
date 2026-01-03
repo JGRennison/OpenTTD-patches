@@ -948,12 +948,12 @@ public:
 	/**
 	 * We need an (empty) constructor so struct isn't zeroed (as C++ standard states)
 	 */
-	TraceRestrictProgram() { }
+	TraceRestrictProgram(TraceRestrictProgramID index) : PoolItemBase(index) {}
 
 	/**
 	 * (Empty) destructor has to be defined else operator delete might be called with nullptr parameter
 	 */
-	~TraceRestrictProgram() { }
+	~TraceRestrictProgram() {}
 
 	/**
 	 * Increment ref count, only use when creating a mapping
@@ -1429,7 +1429,8 @@ struct TraceRestrictSlot : TraceRestrictSlotPool::PoolItem<&_tracerestrictslot_p
 	static void ValidateSlotGroupDescendants(std::function<void(std::string_view)> log);
 	static void PreCleanPool();
 
-	TraceRestrictSlot(CompanyID owner = CompanyID::Invalid(), VehicleType type = VEH_TRAIN) : owner(owner), vehicle_type(type) {}
+	TraceRestrictSlot(TraceRestrictSlotID index, CompanyID owner = CompanyID::Invalid(), VehicleType type = VEH_TRAIN) :
+		PoolItemBase(index), owner(owner), vehicle_type(type) {}
 
 	~TraceRestrictSlot()
 	{
@@ -1517,7 +1518,8 @@ struct TraceRestrictSlotGroup : TraceRestrictSlotGroupPool::PoolItem<&_tracerest
 	ankerl::svector<TraceRestrictSlotID, 8> contained_slots; ///< NOSAVE: slots directly and indirectly contained in this slot group, sorted
 	bool folded = false;        ///< NOSAVE: Is this slot group folded in the slot view?
 
-	TraceRestrictSlotGroup(CompanyID owner = CompanyID::Invalid(), VehicleType type = VEH_TRAIN) : owner(owner), vehicle_type(type), parent(INVALID_TRACE_RESTRICT_SLOT_GROUP) {}
+	TraceRestrictSlotGroup(TraceRestrictSlotGroupID index, CompanyID owner = CompanyID::Invalid(), VehicleType type = VEH_TRAIN) :
+		PoolItemBase(index), owner(owner), vehicle_type(type), parent(INVALID_TRACE_RESTRICT_SLOT_GROUP) {}
 
 	void AddSlotsToParentGroups();
 	void RemoveSlotsFromParentGroups();
@@ -1540,7 +1542,7 @@ struct TraceRestrictCounter : TraceRestrictCounterPool::PoolItem<&_tracerestrict
 	std::string name;
 	ankerl::svector<SignalReference, 0> progsig_dependants;
 
-	TraceRestrictCounter(CompanyID owner = CompanyID::Invalid()) : owner(owner) {}
+	TraceRestrictCounter(TraceRestrictCounterID index, CompanyID owner = CompanyID::Invalid()) : PoolItemBase(index), owner(owner) {}
 
 	void UpdateValue(int32_t new_value);
 

@@ -69,7 +69,8 @@ void TemplateVehicleImageDimensions::SetFromTrain(const Train *t)
 	}
 }
 
-TemplateVehicle::TemplateVehicle(VehicleType type, EngineID eid, Owner current_owner) : BaseVehicle(type), first(this), owner(current_owner), engine_type(eid)
+TemplateVehicle::TemplateVehicle(TemplateID index, VehicleType type, EngineID eid, Owner current_owner) :
+	PoolItemBase(index), BaseVehicle(type), first(this), owner(current_owner), engine_type(eid)
 {
 	this->sprite_seq.Set(SPR_IMG_QUERY);
 }

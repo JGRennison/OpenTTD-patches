@@ -106,17 +106,16 @@ DEFINE_POOL_METHOD(inline void *)::AllocateItem(size_t size, size_t index, Pool:
 	this->data[index] = Tops::PutPtr(item, param);
 	SetBit(this->free_bitmap[index / 64], index % 64);
 	/* MSVC complains about casting to narrower type, so first cast to the base type... then to the strong type. */
-	item->index = static_cast<Tindex>(static_cast<Tindex::BaseType>(index));
 	return item;
 }
 
 /**
  * Allocates new item
  * @param size size of item
- * @return pointer to allocated item
+ * @return pointer to allocated item and the index of said item.
  * @note FatalError() on failure! (no free item)
  */
-DEFINE_POOL_METHOD(void *)::GetNew(size_t size, Pool::ParamType param)
+DEFINE_POOL_METHOD(AllocationResult<Tindex>)::GetNew(size_t size, Pool::ParamType param)
 {
 	size_t index = this->FindFirstFree();
 
@@ -130,7 +129,7 @@ DEFINE_POOL_METHOD(void *)::GetNew(size_t size, Pool::ParamType param)
 	}
 
 	this->first_free = index + 1;
-	return this->AllocateItem(size, index, param);
+	return { this->AllocateItem(size, index, param), static_cast<Tindex>(static_cast<Tindex::BaseType>(index)) };
 }
 
 /**
@@ -217,7 +216,7 @@ DEFINE_POOL_METHOD(void)::CleanPool()
  * forcefully instantiated.
  */
 #define INSTANTIATE_POOL_METHODS(name) \
-	template void * name ## Pool::GetNew(size_t size, name ## Pool::ParamType param); \
+	template AllocationResult<name ## Pool::IndexType> name ## Pool::GetNew(size_t size, name ## Pool::ParamType param); \
 	template void * name ## Pool::GetNew(size_t size, size_t index, name ## Pool::ParamType param); \
 	template void name ## Pool::FreeItem(size_t index); \
 	template void name ## Pool::CleanPool();
