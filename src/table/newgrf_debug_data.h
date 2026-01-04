@@ -510,14 +510,16 @@ class NIHVehicle : public NIHelper {
 		if (show_engine) {
 			const Engine *e = Engine::GetIfValid(v->engine_type);
 			output.buffer.format("  Engine: {}", v->engine_type);
-			if (e->grf_prop.grffile != nullptr) {
-				output.buffer.format(" (local ID: {})", e->grf_prop.local_id);
-			}
-			if (e->info.variant_id != EngineID::Invalid()) {
-				output.buffer.format(", variant of: {}", e->info.variant_id);
-				const Engine *variant_e = Engine::GetIfValid(e->info.variant_id);
-				if (variant_e->grf_prop.grffile != nullptr) {
-					output.buffer.format(" (local ID: {})", variant_e->grf_prop.local_id);
+			if (e != nullptr) {
+				if (e->grf_prop.grffile != nullptr) {
+					output.buffer.format(" (local ID: {})", e->grf_prop.local_id);
+				}
+				if (e->info.variant_id != EngineID::Invalid()) {
+					output.buffer.format(", variant of: {}", e->info.variant_id);
+					const Engine *variant_e = Engine::GetIfValid(e->info.variant_id);
+					if (variant_e->grf_prop.grffile != nullptr) {
+						output.buffer.format(" (local ID: {})", variant_e->grf_prop.local_id);
+					}
 				}
 			}
 			output.FinishPrint();
