@@ -595,6 +595,23 @@ class NIHVehicle : public NIHelper {
 				output.Print("    Company availability: {:X}, climates: {:X}",
 						e->company_avail, e->info.climates);
 
+				{
+					output.buffer.format("    Engine Flags:");
+					bool have_output = false;
+					auto print_bit = [&](EngineFlag bit, const char *name) {
+						if (e->flags.Test(bit)) {
+							if (have_output) output.buffer.push_back(',');
+							output.buffer.push_back(' ');
+							output.buffer.append(name);
+							have_output = true;
+						}
+					};
+					print_bit(EngineFlag::Available,                "Available");
+					print_bit(EngineFlag::ExclusivePreview,         "ExclusivePreview");
+					if (!have_output) output.buffer.append("[NONE]");
+					output.FinishPrint();
+				}
+
 				output.register_next_line_click_flag_toggle(2 << flag_shift);
 				if (output.flags & (2 << flag_shift)) {
 					output.Print("    [-] Engine Misc Flags:\n");
