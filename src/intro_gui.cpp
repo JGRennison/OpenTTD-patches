@@ -252,10 +252,12 @@ struct IntroViewportCommandsHandler {
 	}
 };
 
+void ShowSelectGameWindow(std::unique_ptr<IntroViewportCommandsHandler> intro_command_handler);
+
 struct SelectGameWindow : public Window {
 	std::unique_ptr<IntroViewportCommandsHandler> intro_command_handler;
 
-	SelectGameWindow(WindowDesc &desc, std::unique_ptr<IntroViewportCommandsHandler> intro_command_handler = {}) : Window(desc), intro_command_handler(std::move(intro_command_handler))
+	SelectGameWindow(WindowDesc &desc, std::unique_ptr<IntroViewportCommandsHandler> intro_command_handler) : Window(desc), intro_command_handler(std::move(intro_command_handler))
 	{
 		this->CreateNestedTree();
 		this->FinishInitNested(0);
@@ -282,6 +284,11 @@ struct SelectGameWindow : public Window {
 		this->SetWidgetLoweredState(WID_SGI_ARCTIC_LANDSCAPE,    _settings_newgame.game_creation.landscape == LandscapeType::Arctic);
 		this->SetWidgetLoweredState(WID_SGI_TROPIC_LANDSCAPE,    _settings_newgame.game_creation.landscape == LandscapeType::Tropic);
 		this->SetWidgetLoweredState(WID_SGI_TOYLAND_LANDSCAPE,   _settings_newgame.game_creation.landscape == LandscapeType::Toyland);
+
+		if (_settings_client.gui.traditional_intro_menu) {
+			this->Close();
+			ShowSelectGameWindow(std::move(this->intro_command_handler));
+		}
 	}
 
 	void OnInit() override
@@ -468,9 +475,240 @@ static WindowDesc _select_game_desc(__FILE__, __LINE__,
 	_nested_select_game_widgets
 );
 
+struct TraditionalSelectGameWindow : public Window {
+	std::unique_ptr<IntroViewportCommandsHandler> intro_command_handler;
+
+	TraditionalSelectGameWindow(WindowDesc &desc, std::unique_ptr<IntroViewportCommandsHandler> intro_command_handler) : Window(desc), intro_command_handler(std::move(intro_command_handler))
+	{
+		this->CreateNestedTree();
+		this->FinishInitNested(0);
+		this->OnInvalidateData();
+
+		if (!this->intro_command_handler) this->intro_command_handler = std::make_unique<IntroViewportCommandsHandler>();
+	}
+
+	void OnRealtimeTick(uint delta_ms) override
+	{
+		/* Move the main game viewport according to intro viewport commands. */
+		if (this->intro_command_handler) this->intro_command_handler->OnRealtimeTick(delta_ms);
+	}
+
+	/**
+	 * Some data on this window has become invalid.
+	 * @param data Information about the changed data.
+	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
+	 */
+	void OnInvalidateData([[maybe_unused]] int data = 0, [[maybe_unused]] bool gui_scope = true) override
+	{
+		if (!gui_scope) return;
+		this->SetWidgetLoweredState(WID_SGI_TEMPERATE_LANDSCAPE, _settings_newgame.game_creation.landscape == LandscapeType::Temperate);
+		this->SetWidgetLoweredState(WID_SGI_ARCTIC_LANDSCAPE,    _settings_newgame.game_creation.landscape == LandscapeType::Arctic);
+		this->SetWidgetLoweredState(WID_SGI_TROPIC_LANDSCAPE,    _settings_newgame.game_creation.landscape == LandscapeType::Tropic);
+		this->SetWidgetLoweredState(WID_SGI_TOYLAND_LANDSCAPE,   _settings_newgame.game_creation.landscape == LandscapeType::Toyland);
+
+		if (!_settings_client.gui.traditional_intro_menu) {
+			this->Close();
+			ShowSelectGameWindow(std::move(this->intro_command_handler));
+		}
+	}
+
+	void OnInit() override
+	{
+		const bool disable_missing = true;
+
+		bool missing_sprites = _missing_extra_graphics > 0 && !disable_missing;
+		this->GetWidget<NWidgetStacked>(WID_SGI_BASESET_SELECTION)->SetDisplayedPlane(missing_sprites ? 0 : SZSP_NONE);
+
+		bool missing_lang = _current_language->missing >= _settings_client.gui.missing_strings_threshold && !disable_missing;
+		this->GetWidget<NWidgetStacked>(WID_SGI_TRANSLATION_SELECTION)->SetDisplayedPlane(missing_lang ? 0 : SZSP_NONE);
+	}
+
+	void DrawWidget(const Rect &r, WidgetID widget) const override
+	{
+		switch (widget) {
+			case WID_SGI_BASESET:
+				DrawStringMultiLine(r, GetString(STR_INTRO_BASESET, _missing_extra_graphics), TC_FROMSTRING, SA_CENTER);
+				break;
+
+			case WID_SGI_TRANSLATION:
+				DrawStringMultiLine(r, GetString(STR_INTRO_TRANSLATION, _current_language->missing), TC_FROMSTRING, SA_CENTER);
+				break;
+		}
+	}
+
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
+	{
+		switch (widget) {
+			case WID_SGI_TEMPERATE_LANDSCAPE: case WID_SGI_ARCTIC_LANDSCAPE:
+			case WID_SGI_TROPIC_LANDSCAPE: case WID_SGI_TOYLAND_LANDSCAPE:
+				size.width += WidgetDimensions::scaled.fullbevel.Horizontal();
+				size.height += WidgetDimensions::scaled.fullbevel.Vertical();
+				break;
+		}
+	}
+
+	void OnResize() override
+	{
+		bool changed = false;
+
+		if (NWidgetResizeBase *wid = this->GetWidget<NWidgetResizeBase>(WID_SGI_BASESET); wid != nullptr && wid->current_x > 0) {
+			changed |= wid->UpdateMultilineWidgetSize(GetString(STR_INTRO_BASESET, _missing_extra_graphics), 3);
+		}
+
+		if (NWidgetResizeBase *wid = this->GetWidget<NWidgetResizeBase>(WID_SGI_TRANSLATION); wid != nullptr && wid->current_x > 0) {
+			changed |= wid->UpdateMultilineWidgetSize(GetString(STR_INTRO_TRANSLATION, _current_language->missing), 3);
+		}
+
+		if (changed) this->ReInit(0, 0, this->flags.Test(WindowFlag::Centred));
+	}
+
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
+	{
+		/* Do not create a network server when you (just) have closed one of the game
+		 * creation/load windows for the network server. */
+		if (IsInsideMM(widget, WID_SGI_GENERATE_GAME, WID_SGI_EDIT_SCENARIO + 1)) _is_network_server = false;
+
+		switch (widget) {
+			case WID_SGI_GENERATE_GAME:
+				if (_ctrl_pressed) {
+					StartNewGameWithoutGUI(GENERATE_NEW_SEED);
+				} else {
+					ShowGenerateLandscape();
+				}
+				break;
+
+			case WID_SGI_LOAD_GAME:      ShowSaveLoadDialog(FT_SAVEGAME, SLO_LOAD); break;
+			case WID_SGI_PLAY_SCENARIO:  ShowSaveLoadDialog(FT_SCENARIO, SLO_LOAD); break;
+			case WID_SGI_PLAY_HEIGHTMAP: ShowSaveLoadDialog(FT_HEIGHTMAP,SLO_LOAD); break;
+			case WID_SGI_EDIT_SCENARIO:  StartScenarioEditor(); break;
+
+			case WID_SGI_PLAY_NETWORK:
+				if (!_network_available) {
+					ShowErrorMessage(GetEncodedString(STR_NETWORK_ERROR_NOTAVAILABLE), {}, WL_ERROR);
+				} else {
+					ShowNetworkGameWindow();
+				}
+				break;
+
+			case WID_SGI_TEMPERATE_LANDSCAPE: case WID_SGI_ARCTIC_LANDSCAPE:
+			case WID_SGI_TROPIC_LANDSCAPE: case WID_SGI_TOYLAND_LANDSCAPE:
+				SetNewLandscapeType(LandscapeType(widget - WID_SGI_TEMPERATE_LANDSCAPE));
+				break;
+
+			case WID_SGI_OPTIONS:         ShowGameOptions(); break;
+			case WID_SGI_HIGHSCORE:       ShowHighscoreTable(); break;
+			case WID_SGI_HELP:            ShowHelpWindow(); break;
+			case WID_SGI_GRF_SETTINGS:    ShowNewGRFSettings(true, true, false, _grfconfig_newgame); break;
+			case WID_SGI_CONTENT_DOWNLOAD:
+				if (!_network_available) {
+					ShowErrorMessage(GetEncodedString(STR_NETWORK_ERROR_NOTAVAILABLE), {}, WL_ERROR);
+				} else {
+					ShowNetworkContentListWindow();
+				}
+				break;
+			case WID_SGI_AI_SETTINGS:     ShowAIConfigWindow(); break;
+			case WID_SGI_GS_SETTINGS:     ShowGSConfigWindow(); break;
+			case WID_SGI_EXIT:            HandleExitGameRequest(); break;
+		}
+	}
+};
+
+static constexpr NWidgetPart _nested_traditional_select_game_widgets[] = {
+	NWidget(WWT_CAPTION, COLOUR_BROWN), SetStringTip(STR_INTRO_CAPTION),
+	NWidget(WWT_PANEL, COLOUR_BROWN),
+		NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_wide, 0), SetPadding(WidgetDimensions::unscaled.sparse),
+
+			NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_sparse, 0),
+				/* 'New Game' and 'Load Game' buttons */
+				NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_ORANGE, WID_SGI_GENERATE_GAME), SetStringTip(STR_INTRO_NEW_GAME, STR_INTRO_TOOLTIP_NEW_GAME), SetFill(1, 0),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_ORANGE, WID_SGI_LOAD_GAME), SetStringTip(STR_INTRO_LOAD_GAME, STR_INTRO_TOOLTIP_LOAD_GAME), SetFill(1, 0),
+				EndContainer(),
+
+				/* 'Play Scenario' and 'Play Heightmap' buttons */
+				NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_ORANGE, WID_SGI_PLAY_SCENARIO), SetStringTip(STR_INTRO_PLAY_SCENARIO, STR_INTRO_TOOLTIP_PLAY_SCENARIO), SetFill(1, 0),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_ORANGE, WID_SGI_PLAY_HEIGHTMAP), SetStringTip(STR_INTRO_PLAY_HEIGHTMAP, STR_INTRO_TOOLTIP_PLAY_HEIGHTMAP), SetFill(1, 0),
+				EndContainer(),
+
+				/* 'Scenario Editor' and 'Multiplayer' buttons */
+				NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_ORANGE, WID_SGI_EDIT_SCENARIO), SetStringTip(STR_INTRO_SCENARIO_EDITOR, STR_INTRO_TOOLTIP_SCENARIO_EDITOR), SetFill(1, 0),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_ORANGE, WID_SGI_PLAY_NETWORK), SetStringTip(STR_INTRO_MULTIPLAYER, STR_INTRO_TOOLTIP_MULTIPLAYER), SetFill(1, 0),
+				EndContainer(),
+			EndContainer(),
+
+			/* Climate selection buttons */
+			NWidget(NWID_HORIZONTAL), SetPIP(0, WidgetDimensions::unscaled.hsep_wide, 0), SetPIPRatio(1, 1, 1),
+				NWidget(WWT_IMGBTN_2, COLOUR_ORANGE, WID_SGI_TEMPERATE_LANDSCAPE), SetSpriteTip(SPR_SELECT_TEMPERATE, STR_INTRO_TOOLTIP_TEMPERATE),
+				NWidget(WWT_IMGBTN_2, COLOUR_ORANGE, WID_SGI_ARCTIC_LANDSCAPE), SetSpriteTip(SPR_SELECT_SUB_ARCTIC, STR_INTRO_TOOLTIP_SUB_ARCTIC_LANDSCAPE),
+				NWidget(WWT_IMGBTN_2, COLOUR_ORANGE, WID_SGI_TROPIC_LANDSCAPE), SetSpriteTip(SPR_SELECT_SUB_TROPICAL, STR_INTRO_TOOLTIP_SUB_TROPICAL_LANDSCAPE),
+				NWidget(WWT_IMGBTN_2, COLOUR_ORANGE, WID_SGI_TOYLAND_LANDSCAPE), SetSpriteTip(SPR_SELECT_TOYLAND, STR_INTRO_TOOLTIP_TOYLAND_LANDSCAPE),
+			EndContainer(),
+
+			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_SGI_BASESET_SELECTION),
+				NWidget(NWID_VERTICAL),
+					NWidget(WWT_EMPTY, INVALID_COLOUR, WID_SGI_BASESET), SetFill(1, 0),
+				EndContainer(),
+			EndContainer(),
+
+			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_SGI_TRANSLATION_SELECTION),
+				NWidget(NWID_VERTICAL),
+					NWidget(WWT_EMPTY, INVALID_COLOUR, WID_SGI_TRANSLATION), SetFill(1, 0),
+				EndContainer(),
+			EndContainer(),
+
+			NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_sparse, 0),
+				/* 'Game Options' and 'Settings' buttons */
+				NWidget(WWT_PUSHTXTBTN, COLOUR_ORANGE, WID_SGI_OPTIONS), SetStringTip(STR_INTRO_GAME_OPTIONS, STR_INTRO_TOOLTIP_GAME_OPTIONS), SetFill(1, 0),
+
+				/* 'AI Settings' and 'Game Script Settings' buttons */
+				NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_ORANGE, WID_SGI_AI_SETTINGS), SetStringTip(STR_INTRO_AI_SETTINGS, STR_INTRO_TOOLTIP_AI_SETTINGS), SetFill(1, 0),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_ORANGE, WID_SGI_GS_SETTINGS), SetStringTip(STR_INTRO_GAMESCRIPT_SETTINGS, STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS), SetFill(1, 0),
+				EndContainer(),
+
+				/* 'Check Online Content' and 'NewGRF Settings' buttons */
+				NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_ORANGE, WID_SGI_CONTENT_DOWNLOAD), SetStringTip(STR_INTRO_ONLINE_CONTENT, STR_INTRO_TOOLTIP_ONLINE_CONTENT), SetFill(1, 0),
+					NWidget(WWT_PUSHTXTBTN, COLOUR_ORANGE, WID_SGI_GRF_SETTINGS), SetStringTip(STR_INTRO_NEWGRF_SETTINGS, STR_INTRO_TOOLTIP_NEWGRF_SETTINGS), SetFill(1, 0),
+				EndContainer(),
+			EndContainer(),
+
+			/* 'Help and Manuals' and 'Highscore Table' buttons */
+			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_ORANGE, WID_SGI_HELP), SetStringTip(STR_INTRO_HELP, STR_INTRO_TOOLTIP_HELP), SetFill(1, 0),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_ORANGE, WID_SGI_HIGHSCORE), SetStringTip(STR_INTRO_HIGHSCORE, STR_INTRO_TOOLTIP_HIGHSCORE), SetFill(1, 0),
+			EndContainer(),
+
+			/* 'Exit' button */
+			NWidget(NWID_HORIZONTAL), SetPIPRatio(1, 0, 1),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_ORANGE, WID_SGI_EXIT), SetMinimalSize(128, 0), SetStringTip(STR_INTRO_QUIT, STR_INTRO_TOOLTIP_QUIT),
+			EndContainer(),
+		EndContainer(),
+	EndContainer(),
+};
+
+static WindowDesc _traditional_select_game_desc(__FILE__, __LINE__,
+	WDP_CENTER, nullptr, 0, 0,
+	WC_SELECT_GAME, WC_NONE,
+	WindowDefaultFlag::NoClose,
+	_nested_traditional_select_game_widgets
+);
+
+void ShowSelectGameWindow(std::unique_ptr<IntroViewportCommandsHandler> intro_command_handler)
+{
+	if (_settings_client.gui.traditional_intro_menu) {
+		new TraditionalSelectGameWindow(_traditional_select_game_desc, std::move(intro_command_handler));
+	} else {
+		new SelectGameWindow(_select_game_desc, std::move(intro_command_handler));
+	}
+	MarkWholeScreenDirty();
+}
+
 void ShowSelectGameWindow()
 {
-	new SelectGameWindow(_select_game_desc);
+	ShowSelectGameWindow({});
 }
 
 static void AskExitGameCallback(Window *, bool confirmed)

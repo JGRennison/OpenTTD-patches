@@ -36,6 +36,8 @@ enum GameOptionsWidgets : WidgetID {
 	WID_GO_GUI_FONT_AA_TEXT,       ///< Text for anti-alias toggle.
 	WID_GO_GUI_SCALE_MAIN_TOOLBAR, ///< Toggle for bigger main toolbar.
 	WID_GO_GUI_SCALE_MAIN_TOOLBAR_TEXT, ///< Text for bigger main toolbar toggle.
+	WID_GO_GUI_TRAD_INTRO_TOOLBAR, ///< Toggle for traditional intro menu.
+	WID_GO_GUI_TRAD_INTRO_TOOLBAR_TEXT, ///< Text for traditional intro menu toggle.
 	WID_GO_BASE_GRF_DROPDOWN,      ///< Use to select a base GRF.
 	WID_GO_BASE_GRF_PARAMETERS,    ///< Base GRF parameters.
 	WID_GO_BASE_GRF_CONTENT_DOWNLOAD, ///< 'Get Content' button for base GRF.
