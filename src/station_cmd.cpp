@@ -526,7 +526,7 @@ void Station::UpdateVirtCoord()
 	if (_viewport_sign_kdtree_valid && this->sign.kdtree_valid) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeStation(this->index));
 
 	auto params = MakeParameters(this->index, this->facilities);
-	this->sign.UpdatePosition(ShouldShowBaseStationViewportLabel(this) ? ZOOM_LVL_DRAW_SPR : ZOOM_LVL_END, pt.x, pt.y, params, STR_VIEWPORT_STATION, STR_STATION_NAME);
+	this->sign.UpdatePosition(ShouldShowBaseStationViewportLabel(this) ? ZoomLevel::SpriteMax : ZoomLevel::End, pt.x, pt.y, params, STR_VIEWPORT_STATION, STR_STATION_NAME);
 
 	if (_viewport_sign_kdtree_valid) _viewport_sign_kdtree.Insert(ViewportSignKdtreeItem::MakeStation(this->index));
 

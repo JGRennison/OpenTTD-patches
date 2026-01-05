@@ -925,7 +925,7 @@ void DrawOverlappedWindow(Window *w, int left, int top, int right, int bottom, D
 	dp->top = top - w->top;
 	dp->pitch = _screen.pitch;
 	dp->dst_ptr = BlitterFactory::GetCurrentBlitter()->MoveTo(_screen.dst_ptr, left, top);
-	dp->zoom = ZOOM_LVL_MIN;
+	dp->zoom = ZoomLevel::Min;
 	w->OnPaint();
 	if (unlikely(flags & DOWF_SHOW_DEBUG)) {
 		if (w->viewport != nullptr) ViewportDoDrawProcessAllPending();
@@ -3086,7 +3086,11 @@ static void MouseLoop(MouseClick click, int mousewheel)
 
 	if (mousewheel != 0) {
 		/* Send mousewheel event to window, unless we're scrolling a viewport or the map */
-		if (!scrollwheel_scrolling || (vp == nullptr && w->window_class != WC_SMALLMAP)) w->OnMouseWheel(mousewheel);
+		if (!scrollwheel_scrolling || (vp == nullptr && w->window_class != WC_SMALLMAP)) {
+			if (NWidgetCore *nwid = w->nested_root->GetWidgetFromPos(x - w->left, y - w->top); nwid != nullptr) {
+				w->OnMouseWheel(mousewheel, nwid->GetIndex());
+			}
+		}
 
 		/* Dispatch a MouseWheelEvent for widgets if it is not a viewport */
 		if (vp == nullptr) DispatchMouseWheelEvent(w, w->nested_root->GetWidgetFromPos(x - w->left, y - w->top), mousewheel);

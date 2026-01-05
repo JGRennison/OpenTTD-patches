@@ -60,8 +60,8 @@ public:
 		uint16_t sprite_width;     ///< The width of the sprite.
 	};
 	struct SpriteData {
-		BlitterSpriteFlags flags;
-		SpriteInfo infos[ZOOM_LVL_SPR_COUNT];
+		BlitterSpriteFlags flags{};
+		SpriteCollMap<SpriteInfo> infos{};
 		uint8_t data[]; ///< Data, all zoomlevels.
 	};
 

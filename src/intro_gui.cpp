@@ -98,8 +98,7 @@ struct IntroGameViewportCommand {
 	}
 };
 
-
-struct SelectGameWindow : public Window {
+struct IntroViewportCommandsHandler {
 	/** Vector of viewport commands parsed. */
 	std::vector<IntroGameViewportCommand> intro_viewport_commands{};
 	/** Index of currently active viewport command. */
@@ -108,6 +107,11 @@ struct SelectGameWindow : public Window {
 	uint cur_viewport_command_time = 0;
 	uint mouse_idle_time = 0;
 	Point mouse_idle_pos{};
+
+	IntroViewportCommandsHandler() : mouse_idle_pos(_cursor.pos)
+	{
+		this->ReadIntroGameViewportCommands();
+	}
 
 	/**
 	 * Find and parse all viewport command signs.
@@ -178,19 +182,9 @@ struct SelectGameWindow : public Window {
 		}
 	}
 
-	SelectGameWindow(WindowDesc &desc) : Window(desc), mouse_idle_pos(_cursor.pos)
-	{
-		this->CreateNestedTree();
-		this->FinishInitNested(0);
-		this->OnInvalidateData();
-
-		this->ReadIntroGameViewportCommands();
-	}
-
-	void OnRealtimeTick(uint delta_ms) override
+	void OnRealtimeTick(uint delta_ms)
 	{
 		/* Move the main game viewport according to intro viewport commands. */
-
 		if (intro_viewport_commands.empty()) return;
 
 		bool suppress_panning = true;
@@ -256,6 +250,203 @@ struct SelectGameWindow : public Window {
 		/* If there is only one command, we just executed it and don't need to do any more */
 		if (intro_viewport_commands.size() == 1 && vc.vehicle == VehicleID::Invalid()) intro_viewport_commands.clear();
 	}
+};
+
+void ShowSelectGameWindow(std::unique_ptr<IntroViewportCommandsHandler> intro_command_handler);
+
+struct SelectGameWindow : public Window {
+	std::unique_ptr<IntroViewportCommandsHandler> intro_command_handler;
+
+	SelectGameWindow(WindowDesc &desc, std::unique_ptr<IntroViewportCommandsHandler> intro_command_handler) : Window(desc), intro_command_handler(std::move(intro_command_handler))
+	{
+		this->CreateNestedTree();
+		this->FinishInitNested(0);
+		this->OnInvalidateData();
+
+		if (!this->intro_command_handler) this->intro_command_handler = std::make_unique<IntroViewportCommandsHandler>();
+	}
+
+	void OnRealtimeTick(uint delta_ms) override
+	{
+		/* Move the main game viewport according to intro viewport commands. */
+		if (this->intro_command_handler) this->intro_command_handler->OnRealtimeTick(delta_ms);
+	}
+
+	/**
+	 * Some data on this window has become invalid.
+	 * @param data Information about the changed data.
+	 * @param gui_scope Whether the call is done from GUI scope. You may not do everything when not in GUI scope. See #InvalidateWindowData() for details.
+	 */
+	void OnInvalidateData([[maybe_unused]] int data = 0, [[maybe_unused]] bool gui_scope = true) override
+	{
+		if (!gui_scope) return;
+
+		if (_settings_client.gui.traditional_intro_menu) {
+			this->Close();
+			ShowSelectGameWindow(std::move(this->intro_command_handler));
+		}
+	}
+
+	void OnInit() override
+	{
+		const bool disable_missing = true;
+
+		bool missing_sprites = _missing_extra_graphics > 0 && !disable_missing;
+		this->GetWidget<NWidgetStacked>(WID_SGI_BASESET_SELECTION)->SetDisplayedPlane(missing_sprites ? 0 : SZSP_NONE);
+
+		bool missing_lang = _current_language->missing >= _settings_client.gui.missing_strings_threshold && !disable_missing;
+		this->GetWidget<NWidgetStacked>(WID_SGI_TRANSLATION_SELECTION)->SetDisplayedPlane(missing_lang ? 0 : SZSP_NONE);
+	}
+
+	void DrawWidget(const Rect &r, WidgetID widget) const override
+	{
+		switch (widget) {
+			case WID_SGI_BASESET:
+				DrawStringMultiLine(r, GetString(STR_INTRO_BASESET, _missing_extra_graphics), TC_FROMSTRING, SA_CENTER);
+				break;
+
+			case WID_SGI_TRANSLATION:
+				DrawStringMultiLine(r, GetString(STR_INTRO_TRANSLATION, _current_language->missing), TC_FROMSTRING, SA_CENTER);
+				break;
+		}
+	}
+
+	void OnResize() override
+	{
+		bool changed = false;
+
+		if (NWidgetResizeBase *wid = this->GetWidget<NWidgetResizeBase>(WID_SGI_BASESET); wid != nullptr && wid->current_x > 0) {
+			changed |= wid->UpdateMultilineWidgetSize(GetString(STR_INTRO_BASESET, _missing_extra_graphics), 3);
+		}
+
+		if (NWidgetResizeBase *wid = this->GetWidget<NWidgetResizeBase>(WID_SGI_TRANSLATION); wid != nullptr && wid->current_x > 0) {
+			changed |= wid->UpdateMultilineWidgetSize(GetString(STR_INTRO_TRANSLATION, _current_language->missing), 3);
+		}
+
+		if (changed) this->ReInit(0, 0, this->flags.Test(WindowFlag::Centred));
+	}
+
+	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
+	{
+		switch (widget) {
+			case WID_SGI_GENERATE_GAME:
+				_is_network_server = false;
+				if (_ctrl_pressed) {
+					StartNewGameWithoutGUI(GENERATE_NEW_SEED);
+				} else {
+					ShowGenerateLandscape();
+				}
+				break;
+			case WID_SGI_LOAD_GAME:
+				_is_network_server = false;
+				ShowSaveLoadDialog(FT_SAVEGAME, SLO_LOAD);
+				break;
+			case WID_SGI_PLAY_SCENARIO:
+				_is_network_server = false;
+				ShowSaveLoadDialog(FT_SCENARIO, SLO_LOAD);
+				break;
+			case WID_SGI_PLAY_HEIGHTMAP:
+				_is_network_server = false;
+				ShowSaveLoadDialog(FT_HEIGHTMAP,SLO_LOAD);
+				break;
+			case WID_SGI_EDIT_SCENARIO:
+				_is_network_server = false;
+				StartScenarioEditor();
+				break;
+
+			case WID_SGI_PLAY_NETWORK:
+				if (!_network_available) {
+					ShowErrorMessage(GetEncodedString(STR_NETWORK_ERROR_NOTAVAILABLE), {}, WL_ERROR);
+				} else {
+					ShowNetworkGameWindow();
+				}
+				break;
+
+			case WID_SGI_OPTIONS:         ShowGameOptions(); break;
+			case WID_SGI_HIGHSCORE:       ShowHighscoreTable(); break;
+			case WID_SGI_HELP:            ShowHelpWindow(); break;
+			case WID_SGI_CONTENT_DOWNLOAD:
+				if (!_network_available) {
+					ShowErrorMessage(GetEncodedString(STR_NETWORK_ERROR_NOTAVAILABLE), {}, WL_ERROR);
+				} else {
+					ShowNetworkContentListWindow();
+				}
+				break;
+			case WID_SGI_EXIT:            HandleExitGameRequest(); break;
+		}
+	}
+};
+
+static constexpr NWidgetPart _nested_select_game_widgets[] = {
+	NWidget(WWT_CAPTION, COLOUR_BROWN), SetStringTip(STR_INTRO_CAPTION),
+	NWidget(WWT_PANEL, COLOUR_BROWN),
+		NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_wide, 0), SetPadding(WidgetDimensions::unscaled.sparse),
+
+			/* Single player */
+			NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_normal, 0),
+				NWidget(WWT_PUSHIMGTEXTBTN, COLOUR_ORANGE, WID_SGI_GENERATE_GAME), SetToolbarMinimalSize(1), SetSpriteStringTip(SPR_IMG_LANDSCAPING, STR_INTRO_NEW_GAME, STR_INTRO_TOOLTIP_NEW_GAME), SetAlignment(SA_LEFT | SA_VERT_CENTER), SetFill(1, 0),
+				NWidget(WWT_PUSHIMGTEXTBTN, COLOUR_ORANGE, WID_SGI_PLAY_HEIGHTMAP), SetToolbarMinimalSize(1), SetSpriteStringTip(SPR_IMG_SHOW_COUNTOURS, STR_INTRO_PLAY_HEIGHTMAP, STR_INTRO_TOOLTIP_PLAY_HEIGHTMAP), SetAlignment(SA_LEFT | SA_VERT_CENTER), SetFill(1, 0),
+				NWidget(WWT_PUSHIMGTEXTBTN, COLOUR_ORANGE, WID_SGI_PLAY_SCENARIO), SetToolbarMinimalSize(1), SetSpriteStringTip(SPR_IMG_SUBSIDIES, STR_INTRO_PLAY_SCENARIO, STR_INTRO_TOOLTIP_PLAY_SCENARIO), SetAlignment(SA_LEFT | SA_VERT_CENTER), SetFill(1, 0),
+				NWidget(WWT_PUSHIMGTEXTBTN, COLOUR_ORANGE, WID_SGI_LOAD_GAME), SetToolbarMinimalSize(1), SetSpriteStringTip(SPR_IMG_SAVE, STR_INTRO_LOAD_GAME, STR_INTRO_TOOLTIP_LOAD_GAME), SetAlignment(SA_LEFT | SA_VERT_CENTER), SetFill(1, 0),
+				NWidget(WWT_PUSHIMGTEXTBTN, COLOUR_ORANGE, WID_SGI_HIGHSCORE), SetToolbarMinimalSize(1), SetSpriteStringTip(SPR_IMG_COMPANY_LEAGUE, STR_INTRO_HIGHSCORE, STR_INTRO_TOOLTIP_HIGHSCORE), SetAlignment(SA_LEFT | SA_VERT_CENTER), SetFill(1, 0),
+			EndContainer(),
+
+			/* Multi player */
+			NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_normal, 0),
+				NWidget(WWT_PUSHIMGTEXTBTN, COLOUR_ORANGE, WID_SGI_PLAY_NETWORK), SetToolbarMinimalSize(1), SetSpriteStringTip(SPR_IMG_COMPANY_GENERAL, STR_INTRO_MULTIPLAYER, STR_INTRO_TOOLTIP_MULTIPLAYER), SetAlignment(SA_LEFT | SA_VERT_CENTER), SetFill(1, 0),
+			EndContainer(),
+
+			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_SGI_BASESET_SELECTION),
+				NWidget(NWID_VERTICAL),
+					NWidget(WWT_EMPTY, INVALID_COLOUR, WID_SGI_BASESET), SetFill(1, 0),
+				EndContainer(),
+			EndContainer(),
+
+			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_SGI_TRANSLATION_SELECTION),
+				NWidget(NWID_VERTICAL),
+					NWidget(WWT_EMPTY, INVALID_COLOUR, WID_SGI_TRANSLATION), SetFill(1, 0),
+				EndContainer(),
+			EndContainer(),
+
+			/* Other */
+			NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_normal, 0),
+				NWidget(WWT_PUSHIMGTEXTBTN, COLOUR_ORANGE, WID_SGI_OPTIONS), SetToolbarMinimalSize(1), SetSpriteStringTip(SPR_IMG_SETTINGS, STR_INTRO_GAME_OPTIONS, STR_INTRO_TOOLTIP_GAME_OPTIONS), SetAlignment(SA_LEFT | SA_VERT_CENTER), SetFill(1, 0),
+				NWidget(WWT_PUSHIMGTEXTBTN, COLOUR_ORANGE, WID_SGI_CONTENT_DOWNLOAD), SetToolbarMinimalSize(1), SetSpriteStringTip(SPR_IMG_SHOW_VEHICLES, STR_INTRO_ONLINE_CONTENT, STR_INTRO_TOOLTIP_ONLINE_CONTENT), SetAlignment(SA_LEFT | SA_VERT_CENTER), SetFill(1, 0),
+				NWidget(WWT_PUSHIMGTEXTBTN, COLOUR_ORANGE, WID_SGI_EDIT_SCENARIO), SetToolbarMinimalSize(1), SetSpriteStringTip(SPR_IMG_SMALLMAP, STR_INTRO_SCENARIO_EDITOR, STR_INTRO_TOOLTIP_SCENARIO_EDITOR), SetAlignment(SA_LEFT | SA_VERT_CENTER), SetFill(1, 0),
+				NWidget(WWT_PUSHIMGTEXTBTN, COLOUR_ORANGE, WID_SGI_HELP), SetToolbarMinimalSize(1), SetSpriteStringTip(SPR_IMG_QUERY, STR_INTRO_HELP, STR_INTRO_TOOLTIP_HELP), SetAlignment(SA_LEFT | SA_VERT_CENTER), SetFill(1, 0),
+			EndContainer(),
+
+			NWidget(NWID_VERTICAL),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_ORANGE, WID_SGI_EXIT), SetToolbarMinimalSize(1), SetStringTip(STR_INTRO_QUIT, STR_INTRO_TOOLTIP_QUIT),
+			EndContainer(),
+		EndContainer(),
+	EndContainer(),
+};
+
+static WindowDesc _select_game_desc(__FILE__, __LINE__,
+	WDP_CENTER, nullptr, 0, 0,
+	WC_SELECT_GAME, WC_NONE,
+	WindowDefaultFlag::NoClose,
+	_nested_select_game_widgets
+);
+
+struct TraditionalSelectGameWindow : public Window {
+	std::unique_ptr<IntroViewportCommandsHandler> intro_command_handler;
+
+	TraditionalSelectGameWindow(WindowDesc &desc, std::unique_ptr<IntroViewportCommandsHandler> intro_command_handler) : Window(desc), intro_command_handler(std::move(intro_command_handler))
+	{
+		this->CreateNestedTree();
+		this->FinishInitNested(0);
+		this->OnInvalidateData();
+
+		if (!this->intro_command_handler) this->intro_command_handler = std::make_unique<IntroViewportCommandsHandler>();
+	}
+
+	void OnRealtimeTick(uint delta_ms) override
+	{
+		/* Move the main game viewport according to intro viewport commands. */
+		if (this->intro_command_handler) this->intro_command_handler->OnRealtimeTick(delta_ms);
+	}
 
 	/**
 	 * Some data on this window has become invalid.
@@ -269,6 +460,11 @@ struct SelectGameWindow : public Window {
 		this->SetWidgetLoweredState(WID_SGI_ARCTIC_LANDSCAPE,    _settings_newgame.game_creation.landscape == LandscapeType::Arctic);
 		this->SetWidgetLoweredState(WID_SGI_TROPIC_LANDSCAPE,    _settings_newgame.game_creation.landscape == LandscapeType::Tropic);
 		this->SetWidgetLoweredState(WID_SGI_TOYLAND_LANDSCAPE,   _settings_newgame.game_creation.landscape == LandscapeType::Toyland);
+
+		if (!_settings_client.gui.traditional_intro_menu) {
+			this->Close();
+			ShowSelectGameWindow(std::move(this->intro_command_handler));
+		}
 	}
 
 	void OnInit() override
@@ -372,8 +568,8 @@ struct SelectGameWindow : public Window {
 	}
 };
 
-static constexpr NWidgetPart _nested_select_game_widgets[] = {
-	NWidget(WWT_CAPTION, COLOUR_BROWN), SetStringTip(STR_INTRO_CAPTION),
+static constexpr NWidgetPart _nested_traditional_select_game_widgets[] = {
+	NWidget(WWT_CAPTION, COLOUR_BROWN), SetStringTip(STR_INTRO_CAPTION_TRADITIONAL),
 	NWidget(WWT_PANEL, COLOUR_BROWN),
 		NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_wide, 0), SetPadding(WidgetDimensions::unscaled.sparse),
 
@@ -448,16 +644,26 @@ static constexpr NWidgetPart _nested_select_game_widgets[] = {
 	EndContainer(),
 };
 
-static WindowDesc _select_game_desc(__FILE__, __LINE__,
+static WindowDesc _traditional_select_game_desc(__FILE__, __LINE__,
 	WDP_CENTER, nullptr, 0, 0,
 	WC_SELECT_GAME, WC_NONE,
 	WindowDefaultFlag::NoClose,
-	_nested_select_game_widgets
+	_nested_traditional_select_game_widgets
 );
+
+void ShowSelectGameWindow(std::unique_ptr<IntroViewportCommandsHandler> intro_command_handler)
+{
+	if (_settings_client.gui.traditional_intro_menu) {
+		new TraditionalSelectGameWindow(_traditional_select_game_desc, std::move(intro_command_handler));
+	} else {
+		new SelectGameWindow(_select_game_desc, std::move(intro_command_handler));
+	}
+	MarkWholeScreenDirty();
+}
 
 void ShowSelectGameWindow()
 {
-	new SelectGameWindow(_select_game_desc);
+	ShowSelectGameWindow({});
 }
 
 static void AskExitGameCallback(Window *, bool confirmed)

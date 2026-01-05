@@ -92,3 +92,7 @@ STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}รห�
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}ตั้งพาสเวิร์ดของบริษัท
 
 # JSON messages
+
+STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}การตั้งค่า NewGRF
+STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}แสดงการกำหนดค่า NewGRF
+STR_INTRO_CAPTION_TRADITIONAL                                   :{WHITE}OpenTTD {REV}

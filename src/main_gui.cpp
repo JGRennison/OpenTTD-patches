@@ -135,7 +135,7 @@ bool DoZoomInOutWindow(ZoomStateChange how, Window *w)
 			break;
 		case ZOOM_OUT:
 			if (vp->zoom >= _settings_client.gui.zoom_max) return false;
-			if (w->window_class != WC_MAIN_WINDOW && w->window_class != WC_EXTRA_VIEWPORT && vp->zoom >= ZOOM_LVL_DRAW_SPR) return false;
+			if (w->window_class != WC_MAIN_WINDOW && w->window_class != WC_EXTRA_VIEWPORT && vp->zoom >= ZoomLevel::SpriteMax) return false;
 			vp->zoom = (ZoomLevel)((int)vp->zoom + 1);
 
 			w->viewport->scrollpos_x -= vp->virtual_width >> 1;
@@ -253,7 +253,7 @@ struct MainWindow : Window
 		ResizeWindow(this, _screen.width, _screen.height);
 
 		NWidgetViewport *nvp = this->GetWidget<NWidgetViewport>(WID_M_VIEWPORT);
-		nvp->InitializeViewport(this, TileXY(32, 32).base(), ScaleZoomGUI(ZOOM_LVL_VIEWPORT));
+		nvp->InitializeViewport(this, TileXY(32, 32).base(), ScaleZoomGUI(ZoomLevel::Viewport));
 
 		this->viewport->map_type = (ViewportMapType) _settings_client.gui.default_viewport_map_mode;
 		this->viewport->overlay = new LinkGraphOverlay(this, WID_M_VIEWPORT, 0, CompanyMask{}, 2);
@@ -294,6 +294,11 @@ struct MainWindow : Window
 			for (const SpriteID &sprite : title_sprites) {
 				DrawSprite(sprite, PAL_NONE, off_x, ScaleGUITrad(50));
 				off_x += GetSpriteSize(sprite).width + letter_spacing;
+			}
+
+			if (!_settings_client.gui.traditional_intro_menu) {
+				int text_y = this->height - GetCharacterHeight(FS_NORMAL) * 2;
+				DrawString(0, this->width - 1, text_y, STR_INTRO_VERSION, TC_WHITE, SA_CENTER);
 			}
 		}
 	}
@@ -450,19 +455,19 @@ struct MainWindow : Window
 				break;
 
 			case GHK_CHANGE_MAP_MODE_PREV:
-				if (_focused_window && _focused_window->viewport && _focused_window->viewport->zoom >= ZOOM_LVL_DRAW_MAP) {
+				if (_focused_window && _focused_window->viewport && _focused_window->viewport->zoom >= ZoomLevel::DrawMap) {
 					ChangeRenderMode(_focused_window->viewport, true);
 					_focused_window->SetDirty();
-				} else if (this->viewport->zoom >= ZOOM_LVL_DRAW_MAP) {
+				} else if (this->viewport->zoom >= ZoomLevel::DrawMap) {
 					ChangeRenderMode(this->viewport, true);
 					this->SetDirty();
 				}
 				break;
 			case GHK_CHANGE_MAP_MODE_NEXT:
-				if (_focused_window && _focused_window->viewport && _focused_window->viewport->zoom >= ZOOM_LVL_DRAW_MAP) {
+				if (_focused_window && _focused_window->viewport && _focused_window->viewport->zoom >= ZoomLevel::DrawMap) {
 					ChangeRenderMode(_focused_window->viewport, false);
 					_focused_window->SetDirty();
-				} else if (this->viewport->zoom >= ZOOM_LVL_DRAW_MAP) {
+				} else if (this->viewport->zoom >= ZoomLevel::DrawMap) {
 					ChangeRenderMode(this->viewport, false);
 					this->SetDirty();
 				}
@@ -500,8 +505,9 @@ struct MainWindow : Window
 		this->refresh.SetInterval(LINKGRAPH_DELAY);
 	}
 
-	void OnMouseWheel(int wheel) override
+	void OnMouseWheel(int wheel, WidgetID widget) override
 	{
+		if (widget != WID_M_VIEWPORT) return;
 		if (_ctrl_pressed) {
 			/* Cycle through the drawing modes */
 			ChangeRenderMode(this->viewport, wheel < 0);

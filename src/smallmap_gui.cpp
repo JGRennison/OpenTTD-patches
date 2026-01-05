@@ -176,7 +176,7 @@ static void NotifyAllViewports(ViewportMapType map_type)
 {
 	for (Window *w : Window::Iterate()) {
 		if (w->viewport != nullptr) {
-			if (w->viewport->zoom >= ZOOM_LVL_DRAW_MAP && w->viewport->map_type == map_type) {
+			if (w->viewport->zoom >= ZoomLevel::DrawMap && w->viewport->map_type == map_type) {
 				ClearViewportLandPixelCache(w->viewport);
 				w->InvalidateData();
 			}
@@ -1649,16 +1649,15 @@ int SmallMapWindow::GetPositionOnLegend(Point pt)
 	return true;
 }
 
-/* virtual */ void SmallMapWindow::OnMouseWheel(int wheel)
+/* virtual */ void SmallMapWindow::OnMouseWheel(int wheel, WidgetID widget)
 {
+	if (widget != WID_SM_MAP) return;
 	if (_settings_client.gui.scrollwheel_scrolling != SWS_OFF) {
 		const NWidgetBase *wid = this->GetWidget<NWidgetBase>(WID_SM_MAP);
 		int cursor_x = _cursor.pos.x - this->left - wid->pos_x;
 		int cursor_y = _cursor.pos.y - this->top  - wid->pos_y;
-		if (IsInsideMM(cursor_x, 0, wid->current_x) && IsInsideMM(cursor_y, 0, wid->current_y)) {
-			Point pt = {cursor_x, cursor_y};
-			this->SetZoomLevel((wheel < 0) ? ZLC_ZOOM_IN : ZLC_ZOOM_OUT, &pt);
-		}
+		Point pt = {cursor_x, cursor_y};
+		this->SetZoomLevel((wheel < 0) ? ZLC_ZOOM_IN : ZLC_ZOOM_OUT, &pt);
 	}
 }
 
@@ -1800,7 +1799,7 @@ void SmallMapWindow::ScreenshotCallbackHandler(void *buf, uint y, uint pitch, ui
 	dpi.height = n;
 	dpi.width = (((Map::MaxX() + Map::MaxY()) * 2) * this->ui_zoom) / this->tile_zoom;
 	dpi.pitch = pitch;
-	dpi.zoom = ZOOM_LVL_MIN;
+	dpi.zoom = ZoomLevel::Min;
 	dpi.left = 0;
 	dpi.top = y;
 

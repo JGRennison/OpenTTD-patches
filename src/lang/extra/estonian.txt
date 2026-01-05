@@ -103,3 +103,11 @@ STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Ettevõt
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Vali ettevõttele salasõna
 
 # JSON messages
+
+STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF-i seadistus
+STR_INTRO_AI_SETTINGS                                           :{BLACK}TI Seaded
+STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}GameScript'i seaded
+STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Ava NewGRF-i seadistus
+STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}Ava TI-seaded
+STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}Ava GameScript'i seaded
+STR_INTRO_CAPTION_TRADITIONAL                                   :{WHITE}OpenTTD {REV}

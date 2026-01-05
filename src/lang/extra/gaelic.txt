@@ -91,3 +91,7 @@ STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Dìon do
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Suidhich facal-faire na companaidh
 
 # JSON messages
+
+STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}Roghainnean NewGRF
+STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Seall na roghainnean NewGRF
+STR_INTRO_CAPTION_TRADITIONAL                                   :{WHITE}OpenTTD {REV}

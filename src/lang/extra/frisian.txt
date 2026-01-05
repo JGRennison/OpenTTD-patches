@@ -86,3 +86,7 @@ STR_COMPANY_VIEW_PASSWORD                                       :{BLACK}Wachtwur
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Bedriuwswachtwurd ynstelle
 
 # JSON messages
+
+STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF ynstellings
+STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Lit NewGRF ynstellings sjen
+STR_INTRO_CAPTION_TRADITIONAL                                   :{WHITE}OpenTTD {REV}

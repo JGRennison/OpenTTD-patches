@@ -26,18 +26,17 @@ Sprite *Blitter_32bppSSE_Base::Encode(SpriteType sprite_type, const SpriteLoader
 	 * Second uint32_t of a line = the number of transparent pixels from the right.
 	 * Then all RGBA then all MV.
 	 */
-	ZoomLevel zoom_min = ZOOM_LVL_MIN;
-	ZoomLevel zoom_max = ZOOM_LVL_MIN;
-	uint8_t missing_zoom_levels = 0;
+	ZoomLevel zoom_min = ZoomLevel::Min;
+	ZoomLevel zoom_max = ZoomLevel::Min;
+	LowZoomLevels missing_zoom_levels = {};
 	if (sprite_type != SpriteType::Font) {
 		zoom_min = _settings_client.gui.zoom_min;
-		zoom_max =  (ZoomLevel) std::min(_settings_client.gui.zoom_max, ZOOM_LVL_DRAW_SPR);
-		if (zoom_max == zoom_min) zoom_max = ZOOM_LVL_DRAW_SPR;
+		zoom_max = std::min<ZoomLevel>(_settings_client.gui.zoom_max, ZoomLevel::SpriteMax);
+		if (zoom_max == zoom_min) zoom_max = ZoomLevel::SpriteMax;
 	}
 
 	/* Calculate sizes and allocate. */
-	SpriteData sd;
-	memset(&sd, 0, sizeof(sd));
+	SpriteData sd{};
 	uint all_sprites_size = 0;
 	for (ZoomLevel z = zoom_min; z <= zoom_max; z++) {
 		const SpriteLoader::Sprite *src_sprite = &sprite[z];
@@ -46,7 +45,7 @@ Sprite *Blitter_32bppSSE_Base::Encode(SpriteType sprite_type, const SpriteLoader
 			sd.infos[z].mv_offset = 0;
 			sd.infos[z].sprite_line_size = 0;
 			sd.infos[z].sprite_width = 0;
-			SetBit(missing_zoom_levels, z);
+			missing_zoom_levels.Set(z);
 			continue;
 		}
 
@@ -62,10 +61,11 @@ Sprite *Blitter_32bppSSE_Base::Encode(SpriteType sprite_type, const SpriteLoader
 	}
 
 	Sprite *dst_sprite = allocator.Allocate<Sprite>(sizeof(Sprite) + sizeof(SpriteData) + all_sprites_size);
-	dst_sprite->height = sprite[ZOOM_LVL_MIN].height;
-	dst_sprite->width  = sprite[ZOOM_LVL_MIN].width;
-	dst_sprite->x_offs = sprite[ZOOM_LVL_MIN].x_offs;
-	dst_sprite->y_offs = sprite[ZOOM_LVL_MIN].y_offs;
+	const auto &root_sprite = sprite.Root();
+	dst_sprite->height = root_sprite.height;
+	dst_sprite->width = root_sprite.width;
+	dst_sprite->x_offs = root_sprite.x_offs;
+	dst_sprite->y_offs = root_sprite.y_offs;
 	dst_sprite->next = nullptr;
 	dst_sprite->missing_zoom_levels = missing_zoom_levels;
 	memcpy(dst_sprite->data, &sd, sizeof(SpriteData));
@@ -89,7 +89,7 @@ Sprite *Blitter_32bppSSE_Base::Encode(SpriteType sprite_type, const SpriteLoader
 					dst_rgba->a = src->a;
 					if (src->a != 0 && src->a != 255) has_translucency = true;
 					dst_mv->m = src->m;
-					if (z >= _settings_client.gui.disable_water_animation && src->m >= 245 && src->m <= 254) {
+					if (to_underlying(z) >= _settings_client.gui.disable_water_animation && src->m >= 245 && src->m <= 254) {
 						/* Get brightest value */
 						uint8_t rgb_max = std::max({ src->r, src->g, src->b });
 

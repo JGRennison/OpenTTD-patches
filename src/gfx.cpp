@@ -79,11 +79,11 @@ struct GfxBlitterCtx {
 };
 
 static void GfxMainBlitterViewport(const GfxBlitterCtx &ctx, const Sprite *sprite, int x, int y, BlitterMode mode, const SubSprite *sub = nullptr, SpriteID sprite_id = SPR_CURSOR_MOUSE);
-static void GfxMainBlitter(const GfxBlitterCtx &ctx, const Sprite *sprite, int x, int y, BlitterMode mode, const SubSprite *sub = nullptr, SpriteID sprite_id = SPR_CURSOR_MOUSE, ZoomLevel zoom = ZOOM_LVL_MIN);
+static void GfxMainBlitter(const GfxBlitterCtx &ctx, const Sprite *sprite, int x, int y, BlitterMode mode, const SubSprite *sub = nullptr, SpriteID sprite_id = SPR_CURSOR_MOUSE, ZoomLevel zoom = ZoomLevel::Min);
 
 static ReusableBuffer<uint8_t> _cursor_backup;
 
-ZoomLevel _gui_zoom  = ZOOM_LVL_NORMAL;     ///< GUI Zoom level
+ZoomLevel _gui_zoom = ZoomLevel::Normal;    ///< GUI Zoom level
 ZoomLevel _font_zoom = _gui_zoom;           ///< Sprite font Zoom level (not clamped)
 int _gui_scale       = MIN_INTERFACE_SCALE; ///< GUI scale, 100 is 100%.
 int _gui_scale_cfg;                         ///< GUI scale in config.
@@ -113,7 +113,7 @@ uint32_t _gfx_debug_flags;
 /**
  * Applies a certain FillRectMode-operation to a rectangle [left, right] x [top, bottom] on the screen.
  *
- * @pre dpi->zoom == ZOOM_LVL_MIN, right >= left, bottom >= top
+ * @pre dpi->zoom == ZoomLevel::Min, right >= left, bottom >= top
  * @param blitter Blitter to use
  * @param dpi Draw pixel info
  * @param left Minimum X (inclusive)
@@ -132,7 +132,7 @@ void GfxFillRect(Blitter *blitter, const DrawPixelInfo *dpi, int left, int top, 
 	const int otop = top;
 	const int oleft = left;
 
-	if (dpi->zoom != ZOOM_LVL_MIN) return;
+	if (dpi->zoom != ZoomLevel::Min) return;
 	if (left > right || top > bottom) return;
 	if (right < dpi->left || left >= dpi->left + dpi->width) return;
 	if (bottom < dpi->top || top >= dpi->top + dpi->height) return;
@@ -219,7 +219,7 @@ static std::vector<LineSegment> MakePolygonSegments(std::span<const Point> shape
  * The odd-even winding rule is used, i.e. self-intersecting polygons will have holes in them.
  * Left and top edges are inclusive, right and bottom edges are exclusive.
  * @note For rectangles the GfxFillRect function will be faster.
- * @pre dpi->zoom == ZOOM_LVL_MIN
+ * @pre dpi->zoom == ZoomLevel::Min
  * @param shape List of points on the polygon.
  * @param colour An 8 bit palette index (FILLRECT_OPAQUE and FILLRECT_CHECKER) or a recolour spritenumber (FILLRECT_RECOLOUR).
  * @param mode
@@ -232,7 +232,7 @@ void GfxFillPolygon(std::span<const Point> shape, int colour, FillRectMode mode,
 {
 	Blitter *blitter = BlitterFactory::GetCurrentBlitter();
 	const DrawPixelInfo *dpi = _cur_dpi;
-	if (dpi->zoom != ZOOM_LVL_MIN) return;
+	if (dpi->zoom != ZoomLevel::Min) return;
 
 	std::vector<LineSegment> segments = MakePolygonSegments(shape, Point{ dpi->left, dpi->top });
 
@@ -998,7 +998,7 @@ void DrawCharCentered(char32_t c, const Rect &r, TextColour colour)
  */
 Dimension GetSpriteSize(SpriteID sprid, Point *offset, ZoomLevel zoom)
 {
-	const Sprite *sprite = GetSprite(sprid, SpriteType::Normal, ZoomMask(zoom));
+	const Sprite *sprite = GetSprite(sprid, SpriteType::Normal, LowZoomMask(zoom));
 
 	if (offset != nullptr) {
 		offset->x = UnScaleByZoom(sprite->x_offs, zoom);
@@ -1093,16 +1093,16 @@ void DrawSprite(SpriteID img, PaletteID pal, int x, int y, const SubSprite *sub,
 	if (HasBit(img, PALETTE_MODIFIER_TRANSPARENT)) {
 		pal = GB(pal, 0, PALETTE_WIDTH);
 		ctx.colour_remap_ptr = GetNonSprite(pal, SpriteType::Recolour);
-		GfxMainBlitter(ctx, GetSprite(real_sprite, SpriteType::Normal, ZoomMask(zoom)), x, y, pal == PALETTE_TO_TRANSPARENT ? BlitterMode::Transparent : BlitterMode::TransparentRemap, sub, real_sprite, zoom);
+		GfxMainBlitter(ctx, GetSprite(real_sprite, SpriteType::Normal, LowZoomMask(zoom)), x, y, pal == PALETTE_TO_TRANSPARENT ? BlitterMode::Transparent : BlitterMode::TransparentRemap, sub, real_sprite, zoom);
 	} else if (pal != PAL_NONE) {
 		if (HasBit(pal, PALETTE_TEXT_RECOLOUR)) {
 			ctx.SetColourRemap((TextColour)GB(pal, 0, PALETTE_WIDTH));
 		} else {
 			ctx.colour_remap_ptr = GetNonSprite(GB(pal, 0, PALETTE_WIDTH), SpriteType::Recolour);
 		}
-		GfxMainBlitter(ctx, GetSprite(real_sprite, SpriteType::Normal, ZoomMask(zoom)), x, y, GetBlitterMode(pal), sub, real_sprite, zoom);
+		GfxMainBlitter(ctx, GetSprite(real_sprite, SpriteType::Normal, LowZoomMask(zoom)), x, y, GetBlitterMode(pal), sub, real_sprite, zoom);
 	} else {
-		GfxMainBlitter(ctx, GetSprite(real_sprite, SpriteType::Normal, ZoomMask(zoom)), x, y, BlitterMode::Normal, sub, real_sprite, zoom);
+		GfxMainBlitter(ctx, GetSprite(real_sprite, SpriteType::Normal, LowZoomMask(zoom)), x, y, BlitterMode::Normal, sub, real_sprite, zoom);
 	}
 }
 
@@ -1120,7 +1120,7 @@ void DrawSpriteCustomRemap(SpriteID img, std::span<uint8_t, 256> pal, int x, int
 	GfxBlitterCtx ctx(_cur_dpi);
 	SpriteID real_sprite = GB(img, 0, SPRITE_WIDTH);
 	ctx.colour_remap_ptr = pal.data();
-	GfxMainBlitter(ctx, GetSprite(real_sprite, SpriteType::Normal, ZoomMask(zoom)), x, y, BlitterMode::ColourRemap, sub, real_sprite, zoom);
+	GfxMainBlitter(ctx, GetSprite(real_sprite, SpriteType::Normal, LowZoomMask(zoom)), x, y, BlitterMode::ColourRemap, sub, real_sprite, zoom);
 }
 
 /**
@@ -1143,7 +1143,7 @@ static void GfxBlitter(const GfxBlitterCtx &ctx, const Sprite *sprite, int x, in
 
 	if (sprite->width <= 0 || sprite->height <= 0) return;
 
-	while (HasBit(sprite->missing_zoom_levels, zoom)) {
+	while (sprite->missing_zoom_levels.Test(zoom)) {
 		sprite = sprite->next;
 		if (sprite == nullptr) {
 			Debug(sprite, 0, "Failed to draw sprite {} at zoom level {} as required zoom level is missing", sprite_id, zoom);
@@ -1289,7 +1289,7 @@ std::unique_ptr<uint32_t[]> DrawSpriteToRgbaBuffer(SpriteID spriteId, ZoomLevel 
 
 	/* Gather information about the sprite to write, reserve memory */
 	const SpriteID real_sprite = GB(spriteId, 0, SPRITE_WIDTH);
-	const Sprite *sprite = GetSprite(real_sprite, SpriteType::Normal, ZoomMask(zoom));
+	const Sprite *sprite = GetSprite(real_sprite, SpriteType::Normal, LowZoomMask(zoom));
 	Dimension dim = GetSpriteSize(real_sprite, nullptr, zoom);
 	size_t dim_size = static_cast<size_t>(dim.width) * dim.height;
 	std::unique_ptr<uint32_t[]> result = std::make_unique<uint32_t[]>(dim_size);
@@ -1698,7 +1698,7 @@ void DrawDirtyBlocks()
 					_cur_dpi->height = _screen.height;
 					_cur_dpi->pitch = _screen.pitch;
 					_cur_dpi->dst_ptr = _screen.dst_ptr;
-					_cur_dpi->zoom = ZOOM_LVL_MIN;
+					_cur_dpi->zoom = ZoomLevel::Min;
 
 					_dirty_viewport = vp;
 					_dirty_viewport_disp_flags = w->viewport_widget->disp_flags;
@@ -2027,7 +2027,7 @@ bool FillDrawPixelInfo(DrawPixelInfo *n, int left, int top, int width, int heigh
 	Blitter *blitter = BlitterFactory::GetCurrentBlitter();
 	const DrawPixelInfo *o = _cur_dpi;
 
-	n->zoom = ZOOM_LVL_MIN;
+	n->zoom = ZoomLevel::Min;
 
 	assert(width > 0);
 	assert(height > 0);
@@ -2079,7 +2079,7 @@ void UpdateCursorSize()
 
 	bool first = true;
 	for (const auto &cs : _cursor.sprites) {
-		const Sprite *p = GetSprite(GB(cs.image.sprite, 0, SPRITE_WIDTH), SpriteType::Normal, 0);
+		const Sprite *p = GetSprite(GB(cs.image.sprite, 0, SPRITE_WIDTH), SpriteType::Normal, {});
 		Point offs, size;
 		offs.x = UnScaleGUI(p->x_offs) + cs.pos.x;
 		offs.y = UnScaleGUI(p->y_offs) + cs.pos.y;
@@ -2255,12 +2255,12 @@ void UpdateGUIZoom()
 		_gui_scale = Clamp(_gui_scale_cfg, MIN_INTERFACE_SCALE, MAX_INTERFACE_SCALE);
 	}
 
-	int8_t new_zoom = ScaleGUITrad(1) <= 1 ? ZOOM_LVL_NORMAL : ScaleGUITrad(1) >= 4 ? ZOOM_LVL_IN_4X : ZOOM_LVL_IN_2X;
+	ZoomLevel new_zoom = ScaleGUITrad(1) <= 1 ? ZoomLevel::Normal : ScaleGUITrad(1) >= 4 ? ZoomLevel::In4x : ZoomLevel::In2x;
 	/* Font glyphs should not be clamped to min/max zoom. */
-	_font_zoom = static_cast<ZoomLevel>(new_zoom);
+	_font_zoom = new_zoom;
 	/* Ensure the gui_zoom is clamped between min/max. */
 	new_zoom = Clamp(new_zoom, _settings_client.gui.zoom_min, _settings_client.gui.zoom_max);
-	_gui_zoom = static_cast<ZoomLevel>(new_zoom);
+	_gui_zoom = new_zoom;
 
 	if (old_scale != _gui_scale) {
 		ClearFontCache();
@@ -2309,14 +2309,14 @@ bool AdjustGUIZoom(AdjustGUIZoomMode mode)
 
 	/* Adjust all window sizes to match the new zoom level, so that they don't appear
 	   to move around when the application is moved to a screen with different DPI. */
-	auto zoom_shift = old_gui_zoom - _gui_zoom;
+	auto zoom_shift = static_cast<int>(old_gui_zoom) - static_cast<int>(_gui_zoom);
 	for (Window *w : Window::Iterate()) {
 		if (mode == AGZM_AUTOMATIC) {
 			w->left   = (w->left   * _gui_scale) / old_scale;
 			w->top    = (w->top    * _gui_scale) / old_scale;
 		}
 		if (w->viewport != nullptr) {
-			w->viewport->zoom = static_cast<ZoomLevel>(Clamp(w->viewport->zoom - zoom_shift, _settings_client.gui.zoom_min, _settings_client.gui.zoom_max));
+			w->viewport->zoom = static_cast<ZoomLevel>(Clamp<int>(static_cast<int>(w->viewport->zoom) - zoom_shift, to_underlying(_settings_client.gui.zoom_min), to_underlying(_settings_client.gui.zoom_max)));
 		}
 	}
 

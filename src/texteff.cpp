@@ -36,7 +36,7 @@ static TextEffectID _free_text_effect = 0;
 /** Reset the text effect */
 void TextEffect::Reset()
 {
-	this->MarkDirty(ZOOM_LVL_TEXT_EFFECT);
+	this->MarkDirty(ZoomLevel::TextEffect);
 	this->width_normal = 0;
 	this->string_id = INVALID_STRING_ID;
 	this->params_1 = _free_text_effect;
@@ -68,7 +68,7 @@ TextEffectID AddTextEffect(StringID msg, int center, int y, uint8_t duration, Te
 	/* Make sure we only dirty the new area */
 	te.width_normal = 0;
 	auto params = MakeParameters(param1, param2);
-	te.UpdatePosition(ZOOM_LVL_TEXT_EFFECT, center, y, params, msg);
+	te.UpdatePosition(ZoomLevel::TextEffect, center, y, params, msg);
 
 	return i;
 }
@@ -83,7 +83,7 @@ void UpdateTextEffect(TextEffectID te_id, StringID msg, uint64_t param1, uint64_
 	te->params_2 = param2;
 
 	auto params = MakeParameters(param1, param2);
-	te->UpdatePosition(ZOOM_LVL_TEXT_EFFECT, te->center, te->top, params, msg);
+	te->UpdatePosition(ZoomLevel::TextEffect, te->center, te->top, params, msg);
 }
 
 void UpdateAllTextEffectVirtCoords()
@@ -91,7 +91,7 @@ void UpdateAllTextEffectVirtCoords()
 	for (auto &te : _text_effects) {
 		if (te.string_id == INVALID_STRING_ID) continue;
 		auto params = MakeParameters(te.params_1, te.params_2);
-		te.UpdatePosition(ZOOM_LVL_TEXT_EFFECT, te.center, te.top, params, te.string_id);
+		te.UpdatePosition(ZoomLevel::TextEffect, te.center, te.top, params, te.string_id);
 	}
 }
 
@@ -115,10 +115,10 @@ void MoveAllTextEffects(uint delta_ms)
 			continue;
 		}
 
-		te.MarkDirty(ZOOM_LVL_TEXT_EFFECT);
+		te.MarkDirty(ZoomLevel::TextEffect);
 		te.duration -= count;
 		te.top -= count * ZOOM_BASE;
-		te.MarkDirty(ZOOM_LVL_TEXT_EFFECT);
+		te.MarkDirty(ZoomLevel::TextEffect);
 	}
 }
 
@@ -132,14 +132,14 @@ void InitTextEffects()
 void DrawTextEffects(ViewportDrawerDynamic *vdd, DrawPixelInfo *dpi, bool load_transparent)
 {
 	/* Don't draw the text effects when zoomed out a lot */
-	if (dpi->zoom > ZOOM_LVL_TEXT_EFFECT) return;
+	if (dpi->zoom > ZoomLevel::TextEffect) return;
 
 	const int bottom_threshold = dpi->top + dpi->height;
 	const int top_threshold = dpi->top - ScaleByZoom(WidgetDimensions::scaled.framerect.Horizontal() + GetCharacterHeight(FS_NORMAL), dpi->zoom);
 	const bool show_loading = (_settings_client.gui.loading_indicators && !load_transparent);
 
 	ViewportStringFlags flags{};
-	if (dpi->zoom >= ZOOM_LVL_TEXT_EFFECT) flags.Set(ViewportStringFlag::Small);
+	if (dpi->zoom >= ZoomLevel::TextEffect) flags.Set(ViewportStringFlag::Small);
 
 	for (TextEffect &te : _text_effects) {
 		if (te.string_id == INVALID_STRING_ID) continue;

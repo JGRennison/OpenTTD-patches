@@ -130,12 +130,12 @@ Sprite *Blitter_8bppOptimized::Encode(SpriteType sprite_type, const SpriteLoader
 	ZoomLevel zoom_max;
 
 	if (sprite_type == SpriteType::Font) {
-		zoom_min = ZOOM_LVL_MIN;
-		zoom_max = ZOOM_LVL_MIN;
+		zoom_min = ZoomLevel::Min;
+		zoom_max = ZoomLevel::Min;
 	} else {
 		zoom_min = _settings_client.gui.zoom_min;
-		zoom_max = (ZoomLevel) std::min(_settings_client.gui.zoom_max, ZOOM_LVL_DRAW_SPR);
-		if (zoom_max == zoom_min) zoom_max = ZOOM_LVL_DRAW_SPR;
+		zoom_max = (ZoomLevel) std::min<ZoomLevel>(_settings_client.gui.zoom_max, ZoomLevel::SpriteMax);
+		if (zoom_max == zoom_min) zoom_max = ZoomLevel::SpriteMax;
 	}
 
 	for (ZoomLevel i = zoom_min; i <= zoom_max; i++) {
@@ -221,12 +221,13 @@ Sprite *Blitter_8bppOptimized::Encode(SpriteType sprite_type, const SpriteLoader
 	/* Allocate the exact amount of memory we need */
 	Sprite *dest_sprite = allocator.Allocate<Sprite>(sizeof(*dest_sprite) + size);
 
-	dest_sprite->height = sprite[ZOOM_LVL_MIN].height;
-	dest_sprite->width  = sprite[ZOOM_LVL_MIN].width;
-	dest_sprite->x_offs = sprite[ZOOM_LVL_MIN].x_offs;
-	dest_sprite->y_offs = sprite[ZOOM_LVL_MIN].y_offs;
+	const auto &root_sprite = sprite.Root();
+	dest_sprite->height = root_sprite.height;
+	dest_sprite->width  = root_sprite.width;
+	dest_sprite->x_offs = root_sprite.x_offs;
+	dest_sprite->y_offs = root_sprite.y_offs;
 	dest_sprite->next = nullptr;
-	dest_sprite->missing_zoom_levels = 0;
+	dest_sprite->missing_zoom_levels = {};
 	memcpy(dest_sprite->data, temp_dst, size);
 
 	return dest_sprite;

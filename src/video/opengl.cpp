@@ -1119,7 +1119,7 @@ void OpenGLBackend::PopulateCursorCache()
 
 		if (!this->cursor_cache.Contains(sc.image.sprite)) {
 			OpenGLSpriteAllocator allocator(this->cursor_cache, sc.image.sprite);
-			GetRawSprite(sc.image.sprite, SpriteType::Normal, UINT8_MAX, &allocator, this);
+			GetRawSprite(sc.image.sprite, SpriteType::Normal, LOW_ZOOM_ALL_BITS, &allocator, this);
 		}
 	}
 }
@@ -1400,10 +1400,15 @@ void OpenGLBackend::RenderOglSprite(OpenGLSprite *gl_sprite, PaletteID pal, int 
  * Create an OpenGL sprite with a palette remap part.
  * @param sprite The sprite to create the OpenGL sprite for
  */
-OpenGLSprite::OpenGLSprite(SpriteType sprite_type, const SpriteLoader::SpriteCollection &sprite) :
-	dim(sprite[ZOOM_LVL_MIN].width, sprite[ZOOM_LVL_MIN].height), x_offs(sprite[ZOOM_LVL_MIN].x_offs), y_offs(sprite[ZOOM_LVL_MIN].y_offs)
+OpenGLSprite::OpenGLSprite(SpriteType sprite_type, const SpriteLoader::SpriteCollection &sprite)
 {
-	int levels = sprite_type == SpriteType::Font ? 1 : ZOOM_LVL_SPR_COUNT;
+	const auto &root_sprite = sprite.Root();
+	this->dim.width = root_sprite.width;
+	this->dim.height = root_sprite.height;
+	this->x_offs = root_sprite.x_offs;
+	this->y_offs = root_sprite.y_offs;
+
+	int levels = sprite_type == SpriteType::Font ? 1 : to_underlying(ZoomLevel::SpriteEnd);
 	assert(levels > 0);
 	(void)_glGetError();
 
@@ -1413,8 +1418,8 @@ OpenGLSprite::OpenGLSprite(SpriteType sprite_type, const SpriteLoader::SpriteCol
 
 	for (int t = TEX_RGBA; t < NUM_TEX; t++) {
 		/* Sprite component present? */
-		if (t == TEX_RGBA && sprite[ZOOM_LVL_MIN].colours == SpriteComponent::Palette) continue;
-		if (t == TEX_REMAP && !sprite[ZOOM_LVL_MIN].colours.Test(SpriteComponent::Palette)) continue;
+		if (t == TEX_RGBA && sprite[ZoomLevel::Min].colours == SpriteComponent::Palette) continue;
+		if (t == TEX_REMAP && !sprite[ZoomLevel::Min].colours.Test(SpriteComponent::Palette)) continue;
 
 		/* Allocate texture. */
 		_glGenTextures(1, &this->tex[t]);
@@ -1439,7 +1444,8 @@ OpenGLSprite::OpenGLSprite(SpriteType sprite_type, const SpriteLoader::SpriteCol
 
 	/* Upload texture data. */
 	for (int i = 0; i < levels; i++) {
-		this->Update(sprite[i].width, sprite[i].height, i, sprite[i].data);
+		const auto &sp = sprite[static_cast<ZoomLevel>(i)];
+		this->Update(sp.width, sp.height, i, sp.data);
 	}
 
 	assert(_glGetError() == GL_NO_ERROR);

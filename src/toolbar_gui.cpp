@@ -2866,8 +2866,8 @@ MainToolbarScaleAdjuster::MainToolbarScaleAdjuster()
 		/* Bump scale to next integer multiple */
 		_gui_scale = Clamp(100 * ((_gui_scale / 100) + 1), MIN_INTERFACE_SCALE, MAX_INTERFACE_SCALE);
 
-		int8_t new_zoom = ScaleGUITrad(1) <= 1 ? ZOOM_LVL_NORMAL : ScaleGUITrad(1) >= 4 ? ZOOM_LVL_MIN : ZOOM_LVL_IN_2X;
-		_gui_zoom = static_cast<ZoomLevel>(Clamp(new_zoom, _settings_client.gui.zoom_min, _settings_client.gui.zoom_max));
+		ZoomLevel new_zoom = ScaleGUITrad(1) <= 1 ? ZoomLevel::Normal : ScaleGUITrad(1) >= 4 ? ZoomLevel::Min : ZoomLevel::In2x;
+		_gui_zoom = Clamp<ZoomLevel>(new_zoom, _settings_client.gui.zoom_min, _settings_client.gui.zoom_max);
 		SetupWidgetDimensions();
 	}
 }

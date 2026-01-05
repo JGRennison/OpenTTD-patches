@@ -2016,3 +2016,11 @@ STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Heslo - 
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Nastav heslo společnosti
 
 # JSON messages
+
+STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}Nastavení grafik
+STR_INTRO_AI_SETTINGS                                           :{BLACK}Nastavení AI
+STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}Nastavení herních skriptů
+STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Otevřít nastavení NewGRF
+STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}Otevřít nastavení AI
+STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}Otevřít nastavení herních skriptů
+STR_INTRO_CAPTION_TRADITIONAL                                   :{WHITE}OpenTTD {REV}

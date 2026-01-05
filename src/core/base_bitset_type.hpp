@@ -265,6 +265,16 @@ public:
 		return SetBitIterator<Tvalue_type, Tstorage>(this->data).end();
 	}
 
+	Tvalue_type FindFirstBit() const
+	{
+		return static_cast<Tvalue_type>(::FindFirstBit(this->data));
+	}
+
+	Tvalue_type FindLastBit() const
+	{
+		return static_cast<Tvalue_type>(::FindLastBit(this->data));
+	}
+
 private:
 	Tstorage data; ///< Bitmask of values.
 };

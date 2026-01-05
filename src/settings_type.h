@@ -422,6 +422,7 @@ struct GUISettings : public TimeSettings {
 
 	bool        scale_bevels;                                    ///< bevels are scaled with GUI scale.
 	bool        bigger_main_toolbar;                             ///< bigger main toolbar.
+	bool        traditional_intro_menu;                          ///< traditional intro menu.
 
 	/**
 	 * Returns true when the user has sufficient privileges to edit newgrfs on a running game

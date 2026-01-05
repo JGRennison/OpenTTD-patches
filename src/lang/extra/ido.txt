@@ -34,3 +34,5 @@ STR_VEHICLE_STATUS_HEADING_FOR_DEPOT_SERVICE_VEL_END            :{LTBLUE}Servado
 # Network set password
 
 # JSON messages
+
+STR_INTRO_CAPTION_TRADITIONAL                                   :{WHITE}OpenTTD {REV}

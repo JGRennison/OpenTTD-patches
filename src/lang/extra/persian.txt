@@ -76,3 +76,7 @@ STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}شرکت
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}ثبت رمز جدید
 
 # JSON messages
+
+STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}تنظیمات NewGRF
+STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}نمایش تنظیمات NewGRF
+STR_INTRO_CAPTION_TRADITIONAL                                   :{WHITE}OpenTTD {REV}
