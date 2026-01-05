@@ -176,7 +176,7 @@ static void NotifyAllViewports(ViewportMapType map_type)
 {
 	for (Window *w : Window::Iterate()) {
 		if (w->viewport != nullptr) {
-			if (w->viewport->zoom >= ZOOM_LVL_DRAW_MAP && w->viewport->map_type == map_type) {
+			if (w->viewport->zoom >= ZoomLevel::DrawMap && w->viewport->map_type == map_type) {
 				ClearViewportLandPixelCache(w->viewport);
 				w->InvalidateData();
 			}
@@ -1800,7 +1800,7 @@ void SmallMapWindow::ScreenshotCallbackHandler(void *buf, uint y, uint pitch, ui
 	dpi.height = n;
 	dpi.width = (((Map::MaxX() + Map::MaxY()) * 2) * this->ui_zoom) / this->tile_zoom;
 	dpi.pitch = pitch;
-	dpi.zoom = ZOOM_LVL_MIN;
+	dpi.zoom = ZoomLevel::Min;
 	dpi.left = 0;
 	dpi.top = y;
 

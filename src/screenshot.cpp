@@ -113,7 +113,7 @@ static void LargeWorldCallback(void *userdata, void *buf, uint y, uint pitch, ui
 	dpi.height = n;
 	dpi.width = vp->width;
 	dpi.pitch = pitch;
-	dpi.zoom = ZOOM_LVL_WORLD_SCREENSHOT;
+	dpi.zoom = ZoomLevel::WorldScreenshot;
 	dpi.left = 0;
 	dpi.top = y;
 
@@ -246,7 +246,7 @@ static Viewport SetupScreenshotViewport(ScreenshotType t, uint32_t width = 0, ui
 				vp.zoom =  w->viewport->zoom;
 				vp.map_type = w->viewport->map_type;
 			} else {
-				vp.zoom = ZOOM_LVL_WORLD_SCREENSHOT;
+				vp.zoom = ZoomLevel::WorldScreenshot;
 			}
 
 			TileIndex north_tile = _settings_game.construction.freeform_edges ? TileXY(1, 1) : TileXY(0, 0);
@@ -271,7 +271,7 @@ static Viewport SetupScreenshotViewport(ScreenshotType t, uint32_t width = 0, ui
 			break;
 		}
 		default: {
-			vp.zoom = (t == SC_ZOOMEDIN) ? _settings_client.gui.zoom_min : ZOOM_LVL_VIEWPORT;
+			vp.zoom = (t == SC_ZOOMEDIN) ? _settings_client.gui.zoom_min : ZoomLevel::Viewport;
 
 			Window *w = GetMainWindow();
 			vp.virtual_left   = w->viewport->virtual_left;
@@ -281,8 +281,8 @@ static Viewport SetupScreenshotViewport(ScreenshotType t, uint32_t width = 0, ui
 				vp.virtual_width  = w->viewport->virtual_width;
 				vp.virtual_height = w->viewport->virtual_height;
 			} else {
-				vp.virtual_width = width << vp.zoom;
-				vp.virtual_height = height << vp.zoom;
+				vp.virtual_width = width << to_underlying(vp.zoom);
+				vp.virtual_height = height << to_underlying(vp.zoom);
 			}
 
 			/* Compute pixel coordinates */

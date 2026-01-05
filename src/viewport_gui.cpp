@@ -64,7 +64,7 @@ public:
 		this->InitNested(window_number);
 
 		NWidgetViewport *nvp = this->GetWidget<NWidgetViewport>(WID_EV_VIEWPORT);
-		nvp->InitializeViewport(this, 0, ScaleZoomGUI(ZOOM_LVL_VIEWPORT));
+		nvp->InitializeViewport(this, 0, ScaleZoomGUI(ZoomLevel::Viewport));
 		if (_settings_client.gui.zoom_min == viewport->zoom) this->DisableWidget(WID_EV_ZOOM_IN);
 
 		Point pt;

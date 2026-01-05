@@ -3003,8 +3003,8 @@ void LoadFromConfig(bool startup)
 		if (FindWindowById(WC_ERRMSG, 0) == nullptr) ShowFirstError();
 	} else {
 		PostTransparencyOptionLoad();
-		if (_fallback_gui_zoom_max && _settings_client.gui.zoom_max <= ZOOM_LVL_OUT_8X) {
-			_settings_client.gui.zoom_max = ZOOM_LVL_MAX;
+		if (_fallback_gui_zoom_max && _settings_client.gui.zoom_max <= ZoomLevel::Out8x) {
+			_settings_client.gui.zoom_max = ZoomLevel::Max;
 		}
 	}
 }

@@ -28,9 +28,9 @@ enum class SpriteComponent : uint8_t {
 using SpriteComponents = EnumBitSet<SpriteComponent, uint8_t, SpriteComponent::End>;
 
 struct SpriteLoaderResult {
-	uint8_t loaded_sprites = 0;  ///< Bit mask of the zoom levels successfully loaded or 0 if no sprite could be loaded.
-	uint8_t avail_8bpp = 0;
-	uint8_t avail_32bpp = 0;
+	LowZoomLevels loaded_sprites{};  ///< Bit mask of the zoom levels successfully loaded or 0 if no sprite could be loaded.
+	LowZoomLevels avail_8bpp{};
+	LowZoomLevels avail_32bpp{};
 
 	void Apply(const SpriteLoaderResult &other)
 	{
@@ -38,6 +38,20 @@ struct SpriteLoaderResult {
 		this->avail_8bpp |= other.avail_8bpp;
 		this->avail_32bpp |= other.avail_32bpp;
 	}
+};
+
+/**
+ * Map zoom level to data.
+ */
+template <class T>
+class SpriteCollMap {
+	std::array<T, to_underlying(ZoomLevel::SpriteEnd)> data;
+public:
+	inline constexpr T &operator[](const ZoomLevel &zoom) { return this->data[to_underlying(zoom)]; }
+	inline constexpr const T &operator[](const ZoomLevel &zoom) const { return this->data[to_underlying(zoom)]; }
+
+	T &Root() { return this->data[to_underlying(ZoomLevel::Min)]; }
+	const T &Root() const { return this->data[to_underlying(ZoomLevel::Min)]; }
 };
 
 /** Interface for the loader of our sprites. */
@@ -74,25 +88,25 @@ public:
 		void AllocateData(ZoomLevel zoom, size_t size) { this->data = Sprite::buffer[zoom].ZeroAllocate(size); }
 	private:
 		/** Allocated memory to pass sprite data around */
-		static ReusableBuffer<SpriteLoader::CommonPixel> buffer[ZOOM_LVL_SPR_COUNT];
+		static SpriteCollMap<ReusableBuffer<SpriteLoader::CommonPixel>> buffer;
 	};
 
 	/**
 	 * Type defining a collection of sprites, one for each zoom level.
 	 */
-	using SpriteCollection = std::array<Sprite, ZOOM_LVL_SPR_COUNT>;
+	using SpriteCollection = SpriteCollMap<Sprite>;
 
 	/**
 	 * Load a sprite from the disk and return a sprite struct which is the same for all loaders.
 	 * @param[out] sprite The sprites to fill with data.
-	 * @param file_slot   The file "descriptor" of the file we read from.
+	 * @param file The file "descriptor" of the file we read from.
 	 * @param file_pos    The position within the file the image begins.
 	 * @param sprite_type The type of sprite we're trying to load.
 	 * @param load_32bpp  True if 32bpp sprites should be loaded, false for a 8bpp sprite.
 	 * @param control_flags Control flags, see SpriteCacheCtrlFlags.
 	 * @return SpriteLoaderResult. loaded_sprites field is a bit mask of the zoom levels successfully loaded or 0 if no sprite could be loaded.
 	 */
-	virtual SpriteLoaderResult LoadSprite(SpriteLoader::SpriteCollection &sprite, SpriteFile &file, size_t file_pos, SpriteType sprite_type, bool load_32bpp, uint count, uint16_t control_flags, uint8_t zoom_levels) = 0;
+	virtual SpriteLoaderResult LoadSprite(SpriteLoader::SpriteCollection &sprite, SpriteFile &file, size_t file_pos, SpriteType sprite_type, bool load_32bpp, uint count, uint16_t control_flags, LowZoomLevels zoom_levels) = 0;
 
 	virtual ~SpriteLoader() = default;
 };

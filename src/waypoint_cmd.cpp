@@ -46,7 +46,7 @@ void Waypoint::UpdateVirtCoord()
 	if (_viewport_sign_kdtree_valid && this->sign.kdtree_valid) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeWaypoint(this->index));
 
 	auto params = MakeParameters(this->index);
-	this->sign.UpdatePosition(ShouldShowBaseStationViewportLabel(this) ? ZOOM_LVL_DRAW_SPR : ZOOM_LVL_END, pt.x, pt.y - 32 * ZOOM_BASE, params, STR_WAYPOINT_NAME);
+	this->sign.UpdatePosition(ShouldShowBaseStationViewportLabel(this) ? ZoomLevel::SpriteMax : ZoomLevel::End, pt.x, pt.y - 32 * ZOOM_BASE, params, STR_WAYPOINT_NAME);
 
 	if (_viewport_sign_kdtree_valid) _viewport_sign_kdtree.Insert(ViewportSignKdtreeItem::MakeWaypoint(this->index));
 
@@ -646,7 +646,7 @@ CommandCost CmdSetWaypointLabelHidden(DoCommandFlags flags, StationID waypoint_i
 
 		if (HasBit(_display_opt, DO_SHOW_WAYPOINT_NAMES) &&
 				!(_local_company != wp->owner && wp->owner != OWNER_NONE && !HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS))) {
-			wp->sign.MarkDirty(ZOOM_LVL_DRAW_SPR);
+			wp->sign.MarkDirty(ZoomLevel::SpriteMax);
 		}
 
 		InvalidateWindowData(WC_WAYPOINT_VIEW, wp->index);

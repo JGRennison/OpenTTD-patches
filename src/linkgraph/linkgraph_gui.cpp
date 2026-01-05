@@ -152,7 +152,7 @@ void LinkGraphOverlay::RebuildCache(bool incremental)
 		const Viewport *vp = this->window->viewport;
 		const int pixel_margin = 256;
 		const int vp_margin = ScaleByZoom(pixel_margin, vp->zoom);
-		if (vp->zoom < ZOOM_LVL_DRAW_MAP) {
+		if (vp->zoom < ZoomLevel::DrawMap) {
 			this->GetWidgetDpi(&dpi, pixel_margin);
 		} else {
 			dpi.left = UnScaleByZoomLower(vp->virtual_left - vp_margin, vp->zoom);
@@ -458,7 +458,7 @@ void LinkGraphOverlay::PrepareDraw()
 	if (this->dirty) {
 		this->RebuildCache();
 	}
-	if (this->last_update_number != GetWindowUpdateNumber() && (this->window->viewport == nullptr || this->window->viewport->zoom < ZOOM_LVL_DRAW_MAP)) {
+	if (this->last_update_number != GetWindowUpdateNumber() && (this->window->viewport == nullptr || this->window->viewport->zoom < ZoomLevel::DrawMap)) {
 		this->last_update_number = GetWindowUpdateNumber();
 		this->RefreshDrawCache();
 	}

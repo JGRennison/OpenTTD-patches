@@ -105,7 +105,7 @@ public:
 
 	/* SpriteEncoder */
 
-	uint GetSpriteAlignment() override { return 1u << (ZOOM_LVL_SPR_COUNT - 1); }
+	uint GetSpriteAlignment() override { return 1u << to_underlying(ZoomLevel::SpriteMax); }
 	Sprite *Encode(SpriteType sprite_type, const SpriteLoader::SpriteCollection &sprite, SpriteAllocator &allocator) override;
 };
 

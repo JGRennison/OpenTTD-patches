@@ -106,9 +106,9 @@ struct Viewport {
 private:
 	uint GetDirtyBlockShift() const
 	{
-		if (this->zoom >= ZOOM_LVL_DRAW_MAP) return 3;
-		if (this->zoom >= ZOOM_LVL_OUT_2X) return 4;
-		return 7 - this->zoom;
+		if (this->zoom >= ZoomLevel::DrawMap) return 3;
+		if (this->zoom >= ZoomLevel::Out2x) return 4;
+		return 7 - to_underlying(this->zoom);
 	}
 };
 

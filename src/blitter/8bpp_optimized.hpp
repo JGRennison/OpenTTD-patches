@@ -18,8 +18,8 @@ class Blitter_8bppOptimized final : public Blitter_8bppBase {
 public:
 	/** Data stored about a (single) sprite. */
 	struct SpriteData {
-		uint32_t offset[ZOOM_LVL_SPR_COUNT]; ///< Offsets (from .data) to streams for different zoom levels.
-		uint8_t data[];                      ///< Data, all zoomlevels.
+		SpriteCollMap<uint32_t> offset;   ///< Offsets (from .data) to streams for different zoom levels.
+		uint8_t data[];                   ///< Data, all zoomlevels.
 	};
 
 	void Draw(Blitter::BlitterParams *bp, BlitterMode mode, ZoomLevel zoom) override;

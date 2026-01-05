@@ -348,7 +348,7 @@ struct ViewportDrawerDynamic {
 		dpi_for_text.top    = UnScaleByZoom(this->dpi.top,    this->dpi.zoom);
 		dpi_for_text.width  = UnScaleByZoom(this->dpi.width,  this->dpi.zoom);
 		dpi_for_text.height = UnScaleByZoom(this->dpi.height, this->dpi.zoom);
-		dpi_for_text.zoom   = ZOOM_LVL_MIN;
+		dpi_for_text.zoom   = ZoomLevel::Min;
 		return dpi_for_text;
 	}
 
@@ -504,10 +504,10 @@ static void FillViewportCoverageRect()
 		Rect &r = _viewport_coverage_rects[i];
 		r.left = vp->virtual_left;
 		r.top = vp->virtual_top;
-		r.right = vp->virtual_left + vp->virtual_width + (1 << vp->zoom) - 1;
-		r.bottom = vp->virtual_top + vp->virtual_height + (1 << vp->zoom) - 1;
+		r.right = vp->virtual_left + vp->virtual_width + (1 << to_underlying(vp->zoom)) - 1;
+		r.bottom = vp->virtual_top + vp->virtual_height + (1 << to_underlying(vp->zoom)) - 1;
 
-		if (vp->zoom >= ZOOM_LVL_DRAW_MAP) {
+		if (vp->zoom >= ZoomLevel::DrawMap) {
 			_viewport_vehicle_map_redraw_rects.push_back(r);
 		} else {
 			_viewport_vehicle_normal_redraw_rects.push_back({
@@ -593,7 +593,7 @@ static void ScrollPlanPixelCache(Viewport *vp, int offset_x, int offset_y)
 		plan_dpi.height = height;
 		plan_dpi.width = width;
 		plan_dpi.pitch = vp->width;
-		plan_dpi.zoom = ZOOM_LVL_MIN;
+		plan_dpi.zoom = ZoomLevel::Min;
 		plan_dpi.left = UnScaleByZoomLower(vp->virtual_left, vp->zoom) + x;
 		plan_dpi.top = UnScaleByZoomLower(vp->virtual_top, vp->zoom) + y;
 
@@ -608,7 +608,7 @@ static void ScrollOrInvalidateOverlayPixelCache(Viewport *vp, int offset_x, int 
 {
 	if (vp->overlay_pixel_cache.empty()) return;
 
-	if (vp->zoom < ZOOM_LVL_DRAW_MAP || vp->last_overlay_rebuild_counter != vp->overlay->GetRebuildCounter()) {
+	if (vp->zoom < ZoomLevel::DrawMap || vp->last_overlay_rebuild_counter != vp->overlay->GetRebuildCounter()) {
 		vp->overlay_pixel_cache.clear();
 		return;
 	}
@@ -619,7 +619,7 @@ static void ScrollOrInvalidateOverlayPixelCache(Viewport *vp, int offset_x, int 
 		overlay_dpi.height = height;
 		overlay_dpi.width = width;
 		overlay_dpi.pitch = vp->width;
-		overlay_dpi.zoom = ZOOM_LVL_MIN;
+		overlay_dpi.zoom = ZoomLevel::Min;
 		overlay_dpi.left = UnScaleByZoomLower(vp->virtual_left, vp->zoom) + x;
 		overlay_dpi.top = UnScaleByZoomLower(vp->virtual_top, vp->zoom) + y;
 
@@ -632,7 +632,7 @@ static void ScrollOrInvalidateOverlayPixelCache(Viewport *vp, int offset_x, int 
 
 void ClearViewportCache(Viewport *vp)
 {
-	if (vp->zoom >= ZOOM_LVL_DRAW_MAP) {
+	if (vp->zoom >= ZoomLevel::DrawMap) {
 		memset(vp->map_draw_vehicles_cache.done_hash_bits, 0, sizeof(vp->map_draw_vehicles_cache.done_hash_bits));
 		if (!vp->map_draw_vehicles_cache.vehicle_pixels.empty()) {
 			MemSetT(vp->map_draw_vehicles_cache.vehicle_pixels.data(), 0, vp->map_draw_vehicles_cache.vehicle_pixels.size());
@@ -688,7 +688,7 @@ void InitializeWindowViewport(Window *w, int x, int y,
 	vp->width = width;
 	vp->height = height;
 
-	vp->zoom = static_cast<ZoomLevel>(Clamp(zoom, _settings_client.gui.zoom_min, _settings_client.gui.zoom_max));
+	vp->zoom = Clamp(zoom, _settings_client.gui.zoom_min, _settings_client.gui.zoom_max);
 
 	vp->virtual_left = 0;
 	vp->virtual_top = 0;
@@ -912,7 +912,7 @@ static void DoSetViewportPosition(Window *w, const Point move_offset, const int 
 
 inline void UpdateViewportDirtyBlockLeftMargin(Viewport *vp)
 {
-	if (vp->zoom >= ZOOM_LVL_DRAW_MAP) {
+	if (vp->zoom >= ZoomLevel::DrawMap) {
 		vp->dirty_block_left_margin = 0;
 	} else {
 		vp->dirty_block_left_margin = UnScaleByZoomLower((-vp->virtual_left) & 127, vp->zoom);
@@ -1226,7 +1226,7 @@ void OffsetGroundSprite(int x, int y)
 static void AddCombinedSprite(SpriteID image, PaletteID pal, int x, int y, int z, const SubSprite *sub)
 {
 	Point pt = RemapCoords(x, y, z);
-	const Sprite *spr = GetSprite(image & SPRITE_MASK, SpriteType::Normal, ZoomMask(_vdd->dpi.zoom));
+	const Sprite *spr = GetSprite(image & SPRITE_MASK, SpriteType::Normal, LowZoomMask(_vdd->dpi.zoom));
 
 	int left = pt.x + spr->x_offs;
 	int right = pt.x + spr->x_offs + spr->width;
@@ -1304,7 +1304,7 @@ void AddSortableSpriteToDraw(SpriteID image, PaletteID pal, int x, int y, int w,
 		tmp_width = right - left;
 		tmp_height = bottom - top;
 	} else {
-		const Sprite *spr = GetSprite(image & SPRITE_MASK, SpriteType::Normal, ZoomMask(_vdd->dpi.zoom));
+		const Sprite *spr = GetSprite(image & SPRITE_MASK, SpriteType::Normal, LowZoomMask(_vdd->dpi.zoom));
 		left = tmp_left = (pt.x += spr->x_offs);
 		right           = (pt.x +  spr->width );
 		top  = tmp_top  = (pt.y += spr->y_offs);
@@ -2176,7 +2176,7 @@ static void ViewportAddKdtreeSigns(ViewportDrawerDynamic *vdd, DrawPixelInfo *dp
 	});
 
 	/* Small versions of signs are used zoom level 4X and higher. */
-	bool small = dpi->zoom >= ZOOM_LVL_OUT_4X;
+	bool small = dpi->zoom >= ZoomLevel::Out4x;
 
 	/* Layering order (bottom to top): Town names, signs, stations */
 	ViewportAddTownStrings(vdd, dpi, towns, small);
@@ -2230,25 +2230,26 @@ void ViewportSign::UpdatePosition(ZoomLevel maxzoom, int center, int top, std::s
  */
 void ViewportSign::MarkDirty(ZoomLevel maxzoom) const
 {
-	if (maxzoom == ZOOM_LVL_END) return;
+	if (maxzoom == ZoomLevel::End) return;
 
-	Rect zoomlevels[ZOOM_LVL_END];
+	Rect zoomlevels[to_underlying(ZoomLevel::End)];
 
 	const uint small_height = WidgetDimensions::scaled.fullbevel.top + GetCharacterHeight(FS_SMALL) + WidgetDimensions::scaled.fullbevel.bottom + 1;
 	const uint normal_height = WidgetDimensions::scaled.fullbevel.top + GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.fullbevel.bottom + 1;
 
-	for (ZoomLevel zoom = ZOOM_LVL_BEGIN; zoom != ZOOM_LVL_END; zoom++) {
-		const ZoomLevel small_from = (maxzoom == ZOOM_LVL_OUT_2X) ? ZOOM_LVL_OUT_2X : ZOOM_LVL_OUT_4X;
+	for (ZoomLevel zoom = ZoomLevel::Begin; zoom != ZoomLevel::End; zoom++) {
+		const ZoomLevel small_from = (maxzoom == ZoomLevel::Out2x) ? ZoomLevel::Out2x : ZoomLevel::Out4x;
 		const int width = (zoom >= small_from) ? this->width_small : this->width_normal;
-		zoomlevels[zoom].left   = this->center - ScaleByZoom(width / 2 + 1, zoom);
-		zoomlevels[zoom].top    = this->top    - ScaleByZoom(1, zoom);
-		zoomlevels[zoom].right  = this->center + ScaleByZoom(width / 2 + 1, zoom);
-		zoomlevels[zoom].bottom = this->top    + ScaleByZoom((zoom >= small_from) ? small_height : normal_height, zoom);
+		auto &zl = zoomlevels[to_underlying(zoom)];
+		zl.left   = this->center - ScaleByZoom(width / 2 + 1, zoom);
+		zl.top    = this->top    - ScaleByZoom(1, zoom);
+		zl.right  = this->center + ScaleByZoom(width / 2 + 1, zoom);
+		zl.bottom = this->top    + ScaleByZoom((zoom >= small_from) ? small_height : normal_height, zoom);
 	}
 
 	for (Viewport *vp : _viewport_window_cache) {
 		if (vp->zoom <= maxzoom) {
-			Rect &zl = zoomlevels[vp->zoom];
+			Rect &zl = zoomlevels[to_underlying(vp->zoom)];
 			MarkViewportDirty(vp, zl.left, zl.top, zl.right, zl.bottom, VMDF_NONE);
 		}
 	}
@@ -3567,7 +3568,7 @@ static inline void ViewportMapStoreBridgeAboveTile(const Viewport * const vp, co
 
 static inline TileIndex ViewportMapGetMostSignificantTileType(const Viewport * const vp, const TileIndex from_tile, TileType * const tile_type)
 {
-	if (vp->zoom <= ZOOM_LVL_OUT_32X) {
+	if (vp->zoom <= ZoomLevel::Out32x) {
 		const TileType ttype = GetTileType(from_tile);
 		/* Store bridges and tunnels. */
 		if (ttype != MP_TUNNELBRIDGE) {
@@ -3587,7 +3588,7 @@ static inline TileIndex ViewportMapGetMostSignificantTileType(const Viewport * c
 		return from_tile;
 	}
 
-	const uint8_t length = (vp->zoom - ZOOM_LVL_OUT_32X) * 2;
+	const uint8_t length = (vp->zoom - ZoomLevel::Out32x) * 2;
 	TileArea tile_area = TileArea(from_tile, length, length);
 	tile_area.ClampToMap();
 
@@ -3693,7 +3694,7 @@ static void ViewportMapDrawScrollingViewportBox(const Viewport * const vp)
 {
 	if (_scrolling_viewport && _scrolling_viewport->viewport) {
 		const ViewportData * const vp_scrolling = _scrolling_viewport->viewport;
-		if (vp_scrolling->zoom < ZOOM_LVL_DRAW_MAP) {
+		if (vp_scrolling->zoom < ZoomLevel::DrawMap) {
 			const int w = UnScaleByZoom(_vdd->dpi.width, vp->zoom);
 			const int l = UnScaleByZoomLower(vp_scrolling->next_scrollpos_x - _vdd->dpi.left, _vdd->dpi.zoom);
 			const int r = UnScaleByZoomLower(vp_scrolling->next_scrollpos_x + vp_scrolling->virtual_width - _vdd->dpi.left, _vdd->dpi.zoom);
@@ -3840,7 +3841,7 @@ static void ViewportMapDrawBridgeTunnel(Viewport * const vp, const TunnelBridgeT
 	}
 
 	TileIndexDiff delta = TileOffsByDiagDir(GetTunnelBridgeDirection(tile));
-	uint zoom_mask = (1 << (vp->zoom - ZOOM_LVL_DRAW_MAP)) - 1;
+	uint zoom_mask = (1 << (vp->zoom - ZoomLevel::DrawMap)) - 1;
 	for (tile += delta; tile != tbtm->to_tile; tile += delta) { // For each tile
 		if (zoom_mask != 0 && ((TileX(tile) ^ TileY(tile)) & zoom_mask)) continue;
 		const Point pt = RemapCoords(TileX(tile) * TILE_SIZE, TileY(tile) * TILE_SIZE, z);
@@ -3880,8 +3881,8 @@ void ViewportMapDraw(Viewport * const vp)
 	const uint line_padding = 2 * (sy & 1);
 	uint       colour_index_base = (sx + line_padding) & 3;
 
-	const  int incr_a = (1 << (vp->zoom - 2)) / ZOOM_BASE;
-	const  int incr_b = (1 << (vp->zoom - 1)) / ZOOM_BASE;
+	const  int incr_a = (1 << (to_underlying(vp->zoom) - 2)) / ZOOM_BASE;
+	const  int incr_b = (1 << (to_underlying(vp->zoom) - 1)) / ZOOM_BASE;
 	const  int a = (_vdd->dpi.left >> 2) / ZOOM_BASE;
 	int        b = (_vdd->dpi.top >> 1) / ZOOM_BASE;
 	const  int w = UnScaleByZoom(_vdd->dpi.width, vp->zoom);
@@ -4103,7 +4104,7 @@ void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom, NWid
 	if (vp->overlay != nullptr && vp->overlay->GetCargoMask() != 0 && vp->overlay->GetCompanyMask().Any()) {
 		vp->overlay->PrepareDraw();
 
-		if (vp->zoom >= ZOOM_LVL_DRAW_MAP && (vp->overlay_pixel_cache.empty() || vp->last_overlay_rebuild_counter != vp->overlay->GetRebuildCounter())) {
+		if (vp->zoom >= ZoomLevel::DrawMap && (vp->overlay_pixel_cache.empty() || vp->last_overlay_rebuild_counter != vp->overlay->GetRebuildCounter())) {
 			vp->last_overlay_rebuild_counter = vp->overlay->GetRebuildCounter();
 
 			vp->overlay_pixel_cache.assign(vp->ScreenArea(), 0xD7);
@@ -4113,7 +4114,7 @@ void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom, NWid
 			overlay_dpi.height = vp->height;
 			overlay_dpi.width = vp->width;
 			overlay_dpi.pitch = vp->width;
-			overlay_dpi.zoom = ZOOM_LVL_MIN;
+			overlay_dpi.zoom = ZoomLevel::Min;
 			overlay_dpi.left = UnScaleByZoomLower(vp->virtual_left, vp->zoom);
 			overlay_dpi.top = UnScaleByZoomLower(vp->virtual_top, vp->zoom);
 
@@ -4123,7 +4124,7 @@ void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom, NWid
 		}
 	}
 
-	if (vp->zoom >= ZOOM_LVL_DRAW_MAP) {
+	if (vp->zoom >= ZoomLevel::DrawMap) {
 		/* Here the rendering is like smallmap. */
 		if (BlitterFactory::GetCurrentBlitter()->GetScreenDepth() == 32) {
 			if (_settings_client.gui.show_slopes_on_viewport_map) {
@@ -4142,7 +4143,7 @@ void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom, NWid
 		ViewportMapDrawVehicles(&_vdd->dpi, vp);
 		if (_scrolling_viewport && _settings_client.gui.show_scrolling_viewport_on_map) ViewportMapDrawScrollingViewportBox(vp);
 		if (unlikely(_thd.place_mode == (HT_SPECIAL | HT_MAP) && (_thd.drawstyle & HT_DRAG_MASK) == HT_RECT && _thd.select_proc == DDSP_MEASURE)) ViewportMapDrawSelection(vp);
-		if (vp->zoom < ZOOM_LVL_OUT_64X) ViewportAddKdtreeSigns(_vdd.get(), &_vdd->dpi, true);
+		if (vp->zoom < ZoomLevel::Out64x) ViewportAddKdtreeSigns(_vdd.get(), &_vdd->dpi, true);
 
 		if (AreAnyPlansVisible()) {
 			if (vp->last_plan_update_number != _plan_update_counter) {
@@ -4155,7 +4156,7 @@ void ViewportDoDraw(Viewport *vp, int left, int top, int right, int bottom, NWid
 				plan_dpi.height = vp->height;
 				plan_dpi.width = vp->width;
 				plan_dpi.pitch = vp->width;
-				plan_dpi.zoom = ZOOM_LVL_MIN;
+				plan_dpi.zoom = ZoomLevel::Min;
 				plan_dpi.left = UnScaleByZoomLower(vp->virtual_left, vp->zoom);
 				plan_dpi.top = UnScaleByZoomLower(vp->virtual_top, vp->zoom);
 
@@ -4282,16 +4283,16 @@ void ViewportDoDrawProcessAllPending()
 /* This may be run either in a worker thread, or in the main thead */
 static void ViewportDoDrawPhase2(Viewport *vp, ViewportDrawerDynamic *vdd)
 {
-	if (_draw_dirty_blocks && !(HasBit(_viewport_debug_flags, VDF_DIRTY_BLOCK_PER_SPLIT) && vp->zoom < ZOOM_LVL_DRAW_MAP)) {
+	if (_draw_dirty_blocks && !(HasBit(_viewport_debug_flags, VDF_DIRTY_BLOCK_PER_SPLIT) && vp->zoom < ZoomLevel::DrawMap)) {
 		ViewportDrawDirtyBlocks(&vdd->dpi, HasBit(_viewport_debug_flags, VDF_DIRTY_BLOCK_PER_DRAW));
 	}
 
 	if (vp->overlay != nullptr && vp->overlay->GetCargoMask() != 0 && vp->overlay->GetCompanyMask().Any()) {
-		if (vp->zoom < ZOOM_LVL_DRAW_MAP) {
+		if (vp->zoom < ZoomLevel::DrawMap) {
 			/* translate to window coordinates */
 			DrawPixelInfo dp = vdd->dpi;
 			ZoomLevel zoom = vdd->dpi.zoom;
-			dp.zoom = ZOOM_LVL_MIN;
+			dp.zoom = ZoomLevel::Min;
 			dp.width = UnScaleByZoom(dp.width, zoom);
 			dp.height = UnScaleByZoom(dp.height, zoom);
 			dp.left = vdd->offset_x + vp->left;
@@ -4312,7 +4313,7 @@ static void ViewportDoDrawPhase3(Viewport *vp)
 {
 	DrawPixelInfo dp = _vdd->dpi;
 	ZoomLevel zoom = _vdd->dpi.zoom;
-	dp.zoom = ZOOM_LVL_MIN;
+	dp.zoom = ZoomLevel::Min;
 	dp.width = UnScaleByZoom(dp.width, zoom);
 	dp.height = UnScaleByZoom(dp.height, zoom);
 	_cur_dpi = &dp;
@@ -4329,10 +4330,10 @@ static void ViewportDoDrawPhase3(Viewport *vp)
 	}
 	_cur_dpi = nullptr;
 
-	if (vp->zoom < ZOOM_LVL_DRAW_MAP && AreAnyPlansVisible()) {
+	if (vp->zoom < ZoomLevel::DrawMap && AreAnyPlansVisible()) {
 		DrawPixelInfo plan_dpi = _vdd->MakeDPIForText();
 		ViewportDrawPlans(vp, BlitterFactory::GetCurrentBlitter(), &plan_dpi);
-	} else if (vp->zoom >= ZOOM_LVL_DRAW_MAP && !vp->plan_pixel_cache.empty()) {
+	} else if (vp->zoom >= ZoomLevel::DrawMap && !vp->plan_pixel_cache.empty()) {
 		const int pixel_cache_start = _vdd->offset_x + (_vdd->offset_y * vp->width);
 		BlitterFactory::GetCurrentBlitter()->SetRectNoD7(_vdd->dpi.dst_ptr, 0, 0, vp->plan_pixel_cache.data() + pixel_cache_start,
 				dp.height, dp.width, vp->width);
@@ -4363,7 +4364,7 @@ static void ViewportDoDrawPhase3(Viewport *vp)
  */
 void ViewportDrawChk(Viewport *vp, int left, int top, int right, int bottom, NWidgetDisplayFlags display_flags)
 {
-	if ((vp->zoom < ZOOM_LVL_DRAW_MAP) && ((int64_t)ScaleByZoom(bottom - top, vp->zoom) * (int64_t)ScaleByZoom(right - left, vp->zoom) > (int64_t)(1000000 * ZOOM_BASE * ZOOM_BASE))) {
+	if ((vp->zoom < ZoomLevel::DrawMap) && ((int64_t)ScaleByZoom(bottom - top, vp->zoom) * (int64_t)ScaleByZoom(right - left, vp->zoom) > (int64_t)(1000000 * ZOOM_BASE * ZOOM_BASE))) {
 		if ((bottom - top) > (right - left)) {
 			int t = (top + bottom) >> 1;
 			ViewportDrawChk(vp, left, top, right, t, display_flags);
@@ -4570,7 +4571,7 @@ void UpdateViewportSizeZoom(Viewport *vp)
 	vp->dirty_blocks_column_pitch = CeilDivT(vp->dirty_blocks_per_column, VP_BLOCK_BITS);
 	vp->dirty_blocks.assign(vp->dirty_blocks_column_pitch * vp->dirty_blocks_per_row, 0);
 	UpdateViewportDirtyBlockLeftMargin(vp);
-	if (vp->zoom >= ZOOM_LVL_DRAW_MAP) {
+	if (vp->zoom >= ZoomLevel::DrawMap) {
 		memset(vp->map_draw_vehicles_cache.done_hash_bits, 0, sizeof(vp->map_draw_vehicles_cache.done_hash_bits));
 		vp->map_draw_vehicles_cache.vehicle_pixels.assign(CeilDivT<size_t>(vp->ScreenArea(), VP_BLOCK_BITS), 0);
 
@@ -4597,13 +4598,13 @@ void UpdateViewportSizeZoom(Viewport *vp)
 
 void UpdateActiveScrollingViewport(Window *w)
 {
-	if (w != nullptr && (!_settings_client.gui.show_scrolling_viewport_on_map || w->viewport->zoom >= ZOOM_LVL_DRAW_MAP)) w = nullptr;
+	if (w != nullptr && (!_settings_client.gui.show_scrolling_viewport_on_map || w->viewport->zoom >= ZoomLevel::DrawMap)) w = nullptr;
 
 	const bool bound_valid = (_scrolling_viewport_bound.left != _scrolling_viewport_bound.right);
 
 	if (w == nullptr && !bound_valid) return;
 
-	const int gap = ScaleByZoom(1, ZOOM_LVL_MAX);
+	const int gap = ScaleByZoom(1, ZoomLevel::Max);
 
 	auto get_bounds = [](const ViewportData *vp) -> Rect {
 		return { vp->next_scrollpos_x, vp->next_scrollpos_y, vp->next_scrollpos_x + vp->virtual_width + 1, vp->next_scrollpos_y + vp->virtual_height + 1 };
@@ -4641,8 +4642,8 @@ void UpdateActiveScrollingViewport(Window *w)
 void MarkViewportDirty(Viewport * const vp, int left, int top, int right, int bottom, ViewportMarkDirtyFlags flags)
 {
 	/* Rounding wrt. zoom-out level */
-	right  += (1 << vp->zoom) - 1;
-	bottom += (1 << vp->zoom) - 1;
+	right  += (1 << to_underlying(vp->zoom)) - 1;
+	bottom += (1 << to_underlying(vp->zoom)) - 1;
 
 	right -= vp->virtual_left;
 	if (right <= 0) return;
@@ -4701,7 +4702,7 @@ void MarkViewportDirty(Viewport * const vp, int left, int top, int right, int bo
 	}
 	vp->is_dirty = true;
 
-	if (unlikely(vp->zoom >= ZOOM_LVL_DRAW_MAP && !(flags & VMDF_NOT_LANDSCAPE))) {
+	if (unlikely(vp->zoom >= ZoomLevel::DrawMap && !(flags & VMDF_NOT_LANDSCAPE))) {
 		uint l = UnScaleByZoomLower(left, vp->zoom);
 		uint t = UnScaleByZoomLower(top, vp->zoom);
 		uint w = UnScaleByZoom(right, vp->zoom) - l;
@@ -4717,18 +4718,18 @@ void MarkViewportDirty(Viewport * const vp, int left, int top, int right, int bo
 
 /**
  * Mark all viewports that display an area as dirty (in need of repaint).
- * @param left   Left   edge of area to repaint. (viewport coordinates, that is wrt. #ZOOM_LVL_MIN)
- * @param top    Top    edge of area to repaint. (viewport coordinates, that is wrt. #ZOOM_LVL_MIN)
- * @param right  Right  edge of area to repaint. (viewport coordinates, that is wrt. #ZOOM_LVL_MIN)
- * @param bottom Bottom edge of area to repaint. (viewport coordinates, that is wrt. #ZOOM_LVL_MIN)
+ * @param left   Left   edge of area to repaint. (viewport coordinates, that is wrt. #ZoomLevel::Min)
+ * @param top    Top    edge of area to repaint. (viewport coordinates, that is wrt. #ZoomLevel::Min)
+ * @param right  Right  edge of area to repaint. (viewport coordinates, that is wrt. #ZoomLevel::Min)
+ * @param bottom Bottom edge of area to repaint. (viewport coordinates, that is wrt. #ZoomLevel::Min)
  * @param flags  To tell if an update is relevant or not (for example, animations in map mode are not)
  * @ingroup dirty
  */
 void MarkAllViewportsDirty(int left, int top, int right, int bottom, ViewportMarkDirtyFlags flags)
 {
 	for (uint i = 0; i < _viewport_window_cache.size(); i++) {
-		if (flags & VMDF_NOT_MAP_MODE && _viewport_window_cache[i]->zoom >= ZOOM_LVL_DRAW_MAP) continue;
-		if (flags & VMDF_NOT_MAP_MODE_NON_VEG && _viewport_window_cache[i]->zoom >= ZOOM_LVL_DRAW_MAP && _viewport_window_cache[i]->map_type != VPMT_VEGETATION) continue;
+		if (flags & VMDF_NOT_MAP_MODE && _viewport_window_cache[i]->zoom >= ZoomLevel::DrawMap) continue;
+		if (flags & VMDF_NOT_MAP_MODE_NON_VEG && _viewport_window_cache[i]->zoom >= ZoomLevel::DrawMap && _viewport_window_cache[i]->map_type != VPMT_VEGETATION) continue;
 		const Rect &r = _viewport_coverage_rects[i];
 		if (left >= r.right ||
 				right <= r.left ||
@@ -4785,7 +4786,7 @@ void ViewportRouteOverlay::PrepareRouteStepsAndMarkDirtyIfChanged(const Vehicle 
 void MarkAllViewportMapsDirty(int left, int top, int right, int bottom)
 {
 	for (Viewport *vp : _viewport_window_cache) {
-		if (vp->zoom >= ZOOM_LVL_DRAW_MAP) {
+		if (vp->zoom >= ZoomLevel::DrawMap) {
 			MarkViewportDirty(vp, left, top, right, bottom, VMDF_NOT_LANDSCAPE);
 		}
 	}
@@ -4795,7 +4796,7 @@ void MarkAllViewportMapLandscapesDirty()
 {
 	for (Window *w : Window::Iterate()) {
 		Viewport *vp = w->viewport;
-		if (vp != nullptr && vp->zoom >= ZOOM_LVL_DRAW_MAP) {
+		if (vp != nullptr && vp->zoom >= ZoomLevel::DrawMap) {
 			ClearViewportLandPixelCache(vp);
 			w->SetDirty();
 		}
@@ -4806,7 +4807,7 @@ void MarkWholeNonMapViewportsDirty()
 {
 	for (Window *w : Window::Iterate()) {
 		Viewport *vp = w->viewport;
-		if (vp != nullptr && vp->zoom < ZOOM_LVL_DRAW_MAP) {
+		if (vp != nullptr && vp->zoom < ZoomLevel::DrawMap) {
 			w->SetDirty();
 		}
 	}
@@ -4831,7 +4832,7 @@ void ConstrainAllViewportsZoom()
 	for (Window *w : Window::Iterate()) {
 		if (w->viewport == nullptr) continue;
 
-		ZoomLevel zoom = static_cast<ZoomLevel>(Clamp(w->viewport->zoom, _settings_client.gui.zoom_min, _settings_client.gui.zoom_max));
+		ZoomLevel zoom = Clamp(w->viewport->zoom, _settings_client.gui.zoom_min, _settings_client.gui.zoom_max);
 		if (zoom != w->viewport->zoom) {
 			while (w->viewport->zoom < zoom) DoZoomInOutWindow(ZOOM_OUT, w);
 			while (w->viewport->zoom > zoom) DoZoomInOutWindow(ZOOM_IN, w);
@@ -4912,9 +4913,9 @@ void MarkTileLineDirty(const TileIndex from_tile, const TileIndex to_tile, Viewp
 	const Point to_pt = RemapCoords2(TileX(to_tile) * TILE_SIZE + TILE_SIZE / 2, TileY(to_tile) * TILE_SIZE + TILE_SIZE / 2);
 
 	for (Viewport * const vp : _viewport_window_cache) {
-		if (flags & VMDF_NOT_MAP_MODE && vp->zoom >= ZOOM_LVL_DRAW_MAP) continue;
+		if (flags & VMDF_NOT_MAP_MODE && vp->zoom >= ZoomLevel::DrawMap) continue;
 
-		const int block_shift = 2 + vp->zoom;
+		const int block_shift = 2 + to_underlying(vp->zoom);
 
 		int x1 = from_pt.x >> block_shift;
 		int y1 = from_pt.y >> block_shift;
@@ -5092,7 +5093,7 @@ static void SetSelectionTilesDirty()
 			int r = top.x + TILE_PIXELS * ZOOM_BASE; // 'x' coordinate of right  side of the dirty rectangle
 			int b = bot.y;                           // 'y' coordinate of bottom side of the dirty rectangle
 
-			static const int OVERLAY_WIDTH = conservative_mode ? 2 << ZOOM_LVL_END : 4 * ZOOM_BASE; // part of selection sprites is drawn outside the selected area (in particular: terraforming)
+			static const int OVERLAY_WIDTH = conservative_mode ? 2 << to_underlying(ZoomLevel::End) : 4 * ZOOM_BASE; // part of selection sprites is drawn outside the selected area (in particular: terraforming)
 
 			/* For halftile foundations on SLOPE_STEEP_S the sprite extents some more towards the top */
 			ViewportMarkDirtyFlags mode = (_thd.place_mode & HT_MAP) ? VMDF_NOT_LANDSCAPE : VMDF_NOT_MAP_MODE;
@@ -5154,7 +5155,7 @@ void SetSelectionPalette(PaletteID pal)
  */
 static bool CheckClickOnViewportSign(const Viewport *vp, int x, int y, const ViewportSign *sign)
 {
-	bool small = (vp->zoom >= ZOOM_LVL_OUT_4X);
+	bool small = (vp->zoom >= ZoomLevel::Out4x);
 	int sign_half_width = ScaleByZoom((small ? sign->width_small : sign->width_normal) / 2, vp->zoom);
 	int sign_height = ScaleByZoom(WidgetDimensions::scaled.fullbevel.top + GetCharacterHeight(small ? FS_SMALL : FS_NORMAL) + WidgetDimensions::scaled.fullbevel.bottom, vp->zoom);
 
@@ -5392,13 +5393,13 @@ static void PlaceObject()
 bool HandleViewportDoubleClicked(Window *w, int x, int y)
 {
 	Viewport *vp = w->viewport;
-	if (vp->zoom < ZOOM_LVL_DRAW_MAP) return false;
+	if (vp->zoom < ZoomLevel::DrawMap) return false;
 
 	switch (_settings_client.gui.action_when_viewport_map_is_dblclicked) {
 		case 0: // Do nothing
 			return false;
 		case 1: // Zoom in main viewport
-			while (vp->zoom != ZOOM_LVL_VIEWPORT)
+			while (vp->zoom != ZoomLevel::Viewport)
 				ZoomInOrOutToCursorWindow(true, w);
 			return true;
 		case 2: // Open an extra viewport
@@ -5412,7 +5413,7 @@ bool HandleViewportDoubleClicked(Window *w, int x, int y)
 HandleViewportClickedResult HandleViewportClicked(const Viewport *vp, int x, int y, bool double_click)
 {
 	/* No click in smallmap mode except for plan making and left-button scrolling. */
-	if (vp->zoom >= ZOOM_LVL_DRAW_MAP && !(_thd.place_mode & HT_MAP)) return HVCR_SCROLL_ONLY;
+	if (vp->zoom >= ZoomLevel::DrawMap && !(_thd.place_mode & HT_MAP)) return HVCR_SCROLL_ONLY;
 
 	const Vehicle *v = CheckClickOnVehicle(vp, x, y);
 
@@ -5439,7 +5440,7 @@ HandleViewportClickedResult HandleViewportClicked(const Viewport *vp, int x, int
 		return HVCR_DENY;
 	}
 
-	if (vp->zoom >= ZOOM_LVL_DRAW_MAP) return HVCR_SCROLL_ONLY;
+	if (vp->zoom >= ZoomLevel::DrawMap) return HVCR_SCROLL_ONLY;
 
 	if (CheckClickOnViewportSign(vp, x, y)) return HVCR_DENY;
 	bool result = CheckClickOnLandscape(vp, x, y);
@@ -6868,7 +6869,7 @@ void ResetObjectToPlace()
 
 void ChangeRenderMode(Viewport *vp, bool down) {
 	ViewportMapType map_type = vp->map_type;
-	if (vp->zoom < ZOOM_LVL_DRAW_MAP) return;
+	if (vp->zoom < ZoomLevel::DrawMap) return;
 	ClearViewportLandPixelCache(vp);
 	if (down) {
 		vp->map_type = (map_type == VPMT_MIN) ? VPMT_MAX : (ViewportMapType) (map_type - 1);
@@ -6885,7 +6886,7 @@ Point GetViewportStationMiddle(const Viewport *vp, const Station *st)
 	/* Be faster/less precise in viewport map mode, sub-pixel precision is not needed.
 	 * Don't rebase point into screen coordinates in viewport map mode.
 	 */
-	if (vp->zoom < ZOOM_LVL_DRAW_MAP) {
+	if (vp->zoom < ZoomLevel::DrawMap) {
 		int z = GetSlopePixelZ(Clamp(x, 0, Map::SizeX() * TILE_SIZE - 1), Clamp(y, 0, Map::SizeY() * TILE_SIZE - 1));
 		Point p = RemapCoords(x, y, z);
 		p.x = UnScaleByZoom(p.x - vp->virtual_left, vp->zoom) + vp->left;

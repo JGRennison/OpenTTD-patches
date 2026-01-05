@@ -875,7 +875,7 @@ public:
 
 		this->InitNested(window_number);
 		NWidgetViewport *nvp = this->GetWidget<NWidgetViewport>(WID_IV_VIEWPORT);
-		nvp->InitializeViewport(this, i->location.GetCenterTile().base(), ScaleZoomGUI(ZOOM_LVL_INDUSTRY));
+		nvp->InitializeViewport(this, i->location.GetCenterTile().base(), ScaleZoomGUI(ZoomLevel::Industry));
 
 		if (!i->IsCargoProduced() && !i->IsCargoAccepted()) this->DisableWidget(WID_IV_GRAPH);
 

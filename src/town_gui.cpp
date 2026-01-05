@@ -570,7 +570,7 @@ public:
 
 		this->flags.Set(WindowFlag::DisableVpScroll);
 		NWidgetViewport *nvp = this->GetWidget<NWidgetViewport>(WID_TV_VIEWPORT);
-		nvp->InitializeViewport(this, this->town->xy.base(), ScaleZoomGUI(ZOOM_LVL_TOWN));
+		nvp->InitializeViewport(this, this->town->xy.base(), ScaleZoomGUI(ZoomLevel::Town));
 	}
 
 	void Close([[maybe_unused]] int data = 0) override

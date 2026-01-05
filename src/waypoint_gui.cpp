@@ -105,7 +105,7 @@ public:
 		this->flags.Set(WindowFlag::DisableVpScroll);
 
 		NWidgetViewport *nvp = this->GetWidget<NWidgetViewport>(WID_W_VIEWPORT);
-		nvp->InitializeViewport(this, this->GetCenterTile().base(), ScaleZoomGUI(ZOOM_LVL_VIEWPORT));
+		nvp->InitializeViewport(this, this->GetCenterTile().base(), ScaleZoomGUI(ZoomLevel::Viewport));
 
 		this->OnInvalidateData(0);
 	}

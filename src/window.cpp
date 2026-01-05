@@ -925,7 +925,7 @@ void DrawOverlappedWindow(Window *w, int left, int top, int right, int bottom, D
 	dp->top = top - w->top;
 	dp->pitch = _screen.pitch;
 	dp->dst_ptr = BlitterFactory::GetCurrentBlitter()->MoveTo(_screen.dst_ptr, left, top);
-	dp->zoom = ZOOM_LVL_MIN;
+	dp->zoom = ZoomLevel::Min;
 	w->OnPaint();
 	if (unlikely(flags & DOWF_SHOW_DEBUG)) {
 		if (w->viewport != nullptr) ViewportDoDrawProcessAllPending();

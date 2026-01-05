@@ -106,14 +106,14 @@ const Sprite *SpriteFontCache::GetGlyph(GlyphID key)
 {
 	SpriteID sprite = this->GetUnicodeGlyph(static_cast<char32_t>(key & ~SPRITE_GLYPH));
 	if (sprite == 0) sprite = this->GetUnicodeGlyph('?');
-	return GetSprite(sprite, SpriteType::Font, 0);
+	return GetSprite(sprite, SpriteType::Font, {});
 }
 
 uint SpriteFontCache::GetGlyphWidth(GlyphID key)
 {
 	SpriteID sprite = this->GetUnicodeGlyph(static_cast<char32_t>(key & ~SPRITE_GLYPH));
 	if (sprite == 0) sprite = this->GetUnicodeGlyph('?');
-	return SpriteExists(sprite) ? GetSprite(sprite, SpriteType::Font, 0)->width + ScaleFontTrad(this->fs != FS_NORMAL ? 1 : 0) : 0;
+	return SpriteExists(sprite) ? GetSprite(sprite, SpriteType::Font, {})->width + ScaleFontTrad(this->fs != FS_NORMAL ? 1 : 0) : 0;
 }
 
 GlyphID SpriteFontCache::MapCharToGlyph(char32_t key, [[maybe_unused]] bool allow_fallback)
