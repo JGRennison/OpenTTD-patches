@@ -616,7 +616,7 @@ struct TileLayoutSpriteGroup final : SpriteGroup {
 
 	NewGRFSpriteLayout dts{};
 
-	const DrawTileSprites *ProcessRegisters(uint8_t *stage) const;
+	SpriteLayoutProcessor ProcessRegisters(uint8_t *stage) const;
 };
 
 struct IndustryProductionSpriteGroup final : SpriteGroup {

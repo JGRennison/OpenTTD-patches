@@ -297,7 +297,8 @@ struct OneOfManySettingDesc : IntSettingDesc {
 	std::vector<std::string> many; ///< possible values for this type
 	OnConvert *many_cnvt;          ///< callback procedure when loading value mechanism fails
 
-	static std::optional<uint32_t> ParseSingleValue(std::string_view str, const std::vector<std::string> &many);
+	static std::optional<uint32_t> ParseSingleValue(std::string_view str, std::span<const std::string> many);
+	static std::optional<uint32_t> ParseSingleValue(std::string_view str, std::span<const std::string_view> many);
 	void FormatSingleValue(struct format_target &buf, uint id) const;
 
 	int32_t ParseValue(std::string_view str) const override;

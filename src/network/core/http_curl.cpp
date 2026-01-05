@@ -30,7 +30,7 @@
 
 #if defined(UNIX)
 /** List of certificate bundles, depending on OS. Taken from: https://go.dev/src/crypto/x509/root_linux.go. */
-static auto _certificate_files = {
+static constexpr std::initializer_list<const char *> _certificate_files = {
 	"/etc/ssl/certs/ca-certificates.crt",                // Debian/Ubuntu/Gentoo etc.
 	"/etc/pki/tls/certs/ca-bundle.crt",                  // Fedora/RHEL 6
 	"/etc/ssl/ca-bundle.pem",                            // OpenSUSE
@@ -39,7 +39,7 @@ static auto _certificate_files = {
 	"/etc/ssl/cert.pem",                                 // Alpine Linux
 };
 /** List of certificate directories, depending on OS. Taken from: https://go.dev/src/crypto/x509/root_linux.go. */
-static auto _certificate_directories = {
+static constexpr std::initializer_list<const char *> _certificate_directories = {
 	"/etc/ssl/certs",                                    // SLES10/SLES11, https://golang.org/issue/12139
 	"/etc/pki/tls/certs",                                // Fedora/RHEL
 	"/system/etc/security/cacerts",                      // Android

@@ -46,7 +46,7 @@ static int _smallmap_company_count;  ///< Number of entries in the owner legend.
 static int _smallmap_cargo_count;    ///< Number of cargos in the link stats legend.
 
 /** Link stat colours shown in legenda. */
-static uint8_t _linkstat_colours_in_legenda[] = {0, 1, 3, 5, 7, 9, 11};
+static const uint8_t _linkstat_colours_in_legenda[] = {0, 1, 3, 5, 7, 9, 11};
 
 /** Macro for ordinary entry of LegendAndColour */
 #define MK(a, b) {a, b, IT_INVALID, 0, CompanyID::Invalid(), true, false, false}

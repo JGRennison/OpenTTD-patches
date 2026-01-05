@@ -147,7 +147,7 @@ static CGFloat SpriteFontGetWidth(void *ref_con)
 	return GetGlyphWidth(fs, c);
 }
 
-static CTRunDelegateCallbacks _sprite_font_callback = {
+static const CTRunDelegateCallbacks _sprite_font_callback = {
 	kCTRunDelegateCurrentVersion, nullptr, nullptr, nullptr,
 	&SpriteFontGetWidth
 };
@@ -332,7 +332,7 @@ void MacOSSetCurrentLocaleName(std::string_view iso_code)
  */
 int MacOSStringCompare(std::string_view s1, std::string_view s2)
 {
-	static bool supported = MacOSVersionIsAtLeast(10, 5, 0);
+	static const bool supported = MacOSVersionIsAtLeast(10, 5, 0);
 	if (!supported) return 0;
 
 	if (_osx_locale == nullptr) return 0;
@@ -358,7 +358,7 @@ int MacOSStringCompare(std::string_view s1, std::string_view s2)
  */
 int MacOSStringContains(std::string_view str, std::string_view value, bool case_insensitive)
 {
-	static bool supported = MacOSVersionIsAtLeast(10, 5, 0);
+	static const bool supported = MacOSVersionIsAtLeast(10, 5, 0);
 	if (!supported) return -1;
 
 	CFStringCompareFlags flags = kCFCompareLocalized | kCFCompareWidthInsensitive;

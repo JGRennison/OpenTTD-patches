@@ -348,12 +348,13 @@ void DrawRoadStopTile(int x, int y, RoadType roadtype, const RoadStopSpec *spec,
 	RoadStopResolverObject object(spec, nullptr, INVALID_TILE, roadtype, type, view);
 	const TileLayoutSpriteGroup *group = object.Resolve<TileLayoutSpriteGroup>();
 	if (group == nullptr) return;
-	const DrawTileSprites *dts = group->ProcessRegisters(nullptr);
+	auto processor = group->ProcessRegisters(nullptr);
+	auto dts = processor.GetLayout();
 
 	PaletteID palette = GetCompanyPalette(_local_company);
 
-	SpriteID image = dts->ground.sprite;
-	PaletteID pal  = dts->ground.pal;
+	SpriteID image = dts.ground.sprite;
+	PaletteID pal = dts.ground.pal;
 
 	RoadStopDrawModes draw_mode;
 	if (spec->flags.Test(RoadStopSpecFlag::DrawModeRegister)) {
@@ -395,7 +396,7 @@ void DrawRoadStopTile(int x, int y, RoadType roadtype, const RoadStopSpec *spec,
 		}
 	}
 
-	DrawCommonTileSeqInGUI(x, y, dts, 0, 0, palette, true);
+	DrawCommonTileSeqInGUI(x, y, &dts, 0, 0, palette, true);
 }
 
 const TileLayoutSpriteGroup *GetRoadStopLayout(TileInfo *ti, const RoadStopSpec *spec, BaseStation *st, StationType type, int view)
