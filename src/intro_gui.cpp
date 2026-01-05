@@ -98,8 +98,7 @@ struct IntroGameViewportCommand {
 	}
 };
 
-
-struct SelectGameWindow : public Window {
+struct IntroViewportCommandsHandler {
 	/** Vector of viewport commands parsed. */
 	std::vector<IntroGameViewportCommand> intro_viewport_commands{};
 	/** Index of currently active viewport command. */
@@ -108,6 +107,11 @@ struct SelectGameWindow : public Window {
 	uint cur_viewport_command_time = 0;
 	uint mouse_idle_time = 0;
 	Point mouse_idle_pos{};
+
+	IntroViewportCommandsHandler() : mouse_idle_pos(_cursor.pos)
+	{
+		this->ReadIntroGameViewportCommands();
+	}
 
 	/**
 	 * Find and parse all viewport command signs.
@@ -178,19 +182,9 @@ struct SelectGameWindow : public Window {
 		}
 	}
 
-	SelectGameWindow(WindowDesc &desc) : Window(desc), mouse_idle_pos(_cursor.pos)
-	{
-		this->CreateNestedTree();
-		this->FinishInitNested(0);
-		this->OnInvalidateData();
-
-		this->ReadIntroGameViewportCommands();
-	}
-
-	void OnRealtimeTick(uint delta_ms) override
+	void OnRealtimeTick(uint delta_ms)
 	{
 		/* Move the main game viewport according to intro viewport commands. */
-
 		if (intro_viewport_commands.empty()) return;
 
 		bool suppress_panning = true;
@@ -255,6 +249,25 @@ struct SelectGameWindow : public Window {
 
 		/* If there is only one command, we just executed it and don't need to do any more */
 		if (intro_viewport_commands.size() == 1 && vc.vehicle == VehicleID::Invalid()) intro_viewport_commands.clear();
+	}
+};
+
+struct SelectGameWindow : public Window {
+	std::unique_ptr<IntroViewportCommandsHandler> intro_command_handler;
+
+	SelectGameWindow(WindowDesc &desc, std::unique_ptr<IntroViewportCommandsHandler> intro_command_handler = {}) : Window(desc), intro_command_handler(std::move(intro_command_handler))
+	{
+		this->CreateNestedTree();
+		this->FinishInitNested(0);
+		this->OnInvalidateData();
+
+		if (!this->intro_command_handler) this->intro_command_handler = std::make_unique<IntroViewportCommandsHandler>();
+	}
+
+	void OnRealtimeTick(uint delta_ms) override
+	{
+		/* Move the main game viewport according to intro viewport commands. */
+		if (this->intro_command_handler) this->intro_command_handler->OnRealtimeTick(delta_ms);
 	}
 
 	/**
