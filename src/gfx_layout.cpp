@@ -36,6 +36,7 @@
 
 /** Cache of ParagraphLayout lines. */
 Layouter::LineCache *Layouter::linecache;
+uint64_t Layouter::linecache_lru_counter = 0;
 
 /** Cache of Font instances. */
 Layouter::FontColourMap Layouter::fonts[FS_END];
@@ -395,10 +396,39 @@ Layouter::LineCacheItem &Layouter::GetCachedParagraphLayout(std::string_view str
 	if (linecache == nullptr) {
 		/* Create linecache on first access to avoid trouble with initialisation order of static variables. */
 		linecache = new LineCache();
+	} else if (linecache->size() >= 8192) {
+		ReduceLineCache();
 	}
 
 	auto match = linecache->try_emplace_heterogenous(LineCacheQuery{state, str}, std::piecewise_construct, std::forward_as_tuple(state, str), std::forward_as_tuple());
-	return match.first->second;
+	Layouter::LineCacheItem &item = match.first->second;
+	item.lru_counter = ++linecache_lru_counter;
+	return item;
+}
+
+/**
+ * Reduce the size of linecache to prevent infinite growth.
+ */
+void Layouter::ReduceLineCache()
+{
+	const size_t size = linecache->size();
+	auto values = std::make_unique<uint64_t[]>(size);
+	uint64_t *ptr = values.get();
+	for (const auto &it : *linecache) {
+		*ptr = it.second.lru_counter;
+		++ptr;
+	}
+
+	uint64_t *median = values.get() + (size / 2);
+	std::nth_element(values.get(), median, values.get() + size);
+	uint64_t pivot = *median;
+	for (auto it = linecache->begin(); it != linecache->end();) {
+		if (it->second.lru_counter < pivot) {
+			it = linecache->erase(it);
+		} else {
+			++it;
+		}
+	}
 }
 
 /**
@@ -407,17 +437,6 @@ Layouter::LineCacheItem &Layouter::GetCachedParagraphLayout(std::string_view str
 void Layouter::ResetLineCache()
 {
 	if (linecache != nullptr) linecache->clear();
-}
-
-/**
- * Reduce the size of linecache if necessary to prevent infinite growth.
- */
-void Layouter::ReduceLineCache()
-{
-	if (linecache != nullptr) {
-		/* TODO LRU cache would be fancy, but not exactly necessary */
-		if (linecache->size() > 4096) ResetLineCache();
-	}
 }
 
 /**

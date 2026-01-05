@@ -220,12 +220,16 @@ public:
 
 		std::vector<std::unique_ptr<const ParagraphLayouter::Line>> cached_layout{}; ///< Cached results of line layouting.
 		int cached_width = 0; ///< Width used for the cached layout.
+
+		uint64_t lru_counter;
 	};
 private:
 	typedef robin_hood::unordered_node_map<LineCacheKey, LineCacheItem, LineCacheHash, LineCacheEqual> LineCache;
 	static LineCache *linecache;
+	static uint64_t linecache_lru_counter;
 
 	static LineCacheItem &GetCachedParagraphLayout(std::string_view str, const FontState &state);
+	static void ReduceLineCache();
 
 	using FontColourMap = btree::btree_map<TextColour, std::unique_ptr<Font>>;
 	static FontColourMap fonts[FS_END];
@@ -240,7 +244,6 @@ public:
 	static void Initialize();
 	static void ResetFontCache(FontSize size);
 	static void ResetLineCache();
-	static void ReduceLineCache();
 };
 
 ParagraphLayouter::Position GetCharPosInString(std::string_view str, size_t pos, FontSize start_fontsize = FS_NORMAL);

@@ -1529,8 +1529,6 @@ void StateGameLoop()
 	PerformanceMeasurer framerate(PFE_GAMELOOP);
 	PerformanceAccumulator::Reset(PFE_GL_LANDSCAPE);
 
-	Layouter::ReduceLineCache();
-
 	if (_game_mode == GM_EDITOR) {
 		BasePersistentStorageArray::SwitchMode(PSM_ENTER_GAMELOOP);
 
