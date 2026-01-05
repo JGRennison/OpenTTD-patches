@@ -619,6 +619,7 @@ static std::span<const TraceRestrictDropDownListItem> GetConditionDropDownListIt
 		{ TRIT_COND_UNDEFINED,                                        STR_TRACE_RESTRICT_VARIABLE_UNDEFINED,                 TRDDLIF_HIDDEN },
 		{ TRIT_COND_TRAIN_LENGTH,                                     STR_TRACE_RESTRICT_VARIABLE_TRAIN_LENGTH,              TRDDLIF_NONE },
 		{ TRIT_COND_MAX_SPEED,                                        STR_TRACE_RESTRICT_VARIABLE_MAX_SPEED,                 TRDDLIF_NONE },
+		{ TRIT_COND_LATENESS_COUNTER,                                 STR_TRACE_RESTRICT_VARIABLE_LATENESS_COUNTER,          TRDDLIF_NONE },
 		{ TRIT_COND_CURRENT_ORDER,                                    STR_TRACE_RESTRICT_VARIABLE_CURRENT_ORDER,             TRDDLIF_NONE },
 		{ TRIT_COND_NEXT_ORDER,                                       STR_TRACE_RESTRICT_VARIABLE_NEXT_ORDER,                TRDDLIF_NONE },
 		{ TRIT_COND_LAST_STATION,                                     STR_TRACE_RESTRICT_VARIABLE_LAST_VISITED_STATION,      TRDDLIF_NONE },
@@ -1298,6 +1299,7 @@ static bool IsIntegerValueType(TraceRestrictValueType type)
 		case TRVT_POWER:
 		case TRVT_FORCE:
 		case TRVT_PERCENT:
+		case TRVT_TICK_COUNT:
 			return true;
 
 		case TRVT_SPEED:
@@ -1333,6 +1335,7 @@ static uint ConvertIntegerValue(TraceRestrictValueType type, uint in, bool to_di
 {
 	switch (type) {
 		case TRVT_INT:
+		case TRVT_TICK_COUNT:
 			return in;
 
 		case TRVT_SPEED:
@@ -1571,6 +1574,7 @@ static void FillInstructionString(format_buffer &instruction_string, const Trace
 
 			switch (properties.value_type) {
 				case TRVT_INT:
+				case TRVT_TICK_COUNT:
 				case TRVT_PERCENT: {
 					auto params = make_conditional_common_params(item.GetValue());
 					if (item.GetType() == TRIT_COND_RESERVED_TILES && _settings_game.vehicle.train_braking_model != TBM_REALISTIC) {
