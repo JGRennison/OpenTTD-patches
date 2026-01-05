@@ -89,3 +89,9 @@ STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Passordb
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Vel firmapassord
 
 # JSON messages
+
+STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF-innstillingar
+STR_INTRO_AI_SETTINGS                                           :{BLACK}AI-innstillingar
+STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}Spelscript-innstillingar
+STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Syne NewGRF-instillingar
+STR_INTRO_CAPTION_TRADITIONAL                                   :{WHITE}OpenTTD {REV}

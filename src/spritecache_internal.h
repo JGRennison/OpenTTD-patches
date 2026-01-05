@@ -65,7 +65,7 @@ public:
 	uint count;
 
 	SpriteType type;     ///< In some cases a single sprite is misused by two NewGRFs. Once as real sprite and once as recolour sprite. If the recolour sprite gets into the cache it might be drawn as real sprite which causes enormous trouble.
-	uint8_t total_missing_zoom_levels = 0; ///< Zoom levels missing entirely
+	LowZoomLevels total_missing_zoom_levels{}; ///< Zoom levels missing entirely
 	uint16_t flags;      ///< Control flags, see SpriteCacheCtrlFlags
 
 	void *GetPtr() { return this->ptr.get(); }
@@ -102,10 +102,10 @@ public:
 	void Clear()
 	{
 		this->Deallocate();
-		this->total_missing_zoom_levels = 0;
+		this->total_missing_zoom_levels = {};
 	}
 
-	void RemoveByMissingZoomLevels(uint8_t lvls)
+	void RemoveByMissingZoomLevels(LowZoomLevels lvls)
 	{
 		Sprite *base = this->GetSpritePtr();
 		if (base == nullptr) {
@@ -119,7 +119,7 @@ public:
 			base = this->GetSpritePtr();
 		}
 		if (base == nullptr) {
-			this->total_missing_zoom_levels = 0;
+			this->total_missing_zoom_levels = {};
 			return;
 		}
 		this->total_missing_zoom_levels = base->missing_zoom_levels;
@@ -168,7 +168,7 @@ public:
 	{
 		assert(this->GetType() == SpriteType::Normal);
 
-		if (!this->ptr || this->total_missing_zoom_levels == UINT8_MAX) {
+		if (!this->ptr || this->total_missing_zoom_levels == LOW_ZOOM_ALL_BITS) {
 			/* Top level has no data or no zoom levels at all, it's safe to replace it because it cannot be cached for a render job */
 			this->Assign(std::move(other));
 			return;

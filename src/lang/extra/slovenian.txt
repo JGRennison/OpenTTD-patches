@@ -91,3 +91,7 @@ STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Zaščit
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Nastavi geslo podjetja
 
 # JSON messages
+
+STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF nastavitve
+STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Prikaži nastavitve NewGRF
+STR_INTRO_CAPTION_TRADITIONAL                                   :{WHITE}OpenTTD {REV}

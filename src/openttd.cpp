@@ -957,7 +957,7 @@ int openttd_main(std::span<char * const> arguments)
 	InitializeSpriteSorter();
 
 	/* Initialize the zoom level of the screen to normal */
-	_screen.zoom = ZOOM_LVL_MIN;
+	_screen.zoom = ZoomLevel::Min;
 
 	/* The video driver is now selected, now initialise GUI zoom */
 	AdjustGUIZoom(AGZM_STARTUP);

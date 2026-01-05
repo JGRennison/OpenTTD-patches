@@ -222,7 +222,7 @@ public:
 	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override;
 	void OnInvalidateData(int data = 0, bool gui_scope = true) override;
 	bool OnRightClick(Point pt, WidgetID widget) override;
-	void OnMouseWheel(int wheel) override;
+	void OnMouseWheel(int wheel, WidgetID widget) override;
 	void OnRealtimeTick(uint delta_ms) override;
 	void OnScroll(Point delta) override;
 	void OnMouseOver(Point pt, WidgetID widget) override;

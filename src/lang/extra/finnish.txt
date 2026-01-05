@@ -106,3 +106,11 @@ STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Salasana
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Aseta yhtiön salasana
 
 # JSON messages
+
+STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF-asetukset
+STR_INTRO_AI_SETTINGS                                           :{BLACK}Tekoälyasetukset
+STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}Peliskriptiasetukset
+STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Avaa NewGRF-asetukset
+STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}Avaa tekoälyasetukset
+STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}Avaa peliskriptiasetukset
+STR_INTRO_CAPTION_TRADITIONAL                                   :{WHITE}OpenTTD {REV}

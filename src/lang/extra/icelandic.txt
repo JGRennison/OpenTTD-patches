@@ -88,3 +88,7 @@ STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Til að 
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Setja lykilorð á fyrirtæki
 
 # JSON messages
+
+STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF Stillingar
+STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Sýna NewGRF stillingar
+STR_INTRO_CAPTION_TRADITIONAL                                   :{WHITE}OpenTTD {REV}

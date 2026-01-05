@@ -108,3 +108,11 @@ STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Beskyt d
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Sæt selskabets kodeord
 
 # JSON messages
+
+STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF indstillinger
+STR_INTRO_AI_SETTINGS                                           :{BLACK}AI Indstillinger
+STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}Indstillinger for spilscript
+STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Åben NewGRF-indstillinger
+STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}Åben AI indstillinger
+STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}Åben indstillinger for spilscript
+STR_INTRO_CAPTION_TRADITIONAL                                   :{WHITE}OpenTTD {REV}

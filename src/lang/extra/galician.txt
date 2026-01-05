@@ -2473,3 +2473,11 @@ STR_ORDERLIST_JSON_CONFIRM_OVERRIDE_QUERY_CAPTION               :{WHITE}Confirma
 
 STR_ORDER_UNKNOWN_ERROR                                         :[Error] Erro descoñecido
 STR_ORDER_PARSE_ERROR                                           :[Error] Esta orde non se puido analizar
+
+STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}Configuración NewGRF
+STR_INTRO_AI_SETTINGS                                           :{BLACK}Axustes da IA
+STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}Axustes dos scripts do xogo
+STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Abrir a configuración de NewGRF
+STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}Abrir axustes da IA
+STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}Abrir os axustes dos scripts do xogo
+STR_INTRO_CAPTION_TRADITIONAL                                   :{WHITE}OpenTTD {REV}

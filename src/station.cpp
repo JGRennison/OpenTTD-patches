@@ -173,7 +173,7 @@ Station::~Station()
 	_station_kdtree.Remove(this->index);
 	if (_viewport_sign_kdtree_valid && this->sign.kdtree_valid) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeStation(this->index));
 
-	if (ShouldShowBaseStationViewportLabel(this)) this->sign.MarkDirty(ZOOM_LVL_DRAW_SPR);
+	if (ShouldShowBaseStationViewportLabel(this)) this->sign.MarkDirty(ZoomLevel::SpriteMax);
 }
 
 

@@ -769,7 +769,7 @@ bool IsNonGameThread()
 static std::map<DWORD, std::string> _thread_name_map;
 static std::mutex _thread_name_map_mutex;
 
-static void Win32SetThreadName(uint id, const char *name)
+static void Win32SetThreadName(uint id, std::string_view name)
 {
 	std::lock_guard<std::mutex> lock(_thread_name_map_mutex);
 	_thread_name_map[id] = name;
@@ -798,13 +798,13 @@ PACK_N(struct THREADNAME_INFO {
 /**
  * Signal thread name to any attached debuggers.
  */
-void SetCurrentThreadName(const char *threadName)
+void SetCurrentThreadName(const std::string &thread_name)
 {
 	Win32SetThreadName(GetCurrentThreadId(), threadName);
 
 	THREADNAME_INFO info;
 	info.dwType = 0x1000;
-	info.szName = threadName;
+	info.szName = thread_name.c_str();
 	info.dwThreadID = -1;
 	info.dwFlags = 0;
 
@@ -817,7 +817,7 @@ void SetCurrentThreadName(const char *threadName)
 #pragma warning(pop)
 }
 #else
-void SetCurrentThreadName(const char *threadName)
+void SetCurrentThreadName(const std::string &threadName)
 {
 	Win32SetThreadName(GetCurrentThreadId(), threadName);
 }

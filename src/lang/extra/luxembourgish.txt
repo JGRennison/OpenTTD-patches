@@ -104,3 +104,11 @@ STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Setzt en
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Setzt d'Firmen-Passwuert
 
 # JSON messages
+
+STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF Astellungen
+STR_INTRO_AI_SETTINGS                                           :{BLACK}KI Astellungen
+STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}Spillscriptastellungen
+STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}NewGRF Astellungen opman
+STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}KI-Astellungen opman
+STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}Spillscriptastellungen opman
+STR_INTRO_CAPTION_TRADITIONAL                                   :{WHITE}OpenTTD {REV}

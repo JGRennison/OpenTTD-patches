@@ -99,3 +99,11 @@ STR_COMPANY_VIEW_PASSWORD_TOOLTIP                               :{BLACK}Абар
 STR_COMPANY_VIEW_SET_PASSWORD                                   :{BLACK}Усталяваць пароль кампаніі
 
 # JSON messages
+
+STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}Наладкi NewGRF
+STR_INTRO_AI_SETTINGS                                           :{BLACK}Наладкі ШІ
+STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}Наладкі гульнёвых скрыптоў
+STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Адкрыць наладкі NewGRF
+STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}Адкрыць наладкі ШІ
+STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}Адкрыць наладкі гульнёвых скрыптоў
+STR_INTRO_CAPTION_TRADITIONAL                                   :{WHITE}OpenTTD {REV}

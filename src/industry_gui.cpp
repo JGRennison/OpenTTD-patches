@@ -875,7 +875,7 @@ public:
 
 		this->InitNested(window_number);
 		NWidgetViewport *nvp = this->GetWidget<NWidgetViewport>(WID_IV_VIEWPORT);
-		nvp->InitializeViewport(this, i->location.GetCenterTile().base(), ScaleZoomGUI(ZOOM_LVL_INDUSTRY));
+		nvp->InitializeViewport(this, i->location.GetCenterTile().base(), ScaleZoomGUI(ZoomLevel::Industry));
 
 		if (!i->IsCargoProduced() && !i->IsCargoAccepted()) this->DisableWidget(WID_IV_GRAPH);
 
@@ -1188,8 +1188,9 @@ public:
 		}
 	}
 
-	void OnMouseWheel(int wheel) override
+	void OnMouseWheel(int wheel, WidgetID widget) override
 	{
+		if (widget != WID_IV_VIEWPORT) return;
 		if (_settings_client.gui.scrollwheel_scrolling != SWS_OFF) {
 			DoZoomInOutWindow(wheel < 0 ? ZOOM_IN : ZOOM_OUT, this);
 		}

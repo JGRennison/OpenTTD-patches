@@ -346,12 +346,12 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				int64_t max_value = GetParamMaxValue(_settings_time.time_in_minutes ? 0 : EconTime::MAX_YEAR.base() * DAYS_IN_YEAR);
 				Dimension unumber = GetStringBoundingBox(GetString(STR_SCHDISPATCH_DATE_WALLCLOCK_TINY_FLAGGED, max_value));
 
-				const Sprite *spr = GetSprite(SPR_FLAG_VEH_STOPPED, SpriteType::Normal, ZoomMask(ZOOM_LVL_GUI));
+				const Sprite *spr = GetSprite(SPR_FLAG_VEH_STOPPED, SpriteType::Normal, LowZoomMask(ZOOM_LVL_GUI));
 				this->delete_flag_width = UnScaleGUI(spr->width);
 				this->delete_flag_height = UnScaleGUI(spr->height);
 
-				const Sprite *spr_left_arrow = GetSprite(SPR_ARROW_LEFT, SpriteType::Normal, ZoomMask(ZOOM_LVL_GUI));
-				const Sprite *spr_right_arrow = GetSprite(SPR_ARROW_RIGHT, SpriteType::Normal, ZoomMask(ZOOM_LVL_GUI));
+				const Sprite *spr_left_arrow = GetSprite(SPR_ARROW_LEFT, SpriteType::Normal, LowZoomMask(ZOOM_LVL_GUI));
+				const Sprite *spr_right_arrow = GetSprite(SPR_ARROW_RIGHT, SpriteType::Normal, LowZoomMask(ZOOM_LVL_GUI));
 				this->arrow_flag_width = UnScaleGUI(std::max(spr_left_arrow->width, spr_right_arrow->width));
 				this->arrow_flag_height = UnScaleGUI(std::max(spr_left_arrow->height, spr_right_arrow->height));
 
