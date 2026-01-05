@@ -18,7 +18,7 @@
 #include "../../../safeguards.h"
 
 
-const SQChar *IdType2Name(SQObjectType type)
+std::string_view IdType2Name(SQObjectType type)
 {
 	switch(_RAW_TYPE(type))
 	{
@@ -42,11 +42,11 @@ const SQChar *IdType2Name(SQObjectType type)
 	case _RT_INSTANCE: return "instance";
 	case _RT_WEAKREF: return "weakref";
 	default:
-		return nullptr;
+		NOT_REACHED();
 	}
 }
 
-const SQChar *GetTypeName(const SQObjectPtr &obj1)
+std::string_view GetTypeName(const SQObjectPtr &obj1)
 {
 	return IdType2Name(type(obj1));
 }
@@ -270,10 +270,13 @@ bool WriteObject(HSQUIRRELVM v,SQUserPointer up,SQWRITEFUNC write,SQObjectPtr &o
 {
 	_CHECK_IO(SafeWrite(v,write,up,&type(o),sizeof(SQObjectType)));
 	switch(type(o)){
-	case OT_STRING:
-		_CHECK_IO(SafeWrite(v,write,up,&_string(o)->_len,sizeof(SQInteger)));
-		_CHECK_IO(SafeWrite(v,write,up,_stringval(o),_string(o)->_len));
+	case OT_STRING: {
+		auto str = _string(o)->Span();
+		SQInteger len = str.size();
+		_CHECK_IO(SafeWrite(v,write,up,&len,sizeof(len)));
+		_CHECK_IO(SafeWrite(v,write,up,str.data(),len));
 		break;
+	}
 	case OT_INTEGER:
 		_CHECK_IO(SafeWrite(v,write,up,&_integer(o),sizeof(SQInteger)));break;
 	case OT_FLOAT:
@@ -294,11 +297,11 @@ bool ReadObject(HSQUIRRELVM v,SQUserPointer up,SQREADFUNC read,SQObjectPtr &o)
 	switch(t){
 	case OT_STRING:{
 		SQInteger len;
-		_CHECK_IO(SafeRead(v,read,up,&len,sizeof(SQInteger)));
+		_CHECK_IO(SafeRead(v,read,up,&len,sizeof(len)));
 		_CHECK_IO(SafeRead(v,read,up,_ss(v)->GetScratchPad(len).data(),len));
 		o=SQString::Create(_ss(v),std::string_view(_ss(v)->GetScratchPad(-1).data(),len));
-				   }
 		break;
+	}
 	case OT_INTEGER:{
 		SQInteger i;
 		_CHECK_IO(SafeRead(v,read,up,&i,sizeof(SQInteger))); o = i; break;
@@ -320,7 +323,7 @@ bool ReadObject(HSQUIRRELVM v,SQUserPointer up,SQREADFUNC read,SQObjectPtr &o)
 bool SQClosure::Save(SQVM *v,SQUserPointer up,SQWRITEFUNC write)
 {
 	_CHECK_IO(WriteTag(v,write,up,SQ_CLOSURESTREAM_HEAD));
-	_CHECK_IO(WriteTag(v,write,up,sizeof(SQChar)));
+	_CHECK_IO(WriteTag(v,write,up,sizeof(char)));
 	_CHECK_IO(_funcproto(_function)->Save(v,up,write));
 	_CHECK_IO(WriteTag(v,write,up,SQ_CLOSURESTREAM_TAIL));
 	return true;
@@ -329,7 +332,7 @@ bool SQClosure::Save(SQVM *v,SQUserPointer up,SQWRITEFUNC write)
 bool SQClosure::Load(SQVM *v,SQUserPointer up,SQREADFUNC read,SQObjectPtr &ret)
 {
 	_CHECK_IO(CheckTag(v,read,up,SQ_CLOSURESTREAM_HEAD));
-	_CHECK_IO(CheckTag(v,read,up,sizeof(SQChar)));
+	_CHECK_IO(CheckTag(v,read,up,sizeof(char)));
 	SQObjectPtr func;
 	_CHECK_IO(SQFunctionProto::Load(v,up,read,func));
 	_CHECK_IO(CheckTag(v,read,up,SQ_CLOSURESTREAM_TAIL));

@@ -1649,16 +1649,15 @@ int SmallMapWindow::GetPositionOnLegend(Point pt)
 	return true;
 }
 
-/* virtual */ void SmallMapWindow::OnMouseWheel(int wheel)
+/* virtual */ void SmallMapWindow::OnMouseWheel(int wheel, WidgetID widget)
 {
+	if (widget != WID_SM_MAP) return;
 	if (_settings_client.gui.scrollwheel_scrolling != SWS_OFF) {
 		const NWidgetBase *wid = this->GetWidget<NWidgetBase>(WID_SM_MAP);
 		int cursor_x = _cursor.pos.x - this->left - wid->pos_x;
 		int cursor_y = _cursor.pos.y - this->top  - wid->pos_y;
-		if (IsInsideMM(cursor_x, 0, wid->current_x) && IsInsideMM(cursor_y, 0, wid->current_y)) {
-			Point pt = {cursor_x, cursor_y};
-			this->SetZoomLevel((wheel < 0) ? ZLC_ZOOM_IN : ZLC_ZOOM_OUT, &pt);
-		}
+		Point pt = {cursor_x, cursor_y};
+		this->SetZoomLevel((wheel < 0) ? ZLC_ZOOM_IN : ZLC_ZOOM_OUT, &pt);
 	}
 }
 

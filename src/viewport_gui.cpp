@@ -149,8 +149,9 @@ public:
 		return widget == WID_EV_VIEWPORT;
 	}
 
-	void OnMouseWheel(int wheel) override
+	void OnMouseWheel(int wheel, WidgetID widget) override
 	{
+		if (widget != WID_EV_VIEWPORT) return;
 		if (_ctrl_pressed) {
 			/* Cycle through the drawing modes */
 			ChangeRenderMode(this->viewport, wheel < 0);

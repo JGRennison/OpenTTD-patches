@@ -500,8 +500,9 @@ struct MainWindow : Window
 		this->refresh.SetInterval(LINKGRAPH_DELAY);
 	}
 
-	void OnMouseWheel(int wheel) override
+	void OnMouseWheel(int wheel, WidgetID widget) override
 	{
+		if (widget != WID_M_VIEWPORT) return;
 		if (_ctrl_pressed) {
 			/* Cycle through the drawing modes */
 			ChangeRenderMode(this->viewport, wheel < 0);

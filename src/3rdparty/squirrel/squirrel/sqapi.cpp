@@ -383,16 +383,16 @@ SQRESULT sq_setnativeclosurename(HSQUIRRELVM v,SQInteger idx,std::string_view na
 	return sq_throwerror(v,"the object is not a nativeclosure");
 }
 
-SQRESULT sq_setparamscheck(HSQUIRRELVM v,SQInteger nparamscheck,const SQChar *typemask)
+SQRESULT sq_setparamscheck(HSQUIRRELVM v,SQInteger nparamscheck,std::optional<std::string_view> typemask)
 {
 	SQObject o = stack_get(v, -1);
 	if(!sq_isnativeclosure(o))
 		return sq_throwerror(v, "native closure expected");
 	SQNativeClosure *nc = _nativeclosure(o);
 	nc->_nparamscheck = nparamscheck;
-	if(typemask) {
+	if(typemask.has_value()) {
 		SQIntVec res;
-		if(!CompileTypemask(res, typemask))
+		if(!CompileTypemask(res, *typemask))
 			return sq_throwerror(v, "invalid typemask");
 		nc->_typecheck.copy(res);
 	}
@@ -581,7 +581,7 @@ SQInteger sq_getsize(HSQUIRRELVM v, SQInteger idx)
 	SQObjectPtr &o = stack_get(v, idx);
 	SQObjectType type = type(o);
 	switch(type) {
-	case OT_STRING:		return _string(o)->_len;
+	case OT_STRING:		return _string(o)->View().size();
 	case OT_TABLE:		return _table(o)->CountUsed();
 	case OT_ARRAY:		return _array(o)->Size();
 	case OT_USERDATA:	return _userdata(o)->_size;
