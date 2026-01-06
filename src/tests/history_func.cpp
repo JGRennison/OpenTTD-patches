@@ -14,7 +14,7 @@
 #include "../misc/history_type.hpp"
 #include "../misc/history_func.hpp"
 
-#include <algorithm>
+#include <numeric>
 
 #include "../safeguards.h"
 
