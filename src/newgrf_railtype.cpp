@@ -24,6 +24,28 @@
 
 #include "safeguards.h"
 
+/**
+ * Variable 0x45 of road-/tram-/rail-types to query track types on a tile (rail part).
+ *
+ * Format: __RRttrr
+ * - rr: Translated roadtype.
+ * - tt: Translated tramtype.
+ * - RR: Translated railtype.
+ *
+ * Special values for rr, tt, RR:
+ * - 0xFF: Track not present on tile.
+ * - 0xFE: Track present, but no matching entry in translation table.
+ */
+uint32_t GetTrackTypesRail(RailType railtype, const GRFFile *grffile)
+{
+	uint8_t rail = 0xFF;
+	if (railtype != INVALID_RAILTYPE) {
+		rail = GetReverseRailTypeTranslation(railtype, grffile);
+		if (rail == 0xFF) rail = 0xFE;
+	}
+	return rail << 16;
+}
+
 /* virtual */ uint32_t RailTypeScopeResolver::GetRandomBits() const
 {
 	uint tmp = CountBits(this->tile.base() + (TileX(this->tile) + TileY(this->tile)) * TILE_SIZE);
@@ -39,12 +61,7 @@
 			case 0x42: return 0;
 			case 0x43: return CalTime::CurDate().base();
 			case 0x44: return to_underlying(HouseZone::TownEdge);
-			case 0x45: {
-				auto rt = GetRailTypeInfoIndex(this->rti);
-				uint8_t local = GetReverseRailTypeTranslation(rt, this->ro.grffile);
-				if (local == 0xFF) local = 0xFE;
-				return 0xFFFF | local << 16;
-			}
+			case 0x45: return 0xFFFF | GetTrackTypesRail(GetRailTypeInfoIndex(this->rti), this->ro.grffile);
 			case A2VRI_RAILTYPE_SIGNAL_RESTRICTION_INFO: return 0;
 			case A2VRI_RAILTYPE_SIGNAL_CONTEXT: return GetNewSignalsSignalContext(this->signal_context);
 			case A2VRI_RAILTYPE_SIGNAL_SIDE: return GetNewSignalsSideVariable();
@@ -69,8 +86,11 @@
 			}
 			return to_underlying(t != nullptr ? GetTownRadiusGroup(t, this->tile) : HouseZone::TownEdge);
 		}
-		case 0x45:
-			return GetTrackTypes(this->tile, ro.grffile);
+		case 0x45: {
+			uint32_t result = GetTrackTypesRail((this->rti != nullptr) ? GetRailTypeInfoIndex(this->rti) : GetTileRailType(this->tile), this->ro.grffile);
+			if (extra.mask & 0xFFFF) result |= GetTrackTypesRoad(this->tile, this->ro.grffile);
+			return result;
+		}
 		case A2VRI_RAILTYPE_SIGNAL_RESTRICTION_INFO:
 			return GetNewSignalsRestrictedSignalsInfo(this->prog, this->tile, 0);
 		case A2VRI_RAILTYPE_SIGNAL_CONTEXT:

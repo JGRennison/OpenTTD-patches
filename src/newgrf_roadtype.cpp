@@ -21,7 +21,7 @@
 #include "safeguards.h"
 
 /**
- * Variable 0x45 of road-/tram-/rail-types to query track types on a tile.
+ * Variable 0x45 of road-/tram-/rail-types to query track types on a tile (road/tram parts).
  *
  * Format: __RRttrr
  * - rr: Translated roadtype.
@@ -32,7 +32,7 @@
  * - 0xFF: Track not present on tile.
  * - 0xFE: Track present, but no matching entry in translation table.
  */
-uint32_t GetTrackTypes(TileIndex tile, const GRFFile *grffile)
+uint32_t GetTrackTypesRoad(TileIndex tile, const GRFFile *grffile)
 {
 	uint8_t road = 0xFF;
 	uint8_t tram = 0xFF;
@@ -46,12 +46,7 @@ uint32_t GetTrackTypes(TileIndex tile, const GRFFile *grffile)
 			if (tram == 0xFF) tram = 0xFE;
 		}
 	}
-	uint8_t rail = 0xFF;
-	if (auto tt = GetTileRailType(tile); tt != INVALID_RAILTYPE) {
-		rail = GetReverseRailTypeTranslation(tt, grffile);
-		if (rail == 0xFF) rail = 0xFE;
-	}
-	return road | tram << 8 | rail << 16;
+	return road | tram << 8;
 }
 
 /* virtual */ uint32_t RoadTypeScopeResolver::GetRandomBits() const
@@ -98,8 +93,11 @@ uint32_t GetTrackTypes(TileIndex tile, const GRFFile *grffile)
 			}
 			return to_underlying(t != nullptr ? GetTownRadiusGroup(t, this->tile) : HouseZone::TownEdge);
 		}
-		case 0x45:
-			return GetTrackTypes(this->tile, ro.grffile);
+		case 0x45: {
+			uint32_t result = GetTrackTypesRoad(this->tile, this->ro.grffile);
+			if (extra.mask & 0xFF0000) result |= GetTrackTypesRail(GetTileRailType(this->tile), this->ro.grffile);
+			return result;
+		}
 	}
 
 	Debug(grf, 1, "Unhandled road type tile variable 0x{:X}", variable);
