@@ -17,6 +17,7 @@
 #include <algorithm>
 
 #include "../safeguards.h"
+#include <numeric>
 
 template <>
 uint16_t SumHistory(std::span<const uint16_t> history)
