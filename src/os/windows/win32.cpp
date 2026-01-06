@@ -800,7 +800,7 @@ PACK_N(struct THREADNAME_INFO {
  */
 void SetCurrentThreadName(const std::string &thread_name)
 {
-	Win32SetThreadName(GetCurrentThreadId(), threadName);
+	Win32SetThreadName(GetCurrentThreadId(), thread_name);
 
 	THREADNAME_INFO info;
 	info.dwType = 0x1000;
