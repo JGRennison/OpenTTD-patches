@@ -339,7 +339,7 @@ inline RailType GetRailTypeInfoIndex(const RailTypeInfo *rti)
 {
 	extern RailTypeInfo _railtypes[RAILTYPE_END];
 	size_t index = rti - _railtypes;
-	assert(index < RAILTYPE_END && rti == _railtypes + index);
+	dbg_assert(index < RAILTYPE_END && rti == _railtypes + index);
 	return static_cast<RailType>(index);
 }
 
