@@ -453,7 +453,7 @@ struct FramerateWindow : Window {
 	}
 
 	/** Update the window on a regular interval. */
-	IntervalTimer<TimerWindow> update_interval = {std::chrono::milliseconds(100), [this](auto) {
+	const IntervalTimer<TimerWindow> update_interval = {std::chrono::milliseconds(100), [this](auto) {
 		this->UpdateData();
 		this->SetDirty();
 	}};

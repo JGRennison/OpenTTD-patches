@@ -135,7 +135,7 @@ bool FioCheckFileExists(std::string_view filename, Subdirectory subdir)
  * @param filename the file to test.
  * @return true if and only if the file exists.
  */
-bool FileExists(const std::string &filename)
+bool FileExists(std::string_view filename)
 {
 #if defined(_WIN32)
 	return _taccess(OTTD2FS(filename).c_str(), 0) == 0;

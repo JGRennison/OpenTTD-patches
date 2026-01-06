@@ -233,11 +233,11 @@ private:
 	std::pair<WidgetID, WidgetID> badge_filters{};
 	BadgeFilterChoices badge_filter_choices{};
 
-	IntervalTimer<TimerGameCalendar> yearly_interval = {{TimerGameCalendar::YEAR, TimerGameCalendar::Priority::NONE}, [this](auto) {
+	const IntervalTimer<TimerGameCalendar> yearly_interval = {{TimerGameCalendar::YEAR, TimerGameCalendar::Priority::NONE}, [this](auto) {
 		this->SetDirty();
 	}};
 
-	IntervalTimer<TimerWindow> refresh_interval = {std::chrono::seconds(3), [this](auto) {
+	const IntervalTimer<TimerWindow> refresh_interval = {std::chrono::seconds(3), [this](auto) {
 		RefreshUsedTypeList();
 	}};
 };

@@ -33,7 +33,7 @@ void AppendPathSeparator(std::string &buf);
 void DeterminePaths(const char *exe, bool only_local_path);
 std::optional<UniqueBuffer<uint8_t>> ReadFileToBuffer(const std::string &filename, size_t maxsize);
 std::optional<UniqueBuffer<uint8_t>> ReadFileToBuffer(FileHandle &fh, size_t maxsize);
-bool FileExists(const std::string &filename);
+bool FileExists(std::string_view filename);
 bool ExtractTar(const std::string &tar_filename, Subdirectory subdir);
 
 extern std::string _personal_dir; ///< custom directory for personal settings, saves, newgrf, etc.

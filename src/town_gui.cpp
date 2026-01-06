@@ -2252,7 +2252,7 @@ struct BuildHouseWindow : public PickerWindow {
 		}
 	}
 
-	IntervalTimer<TimerWindow> view_refresh_interval = {std::chrono::milliseconds(2500), [this](auto) {
+	const IntervalTimer<TimerWindow> view_refresh_interval = {std::chrono::milliseconds(2500), [this](auto) {
 		/* There are four different 'views' that are random based on house tile position. As this is not
 		 * user-controllable, instead we automatically cycle through them. */
 		HousePickerCallbacks::sel_view = (HousePickerCallbacks::sel_view + 1) % 4;

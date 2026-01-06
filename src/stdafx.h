@@ -168,8 +168,8 @@
 		using fs_string = std::string;
 		using fs_char = char;
 #	else
-		template <typename T> std::string FS2OTTD(T name) { return name; }
-		template <typename T> std::string OTTD2FS(T name) { return name; }
+		template <typename T> std::string FS2OTTD(T &&name) { return std::string{std::forward<T>(name)}; }
+		template <typename T> std::string OTTD2FS(T &&name) { return std::string{std::forward<T>(name)}; }
 		using fs_string = std::string;
 		using fs_char = char;
 #	endif /* _WIN32 or WITH_ICONV */

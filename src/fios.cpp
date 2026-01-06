@@ -850,7 +850,7 @@ FiosNumberedSaveName::FiosNumberedSaveName(std::string_view prefix) : prefix(pre
 	static std::string _prefix; ///< Static as the lambda needs access to it.
 
 	/* Callback for FiosFileScanner. */
-	static fios_getlist_callback_proc *proc = [](SaveLoadOperation fop, const std::string &file, const char *ext, char *title, const char *last) {
+	static fios_getlist_callback_proc *const proc = [](SaveLoadOperation fop, const std::string &file, const char *ext, char *title, const char *last) {
 		if (StrEqualsIgnoreCase(ext, ".sav") && file.starts_with(_prefix)) return FIOS_TYPE_FILE;
 		return FIOS_TYPE_INVALID;
 	};

@@ -9,6 +9,7 @@
 
 #include "../stdafx.h"
 #include "../core/endian_func.hpp"
+#include "../core/math_func.hpp"
 #include "../core/mem_func.hpp"
 #include "../error_func.h"
 #include "../fileio_type.h"

@@ -594,12 +594,13 @@ static inline PaletteID GetHouseColour(HouseID house_id, TileIndex tile = INVALI
 
 static void DrawTileLayout(const TileInfo *ti, const TileLayoutSpriteGroup *group, uint8_t stage, HouseID house_id)
 {
-	const DrawTileSprites *dts = group->ProcessRegisters(&stage);
+	auto processor = group->ProcessRegisters(&stage);
+	auto dts = processor.GetLayout();
 
 	PaletteID palette = GetHouseColour(house_id, ti->tile);
 
-	SpriteID image = dts->ground.sprite;
-	PaletteID pal  = dts->ground.pal;
+	SpriteID image = dts.ground.sprite;
+	PaletteID pal = dts.ground.pal;
 
 	if (HasBit(image, SPRITE_MODIFIER_CUSTOM_SPRITE)) image += stage;
 	if (HasBit(pal, SPRITE_MODIFIER_CUSTOM_SPRITE)) pal += stage;
@@ -608,7 +609,7 @@ static void DrawTileLayout(const TileInfo *ti, const TileLayoutSpriteGroup *grou
 		DrawGroundSprite(image, GroundSpritePaletteTransform(image, pal, palette));
 	}
 
-	DrawNewGRFTileSeq(ti, dts, TO_HOUSES, stage, palette);
+	DrawNewGRFTileSeq(ti, &dts, TO_HOUSES, stage, palette);
 }
 
 void DrawNewHouseTile(TileInfo *ti, HouseID house_id)
@@ -651,7 +652,8 @@ void DrawNewHouseTileInGUI(int x, int y, const HouseSpec *spec, HouseID house_id
 	if (group == nullptr) return;
 
 	uint8_t stage = TOWN_HOUSE_COMPLETED;
-	const DrawTileSprites *dts = group->ProcessRegisters(&stage);
+	auto processor = group->ProcessRegisters(&stage);
+	auto dts = processor.GetLayout();
 
 	PaletteID palette = GetColourPalette(spec->random_colour[0]);
 	if (spec->callback_mask.Test(HouseCallbackMask::Colour)) {
@@ -662,8 +664,8 @@ void DrawNewHouseTileInGUI(int x, int y, const HouseSpec *spec, HouseID house_id
 		}
 	}
 
-	SpriteID image = dts->ground.sprite;
-	PaletteID pal = dts->ground.pal;
+	SpriteID image = dts.ground.sprite;
+	PaletteID pal = dts.ground.pal;
 
 	if (HasBit(image, SPRITE_MODIFIER_CUSTOM_SPRITE)) image += stage;
 	if (HasBit(pal, SPRITE_MODIFIER_CUSTOM_SPRITE)) pal += stage;
@@ -672,7 +674,7 @@ void DrawNewHouseTileInGUI(int x, int y, const HouseSpec *spec, HouseID house_id
 		DrawSprite(image, GroundSpritePaletteTransform(image, pal, palette), x, y);
 	}
 
-	DrawNewGRFTileSeqInGUI(x, y, dts, stage, palette);
+	DrawNewGRFTileSeqInGUI(x, y, &dts, stage, palette);
 }
 
 /* Simple wrapper for GetHouseCallback to keep the animation unified. */

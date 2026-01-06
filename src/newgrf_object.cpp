@@ -494,11 +494,12 @@ void DrawObjectLandscapeGround(TileInfo *ti)
  */
 static void DrawTileLayout(TileInfo *ti, const TileLayoutSpriteGroup *group, const ObjectSpec *spec, int building_z_offset)
 {
-	const DrawTileSprites *dts = group->ProcessRegisters(nullptr);
+	auto processor = group->ProcessRegisters(nullptr);
+	auto dts = processor.GetLayout();
 	PaletteID palette = (spec->flags.Test(ObjectFlag::Uses2CC) ? SPR_2CCMAP_BASE : PALETTE_RECOLOUR_START) + Object::GetByTile(ti->tile)->colour;
 
-	SpriteID image = dts->ground.sprite;
-	PaletteID pal  = dts->ground.pal;
+	SpriteID image = dts.ground.sprite;
+	PaletteID pal = dts.ground.pal;
 
 	if (spec->ctrl_flags.Test(ObjectCtrlFlag::UseLandGround)) {
 		DrawObjectLandscapeGround(ti);
@@ -513,7 +514,7 @@ static void DrawTileLayout(TileInfo *ti, const TileLayoutSpriteGroup *group, con
 	}
 
 	if (building_z_offset) ti->z += building_z_offset;
-	DrawNewGRFTileSeq(ti, dts, TO_STRUCTURES, 0, palette);
+	DrawNewGRFTileSeq(ti, &dts, TO_STRUCTURES, 0, palette);
 	if (building_z_offset) ti->z -= building_z_offset;
 }
 
@@ -546,7 +547,8 @@ void DrawNewObjectTileInGUI(int x, int y, const ObjectSpec *spec, uint8_t view)
 	const TileLayoutSpriteGroup *group = object.Resolve<TileLayoutSpriteGroup>();
 	if (group == nullptr) return;
 
-	const DrawTileSprites *dts = group->ProcessRegisters(nullptr);
+	auto processor = group->ProcessRegisters(nullptr);
+	auto dts = processor.GetLayout();
 
 	PaletteID palette;
 	if (Company::IsValidID(_local_company)) {
@@ -562,14 +564,14 @@ void DrawNewObjectTileInGUI(int x, int y, const ObjectSpec *spec, uint8_t view)
 		palette = spec->flags.Test(ObjectFlag::Uses2CC) ? SPR_2CCMAP_BASE : PALETTE_RECOLOUR_START;
 	}
 
-	SpriteID image = dts->ground.sprite;
-	PaletteID pal  = dts->ground.pal;
+	SpriteID image = dts.ground.sprite;
+	PaletteID pal = dts.ground.pal;
 
 	if (GB(image, 0, SPRITE_WIDTH) != 0) {
 		DrawSprite(image, GroundSpritePaletteTransform(image, pal, palette), x, y);
 	}
 
-	DrawNewGRFTileSeqInGUI(x, y, dts, 0, palette);
+	DrawNewGRFTileSeqInGUI(x, y, &dts, 0, palette);
 }
 
 /**

@@ -3420,7 +3420,6 @@ static bool CheckForValidOrders(const Vehicle *v)
 	for (const Order *order : v->Orders()) {
 		switch (order->GetType()) {
 			case OT_GOTO_STATION:
-			case OT_GOTO_DEPOT:
 			case OT_GOTO_WAYPOINT:
 				return true;
 

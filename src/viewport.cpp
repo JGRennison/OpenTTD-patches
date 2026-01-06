@@ -6908,7 +6908,7 @@ struct ViewportSSCSS {
 };
 
 /** List of sorters ordered from best to worst. */
-static ViewportSSCSS _vp_sprite_sorters[] = {
+static const ViewportSSCSS _vp_sprite_sorters[] = {
 #ifdef WITH_SSE
 	{ &ViewportSortParentSpritesSSE41Checker, &ViewportSortParentSpritesSSE41 },
 #endif

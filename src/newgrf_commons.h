@@ -18,6 +18,7 @@
 #include "direction_type.h"
 #include "company_type.h"
 #include "cargo_type.h"
+#include "core/bitmath_func.hpp"
 #include <vector>
 
 /** Context for tile accesses */
@@ -124,9 +125,8 @@ struct NewGRFSpriteLayout : DrawTileSprites {
 	void AllocateRegisters();
 
 	/**
-	 * Tests whether this spritelayout needs preprocessing by
-	 * #PrepareLayout() and #ProcessRegisters(), or whether it can be
-	 * used directly.
+	 * Tests whether this spritelayout needs preprocessing by SpriteLayoutProcessor,
+	 * or whether it can be used directly.
 	 * @return true if preprocessing is needed
 	 */
 	bool NeedsPreprocessing() const
@@ -134,25 +134,48 @@ struct NewGRFSpriteLayout : DrawTileSprites {
 		return !this->registers.empty();
 	}
 
-	uint32_t PrepareLayout(uint32_t orig_offset, uint32_t newgrf_ground_offset, uint32_t newgrf_offset, uint constr_stage, bool separate_ground) const;
-	void ProcessRegisters(uint8_t resolved_var10, uint32_t resolved_sprite, bool separate_ground) const;
+	std::span<const DrawTileSeqStruct> GetSequence() const override { return {this->seq.begin(), this->seq.end()}; }
+};
+
+/**
+ * Add dynamic register values to a sprite layout.
+ */
+class SpriteLayoutProcessor {
+	const NewGRFSpriteLayout *raw_layout = nullptr;
+	std::vector<DrawTileSeqStruct> result_seq;
+	uint32_t var10_values = 0;
+	bool separate_ground = false;
+public:
+	SpriteLayoutProcessor() = default;
+
+	/** Constructor for spritelayout, which do not need preprocessing. */
+	SpriteLayoutProcessor(const NewGRFSpriteLayout &raw_layout) : raw_layout(&raw_layout) {}
+
+	SpriteLayoutProcessor(const NewGRFSpriteLayout &raw_layout, uint32_t orig_offset, uint32_t newgrf_ground_offset, uint32_t newgrf_offset, uint constr_stage, bool separate_ground);
+
+	/**
+	 * Get values for variable 10 to resolve sprites for.
+	 * NewStations only.
+	 */
+	SetBitIterator<uint8_t, uint32_t> Var10Values() const { return this->var10_values; }
+
+	void ProcessRegisters(uint8_t resolved_var10, uint32_t resolved_sprite);
 
 	/**
 	 * Returns the result spritelayout after preprocessing.
-	 * @pre #PrepareLayout() and #ProcessRegisters() need calling first.
-	 * @return result spritelayout
+	 * @return result ground sprite and spritelayout
 	 */
-	std::span<DrawTileSeqStruct> GetLayout(PalSpriteID *ground) const
+	DrawTileSpriteSpan GetLayout() const
 	{
-		*ground = result_seq[0].image;
-		return {++result_seq.begin(), result_seq.end()};
+		assert(this->raw_layout != nullptr);
+		if (this->result_seq.empty()) {
+			/* Simple layout without preprocessing. */
+			return {this->raw_layout->ground, this->raw_layout->seq};
+		} else {
+			/* Dynamic layout with preprocessing. */
+			return {this->result_seq[0].image, {++this->result_seq.begin(), this->result_seq.end()}};
+		}
 	}
-
-	std::span<const DrawTileSeqStruct> GetSequence() const override { return {this->seq.begin(), this->seq.end()}; }
-
-
-private:
-	static std::vector<DrawTileSeqStruct> result_seq; ///< Temporary storage when preprocessing spritelayouts.
 };
 
 /**

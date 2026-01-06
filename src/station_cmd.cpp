@@ -3378,7 +3378,8 @@ bool SplitGroundSpriteForOverlay(const TileInfo *ti, SpriteID *ground, RailTrack
 static void DrawTile_Station(TileInfo *ti, DrawTileProcParams params)
 {
 	const NewGRFSpriteLayout *layout = nullptr;
-	DrawTileSpriteSpan tmp_rail_layout;
+	SpriteLayoutProcessor processor; // owns heap, borrowed by tmp_layout and t
+	DrawTileSpriteSpan tmp_layout;
 	const DrawTileSprites *t = nullptr;
 	int32_t total_offset;
 	const RailTypeInfo *rti = nullptr;
@@ -3562,13 +3563,13 @@ draw_default_foundation:
 		if (layout != nullptr) {
 			/* Sprite layout which needs preprocessing */
 			bool separate_ground = statspec->flags.Test(StationSpecFlag::SeparateGround);
-			uint32_t var10_values = layout->PrepareLayout(total_offset, rti->fallback_railtype, 0, 0, separate_ground);
-			for (uint8_t var10 : SetBitIterator(var10_values)) {
+			processor = SpriteLayoutProcessor(*layout, total_offset, rti->fallback_railtype, 0, 0, separate_ground);
+			for (uint8_t var10 : processor.Var10Values()) {
 				uint32_t var10_relocation = GetCustomStationRelocation(statspec, st, ti->tile, INVALID_RAILTYPE, var10);
-				layout->ProcessRegisters(var10, var10_relocation, separate_ground);
+				processor.ProcessRegisters(var10, var10_relocation);
 			}
-			tmp_rail_layout.seq = layout->GetLayout(&tmp_rail_layout.ground);
-			t = &tmp_rail_layout;
+			tmp_layout = processor.GetLayout();
+			t = &tmp_layout;
 			total_offset = 0;
 		} else if (statspec != nullptr) {
 			/* Simple sprite layout */
@@ -3631,7 +3632,9 @@ draw_default_foundation:
 				if (type == StationType::RoadWaypoint && stop_draw_mode.Test(RoadStopDrawMode::WaypGround)) {
 					draw_ground = true;
 				}
-				t = group->ProcessRegisters(nullptr);
+				processor = group->ProcessRegisters(nullptr);
+				tmp_layout = processor.GetLayout();
+				t = &tmp_layout;
 			}
 		}
 

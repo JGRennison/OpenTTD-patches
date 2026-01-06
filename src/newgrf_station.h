@@ -34,6 +34,29 @@ struct StationScopeResolver : public ScopeResolver {
 	RailType rt;                        ///< %RailType of the station (unbuilt stations only).
 
 	/**
+	 * Station variable cache
+	 * This caches 'expensive' station variable lookups which iterate over
+	 * several tiles that may be called multiple times per Resolve().
+	 */
+	struct Cache {
+		uint32_t v40;
+		uint32_t v41;
+		uint32_t v45;
+		uint32_t v46;
+		uint32_t v47;
+		uint32_t v49;
+		uint8_t valid = 0;
+
+		bool Refresh(uint8_t bit)
+		{
+			bool refresh = !HasBit(this->valid, bit);
+			if (refresh) SetBit(this->valid, bit);
+			return refresh;
+		}
+	};
+	mutable Cache cache;
+
+	/**
 	 * Constructor for station scopes.
 	 * @param ro Surrounding resolver.
 	 * @param statspec Station (type) specification.

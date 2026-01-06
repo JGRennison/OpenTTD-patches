@@ -11,6 +11,7 @@
 #include "../core/endian_func.hpp"
 #include "../core/alloc_func.hpp"
 #include "../core/mem_func.hpp"
+#include "../core/math_func.hpp"
 #include "../error_func.h"
 #include "../string_func.h"
 #include "../core/string_builder.hpp"
@@ -613,10 +614,7 @@ void StringReader::ParseFile()
 	_strgen.file = this->file;
 
 	/* For each new file we parse, reset the genders, and language codes. */
-	MemSetT(&_strgen.lang, 0);
-	strecpy(_strgen.lang.digit_group_separator, ",");
-	strecpy(_strgen.lang.digit_group_separator_currency, ",");
-	strecpy(_strgen.lang.digit_decimal_separator, ".");
+	_strgen.lang = {};
 
 	_strgen.cur_line = 1;
 	while (this->ReadLine(buf, lastof(buf)) != nullptr) {

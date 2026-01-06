@@ -250,7 +250,25 @@ const uint16_t INIFILE_VERSION = (IniFileVersion)(IFV_MAX_VERSION - 1); ///< Cur
  * @param many full domain of values the ONEofMANY setting can have
  * @return the integer index of the full-list, or std::nullopt if not found
  */
-std::optional<uint32_t> OneOfManySettingDesc::ParseSingleValue(std::string_view str, const std::vector<std::string> &many)
+std::optional<uint32_t> OneOfManySettingDesc::ParseSingleValue(std::string_view str, std::span<const std::string> many)
+{
+	StringConsumer consumer{str};
+	auto digit = consumer.TryReadIntegerBase<uint32_t>(10);
+	/* check if it's an integer */
+	if (digit.has_value()) return digit;
+
+	auto it = std::ranges::find(many, str);
+	if (it == many.end()) return std::nullopt;
+	return static_cast<uint32_t>(it - many.begin());
+}
+
+/**
+ * Find the index value of a ONEofMANY type in a string
+ * @param str the current value of the setting for which a value needs found
+ * @param many full domain of values the ONEofMANY setting can have
+ * @return the integer index of the full-list, or std::nullopt if not found
+ */
+std::optional<uint32_t> OneOfManySettingDesc::ParseSingleValue(std::string_view str, std::span<const std::string_view> many)
 {
 	StringConsumer consumer{str};
 	auto digit = consumer.TryReadIntegerBase<uint32_t>(10);
@@ -1908,7 +1926,7 @@ static void RoadSideChanged(int32_t new_value)
 static std::optional<uint32_t> ConvertLandscape(std::string_view value)
 {
 	/* try with the old values */
-	static std::vector<std::string> _old_landscape_values{"normal", "hilly", "desert", "candy"};
+	static constexpr std::initializer_list<std::string_view> _old_landscape_values{"normal", "hilly", "desert", "candy"};
 	return OneOfManySettingDesc::ParseSingleValue(value, _old_landscape_values);
 }
 
@@ -2947,7 +2965,7 @@ void LoadFromConfig(bool startup)
 		}
 
 		if (generic_version < IFV_AUTOSAVE_RENAME && IsConversionNeeded(generic_ini, "gui", "autosave", "autosave_interval", &old_item)) {
-			static std::vector<std::string> _old_autosave_interval{"off", "monthly", "quarterly", "half year", "yearly", "custom_days", "custom_realtime_minutes"};
+			static constexpr std::initializer_list<std::string_view> _old_autosave_interval{"off", "monthly", "quarterly", "half year", "yearly", "custom_days", "custom_realtime_minutes"};
 			auto old_value = OneOfManySettingDesc::ParseSingleValue(*old_item->value, _old_autosave_interval);
 
 			if (old_value.has_value()) {
