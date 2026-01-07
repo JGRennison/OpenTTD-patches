@@ -993,6 +993,19 @@ inline bool IsSavegameVersionBeforeOrAt(SaveLoadVersion major)
 }
 
 /**
+ * Checks whether the effective upstream savegame is below \a major.
+ * @param major Major number of the version to check against.
+ * @return eEfective upstream savegame version is earlier than the specified version.
+ */
+inline bool IsEffectiveUpstreamSavegameVersionBefore(SaveLoadVersion major)
+{
+	extern SaveLoadVersion _sl_version;
+	extern SaveLoadVersion _sl_xv_upstream_version;
+	if (_sl_xv_upstream_version != SL_MIN_VERSION) return _sl_xv_upstream_version < major;
+	return _sl_version < major;
+}
+
+/**
  * Checks if some version from/to combination falls within the range of the
  * active savegame version.
  * @param version_from Inclusive savegame version lower bound.
