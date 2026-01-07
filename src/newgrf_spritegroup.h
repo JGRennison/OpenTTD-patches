@@ -679,7 +679,6 @@ struct ResolverObject {
 	ResolverObject(const GRFFile *grffile, CallbackID callback = CBID_NO_CALLBACK, uint32_t callback_param1 = 0, uint32_t callback_param2 = 0)
 		: default_scope(*this), callback(callback), callback_param1(callback_param1), callback_param2(callback_param2), grffile(grffile), root_spritegroup(nullptr)
 	{
-		this->ResetState();
 	}
 
 	virtual ~ResolverObject() = default;
@@ -708,6 +707,7 @@ public:
 	template <typename TSpriteGroup = SpriteGroup>
 	const TSpriteGroup *Resolve()
 	{
+		this->ResetState();
 		const SpriteGroup *sg = SpriteGroup::Resolve(this->root_spritegroup, *this);
 		if constexpr (!std::is_same_v<TSpriteGroup, SpriteGroup>) {
 			if (sg == nullptr || sg->type != TSpriteGroup::TYPE) return nullptr;
@@ -776,18 +776,6 @@ public:
 	}
 
 	/**
-	 * Resets the dynamic state of the resolver object.
-	 * To be called before resolving an Action-1-2-3 chain.
-	 */
-	void ResetState()
-	{
-		this->last_value = 0;
-		this->waiting_random_triggers = 0;
-		this->used_random_triggers = 0;
-		this->reseed.fill(0);
-	}
-
-	/**
 	 * Get the feature number being resolved for.
 	 * This function is mainly intended for the callback profiling feature.
 	 */
@@ -798,6 +786,19 @@ public:
 	 * and should return an identifier recognisable by the NewGRF developer.
 	 */
 	virtual uint32_t GetDebugID() const { return 0; }
+
+private:
+	/**
+	 * Resets the dynamic state of the resolver object.
+	 * To be called before resolving an Action-1-2-3 chain.
+	 */
+	void ResetState()
+	{
+		this->last_value = 0;
+		this->waiting_random_triggers = 0;
+		this->used_random_triggers = 0;
+		this->reseed.fill(0);
+	}
 };
 
 /**

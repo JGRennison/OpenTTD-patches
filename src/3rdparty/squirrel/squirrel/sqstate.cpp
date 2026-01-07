@@ -538,7 +538,7 @@ void SQStringTable::AllocNodes(SQInteger size)
 {
 	_numofslots = size;
 	_strings = (SQString**)SQ_MALLOC(sizeof(SQString*)*_numofslots);
-	memset(_strings,0,sizeof(SQString*)*(size_t)_numofslots);
+	std::fill_n(_strings, _numofslots, nullptr);
 }
 
 static const std::hash<std::string_view> string_table_hash{};
@@ -563,7 +563,7 @@ SQString *SQStringTable::Add(std::string_view new_string)
 
 SQString::SQString(std::string_view new_string)
 {
-	memcpy(_val,new_string.data(),new_string.size());
+	std::ranges::copy(new_string, _val);
 	_val[new_string.size()] = '\0';
 	_len = new_string.size();
 	_hash = string_table_hash(new_string);

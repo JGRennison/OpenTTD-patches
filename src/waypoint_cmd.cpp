@@ -370,8 +370,8 @@ CommandCost CmdBuildRoadWaypoint(DoCommandFlags flags, TileIndex start_tile, Axi
 	}
 	CommandCost cost(EXPENSES_CONSTRUCTION, roadstop_area.w * roadstop_area.h * unit_cost);
 	StationID est = StationID::Invalid();
-	extern CommandCost CheckFlatLandRoadStop(TileArea tile_area, const RoadStopSpec *spec, DoCommandFlags flags, uint invalid_dirs, bool is_drive_through, StationType station_type, Axis axis, StationID *station, RoadType rt, bool require_road);
-	CommandCost ret = CheckFlatLandRoadStop(roadstop_area, spec, flags, 5 << axis, true, StationType::RoadWaypoint, axis, &est, INVALID_ROADTYPE, true);
+	extern CommandCost CheckFlatLandRoadStop(TileArea tile_area, const RoadStopSpec *spec, DoCommandFlags flags, DiagDirections invalid_dirs, bool is_drive_through, StationType station_type, Axis axis, StationID *station, RoadType rt, bool require_road);
+	CommandCost ret = CheckFlatLandRoadStop(roadstop_area, spec, flags, AxisToDiagDirs(axis), true, StationType::RoadWaypoint, axis, &est, INVALID_ROADTYPE, true);
 	if (ret.Failed()) return ret;
 	cost.AddCost(ret.GetCost());
 

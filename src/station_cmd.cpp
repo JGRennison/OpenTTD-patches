@@ -880,7 +880,7 @@ CommandCost ClearTile_Station(TileIndex tile, DoCommandFlags flags);
  * @param check_bridge Check for the existence of a bridge.
  * @return The cost in case of success, or an error code if it failed.
  */
-CommandCost CheckBuildableTile(TileIndex tile, uint invalid_dirs, int &allowed_z, bool allow_steep, bool check_bridge)
+CommandCost CheckBuildableTile(TileIndex tile, DiagDirections invalid_dirs, int &allowed_z, bool allow_steep, bool check_bridge)
 {
 	if (check_bridge && IsBridgeAbove(tile)) {
 		return CommandCost(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
@@ -905,7 +905,7 @@ CommandCost CheckBuildableTile(TileIndex tile, uint invalid_dirs, int &allowed_z
 	if (tileh != SLOPE_FLAT) {
 		/* Forbid building if the tile faces a slope in a invalid direction. */
 		for (DiagDirection dir = DIAGDIR_BEGIN; dir != DIAGDIR_END; dir++) {
-			if (HasBit(invalid_dirs, dir) && !CanBuildDepotByTileh(dir, tileh)) {
+			if (invalid_dirs.Test(dir) && !CanBuildDepotByTileh(dir, tileh)) {
 				return CommandCost(STR_ERROR_FLAT_LAND_REQUIRED);
 			}
 		}
@@ -1066,7 +1066,7 @@ static CommandCost CheckFlatLandRailStation(TileArea tile_area, DoCommandFlags f
 {
 	CommandCost cost(EXPENSES_CONSTRUCTION);
 	int allowed_z = -1;
-	uint invalid_dirs = 5 << axis;
+	DiagDirections invalid_dirs = AxisToDiagDirs(axis);
 
 	const StationSpec *statspec = StationClass::Get(spec_class)->GetSpec(spec_index);
 	bool slope_cb = statspec != nullptr && statspec->callback_mask.Test(StationCallbackMask::SlopeCheck);
@@ -1110,7 +1110,7 @@ static CommandCost CheckFlatLandRailStation(TileArea tile_area, DoCommandFlags f
 				if (HasPowerOnRail(GetRailType(tile_cur), rt)) {
 					TrackBits tracks = GetTrackBits(tile_cur);
 					Track track = RemoveFirstTrack(&tracks);
-					Track expected_track = HasBit(invalid_dirs, DIAGDIR_NE) ? TRACK_X : TRACK_Y;
+					Track expected_track = invalid_dirs.Test(DIAGDIR_NE) ? TRACK_X : TRACK_Y;
 
 					/* The existing track must align with the desired station axis. */
 					if (tracks == TRACK_BIT_NONE && track == expected_track) {
@@ -1154,7 +1154,7 @@ static CommandCost CheckFlatLandRailStation(TileArea tile_area, DoCommandFlags f
  * @param require_road Is existing road required.
  * @return The cost in case of success, or an error code if it failed.
  */
-CommandCost CheckFlatLandRoadStop(TileArea tile_area, const RoadStopSpec *spec, DoCommandFlags flags, uint invalid_dirs, bool is_drive_through, StationType station_type, Axis axis, StationID *station, RoadType rt, bool require_road)
+CommandCost CheckFlatLandRoadStop(TileArea tile_area, const RoadStopSpec *spec, DoCommandFlags flags, DiagDirections invalid_dirs, bool is_drive_through, StationType station_type, Axis axis, StationID *station, RoadType rt, bool require_road)
 {
 	CommandCost cost(EXPENSES_CONSTRUCTION);
 	int allowed_z = -1;
@@ -1167,7 +1167,7 @@ CommandCost CheckFlatLandRoadStop(TileArea tile_area, const RoadStopSpec *spec, 
 		if (IsBridgeAbove(cur_tile)) {
 			TileIndex southern_bridge_end = GetSouthernBridgeEnd(cur_tile);
 			TileIndex northern_bridge_end = GetNorthernBridgeEnd(cur_tile);
-			CommandCost bridge_ret = IsRoadStopBridgeAboveOK(cur_tile, spec, station_type, is_drive_through, (DiagDirection) FindFirstBit(invalid_dirs),
+			CommandCost bridge_ret = IsRoadStopBridgeAboveOK(cur_tile, spec, station_type, is_drive_through, invalid_dirs.FindFirstBit(),
 					northern_bridge_end, southern_bridge_end, GetBridgeHeight(southern_bridge_end),
 					GetBridgeType(southern_bridge_end), GetTunnelBridgeTransportType(southern_bridge_end));
 			if (bridge_ret.Failed()) return bridge_ret;
@@ -1282,7 +1282,7 @@ static CommandCost CheckFlatLandAirport(AirportTileTableIterator tile_iter, DoCo
 
 	for (; tile_iter != INVALID_TILE; ++tile_iter) {
 		const TileIndex tile_cur = tile_iter;
-		CommandCost ret = CheckBuildableTile(tile_cur, 0, allowed_z, true, true);
+		CommandCost ret = CheckBuildableTile(tile_cur, {}, allowed_z, true, true);
 		if (ret.Failed()) return ret;
 		cost.AddCost(ret.GetCost());
 
@@ -2199,7 +2199,7 @@ CommandCost CmdBuildRoadStop(DoCommandFlags flags, TileIndex tile, uint8_t width
 	}
 	CommandCost cost(EXPENSES_CONSTRUCTION, roadstop_area.w * roadstop_area.h * unit_cost);
 	StationID est = StationID::Invalid();
-	ret = CheckFlatLandRoadStop(roadstop_area, roadstopspec, flags, is_drive_through ? 5 << axis : 1 << ddir, is_drive_through, station_type, axis, &est, rt, false);
+	ret = CheckFlatLandRoadStop(roadstop_area, roadstopspec, flags, is_drive_through ? AxisToDiagDirs(axis) : DiagDirections{ddir}, is_drive_through, station_type, axis, &est, rt, false);
 	if (ret.Failed()) return ret;
 	cost.AddCost(ret.GetCost());
 
