@@ -767,7 +767,7 @@ STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Опци
 
 
 
-###length 45
+###length 46
 
 
 # Autosave dropdown
@@ -968,6 +968,7 @@ STR_CONFIG_SETTING_GRAPH_LINE_THICKNESS                         :Дебелин�
 ###length 4
 
 ###length 4
+
 
 
 
@@ -1496,7 +1497,6 @@ STR_NEWGRF_SETTINGS_MIN_VERSION                                 :{BLACK}Мин. 
 
 # NewGRF parameters window
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}Промена НовGRF параметри
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Затвори
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}Ресетирај
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}Наместете ги сите параметри на нивните стандардни вредности
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :Параметар {NUM}

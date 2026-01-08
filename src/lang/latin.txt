@@ -1053,7 +1053,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :Unitates nummi
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :Electio unitatum nummi
 
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Libra Britannica
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Dollarium CFA
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1613,6 +1613,7 @@ STR_CONFIG_SETTING_SCROLLMODE_LMB                               :Tabula movetur 
 
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Movere conspectum leniter: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Quomodo conspectus vagatur ad quemdam locum globulo sinistro in tabula premendi aut cum iubetur vagari ad quamdam rem in tabula. Electa, conspectus leniter vagatur. Neglecta, statim salit ad locum
+
 
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Ostendere nuntium adiuvans apud varia ferramenta construendi: {STRING}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP_HELPTEXT                     :Ostendere spatium atque altitudinem inter tegulas dum mus trahitur in construendo
@@ -3099,14 +3100,11 @@ STR_SAVE_PRESET_CAPTION                                         :{WHITE}Servare 
 STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}Index rationum. Unam elige ut transcribatur nomini infero
 STR_SAVE_PRESET_TITLE                                           :{BLACK}Inscribe nomen rationis
 STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}Nomen electum rationis conservandum
-STR_SAVE_PRESET_CANCEL                                          :{BLACK}Cancellare
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}Non mutare rationem
 STR_SAVE_PRESET_SAVE                                            :{BLACK}Servare
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}Rationem conservare huic nomini
 
 # NewGRF parameters window
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}Mutare parametra NewGRF
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Claudere
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}Redire
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}Facere ut quodque parametrum solito reversum sit
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :Parametrum {NUM}
@@ -4294,13 +4292,10 @@ STR_AI_LIST_URL                                                 :{LTBLUE}URL: {O
 
 STR_AI_LIST_ACCEPT                                              :{BLACK}Accipere
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Eligere scriptum
-STR_AI_LIST_CANCEL                                              :{BLACK}Cancellare
-STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Non scriptum mutare
 
 
 # Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :IA
-STR_AI_SETTINGS_CLOSE                                           :{BLACK}Claudere
 STR_AI_SETTINGS_RESET                                           :{BLACK}Revertere
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
 

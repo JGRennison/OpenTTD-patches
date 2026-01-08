@@ -828,7 +828,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :کرنسی کی
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :کرنسی کی اکائی اختیار کریں
 
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :برطانوی پاونڈ
 STR_GAME_OPTIONS_CURRENCY_USD                                   :امریکی ڈالر
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :یورو
@@ -1240,6 +1240,7 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :بنفشی
 ###length 4
 
 ###length 4
+
 
 
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :تعمیراتی کام کے دوران پیمائشی ٹول ٹپ دکھائیں: {STRING}
@@ -2247,8 +2248,6 @@ STR_NEWGRF_SETTINGS_UPGRADE                                     :{BLACK}اپگر
 
 
 # NewGRF save preset window
-STR_SAVE_PRESET_CANCEL                                          :{BLACK}منسوخ
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}پریسیٹ تبدیل نہ کریں
 STR_SAVE_PRESET_SAVE                                            :{BLACK}بچایں
 
 # NewGRF parameters window

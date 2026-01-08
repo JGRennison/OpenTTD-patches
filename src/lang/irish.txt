@@ -190,6 +190,20 @@ STR_COLOUR_WHITE                                                :Bán
 STR_COLOUR_RANDOM                                               :Randamach
 
 ###length 17
+STR_COLOUR_SECONDARY_DARK_BLUE                                  :Gorm Dorcha
+STR_COLOUR_SECONDARY_PALE_GREEN                                 :Liathuaine
+STR_COLOUR_SECONDARY_RED                                        :Dearg
+STR_COLOUR_SECONDARY_LIGHT_BLUE                                 :Bánghorm
+STR_COLOUR_SECONDARY_GREEN                                      :Uaine
+STR_COLOUR_SECONDARY_DARK_GREEN                                 :Ciaruaine
+STR_COLOUR_SECONDARY_BLUE                                       :Gorm
+STR_COLOUR_SECONDARY_CREAM                                      :Uachtar
+STR_COLOUR_SECONDARY_MAUVE                                      :Liathchorcra
+STR_COLOUR_SECONDARY_PURPLE                                     :Corcra
+STR_COLOUR_SECONDARY_ORANGE                                     :Oráiste
+STR_COLOUR_SECONDARY_BROWN                                      :Donn
+STR_COLOUR_SECONDARY_GREY                                       :Liath
+STR_COLOUR_SECONDARY_SAME_AS_PRIMARY                            :Mar an gcéanna leis an gceann príomhúil
 
 
 # Units used in OpenTTD
@@ -396,6 +410,8 @@ STR_SCENEDIT_FILE_MENU_QUIT_EDITOR                              :Fág eagarthói
 STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
 STR_SCENEDIT_FILE_MENU_QUIT                                     :Scoir
 
+STR_SCENEDIT_TOWN_MENU_BUILD_TOWN                               :Cruthaigh bailte
+STR_SCENEDIT_TOWN_MENU_PACE_HOUSE                               :Cuir síos tithe
 
 # Settings menu
 STR_SETTINGS_MENU_GAME_OPTIONS                                  :Roghanna an chluiche
@@ -883,7 +899,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :Aonaid airgeadr
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :Aonaid airgeadra a roghnú
 
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Punt na Breataine
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Dollar Mheiriceá
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -959,6 +975,13 @@ STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :Cuir tic sa bho
 
 
 
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_FRAME                       :Suirbhé uathoibrithe
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY                             :Glac páirt i suirbhé uathoibrithe
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_TOOLTIP                     :Má tá sé cumasaithe, déanfaidh OpenTTd suirbhé a sheoladh nuair a fhágfar cluiche
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_LINK                        :Maidir leis an suirbhé agus príobháideachas
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_LINK_TOOLTIP                :Osclóidh seo brabhsálaí ina mbeidh tuilleadh eolais faoin suirbhé uathoibrithe
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW                     :Réamhamharc ar thoradh an tsuirbhé
+STR_GAME_OPTIONS_PARTICIPATE_SURVEY_PREVIEW_TOOLTIP             :Taispeáin toradh an tsuirbhé ar an gcluiche reatha atá ar siúl
 
 
 STR_GAME_OPTIONS_REFRESH_RATE                                   :Ráta athnuachana na taispeána
@@ -994,6 +1017,8 @@ STR_CURRENCY_DECREASE_EXCHANGE_RATE_TOOLTIP                     :{BLACK}Laghdaig
 STR_CURRENCY_INCREASE_EXCHANGE_RATE_TOOLTIP                     :{BLACK}Méadaigh méid d'airgeadra ar Euro (€) amháin
 STR_CURRENCY_SET_EXCHANGE_RATE_TOOLTIP                          :{BLACK}Socraigh ráta malairte d'airgeadra ar Euro (€) amháin
 
+STR_CURRENCY_SEPARATOR                                          :{LTBLUE}Deighilteoir: {ORANGE}{STRING}
+STR_CURRENCY_SET_CUSTOM_CURRENCY_SEPARATOR_TOOLTIP              :{BLACK}Socraigh an deighilteoir dod' airgeadra
 
 STR_CURRENCY_PREFIX                                             :{LTBLUE}Réimír: {ORANGE}{STRING}
 STR_CURRENCY_SET_CUSTOM_CURRENCY_PREFIX_TOOLTIP                 :{BLACK}Socraigh an teaghrán réimíre dod' airgeadra
@@ -1480,6 +1505,7 @@ STR_CONFIG_SETTING_SCROLLMODE_LMB                               :Bog an léarsc�
 
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Scrollú mín do na fuinneoga amhairc: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Roghnaigh an chaoi a scrollóidh an príomhamharc chuig suíomh ar leith má chliceálann tú ar an léarscáil bheag nó má thugann tú ordú scrollú chuig oibiacht ar leith ar an léarscáil. Má tá sé cumasaithe, scrollóidh an fhuinneog amhairc go mín, má tá sé díchumasaithe léimfidh sé go díreach chuig an suíomh sin.
+
 
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Taispeáin leid uirlise tomhais agu uirlisí tógála áirithe in úsáid: {STRING}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP_HELPTEXT                     :Taispeánfar faid na dtíleanna agus difríochtaí san airde agus tú ag tarraingt le linn duit a bheith i mbun tógála
@@ -2540,7 +2566,10 @@ STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Tóg st�
 
 
 STR_STATION_CLASS_DFLT                                          :Stáisiún réamhshocraithe
+STR_STATION_CLASS_DFLT_STATION                                  :Stáisiún réamhshocraithe
+STR_STATION_CLASS_DFLT_ROADSTOP                                 :Stad bóthair réamhshocraithe
 STR_STATION_CLASS_WAYP                                          :Pointí bealaigh
+STR_STATION_CLASS_WAYP_WAYPOINT                                 :Pointe bealaigh réamhshocraithe
 
 # Signal window
 STR_BUILD_SIGNAL_CAPTION                                        :{WHITE}Comharthaí a Roghnú
@@ -3146,14 +3175,11 @@ STR_SAVE_PRESET_CAPTION                                         :{WHITE}Sábhái
 STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}Liosta de na réamhshocraithe atá ar fáil, roghnaigh ceann chun é a chóipeáil chuig an t-ainm sábháilte thíos
 STR_SAVE_PRESET_TITLE                                           :{BLACK}Iontráil ainm don réamhshocrú
 STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}An t-ainm atá roghnaithe faoi láthair don réamhshocrú a shábhálfar
-STR_SAVE_PRESET_CANCEL                                          :{BLACK}Cuir ar ceal
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}Ná hathraigh an réamhshocrú
 STR_SAVE_PRESET_SAVE                                            :{BLACK}Sábháil
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}Sábháil an réamhshocrú faoin ainm atá roghnaithe faoi láthair
 
 # NewGRF parameters window
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}Athraigh na paraiméadair NewGRF
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Dún
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}Athshocraigh
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}Socraigh go mbeidh a réamhshocrú ag gach paraiméadair
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :Paraiméadar{NUM}
@@ -4042,6 +4068,7 @@ STR_VEHICLE_INFO_CAPACITY_CAPACITY                              :{BLACK}Toillead
 
 STR_VEHICLE_INFO_FEEDER_CARGO_VALUE                             :{BLACK}Creidmheasanna Aistrithe: {LTBLUE}{CURRENCY_LONG}
 
+STR_VEHICLE_DETAILS_LAST_SERVICE_DATE                           :An seirbhísiú deireanach: {LTBLUE}{DATE_LONG}
 
 STR_SERVICE_INTERVAL_DROPDOWN_TOOLTIP                           :{BLACK}Athraigh cineál eatramh seirbhísithe
 STR_VEHICLE_DETAILS_DEFAULT                                     :Réamhshocrú
@@ -4385,8 +4412,6 @@ STR_AI_LIST_URL                                                 :{LTBLUE}URL: {O
 
 STR_AI_LIST_ACCEPT                                              :{BLACK}Glac leis
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Roghnaigh an AI aibhsithe
-STR_AI_LIST_CANCEL                                              :{BLACK}Cuir ar ceal
-STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Ná hathraigh an AI
 
 STR_SCREENSHOT_CAPTION                                          :{WHITE}Seat scáileáin a thógáil
 STR_SCREENSHOT_SCREENSHOT                                       :{BLACK}Gnáth-seat scáileáin
@@ -4398,7 +4423,6 @@ STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Seat sc�
 
 # Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :AI
-STR_AI_SETTINGS_CLOSE                                           :{BLACK}Dún
 STR_AI_SETTINGS_RESET                                           :{BLACK}Athshocraigh
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
 
@@ -5310,6 +5334,10 @@ STR_TOWN_NAME                                                   :{TOWN}
 STR_VEHICLE_NAME                                                :{VEHICLE}
 STR_WAYPOINT_NAME                                               :{WAYPOINT}
 
+STR_CURRENCY_SHORT_KILO                                         :{NBSP}k
+STR_CURRENCY_SHORT_MEGA                                         :{NBSP}m
+STR_CURRENCY_SHORT_GIGA                                         :{NBSP}bn
+STR_CURRENCY_SHORT_TERA                                         :{NBSP}tn
 
 STR_JUST_CARGO                                                  :{CARGO_LONG}
 STR_JUST_CHECKMARK                                              :{CHECKMARK}

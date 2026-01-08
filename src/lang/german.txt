@@ -996,7 +996,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :Währung auswä
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Britische Pfund
 STR_GAME_OPTIONS_CURRENCY_USD                                   :US-Dollar
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1042,6 +1042,7 @@ STR_GAME_OPTIONS_CURRENCY_MYR                                   :Malaysische Rin
 STR_GAME_OPTIONS_CURRENCY_LVL                                   :Lettlandischer Lats
 STR_GAME_OPTIONS_CURRENCY_PTE                                   :Portugiesische Escudo
 STR_GAME_OPTIONS_CURRENCY_UAH                                   :Ukrainische Griwna
+STR_GAME_OPTIONS_CURRENCY_VND                                   :Vietnamesischer Dong
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :Autosicherung
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :Abstand zwischen den automatischen Spielesicherungen wählen
@@ -1682,6 +1683,9 @@ STR_CONFIG_SETTING_SCROLLMODE_LMB                               :Bewege die Kart
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Weicher Bildlauf beim Springen zu einer Position: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Lege fest, auf welche Weise die Hauptansicht an eine bestimmte Position wechselt (z.B. wenn ein Punkt auf der Weltkarte angeklickt wird oder der Standort eines Bahnhofs angezeigt werden soll). Ist diese Option eingeschaltet, schwenkt die Ansicht über die Karte, bis sie am gewünschten Punkt angekommen ist. Ist sie ausgeschaltet, springt die Ansicht sofort an die gewünschte Position
 
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT                  :Traditionelles Auswahlverhalten des Werkzeugleistenmenüs: {STRING}
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT_HELPTEXT         :Auswahlverhalten von Werkzeugleistenmenüs auswählen. Falls aus, werden Werkzeugleistenmenüs offen bleiben, bis eine Auswahl getroffen wurde. Falls an, werden Werkzeugleistenmenüs aktiv, wenn die Maustaste losgelassen wurde.
+
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Beim Bauen Tooltip mit Abmessungen anzeigen: {STRING}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP_HELPTEXT                     :Zeige Distanzen und Höhendifferenzen an, wenn mit der Maus während eines Bauvorgangs gezogen wird
 
@@ -2211,7 +2215,8 @@ STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... kein
 STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :{WHITE}… GPU-Treiber brachte das Spiel zum Absturz. Hardwarebeschleunigung deaktiviert
 
 # Intro window
-STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
+STR_INTRO_CAPTION                                               :{WHITE}OpenTTD
+STR_INTRO_VERSION                                               :OpenTTD {REV}
 
 STR_INTRO_NEW_GAME                                              :{BLACK}Neues Spiel
 STR_INTRO_LOAD_GAME                                             :{BLACK}Spiel laden
@@ -2860,9 +2865,11 @@ STR_HOUSE_PICKER_CLASS_ZONE3                                    :Äußere Vorort
 STR_HOUSE_PICKER_CLASS_ZONE4                                    :Innere Vororte
 STR_HOUSE_PICKER_CLASS_ZONE5                                    :Stadtmitte
 
-STR_HOUSE_PICKER_PROTECT                                        :Aufwertungen verhindern
+STR_HOUSE_PICKER_PROTECT                                        :Upgrades verhindern
 STR_HOUSE_PICKER_PROTECT_TOOLTIP                                :Auswählen, ob dieses Haus vor dem Ersetzen geschützt wird, wenn die Stadt wächst.
 
+STR_HOUSE_PICKER_REPLACE                                        :Existierende ersetzen
+STR_HOUSE_PICKER_REPLACE_TOOLTIP                                :Wählen, ob automatisch ein existierendes Haus auf der Kachel, wo dieses Haus platziert wird, entfernt werden soll
 
 STR_STATION_CLASS_DFLT                                          :Standard
 STR_STATION_CLASS_DFLT_STATION                                  :Standart-Haltestelle
@@ -2885,7 +2892,7 @@ STR_BUILD_SIGNAL_ELECTRIC_EXIT_TOOLTIP                          :{BLACK}Ausfahrs
 STR_BUILD_SIGNAL_ELECTRIC_COMBO_TOOLTIP                         :{BLACK}Kombinationssignal (Lichtsignal){}Das Kombinationssignal ist gleichzeitig Aus- und Einfahrsignal. Somit werden umfangreiche Signalverschaltungen möglich
 STR_BUILD_SIGNAL_ELECTRIC_PBS_TOOLTIP                           :{BLACK}Pfadsignal (Lichtsignal){}Erlaubt mehreren Zügen gleichzeitig, einen Signalbereich zu befahren, sofern sie separate Gleisabschnitte belegen können. Normale Pfadsignale können von hinten durchfahren werden
 STR_BUILD_SIGNAL_ELECTRIC_PBS_OWAY_TOOLTIP                      :{BLACK}Einseitiges Pfadsignal (Lichtsignal):{}Erlaubt mehreren Zügen, einen Signalbereich zu befahren, sofern sie separate Gleisabschnitte belegen können. Einseitige Pfadsignale können nicht von hinten durchfahren werden
-STR_BUILD_SIGNAL_CONVERT_TOOLTIP                                :{BLACK}Signalumbau{}Ein Klick auf ein exsitierendes Signal wird es zum gewählten Signaltyp und ihrer Variante umbauen. Strg+Klick, um die bestehende Bauform zu wechseln. Umschalt+Klick zeigt Kostenvoranschlag für den Umbau
+STR_BUILD_SIGNAL_CONVERT_TOOLTIP                                :{BLACK}Signalumbau{}Ein Klick auf ein existierendes Signal wird es zum gewählten Signaltyp und ihrer Variante umbauen. Strg+Klick, um die bestehende Bauform zu wechseln. Umschalt+Klick zeigt Kostenvoranschlag für den Umbau
 STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_TOOLTIP                   :{BLACK}Signalabstand beim automatischen Bau durch Ziehen
 STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_DECREASE_TOOLTIP          :{BLACK}Signalabstand verringern
 STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_INCREASE_TOOLTIP          :{BLACK}Signalabstand erhöhen
@@ -3524,15 +3531,12 @@ STR_SAVE_PRESET_CAPTION                                         :{WHITE}Voreinst
 STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}Liste der verfügbaren Voreinstellungen. Eine wählen, um deren Namen zum Speichern auszuwählen
 STR_SAVE_PRESET_TITLE                                           :{BLACK}Namen der Voreinstellung eingeben
 STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}Name, der zum Speichern der Voreinstellung verwendet wird
-STR_SAVE_PRESET_CANCEL                                          :{BLACK}Abbrechen
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}Voreinstellung nicht ändern
 STR_SAVE_PRESET_SAVE                                            :{BLACK}Speichern
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}Voreinstellung unter dem ausgewählten Namen speichern
 
 # NewGRF parameters window
 STR_BASEGRF_PARAMETERS_CAPTION                                  :{WHITE}Parameter der Basisgrafiken ändern
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}NewGRF Parameter ändern
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Schließen
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}Zurücksetzen
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}Alle Parameter auf ihre Vorgabewerte zurücksetzen
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :Parameter {NUM}
@@ -3667,6 +3671,7 @@ STR_EDIT_SIGN_CAPTION                                           :{WHITE}Schildte
 STR_EDIT_SIGN_LOCATION_TOOLTIP                                  :{BLACK}Hauptansicht auf Schildposition zentrieren. Mit Strg+Klick wird ein neues Ansichtsfenster auf der Position des Schildes geöffnet
 STR_EDIT_SIGN_NEXT_SIGN_TOOLTIP                                 :{BLACK}Zum nächsten Schild wechseln
 STR_EDIT_SIGN_PREVIOUS_SIGN_TOOLTIP                             :{BLACK}Zum vorherigen Schild wechseln
+STR_EDIT_SIGN_TEXT_COLOUR_TOOLTIP                               :{BLACK}Farbe des Schildtexts
 
 STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}Text für dieses Schild eingeben
 
@@ -3674,7 +3679,7 @@ STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}Text fü
 STR_TOWN_DIRECTORY_CAPTION                                      :{WHITE}Städte ({COMMA} von {COMMA})
 STR_TOWN_DIRECTORY_NONE                                         :{ORANGE}- Keine -
 STR_TOWN_DIRECTORY_TOWN                                         :{ORANGE}{TOWN}{BLACK} ({COMMA})
-STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{YELLOW} (Großstadt){BLACK} ({COMMA})
+STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{BLACK} ({COMMA}) {YELLOW}{CITY_ICON}
 STR_TOWN_DIRECTORY_LIST_TOOLTIP                                 :{BLACK}Städtenamen – Klick auf den Namen zentriert Hauptansicht auf die Stadt. Mit Strg+Klick wird eine neue Zusatzansicht auf die Stadt geöffnet
 STR_TOWN_POPULATION                                             :{BLACK}Weltbevölkerung: {COMMA}
 
@@ -4901,8 +4906,6 @@ STR_AI_LIST_URL                                                 :{LTBLUE}URL: {O
 
 STR_AI_LIST_ACCEPT                                              :{BLACK}Anwenden
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Ausgewähltes Skript verwenden
-STR_AI_LIST_CANCEL                                              :{BLACK}Abbrechen
-STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Skript nicht wechseln
 
 STR_SCREENSHOT_CAPTION                                          :{WHITE}Screenshot erzeugen
 STR_SCREENSHOT_SCREENSHOT                                       :{BLACK}Normaler Screenshot
@@ -4915,7 +4918,6 @@ STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Übersic
 # Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}KI-Parameters
 STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :{WHITE}Spielskriptparameter
-STR_AI_SETTINGS_CLOSE                                           :{BLACK}Schließen
 STR_AI_SETTINGS_RESET                                           :{BLACK}Zurücksetzen
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
 
@@ -5255,6 +5257,13 @@ STR_ERROR_START_AND_END_MUST_BE_IN                              :{WHITE}Anfang u
 STR_ERROR_ENDS_OF_BRIDGE_MUST_BOTH                              :{WHITE}... Brücke muss an beiden Seiten auf Land enden
 STR_ERROR_BRIDGE_TOO_LONG                                       :{WHITE}... Brücke zu lang
 STR_ERROR_BRIDGE_THROUGH_MAP_BORDER                             :{WHITE}Die Brücke würde außerhalb der Karte enden
+STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}Brücke ist {HEIGHT} zu niedrig für Station
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROADSTOP                           :{WHITE}Brücke ist {HEIGHT} zu niedrig für Straßenhaltepunkt
+STR_ERROR_BRIDGE_TOO_LOW_FOR_DOCK                               :{WHITE}Brücke ist {HEIGHT} zu niedrig für Dock
+STR_ERROR_BRIDGE_TOO_LOW_FOR_BUOY                               :{WHITE}Brücke ist {HEIGHT} zu niedrig für Boje
+STR_ERROR_BRIDGE_TOO_LOW_FOR_RAIL_WAYPOINT                      :{WHITE}Brücke ist {HEIGHT} zu niedrig für Schienenwegpunkt
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROAD_WAYPOINT                      :{WHITE}Brücke ist {HEIGHT} zu niedrig für Straßenwegpunkt
+STR_ERROR_BRIDGE_TOO_LOW_FOR_LOCK                               :{WHITE}Brücke ist {HEIGHT} zu niedrig für Schleuse
 
 # Tunnel related errors
 STR_ERROR_CAN_T_BUILD_TUNNEL_HERE                               :{WHITE}Tunnel kann hier nicht gebaut werden ...
@@ -5871,6 +5880,8 @@ STR_SAVEGAME_NAME_SPECTATOR                                     :Zuschauer, {1:S
 
 # Viewport strings
 STR_VIEWPORT_TOWN_POP                                           :{TOWN} ({COMMA})
+STR_VIEWPORT_TOWN_CITY                                          :{TOWN} {CITY_ICON}
+STR_VIEWPORT_TOWN_CITY_POP                                      :{TOWN} ({COMMA}) {CITY_ICON}
 STR_VIEWPORT_STATION                                            :{STATION} {STATION_FEATURES}
 
 # Simple strings to get specific types of data

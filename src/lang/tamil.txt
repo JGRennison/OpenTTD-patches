@@ -937,7 +937,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :நாணய �
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :பிரித்தானிய பவுண்டு
 STR_GAME_OPTIONS_CURRENCY_USD                                   :அமெரிக்கன் டாலர்
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :யுரோ
@@ -1527,6 +1527,7 @@ STR_CONFIG_SETTING_SCROLLMODE_RMB                               :வலது �
 STR_CONFIG_SETTING_SCROLLMODE_LMB                               :இடது சுட்டி பொத்தானைக் கொண்டு வரைபடத்தை நகர்த்தவும்
 
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :பார்படத்தின் இலகுவான பக்கமுருட்டல்: {STRING}
+
 
 
 STR_CONFIG_SETTING_LIVERIES                                     :நிறுவன livery களைக் காட்டு: {STRING}
@@ -3121,13 +3122,10 @@ STR_NEWGRF_SETTINGS_INCOMPATIBLE                                :{RED}இந்�
 # NewGRF save preset window
 STR_SAVE_PRESET_CAPTION                                         :{WHITE}Preset-ஐ பதிவுசெய்
 STR_SAVE_PRESET_TITLE                                           :{BLACK}Preset இற்கு ஒரு பெயரினை இடு
-STR_SAVE_PRESET_CANCEL                                          :{BLACK}இரத்து செய்
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}முன்னமைக்கப்பட்டவற்றை மாற்றாதே
 STR_SAVE_PRESET_SAVE                                            :{BLACK}சேமி
 
 # NewGRF parameters window
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}NewGRF குணாதிசயங்களை மாற்று
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}மூடு
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}முன்னிருந்தமை மாற்று
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}எல்லா குணாதிசயங்களையும் அதன் முதன்நிலையாக்கு
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :குணாதிசயம் {NUM}
@@ -4368,8 +4366,6 @@ STR_AI_LIST_URL                                                 :{LTBLUE}URL: {O
 
 STR_AI_LIST_ACCEPT                                              :{BLACK}ஏற்றுக்கொள்
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}குறிக்கப்பட்ட வரிவடிவத்தினை தேர்ந்தெடு
-STR_AI_LIST_CANCEL                                              :{BLACK}இரத்து செய்
-STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}வரிவடிவத்தினை மாற்றாதே
 
 STR_SCREENSHOT_CAPTION                                          :{WHITE}ஒரு திரைப்பிடிப்பினை எடுக்கவும்
 STR_SCREENSHOT_SCREENSHOT                                       :{BLACK}சாதாரண திரைப்பிடிப்பு
@@ -4382,7 +4378,6 @@ STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}சி�
 # Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :AI
 STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :விளையாட்டு ஸ்கிரிப்ட்
-STR_AI_SETTINGS_CLOSE                                           :{BLACK}மூடு
 STR_AI_SETTINGS_RESET                                           :{BLACK}முன்னிருந்தமாதிரி மாற்று
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
 

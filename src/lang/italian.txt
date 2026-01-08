@@ -984,7 +984,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :Selezione della
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Sterlina britannica
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Dollaro americano
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1030,6 +1030,7 @@ STR_GAME_OPTIONS_CURRENCY_MYR                                   :Ringgit malaysi
 STR_GAME_OPTIONS_CURRENCY_LVL                                   :Lats lettoni
 STR_GAME_OPTIONS_CURRENCY_PTE                                   :Escudo portoghese
 STR_GAME_OPTIONS_CURRENCY_UAH                                   :Grivna Ucraina
+STR_GAME_OPTIONS_CURRENCY_VND                                   :Dong Vietnamita
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :Salvataggi automatici
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :Seleziona l'intervallo fra i salvataggi automatici della partita
@@ -1703,6 +1704,9 @@ STR_CONFIG_SETTING_SCROLLMODE_LMB                               :Muovi mappa col
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Scorrimento morbido delle visuali: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Controlla il modo in cui la visuale principale scorre verso una specifica posizione quando si fa clic sulla minimappa o si ordina di visualizzare un oggetto specifico sulla mappa. Se abilitata, la visuale scorre in modo morbido. Se disabilitata, salta direttamente al punto prescelto
 
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT                  :Comportamento tradizionale di selezione dei menu della barra degli strumenti: {STRING}
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT_HELPTEXT         :Scegli il comportamento di selezione dei menu della barra degli strumenti. Se disattivato, l'elenco dei menu della barra degli strumenti rimarrà aperto finché non si effettua una selezione. Se attivato, si apre il menu su cui si trova il puntatore al rilascio del pulsante del mouse.
+
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Mostra un tooltip di misura durante la costruzione: {STRING}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP_HELPTEXT                     :Mostra le distanze in caselle e le differenze di altezza quando si trascina durante le operazioni di costruzione
 
@@ -2231,7 +2235,8 @@ STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... non 
 STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :{WHITE}... Il driver della GPU ha mandato in crash il gioco. Accelerazione hardware disattivata
 
 # Intro window
-STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
+STR_INTRO_CAPTION                                               :{WHITE}OpenTTD
+STR_INTRO_VERSION                                               :OpenTTD {REV}
 
 STR_INTRO_NEW_GAME                                              :{BLACK}Nuova partita
 STR_INTRO_LOAD_GAME                                             :{BLACK}Carica partita
@@ -3531,15 +3536,12 @@ STR_SAVE_PRESET_CAPTION                                         :{WHITE}Salva pr
 STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}Lista dei profili disponibili, selezionarne uno per copiarlo nella casella del nome del salvataggio
 STR_SAVE_PRESET_TITLE                                           :{BLACK}Inserire il nome del profilo
 STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}Nome scelto per il profilo da salvare
-STR_SAVE_PRESET_CANCEL                                          :{BLACK}Annulla
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}Non modifica il profilo
 STR_SAVE_PRESET_SAVE                                            :{BLACK}Salva
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}Salva il profilo utilizzando il nome inserito
 
 # NewGRF parameters window
 STR_BASEGRF_PARAMETERS_CAPTION                                  :{WHITE}Modifica dei parametri grafici di base
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}Cambia parametri NewGRF
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Chiudi
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}Reimposta
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}Imposta tutti i parametri al loro valore predefinito
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :Parametro {NUM}
@@ -4895,8 +4897,6 @@ STR_AI_LIST_URL                                                 :{LTBLUE}URL: {O
 
 STR_AI_LIST_ACCEPT                                              :{BLACK}Accetta
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Sceglie lo script selezionato
-STR_AI_LIST_CANCEL                                              :{BLACK}Annulla
-STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Non modifica lo script utilizzato
 
 STR_SCREENSHOT_CAPTION                                          :{WHITE}Cattura uno screenshot
 STR_SCREENSHOT_SCREENSHOT                                       :{BLACK}Screenshot normale
@@ -4909,7 +4909,6 @@ STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Screensh
 # Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :IA
 STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :Script di gioco
-STR_AI_SETTINGS_CLOSE                                           :{BLACK}Chiudi
 STR_AI_SETTINGS_RESET                                           :{BLACK}Reimposta
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
 
@@ -5859,6 +5858,8 @@ STR_SAVEGAME_NAME_SPECTATOR                                     :Spettatore, {1:
 
 # Viewport strings
 STR_VIEWPORT_TOWN_POP                                           :{TOWN} ({COMMA})
+STR_VIEWPORT_TOWN_CITY                                          :{TOWN} {CITY_ICON}
+STR_VIEWPORT_TOWN_CITY_POP                                      :{TOWN} ({COMMA}) {CITY_ICON}
 STR_VIEWPORT_STATION                                            :{STATION} {STATION_FEATURES}
 
 # Simple strings to get specific types of data

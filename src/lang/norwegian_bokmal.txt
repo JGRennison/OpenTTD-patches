@@ -997,7 +997,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :Velg valutaenhe
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Britiske pund
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Amerikanske dollar
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1043,6 +1043,7 @@ STR_GAME_OPTIONS_CURRENCY_MYR                                   :Malaysiske ring
 STR_GAME_OPTIONS_CURRENCY_LVL                                   :Latviske lats
 STR_GAME_OPTIONS_CURRENCY_PTE                                   :Portugisiske escudo
 STR_GAME_OPTIONS_CURRENCY_UAH                                   :Ukrainske hryvnja
+STR_GAME_OPTIONS_CURRENCY_VND                                   :Vietnamesiske dong
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :Automatisk lagring
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :Velg intervall for automatisk lagring
@@ -1683,6 +1684,9 @@ STR_CONFIG_SETTING_SCROLLMODE_LMB                               :Panorer kartet 
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Myk panorering av synsfelt: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Velge hvordan synsfeltet panorerer til en bestemt posisjon når du klikker på det lille kartet, eller ved utstedelse av en kommando for å gå til et bestemt objekt på kartet. Hvis aktivert, panorerer synsfeltet jevnt, og hvis deaktivert hopper det direkte til det valgte punktet
 
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT                  :Tradisjonell oppførsel for valg av verktøylinjemeny: {STRING}
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT_HELPTEXT         :Velg valgfunksjon for verktøylinjemenyer. Hvis av, vil verktøylinjemenyene forbli åpne til et valg gjøres. Hvis på, vil verktøylinjemenyene aktiveres når museknappen slippes.
+
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Vis målingsverktøy ved bruk av byggingsverktøy: {STRING}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP_HELPTEXT                     :Vise avstander mellom kartelementer samt høydeforskjeller når du drar linjer ved byggevirksomhet
 
@@ -2212,7 +2216,8 @@ STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... inge
 STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :{WHITE}... GPU-driveren krasjet spillet. Maskinvareakselerasjon deaktivert
 
 # Intro window
-STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
+STR_INTRO_CAPTION                                               :{WHITE}OpenTTD
+STR_INTRO_VERSION                                               :OpenTTD {REV}
 
 STR_INTRO_NEW_GAME                                              :{BLACK}Nytt spill
 STR_INTRO_LOAD_GAME                                             :{BLACK}Last inn spill
@@ -3527,15 +3532,12 @@ STR_SAVE_PRESET_CAPTION                                         :{WHITE}Lagre fo
 STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}Liste over tilgjengelige forhåndsinnstillinger. Velg en for å kopiere den til det lagrede navnet nedenfor
 STR_SAVE_PRESET_TITLE                                           :{BLACK}Skriv inn et navn for forhåndsinnstillingen
 STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}Valgt navn for forhåndsinnstillingen som skal lagres
-STR_SAVE_PRESET_CANCEL                                          :{BLACK}Avbryt
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}Ikke forandre forhåndsinnstillingen
 STR_SAVE_PRESET_SAVE                                            :{BLACK}Lagre
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}Lagre forhåndsinnstillingen med det valgte navnet
 
 # NewGRF parameters window
 STR_BASEGRF_PARAMETERS_CAPTION                                  :{WHITE}Endre grunnleggende grafikkparametre
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}Endre NewGRF-parametre
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Lukk
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}Tilbakestill
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}Sett alle parametere til standardverdi
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :Parameter {NUM}
@@ -3678,7 +3680,7 @@ STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}Skriv in
 STR_TOWN_DIRECTORY_CAPTION                                      :{WHITE}Byer ({COMMA} av {COMMA})
 STR_TOWN_DIRECTORY_NONE                                         :{ORANGE}- Ingen -
 STR_TOWN_DIRECTORY_TOWN                                         :{ORANGE}{TOWN}{BLACK} ({COMMA})
-STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{YELLOW} (By){BLACK} ({COMMA})
+STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{BLACK} ({COMMA}) {YELLOW}{CITY_ICON}
 STR_TOWN_DIRECTORY_LIST_TOOLTIP                                 :{BLACK}Bynavn - klikk på navnet for å gå til byen. Ctrl+klikk for å åpne et nytt tilleggsvindu over byen
 STR_TOWN_POPULATION                                             :{BLACK}Verdensbefolkning: {COMMA}
 
@@ -4905,8 +4907,6 @@ STR_AI_LIST_URL                                                 :{LTBLUE}URL: {O
 
 STR_AI_LIST_ACCEPT                                              :{BLACK}Godta
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Velg det merkede skript
-STR_AI_LIST_CANCEL                                              :{BLACK}Avbryt
-STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Ikke endre skriptet
 
 STR_SCREENSHOT_CAPTION                                          :WHITE}Ta skjermbilde
 STR_SCREENSHOT_SCREENSHOT                                       :{BLACK}Normalt skjermbilde
@@ -4919,7 +4919,6 @@ STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Oversikt
 # Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}KI-parametere
 STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :{WHITE}Game Script-parametere
-STR_AI_SETTINGS_CLOSE                                           :{BLACK}Lukk
 STR_AI_SETTINGS_RESET                                           :{BLACK}Tilbakestill
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
 
@@ -5259,6 +5258,13 @@ STR_ERROR_START_AND_END_MUST_BE_IN                              :{WHITE}Start og
 STR_ERROR_ENDS_OF_BRIDGE_MUST_BOTH                              :{WHITE}...{NBSP}broens ender må være på land
 STR_ERROR_BRIDGE_TOO_LONG                                       :{WHITE}... broen er for lang
 STR_ERROR_BRIDGE_THROUGH_MAP_BORDER                             :{WHITE}Bro vil ende utenfor kartet
+STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}Broen er {HEIGHT} for lav for en stasjon
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROADSTOP                           :{WHITE}Broen er {HEIGHT} for lav for en holdeplass
+STR_ERROR_BRIDGE_TOO_LOW_FOR_DOCK                               :{WHITE}Broen er {HEIGHT} for lav for en havn
+STR_ERROR_BRIDGE_TOO_LOW_FOR_BUOY                               :{WHITE}Broen er {HEIGHT} for lav for en bøye
+STR_ERROR_BRIDGE_TOO_LOW_FOR_RAIL_WAYPOINT                      :{WHITE}Broen er {HEIGHT} for lav for et veipunkt
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROAD_WAYPOINT                      :{WHITE}Broen er {HEIGHT} for lav for et veipunkt
+STR_ERROR_BRIDGE_TOO_LOW_FOR_LOCK                               :{WHITE}Broen er {HEIGHT} for lav for en sluse
 
 # Tunnel related errors
 STR_ERROR_CAN_T_BUILD_TUNNEL_HERE                               :{WHITE}Kan ikke bygge tunnel her...
@@ -5875,6 +5881,8 @@ STR_SAVEGAME_NAME_SPECTATOR                                     :Tilskuer, {1:ST
 
 # Viewport strings
 STR_VIEWPORT_TOWN_POP                                           :{TOWN} ({COMMA})
+STR_VIEWPORT_TOWN_CITY                                          :{TOWN} {CITY_ICON}
+STR_VIEWPORT_TOWN_CITY_POP                                      :{TOWN} ({COMMA}) {CITY_ICON}
 STR_VIEWPORT_STATION                                            :{STATION} {STATION_FEATURES}
 
 # Simple strings to get specific types of data

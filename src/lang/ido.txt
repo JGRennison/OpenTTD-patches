@@ -470,7 +470,7 @@ STR_GAME_OPTIONS_CAPTION                                        :{WHITE}Ludo Sel
 
 
 
-###length 45
+###length 46
 
 
 # Autosave dropdown
@@ -686,6 +686,7 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Violkolora
 ###length 4
 
 ###length 4
+
 
 
 
@@ -1089,7 +1090,6 @@ STR_NEWGRF_SETTINGS_VERSION                                     :{BLACK}Versiono
 # NewGRF save preset window
 
 # NewGRF parameters window
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Klozas
 STR_NEWGRF_PARAMETERS_SETTING                                   :{STRING}: {ORANGE}{STRING}
 STR_NEWGRF_PARAMETERS_NUM_PARAM                                 :{LTBLUE}Nombro di parametri: {ORANGE}{NUM}
 

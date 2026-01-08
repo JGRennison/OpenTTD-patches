@@ -861,7 +861,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :Muntienheid
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :Muntienheidseleksje
 
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Britske Pûn
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Amerikaanske Dollars
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1420,6 +1420,7 @@ STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREY_TO_RED                :Griis nei read
 
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Loaitsfinster floeiend scrolle : {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Bepaalt hoe it haadfinster scrollt. By ynskeakeljen sil dit floeiend wêze. By útskeakeljen ljept it byld direktst nei de selektearre lokaasje
+
 
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Under it gebrûk fan de ferskate bou-arken diminsjes sjen litte: {STRING}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP_HELPTEXT                     :Lit it oantal teilen en it hichteferskil sjen ûnder it dellizzen fan ynfrastruktuer
@@ -2755,13 +2756,10 @@ STR_NEWGRF_SETTINGS_INCOMPATIBLE                                :{RED}Dat strykt
 STR_SAVE_PRESET_CAPTION                                         :{WHITE}Sla ynstellings op
 STR_SAVE_PRESET_TITLE                                           :{BLACK}Jou dizze ynstellings in namme
 STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}Op dit stuit selektearre namme foar preset om op te slaan
-STR_SAVE_PRESET_CANCEL                                          :{BLACK}Annulearje
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}Ynstellings net feroarje
 STR_SAVE_PRESET_SAVE                                            :{BLACK}Opslaan
 
 # NewGRF parameters window
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}Feroarje NewGRF-parameters
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Slút
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}Set werom
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}Set alle ynstellings op normale wearde
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :Parameter {NUM}
@@ -3776,13 +3774,10 @@ STR_AI_LIST_URL                                                 :{LTBLUE}URL: {O
 
 STR_AI_LIST_ACCEPT                                              :{BLACK}Akseptearje
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Selekteare highlighted script
-STR_AI_LIST_CANCEL                                              :{BLACK}Annulearje
-STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Skript net feroare
 
 
 # Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :AI
-STR_AI_SETTINGS_CLOSE                                           :{BLACK}Slúte
 STR_AI_SETTINGS_RESET                                           :{BLACK}Weromsette
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
 
