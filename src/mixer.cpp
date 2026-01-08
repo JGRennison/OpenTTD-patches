@@ -22,7 +22,7 @@
 
 struct MixerChannel {
 	/* pointer to allocated buffer memory */
-	std::shared_ptr<std::vector<uint8_t>> memory;
+	std::shared_ptr<std::vector<std::byte>> memory;
 
 	/* current position in memory */
 	uint32_t pos;
@@ -183,7 +183,7 @@ MixerChannel *MxAllocateChannel()
 	return mc;
 }
 
-void MxSetChannelRawSrc(MixerChannel *mc, const std::shared_ptr<std::vector<uint8_t>> &mem, uint rate, bool is16bit)
+void MxSetChannelRawSrc(MixerChannel *mc, const std::shared_ptr<std::vector<std::byte>> &mem, uint rate, bool is16bit)
 {
 	mc->memory = mem;
 	mc->frac_pos = 0;

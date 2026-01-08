@@ -50,7 +50,7 @@ static void FeatureNewName(ByteReader &buf)
 
 	GrfSpecFeatureRef feature_ref = ReadFeature(buf.ReadByte(), true);
 	GrfSpecFeature feature = feature_ref.id;
-	if (feature >= GSF_END && feature != 0x48) {
+	if (feature >= GSF_END && feature != GSF_ORIGINAL_STRINGS) {
 		GrfMsg(1, "FeatureNewName: Unsupported feature {}, skipping", GetFeatureString(feature_ref));
 		return;
 	}

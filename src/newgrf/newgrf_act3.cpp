@@ -35,7 +35,7 @@
 #include "../safeguards.h"
 
 
-static CargoType TranslateCargo(uint8_t feature, uint8_t ctype)
+static CargoType TranslateCargo(GrfSpecFeature feature, uint8_t ctype)
 {
 	/* Special cargo types for purchase list and stations */
 	if ((feature == GSF_STATIONS || feature == GSF_ROADSTOPS) && ctype == 0xFE) return CargoGRFFileProps::SG_DEFAULT_NA;
@@ -84,7 +84,7 @@ static bool IsValidGroupID(uint16_t groupid, std::string_view function)
 	return true;
 }
 
-static void VehicleMapSpriteGroup(ByteReader &buf, uint8_t feature, uint8_t idcount)
+static void VehicleMapSpriteGroup(ByteReader &buf, GrfSpecFeature feature, uint8_t idcount)
 {
 	static std::vector<EngineID> last_engines; // Engine IDs are remembered in case the next action is a wagon override.
 	bool wagover = false;
@@ -112,7 +112,7 @@ static void VehicleMapSpriteGroup(ByteReader &buf, uint8_t feature, uint8_t idco
 			/* No engine could be allocated?!? Deal with it. Okay,
 			 * this might look bad. Also make sure this NewGRF
 			 * gets disabled, as a half loaded one is bad. */
-			HandleChangeInfoResult("VehicleMapSpriteGroup", CIR_INVALID_ID, (GrfSpecFeature)0, 0);
+			HandleChangeInfoResult("VehicleMapSpriteGroup", CIR_INVALID_ID, feature, 0);
 			return;
 		}
 
@@ -808,7 +808,7 @@ static void FeatureMapSpriteGroup(ByteReader &buf)
 	}
 
 	/* Mark the feature as used by the grf (generic callbacks do not count) */
-	SetBit(_cur_gps.grffile->grf_features, feature);
+	_cur_gps.grffile->grf_features.Set(feature);
 
 	GrfMsg(6, "FeatureMapSpriteGroup: Feature {}, {} ids", GetFeatureString(feature_ref), idcount);
 

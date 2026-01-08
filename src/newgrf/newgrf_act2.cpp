@@ -66,7 +66,7 @@ void MapSpriteMappingRecolour(PalSpriteID *grf_sprite)
  * @param[out] max_palette_offset Optionally returns the number of sprites in the spriteset of the palette. (0 if no spritset)
  * @return Read TileLayoutFlags.
  */
-TileLayoutFlags ReadSpriteLayoutSprite(ByteReader &buf, bool read_flags, bool invert_action1_flag, bool use_cur_spritesets, int feature, PalSpriteID *grf_sprite, uint16_t *max_sprite_offset, uint16_t *max_palette_offset)
+TileLayoutFlags ReadSpriteLayoutSprite(ByteReader &buf, bool read_flags, bool invert_action1_flag, bool use_cur_spritesets, GrfSpecFeature feature, PalSpriteID *grf_sprite, uint16_t *max_sprite_offset, uint16_t *max_palette_offset)
 {
 	grf_sprite->sprite = buf.ReadWord();
 	grf_sprite->pal = buf.ReadWord();
@@ -182,7 +182,7 @@ static void ReadSpriteLayoutRegisters(ByteReader &buf, TileLayoutFlags flags, bo
  * @param dts                  Layout container to output into
  * @return True on error (GRF was disabled).
  */
-bool ReadSpriteLayout(ByteReader &buf, uint num_building_sprites, bool use_cur_spritesets, uint8_t feature, bool allow_var10, bool no_z_position, NewGRFSpriteLayout *dts)
+bool ReadSpriteLayout(ByteReader &buf, uint num_building_sprites, bool use_cur_spritesets, GrfSpecFeature feature, bool allow_var10, bool no_z_position, NewGRFSpriteLayout *dts)
 {
 	bool has_flags = HasBit(num_building_sprites, 6);
 	ClrBit(num_building_sprites, 6);
@@ -331,7 +331,7 @@ static const SpriteGroup *GetGroupFromGroupID(uint16_t setid, uint8_t type, uint
  * @param spriteid Raw value from the GRF for the new spritegroup; describes either the return value or the referenced spritegroup.
  * @return Created spritegroup.
  */
-static const SpriteGroup *CreateGroupFromGroupID(uint8_t feature, uint16_t setid, uint8_t type, uint16_t spriteid)
+static const SpriteGroup *CreateGroupFromGroupID(GrfSpecFeature feature, uint16_t setid, uint8_t type, uint16_t spriteid)
 {
 	if (HasBit(spriteid, 15)) {
 		return NewCallbackResultSpriteGroup(spriteid);

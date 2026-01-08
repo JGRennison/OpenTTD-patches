@@ -32,7 +32,7 @@ struct GenericScopeResolver : public ScopeResolver {
 	uint8_t count;
 	uint8_t station_size;
 
-	uint8_t feature;
+	GrfSpecFeature feature;
 
 	/**
 	 * Generic scope resolver.
@@ -166,7 +166,7 @@ GenericResolverObject::GenericResolverObject(bool ai_callback, CallbackID callba
  * @param param1_grfv8 callback_param1 for GRFs from version 8 on.
  * @return answering GRFFile and callback value if successful, or CALLBACK_FAILED
  */
-static std::pair<const GRFFile *, uint16_t> GetGenericCallbackResult(uint8_t feature, ResolverObject &object, uint32_t param1_grfv7, uint32_t param1_grfv8)
+static std::pair<const GRFFile *, uint16_t> GetGenericCallbackResult(GrfSpecFeature feature, ResolverObject &object, uint32_t param1_grfv7, uint32_t param1_grfv8)
 {
 	assert(feature < lengthof(_gcl));
 
