@@ -192,7 +192,8 @@ enum ViewportDragDropSelectionProcess : uint8_t {
 	DDSP_MEASURE,              ///< Measurement tool
 	DDSP_DRAW_PLANLINE,        ///< Draw a line for a plan
 	DDSP_BUY_LAND,             ///< Purchase land
-	DDSP_BUILD_OBJECT,         ///< Build object
+	DDSP_BUILD_OBJECT,         ///< Build an object
+	DDSP_PLACE_HOUSE,          ///< Place a house
 
 	/* Rail specific actions */
 	DDSP_PLACE_RAIL,           ///< Rail placement

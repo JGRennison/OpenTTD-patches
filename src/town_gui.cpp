@@ -2243,12 +2243,41 @@ struct BuildHouseWindow : public PickerWindow {
 	void OnPlaceObject([[maybe_unused]] Point pt, TileIndex tile) override
 	{
 		const HouseSpec *spec = HouseSpec::Get(HousePickerCallbacks::sel_type);
+		if (spec->building_flags.Test(BuildingFlag::Size1x1)) {
+			VpStartPlaceSizing(tile, VPM_X_AND_Y, DDSP_PLACE_HOUSE);
+		} else {
+			this->PlaceSingleHouse(spec, tile);
+		}
+	}
+
+	void PlaceSingleHouse(const HouseSpec *spec, TileIndex tile)
+	{
 		CommandContainer<CMD_PLACE_HOUSE> cmd_container(STR_ERROR_CAN_T_BUILD_HOUSE, tile,
 				CmdPayload<CMD_PLACE_HOUSE>::Make(spec->Index(), BuildHouseWindow::house_protected, TownID::Invalid(), BuildHouseWindow::replace), CommandCallback::PlaySound_CONSTRUCTION_OTHER);
 		if (_ctrl_pressed) {
 			ShowSelectTownWindow(cmd_container);
 		} else {
 			DoCommandPContainer(cmd_container);
+		}
+	}
+
+	void OnPlaceDrag(ViewportPlaceMethod select_method, [[maybe_unused]] ViewportDragDropSelectionProcess select_proc, [[maybe_unused]] Point pt) override
+	{
+		VpSelectTilesWithMethod(pt.x, pt.y, select_method);
+	}
+
+	void OnPlaceMouseUp([[maybe_unused]] ViewportPlaceMethod select_method, [[maybe_unused]] ViewportDragDropSelectionProcess select_proc, [[maybe_unused]] Point pt, TileIndex start_tile, TileIndex end_tile) override
+	{
+		if (pt.x == -1) return;
+
+		assert(select_proc == DDSP_PLACE_HOUSE);
+
+		const HouseSpec *spec = HouseSpec::Get(HousePickerCallbacks::sel_type);
+		if (end_tile == start_tile) {
+			this->PlaceSingleHouse(spec, start_tile);
+		} else {
+			Command<CMD_PLACE_HOUSE_AREA>::Post(STR_ERROR_CAN_T_BUILD_HOUSE, CommandCallback::PlaySound_CONSTRUCTION_OTHER,
+					end_tile, start_tile, spec->Index(), BuildHouseWindow::house_protected, TownID::Invalid(), BuildHouseWindow::replace, _ctrl_pressed);
 		}
 	}
 
