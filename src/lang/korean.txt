@@ -1316,6 +1316,10 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :대출 금리�
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :유지비: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :차량과 기반시설의 유지비 수준을 설정하십시오
+###length 3
+STR_CONFIG_SETTING_RUNNING_COSTS_LOW                            :낮음
+STR_CONFIG_SETTING_RUNNING_COSTS_MEDIUM                         :보통
+STR_CONFIG_SETTING_RUNNING_COSTS_HIGH                           :높음
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :건설 속도: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :인공지능의 건설 행동량을 제한하여 건설 속도를 조절할 수 있습니다
@@ -1337,6 +1341,10 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :보조금 없�
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :건설 가격: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :건설 및 구매 가격의 수준을 설정하십시오.
+###length 3
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_LOW                       :낮음
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_MEDIUM                    :보통
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :높음
 
 STR_CONFIG_SETTING_RECESSIONS                                   :경제 불황: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :이 설정을 켜면, 주기적으로 경제 불황이 발생할 수 있습니다. 불황 기간 동안에는 모든 화물의 생산량이 확연하게 줄어듭니다. (불황이 끝나면 이전 수준으로 회복됩니다.)
@@ -2206,8 +2214,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... '{ST
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... 기본 그래픽 세트({STRING})가 무시되었습니다: 파일을 찾을 수 없습니다
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... 기본 효과음 세트({STRING})가 무시되었습니다: 파일을 찾을 수 없습니다
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... 기본 배경음 세트({STRING})가 무시되었습니다: 파일을 찾을 수 없습니다
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}메모리 초과
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}{BYTES}의 스프라이트 캐시 할당에 실패하였습니다. 스프라이트 캐시 용량이 {BYTES}로 감소합니다. 이는 OpenTTD의 성능을 저하시킬 것입니다. 메모리 요구사항을 낮추려면 32bpp를 비활성화하거나 화면 확대 설정을 기본값에 가깝게 조절하십시오.
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}비디오 설정 오류 발생...
@@ -2834,6 +2840,11 @@ STR_PICKER_MODE_USED                                            :사용한 것
 STR_PICKER_MODE_USED_TOOLTIP                                    :존재하는 항목만 표시 전환
 STR_PICKER_MODE_SAVED                                           :즐겨찾기
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :즐겨찾기된 항목만 표시 전환
+
+STR_PICKER_PREVIEW_SHRINK                                       :-
+STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :미리보기 이미지의 높이를 줄입니다. CTRL+클릭하면 최대로 줄입니다
+STR_PICKER_PREVIEW_EXPAND                                       :+
+STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :미리보기 이미지의 높이를 늘입니다. CTRL+클릭하면 최대로 늘입니다
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :표시할 역 종류를 선택하세요
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :설치하려는 역 종류를 선택하세요. CTRL+클릭하면 즐겨찾기 추가/제거가 가능합니다

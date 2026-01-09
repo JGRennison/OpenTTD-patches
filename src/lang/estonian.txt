@@ -1337,6 +1337,7 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Laenu intressim
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Käituskulud: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Määrab sõidukite ja taristu hooldus- ja käituskulude hinnataseme
+###length 3
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Ehitustempo: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Piirab arvuti ehitustoimingute arvu
@@ -1358,6 +1359,7 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :Toetusteta
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Ehituse hinnad: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Määrab ehitus- ja ostukulude hinnataseme
+###length 3
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Majanduslangused: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Kui on aktiveeritud siis võib majanduslangus toimuda iga paari aasta tagant. Majanduslanguse ajal on kõik tootmismahud tunduvalt madalamad (majanduslanguse lõppedes taastuvad endised tootmismahud)
@@ -2217,8 +2219,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... män
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... eiratakse põhigraafika komplekti «{STRING}»: ei leitud
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... eiratakse põhihelide komplekti «{STRING}»: ei leitud
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... eiratakse põhimuusika komplekti «{STRING}»: ei leitud
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Vahemälu on täis
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Pildipuhvri (ingl k «spritecache») suurendamine {BYTES} võrra ebaõnnestus. Pildipuhvri uus suurus on {BYTES}. Seetõttu on OpenTTD nüüd aeglasem. 32 bpp graafika keelamine ja suurendusastme ülempiirangu vähendamine piirab vahemälu tarbimist
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Videoseadete viga...
@@ -2834,6 +2834,7 @@ STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Lohistam
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Ehita jaam kasutades hiirega lohistamist
 
 STR_PICKER_MODE_ALL                                             :Kõik
+
 
 STR_PICKER_ROADSTOP_TRUCK_CLASS_TOOLTIP                         :Vali, milliseid veoautojaamu näidatakse
 STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :Vali näidatud asulaosa

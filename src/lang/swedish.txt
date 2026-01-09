@@ -1315,6 +1315,10 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Räntenivå fö
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Driftkostnader: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Sätt nivån för underhålls- och driftkostnader för fordon och infrastruktur
+###length 3
+STR_CONFIG_SETTING_RUNNING_COSTS_LOW                            :Låga
+STR_CONFIG_SETTING_RUNNING_COSTS_MEDIUM                         :Medel
+STR_CONFIG_SETTING_RUNNING_COSTS_HIGH                           :Höga
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Konstruktionshastighet: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Begränsar antalet konstruktionshandlingar för datorspelare
@@ -1336,6 +1340,10 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :Inga subvention
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Konstruktionskostnader: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Sätt nivån för konstruktions- och inköpskostnader
+###length 3
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_LOW                       :Låga
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_MEDIUM                    :Mellan
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :Höga
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Lågkonjunkturer: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Om det är aktiverat kan lågkonjunkturer uppstå regelbundet. Under en lågkonjunktur är all produktion avsevärt lägre (men återgår till det normala när lågkonjunkturen är över)
@@ -2095,9 +2103,9 @@ STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :Den BEPANSRADE 
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :Distributionssätt för övriga godsklasser: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :"Asymmetriskt" innebär att en godtycklig mängd gods kan skickas i vardera riktningen. "Manuellt" innebär att ingen automatisk distribution av dessa godstyper sker
 ###length 3
-STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :manuellt
-STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :asymmetriskt
-STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :symmetriskt
+STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :Manuellt
+STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :Asymmetriskt
+STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :Symmetriskt
 
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY                           :Distributionsnoggrannhet: {STRING}
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY_HELPTEXT                  :Ju högre du sätter denna, desto längre CPU-tid kommer beräkningen av länkgrafen ta. Om det tar för lång tid kan spelet lagga. Om du däremot sätter den till ett lågt värde kommer distributionen att bli inexakt, vilket kan leda till att godset inte skickas dit du förväntar dig
@@ -2205,8 +2213,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... filf
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... ignorerar grundgrafikpaketet '{STRING}': hittades ej
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... ignorerar grundljudpaketet '{STRING}': hittades ej
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... ignorerar grundmusikpaket '{STRING}': hittades ej
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Slut på minne
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Allokerandet av {BYTES} till spritecachen misslyckades. Spritecachen begränsades till {BYTES}. Detta kommer att begränsa OpenTTD:s prestanda. För att minska minneskraven kan du försöka att inaktivera 32bpp-grafik och/eller antalet inzoomningsnivåer
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Fel med video inställningarna...
@@ -2833,6 +2839,11 @@ STR_PICKER_MODE_USED                                            :Använda
 STR_PICKER_MODE_USED_TOOLTIP                                    :Slå av/på visning av endast existerande objekt
 STR_PICKER_MODE_SAVED                                           :Sparade
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :Slå på/av visning av endast sparade objekt
+
+STR_PICKER_PREVIEW_SHRINK                                       :-
+STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Minska höjden på förhandsvisningen. Ctrl+Click för att minska till minimum
+STR_PICKER_PREVIEW_EXPAND                                       :+
+STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Öka höjden på förhandsvisningen. Ctrl+Click för att öka till max
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Välj vilken klass av stationer som ska visas
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Välj en stationstyp att bygga. Ctrl+Klick för att lägga till eller ta bort i sparade objekt

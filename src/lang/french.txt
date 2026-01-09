@@ -1316,6 +1316,10 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Taux d’intér
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Coûts d'entretien{NBSP}: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Définit le niveau des coûts d'entretien et de fonctionnement des véhicules et des infrastructures
+###length 3
+STR_CONFIG_SETTING_RUNNING_COSTS_LOW                            :Faible
+STR_CONFIG_SETTING_RUNNING_COSTS_MEDIUM                         :Moyen
+STR_CONFIG_SETTING_RUNNING_COSTS_HIGH                           :Élevé
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Vitesse de construction{NBSP}: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Limite le nombre d'actions de constructions pour les IAs
@@ -1337,6 +1341,10 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :Pas de subventi
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Coûts de construction{NBSP}: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Définit le niveau des coûts de construction et d'achat
+###length 3
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_LOW                       :Faible
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_MEDIUM                    :Moyen
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :Élevé
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Récessions{NBSP}: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Si activé, des récessions peuvent se produire périodiquement. Pendant une récession, toute la production baisse de façon significative (elle retourne à son niveau antérieur à la fin de la récession).
@@ -2096,9 +2104,9 @@ STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :La classe de ca
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :Type de distribution pour les autres classes de cargaison{NBSP}: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :"Asymétrique" signifie qu'une quantité arbitraire de cargaison peut être envoyée dans les deux directions. "Manuel" signifie qu'aucune distribution n'est mise en place pour la cargaison
 ###length 3
-STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :manuel
-STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :asymétrique
-STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :symétrique
+STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :Manuel
+STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :Asymétrique
+STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :Symétrique
 
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY                           :Précision de la distribution{NBSP}: {STRING}
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY_HELPTEXT                  :Plus ce réglage est élevé, plus le recalcul du graphe de distribution occupe de temps CPU. S'il est trop élevé, cela peut produire de la latence ("lag"). Au contraire, plus la valeur est basse, plus la distribution sera imprécise et l'on risque de voir des cargaisons ne pas aller vers la destination attendue
@@ -2206,8 +2214,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... le f
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... graphiques de base '{STRING}' ignorés{NBSP}: non trouvés
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... sons de base '{STRING}' ignorés{NBSP}: non trouvés
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... musique de base '{STRING}' ignorée{NBSP}: non trouvée
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Plus de mémoire
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}L'allocation de {BYTES} pour le cache des sprites a échoué. Le cache des sprites a été réduit à {BYTES}. Cela va réduire les performances d'OpenTTD. Pour diminuer les besoins en mémoire vous pouvez essayer de désactiver les graphismes 32bpp et/ou les niveaux de zoom avant
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE} Erreur avec les paramètres vidéo...
@@ -2834,6 +2840,11 @@ STR_PICKER_MODE_USED                                            :Utilisé
 STR_PICKER_MODE_USED_TOOLTIP                                    :Basculer l'affichage exclusif d'éléments existants
 STR_PICKER_MODE_SAVED                                           :Sauvegardé
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :Basculer l'affichage exclusif des éléments sauvegardés
+
+STR_PICKER_PREVIEW_SHRINK                                       :-
+STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Réduire la hauteur des images d'aperçu. Ctrl-clic pour réduire au maximum
+STR_PICKER_PREVIEW_EXPAND                                       :+
+STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Augmenter la hauteur des images d'aperçu. Ctrl-clic pour augmenter au maximum
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Séléctionner un type de station à afficher
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Séléctionner un type de station à construire. Ctrl+Clic pour ajouter ou retirer des éléments sauvegardés.

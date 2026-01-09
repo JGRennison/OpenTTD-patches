@@ -1313,6 +1313,10 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Tasa de interé
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Costos de operación: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Nivel de costos de mantenimiento y operación de vehículos e infraestructura
+###length 3
+STR_CONFIG_SETTING_RUNNING_COSTS_LOW                            :Bajos
+STR_CONFIG_SETTING_RUNNING_COSTS_MEDIUM                         :Medios
+STR_CONFIG_SETTING_RUNNING_COSTS_HIGH                           :Altos
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Velocidad de construcción: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Restringir la velocidad de las acciones de construcción de jugadores no humanos
@@ -1334,6 +1338,10 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :Sin subsidios
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Costos de construcción: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Nivel de costos de construcción y adquisición
+###length 3
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_LOW                       :Bajos
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_MEDIUM                    :Medios
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :Altos
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Recesiones: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Al activarse, habrá recesiones periódicamente en las que toda la producción decaerá considerablemente, restableciéndose al final de cada recesión
@@ -2201,8 +2209,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... el f
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... gráficos base '{STRING}' ignorados: no encontrados
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... sonidos base '{STRING}' ignorados: no encontrados
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... música base '{STRING}' ignorada: no encontrada
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}No hay memoria suficiente
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}La asignación de {BYTES} de caché de sprites ha fallado. La caché de sprites ha sido reducida a {BYTES}, lo que reducirá el desempeño de OpenTTD. Para reducir los requisitos de memoria es posible deshabilitar los gráficos de 32bpp o reducir los grados de acercamiento
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Error en la configuración de video...
@@ -2829,6 +2835,11 @@ STR_PICKER_MODE_USED                                            :Usados
 STR_PICKER_MODE_USED_TOOLTIP                                    :Ver solo los elementos existentes
 STR_PICKER_MODE_SAVED                                           :Guardados
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :Ver solo los elementos guardados
+
+STR_PICKER_PREVIEW_SHRINK                                       :-
+STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Reducir la altura de las imágenes previas. Ctrl+Clic reduce al mínimo
+STR_PICKER_PREVIEW_EXPAND                                       :+
+STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Incrementar la altura de las imágenes previas. Ctrl+Clic aumenta al máximo
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Elegir qué clase de estación mostrar
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Elegir qué tipo de estación construir. Ctrl+Clic lo añade o elimina de guardados

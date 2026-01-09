@@ -1315,6 +1315,10 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Lãi xuất vay
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Chi phí hoạt động: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Thiết lập mức độ tính chi phí bảo trì và vận hành đối với phương tiện và hạ tầng giao thông
+###length 3
+STR_CONFIG_SETTING_RUNNING_COSTS_LOW                            :Thấp
+STR_CONFIG_SETTING_RUNNING_COSTS_MEDIUM                         :Trung bình
+STR_CONFIG_SETTING_RUNNING_COSTS_HIGH                           :Cao
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Tốc độ xây dựng: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Giới hạn hành động xây dựng của AI
@@ -1336,6 +1340,10 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :Không có tr�
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Chi phí xây dựng: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Thiết lập mức độ xây dựng và chi phí mua sắm
+###length 3
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_LOW                       :Thấp
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_MEDIUM                    :Trung bình
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :Cao
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Suy thoái: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Nếu bật, thì các đợt suy thoái sẽ xảy ra vài năm một lần. Trong suy thoái tất cả sản xuất sẽ giảm mạnh (và sẽ trở lại như cũ sau khi suy thoái kết thúc)
@@ -2095,9 +2103,9 @@ STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :Loại hàng h�
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :Chế độ phân phối đối với các loại hàng hóa mặc định: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :"Không đối xứng" có nghĩa là số lượng hàng hóa tùy ý có thể được gửi theo một trong hai hướng. "Thủ công" có nghĩa là những loại hàng hóa đó sẽ không được phân phối tự động
 ###length 3
-STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :bằng tay
-STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :bất đối xứng
-STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :đối xứng
+STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :Bằng tay
+STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :Bất đối xứng
+STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :Đối xứng
 
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY                           :Độ chính xác phân phối: {STRING}
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY_HELPTEXT                  :Mức chính xác tính toán đồ thị, nếu giá trị càng cao càng tốn CPU và trò chơi có thể chậm phản ứng, tuy nhiên giá trị thấp sẽ khiến việc phân phối sẽ giảm sự chính xác và bạn sẽ thấy sự khác biệt là hàng hóa không gửi đến chỗ cần đến
@@ -2205,8 +2213,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... khô
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... từ chối gói đồ họa chuẩn '{STRING}': không tìm thấy
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... từ chối gói âm thanh chuẩn '{STRING}': không tìm thấy
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... từ chối gói nhạc chuẩn '{STRING}': không tìm thấy
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Hết bộ nhớ
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Phân bổ {BYTES} cho spritecache thất bại. Spritecache đã được giảm còn {BYTES}. Điều này có thể làm giảm hiệu năng của OpenTTD. Để giảm yêu cầu bộ nhớ, bạn có thể thử tắt gói đồ họa 32bpp và/hoặc mức độ phóng to
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Lỗi ở thiết lập hình ảnh...
@@ -2833,6 +2839,11 @@ STR_PICKER_MODE_USED                                            :Đã sử dụn
 STR_PICKER_MODE_USED_TOOLTIP                                    :Bật/tắt hiển thị những hạng mục còn hiện hữu
 STR_PICKER_MODE_SAVED                                           :Đã lưu
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :Bật/tắt hiển thị những hạng mục được lưu
+
+STR_PICKER_PREVIEW_SHRINK                                       :-
+STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Giảm chiều cao của ảnh xem trước. Ctrl+Click để giảm đến mức tối thiểu
+STR_PICKER_PREVIEW_EXPAND                                       :+
+STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Tăng chiều cao của ảnh xem trước. Ctrl+Click để tăng đến mức tối đa
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Chọn loại ga bến cần hiển thị
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Chọn loại ga bến để xây. Ctrl+Click để thêm hoặc bớt vào danh sách lưu

@@ -784,6 +784,7 @@ STR_CONFIG_SETTING_REALISTIC                                    :खरेखु
 ###setting-zero-is-special
 
 
+###length 3
 
 
 
@@ -792,6 +793,7 @@ STR_CONFIG_SETTING_REALISTIC                                    :खरेखु
 
 ###setting-zero-is-special
 
+###length 3
 
 
 
@@ -1190,6 +1192,7 @@ STR_NETWORK_SERVER_MESSAGE                                      :*** {STRING}
 # Rail waypoint construction window
 
 # Rail station construction window
+
 
 
 

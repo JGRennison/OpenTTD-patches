@@ -1316,6 +1316,10 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Borç faiz oran
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :İşletme giderleri: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Araçlar ve altyapı için bakım ve işletme giderlerinin seviyesini ayarlayın
+###length 3
+STR_CONFIG_SETTING_RUNNING_COSTS_LOW                            :Düşük
+STR_CONFIG_SETTING_RUNNING_COSTS_MEDIUM                         :Orta
+STR_CONFIG_SETTING_RUNNING_COSTS_HIGH                           :Yüksek
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :İnşaat hızı: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :YZ'ler için inşaat hareketi sayısını sınırlayın
@@ -1337,6 +1341,10 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :Teşvik yok
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :İnşaat maliyetleri: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :İnşaat ve satın alma maliyet seviyesini belirleyin
+###length 3
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_LOW                       :Düşük
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_MEDIUM                    :Orta
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :Yüksek
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Ekonomik krizler: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Etkinleştirilirse, periyodik olarak bir ekonomik durgunluk yaşanır. Durgunluk süresince tüm üretim seviyeleri belirgin oranda düşer (durgunluk sona erdiğinde önceki seviyesine tekrar yükselir)
@@ -2096,9 +2104,9 @@ STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :ZIRHLI kargo s�
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :Diğer kargo sınıfları için dağılım kipi: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :"Asimetrik", kargonun iki yönde de rastgele miktarda gönderileceğini gösterir. "El ile" seçildiği takdirde o kargolar için otomatik dağılım yapılmaz
 ###length 3
-STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :el ile (manual)
-STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :asimetrik
-STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :simetrik
+STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :El ile
+STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :Asimetrik
+STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :Simetrik
 
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY                           :Dağılım isabetliliği: {STRING}
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY_HELPTEXT                  :Buraya daha yüksek değerler girildikçe bağlantı grafiğinin hesaplanmasına daha fazla işlemci zamanı harcanır. Eğer hesaplama çok uzun sürerse gecikmeler hissedilebilir. Fakat düşük bir değer girerseniz dağılım isabetli olmayacaktır ve kargonun beklediğiniz yerlere gönderilmediğini fark edebilirsiniz
@@ -2206,8 +2214,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... kayd
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... Temel Grafik kümesi görmezden geliniyor '{STRING}': bulunamadı
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... Temel Ses kümesi görmezden geliniyor '{STRING}': bulunamadı
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... Temel Müzik kümesi görmezden geliniyor '{STRING}': bulunamadı
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Bellek yetersiz
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}{BYTES} sprite-önbelleği ayırma işlemi başarısız. Sprite-önbelleği {BYTES}'a düşürüldü. Bu OpenTTD'nin performansını azaltacak. Bellek gereksinimini azaltmak için 32bpp grafikleri ve/veya yakınlaştırma seviyelerini kapatmayı deneyebilirsiniz
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Video ayarlarında hata...
@@ -2834,6 +2840,11 @@ STR_PICKER_MODE_USED                                            :Kullanılmış
 STR_PICKER_MODE_USED_TOOLTIP                                    :Yalnızca mevcut öğeleri göstermeyi aç/kapat
 STR_PICKER_MODE_SAVED                                           :Kaydedilen
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :Yalnızca kaydedilen öğeleri göstermeyi aç/kapat
+
+STR_PICKER_PREVIEW_SHRINK                                       :-
+STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Önizleme resimlerinin yüksekliğini azaltır. En düşüğe çekmek için Ctrl + Sol Tık yapın
+STR_PICKER_PREVIEW_EXPAND                                       :+
+STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Önizleme resimlerinin yüksekliğini arttır. En yükseğe çekmek için Ctrl + Sol Tık yapın
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Görüntülenecek istasyon sınıfını seçin
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :İnşa edilecek istasyon türünü seçin. Kayıtlı öğelerde ekleme çıkarma için Ctrl+Tıklayabilirsiniz

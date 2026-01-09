@@ -1176,6 +1176,7 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Ráta úis ar i
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Costais choinneála: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Socraigh leibhéal na gcostas cothabhála agus coinneála atá ag feithiclí agus bonneagar
+###length 3
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Luas tógála: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Cuir teorainn le líon na ngníomhartha tógála atá ag AInna
@@ -1195,6 +1196,7 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :Gan fóirdheont
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Costais tógála: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Socraigh leibhéal na gcostas tógála agus ceannaigh
+###length 3
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Cúluithe eacnamaíochta: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Má dhéantar seo a chumasú, féadfaidh cúluithe a bheith ann gach cúpla bliain. Le linn cúlú, bíonn an táirgeadh ar fad cuid mhaith níos ísle (téann sé ar ais chuig an leibhéal roimhe sin nuair a bheidh an cúlú thart)
@@ -1989,8 +1991,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... níl
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... ag tabhairt neamhaird ar an tsraith Bhunghrafaice '{STRING}': níor aimsíodh í
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... ag tabhairt neamhaird ar an tsraith Bhunfhuaimeanna '{STRING}': níor aimsíodh í
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... ag tabhairt neamhaird ar an tsraith Bhuncheoil '{STRING}': níor aimsíodh í
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Easpa chuimhne
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Teipeadh {BYTES} a shannadh don taisce sprideanna. Laghdaíodh an taisce sprideanna go {BYTES}. Laghdófar feidhmíocht OpenTTD dá bharr. Chun an méid cuimhne atá riachtanach a laghdú, is féidir leat grafaicí 32bpp agus/nó leibhéil zúmála isteach a dhíchumasú
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Earráid leis na socruithe físeáin...
@@ -2558,6 +2558,7 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}Fad an a
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Roghnaigh fad an stáisiúin iarnróid
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Tarraing & Scaoil
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Tóg stáisiún ag úsáid tarraing & scaoil
+
 
 
 

@@ -1315,6 +1315,10 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Cyfradd chwyddi
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Costau rhedeg: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Gosod lefel costau cynnal a chadw ar gerbydau a thanadeiledd
+###length 3
+STR_CONFIG_SETTING_RUNNING_COSTS_LOW                            :Isel
+STR_CONFIG_SETTING_RUNNING_COSTS_MEDIUM                         :Cymhedrol
+STR_CONFIG_SETTING_RUNNING_COSTS_HIGH                           :Uchel
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Cyflymder adeiladu: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Cyfyngu'r nifer o weithredoedd adeiliadu ar gyfer AIau
@@ -1336,6 +1340,10 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :Dim cymhorthdal
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Costau adeiladu: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Gosod lefel costau prynnu ac adeiladu
+###length 3
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_LOW                       :Isel
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_MEDIUM                    :Cymhedrol
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :Uchel
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Dirwasgiadau: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Os y galluogir, gall dirwasgiadau ddigwydd yn ysbeidiol. Yn ystod dirwasgiad bydd lefelau gweithgynhyrchu'n is o lawer (gan ddychwelyd at y lefel gwreiddiol wedi diwedd y dirwasgiad)
@@ -2095,9 +2103,9 @@ STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :Mae llwythi ARF
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :Dull dosrannu ar gyfer llwythi eraill: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :Mae "anghymesur" yn golygu y gall llwythi mympwyol eu gyrru yn y naill cyfeiriad neu'r llall. Mae "â llaw" yn golygu ni fydd dosrannu diofyn yn digwydd ar gyfer y llwythi hyn
 ###length 3
-STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :â llaw
-STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :anghymesur
-STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :cymesur
+STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :Â llaw
+STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :Anghymesur
+STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :Cymesur
 
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY                           :Manylder dosrannu: {STRING}
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY_HELPTEXT                  :Mae'r gosodiad yma'n pennu faint o amser prosesydd y bydd cyfrifo'r graff cyswllt yn ei gymeryd. Os yw'n cymryd gormod o amser efallai bydd peth oedi ar y gêm. Os ydych yn gosod gwerth isel, fodd bynnag, ni fydd y dosraniad yn fanwl gywir, a gallwch nodi nad yw llwythi'n cael ei yrru i'r mannau y byddech y disgwyl
@@ -2205,8 +2213,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... nid 
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... yn anwybyddu set Graffeg Sylfaenol '{STRING}': ni ganfuwyd
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... yn anwybyddu setiau Sain Sylfaenol '{STRING}': ni ganfuwyd
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... yn anwybyddu set Sain Sylfaenol '{STRING}': ni ganfuwyd
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Allan o gof
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Methwyd dyroddi {BYTES} o storfa corluniau. Lleihawyd y storfa corluniau at {BYTES}. Bydd hyn yn lleihau perfformiad OpenTTD. I leihau gofynion cof gallwch roi cynnig ar analluogi graffigiau 32 did a/neu lefelau mwyháu
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Gwall gyda'r gosodiadau fideo...
@@ -2833,6 +2839,11 @@ STR_PICKER_MODE_USED                                            :Defnyddiwyd
 STR_PICKER_MODE_USED_TOOLTIP                                    :Toglu dangos eitemau wedi'u defnyddio yn unig
 STR_PICKER_MODE_SAVED                                           :Wedi'u Cadw
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :Toglu dangos eitemau wedi'u cadw yn unig
+
+STR_PICKER_PREVIEW_SHRINK                                       :-
+STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Lleihau ucher delewddau rhagolwg. Mae Ctrl+Clic yn lleihau at yr isafswm
+STR_PICKER_PREVIEW_EXPAND                                       :+
+STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Cynyddu ucher delewddau rhagolwg. Mae Ctrl+Clic yn cynyddu at yr uchafswm
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Dewis dosbarth gorsaf i'w ddangos
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Dewis math gorsaf i'w adeiladu. Mae Ctrl+Clic yn adio neu tynnu o'r eitemau a gedwir

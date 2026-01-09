@@ -1316,6 +1316,10 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Taxa de juro do
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Custos operacionais: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Configurar nível de manutenção e custos operacionais de veículos e infraestrutura
+###length 3
+STR_CONFIG_SETTING_RUNNING_COSTS_LOW                            :Baixos
+STR_CONFIG_SETTING_RUNNING_COSTS_MEDIUM                         :Médios
+STR_CONFIG_SETTING_RUNNING_COSTS_HIGH                           :Altos
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Velocidade de construção: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Limitar o número de ações de construção por jogadores controlados pelo computador
@@ -1337,6 +1341,10 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :Sem subsídios
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Custos de construção: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Configurar o nível de construção e custos de compra
+###length 3
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_LOW                       :Baixos
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_MEDIUM                    :Médios
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :Altos
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Recessões: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Se ativo, podem ocorrer recessões periodicamente. Durante uma recessão a produção em geral é mais baixa (e regressa aos níveis anteriores quando termina a recessão)
@@ -2096,9 +2104,9 @@ STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :A classe de car
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :Modo de distribuição para outras classes de carga: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :"Assimétrico" significa que quantidades arbitrárias de carga podem ser enviadas em qualquer direção. "Manual" significa que nenhuma distribuição automática ocorrerá para essas cargas
 ###length 3
-STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :manual
-STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :asimétrico
-STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :simétrico
+STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :Manual
+STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :Assimétrico
+STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :Simétrico
 
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY                           :Precisão de distribuição: {STRING}
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY_HELPTEXT                  :Quanto mais alto o definir, mais tempo o CPU demorará a calcular o gráfico de ligações. Se demorar muito poderá atrasar a execução do jogo. Se no entanto for definido um valor reduzido a distribuição será imprecisa, e poderá verificar cargas não serem entregues onde seriam esperadas
@@ -2206,8 +2214,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... form
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... a ignorar conjunto de Gráficos Base '{STRING}': não foi encontrado
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... a ignorar conjunto Base de Sons '{STRING}': não foi encontrado
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... a ignorar conjunto Musica Base '{STRING}': não foi encontrado
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Falta de memória
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Falha a alocar {BYTES} da cache de sprites. a cache de sprites foi reduzida para {BYTES}. Isto irá reduzir a performance do OpenTTD. Para baixar os requisitos de memória poderá desabilitar gráficos de 32bpp e/ou niveis de zoom
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Erro com as definições gráficas...
@@ -2834,6 +2840,11 @@ STR_PICKER_MODE_USED                                            :Usado
 STR_PICKER_MODE_USED_TOOLTIP                                    :Alterna a exibição só de itens existentes
 STR_PICKER_MODE_SAVED                                           :Guardado
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :Alterna a exibição só de itens guardados
+
+STR_PICKER_PREVIEW_SHRINK                                       :-
+STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Reduzir a altura das imagens de pré-visualização. Ctrl+Clique para reduzir ao mínimo
+STR_PICKER_PREVIEW_EXPAND                                       :+
+STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Aumentar a altura das imagens de pré-visualização. Ctrl+Clique para aumentar ao máximo
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Selecionar uma classe de estação para mostrar
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Escolher um tipo de estação para construir. Ctrl+Clique para adicionar ou remover nos itens guardados

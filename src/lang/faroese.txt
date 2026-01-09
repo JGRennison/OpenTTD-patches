@@ -1066,6 +1066,7 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Rentustigi á l
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Rakstrar kostnaður: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Set hvussu høgur/lágur rakstrarkostnaðurin av flutningstólum og innankervi skal vera
+###length 3
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Byggingar fer: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Avmarka hvussu nógv AI kann byggja
@@ -1082,6 +1083,7 @@ STR_CONFIG_SETTING_SUBSIDY_MULTIPLIER_HELPTEXT                  :Vel hvussu nóg
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Bygnings kostnaður: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Set hvussu høgur/lágur bygnings- og keypskostnaður skal vera
+###length 3
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Ringar tíðir: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Um hetta er tendra kunnu ringar tíðir koma fyri við nøkrum ára millumbili. Meðan ringar tíðir eru, er øll framleiðsla munandi lægri (fer aftur á støði ta var áðrenn tá ringu tíðinar eru av)
@@ -1695,8 +1697,6 @@ STR_CONFIG_ERROR_INVALID_GRF_NOT_FOUND                          :ikki funni
 STR_CONFIG_ERROR_INVALID_GRF_SYSTEM                             :system NewGRF
 STR_CONFIG_ERROR_INVALID_GRF_INCOMPATIBLE                       :ósambæriligur við hesa útgávuna av OpenTTD
 STR_CONFIG_ERROR_INVALID_GRF_UNKNOWN                            :ókendur
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Einki minni eftir
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Leitan eftir {BYTES} av spritecache eydnaðist ikki. Spritecache var skerd til {BYTES}. Hetta vil skerja framførsluna av OpenTTD. Fyri at minka um minnis krøvini kann tú royna at sløkkja fyri 32bpp grafikki og/ella suma-in stig
 
 # Video initalization errors
 
@@ -2158,6 +2158,7 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}Pall lon
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Vel hvussu lang tokstøðin skal verða
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Toga & Slepp
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Bygg eina støð vi at nýta toga & slepp
+
 
 
 

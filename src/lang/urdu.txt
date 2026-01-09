@@ -1033,6 +1033,7 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :دائیں
 ###setting-zero-is-special
 
 
+###length 3
 
 
 
@@ -1041,6 +1042,7 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :دائیں
 
 ###setting-zero-is-special
 
+###length 3
 
 
 
@@ -1977,6 +1979,7 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}پلیٹ
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}ریلوے اسٹیشن کی لمبائی منتخب کریں
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}کھینچ کر رکھ دیں
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}کھینچ کر رکھ کر اسٹیشن تعمیر کریں
+
 
 
 

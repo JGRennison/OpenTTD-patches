@@ -1258,6 +1258,7 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Obrestna mera; 
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Stroški delovanja: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Nastavitev vzdrževanja in stroškov delovanja vozil in zgradb
+###length 3
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Hitrost gradnje: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Nastavitev hitrosti gradnje za UI
@@ -1274,6 +1275,7 @@ STR_CONFIG_SETTING_SUBSIDY_MULTIPLIER_HELPTEXT                  :Nastavitev fakt
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Cene gradnje: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Nastavitev cene gradnje in nakupa
+###length 3
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Recesije: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Če je omogočeno, se recesije lahko pojavijo vsakih nekaj let. Med recesijo je proizvodnja znatno nižja, povrne se v tek po recesiji.
@@ -2012,8 +2014,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... form
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... ignoriran osnovni grafični set '{STRING}': ni najden
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... ignoriran osnovni zvočni set '{STRING}': ni najden
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... ignoriran osnovni glasbeni set '{STRING}': ni najden
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Premalo pomnilnika
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Priprava {BYTES} za predpomnilnik sličic ni uspela. Pomnilnik je bil zmanjšan na {BYTES}. To bo zmanjšalo zmogljivost OpenTTD. Za zmanjšanje potrebe po spominu onemogoči podporo za 32 bitne sličice
 
 # Video initalization errors
 
@@ -2504,6 +2504,7 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}Dolžina
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Izberi dolžino železniške postaje
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Vleci in spusti
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Zgradi postajo s povleci in spusti
+
 
 
 

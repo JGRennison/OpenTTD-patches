@@ -1306,6 +1306,7 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Luach-rèidh ia
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Cosgaisean ruith: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Suidhich ìre nan cosgaisean ruith is obrach-càraidh aig carbadan is a' bhun-structar
+###length 3
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Luaths na togail: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Cuingich meud nan gnìomhan togail aig na IFan
@@ -1322,6 +1323,7 @@ STR_CONFIG_SETTING_SUBSIDY_MULTIPLIER_HELPTEXT                  :Suidhich na th�
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Cosgaisean togail: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Suidhich ìre nan cosgaisean togail is ceannachd
+###length 3
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Crìonaidhean eaconamaidh: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Ma tha seo air, faodaidh crìonadh eaconamaidh tachairt gach beagan bhliadhnaichean. Rè crìonaidh eaconamaidh, tha a h-uile toradh mòran nas ìsle (tillidh e dhan ìre roimhe nuair a bhios an crìonadh eaconamaidh seachad)
@@ -2061,8 +2063,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... chan
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... a' leigeil seachad an seata grafaigeachd bunasach “{STRING}": cha deach a lorg
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... a' leigeil seachad an seata fuaime bunasach “{STRING}": cha deach a lorg
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... a' leigeil seachad an seata ciùil bunasach “{STRING}": cha deach a lorg
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Chan eil cuimhne gu leòr agad
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Dh'fhàillig le sònrachadh aig {BYTES} dhe thasgadan nam sprites. Chaidh tasgadan nam sprites a lùghdachadh gu {BYTES}. Le sin, bidh an dèanadas aig OpenTTD nas lugha. Gus nach bidh feum ann airson a leithid dhe chuimhne, feuch an cuir thu grafaigeachd 32bpp is/no leibheilean sùmaidh à comas
 
 # Video initalization errors
 
@@ -2560,6 +2560,7 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}Faide na
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Tagh dè cho fad ’s a bhios an stèisean
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Slaod is leig às
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Tog stèisean le slaodadh is leigeil às
+
 
 
 

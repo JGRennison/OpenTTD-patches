@@ -1315,6 +1315,10 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :設定貸款息
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :營運成本：{STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :設定車輛的營運與維護成本水平。
+###length 3
+STR_CONFIG_SETTING_RUNNING_COSTS_LOW                            :低
+STR_CONFIG_SETTING_RUNNING_COSTS_MEDIUM                         :適中
+STR_CONFIG_SETTING_RUNNING_COSTS_HIGH                           :高
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :建造速度：{STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :限制電腦 AI 的建造速度。
@@ -1336,6 +1340,10 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :沒有補助
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :建造成本：{STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :設定建造和購買物件的成本水平。
+###length 3
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_LOW                       :低
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_MEDIUM                    :適中
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :高
 
 STR_CONFIG_SETTING_RECESSIONS                                   :經濟衰退：{STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :如果此選項被啟用，經濟衰退將會週期性發生。屆時所有工業生產都會大幅下降，直至衰退結束後回到之前的水平
@@ -2205,8 +2213,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... 本�
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}……正在忽略「 {STRING} 」基本圖形集：找不到檔案
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}……正在忽略「 {STRING} 」基本音效集：找不到檔案
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}……正在忽略「 {STRING} 」基本音樂集：找不到檔案
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}記憶體不足
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}無法編配 {BYTES} 作為子畫面快取。子畫面快取的大小已降至 {BYTES} 。 OpenTTD的效能會受到影響。請嘗試停用 32bpp 圖形及／或減少放大倍數，以減低記憶體要求
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}圖像設定錯誤...
@@ -2833,6 +2839,11 @@ STR_PICKER_MODE_USED                                            :已啟用
 STR_PICKER_MODE_USED_TOOLTIP                                    :切換僅顯示現有的項目
 STR_PICKER_MODE_SAVED                                           :已儲存
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :切換僅顯示已儲存的項目
+
+STR_PICKER_PREVIEW_SHRINK                                       :-
+STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :縮小預覽圖。按住 <Ctrl> 鍵點選以最小化
+STR_PICKER_PREVIEW_EXPAND                                       :+
+STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :放大預覽圖。按住 <Ctrl> 鍵點選以最大化
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :選擇顯示的車站種類
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :選擇建設的車站類型。按住 <Ctrl> 點選可在儲存項目中新增或刪除

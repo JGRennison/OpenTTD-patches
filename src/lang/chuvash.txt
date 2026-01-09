@@ -574,6 +574,7 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :Сылтӑмр�
 ###setting-zero-is-special
 
 
+###length 3
 
 
 
@@ -582,6 +583,7 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :Сылтӑмр�
 
 ###setting-zero-is-special
 
+###length 3
 
 
 
@@ -1059,6 +1061,7 @@ STR_CONTENT_DETAIL_VERSION                                      :{SILVER}Вер�
 # Rail waypoint construction window
 
 # Rail station construction window
+
 
 
 

@@ -1408,6 +1408,10 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Επιτόκι�
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Λειτουργικά έξοδα: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Θέτει το επίπεδο συντήρησης και τα λειτουργικά έξοδα των οχημάτων και της υποδομής
+###length 3
+STR_CONFIG_SETTING_RUNNING_COSTS_LOW                            :Χαμηλά
+STR_CONFIG_SETTING_RUNNING_COSTS_MEDIUM                         :Μεσαία
+STR_CONFIG_SETTING_RUNNING_COSTS_HIGH                           :Υψηλά
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Ταχύτητα οικοδόμησης: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Περιορίζει τις πόσεις εικοδομήσεις κάνουν τα AI
@@ -1429,6 +1433,10 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :Χωρίς επ
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Κόστος οικοδόμησης: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Θέτει το επίπεδο κόστους για αγορές και οικοδομές
+###length 3
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_LOW                       :Χαμηλό
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_MEDIUM                    :Μεσαίο
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :Υψηλό
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Υφέσεις: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Όταν είναι ενεργοποιημένο, ενδέχεται περιοδικά να υπάρχουν υφέσεις. Κατά τη διάρκεια μιας ύφεσης, όλη η παραγωγή είναι πολύ χαμηλότερη (επιστρέφει στο προηγούμενο επίπεδο όταν τελειώσει η ύφεση)
@@ -2188,9 +2196,9 @@ STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :Ο ΘΩΡΑΚΙ
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :Τρόπος διανομής άλλων ειδών φορτίου: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :Το «ασυμμετρικό» σημαίνει ότι αυθαίρετες ποσότητες φορτίου μπορεί να σταλούν σε οποιαδήποτε εκ των δύο κατευθύνσεων. Το «χειροκίνητο» σημαίνει ότι καμία αυτόματη διανομή δε θα γίνεται για αυτά τα φορτία
 ###length 3
-STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :χειροκίνητη
-STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :μη συμμετρική
-STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :συμμετρική
+STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :Χειροκίνητος
+STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :Ασύμμετρος
+STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :Συμμετρικός
 
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY                           :Ακρίβεια διανομής: {STRING}
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY_HELPTEXT                  :Όσο μεγαλύτερη ή τιμή αυτή, τόσο περισσότερος χρόνος επεξεργαστή θα χρειάζεται για τον υπολογισμό του γραφήματος συνδέσμου. Αν το ορίσετε πολύ ψηλά, ενδέχεται να παρατηρήσετε καθυστερήσεις. Εάν όμως θέσετε χαμηλή τιμή, η διανομή θα είναι ανακριβής και μπορεί να παρατηρήσετε φορτία να μην στέλνονται στους προορισμούς που θα έπρεπε να πηγαίνουν
@@ -2298,8 +2306,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... ο �
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... αγνόηση βασικού σετ γραφικών «{STRING}»: δεν βρέθηκε
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... αγνόηση βασικού σετ ήχων «{STRING}»: δεν βρέθηκε
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... αγνόηση βασικού σετ μουσικής «{STRING}»: δεν βρέθηκε
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Έλληψη μνήμης
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Η κατανομή {BYTES} του spritecache απέτυχε. Το spritecache μειώθηκε σε {BYTES}. Αυτό θα μειώσει την απόδοση του OpenTTD. Για να μειώσετε τις ανάγκες μνήμς μπορείτε να απενεργοποιήσετε τα γραφικά 32bpp graphics ή/και τα επίπεδα μεγέθυνσης
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Πρόβλημα με τις ρυθμίσεις βίντεο...
@@ -2926,6 +2932,11 @@ STR_PICKER_MODE_USED                                            :Χρησιμο�
 STR_PICKER_MODE_USED_TOOLTIP                                    :Εναλλαγή εμφάνισης μόνο υπαρχόντων στοιχείων
 STR_PICKER_MODE_SAVED                                           :Αποθηκεύτηκε
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :Εναλλαγή εμφάνισης μόνο αποθηκευμένων στοιχείων
+
+STR_PICKER_PREVIEW_SHRINK                                       :-
+STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Μείωση του ύψους των εικόνων προεπισκόπισης. Ctrl+κλικ για μείωση στο ελάχιστο
+STR_PICKER_PREVIEW_EXPAND                                       :+
+STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Αύξηση του ύψους των εικόνων προεπισκόπισης. Ctrl+κλικ για αύξηση στο μέγιστο
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Επιλογή κατηγορίας σταθμού για εμφάνιση
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Επιλογή τύπου σταθμού για κατασκευή. Ctrl+κλικ για προσθήκη σε ή αφαίρεση από αποθηκευμένα στοιχεία

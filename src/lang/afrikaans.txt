@@ -1121,6 +1121,7 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Lening rentekoe
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Bedryfskostes: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Verstel die vlak van instandhouding en bedryfskoste van voertuie en infrastruktuur
+###length 3
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Konstruksie spoed: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Beperk die hoeveelheid konstruksie aksies vir die AIs
@@ -1137,6 +1138,7 @@ STR_CONFIG_SETTING_SUBSIDY_MULTIPLIER_HELPTEXT                  :Verstel hoeveel
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Konstruksie kostes: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Verstel die vlak van konstruksie en aankoop-kostes
+###length 3
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Resessies: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :As dit geaktiveer is, kan resessie elke paar jaar voorkom. Gedurende 'n resessie word is vervaardiging drasties minder en aan die einde van die resessie word dit weer herstel na normale vlakke.
@@ -1889,8 +1891,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... save
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... gaan die basis-grafikastel '{STRING}' ignoreer: nie gevind nie
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... ignoreer Basis Klank stel '{STRING}': nie gevind nie
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... ignoreer Basis Musiek stel '{STRING}': nie gevind
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Program is uit geheue uit
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Allokering van {BYTES} kasgeheue vir grafika het gefaal. Die kasgeheue is verminder na {BYTES}. Dit sal OpenTDD stadiger maak. Om geheue-aanvraag te verminder, kan u 32bpp grafika en/of zoom-vlakke afskakel.
 
 # Video initalization errors
 
@@ -2378,6 +2378,7 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}Perron l
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Kies treinstasie lengte
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Sleep & Drop
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Bou 'n stasie gebruikend sleep & drop
+
 
 
 

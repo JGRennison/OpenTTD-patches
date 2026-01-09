@@ -1222,6 +1222,7 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :借入利率を
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :維持費: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :車両や施設のメンテナンスコストを設定します
+###length 3
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :建設速度: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :AIの建設速度を設定します
@@ -1242,6 +1243,7 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :補助金なし
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :建設費: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :建設・購入費用のレベルを設定します
+###length 3
 
 STR_CONFIG_SETTING_RECESSIONS                                   :景気後退: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :設定を有効にすると数年おきに短期間、景気の後退が起こる可能性が出ます。景気後退の間はすべての生産がかなりの落ち込みを見せます (景気後退が終わると元のレベルに戻ります)。
@@ -2062,8 +2064,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}デー�
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}ファイルが見つからないため、基本グラフィックセット'{STRING}'は読み込まれませんでした
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}ファイルが見つからないため、基本効果音セット '{STRING}'は読み込まれませんでした
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}ファイルが見つからないため、基本音楽セット'{STRING}'は読み込まれませんでした
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}メモリー不足
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}スプライトキャッシュ中、{BYTES}の割り当てに失敗しました。スプライトキャッシュは{BYTES}に減ったため、OpenTTDの処理速度が低下する恐れがあります。必要メモリ量を減らすには32bitグラフィックを無効にするか、最大ズームイン・ズームアウトのレベルを下げてください
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}ビデオ設定にエラーがあります...
@@ -2652,6 +2652,7 @@ STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}任意�
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}ドラッグ&ドロップで任意のサイズの駅を建設します
 
 STR_PICKER_MODE_ALL                                             :すべて
+
 
 
 

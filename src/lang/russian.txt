@@ -1466,6 +1466,10 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Процент�
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Эксплуатационные расходы: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Установите уровень стоимости обслуживания и эксплуатации транспорта и инфраструктуры
+###length 3
+STR_CONFIG_SETTING_RUNNING_COSTS_LOW                            :Низкие
+STR_CONFIG_SETTING_RUNNING_COSTS_MEDIUM                         :Средние
+STR_CONFIG_SETTING_RUNNING_COSTS_HIGH                           :Высокие
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Скорость строительства: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Ограничьте количество строительных мероприятий для ИИ
@@ -1487,6 +1491,10 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :субсиди�
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Затраты на строительство: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Установите уровень затрат на строительство и приобретение
+###length 3
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_LOW                       :Низкая
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_MEDIUM                    :Средняя
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :Высокая
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Экономические кризисы: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Если эта настройка включена, в игре иногда происходят экономические кризисы. В это время объёмы производства значительно снижаются (и возвращаются к прежнему уровню, когда спад заканчивается).
@@ -2246,9 +2254,9 @@ STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :Ценные г
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :Распределение прочих грузов: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :«Несимметричное» означает, что объёмы грузов в любых направлениях не будут зависеть друг от друга.{}«Вручную» - не использовать автоматическое распределение грузов.
 ###length 3
-STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :вручную
-STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :несимметричное
-STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :симметричное
+STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :Вручную
+STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :Несимметричное
+STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :Симметричное
 
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY                           :Точность распределения: {STRING}
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY_HELPTEXT                  :Чем выше данное значение, тем больше процессорного времени используется для расчёта графа грузоперевозок. При высоких значениях возможны задержки в игре. Однако при низких значениях расчёты грузопотоков будут неточными, и грузы, возможно, будут отправляться не туда, куда нужно.
@@ -2356,8 +2364,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... ал
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... графический пакет «{STRING}» не найден
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... звуковой пакет «{STRING}» не найден
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... музыкальный пакет «{STRING}» не найден
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Нехватка оперативной памяти
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Не удалось выделить {BYTES} для кэша спрайтов. Размер кэша снижен до {BYTES}. Это отрицательно скажется на производительности OpenTTD. Чтобы снизить затраты памяти, отключите 32-битную графику и снизьте максимальный уровень приближения.
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Ошибка в настройках графики...
@@ -3004,6 +3010,11 @@ STR_PICKER_MODE_USED                                            :Существ�
 STR_PICKER_MODE_USED_TOOLTIP                                    :Показать уже существующие элементы
 STR_PICKER_MODE_SAVED                                           :Избранное
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :Переключить отображение только сохранённых элементов
+
+STR_PICKER_PREVIEW_SHRINK                                       :-
+STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Уменьшить высоту изображений предпросмотра. Ctrl+щелчок - до минимума.
+STR_PICKER_PREVIEW_EXPAND                                       :+
+STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Увеличить высоту изображений предпросмотра. Ctrl+щелчок - до максимума.
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Выберите тип станций для отображения
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Выберите станцию для строительства. Ctrl+щелчок добавит её в «избранное» или удалит.

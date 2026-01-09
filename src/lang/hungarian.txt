@@ -1379,6 +1379,10 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Banki hitelkama
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Üzemeltetési költségek: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Járművek karbantartási és üzemeltetési költségeinek a szintje
+###length 3
+STR_CONFIG_SETTING_RUNNING_COSTS_LOW                            :Alacsony
+STR_CONFIG_SETTING_RUNNING_COSTS_MEDIUM                         :Közepes
+STR_CONFIG_SETTING_RUNNING_COSTS_HIGH                           :Magas
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Építkezési sebesség: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Korlátozza az építkezési sebességét számítógépes ellenfeleknek
@@ -1400,6 +1404,10 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :Nincsenek támo
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Építkezési költségek: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Építkezések és beszerzések költségeinek szintje
+###length 3
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_LOW                       :Alacsony
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_MEDIUM                    :Közepes
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :Magas
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Gazdasági válságok: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Ha bekapcsolod, időszakonként gazdasági válság fog kitörni. A válság alatt az összes ipar jelentősen kevesebbet termel. (A válság végével a termelés visszaáll az eredeti szintre.)
@@ -2159,9 +2167,9 @@ STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :A PÁNCÉLOZOTT
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :Egyéb rakománytípusok szétosztása: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :Az "Aszimmetrikus" beállítás esetén a különböző irányokba tetszőleges mennyiségű rakomány mehet. "Kézi" esetben a rakományok nem lesznek automatikusan szétosztva.
 ###length 3
-STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :kézi
-STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :aszimmetrikus
-STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :szimmetrikus
+STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :Kézi
+STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :Aszimmetrikus
+STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :Szimmetrikus
 
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY                           :A szétosztás pontossága: {STRING}
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY_HELPTEXT                  :Magasabb beállítás esetén a kapcsolati gráf kiszámítása több időt fog igénybe venni. A játék akadozhat, ha ez a számítás túl sok időbe telik. Alacsony beállítás esetén viszont a szétosztás pontatlan lehet, a rakományok váratlan célokat kaphatnak.
@@ -2269,8 +2277,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... a(z)
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... érvénytelen grafikus alapcsomag nem került betöltésre - '{STRING}': nem található
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... érvénytelen hang alapcsomag nem került betöltésre - '{STRING}': nem található
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... érvénytelen zenei alapcsomag nem került betöltésre - '{STRING}': nem található
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Kevés a memória
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}{BYTES} memória gyorsítótár kiosztása sikertelen. A gyorsítótár le lett csökkentve {BYTES}ra. Ez csökkenti az OpenTTD teljesítményét. Csökkentheted a memóriaigényt, ha kikapcsolod a 32bpp grafikát és/vagy a nagyítási szinteket
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Hiba a videobeállításokban...
@@ -2897,6 +2903,11 @@ STR_PICKER_MODE_USED                                            :Használt
 STR_PICKER_MODE_USED_TOOLTIP                                    :Csak a meglévő elemek megjelenítése
 STR_PICKER_MODE_SAVED                                           :Mentve
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :Csak a mentett elemek megjelenítése
+
+STR_PICKER_PREVIEW_SHRINK                                       :-
+STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Az előnézeti képek méretének csökkentése. Ctrl+kattintás a minimalizáláshoz
+STR_PICKER_PREVIEW_EXPAND                                       :+
+STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Az előnézeti képek méretének növelése. Ctrl+kattintás a maximalizáláshoz
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Válaszd ki a megjeleníteni kívánt állomástípust
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Válassz ki egy állomástípust az építéshez. Ctrl+kattintás a mentett elemek hozzáadásához vagy eltávolításához

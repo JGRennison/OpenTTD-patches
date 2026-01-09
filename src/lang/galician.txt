@@ -1316,6 +1316,10 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :A taxa de inter
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Custos de explotación: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Establece o nivel de mantemento e custo de operación de vehículos e infraestrutura
+###length 3
+STR_CONFIG_SETTING_RUNNING_COSTS_LOW                            :Baixo
+STR_CONFIG_SETTING_RUNNING_COSTS_MEDIUM                         :Medio
+STR_CONFIG_SETTING_RUNNING_COSTS_HIGH                           :Alto
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Velocidade de construción: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Limita a cantidade de accións construtivas das IAs
@@ -1337,6 +1341,10 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :Sen subvención
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Custos de construción: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Fixa o nivel de custos de construción e compra
+###length 3
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_LOW                       :Baixo
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_MEDIUM                    :Medio
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :Alto
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Recesións económicas: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Se está activado, a economía pode entrar en recesión periódicamente. Durante unha recesión tódalas producións son significativamente máis baixas (volvendo ao nivel anterior cando a recesión remata)
@@ -2096,9 +2104,9 @@ STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :A clase de merc
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :Xeito de distribución para outros tipos de mercadoría: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :"Asimétrico" significa que calquera cantidade de mercadorías pode ser enviada en calquera dirección. "Manual" significa que non haberá distribución automática para estas mercadorías
 ###length 3
-STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :manual
-STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :asimétrica
-STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :simétrica
+STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :Manual
+STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :Asimétrica
+STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :Simétrica
 
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY                           :Precisión da distribución: {STRING}
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY_HELPTEXT                  :Canto máis alto sexa o valor, máis tempo de CPU levará o cálculo de distribución. Se leva demasiado tempo podes experimentar retraso. Se sen embargo o fixas nun valor baixo, a distribución será imprecisa, e pode que a carga non sexa enviada aos destinos que ti queres
@@ -2206,8 +2214,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}...o for
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}...ignorando o set de gráficos básicos '{STRING}': non atopado
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}...ignorando o set de sons básicos '{STRING}': non atopado
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}...ignorando o set de música básico '{STRING}': non atopado
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Memoria esgotada
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE} Fallo ao reservar {BYTES} de caché de sprites. A caché de sprites reduciuse a {BYTES}. Isto reducirá o rendemento de OpenTTD. Para reducir os requisitos de memoria podes tentar deshabilitar os gráficos 32bpp e/ou niveles de zoom
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Error na configuración de vídeo...
@@ -2834,6 +2840,11 @@ STR_PICKER_MODE_USED                                            :Usado
 STR_PICKER_MODE_USED_TOOLTIP                                    :Alternar amosar só elementos existentes
 STR_PICKER_MODE_SAVED                                           :Gardados
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :Alternar amosar só elementos gardados
+
+STR_PICKER_PREVIEW_SHRINK                                       :-
+STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Reducir a altura da vista previa de imaxes. Ctrl+Click para reducir o mínimo
+STR_PICKER_PREVIEW_EXPAND                                       :+
+STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Inrecementar a altura da vista previa de imaxes. Ctrl+Click para incrementar o máximo
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Selecciona unha clase de estación para amosar
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Selecciona un tipo de estación a construír. Ctrl+Click para engadir ou eliminar nos elementos gardados.

@@ -1151,6 +1151,7 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :يمين
 STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :سعر الفائدة على القرض يتحكم أيضًا في التضخم ، إذا تم تمكينه
 
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :تحديد مستوى تكاليف الصيانة والتشغيل للمركبات والبنية التحتية
+###length 3
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           ::سرعة البناء {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :الحد من كمية البناء للذكاء الاصطناعي
@@ -1165,6 +1166,7 @@ STR_CONFIG_SETTING_SUBSIDY_MULTIPLIER_HELPTEXT                  :حدد المب
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :تكاليف البناء: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :تحديد مستوى تكاليف البناء والشراء
+###length 3
 
 STR_CONFIG_SETTING_RECESSIONS                                   :حالات الركود: {STRING}
 
@@ -1760,7 +1762,6 @@ STR_CONFIG_ERROR_INVALID_GRF_SYSTEM                             :نظام الا
 STR_CONFIG_ERROR_INVALID_GRF_INCOMPATIBLE                       :غير متطابق مع هذه النسخة من OpenTTD
 STR_CONFIG_ERROR_INVALID_GRF_UNKNOWN                            :مجهول
 STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_LEVEL             :{WHITE}... نسبة الضغط '{STRING}' غير صحيحة
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}نفذت الذاكرة
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... لم يتم العثور على GPU متوافق. تم تعطيل تسريع الأجهزة
@@ -2269,6 +2270,7 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}طول �
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}اختر طول المحطة
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}أسحب وأفلت
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}بناء محطة بطريقة السحب والإفلات
+
 
 
 

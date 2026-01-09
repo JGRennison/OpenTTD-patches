@@ -1317,6 +1317,10 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Lånerente; kon
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Driftskostnader: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Still nivå av vedlikehold og driftskostnader for kjøretøy og infrastruktur
+###length 3
+STR_CONFIG_SETTING_RUNNING_COSTS_LOW                            :Lav
+STR_CONFIG_SETTING_RUNNING_COSTS_MEDIUM                         :Middels
+STR_CONFIG_SETTING_RUNNING_COSTS_HIGH                           :Høy
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Byggehastighet: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Begrens mengden av byggetiltak hos KI-er
@@ -1338,6 +1342,10 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :Ingen subsidier
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Byggekostnader: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Still kostnadsnivå for bygging og kjøp
+###length 3
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_LOW                       :Lav
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_MEDIUM                    :Middels
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :Høy
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Resesjoner: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Hvis aktivert, lavkonjunkturer kan forekomme innimellom. Under en lavkonjunktur vil all produksjon være betydelig lavere (den returnerer til tidligere nivå når lavkonjunktur er over)
@@ -2097,9 +2105,9 @@ STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :Den PANSREDE va
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :Distribusjonsmodus for andre vareklasser: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :"Asymmetrisk" betyr at vilkårlige mengder varer kan sendes i begge retninger. "Manuell" betyr at ingen automatisk distribusjon vil forekomme for disse varene
 ###length 3
-STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :manual
-STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :asymmetrisk
-STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :symmetrisk
+STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :Manuell
+STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :Asymmetrisk
+STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :Symmetrisk
 
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY                           :Distribusjonsnøyaktighet: {STRING}
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY_HELPTEXT                  :Jo høyere du setter denne, desto mer prosessortid vil beregningen av koblingsgrafen ta. Hvis dette bruker for lang tid, vil du kunne oppleve etterslep. Hvis du setter den til en lav verdi, derimot, vil distribusjonen bli mer unøyaktig, og du vil kunne oppleve at varer ikke blir sendt til de stedene du forventer at de skal
@@ -2207,8 +2215,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... lagr
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... ignorerer Grunn Graffik set '{STRING}': ikke funnet
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... ignorerer Grunn Lyd set '{STRING}': ikke funnet
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... ignorerer Grunn Musikk set '{STRING}': ikke funnet
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Tomt for minne
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Tildeling av {BYTES} fra spritecachen mislyktes. Spritecachen ble redusert til {BYTES}. Dette senke ytelsen av OpenTTD. For å redusere minneforbruken kan du forsøke å slå av 32bpp grafikk og/eller zoomnivå.
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Feil med skjerminstillingene...
@@ -2835,6 +2841,11 @@ STR_PICKER_MODE_USED                                            :Brukt
 STR_PICKER_MODE_USED_TOOLTIP                                    :Vis bare eksisterende elementer
 STR_PICKER_MODE_SAVED                                           :Lagret
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :Vis bare lagrede elementer
+
+STR_PICKER_PREVIEW_SHRINK                                       :-
+STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Reduser høyden på forhåndsvisninger. Ctrl+klikk for så liten som mulig
+STR_PICKER_PREVIEW_EXPAND                                       :+
+STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Øk høyden på forhåndsvisninger. Ctrl+klikk for så stor som mulig
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Velg stasjonsklassen du vil vise
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Velg type stasjon å bygge. Ctrl+klikk for å legge til eller fjerne lagrede elementer

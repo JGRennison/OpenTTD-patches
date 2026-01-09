@@ -1298,6 +1298,7 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Proportio faeno
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Pretii operandi: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Eligere magnitudinem pretiorum vehicula operandi atque infrastructuram ministrandi
+###length 3
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Velocitas struendi: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Definire IA velocitatem struendi
@@ -1314,6 +1315,7 @@ STR_CONFIG_SETTING_SUBSIDY_MULTIPLIER_HELPTEXT                  :Eligere proport
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Pretii struendi: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Eligere magnitudinem pretiorum struendi emendique
+###length 3
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Recessiones: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Sinere recessiones oeconomicae aliquando accidere. In recessione oeconomica, productio omnino minuitur (sed, recessione confecta, productio redit ad magnitudinem priorem)
@@ -2063,8 +2065,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... form
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... neglectum Fundamentum Graphicum '{STRING}': non inventum
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... neglectum Fundamentum Sonicum '{STRING}': non inventum
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... neglectum Fundamentum Musicum '{STRING}': non inventum
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Memoria deest
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Non potuit collocare {BYTES} promptuarii spiritus. Promptuarium spiritus minuitur ad {BYTES}. Haec minuit effectum OpenTTD. Conare removere graphicas 32bpp ut desideria memoriae minuatur
 
 # Video initalization errors
 
@@ -2565,6 +2565,7 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}Longitud
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Eligere longitudinem ferriviae stationis
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Trahere Ponereque
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Struere stationem trahendo ponendoque
+
 
 
 

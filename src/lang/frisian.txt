@@ -1117,6 +1117,7 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Rinte op lienin
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Eksploitaasjekosten: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Stel hichte ûnderhâlds- en ekploitaasjekosten fan fiertugen en ynfrastruktuer yn
+###length 3
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Boufaasje: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Behein it oantal bouwaksjes foar AI's
@@ -1134,6 +1135,7 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_HELPTEXT                    :Stel it oantal 
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Boukosten: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Stel hichte bouw- en oankeapkosten yn
+###length 3
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Resesjes: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :By ynskeakeljen kinne der om de safolle jier resesjes plakfine. Under in resesje nim de produksje op alle flakken ôf (sadree in resesje oergean is giet de produkje wer nei it âlde nivo omheech)
@@ -1823,7 +1825,6 @@ STR_CONFIG_ERROR_INVALID_VALUE                                  :{WHITE}... ûnj
 STR_CONFIG_ERROR_INVALID_GRF_NOT_FOUND                          :koe net fûn wurde
 STR_CONFIG_ERROR_INVALID_GRF_INCOMPATIBLE                       :Dat strykt net mei dizze ferzje fan OpenTTD
 STR_CONFIG_ERROR_INVALID_GRF_UNKNOWN                            :ûnbekind
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Gjin geheugen mear
 
 # Video initalization errors
 
@@ -2258,6 +2259,7 @@ STR_STATION_BUILD_NUMBER_OF_TRACKS_TOOLTIP                      :{BLACK}Selektea
 STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}Stasjon lengte
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Selektear lengte fan treinstasjon
 STR_STATION_BUILD_DRAG_DROP                                     :Sleepe en los litte
+
 
 
 

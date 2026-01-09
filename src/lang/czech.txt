@@ -1402,6 +1402,10 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Výše úroků 
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Cena provozu: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Nastav cenu údržby a provozu vozidel a infrastruktury
+###length 3
+STR_CONFIG_SETTING_RUNNING_COSTS_LOW                            :nízký
+STR_CONFIG_SETTING_RUNNING_COSTS_MEDIUM                         :střední
+STR_CONFIG_SETTING_RUNNING_COSTS_HIGH                           :vysoký
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Rychlost výstavby: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Omezení výstavby AI
@@ -1423,6 +1427,10 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :Žádné dotace
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Cena výstavby: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Nastav cenu výstavby a nákupu
+###length 3
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_LOW                       :nízký
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_MEDIUM                    :střední
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :vysoký
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Krize: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Pokud jsou krize zapnuty, mohou se občas objevit krize. Během krize je snížena veškerá produkce. Po krizi se opět vrátí do původních hodnot
@@ -2183,7 +2191,7 @@ STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :Módy distribuc
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :"Asymmetricky" znamená, že v obou směrech může být zasláno libovolné množství nákladu. "Manuální" znamená, že u těchto nákladů nebude probíhat žádná automatická distribuce.
 ###length 3
 STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :manuální
-STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :nerovnoměrný
+STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :Asymmetrický
 STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :rovnoměrný
 
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY                           :Přesnost distribuce: {STRING}
@@ -2292,8 +2300,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... form
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... ignorování základní grafické sady '{STRING}': nenalezeno
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... ignorování základní hudební sady '{STRING}': nenalezeno
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... ignorování základní hudební sady '{STRING}': nenalezeno
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Nedostatek paměti
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Alokování {BYTES} grafické mezipaměti selhalo. Grafická mezipaměť byla zredukována na {BYTES}. To sníží výkon OpenTTD. Pro snížení paměťových nároků můžeš zkusit vypnout 32bpp grafiku a/nebo úrovně přiblížení
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Chyba v nastavení zobrazení...
@@ -2920,6 +2926,11 @@ STR_PICKER_MODE_USED                                            :Použito
 STR_PICKER_MODE_USED_TOOLTIP                                    :Zobrazení pouze existujících položek
 STR_PICKER_MODE_SAVED                                           :Uloženo
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :Zobrazení pouze uložených položek
+
+STR_PICKER_PREVIEW_SHRINK                                       :-
+STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Snížit výšku náhledových obrázků. Klikni s Ctrl pro minimální výšku
+STR_PICKER_PREVIEW_EXPAND                                       :+
+STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Zvýšit výšku náhledových obrázků. Klikni s Ctrl pro maximální výšku
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Vyber typ stanice pro zobrazení
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Zvol typ stanice pro stavbu. Podrž Ctrl pro přidaní nebo odebrání z oblíbených položek

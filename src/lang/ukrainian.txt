@@ -1452,6 +1452,10 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Процент�
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Вартість експлуатації: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Встановіть вартість обслуговування та вартість експлуатації на транспорт та інфраструктуру
+###length 3
+STR_CONFIG_SETTING_RUNNING_COSTS_LOW                            :мало
+STR_CONFIG_SETTING_RUNNING_COSTS_MEDIUM                         :посередньо
+STR_CONFIG_SETTING_RUNNING_COSTS_HIGH                           :багато
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Швидкість побудови: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Обмеження кількості будівельних дій для ШІ
@@ -1473,6 +1477,10 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :Без субс
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Зведення коштуватиме: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Встановити рівень витрат на побудову та придбання
+###length 3
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_LOW                       :низька
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_MEDIUM                    :середня
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :висока
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Рецесії: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Якщо увімкнено, рецесії можуть відбуватися кожні кілька років. Під час рецессії обсяг виробництва на всіх підприємствах значно знижений (він повертається на попередній рівень, коли рецесія закінчується)
@@ -2342,8 +2350,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... фо
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... базовий набір графіки '{STRING}' не знайдено
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... базовий набір звуків '{STRING}' не знайдено
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... базовий набір музики '{STRING}' не знайдено
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Не вистачає пам'яті
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Не вдалося розподілити {BYTES} спрайт-кешу. Спрайт кеш було зменшено до {BYTES}. Це зменшить швидкість роботи OpenTTD. Аби зменшити використання пам'яті спробуйте заборонити 32-бітну графіку і/або ступені масшатабування екрану
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Помилка з налаштуванням зображення...
@@ -2973,6 +2979,11 @@ STR_PICKER_MODE_USED                                            :Викорис�
 STR_PICKER_MODE_USED_TOOLTIP                                    :Переключити на показ лише наявних елементів
 STR_PICKER_MODE_SAVED                                           :Збережено
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :Переключити на показ лише збережених елементів
+
+STR_PICKER_PREVIEW_SHRINK                                       :-
+STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Зменшити висоту попереднього перегляду зображень. Ctrl+клац зменшує до нижньої межі
+STR_PICKER_PREVIEW_EXPAND                                       :+
+STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Збільшити висоту попереднього перегляду зображень. Ctrl+клац збільшує до верхньої межі
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Виберіть тип станцій для відображення
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Виберіть тип станції для побудови. Клацніть Ctrl+Клік, щоб додати або видалити зі списку збереженого
