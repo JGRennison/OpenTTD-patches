@@ -1002,13 +1002,13 @@ template <typename T>
 void UpdateNewVirtualTrainFromSource(Train *v, const T *src)
 {
 	struct helper {
-		static bool IsTrainPartReversed(const Train *src) { return HasBit(src->flags, VRF_REVERSE_DIRECTION); }
+		static bool IsTrainPartReversed(const Train *src) { return src->flags.Test(VehicleRailFlag::Flipped); }
 		static bool IsTrainPartReversed(const TemplateVehicle *src) { return HasBit(src->ctrl_flags, TVCF_REVERSED); }
 		static const Train *GetTrainMultiheadOtherPart(const Train *src) { return src->other_multiheaded_part; }
 		static const TemplateVehicle *GetTrainMultiheadOtherPart(const TemplateVehicle *src) { return src; }
 	};
 
-	AssignBit(v->flags, VRF_REVERSE_DIRECTION, helper::IsTrainPartReversed(src));
+	v->flags.Set(VehicleRailFlag::Flipped, helper::IsTrainPartReversed(src));
 
 	if (v->IsMultiheaded()) {
 		const T *other = helper::GetTrainMultiheadOtherPart(src);
@@ -1416,11 +1416,11 @@ CommandCost CmdCloneVehicle(DoCommandFlags flags, TileIndex tile, VehicleID veh_
 			if (!veh_id.has_value()) return CMD_ERROR;
 			w = Vehicle::Get(*veh_id);
 
-			if (v->type == VEH_TRAIN && HasBit(Train::From(v)->flags, VRF_REVERSE_DIRECTION)) {
+			if (v->type == VEH_TRAIN && Train::From(v)->flags.Test(VehicleRailFlag::Flipped)) {
 				/* Only copy the reverse state if neither old or new vehicle implements reverse-on-build probability callback. */
 				if (!TestVehicleBuildProbability(v, v->engine_type, BuildProbabilityType::Reversed).has_value() &&
 					!TestVehicleBuildProbability(w, w->engine_type, BuildProbabilityType::Reversed).has_value()) {
-					SetBit(Train::From(w)->flags, VRF_REVERSE_DIRECTION);
+					Train::From(w)->flags.Set(VehicleRailFlag::Flipped);
 				}
 			}
 

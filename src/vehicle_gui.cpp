@@ -3457,7 +3457,7 @@ struct VehicleDetailsWindow : Window {
 
 				bool should_show_speed_adaptation = this->ShouldShowSpeedAdaptationLine(v);
 				if (should_show_speed_adaptation) {
-					if (HasBit(Train::From(v)->flags, VRF_SPEED_ADAPTATION_EXEMPT)) {
+					if (Train::From(v)->flags.Test(VehicleRailFlag::SpeedAdaptationExempt)) {
 						DrawString(tr, GetString(STR_VEHICLE_INFO_SPEED_ADAPTATION_EXEMPT));
 					} else if (Train::From(v)->signal_speed_restriction != 0) {
 						DrawString(tr, GetString(STR_VEHICLE_INFO_SPEED_ADAPTATION_LIMIT, Train::From(v)->signal_speed_restriction));
@@ -4143,7 +4143,7 @@ public:
 
 		if (v->vehstatus.Test(VehState::Crashed)) {
 			AppendStringInPlace(buffer, STR_VEHICLE_STATUS_CRASHED);
-		} else if ((v->breakdown_ctr == 1 || (v->type == VEH_TRAIN && Train::From(v)->flags & VRF_IS_BROKEN)) && !mouse_over_start_stop) {
+		} else if ((v->breakdown_ctr == 1 || (v->type == VEH_TRAIN && Train::From(v)->flags.Any(VehicleRailFlagsIsBroken))) && !mouse_over_start_stop) {
 			const Vehicle *w = (v->type == VEH_TRAIN) ? GetMostSeverelyBrokenEngine(Train::From(v)) : v;
 
 			StringID breakdown_str;
@@ -4199,8 +4199,8 @@ public:
 			}
 		} else if (v->IsInDepot() && v->IsWaitingForUnbunching()) {
 			append(STR_VEHICLE_STATUS_WAITING_UNBUNCHING);
-		} else if (v->type == VEH_TRAIN && HasBit(Train::From(v)->flags, VRF_TRAIN_STUCK) && !v->current_order.IsType(OT_LOADING) && !mouse_over_start_stop) {
-			append(HasBit(Train::From(v)->flags, VRF_WAITING_RESTRICTION) ? STR_VEHICLE_STATUS_TRAIN_STUCK_WAIT_RESTRICTION : STR_VEHICLE_STATUS_TRAIN_STUCK);
+		} else if (v->type == VEH_TRAIN && Train::From(v)->flags.Test(VehicleRailFlag::Stuck) && !v->current_order.IsType(OT_LOADING) && !mouse_over_start_stop) {
+			append(Train::From(v)->flags.Test(VehicleRailFlag::WaitingRestriction) ? STR_VEHICLE_STATUS_TRAIN_STUCK_WAIT_RESTRICTION : STR_VEHICLE_STATUS_TRAIN_STUCK);
 		} else if (v->type == VEH_TRAIN && Train::From(v)->reverse_distance >= 1) {
 			if (Train::From(v)->track == TRACK_BIT_DEPOT) {
 				append(STR_VEHICLE_STATUS_TRAIN_MOVING_DEPOT);
@@ -4281,9 +4281,9 @@ public:
 			}
 
 			if (mouse_over_start_stop) {
-				if (v->vehstatus.Test(VehState::Stopped) || (v->breakdown_ctr == 1 || (v->type == VEH_TRAIN && Train::From(v)->flags & VRF_IS_BROKEN))) {
+				if (v->vehstatus.Test(VehState::Stopped) || (v->breakdown_ctr == 1 || (v->type == VEH_TRAIN && Train::From(v)->flags.Any(VehicleRailFlagsIsBroken)))) {
 					text_colour = TC_RED | TC_FORCED;
-				} else if (v->type == VEH_TRAIN && HasBit(Train::From(v)->flags, VRF_TRAIN_STUCK) && !v->current_order.IsType(OT_LOADING)) {
+				} else if (v->type == VEH_TRAIN && Train::From(v)->flags.Test(VehicleRailFlag::Stuck) && !v->current_order.IsType(OT_LOADING)) {
 					text_colour = TC_ORANGE | TC_FORCED;
 				}
 			}

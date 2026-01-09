@@ -1676,7 +1676,8 @@ struct ThroughLoadTrainInPlatformAction
 	bool operator()(const Vehicle *v)
 	{
 		assert(v->type == VEH_TRAIN);
-		return !HasBit(Train::From(v)->flags, VRF_BEYOND_PLATFORM_END) && !HasBit(Train::From(v)->flags, VRF_NOT_YET_IN_PLATFORM);
+		const Train *t = Train::From(v);
+		return !t->flags.Test(VehicleRailFlag::BeyondPlatformEnd) && !t->flags.Test(VehicleRailFlag::NotYetInPlatform);
 	}
 };
 
@@ -1865,7 +1866,7 @@ struct ReserveCargoAction {
 	bool operator()(Vehicle *v)
 	{
 		/* Don't try to reserve cargo if the vehicle has already advanced beyond the station platform */
-		if (v->type == VEH_TRAIN && HasBit(Train::From(v)->flags, VRF_BEYOND_PLATFORM_END)) return true;
+		if (v->type == VEH_TRAIN && Train::From(v)->flags.Test(VehicleRailFlag::BeyondPlatformEnd)) return true;
 
 		if (cargo_type_loading != nullptr) {
 			OrderLoadFlags flags = cargo_type_loading->current_order.GetCargoLoadTypeRaw(v->cargo_type);
@@ -2055,7 +2056,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 	uint artic_part = 0; // Articulated part we are currently trying to load. (not counting parts without capacity)
 	bool suppress_artic_load = false;
 	for (Vehicle *v = front; v != nullptr; v = v->Next()) {
-		if (pull_through_mode && HasBit(Train::From(v)->flags, VRF_BEYOND_PLATFORM_END)) {
+		if (pull_through_mode && Train::From(v)->flags.Test(VehicleRailFlag::BeyondPlatformEnd)) {
 			if (v->cargo_cap != 0) {
 				if (v->cargo.StoredCount() >= v->cargo_cap) {
 					SetBit(beyond_platform_end_cargo_full, v->cargo_type);
@@ -2070,9 +2071,9 @@ static void LoadUnloadVehicle(Vehicle *front)
 				u = u->GetNextArticulatedPart();
 				length += Train::From(u)->gcache.cached_veh_length;
 			}
-			if (v != station_vehicle && !HasBit(Train::From(v->Previous())->flags, VRF_BEYOND_PLATFORM_END) && length > platform_length_left) {
+			if (v != station_vehicle && !Train::From(v->Previous())->flags.Test(VehicleRailFlag::BeyondPlatformEnd) && length > platform_length_left) {
 				for (Vehicle *skip = v; skip != nullptr; skip = skip->Next()) {
-					SetBit(Train::From(skip)->flags, VRF_NOT_YET_IN_PLATFORM);
+					Train::From(skip)->flags.Set(VehicleRailFlag::NotYetInPlatform);
 					if (skip->vehicle_flags.Test(VehicleFlag::CargoUnloading)) {
 						unload_payment_not_yet_in_station = true;
 						load_unload_not_yet_in_station = true;
@@ -2370,18 +2371,18 @@ static void LoadUnloadVehicle(Vehicle *front)
 					if (not_yet_in_station_cargo_not_full != 0 &&
 							((cargo_full | not_yet_in_station_cargo_full) & ~(cargo_not_full | not_yet_in_station_cargo_not_full)) == 0) {
 						finished_loading = false;
-						SetBit(Train::From(front)->flags, VRF_ADVANCE_IN_PLATFORM);
+						Train::From(front)->flags.Set(VehicleRailFlag::AdvanceInPlatform);
 					}
 				} else if (not_yet_in_station_cargo_not_full) {
 					finished_loading = false;
-					SetBit(Train::From(front)->flags, VRF_ADVANCE_IN_PLATFORM);
+					Train::From(front)->flags.Set(VehicleRailFlag::AdvanceInPlatform);
 				}
 			}
 		}
 
 		if (finished_loading && pull_through_mode && load_unload_not_yet_in_station) {
 			finished_loading = false;
-			SetBit(Train::From(front)->flags, VRF_ADVANCE_IN_PLATFORM);
+			Train::From(front)->flags.Set(VehicleRailFlag::AdvanceInPlatform);
 		}
 
 		/* Refresh next hop stats if we're full loading to make the links

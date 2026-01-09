@@ -1532,7 +1532,7 @@ static void TrainBrakingModelChanged(int32_t new_value)
 				v->lookahead.reset();
 				continue;
 			}
-			if (!HasBit(v->flags, VRF_TRAIN_STUCK)) {
+			if (!v->flags.Test(VehicleRailFlag::Stuck)) {
 				_settings_game.vehicle.train_braking_model = TBM_REALISTIC;
 				FreeTrainTrackReservation(v);
 				_settings_game.vehicle.train_braking_model = new_value;

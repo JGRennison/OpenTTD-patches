@@ -554,7 +554,7 @@ void AddArticulatedParts(Vehicle *first)
 
 		if (v->type == VEH_TRAIN) {
 			auto prob = TestVehicleBuildProbability(v, v->engine_type, BuildProbabilityType::Reversed);
-			if (prob.has_value()) AssignBit(Train::From(v)->flags, VRF_REVERSE_DIRECTION, prob.value());
+			if (prob.has_value()) Train::From(v)->flags.Set(VehicleRailFlag::Flipped, prob.value());
 		}
 		v->UpdatePosition();
 	}

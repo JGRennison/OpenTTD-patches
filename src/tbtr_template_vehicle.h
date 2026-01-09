@@ -75,7 +75,7 @@ struct TemplateVehicleImageDimensions {
 
 /** Template vehicle control flags. */
 enum TemplateVehicleControlFlags {
-	TVCF_REVERSED                     = 0,      ///< Vehicle is reversed (VRF_REVERSE_DIRECTION)
+	TVCF_REVERSED                     = 0,      ///< Vehicle is reversed (VehicleRailFlag::Flipped)
 };
 
 struct TemplateVehicle : TemplatePool::PoolItem<&_template_pool>, BaseVehicle {

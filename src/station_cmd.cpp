@@ -4049,10 +4049,10 @@ static VehicleEnterTileStates VehicleEnter_Station(Vehicle *v, TileIndex tile, i
 				}
 			}
 		}
-		if (HasBit(Train::From(v)->flags, VRF_BEYOND_PLATFORM_END)) return {};
+		if (Train::From(v)->flags.Test(VehicleRailFlag::BeyondPlatformEnd)) return {};
 		Train *front = Train::From(v)->First();
 		if (!front->IsFrontEngine()) return {};
-		if (!(v == front || HasBit(Train::From(v)->Previous()->flags, VRF_BEYOND_PLATFORM_END))) return {};
+		if (!(v == front || Train::From(v)->Previous()->flags.Test(VehicleRailFlag::BeyondPlatformEnd))) return {};
 		if (!HasStationTileRail(tile)) return {};
 		if (!front->current_order.ShouldStopAtStation(front, station_id, IsRailWaypoint(tile))) return {};
 
@@ -4087,7 +4087,7 @@ static VehicleEnterTileStates VehicleEnter_Station(Vehicle *v, TileIndex tile, i
 						AddNewsItem(std::move(msg), NewsType::Advice, NewsStyle::Small, {NewsFlag::InColour, NewsFlag::VehicleParam0}, v->index, station_id);
 					}
 					for (Train *u = front; u != nullptr; u = u->Next()) {
-						ClrBit(u->flags, VRF_BEYOND_PLATFORM_END);
+						u->flags.Reset(VehicleRailFlag::BeyondPlatformEnd);
 					}
 					return {};
 				}

@@ -1647,7 +1647,7 @@ CommandCost CmdSkipToOrder(DoCommandFlags flags, VehicleID veh_id, VehicleOrderI
 
 		if (v->type == VEH_TRAIN) {
 			for (Train *u = Train::From(v); u != nullptr; u = u->Next()) {
-				ClrBit(u->flags, VRF_BEYOND_PLATFORM_END);
+				u->flags.Reset(VehicleRailFlag::BeyondPlatformEnd);
 			}
 		}
 

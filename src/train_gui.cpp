@@ -287,7 +287,7 @@ static void TrainDetailsInfoTab(const Train *v, int left, int right, int y, uint
 						breakdown_status = STR_VEHICLE_STATUS_BROKEN_DOWN;
 					}
 				} else {
-					if (HasBit(v->flags, VRF_NEED_REPAIR)) {
+					if (v->flags.Test(VehicleRailFlag::NeedRepair)) {
 						breakdown_status = STR_NEED_REPAIR;
 						p1 = GetTrainVehicleMaxSpeed(v, v->GetEngine()->VehInfo<RailVehicleInfo>(), v->First());
 					} else {

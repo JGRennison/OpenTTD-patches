@@ -366,7 +366,7 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 			TrainCache tcache;
 			RailTypes railtypes;
 			RailTypes compatible_railtypes;
-			uint32_t flags;
+			VehicleRailFlags flags;
 			SavedTrainInfo(const Train *t) : tcache(t->tcache), railtypes(t->railtypes), compatible_railtypes(t->compatible_railtypes), flags(t->flags) {}
 		};
 		std::vector<SavedTrainInfo> train_old;
@@ -388,11 +388,11 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 				if (u->IsGroundVehicle() && (HasBit(u->GetGroundVehicleFlags(), GVF_GOINGUP_BIT) || HasBit(u->GetGroundVehicleFlags(), GVF_GOINGDOWN_BIT)) && u->GetGroundVehicleCache()->cached_slope_resistance && HasBit(v->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST)) {
 					CCLOGV("VCF_GV_ZERO_SLOPE_RESIST set incorrectly (1)");
 				}
-				if (u->type == VEH_TRAIN && u->breakdown_ctr != 0 && !HasBit(Train::From(v)->flags, VRF_CONSIST_BREAKDOWN) && (Train::From(u)->IsEngine() || Train::From(u)->IsMultiheaded())) {
-					CCLOGV("VRF_CONSIST_BREAKDOWN incorrectly not set");
+				if (u->type == VEH_TRAIN && u->breakdown_ctr != 0 && !Train::From(v)->flags.Test(VehicleRailFlag::ConsistBreakdown) && (Train::From(u)->IsEngine() || Train::From(u)->IsMultiheaded())) {
+					CCLOGV("VehicleRailFlag::ConsistBreakdown incorrectly not set");
 				}
-				if (u->type == VEH_TRAIN && ((Train::From(u)->track & TRACK_BIT_WORMHOLE && !Train::From(u)->vehstatus.Test(VehState::Hidden)) || Train::From(u)->track == TRACK_BIT_DEPOT) && !HasBit(Train::From(v)->flags, VRF_CONSIST_SPEED_REDUCTION)) {
-					CCLOGV("VRF_CONSIST_SPEED_REDUCTION incorrectly not set");
+				if (u->type == VEH_TRAIN && ((Train::From(u)->track & TRACK_BIT_WORMHOLE && !Train::From(u)->vehstatus.Test(VehState::Hidden)) || Train::From(u)->track == TRACK_BIT_DEPOT) && !Train::From(v)->flags.Test(VehicleRailFlag::ConsistSpeedReduction)) {
+					CCLOGV("VehicleRailFlag::ConsistSpeedReduction incorrectly not set");
 				}
 			}
 

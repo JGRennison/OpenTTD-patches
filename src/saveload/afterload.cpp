@@ -3157,9 +3157,9 @@ bool AfterLoadGame()
 	if (IsSavegameVersionBefore(SLV_156)) {
 		/* The train's pathfinder lost flag got moved. */
 		for (Train *t : Train::Iterate()) {
-			if (!HasBit(t->flags, 5)) continue;
+			if (!t->flags.Test(VehicleRailFlag{5})) continue;
 
-			ClrBit(t->flags, 5);
+			t->flags.Reset(VehicleRailFlag{5});
 			t->vehicle_flags.Set(VehicleFlag::PathfinderLost);
 		}
 
@@ -3197,8 +3197,8 @@ bool AfterLoadGame()
 					 * It was changed in savegame version 139, but savegame
 					 * version 158 doesn't use these bits, so it doesn't hurt
 					 * to clear them unconditionally. */
-					ClrBit(t->flags, 1);
-					ClrBit(t->flags, 2);
+					t->flags.Reset(VehicleRailFlag{1});
+					t->flags.Reset(VehicleRailFlag{2});
 
 					/* Clear both bits first. */
 					ClrBit(t->gv_flags, GVF_GOINGUP_BIT);
@@ -3415,7 +3415,7 @@ bool AfterLoadGame()
 		_settings_game.vehicle.improved_breakdowns = false;
 		for (Train *v : Train::Iterate()) {
 			if (v->IsFrontEngine()) {
-				if (v->breakdown_ctr == 1) SetBit(v->flags, VRF_BREAKDOWN_STOPPED);
+				if (v->breakdown_ctr == 1) v->flags.Set(VehicleRailFlag::BreakdownStopped);
 			} else if (v->IsEngine() || v->IsMultiheaded()) {
 				/** Non-front engines could have a reliability of 0.
 				 * Set it to the reliability of the front engine or the maximum, whichever is lower. */
@@ -3464,7 +3464,7 @@ bool AfterLoadGame()
 	if (SlXvIsFeatureMissing(XSLFI_CONSIST_BREAKDOWN_FLAG)) {
 		for (Train *v : Train::Iterate()) {
 			if (v->breakdown_ctr != 0 && (v->IsEngine() || v->IsMultiheaded())) {
-				SetBit(v->First()->flags, VRF_CONSIST_BREAKDOWN);
+				v->First()->flags.Set(VehicleRailFlag::ConsistBreakdown);
 			}
 		}
 	}
@@ -4225,7 +4225,7 @@ bool AfterLoadGame()
 	if (SlXvIsFeatureMissing(XSLFI_CONSIST_SPEED_RD_FLAG)) {
 		for (Train *t : Train::Iterate()) {
 			if ((t->track & TRACK_BIT_WORMHOLE && !t->vehstatus.Test(VehState::Hidden)) || t->track == TRACK_BIT_DEPOT) {
-				SetBit(t->First()->flags, VRF_CONSIST_SPEED_REDUCTION);
+				t->First()->flags.Set(VehicleRailFlag::ConsistSpeedReduction);
 			}
 		}
 	}
@@ -4387,9 +4387,9 @@ bool AfterLoadGame()
 	if (SlXvIsFeaturePresent(XSLFI_TRACE_RESTRICT, 7, 12)) {
 		/* Move vehicle in slot flag */
 		for (Vehicle *v : Vehicle::Iterate()) {
-			if (v->type == VEH_TRAIN && HasBit(Train::From(v)->flags, 2)) { /* was VRF_HAVE_SLOT */
+			if (v->type == VEH_TRAIN && Train::From(v)->flags.Test(VehicleRailFlag{2})) { /* was VRF_HAVE_SLOT */
 				v->vehicle_flags.Set(VehicleFlag::HaveSlot);
-				ClrBit(Train::From(v)->flags, 2);
+				Train::From(v)->flags.Reset(VehicleRailFlag{2});
 			} else {
 				v->vehicle_flags.Reset(VehicleFlag::HaveSlot);
 			}

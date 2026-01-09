@@ -4689,7 +4689,7 @@ static VehicleEnterTileStates VehicleEnter_Track(Vehicle *u, TileIndex tile, int
 			}
 		} else {
 			for (Train *u = v; u != nullptr; u = u->Next()) {
-				ClrBit(u->flags, VRF_BEYOND_PLATFORM_END);
+				u->flags.Reset(VehicleRailFlag::BeyondPlatformEnd);
 			}
 		}
 	};
@@ -4720,10 +4720,10 @@ static VehicleEnterTileStates VehicleEnter_Track(Vehicle *u, TileIndex tile, int
 			if (v->IsFrontEngine()) {
 				if (v->current_order.IsType(OT_LOADING_ADVANCE)) {
 					abort_load_through(true);
-				} else if (HasBit(v->flags, VRF_BEYOND_PLATFORM_END)) {
+				} else if (v->flags.Test(VehicleRailFlag::BeyondPlatformEnd)) {
 					abort_load_through(false);
 				}
-				SetBit(v->flags, VRF_CONSIST_SPEED_REDUCTION);
+				v->flags.Set(VehicleRailFlag::ConsistSpeedReduction);
 			}
 
 			v->track = TRACK_BIT_DEPOT,
