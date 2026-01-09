@@ -1424,7 +1424,7 @@ std::vector<Aircraft *> _tick_aircraft_front_cache;
 std::vector<Ship *> _tick_ship_cache;
 std::vector<Vehicle *> _tick_other_veh_cache;
 
-std::vector<VehicleID> _remove_from_tick_effect_veh_cache;
+robin_hood::unordered_flat_set<VehicleID> _remove_from_tick_effect_veh_cache;
 btree::btree_set<VehicleID> _tick_effect_veh_cache;
 
 void ClearVehicleTickCaches()
