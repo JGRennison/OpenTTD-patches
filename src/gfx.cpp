@@ -8,7 +8,7 @@
 /** @file gfx.cpp Handling of drawing text and other gfx related stuff. */
 
 #include "stdafx.h"
-#include "core/alloc_func.hpp"
+#include "gfx_func.h"
 #include "gfx_layout.h"
 #include "progress.h"
 #include "zoom_func.h"
@@ -26,6 +26,7 @@
 #include "window_gui.h"
 #include "framerate_type.h"
 #include "transparency.h"
+#include "core/alloc_func.hpp"
 #include "core/backup_type.hpp"
 #include "core/container_func.hpp"
 #include "core/geometry_func.hpp"
@@ -556,10 +557,9 @@ static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, 
 	int max_x = right; // The maximum x position to draw normal glyphs on.
 
 	truncation &= max_w < w;         // Whether we need to do truncation.
-	int dot_width = 0;               // Cache for the width of the dot.
-	const Sprite *dot_sprite = nullptr; // Cache for the sprite of the dot.
-	bool dot_has_shadow = false;     // Whether the dot's font requires shadows.
+	int truncation_width = 0; // Width of the ellipsis string.
 
+	std::optional<Layouter> truncation_layout; ///< Layout for truncation ellipsis.
 	if (truncation) {
 		/*
 		 * Assumption may be made that all fonts of a run are of the same size.
@@ -567,20 +567,17 @@ static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, 
 		 * another size would be chosen it won't have truncated too little for
 		 * the truncation dots.
 		 */
-		FontCache *fc = line.GetVisualRun(0).GetFont()->fc;
-		dot_has_shadow = fc->GetDrawGlyphShadow();
-		GlyphID dot_glyph = fc->MapCharToGlyph('.');
-		dot_width = fc->GetGlyphWidth(dot_glyph);
-		dot_sprite = fc->GetGlyph(dot_glyph);
+		truncation_layout.emplace(GetEllipsis(), INT32_MAX, line.GetVisualRun(0).GetFont()->fc->GetSize());
+		truncation_width = truncation_layout->GetBounds().width;
 
 		/* Is there enough space even for an ellipsis? */
-		if (max_w < dot_width * 3) return (_current_text_dir == TD_RTL) ? left : right;
+		if (max_w < truncation_width) return (_current_text_dir == TD_RTL) ? left : right;
 
 		if (_current_text_dir == TD_RTL) {
-			min_x += 3 * dot_width;
+			min_x += truncation_width;
 			offset_x = w - max_w;
 		} else {
-			max_x -= 3 * dot_width;
+			max_x -= truncation_width;
 		}
 
 		w = max_w;
@@ -618,9 +615,12 @@ static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, 
 
 	const uint shadow_offset = ScaleGUITrad(1);
 
-	/* Draw shadow, then foreground */
-	for (bool do_shadow : { true, false }) {
-		bool colour_has_shadow = false;
+	auto draw_line = [&](const ParagraphLayouter::Line &line, bool do_shadow, int left, int min_x, int max_x, bool truncation, TextColour initial_colour) -> TextColour {
+		const DrawPixelInfo *dpi = _cur_dpi;
+		int dpi_left = dpi->left;
+		int dpi_right = dpi->left + dpi->width - 1;
+		TextColour last_colour = initial_colour;
+
 		for (int run_index = 0; run_index < line.CountRuns(); run_index++) {
 			const ParagraphLayouter::VisualRun &run = line.GetVisualRun(run_index);
 			const auto &glyphs = run.GetGlyphs();
@@ -630,13 +630,11 @@ static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, 
 			FontCache *fc = f->fc;
 			TextColour colour = f->colour;
 			if (colour == TC_INVALID || HasFlag(default_colour, TC_FORCED)) colour = default_colour;
-			colour_has_shadow = (colour & TC_NO_SHADE) == 0 && (colour & ~TC_FORCED) != TC_BLACK;
-			ctx.SetColourRemap(do_shadow ? TC_BLACK : colour); // the last run also sets the colour for the truncation dots
+			bool colour_has_shadow = (colour & TC_NO_SHADE) == 0 && (colour & ~TC_FORCED) != TC_BLACK;
+			/* Update the last colour for the truncation ellipsis. */
+			last_colour = colour;
 			if (do_shadow && (!fc->GetDrawGlyphShadow() || !colour_has_shadow)) continue;
-
-			DrawPixelInfo *dpi = _cur_dpi;
-			int dpi_left  = dpi->left;
-			int dpi_right = dpi->left + dpi->width - 1;
+			ctx.SetColourRemap(do_shadow ? TC_BLACK : colour); // the last run also sets the colour for the truncation dots
 
 			for (int i = 0; i < run.GetGlyphCount(); i++) {
 				GlyphID glyph = glyphs[i];
@@ -644,8 +642,8 @@ static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, 
 				/* Not a valid glyph (empty) */
 				if (glyph == 0xFFFF) continue;
 
-				int begin_x = positions[i].left + left - offset_x;
-				int end_x = positions[i].right + left - offset_x;
+				int begin_x = positions[i].left + left;
+				int end_x = positions[i].right + left;
 				int top = positions[i].top + y;
 
 				/* Truncated away. */
@@ -661,11 +659,16 @@ static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, 
 			}
 		}
 
-		if (truncation && (!do_shadow || (dot_has_shadow && colour_has_shadow))) {
-			int x = (_current_text_dir == TD_RTL) ? left : (right - 3 * dot_width);
-			for (int i = 0; i < 3; i++, x += dot_width) {
-				GfxMainBlitter(ctx, dot_sprite, x + (do_shadow ? shadow_offset : 0), y + (do_shadow ? shadow_offset : 0), BlitterMode::ColourRemap);
-			}
+		return last_colour;
+	};
+
+	/* Draw shadow, then foreground */
+	for (bool do_shadow : {true, false}) {
+		TextColour colour = draw_line(line, do_shadow, left - offset_x, min_x, max_x, truncation, default_colour);
+
+		if (truncation) {
+			int x = (_current_text_dir == TD_RTL) ? left : (right - truncation_width);
+			draw_line(*truncation_layout->front(), do_shadow, x, INT32_MIN, INT32_MAX, false, colour);
 		}
 	}
 
@@ -1349,14 +1352,14 @@ static void GfxMainBlitter(const GfxBlitterCtx &ctx, const Sprite *sprite, int x
 }
 
 /**
- * Initialize _stringwidth_table cache
- * @param monospace Whether to load the monospace cache or the normal fonts.
+ * Initialize _stringwidth_table cache for the specified font sizes.
+ * @param fontsizes Font sizes to initialise.
  */
-void LoadStringWidthTable(bool monospace)
+void LoadStringWidthTable(FontSizes fontsizes)
 {
-	ClearFontCache();
+	ClearFontCache(fontsizes);
 
-	for (FontSize fs = monospace ? FS_MONO : FS_BEGIN; fs < (monospace ? FS_END : FS_MONO); fs++) {
+	for (FontSize fs : fontsizes.IterateSetBits()) {
 		for (uint i = 0; i != 224; i++) {
 			_stringwidth_table[fs][i] = GetGlyphWidth(fs, i + 32);
 		}
@@ -2269,7 +2272,7 @@ void UpdateGUIZoom()
 	_gui_zoom = new_zoom;
 
 	if (old_scale != _gui_scale) {
-		ClearFontCache();
+		ClearFontCache(FONTSIZES_ALL);
 	}
 	UpdateFontHeightCache();
 }
@@ -2303,7 +2306,7 @@ bool AdjustGUIZoom(AdjustGUIZoomMode mode)
 	if (old_font_zoom != _font_zoom) {
 		GfxClearFontSpriteCache();
 	}
-	ClearFontCache();
+	ClearFontCache(FONTSIZES_ALL);
 	UpdateFontHeightCache();
 	LoadStringWidthTable();
 

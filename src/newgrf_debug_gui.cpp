@@ -1518,7 +1518,7 @@ struct SpriteAlignerWindow : Window {
 
 	std::string GetWidgetString(WidgetID widget, StringID stringid) const override
 	{
-		const Sprite *spr = GetSprite(this->current_sprite, SpriteType::Normal, LowZoomMask(ZOOM_LVL_GUI));
+		const Sprite *spr = GetSprite(this->current_sprite, SpriteType::Normal, LowZoomMask(_gui_zoom));
 		switch (widget) {
 			case WID_SA_CAPTION:
 				if (this->act5_type != nullptr) {
@@ -1588,7 +1588,7 @@ struct SpriteAlignerWindow : Window {
 		switch (widget) {
 			case WID_SA_SPRITE: {
 				/* Center the sprite ourselves */
-				const Sprite *spr = GetSprite(this->current_sprite, SpriteType::Normal, LowZoomMask(ZOOM_LVL_GUI));
+				const Sprite *spr = GetSprite(this->current_sprite, SpriteType::Normal, LowZoomMask(_gui_zoom));
 				Rect ir = r.Shrink(WidgetDimensions::scaled.bevel);
 				int x;
 				int y;

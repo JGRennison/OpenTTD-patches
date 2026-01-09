@@ -93,7 +93,7 @@ public:
 	/**
 	 * Get the storage of this script.
 	 */
-	class ScriptStorage *GetStorage();
+	class ScriptStorage &GetStorage();
 
 	/**
 	 * Get the log pointer of this script.
@@ -148,7 +148,11 @@ public:
 	/**
 	 * Get the controller attached to the instance.
 	 */
-	class ScriptController *GetController() { return controller; }
+	class ScriptController &GetController()
+	{
+		assert(this->controller != nullptr);
+		return *this->controller;
+	}
 
 	/**
 	 * Return the "this script died" value
@@ -260,7 +264,7 @@ public:
 	void ReleaseSQObject(HSQOBJECT *obj);
 
 protected:
-	class Squirrel *engine = nullptr; ///< A wrapper around the squirrel vm.
+	std::unique_ptr<class Squirrel> engine; ///< A wrapper around the squirrel vm.
 	std::string api_version{}; ///< Current API used by this script.
 
 	/**
@@ -292,9 +296,9 @@ protected:
 	virtual void LoadDummyScript() = 0;
 
 private:
-	class ScriptController *controller = nullptr; ///< The script main class.
-	class ScriptStorage *storage = nullptr; ///< Some global information for each running script.
-	SQObject *instance = nullptr; ///< Squirrel-pointer to the script main class.
+	std::unique_ptr<class ScriptStorage> storage; ///< Some global information for each running script.
+	std::unique_ptr<class ScriptController> controller; ///< The script main class.
+	std::unique_ptr<SQObject> instance; ///< Squirrel-pointer to the script main class.
 
 	bool is_started = false;                        ///< Is the scripts constructor executed?
 	bool is_dead = false;                           ///< True if the script has been stopped.
