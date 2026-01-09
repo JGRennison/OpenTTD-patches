@@ -114,7 +114,7 @@ template <> const char *GetClassName<AIInfo, ScriptType::AI>() { return "AIInfo"
 	/* Remove the link to the real instance, else it might get deleted by RegisterAI() */
 	sq_setinstanceup(vm, 2, nullptr);
 	/* Register the AI to the base system */
-	static_cast<AIScannerInfo *>(info->GetScanner())->SetDummyAI(info);
+	static_cast<AIScannerInfo *>(info->GetScanner())->SetDummyAI(std::unique_ptr<AIInfo>(info));
 	return 0;
 }
 

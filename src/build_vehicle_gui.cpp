@@ -43,6 +43,7 @@
 #include "hotkeys.h"
 #include "vehicle_cmd.h"
 #include "tbtr_template_vehicle_cmd.h"
+#include "3rdparty/cpp-btree/btree_set.h"
 
 #include "widgets/build_vehicle_widget.h"
 
@@ -1768,7 +1769,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 	/* Figure out what train EngineIDs to put in the list */
 	void GenerateBuildTrainList(GUIEngineList &list)
 	{
-		std::vector<EngineID> variants;
+		btree::btree_set<EngineID> variants;
 		EngineID sel_id = EngineID::Invalid();
 		size_t num_engines = 0;
 
@@ -1803,8 +1804,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 
 			/* Add all parent variants of this engine to the variant list */
 			EngineID parent = e->info.variant_id;
-			while (parent != EngineID::Invalid()) {
-				variants.push_back(parent);
+			while (parent != EngineID::Invalid() && variants.insert(parent).second) {
 				parent = Engine::Get(parent)->info.variant_id;
 			}
 
@@ -1960,11 +1960,10 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		this->FilterEngineList();
 
 		/* ensure primary engine of variant group is in list after filtering */
-		std::vector<EngineID> variants;
+		FlatSet<EngineID> variants;
 		for (const auto &item : this->eng_list) {
 			EngineID parent = item.variant_id;
-			while (parent != EngineID::Invalid()) {
-				variants.push_back(parent);
+			while (parent != EngineID::Invalid() && variants.insert(parent).second) {
 				parent = Engine::Get(parent)->info.variant_id;
 			}
 		}
@@ -2177,7 +2176,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 	{
 		switch (widget) {
 			case WID_BV_LIST:
-				resize.height = GetEngineListHeight(this->vehicle_type);
+				fill.height = resize.height = GetEngineListHeight(this->vehicle_type);
 				size.height = 3 * resize.height;
 				size.width = std::max(size.width, this->badge_classes.GetTotalColumnsWidth() + GetVehicleImageCellSize(this->vehicle_type, EIT_PURCHASE).extend_left + GetVehicleImageCellSize(this->vehicle_type, EIT_PURCHASE).extend_right + 165) + padding.width;
 				break;

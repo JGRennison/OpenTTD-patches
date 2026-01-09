@@ -413,7 +413,7 @@ public:
 				break;
 
 			case WID_TA_RATING_INFO:
-				resize.height = std::max({this->icon_size.height + WidgetDimensions::scaled.vsep_normal, this->exclusive_size.height + WidgetDimensions::scaled.vsep_normal, (uint)GetCharacterHeight(FS_NORMAL)});
+				fill.height = resize.height = std::max({this->icon_size.height + WidgetDimensions::scaled.vsep_normal, this->exclusive_size.height + WidgetDimensions::scaled.vsep_normal, (uint)GetCharacterHeight(FS_NORMAL)});
 				size.height = 9 * resize.height + padding.height;
 				break;
 		}
@@ -942,11 +942,6 @@ static constexpr NWidgetPart _nested_town_directory_widgets[] = {
 	EndContainer(),
 };
 
-/** Enum referring to the Hotkeys in the town directory window */
-enum TownDirectoryHotkeys : int32_t {
-	TDHK_FOCUS_FILTER_BOX, ///< Focus the filter box
-};
-
 /** Town directory window class. */
 struct TownDirectoryWindow : public Window {
 private:
@@ -1206,7 +1201,7 @@ public:
 				Dimension icon_size = GetSpriteSize(SPR_TOWN_RATING_GOOD);
 				d.width += icon_size.width + 2;
 				d.height = std::max(d.height, icon_size.height);
-				resize.height = d.height;
+				fill.height = resize.height = d.height;
 				d.height *= 5;
 				d.width += padding.width;
 				d.height += padding.height;
@@ -1330,24 +1325,11 @@ public:
 		}
 	}
 
-	EventState OnHotkey(int hotkey) override
-	{
-		switch (hotkey) {
-			case TDHK_FOCUS_FILTER_BOX:
-				this->SetFocusedWidget(WID_TD_FILTER);
-				SetFocusedWindow(this); // The user has asked to give focus to the text box, so make sure this window is focused.
-				break;
-			default:
-				return ES_NOT_HANDLED;
-		}
-		return ES_HANDLED;
-	}
-
 	static HotkeyList hotkeys;
 };
 
 static Hotkey towndirectory_hotkeys[] = {
-	Hotkey('F', "focus_filter_box", TDHK_FOCUS_FILTER_BOX),
+	Hotkey('F', "focus_filter_box", WID_TD_FILTER),
 };
 HotkeyList TownDirectoryWindow::hotkeys("towndirectory", towndirectory_hotkeys);
 

@@ -573,9 +573,12 @@ static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, 
 		dot_width = fc->GetGlyphWidth(dot_glyph);
 		dot_sprite = fc->GetGlyph(dot_glyph);
 
+		/* Is there enough space even for an ellipsis? */
+		if (max_w < dot_width * 3) return (_current_text_dir == TD_RTL) ? left : right;
+
 		if (_current_text_dir == TD_RTL) {
 			min_x += 3 * dot_width;
-			offset_x = w - 3 * dot_width - max_w;
+			offset_x = w - max_w;
 		} else {
 			max_x -= 3 * dot_width;
 		}

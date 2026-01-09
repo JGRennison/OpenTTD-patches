@@ -133,11 +133,6 @@ struct SignList {
 bool SignList::match_case = false;
 std::string SignList::default_name;
 
-/** Enum referring to the Hotkeys in the sign list window */
-enum SignListHotkeys : int32_t {
-	SLHK_FOCUS_FILTER_BOX, ///< Focus the edit box for editing the filter string
-};
-
 struct SignListWindow : Window, SignList {
 	QueryString filter_editbox; ///< Filter editbox;
 	int text_offset = 0; ///< Offset of the sign text relative to the left edge of the WID_SIL_LIST widget.
@@ -269,7 +264,7 @@ struct SignListWindow : Window, SignList {
 			case WID_SIL_LIST: {
 				Dimension spr_dim = GetSpriteSize(SPR_COMPANY_ICON);
 				this->text_offset = WidgetDimensions::scaled.frametext.left + spr_dim.width + 2; // 2 pixels space between icon and the sign text.
-				resize.height = std::max<uint>(GetCharacterHeight(FS_NORMAL), spr_dim.height + 2);
+				fill.height = resize.height = std::max<uint>(GetCharacterHeight(FS_NORMAL), spr_dim.height + 2);
 				Dimension d = {(uint)(this->text_offset + WidgetDimensions::scaled.frametext.right), padding.height + 5 * resize.height};
 				size = maxdim(size, d);
 				break;
@@ -281,21 +276,6 @@ struct SignListWindow : Window, SignList {
 				size.width  += padding.width;
 				break;
 		}
-	}
-
-	EventState OnHotkey(int hotkey) override
-	{
-		switch (hotkey) {
-			case SLHK_FOCUS_FILTER_BOX:
-				this->SetFocusedWidget(WID_SIL_FILTER_TEXT);
-				SetFocusedWindow(this); // The user has asked to give focus to the text box, so make sure this window is focused.
-				break;
-
-			default:
-				return ES_NOT_HANDLED;
-		}
-
-		return ES_HANDLED;
 	}
 
 	void OnEditboxChanged(WidgetID widget) override
@@ -354,7 +334,7 @@ static EventState SignListGlobalHotkeys(int hotkey)
 }
 
 static Hotkey signlist_hotkeys[] = {
-	Hotkey('F', "focus_filter_box", SLHK_FOCUS_FILTER_BOX),
+	Hotkey('F', "focus_filter_box", WID_SIL_FILTER_TEXT),
 };
 HotkeyList SignListWindow::hotkeys("signlist", signlist_hotkeys, SignListGlobalHotkeys);
 

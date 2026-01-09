@@ -809,7 +809,7 @@ public:
 
 				size.height = 5 * this->line_height;
 				resize.width = 1;
-				resize.height = this->line_height;
+				fill.height = resize.height = this->line_height;
 				break;
 			}
 

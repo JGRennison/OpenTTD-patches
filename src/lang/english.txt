@@ -1315,6 +1315,10 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Loan interest r
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Running costs: {STRING2}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Set level of maintenance and running costs of vehicles and infrastructure
+###length 3
+STR_CONFIG_SETTING_RUNNING_COSTS_LOW                            :Low
+STR_CONFIG_SETTING_RUNNING_COSTS_MEDIUM                         :Medium
+STR_CONFIG_SETTING_RUNNING_COSTS_HIGH                           :High
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Construction speed: {STRING2}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Limit the amount of construction actions for AIs
@@ -1336,6 +1340,10 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :No subsidies
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Construction costs: {STRING2}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Set level of construction and purchase costs
+###length 3
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_LOW                       :Low
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_MEDIUM                    :Medium
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :High
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Recessions: {STRING2}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :If enabled, recessions may occur periodically. During a recession all production is significantly lower (it returns to previous level when the recession is over)
@@ -2097,9 +2105,9 @@ STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :The ARMOURED ca
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :Distribution mode for other cargo classes: {STRING2}
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :"Asymmetric" means that arbitrary amounts of cargo can be sent in either direction. "Manual" means that no automatic distribution will take place for those cargoes
 ###length 3
-STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :manual
-STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :asymmetric
-STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :symmetric
+STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :Manual
+STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :Asymmetric
+STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :Symmetric
 
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY                           :Distribution accuracy: {STRING2}
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY_HELPTEXT                  :The higher you set this the more CPU time the calculation of the link graph will take. If it takes too long you may notice lag. If you set it to a low value, however, the distribution will be inaccurate, and you may notice cargo not being sent to the places you expect it to go
@@ -2207,8 +2215,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... save
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... ignoring Base Graphics set '{RAW_STRING}': not found
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... ignoring Base Sounds set '{RAW_STRING}': not found
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... ignoring Base Music set '{RAW_STRING}': not found
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Out of memory
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Allocating {BYTES} of spritecache failed. The spritecache was reduced to {BYTES}. This will reduce the performance of OpenTTD. To reduce memory requirements you can try to disable 32bpp graphics and/or zoom-in levels
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Error with video settings...
@@ -2835,6 +2841,11 @@ STR_PICKER_MODE_USED                                            :Used
 STR_PICKER_MODE_USED_TOOLTIP                                    :Toggle showing only existing items
 STR_PICKER_MODE_SAVED                                           :Saved
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :Toggle showing only saved items
+
+STR_PICKER_PREVIEW_SHRINK                                       :-
+STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Reduce the height of preview images. Ctrl+Click to reduce to minimum
+STR_PICKER_PREVIEW_EXPAND                                       :+
+STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Increase the height of preview images. Ctrl+Click to increase to maximum
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Select a station class to display
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Select a station type to build. Ctrl+Click to add or remove in saved items

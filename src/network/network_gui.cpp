@@ -1673,8 +1673,7 @@ public:
 				this->line_height = std::max(height, (uint)GetCharacterHeight(FS_NORMAL)) + padding.height;
 
 				resize.width = 1;
-				resize.height = this->line_height;
-				fill.height = this->line_height;
+				fill.height = resize.height = this->line_height;
 				size.height = std::max(size.height, 5 * this->line_height);
 				break;
 			}
