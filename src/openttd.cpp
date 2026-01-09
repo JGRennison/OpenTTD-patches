@@ -438,6 +438,7 @@ static void ShutdownGame()
 
 	ViewportMapClearTunnelCache();
 	InvalidateVehicleTickCaches();
+	InvalidateEffectVehicleTickCache();
 	ClearVehicleTickCaches();
 	InvalidateTemplateReplacementImages();
 	ResetDisasterVehicleTargeting();

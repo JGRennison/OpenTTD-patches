@@ -670,17 +670,14 @@ TransparencyOption EffectVehicle::GetTransparencyOption() const
 
 extern robin_hood::unordered_flat_set<VehicleID> _remove_from_tick_effect_veh_cache;
 extern btree::btree_set<VehicleID> _tick_effect_veh_cache;
-extern bool _tick_caches_valid;
 
 void EffectVehicle::AddEffectVehicleToTickCache()
 {
-	if (!_tick_caches_valid) return;
 	if (_remove_from_tick_effect_veh_cache.erase(this->index) > 0) return;
 	_tick_effect_veh_cache.insert(this->index);
 }
 
 void EffectVehicle::RemoveEffectVehicleFromTickCache()
 {
-	if (!_tick_caches_valid) return;
 	_remove_from_tick_effect_veh_cache.insert(this->index);
 }

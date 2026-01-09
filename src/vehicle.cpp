@@ -1418,6 +1418,8 @@ void ShowTrainTooHeavyAdviceMessage(const Vehicle *v)
 }
 
 bool _tick_caches_valid = false;
+bool _tick_effect_veh_cache_valid = false;
+
 std::vector<Train *> _tick_train_front_cache;
 std::vector<RoadVehicle *> _tick_road_veh_front_cache;
 std::vector<Aircraft *> _tick_aircraft_front_cache;
@@ -1433,9 +1435,12 @@ void ClearVehicleTickCaches()
 	_tick_road_veh_front_cache.clear();
 	_tick_aircraft_front_cache.clear();
 	_tick_ship_cache.clear();
-	_tick_effect_veh_cache.clear();
-	_remove_from_tick_effect_veh_cache.clear();
 	_tick_other_veh_cache.clear();
+
+	if (!_tick_effect_veh_cache_valid) {
+		_tick_effect_veh_cache.clear();
+		_remove_from_tick_effect_veh_cache.clear();
+	}
 }
 
 void RemoveFromOtherVehicleTickCache(const Vehicle *v)
@@ -1485,11 +1490,12 @@ void RebuildVehicleTickCaches()
 				break;
 
 			case VEH_EFFECT:
-				_tick_effect_veh_cache.insert(i);
+				if (!_tick_effect_veh_cache_valid) _tick_effect_veh_cache.insert(_tick_effect_veh_cache.end(), i);
 				break;
 		}
 	}
 	_tick_caches_valid = true;
+	_tick_effect_veh_cache_valid = true;
 }
 
 void ValidateVehicleTickCaches()

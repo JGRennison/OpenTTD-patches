@@ -4595,6 +4595,7 @@ bool AfterLoadGame()
 	}
 
 	InvalidateVehicleTickCaches();
+	InvalidateEffectVehicleTickCache();
 	ClearVehicleTickCaches();
 
 	UpdateAllVehiclesIsDrawn();
