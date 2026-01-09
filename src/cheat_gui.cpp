@@ -704,7 +704,7 @@ struct CheatWindow : Window {
 
 			int32_t value;
 			if (!str->empty()) {
-				auto llvalue = ParseInteger<int64_t>(*str);
+				auto llvalue = ParseInteger<int64_t>(*str, 10, true);
 				if (!llvalue.has_value()) return;
 
 				/* Save the correct currency-translated value */
@@ -730,7 +730,7 @@ struct CheatWindow : Window {
 			return;
 		}
 		if (ce->mode == CNM_MONEY) {
-			auto llvalue = ParseInteger<int64_t>(*str);
+			auto llvalue = ParseInteger<int64_t>(*str, 10, true);
 			if (!llvalue.has_value()) return;
 
 			if (!_networking) *ce->been_used = true;
@@ -745,7 +745,7 @@ struct CheatWindow : Window {
 
 		if (_networking) return;
 		int oldvalue = (int32_t)ReadValue(ce->variable, ce->type);
-		auto try_value = ParseInteger<int>(*str);
+		auto try_value = ParseInteger<int>(*str, 10, true);
 		if (!try_value.has_value()) return;
 		int value = *try_value;
 		*ce->been_used = true;

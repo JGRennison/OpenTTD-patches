@@ -548,10 +548,10 @@ VehiclesNearTileXYBaseIterator::VehiclesNearTileXYBaseIterator(int32_t x, int32_
 	this->pos_rect.bottom = std::max<int>(0, y + max_dist);
 
 	/* Hash area to scan */
-	this->hxmin = this->hx = pos_rect.left / TILE_SIZE;
-	this->hxmax = pos_rect.right / TILE_SIZE;
-	this->hymin = this->hy = pos_rect.top / TILE_SIZE;
-	this->hymax = pos_rect.bottom / TILE_SIZE;
+	this->hxmin = this->hx = this->pos_rect.left / TILE_SIZE;
+	this->hxmax = this->pos_rect.right / TILE_SIZE;
+	this->hymin = this->hy = this->pos_rect.top / TILE_SIZE;
+	this->hymax = this->pos_rect.bottom / TILE_SIZE;
 
 	VehicleTypeTileHash &vhash = _vehicle_tile_hashes[this->veh_type];
 	auto iter = vhash.find(TileXY(this->hx, this->hy));

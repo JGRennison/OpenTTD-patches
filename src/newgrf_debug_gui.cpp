@@ -1163,7 +1163,7 @@ struct NewGRFInspectWindow final : Window {
 		if (!str.has_value()) return;
 
 		if (this->current_edit_param == 0 && this->sprite_dump) {
-			auto val = ParseInteger<int32_t>(*str);
+			auto val = ParseInteger<int32_t>(*str, 10, true);
 			if (!val.has_value()) return;
 			auto iter = this->nfo_line_lines.find(*val);
 			if (iter != this->nfo_line_lines.end()) {
@@ -1756,7 +1756,7 @@ struct SpriteAlignerWindow : Window {
 	{
 		if (!str.has_value()) return;
 
-		auto value = ParseInteger(*str);
+		auto value = ParseInteger(*str, 10, true);
 		if (!value.has_value()) return;
 		this->current_sprite = *value;
 		if (this->current_sprite >= GetMaxSpriteID()) this->current_sprite = 0;

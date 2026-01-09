@@ -2512,7 +2512,7 @@ struct CompanyWindow : Window
 			default: NOT_REACHED();
 
 			case WID_C_GIVE_MONEY: {
-				auto value = ParseInteger<uint64_t>(*str);
+				auto value = ParseInteger<uint64_t>(*str, 10, true);
 				if (!value.has_value()) return;
 				Money money = *value / GetCurrency().rate;
 				Command<CMD_GIVE_MONEY>::Post(STR_ERROR_CAN_T_GIVE_MONEY, CommandCallback::GiveMoney, money, (CompanyID)this->window_number);

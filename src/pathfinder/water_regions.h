@@ -10,13 +10,16 @@
 #ifndef WATER_REGIONS_H
 #define WATER_REGIONS_H
 
+#include "../core/strong_typedef_type.hpp"
 #include "../tile_type.h"
 #include "../map_func.h"
 
 #include <functional>
 
-using TWaterRegionPatchLabel = uint8_t;
-using TWaterRegionIndex = uint32_t;
+using WaterRegionPatchLabel = uint8_t;
+
+struct WaterRegionIndexTag : public StrongType::TypedefTraits<uint32_t, StrongType::Compare, StrongType::Integer> {};
+using WaterRegionIndex = StrongType::Typedef<WaterRegionIndexTag>;
 
 constexpr uint32_t WATER_REGION_EDGE_LENGTH = 16;
 constexpr uint32_t WATER_REGION_EDGE_LENGTH_LOG = 4;
@@ -27,7 +30,7 @@ static_assert((WATER_REGION_EDGE_LENGTH & WATER_REGION_EDGE_MASK) == 0);
 
 constexpr uint32_t WATER_REGION_NUMBER_OF_TILES = WATER_REGION_EDGE_LENGTH * WATER_REGION_EDGE_LENGTH;
 
-constexpr TWaterRegionPatchLabel INVALID_WATER_REGION_PATCH = 0;
+constexpr WaterRegionPatchLabel INVALID_WATER_REGION_PATCH = 0;
 
 /**
  * Describes a single interconnected patch of water within a particular water region.
@@ -36,7 +39,7 @@ struct WaterRegionPatchDesc
 {
 	uint32_t x; ///< The X coordinate of the water region, i.e. X=2 is the 3rd water region along the X-axis
 	uint32_t y; ///< The Y coordinate of the water region, i.e. Y=2 is the 3rd water region along the Y-axis
-	TWaterRegionPatchLabel label; ///< Unique label identifying the patch within the region
+	WaterRegionPatchLabel label; ///< Unique label identifying the patch within the region
 
 	bool operator==(const WaterRegionPatchDesc &other) const { return x == other.x && y == other.y && label == other.label; }
 };
@@ -67,8 +70,8 @@ void InvalidateWaterRegion(TileIndex tile);
 void DebugInvalidateAllWaterRegions();
 void DebugInitAllWaterRegions();
 
-using TVisitWaterRegionPatchCallBack = std::function<void(const WaterRegionPatchDesc &)>;
-void VisitWaterRegionPatchNeighbours(const WaterRegionPatchDesc &water_region_patch, TVisitWaterRegionPatchCallBack &callback);
+using VisitWaterRegionPatchCallback = std::function<void(const WaterRegionPatchDesc &)>;
+void VisitWaterRegionPatchNeighbours(const WaterRegionPatchDesc &water_region_patch, VisitWaterRegionPatchCallback &callback);
 
 void InitializeWaterRegions();
 

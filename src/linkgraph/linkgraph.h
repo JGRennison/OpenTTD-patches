@@ -301,7 +301,7 @@ public:
 	 * @param orig_age Age of the original link graph.
 	 * @return scaled value.
 	 */
-	inline static uint Scale(uint val, uint target_age, uint orig_age)
+	static inline uint Scale(uint val, uint target_age, uint orig_age)
 	{
 		return val > 0 ? std::max(1U, val * target_age / orig_age) : 0;
 	}

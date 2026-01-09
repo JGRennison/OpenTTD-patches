@@ -47,7 +47,7 @@ static VehicleUnbunchState _unbunch_state;
 
 class SlVehicleCommon : public DefaultSaveLoadHandler<SlVehicleCommon, Vehicle> {
 public:
-	inline static const SaveLoad description[] = {
+	static inline const SaveLoad description[] = {
 		    SLE_VAR(Vehicle, subtype,               SLE_UINT8),
 
 		    SLE_REF(Vehicle, next,                  REF_VEHICLE_OLD),
@@ -177,7 +177,7 @@ public:
 		SLEG_CONDVAR("round_trip_time",                 _unbunch_state.round_trip_time,                 SLE_INT32,  SLV_DEPOT_UNBUNCHING, SL_MAX_VERSION),
 	};
 
-	inline const static SaveLoadCompatTable compat_description = _vehicle_common_sl_compat;
+	static inline const SaveLoadCompatTable compat_description = _vehicle_common_sl_compat;
 
 	void Save(Vehicle *v) const override
 	{
@@ -197,7 +197,7 @@ public:
 
 class SlVehicleTrain : public DefaultSaveLoadHandler<SlVehicleTrain, Vehicle> {
 public:
-	inline static const SaveLoad description[] = {
+	static inline const SaveLoad description[] = {
 		 SLEG_STRUCT("common", SlVehicleCommon),
 		     SLE_VAR(Train, crash_anim_pos,      SLE_UINT16),
 		     SLE_VAR(Train, force_proceed,       SLE_UINT8),
@@ -208,7 +208,7 @@ public:
 		 SLE_CONDVAR(Train, wait_counter,        SLE_UINT16,                 SLV_136, SL_MAX_VERSION),
 		 SLE_CONDVAR(Train, gv_flags,            SLE_UINT16,                 SLV_139, SL_MAX_VERSION),
 	};
-	inline const static SaveLoadCompatTable compat_description = _vehicle_train_sl_compat;
+	static inline const SaveLoadCompatTable compat_description = _vehicle_train_sl_compat;
 
 	void Save(Vehicle *v) const override
 	{
@@ -239,11 +239,11 @@ public:
 		TileIndex tile; ///< Tile for this element.
 	};
 
-	inline static const SaveLoad description[] = {
+	static inline const SaveLoad description[] = {
 		SLE_VAR(RoadVehPathElement, trackdir, SLE_UINT8),
 		SLE_VAR(RoadVehPathElement, tile, SLE_UINT32),
 	};
-	inline const static SaveLoadCompatTable compat_description = {};
+	static inline const SaveLoadCompatTable compat_description = {};
 
 	void Save(RoadVehicle *rv) const override
 	{
@@ -280,7 +280,7 @@ public:
 
 class SlVehicleRoadVeh : public DefaultSaveLoadHandler<SlVehicleRoadVeh, Vehicle> {
 public:
-	inline static const SaveLoad description[] = {
+	static inline const SaveLoad description[] = {
 		  SLEG_STRUCT("common", SlVehicleCommon),
 		      SLE_VAR(RoadVehicle, state,                SLE_UINT8),
 		      SLE_VAR(RoadVehicle, frame,                SLE_UINT8),
@@ -294,7 +294,7 @@ public:
 		SLEG_CONDSTRUCTLIST("path", SlVehicleRoadVehPath,                            SLV_PATH_CACHE_FORMAT, SL_MAX_VERSION),
 		  SLE_CONDVAR(RoadVehicle, gv_flags,             SLE_UINT16,                 SLV_139, SL_MAX_VERSION),
 	};
-	inline const static SaveLoadCompatTable compat_description = _vehicle_roadveh_sl_compat;
+	static inline const SaveLoadCompatTable compat_description = _vehicle_roadveh_sl_compat;
 
 	void Save(Vehicle *v) const override
 	{
@@ -333,10 +333,10 @@ public:
 		Trackdir trackdir; ///< Trackdir for this element.
 	};
 
-	inline static const SaveLoad description[] = {
+	static inline const SaveLoad description[] = {
 		SLE_VAR(ShipPathElement, trackdir, SLE_UINT8),
 	};
-	inline const static SaveLoadCompatTable compat_description = {};
+	static inline const SaveLoadCompatTable compat_description = {};
 
 	void Save(Ship *s) const override
 	{
@@ -359,14 +359,14 @@ public:
 
 class SlVehicleShip : public DefaultSaveLoadHandler<SlVehicleShip, Vehicle> {
 public:
-	inline static const SaveLoad description[] = {
+	static inline const SaveLoad description[] = {
 		  SLEG_STRUCT("common", SlVehicleCommon),
 		      SLE_VAR(Ship, state,                     SLE_UINT8),
 		SLEG_CONDVECTOR("path", _path_td,              SLE_UINT8,                  SLV_SHIP_PATH_CACHE, SLV_PATH_CACHE_FORMAT),
 		SLEG_CONDSTRUCTLIST("path", SlVehicleShipPath,                             SLV_PATH_CACHE_FORMAT, SL_MAX_VERSION),
 		  SLE_CONDVAR(Ship, rotation,                  SLE_UINT8,                  SLV_SHIP_ROTATION, SL_MAX_VERSION),
 	};
-	inline const static SaveLoadCompatTable compat_description = _vehicle_ship_sl_compat;
+	static inline const SaveLoadCompatTable compat_description = _vehicle_ship_sl_compat;
 
 	void Save(Vehicle *v) const override
 	{
@@ -395,7 +395,7 @@ public:
 
 class SlVehicleAircraft : public DefaultSaveLoadHandler<SlVehicleAircraft, Vehicle> {
 public:
-	inline static const SaveLoad description[] = {
+	static inline const SaveLoad description[] = {
 		 SLEG_STRUCT("common", SlVehicleCommon),
 		     SLE_VAR(Aircraft, crashed_counter,       SLE_UINT16),
 		     SLE_VAR(Aircraft, pos,                   SLE_UINT8),
@@ -412,7 +412,7 @@ public:
 		 SLE_CONDVAR(Aircraft, turn_counter,          SLE_UINT8,                  SLV_136, SL_MAX_VERSION),
 		 SLE_CONDVAR(Aircraft, flags,                 SLE_UINT8,                  SLV_167, SL_MAX_VERSION),
 	};
-	inline const static SaveLoadCompatTable compat_description = _vehicle_aircraft_sl_compat;
+	static inline const SaveLoadCompatTable compat_description = _vehicle_aircraft_sl_compat;
 
 	void Save(Vehicle *v) const override
 	{
@@ -435,7 +435,7 @@ public:
 
 class SlVehicleEffect : public DefaultSaveLoadHandler<SlVehicleEffect, Vehicle> {
 public:
-	inline static const SaveLoad description[] = {
+	static inline const SaveLoad description[] = {
 		     SLE_VAR(Vehicle, subtype,               SLE_UINT8),
 
 		 SLE_CONDVAR(Vehicle, tile,                  SLE_FILE_U16 | SLE_VAR_U32,   SL_MIN_VERSION,   SLV_6),
@@ -457,7 +457,7 @@ public:
 
 		 SLE_CONDVAR(Vehicle, spritenum,             SLE_UINT8,                    SLV_2, SL_MAX_VERSION),
 	};
-	inline const static SaveLoadCompatTable compat_description = _vehicle_effect_sl_compat;
+	static inline const SaveLoadCompatTable compat_description = _vehicle_effect_sl_compat;
 
 	void Save(Vehicle *v) const override
 	{
@@ -480,7 +480,7 @@ public:
 
 class SlVehicleDisaster : public DefaultSaveLoadHandler<SlVehicleDisaster, Vehicle> {
 public:
-	inline static const SaveLoad description[] = {
+	static inline const SaveLoad description[] = {
 		    SLE_REF(Vehicle, next,                  REF_VEHICLE_OLD),
 
 		    SLE_VAR(Vehicle, subtype,               SLE_UINT8),
@@ -516,7 +516,7 @@ public:
 		SLE_CONDVAR(DisasterVehicle, flags,                     SLE_UINT8,                  SLV_194, SL_MAX_VERSION),
 	};
 
-	inline const static SaveLoadCompatTable compat_description = _vehicle_disaster_sl_compat;
+	static inline const SaveLoadCompatTable compat_description = _vehicle_disaster_sl_compat;
 
 	void Save(Vehicle *v) const override
 	{
@@ -537,7 +537,7 @@ public:
 	}
 };
 
-const static SaveLoad _vehicle_desc[] = {
+static const SaveLoad _vehicle_desc[] = {
 	SLE_SAVEBYTE(Vehicle, type),
 	SLEG_STRUCT("train", SlVehicleTrain),
 	SLEG_STRUCT("roadveh", SlVehicleRoadVeh),

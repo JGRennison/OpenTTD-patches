@@ -1202,7 +1202,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 				if (this->query_is_speed_query) {
 					uint64_t display_speed = 0;
 					if (!str->empty()) {
-						auto try_value = ParseInteger<uint64_t>(*str);
+						auto try_value = ParseInteger<uint64_t>(*str, 10, true);
 						if (!try_value.has_value()) return;
 						display_speed = *try_value;
 					}

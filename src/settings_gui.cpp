@@ -1462,7 +1462,7 @@ struct GameOptionsWindow : Window {
 		if (!str.has_value()) return;
 
 		if (this->current_query_text_item == QueryTextItem::AutosaveCustomRealTimeMinutes) {
-			auto try_value = ParseInteger<int>(*str);
+			auto try_value = ParseInteger<int>(*str, 10, true);
 			if (!try_value.has_value()) return;
 			_settings_client.gui.autosave_interval = Clamp(*try_value, 1, 8000);
 			ChangeAutosaveFrequency(false);
@@ -1481,7 +1481,7 @@ struct GameOptionsWindow : Window {
 			if (sd->flags.Test(SettingFlag::GuiVelocity) && GetGameSettings().locale.units_velocity == 3) {
 				llvalue = atof(str->c_str()) * 10;
 			} else {
-				auto try_llvalue = ParseInteger<int64_t>(*str);
+				auto try_llvalue = ParseInteger<int64_t>(*str, 10, true);
 				if (!try_llvalue.has_value()) return;
 				llvalue = *try_llvalue;
 			}
@@ -2226,7 +2226,7 @@ struct CustomCurrencyWindow : Window {
 
 		switch (this->query_widget) {
 			case WID_CC_RATE: {
-				auto val = ParseInteger(*str);
+				auto val = ParseInteger(*str, 10, true);
 				if (!val.has_value()) return;
 				GetCustomCurrency().rate = Clamp(*val, 1, UINT16_MAX);
 				break;
@@ -2247,7 +2247,7 @@ struct CustomCurrencyWindow : Window {
 			case WID_CC_YEAR: { // Year to switch to euro
 				CalTime::Year year = CF_NOEURO;
 				if (!str->empty()) {
-					auto val = ParseInteger(*str);
+					auto val = ParseInteger(*str, 10, true);
 					if (!val.has_value()) return;
 					year = Clamp(static_cast<CalTime::Year>(*val), MIN_EURO_YEAR, CalTime::MAX_YEAR);
 				}
