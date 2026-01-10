@@ -93,6 +93,16 @@ public:
 	}
 
 	/**
+	 * Reset all bits.
+	 * @returns The bit set
+	 */
+	inline constexpr Timpl &Reset()
+	{
+		this->data = 0;
+		return static_cast<Timpl &>(*this);
+	}
+
+	/**
 	 * Reset the value-th bit.
 	 * @param value Bit to reset.
 	 * @returns The bit set

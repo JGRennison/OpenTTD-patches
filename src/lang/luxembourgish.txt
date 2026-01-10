@@ -995,7 +995,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :Währungseenhee
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Pond
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Dollar
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1041,6 +1041,7 @@ STR_GAME_OPTIONS_CURRENCY_MYR                                   :Malaysesche Rin
 STR_GAME_OPTIONS_CURRENCY_LVL                                   :Lettesch Lat
 STR_GAME_OPTIONS_CURRENCY_PTE                                   :Portugieseschen Escudo
 STR_GAME_OPTIONS_CURRENCY_UAH                                   :Ukrainesch Hryvnia
+STR_GAME_OPTIONS_CURRENCY_VND                                   :Vietnamesesch Dong
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :Autospäicheren
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :Wiel den Intervall aus fir d'Autospäicherung
@@ -1314,6 +1315,10 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Zënssaz; kontr
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Betribskäschten: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Fixéier den Niveau vun de Betribskäschten vu Gefierer an Infrastruktur
+###length 3
+STR_CONFIG_SETTING_RUNNING_COSTS_LOW                            :Niddreg
+STR_CONFIG_SETTING_RUNNING_COSTS_MEDIUM                         :Mëttel
+STR_CONFIG_SETTING_RUNNING_COSTS_HIGH                           :Héich
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Baugeschwindegkeet: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Limitéier d'Unzuel u Bauaktiounen fir d'KI
@@ -1335,6 +1340,10 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :Keng Subsiden
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Konstruktiounskäschten: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Bestëmm den Niveau vu Bau- a Kafkäschten
+###length 3
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_LOW                       :Niddreg
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_MEDIUM                    :Mëttel
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :Héich
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Rezessiounen: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Wann ugeschalt kann vun Zäit zur Zäit eng Rezessioun kommen. Während enger Rezessioun ass d'Produktioun däitlech méi niddreg (an klëmmt erëm op den alen Niveau no der Rezessioun)
@@ -1680,6 +1689,9 @@ STR_CONFIG_SETTING_SCROLLMODE_LMB                               :Kaart mat der l
 
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Glaate Scrolling: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Kontrolléiert wéi d'Haptusiicht op eng bestëmmten Positioun scrollt, wann een op déi kléng Kaart klickt oder en Befehl fir ob en spezifescht Objet ze scrollen gëtt. Wann ugeschalt, gëtt bis dohin gescrollt, wann ausgeschalt, spréngt d'Vue op den Zielobjet
+
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT                  :Traditionellt Toolbarmenuselektiounsverhalen: {STRING}
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT_HELPTEXT         :Wiel aus wéi d'Selektioun an den Toolbarmenus sech verhält. Wann ausgeschalt, bleiwen d'Menuer opgeklappt bis eng Selektioun gemet gouf. Wann ugeschalt, aktivéiren sech d'Menuer wann d'Maustast lassgelooss gëtt.
 
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Weis en Mooss-Tooltip wann verschidde Bau-Tools benotzt ginn: {STRING}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP_HELPTEXT                     :Weis Felderdistanzen an Héichtenënnerscheed beim Zéien während dem Bauen un
@@ -2091,9 +2103,9 @@ STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :D'GEPANZERT Wue
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :Verdeelungsmodus fir aner Wuereklassen: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :"Asymmetresch" heescht dass eng beléiweg Unzuel un Wueren an béid Richtungen verschéckt ginn. "Manuell" heescht dass keng automatësch Verdeelung stattfënnt
 ###length 3
-STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :manuell
-STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :asymmetresch
-STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :symmetresch
+STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :Manuell
+STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :Asymmetresch
+STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :Symmetresch
 
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY                           :Verdeelungsgenauegkeet: {STRING}
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY_HELPTEXT                  :Wat de Wäert méi héich ass, wat méi CPU benotzt gëtt fir d'Linkgrafik ze zeechnen. Wann ze héich gesat, kann et zu Lags kommen. Ze niddreg gesat kann d'Verdeelung ongenau ginn an d'Wueren net sou verdeelt ginn wéi geduet
@@ -2201,8 +2213,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... Spä
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... ignoréiren Basis Grafik Set '{STRING}': net fonnt
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... ignoréiren Basis Sound Set '{STRING}': net fonnt
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... ignoréiren Basis Musik Set '{STRING}': net fonnt
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Net genuch Späicher
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Reservéirung vun {BYTES} Spritecache versot. De Spritecache gouf reduzéiert op {BYTES}. Dëst reduzéiert d'Performance vun OpenTTD. Fir Späicher ze spueren kann een probéiren 32bpp Grafiken auszeschalten an/oder Zoom-Eran Stufen
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Feeler an de Videoastellungen
@@ -2210,7 +2220,8 @@ STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... keng
 STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :{WHITE}... GPU driver huet d'Spill gecrasht. Hardwarebeschleunegung ausgeschalt
 
 # Intro window
-STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
+STR_INTRO_CAPTION                                               :{WHITE}OpenTTD
+STR_INTRO_VERSION                                               :OpenTTD {REV}
 
 STR_INTRO_NEW_GAME                                              :{BLACK}Neit Spill
 STR_INTRO_LOAD_GAME                                             :{BLACK}Spill lueden
@@ -2828,6 +2839,11 @@ STR_PICKER_MODE_USED                                            :Benotzt
 STR_PICKER_MODE_USED_TOOLTIP                                    :Wiesselen tëschent Objeten déi existéieren
 STR_PICKER_MODE_SAVED                                           :Gespäichert
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :Wiesselen tëschent gespäicherten Objeten
+
+STR_PICKER_PREVIEW_SHRINK                                       :-
+STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :D'Héicht vun Virschaubiller erofsetzen. Ctrl+Klick fir op de Minimum ze setzen
+STR_PICKER_PREVIEW_EXPAND                                       :+
+STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :D'Héicht vun Virschaubiller eropsetzen. Ctrl+Klick fir op de Maximum ze setzen.
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Wiel eng Statiounsklass fir unzeweisen
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Wiel en Typ vu Statioun fir ze bauen. Ctrl+Klick fir en bei d'gespäichert Objeten dobäizesetzen oder ewechzehuelen
@@ -3525,15 +3541,12 @@ STR_SAVE_PRESET_CAPTION                                         :{WHITE}Preset s
 STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}Lëscht vu Presets, wiel een den op den Numm ënnendrënner kopéiert gëtt
 STR_SAVE_PRESET_TITLE                                           :{BLACK}Wiel en Numm fir de Preset
 STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}Grad ausgewielten Numm fir de Preset dee gespäichert soll ginn
-STR_SAVE_PRESET_CANCEL                                          :{BLACK}Ofbriechen
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}Den Preset net änneren
 STR_SAVE_PRESET_SAVE                                            :{BLACK}Späichern
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}Späicher de Preset op dee grad ausgewielten Numm
 
 # NewGRF parameters window
 STR_BASEGRF_PARAMETERS_CAPTION                                  :{WHITE}Basis Grafikparameter änneren
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}NewGRF Parameter änneren
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Zoumaachen
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}Reset
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}Setzt all Paramater op de Standard zréck
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :Parameter {NUM}
@@ -3676,7 +3689,7 @@ STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}Gëff en
 STR_TOWN_DIRECTORY_CAPTION                                      :{WHITE}Stied ({COMMA} vu {COMMA})
 STR_TOWN_DIRECTORY_NONE                                         :{ORANGE}- Keng -
 STR_TOWN_DIRECTORY_TOWN                                         :{ORANGE}{TOWN}{BLACK} ({COMMA})
-STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{YELLOW} (Stad){BLACK} ({COMMA})
+STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{BLACK} ({COMMA}) {YELLOW}{CITY_ICON}
 STR_TOWN_DIRECTORY_LIST_TOOLTIP                                 :{BLACK}Stiednimm - klick op den Numm fir d'Usiicht drop ze zentréieren. Ctrl+Klick erstellt eng nei Usiicht vun der Stad
 STR_TOWN_POPULATION                                             :{BLACK}Weltbevölkerung: {COMMA}
 
@@ -4903,8 +4916,6 @@ STR_AI_LIST_URL                                                 :{LTBLUE}URL: {O
 
 STR_AI_LIST_ACCEPT                                              :{BLACK}Akzeptéiert
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Wiel de markéierten Script
-STR_AI_LIST_CANCEL                                              :{BLACK}Ofbriechen
-STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Script net änneren
 
 STR_SCREENSHOT_CAPTION                                          :{WHITE}E Screenshot maachen
 STR_SCREENSHOT_SCREENSHOT                                       :{BLACK}Normale Screenshot
@@ -4917,7 +4928,6 @@ STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Minimap-
 # Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :KI
 STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :{WHITE}Spill-Script-Parameter
-STR_AI_SETTINGS_CLOSE                                           :{BLACK}Zoumaachen
 STR_AI_SETTINGS_RESET                                           :{BLACK}Reset
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
 
@@ -5257,6 +5267,13 @@ STR_ERROR_START_AND_END_MUST_BE_IN                              :{WHITE}Start an
 STR_ERROR_ENDS_OF_BRIDGE_MUST_BOTH                              :{WHITE}... dei zwee Enner vun der Bréck mussen u Land sinn
 STR_ERROR_BRIDGE_TOO_LONG                                       :{WHITE}... Bréck ze laang
 STR_ERROR_BRIDGE_THROUGH_MAP_BORDER                             :{WHITE}Bréck géif ausserhalb der Kaart ukommen
+STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}Bréck ass {HEIGHT} ze niddreg fir d'Gare
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROADSTOP                           :{WHITE}Bréck ass {HEIGHT} ze niddreg fir e Stroossestop
+STR_ERROR_BRIDGE_TOO_LOW_FOR_DOCK                               :{WHITE}Bréck ass {HEIGHT} ze niddreg fir de Quai
+STR_ERROR_BRIDGE_TOO_LOW_FOR_BUOY                               :{WHITE}Bréck as {HEIGHT} ze niddreg fir d'Boje
+STR_ERROR_BRIDGE_TOO_LOW_FOR_RAIL_WAYPOINT                      :{WHITE}Bréck ass {HEIGHT} ze niddreg fir den Zuchweepunkt
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROAD_WAYPOINT                      :{WHITE}Bréck ass {HEIGHT} ze niddreg fir de Stroosseweepunkt
+STR_ERROR_BRIDGE_TOO_LOW_FOR_LOCK                               :{WHITE}Bréck ass {HEIGHT} ze niddreg fir d'Schleis
 
 # Tunnel related errors
 STR_ERROR_CAN_T_BUILD_TUNNEL_HERE                               :{WHITE}Kann den Tunnel hei net bauen...
@@ -5873,6 +5890,8 @@ STR_SAVEGAME_NAME_SPECTATOR                                     :Zuschauer, {1:S
 
 # Viewport strings
 STR_VIEWPORT_TOWN_POP                                           :{TOWN} ({COMMA})
+STR_VIEWPORT_TOWN_CITY                                          :{TOWN} {CITY_ICON}
+STR_VIEWPORT_TOWN_CITY_POP                                      :{TOWN} ({COMMA}) {CITY_ICON}
 STR_VIEWPORT_STATION                                            :{STATION} {STATION_FEATURES}
 
 # Simple strings to get specific types of data

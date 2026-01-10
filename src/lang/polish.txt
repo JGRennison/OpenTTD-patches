@@ -1375,7 +1375,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :Wybór jednoste
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Funt brytyjski
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Dolar amerykański
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1421,6 +1421,7 @@ STR_GAME_OPTIONS_CURRENCY_MYR                                   :Ringgit malezyj
 STR_GAME_OPTIONS_CURRENCY_LVL                                   :Łat łotewski
 STR_GAME_OPTIONS_CURRENCY_PTE                                   :Escudo portugalskie
 STR_GAME_OPTIONS_CURRENCY_UAH                                   :Hrywna ukraińska
+STR_GAME_OPTIONS_CURRENCY_VND                                   :Dong wietnamski
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :Automatyczny zapis
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :Wybierz częstotliwość automatycznego zapisu stanu gry
@@ -1694,6 +1695,10 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Oprocentowanie 
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Koszty amortyzacji: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Ustaw poziom kosztów utrzymania i amortyzacji pojazdów i infrastruktury
+###length 3
+STR_CONFIG_SETTING_RUNNING_COSTS_LOW                            :Niskie
+STR_CONFIG_SETTING_RUNNING_COSTS_MEDIUM                         :Średnie
+STR_CONFIG_SETTING_RUNNING_COSTS_HIGH                           :Wysokie
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Szybkość budowy: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Ogranicz ilość czynności budowlanych wykonywanych przez SI
@@ -1715,6 +1720,10 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :Brak dotacji
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Koszty budowy: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Ustaw poziom kosztów budowy i kupna
+###length 3
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_LOW                       :Niskie
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_MEDIUM                    :Średnie
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :Wysokie
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Kryzys: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Jeśli włączone, kryzys może występować okresowo. Podczas kryzysu produkcja jest znacznie niższa (powraca do poprzedniego poziomu, kiedy kryzys się kończy)
@@ -2060,6 +2069,9 @@ STR_CONFIG_SETTING_SCROLLMODE_LMB                               :Przeciągnij ma
 
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Wygładź przesuwanie widoku: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Określ, w jaki sposób widok główny ma być przesuwany do określonej lokalizacji po kliknięciu na minimapie lub po użyciu funkcji przeniesienia do określonego obiektu na mapie. Jeśli opcja ta jest włączona, widok przesuwa się płynnie, natomiast jeśli jest wyłączona, przeskakuje natychmiast do wybranego miejsca
+
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT                  :Tradycyjne zachowanie menu pod paskiem narzędzi: {STRING}
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT_HELPTEXT         :Określ zachowanie rozwijanych menu pod głównym paskiem narzędzi. Jeśli ta opcja jest wyłączona, menu pozostanie rozwinięte do momentu dokonania wyboru. Jeśli ta opcja jest włączona, pozycja menu zostanie aktywowana po zwolnieniu przycisku myszy.
 
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Pokaż dymek z pomiarem podczas używania różnych narzędzi: {STRING}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP_HELPTEXT                     :Wyświetlaj długość budowanych odcinków i różnicę wysokości przy przeciąganiu w trakcie operacji budowlanych
@@ -2581,8 +2593,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... form
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... ignoruję zestaw Base Graphics „{STRING}”: nie odnaleziono
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... ignoruję zestaw Base Sounds „{STRING}”: nie odnaleziono
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... ignoruję zestaw Base Music „{STRING}”: nie odnaleziono
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Brak pamięci
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Nie powiodła się rezerwacja pamięci cache dla sprite'ów od wielkości {BYTES}. Pamięć cache sprite'ów została zredukowana do {BYTES}. Obniży to wydajność OpenTTD. By zmniejszyć zapotrzebowanie pamięci, możesz spróbować wyłączyć grafikę 32bpp i/lub poziomy zbliżenia
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Błąd ustawień obrazu...
@@ -2590,7 +2600,8 @@ STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... nie 
 STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :{WHITE}... Sterownik GPU spowodował awarię gry. Wyłączono przyspieszenie sprzętowe
 
 # Intro window
-STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
+STR_INTRO_CAPTION                                               :{WHITE}OpenTTD
+STR_INTRO_VERSION                                               :OpenTTD {REV}
 
 STR_INTRO_NEW_GAME                                              :{BLACK}Nowa Gra
 STR_INTRO_LOAD_GAME                                             :{BLACK}Wczytaj Grę
@@ -3208,6 +3219,11 @@ STR_PICKER_MODE_USED                                            :Użyte
 STR_PICKER_MODE_USED_TOOLTIP                                    :Przełącz wyświetlanie tylko już istniejących elementów
 STR_PICKER_MODE_SAVED                                           :Zapisane
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :Przełącz wyświetlanie tylko zapisanych elementów
+
+STR_PICKER_PREVIEW_SHRINK                                       :-
+STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Zmniejsz wysokość podglądów. Użyj Ctrl, aby pomniejszyć do minimum
+STR_PICKER_PREVIEW_EXPAND                                       :+
+STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Zwiększ wysokość podglądów. Użyj Ctrl, aby powiększyć maksymalnie
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Wybierz klasę stacji do wyświetlenia
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Wybierz typ stacji do zbudowania. Użyj Ctrl, aby dodać lub usunąć z zapisanych elementów
@@ -3905,15 +3921,12 @@ STR_SAVE_PRESET_CAPTION                                         :{WHITE}Zapis sc
 STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}Lista dostępnych schematów. Wybierz jeden z nich, aby wykonać zapis z taką nazwą
 STR_SAVE_PRESET_TITLE                                           :{BLACK}Wpisz nazwę schematu
 STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}Aktualna nazwa dla zapisywanego schematu
-STR_SAVE_PRESET_CANCEL                                          :{BLACK}Anuluj
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}Nie wprowadzaj zmian
 STR_SAVE_PRESET_SAVE                                            :{BLACK}Zapisz
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}Zapisz schemat z wybraną nazwą
 
 # NewGRF parameters window
 STR_BASEGRF_PARAMETERS_CAPTION                                  :{WHITE}Zmień parametry podstawowych grafik
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}Zmień parametry NewGRF
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Zamknij
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}Resetuj
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}Przywróć domyślne wartości parametrów
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :Parametr {NUM}
@@ -4056,7 +4069,7 @@ STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}Wpisz na
 STR_TOWN_DIRECTORY_CAPTION                                      :{WHITE}Miasta ({COMMA} z {COMMA})
 STR_TOWN_DIRECTORY_NONE                                         :{ORANGE}- Żaden -
 STR_TOWN_DIRECTORY_TOWN                                         :{ORANGE}{TOWN}{BLACK} ({COMMA})
-STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{YELLOW} (Metropolia){BLACK} ({COMMA})
+STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{BLACK} ({COMMA}) {YELLOW}{CITY_ICON}
 STR_TOWN_DIRECTORY_LIST_TOOLTIP                                 :{BLACK}Nazwy miast - kliknij na nazwę miasta, aby wyśrodkować na nim widok główny. Użyj Ctrl, aby otworzyć nowy podgląd na lokalizację miasta
 STR_TOWN_POPULATION                                             :{BLACK}Populacja świata: {COMMA}
 
@@ -5289,8 +5302,6 @@ STR_AI_LIST_URL                                                 :{LTBLUE}Adres: 
 
 STR_AI_LIST_ACCEPT                                              :{BLACK}Zaakceptuj
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Wybierz zaznaczony skrypt
-STR_AI_LIST_CANCEL                                              :{BLACK}Anuluj
-STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Nie zmieniaj skryptu
 
 STR_SCREENSHOT_CAPTION                                          :{WHITE}Zrób zrzut obrazu
 STR_SCREENSHOT_SCREENSHOT                                       :{BLACK}Normalny zrzut obrazu
@@ -5303,7 +5314,6 @@ STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Zrzut ob
 # Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}Parametry SI
 STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :{WHITE}Parametry Game Script
-STR_AI_SETTINGS_CLOSE                                           :{BLACK}Zamknij
 STR_AI_SETTINGS_RESET                                           :{BLACK}Resetuj
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
 
@@ -5643,6 +5653,13 @@ STR_ERROR_START_AND_END_MUST_BE_IN                              :{WHITE}Począte
 STR_ERROR_ENDS_OF_BRIDGE_MUST_BOTH                              :{WHITE}... końce mostu muszą znajdować się na lądzie
 STR_ERROR_BRIDGE_TOO_LONG                                       :{WHITE}... za długi most
 STR_ERROR_BRIDGE_THROUGH_MAP_BORDER                             :{WHITE}Koniec mostu poza mapą
+STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}Most jest o {HEIGHT} za niski dla stacji
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROADSTOP                           :{WHITE}Most jest o {HEIGHT} za niski dla przystanku
+STR_ERROR_BRIDGE_TOO_LOW_FOR_DOCK                               :{WHITE}Most jest o {HEIGHT} za niski dla portu
+STR_ERROR_BRIDGE_TOO_LOW_FOR_BUOY                               :{WHITE}Most jest o {HEIGHT} za niski dla boi
+STR_ERROR_BRIDGE_TOO_LOW_FOR_RAIL_WAYPOINT                      :{WHITE}Most jest o {HEIGHT} za niski dla posterunku kolejowego
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROAD_WAYPOINT                      :{WHITE}Most jest o {HEIGHT} za niski dla posterunku drogowego
+STR_ERROR_BRIDGE_TOO_LOW_FOR_LOCK                               :{WHITE}Most jest o {HEIGHT} za niski dla śluzy
 
 # Tunnel related errors
 STR_ERROR_CAN_T_BUILD_TUNNEL_HERE                               :{WHITE}Nie można tutaj zbudować tunelu...
@@ -6314,6 +6331,8 @@ STR_SAVEGAME_NAME_SPECTATOR                                     :Obserwator, {1:
 
 # Viewport strings
 STR_VIEWPORT_TOWN_POP                                           :{TOWN} ({COMMA})
+STR_VIEWPORT_TOWN_CITY                                          :{TOWN} {CITY_ICON}
+STR_VIEWPORT_TOWN_CITY_POP                                      :{TOWN} ({COMMA}) {CITY_ICON}
 STR_VIEWPORT_STATION                                            :{STATION} {STATION_FEATURES}
 
 # Simple strings to get specific types of data

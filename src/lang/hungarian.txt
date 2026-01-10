@@ -1059,7 +1059,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :Pénznem kivál
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Angol Font
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Amerikai Dollár
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euró
@@ -1105,6 +1105,7 @@ STR_GAME_OPTIONS_CURRENCY_MYR                                   :Maláj ringgit
 STR_GAME_OPTIONS_CURRENCY_LVL                                   :Lett Lat
 STR_GAME_OPTIONS_CURRENCY_PTE                                   :Portugál escudo
 STR_GAME_OPTIONS_CURRENCY_UAH                                   :Ukrán hrivnya
+STR_GAME_OPTIONS_CURRENCY_VND                                   :Vietnámi dong
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :Automatikus mentés
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :Az automatikus mentések közötti időtartam kiválasztása
@@ -1378,6 +1379,10 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Banki hitelkama
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Üzemeltetési költségek: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Járművek karbantartási és üzemeltetési költségeinek a szintje
+###length 3
+STR_CONFIG_SETTING_RUNNING_COSTS_LOW                            :Alacsony
+STR_CONFIG_SETTING_RUNNING_COSTS_MEDIUM                         :Közepes
+STR_CONFIG_SETTING_RUNNING_COSTS_HIGH                           :Magas
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Építkezési sebesség: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Korlátozza az építkezési sebességét számítógépes ellenfeleknek
@@ -1399,6 +1404,10 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :Nincsenek támo
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Építkezési költségek: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Építkezések és beszerzések költségeinek szintje
+###length 3
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_LOW                       :Alacsony
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_MEDIUM                    :Közepes
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :Magas
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Gazdasági válságok: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Ha bekapcsolod, időszakonként gazdasági válság fog kitörni. A válság alatt az összes ipar jelentősen kevesebbet termel. (A válság végével a termelés visszaáll az eredeti szintre.)
@@ -1744,6 +1753,9 @@ STR_CONFIG_SETTING_SCROLLMODE_LMB                               :A térkép mozg
 
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Finomított nézőpont-görgetés: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Beállítható, hogy a fő nézet hogyan mozogjon egy adott pozícióra a térképre kattintáskor ha egy adott objektumra történik mozgás. Bekapcsolva a nézet egyenletesen mozog, kikapcsolva közvetlenül a kijelölt helyre ugrik
+
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT                  :Tradicionális eszköztár menü kiválasztási viselkedése:{STRING}
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT_HELPTEXT         :A kiválasztás viselkedése az eszköztár menüben. Ha kikapcsolt, az eszköztár menük nyitva maradnak, amíg nincs kiválasztva valami. Ha bekapcsolt, akkor a menük az egér gomb elengedésére aktiválódnak.
 
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Területinformációk mutatása építési eszközök használatakor: {STRING}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP_HELPTEXT                     :Mezők közti távolságok és magasságkülönbségek megjelenítése húzás közben építkezéskor
@@ -2155,9 +2167,9 @@ STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :A PÁNCÉLOZOTT
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :Egyéb rakománytípusok szétosztása: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :Az "Aszimmetrikus" beállítás esetén a különböző irányokba tetszőleges mennyiségű rakomány mehet. "Kézi" esetben a rakományok nem lesznek automatikusan szétosztva.
 ###length 3
-STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :kézi
-STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :aszimmetrikus
-STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :szimmetrikus
+STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :Kézi
+STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :Aszimmetrikus
+STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :Szimmetrikus
 
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY                           :A szétosztás pontossága: {STRING}
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY_HELPTEXT                  :Magasabb beállítás esetén a kapcsolati gráf kiszámítása több időt fog igénybe venni. A játék akadozhat, ha ez a számítás túl sok időbe telik. Alacsony beállítás esetén viszont a szétosztás pontatlan lehet, a rakományok váratlan célokat kaphatnak.
@@ -2265,8 +2277,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... a(z)
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... érvénytelen grafikus alapcsomag nem került betöltésre - '{STRING}': nem található
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... érvénytelen hang alapcsomag nem került betöltésre - '{STRING}': nem található
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... érvénytelen zenei alapcsomag nem került betöltésre - '{STRING}': nem található
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Kevés a memória
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}{BYTES} memória gyorsítótár kiosztása sikertelen. A gyorsítótár le lett csökkentve {BYTES}ra. Ez csökkenti az OpenTTD teljesítményét. Csökkentheted a memóriaigényt, ha kikapcsolod a 32bpp grafikát és/vagy a nagyítási szinteket
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Hiba a videobeállításokban...
@@ -2274,7 +2284,8 @@ STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... nem 
 STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :{WHITE}... A videókártya illesztőprogram hibát okozott. Hardveres gyorsítás kikapcsolva
 
 # Intro window
-STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
+STR_INTRO_CAPTION                                               :{WHITE}OpenTTD
+STR_INTRO_VERSION                                               :OpenTTD {REV}
 
 STR_INTRO_NEW_GAME                                              :{BLACK}Új játék
 STR_INTRO_LOAD_GAME                                             :{BLACK}Játék betöltése
@@ -2892,6 +2903,11 @@ STR_PICKER_MODE_USED                                            :Használt
 STR_PICKER_MODE_USED_TOOLTIP                                    :Csak a meglévő elemek megjelenítése
 STR_PICKER_MODE_SAVED                                           :Mentve
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :Csak a mentett elemek megjelenítése
+
+STR_PICKER_PREVIEW_SHRINK                                       :-
+STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Az előnézeti képek méretének csökkentése. Ctrl+kattintás a minimalizáláshoz
+STR_PICKER_PREVIEW_EXPAND                                       :+
+STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Az előnézeti képek méretének növelése. Ctrl+kattintás a maximalizáláshoz
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Válaszd ki a megjeleníteni kívánt állomástípust
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Válassz ki egy állomástípust az építéshez. Ctrl+kattintás a mentett elemek hozzáadásához vagy eltávolításához
@@ -3589,15 +3605,12 @@ STR_SAVE_PRESET_CAPTION                                         :{WHITE}Lista me
 STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}Az elérhető listák, kattints az egyikre, hogy lemásold a lenti mezőbe
 STR_SAVE_PRESET_TITLE                                           :{BLACK}A lista neve
 STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}A lista mentéséhez kiválasztott név
-STR_SAVE_PRESET_CANCEL                                          :{BLACK}Mégse
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}Ne mentse a listát
 STR_SAVE_PRESET_SAVE                                            :{BLACK}Mentés
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}A lista mentése a megadott névvel
 
 # NewGRF parameters window
 STR_BASEGRF_PARAMETERS_CAPTION                                  :{WHITE}Alap grafikai paraméterek módosítása
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}NewGRF paraméterek megváltoztatása
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Bezárás
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}Alapértelmezett
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}Összes paraméter alapértelmezettre állítása
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :Paraméter {NUM}
@@ -3740,7 +3753,7 @@ STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}Felirat 
 STR_TOWN_DIRECTORY_CAPTION                                      :{WHITE}Városok ({COMMA}, {COMMA})
 STR_TOWN_DIRECTORY_NONE                                         :{ORANGE}- Nincs -
 STR_TOWN_DIRECTORY_TOWN                                         :{ORANGE}{TOWN}{BLACK} ({COMMA})
-STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{YELLOW} (Város){BLACK} ({COMMA})
+STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{BLACK} ({COMMA}) {YELLOW}{CITY_ICON}
 STR_TOWN_DIRECTORY_LIST_TOOLTIP                                 :{BLACK}Városnevek - kattints egy névre a város megnézéséhez. Ctrl+kattintással új nézet nyílik a városnál
 STR_TOWN_POPULATION                                             :{BLACK}Világnépesség: {COMMA}
 
@@ -4967,8 +4980,6 @@ STR_AI_LIST_URL                                                 :{LTBLUE}URL: {O
 
 STR_AI_LIST_ACCEPT                                              :{BLACK}Elfogadás
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}A kijelölt szkript kiválasztása
-STR_AI_LIST_CANCEL                                              :{BLACK}Mégsem
-STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Ne változtassa a szkriptet
 
 STR_SCREENSHOT_CAPTION                                          :{WHITE}Képmentés
 STR_SCREENSHOT_SCREENSHOT                                       :{BLACK}Normál képernyőkép
@@ -4981,7 +4992,6 @@ STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Minitér
 # Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}MI paraméterek
 STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :{WHITE}Játékszkript paraméterek
-STR_AI_SETTINGS_CLOSE                                           :{BLACK}Bezárás
 STR_AI_SETTINGS_RESET                                           :{BLACK}Visszaállítás
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
 
@@ -5321,6 +5331,13 @@ STR_ERROR_START_AND_END_MUST_BE_IN                              :{WHITE}A kezdet
 STR_ERROR_ENDS_OF_BRIDGE_MUST_BOTH                              :{WHITE}... a híd mindkét végének szárazföldön kell lennie
 STR_ERROR_BRIDGE_TOO_LONG                                       :{WHITE}... a híd túl hosszú
 STR_ERROR_BRIDGE_THROUGH_MAP_BORDER                             :{WHITE}A híd a térképen túl végződne
+STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}A híd {HEIGHT} magas, túl alacsony az állomáshoz
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROADSTOP                           :{WHITE}A híd {HEIGHT} magas, túl alacsony a megállóhoz
+STR_ERROR_BRIDGE_TOO_LOW_FOR_DOCK                               :{WHITE}A híd {HEIGHT} magas, túl alacsony a kikötőhöz
+STR_ERROR_BRIDGE_TOO_LOW_FOR_BUOY                               :{WHITE}A híd {HEIGHT} magas, túl alacsony a bójához
+STR_ERROR_BRIDGE_TOO_LOW_FOR_RAIL_WAYPOINT                      :{WHITE}A híd {HEIGHT} magas, túl alacsony a vasúti ellenőrzőponthoz
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROAD_WAYPOINT                      :{WHITE}A híd {HEIGHT} magas, túl alacsony az útponthoz
+STR_ERROR_BRIDGE_TOO_LOW_FOR_LOCK                               :{WHITE}A híd {HEIGHT} magas, túl alacsony a zároláshoz
 
 # Tunnel related errors
 STR_ERROR_CAN_T_BUILD_TUNNEL_HERE                               :{WHITE}Nem áshatsz ide alagutat...
@@ -5978,6 +5995,8 @@ STR_SAVEGAME_NAME_SPECTATOR                                     :Megfigyelő, {1
 
 # Viewport strings
 STR_VIEWPORT_TOWN_POP                                           :{TOWN} ({COMMA})
+STR_VIEWPORT_TOWN_CITY                                          :{TOWN} {CITY_ICON}
+STR_VIEWPORT_TOWN_CITY_POP                                      :{TOWN} ({COMMA}) {CITY_ICON}
 STR_VIEWPORT_STATION                                            :{STATION} {STATION_FEATURES}
 
 # Simple strings to get specific types of data

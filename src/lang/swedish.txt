@@ -995,7 +995,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :Välj valutaenh
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Brittiskt pund
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Amerikansk dollar
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1041,6 +1041,7 @@ STR_GAME_OPTIONS_CURRENCY_MYR                                   :Malaysisk ringg
 STR_GAME_OPTIONS_CURRENCY_LVL                                   :Lettiska Lats
 STR_GAME_OPTIONS_CURRENCY_PTE                                   :Portugisisk escudo
 STR_GAME_OPTIONS_CURRENCY_UAH                                   :Ukrainsk hryvnia
+STR_GAME_OPTIONS_CURRENCY_VND                                   :Vietnamesisk dong
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :Autospara
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :Välj intervall för automatiskt sparande av spelet
@@ -1314,6 +1315,10 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Räntenivå fö
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Driftkostnader: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Sätt nivån för underhålls- och driftkostnader för fordon och infrastruktur
+###length 3
+STR_CONFIG_SETTING_RUNNING_COSTS_LOW                            :Låga
+STR_CONFIG_SETTING_RUNNING_COSTS_MEDIUM                         :Medel
+STR_CONFIG_SETTING_RUNNING_COSTS_HIGH                           :Höga
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Konstruktionshastighet: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Begränsar antalet konstruktionshandlingar för datorspelare
@@ -1335,6 +1340,10 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :Inga subvention
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Konstruktionskostnader: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Sätt nivån för konstruktions- och inköpskostnader
+###length 3
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_LOW                       :Låga
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_MEDIUM                    :Mellan
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :Höga
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Lågkonjunkturer: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Om det är aktiverat kan lågkonjunkturer uppstå regelbundet. Under en lågkonjunktur är all produktion avsevärt lägre (men återgår till det normala när lågkonjunkturen är över)
@@ -1680,6 +1689,9 @@ STR_CONFIG_SETTING_SCROLLMODE_LMB                               :Rör kartan med
 
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Mjuk scrollning av vy: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Kontrollera hur huvudvyn skrollar till en specifik position vid klick på minikartan eller när ett kommando används för att skrolla till ett specifikt objekt på kartan. Om det är aktiverat skrollar vyn mjukt, om det är inaktiverat hoppar den direkt till målet
+
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT                  :Traditionellt valbeteende hos verktygsfälts menyer: {STRING}
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT_HELPTEXT         :Välj valbeteende för menyer i verktygsfält. Om "av" så kommer verktygsfälts menyer hållas öppna tills ett val har gjorts. Om "på" så kommer verktygsfälts menyer aktiveras när musknappen släpps.
 
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Visa måtthjälptext vid användning av byggverktyg: {STRING}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP_HELPTEXT                     :Visa rutavstånd och höjdskillnader vid dragning med musen under byggoperationer
@@ -2091,9 +2103,9 @@ STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :Den BEPANSRADE 
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :Distributionssätt för övriga godsklasser: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :"Asymmetriskt" innebär att en godtycklig mängd gods kan skickas i vardera riktningen. "Manuellt" innebär att ingen automatisk distribution av dessa godstyper sker
 ###length 3
-STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :manuellt
-STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :asymmetriskt
-STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :symmetriskt
+STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :Manuellt
+STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :Asymmetriskt
+STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :Symmetriskt
 
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY                           :Distributionsnoggrannhet: {STRING}
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY_HELPTEXT                  :Ju högre du sätter denna, desto längre CPU-tid kommer beräkningen av länkgrafen ta. Om det tar för lång tid kan spelet lagga. Om du däremot sätter den till ett lågt värde kommer distributionen att bli inexakt, vilket kan leda till att godset inte skickas dit du förväntar dig
@@ -2201,8 +2213,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... filf
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... ignorerar grundgrafikpaketet '{STRING}': hittades ej
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... ignorerar grundljudpaketet '{STRING}': hittades ej
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... ignorerar grundmusikpaket '{STRING}': hittades ej
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Slut på minne
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Allokerandet av {BYTES} till spritecachen misslyckades. Spritecachen begränsades till {BYTES}. Detta kommer att begränsa OpenTTD:s prestanda. För att minska minneskraven kan du försöka att inaktivera 32bpp-grafik och/eller antalet inzoomningsnivåer
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Fel med video inställningarna...
@@ -2210,7 +2220,8 @@ STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... Inge
 STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :{WHITE}... GPU-drivrutinen kraschade spelet. Maskinvaruacceleration inaktiverad
 
 # Intro window
-STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
+STR_INTRO_CAPTION                                               :{WHITE}OpenTTD
+STR_INTRO_VERSION                                               :OpenTTD {REV}
 
 STR_INTRO_NEW_GAME                                              :{BLACK}Nytt spel
 STR_INTRO_LOAD_GAME                                             :{BLACK}Ladda spel
@@ -2828,6 +2839,11 @@ STR_PICKER_MODE_USED                                            :Använda
 STR_PICKER_MODE_USED_TOOLTIP                                    :Slå av/på visning av endast existerande objekt
 STR_PICKER_MODE_SAVED                                           :Sparade
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :Slå på/av visning av endast sparade objekt
+
+STR_PICKER_PREVIEW_SHRINK                                       :-
+STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Minska höjden på förhandsvisningen. Ctrl+Click för att minska till minimum
+STR_PICKER_PREVIEW_EXPAND                                       :+
+STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Öka höjden på förhandsvisningen. Ctrl+Click för att öka till max
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Välj vilken klass av stationer som ska visas
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Välj en stationstyp att bygga. Ctrl+Klick för att lägga till eller ta bort i sparade objekt
@@ -3525,15 +3541,12 @@ STR_SAVE_PRESET_CAPTION                                         :{WHITE}Spara f�
 STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}Lista över tillgängliga förinställningar, väljer man att kopiera den till spara namn nedan
 STR_SAVE_PRESET_TITLE                                           :{BLACK}Skriv in ett namn
 STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}Nuvarande valt namn för förinställningen att spara
-STR_SAVE_PRESET_CANCEL                                          :{BLACK}Avbryt
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}Ändra inte det förinställda
 STR_SAVE_PRESET_SAVE                                            :{BLACK}Spara
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}Spara den inställda till den nuvarande valda namnet
 
 # NewGRF parameters window
 STR_BASEGRF_PARAMETERS_CAPTION                                  :{WHITE}Ändra parametrar för grafikpaketet
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}Ändra NewGRF-parametrar
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Stäng
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}Återställ
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}Återställ alla parametrar till deras standardvärden
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :Parameter {NUM}
@@ -3676,7 +3689,7 @@ STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}Mata in 
 STR_TOWN_DIRECTORY_CAPTION                                      :{WHITE}Städer ({COMMA} av {COMMA})
 STR_TOWN_DIRECTORY_NONE                                         :{ORANGE}- Inga -
 STR_TOWN_DIRECTORY_TOWN                                         :{ORANGE}{TOWN}{BLACK} ({COMMA})
-STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{YELLOW} (Stad){BLACK} ({COMMA})
+STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{BLACK} ({COMMA}) {YELLOW}{CITY_ICON}
 STR_TOWN_DIRECTORY_LIST_TOOLTIP                                 :{BLACK}Stadsnamn - klicka på ett namn för att centrera huvudvyn på staden. Ctrl+Klick för att öppna en ny fönstervy över stadens läge
 STR_TOWN_POPULATION                                             :{BLACK}Global folkmängd: {COMMA}
 
@@ -4903,8 +4916,6 @@ STR_AI_LIST_URL                                                 :{LTBLUE}URL: {O
 
 STR_AI_LIST_ACCEPT                                              :{BLACK}Acceptera
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Välj markerad datorspelare
-STR_AI_LIST_CANCEL                                              :{BLACK}Avbryt
-STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Ändra inte datorspelare
 
 STR_SCREENSHOT_CAPTION                                          :{WHITE}Ta en skärmdump
 STR_SCREENSHOT_SCREENSHOT                                       :{BLACK}Vanlig skärmdump
@@ -4917,7 +4928,6 @@ STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Skärmdu
 # Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}Parametrar för datorspelare
 STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :{WHITE}Parametrar för spelskript
-STR_AI_SETTINGS_CLOSE                                           :{BLACK}Stäng
 STR_AI_SETTINGS_RESET                                           :{BLACK}Återställ
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
 
@@ -5257,6 +5267,13 @@ STR_ERROR_START_AND_END_MUST_BE_IN                              :{WHITE}Start- o
 STR_ERROR_ENDS_OF_BRIDGE_MUST_BOTH                              :{WHITE}... brons båda ändar måste vara på land
 STR_ERROR_BRIDGE_TOO_LONG                                       :{WHITE}... för lång bro
 STR_ERROR_BRIDGE_THROUGH_MAP_BORDER                             :{WHITE}Bron slutar utanför kartans gränser
+STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}Bron är {HEIGHT} för låg för station
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROADSTOP                           :{WHITE}Bron är {HEIGHT} för låg för depå
+STR_ERROR_BRIDGE_TOO_LOW_FOR_DOCK                               :{WHITE}Bron är {HEIGHT} för låg för en kaj
+STR_ERROR_BRIDGE_TOO_LOW_FOR_BUOY                               :{WHITE}Bron är {HEIGHT} för låg för boj
+STR_ERROR_BRIDGE_TOO_LOW_FOR_RAIL_WAYPOINT                      :{WHITE}Bron är {HEIGHT} för låg för järnvägsriktmärke
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROAD_WAYPOINT                      :{WHITE}Bron är {HEIGHT} för låg för vägriktmärke
+STR_ERROR_BRIDGE_TOO_LOW_FOR_LOCK                               :{WHITE}Bron är {HEIGHT} för låg för sluss
 
 # Tunnel related errors
 STR_ERROR_CAN_T_BUILD_TUNNEL_HERE                               :{WHITE}Kan inte bygga tunnel här...
@@ -5873,6 +5890,8 @@ STR_SAVEGAME_NAME_SPECTATOR                                     :Åskådare, {1:
 
 # Viewport strings
 STR_VIEWPORT_TOWN_POP                                           :{TOWN} ({COMMA})
+STR_VIEWPORT_TOWN_CITY                                          :{TOWN} {CITY_ICON}
+STR_VIEWPORT_TOWN_CITY_POP                                      :{TOWN} ({COMMA}) {CITY_ICON}
 STR_VIEWPORT_STATION                                            :{STATION} {STATION_FEATURES}
 
 # Simple strings to get specific types of data

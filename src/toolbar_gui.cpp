@@ -105,6 +105,11 @@ enum CallBackFunction : uint8_t {
 
 static CallBackFunction _last_started_action = CBF_NONE; ///< Last started user action.
 
+inline DropDownModeFlags ToolbarDropdownMode()
+{
+	return _settings_client.gui.toolbar_dropdown_autoselect ? DDMF_INSTANT_CLOSE : DDMF_NONE;
+}
+
 /**
  * Company name list item, with company-colour icon, name, and lock components.
  */
@@ -135,7 +140,7 @@ std::unique_ptr<DropDownListItem> MakeCompanyDropDownListItem(CompanyID cid, boo
  */
 static void PopupMainToolbarMenu(Window *w, WidgetID widget, DropDownList &&list, int def)
 {
-	ShowDropDownList(w, std::move(list), def, widget, 0, DDMF_INSTANT_CLOSE);
+	ShowDropDownList(w, std::move(list), def, widget, 0, ToolbarDropdownMode());
 	SndClickBeep();
 }
 
@@ -317,7 +322,7 @@ static CallBackFunction ToolbarOptionsClick(Window *w)
 	list.push_back(MakeDropDownListCheckedItem(IsTransparencySet(TO_SIGNS),                    STR_SETTINGS_MENU_TRANSPARENT_SIGNS,       OME_SHOW_STATIONSIGNS, false));
 	list.push_back(MakeDropDownListCheckedItem(HasBit(_extra_display_opt, XDO_SHOW_MONEY_TEXT_EFFECTS), STR_SETTINGS_MENU_MONEY_TEXT_EFFECTS, OME_SHOW_MONEYTEXT, false));
 
-	ShowDropDownList(w, std::move(list), 0, WID_TN_SETTINGS, 140, DDMF_INSTANT_CLOSE);
+	ShowDropDownList(w, std::move(list), 0, WID_TN_SETTINGS, 140, ToolbarDropdownMode());
 	SndClickBeep();
 	return CBF_NONE;
 }
@@ -717,7 +722,7 @@ static CallBackFunction ToolbarGraphsClick(Window *w)
 
 	if (_toolbar_mode != TB_NORMAL) AddDropDownLeagueTableOptions(list);
 
-	ShowDropDownList(w, std::move(list), GRMN_OPERATING_PROFIT_GRAPH, WID_TN_GRAPHS, 140, DDMF_INSTANT_CLOSE);
+	ShowDropDownList(w, std::move(list), GRMN_OPERATING_PROFIT_GRAPH, WID_TN_GRAPHS, 140, ToolbarDropdownMode());
 	SndClickBeep();
 
 	return CBF_NONE;
@@ -730,7 +735,7 @@ static CallBackFunction ToolbarLeagueClick(Window *w)
 	AddDropDownLeagueTableOptions(list);
 
 	int selected = list[0]->result;
-	ShowDropDownList(w, std::move(list), selected, WID_TN_LEAGUE, 140, DDMF_INSTANT_CLOSE);
+	ShowDropDownList(w, std::move(list), selected, WID_TN_LEAGUE, 140, ToolbarDropdownMode());
 	SndClickBeep();
 
 	return CBF_NONE;
@@ -911,7 +916,7 @@ static CallBackFunction ToolbarZoomOutClick(Window *w)
 
 static CallBackFunction ToolbarBuildRailClick(Window *w)
 {
-	ShowDropDownList(w, GetRailTypeDropDownList(), _last_built_railtype, WID_TN_RAILS, 140, DDMF_INSTANT_CLOSE);
+	ShowDropDownList(w, GetRailTypeDropDownList(), _last_built_railtype, WID_TN_RAILS, 140, ToolbarDropdownMode());
 	SndClickBeep();
 	return CBF_NONE;
 }
@@ -933,7 +938,7 @@ static CallBackFunction MenuClickBuildRail(int index)
 
 static CallBackFunction ToolbarBuildRoadClick(Window *w)
 {
-	ShowDropDownList(w, GetRoadTypeDropDownList(RTTB_ROAD), _last_built_roadtype, WID_TN_ROADS, 140, DDMF_INSTANT_CLOSE);
+	ShowDropDownList(w, GetRoadTypeDropDownList(RTTB_ROAD), _last_built_roadtype, WID_TN_ROADS, 140, ToolbarDropdownMode());
 	SndClickBeep();
 	return CBF_NONE;
 }
@@ -955,7 +960,7 @@ static CallBackFunction MenuClickBuildRoad(int index)
 
 static CallBackFunction ToolbarBuildTramClick(Window *w)
 {
-	ShowDropDownList(w, GetRoadTypeDropDownList(RTTB_TRAM), _last_built_tramtype, WID_TN_TRAMS, 140, DDMF_INSTANT_CLOSE);
+	ShowDropDownList(w, GetRoadTypeDropDownList(RTTB_TRAM), _last_built_tramtype, WID_TN_TRAMS, 140, ToolbarDropdownMode());
 	SndClickBeep();
 	return CBF_NONE;
 }
@@ -979,7 +984,7 @@ static CallBackFunction ToolbarBuildWaterClick(Window *w)
 {
 	DropDownList list;
 	list.push_back(MakeDropDownListIconItem(SPR_IMG_BUILD_CANAL, PAL_NONE, STR_WATERWAYS_MENU_WATERWAYS_CONSTRUCTION, 0, false));
-	ShowDropDownList(w, std::move(list), 0, WID_TN_WATER, 140, DDMF_INSTANT_CLOSE);
+	ShowDropDownList(w, std::move(list), 0, WID_TN_WATER, 140, ToolbarDropdownMode());
 	SndClickBeep();
 	return CBF_NONE;
 }
@@ -1001,7 +1006,7 @@ static CallBackFunction ToolbarBuildAirClick(Window *w)
 {
 	DropDownList list;
 	list.push_back(MakeDropDownListIconItem(SPR_IMG_AIRPORT, PAL_NONE, STR_AIRCRAFT_MENU_AIRPORT_CONSTRUCTION, 0, false));
-	ShowDropDownList(w, std::move(list), 0, WID_TN_AIR, 140, DDMF_INSTANT_CLOSE);
+	ShowDropDownList(w, std::move(list), 0, WID_TN_AIR, 140, ToolbarDropdownMode());
 	SndClickBeep();
 	return CBF_NONE;
 }
@@ -1025,7 +1030,7 @@ static CallBackFunction ToolbarForestClick(Window *w)
 	list.push_back(MakeDropDownListIconItem(SPR_IMG_LANDSCAPING, PAL_NONE, STR_LANDSCAPING_MENU_LANDSCAPING, 0, false));
 	list.push_back(MakeDropDownListIconItem(SPR_IMG_PLANTTREES, PAL_NONE, STR_LANDSCAPING_MENU_PLANT_TREES, 1, false));
 	list.push_back(MakeDropDownListIconItem(SPR_IMG_SIGN, PAL_NONE, STR_LANDSCAPING_MENU_PLACE_SIGN, 2, false));
-	ShowDropDownList(w, std::move(list), 0, WID_TN_LANDSCAPE, 100, DDMF_INSTANT_CLOSE);
+	ShowDropDownList(w, std::move(list), 0, WID_TN_LANDSCAPE, 100, ToolbarDropdownMode());
 	SndClickBeep();
 	return CBF_NONE;
 }
@@ -1440,7 +1445,7 @@ static CallBackFunction ToolbarScenGenIndustry(Window *w)
 
 static CallBackFunction ToolbarScenBuildRoadClick(Window *w)
 {
-	ShowDropDownList(w, GetScenRoadTypeDropDownList(RTTB_ROAD), _last_built_roadtype, WID_TE_ROADS, 140, DDMF_INSTANT_CLOSE);
+	ShowDropDownList(w, GetScenRoadTypeDropDownList(RTTB_ROAD), _last_built_roadtype, WID_TE_ROADS, 140, ToolbarDropdownMode());
 	SndClickBeep();
 	return CBF_NONE;
 }
@@ -1460,7 +1465,7 @@ static CallBackFunction ToolbarScenBuildRoad(int index)
 
 static CallBackFunction ToolbarScenBuildTramClick(Window *w)
 {
-	ShowDropDownList(w, GetScenRoadTypeDropDownList(RTTB_TRAM), _last_built_tramtype, WID_TE_TRAMS, 140, DDMF_INSTANT_CLOSE);
+	ShowDropDownList(w, GetScenRoadTypeDropDownList(RTTB_TRAM), _last_built_tramtype, WID_TE_TRAMS, 140, ToolbarDropdownMode());
 	SndClickBeep();
 	return CBF_NONE;
 }
@@ -2749,7 +2754,7 @@ struct ScenarioEditorToolbarWindow : Window {
 
 		CalTime::Year value;
 		if (!str->empty()) {
-			auto val = ParseInteger(*str);
+			auto val = ParseInteger(*str, 10, true);
 			if (!val.has_value()) return;
 			value = static_cast<CalTime::Year>(*val);
 		} else {

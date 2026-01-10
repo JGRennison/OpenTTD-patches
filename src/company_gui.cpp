@@ -809,7 +809,7 @@ public:
 
 				size.height = 5 * this->line_height;
 				resize.width = 1;
-				resize.height = this->line_height;
+				fill.height = resize.height = this->line_height;
 				break;
 			}
 
@@ -2093,6 +2093,9 @@ static const StringID _company_view_vehicle_count_strings[] = {
  */
 struct CompanyWindow : Window
 {
+	/** WID_C_CAPTION does not have a query string, so it can be safely used as invalid value. */
+	static constexpr CompanyWidgets INVALID_QUERY_WIDGET = WID_C_CAPTION;
+
 	CompanyWidgets query_widget{};
 
 	/** Display planes in the company window. */
@@ -2392,13 +2395,13 @@ struct CompanyWindow : Window
 				break;
 
 			case WID_C_PRESIDENT_NAME:
-				this->query_widget = WID_C_PRESIDENT_NAME;
 				ShowQueryString(GetString(STR_PRESIDENT_NAME, this->window_number), STR_COMPANY_VIEW_PRESIDENT_S_NAME_QUERY_CAPTION, MAX_LENGTH_PRESIDENT_NAME_CHARS, this, CS_ALPHANUMERAL, {QueryStringFlag::EnableDefault, QueryStringFlag::LengthIsInChars});
+				this->query_widget = WID_C_PRESIDENT_NAME;
 				break;
 
 			case WID_C_COMPANY_NAME:
-				this->query_widget = WID_C_COMPANY_NAME;
 				ShowQueryString(GetString(STR_COMPANY_NAME, this->window_number), STR_COMPANY_VIEW_COMPANY_NAME_QUERY_CAPTION, MAX_LENGTH_COMPANY_NAME_CHARS, this, CS_ALPHANUMERAL, {QueryStringFlag::EnableDefault, QueryStringFlag::LengthIsInChars});
+				this->query_widget = WID_C_COMPANY_NAME;
 				break;
 
 			case WID_C_VIEW_HQ: {
@@ -2441,8 +2444,8 @@ struct CompanyWindow : Window
 				break;
 
 			case WID_C_GIVE_MONEY:
-				this->query_widget = WID_C_GIVE_MONEY;
 				ShowQueryString({}, STR_COMPANY_VIEW_GIVE_MONEY_QUERY_CAPTION, 30, this, CS_NUMERAL, {});
+				this->query_widget = WID_C_GIVE_MONEY;
 				break;
 
 			case WID_C_BUY_SHARE:
@@ -2500,13 +2503,16 @@ struct CompanyWindow : Window
 
 	void OnQueryTextFinished(std::optional<std::string> str) override
 	{
+		CompanyWidgets widget = this->query_widget;
+		this->query_widget = CompanyWindow::INVALID_QUERY_WIDGET;
+
 		if (!str.has_value()) return;
 
-		switch (this->query_widget) {
+		switch (widget) {
 			default: NOT_REACHED();
 
 			case WID_C_GIVE_MONEY: {
-				auto value = ParseInteger<uint64_t>(*str);
+				auto value = ParseInteger<uint64_t>(*str, 10, true);
 				if (!value.has_value()) return;
 				Money money = *value / GetCurrency().rate;
 				Command<CMD_GIVE_MONEY>::Post(STR_ERROR_CAN_T_GIVE_MONEY, CommandCallback::GiveMoney, money, (CompanyID)this->window_number);
@@ -2555,9 +2561,14 @@ struct CompanyWindow : Window
 			}
 		}
 
-		if (gui_scope && data == 1) {
-			/* Manually call OnResize to adjust minimum height of president name widget. */
-			OnResize();
+		if (!gui_scope) return;
+
+		/* Manually call OnResize to adjust minimum height of president name widget. */
+		if (data == WID_C_PRESIDENT_NAME) this->OnResize();
+
+		/* If a query string is visible, update its default value. */
+		if (this->query_widget != CompanyWindow::INVALID_QUERY_WIDGET && data == this->query_widget) {
+			UpdateQueryStringDefault(GetString(data == WID_C_COMPANY_NAME ? STR_COMPANY_NAME : STR_PRESIDENT_NAME, this->window_number));
 		}
 	}
 };

@@ -116,7 +116,7 @@ void SetupTemplateVehicleFromVirtual(TemplateVehicle *tmp, TemplateVehicle *prev
 	tmp->cargo_subtype = virt->cargo_subtype;
 	tmp->cargo_cap = virt->cargo_cap;
 
-	AssignBit(tmp->ctrl_flags, TVCF_REVERSED, HasBit(virt->flags, VRF_REVERSE_DIRECTION));
+	AssignBit(tmp->ctrl_flags, TVCF_REVERSED, virt->flags.Test(VehicleRailFlag::Flipped));
 
 	if (virt->Previous() == nullptr) {
 		uint cargo_weight = 0;
@@ -285,7 +285,7 @@ TBTRDiffFlags TrainTemplateDifference(const Train *t, const TemplateVehicle *tv)
 		if (check_refit_as_template && (t->cargo_type != tv->cargo_type || t->cargo_subtype != tv->cargo_subtype)) {
 			diff |= TBTRDF_REFIT;
 		}
-		if (HasBit(t->flags, VRF_REVERSE_DIRECTION) != HasBit(tv->ctrl_flags, TVCF_REVERSED)) {
+		if (t->flags.Test(VehicleRailFlag::Flipped) != HasBit(tv->ctrl_flags, TVCF_REVERSED)) {
 			diff |= TBTRDF_DIR;
 		}
 		t = t->GetNextUnit();
@@ -344,7 +344,7 @@ void CmdSetTrainUnitDirectionFromTemplate(Train *t, const TemplateVehicle *tv, D
 {
 	while (t != nullptr && tv != nullptr) {
 		/* Refit t as tv */
-		if (HasBit(t->flags, VRF_REVERSE_DIRECTION) != HasBit(tv->ctrl_flags, TVCF_REVERSED)) {
+		if (t->flags.Test(VehicleRailFlag::Flipped) != HasBit(tv->ctrl_flags, TVCF_REVERSED)) {
 			Command<CMD_REVERSE_TRAIN_DIRECTION>::Do(flags, t->index, true);
 		}
 

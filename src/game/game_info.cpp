@@ -76,14 +76,14 @@ template <> const char *GetClassName<GameInfo, ScriptType::GS>() { return "GSInf
 	if (!info->CheckMethod("GetAPIVersion")) return SQ_ERROR;
 	if (!info->engine->CallStringMethod(info->SQ_instance, "GetAPIVersion", &info->api_version, MAX_GET_OPS)) return SQ_ERROR;
 	if (!CheckAPIVersion(info->api_version)) {
-		Debug(script, 1, "Loading info.nut from ({}.{}): GetAPIVersion returned invalid version", info->GetName(), info->GetVersion());
+		sq_throwerror(vm, fmt::format("Loading info.nut from ({}.{}): GetAPIVersion returned invalid version", info->GetName(), info->GetVersion()));
 		return SQ_ERROR;
 	}
 
 	/* Remove the link to the real instance, else it might get deleted by RegisterGame() */
 	sq_setinstanceup(vm, 2, nullptr);
 	/* Register the Game to the base system */
-	info->GetScanner()->RegisterScript(info);
+	info->GetScanner()->RegisterScript(std::unique_ptr<GameInfo>{info});
 	return 0;
 }
 
@@ -111,22 +111,21 @@ bool GameInfo::CanLoadFromVersion(int version) const
 /* static */ SQInteger GameLibrary::Constructor(HSQUIRRELVM vm)
 {
 	/* Create a new library */
-	GameLibrary *library = new GameLibrary();
+	auto library = std::make_unique<GameLibrary>();
 
 	SQInteger res = ScriptInfo::Constructor(vm, *library);
 	if (res != 0) {
-		delete library;
 		return res;
 	}
 
 	/* Cache the category */
 	if (!library->CheckMethod("GetCategory") || !library->engine->CallStringMethod(library->SQ_instance, "GetCategory", &library->category, MAX_GET_OPS)) {
-		delete library;
 		return SQ_ERROR;
 	}
 
 	/* Register the Library to the base system */
-	library->GetScanner()->RegisterScript(library);
+	ScriptScanner *scanner = library->GetScanner();
+	scanner->RegisterScript(std::move(library));
 
 	return 0;
 }

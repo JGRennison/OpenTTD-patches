@@ -621,8 +621,14 @@ STR_GRAPH_COMPANY_VALUES_CAPTION                                :{WHITE}Graff Gw
 
 STR_GRAPH_LAST_24_MINUTES_TIME_LABEL                            :{TINY_FONT}{BLACK}Y 24 munud diwethaf
 STR_GRAPH_LAST_72_MINUTES_TIME_LABEL                            :{TINY_FONT}{BLACK}Y 72 munud diwethaf
+STR_GRAPH_LAST_288_MINUTES_TIME_LABEL                           :{TINY_FONT}{BLACK}Y 288 munud diwethaf
 
+STR_GRAPH_LAST_24_MONTHS                                        :{TINY_FONT}{BLACK}2 flynedd (misol)
+STR_GRAPH_LAST_24_QUARTERS                                      :{TINY_FONT}{BLACK}6 mlynedd (chwarterol)
+STR_GRAPH_LAST_24_YEARS                                         :{TINY_FONT}{BLACK}24 mlynedd (blynyddol)
 
+STR_GRAPH_TOGGLE_RANGE                                          :Toglu graff ar gyfer yr ystod data yma
+STR_GRAPH_SELECT_SCALE                                          :Newid graddfa llorweddol y graff
 
 STR_GRAPH_CARGO_PAYMENT_RATES_CAPTION                           :{WHITE}Cyfraddau Tâl Llwythi
 STR_GRAPH_CARGO_PAYMENT_RATES_DAYS                              :{TINY_FONT}{BLACK}Diwrnodau cludo
@@ -641,6 +647,9 @@ STR_GRAPH_INDUSTRY_RANGE_TRANSPORTED                            :Cludwyd
 STR_GRAPH_INDUSTRY_RANGE_DELIVERED                              :Danfonwyd
 STR_GRAPH_INDUSTRY_RANGE_WAITING                                :Yn aros
 
+STR_GRAPH_TOWN_CARGO_CAPTION                                    :{WHITE}{TOWN} - Hanes Cargo
+STR_GRAPH_TOWN_RANGE_PRODUCED                                   :Cyflenwad
+STR_GRAPH_TOWN_RANGE_TRANSPORTED                                :Cludwyd
 
 STR_GRAPH_PERFORMANCE_DETAIL_TOOLTIP                            :{BLACK}Dangos manwl amcangyfrif perfformiad
 
@@ -986,7 +995,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :Dewis unedau ar
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Punnoedd Prydeinig
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Doler America
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Ewro
@@ -1032,6 +1041,7 @@ STR_GAME_OPTIONS_CURRENCY_MYR                                   :Ringgit Malaysi
 STR_GAME_OPTIONS_CURRENCY_LVL                                   :Lats Latfia
 STR_GAME_OPTIONS_CURRENCY_PTE                                   :Esgwdo Portiwgeaidd
 STR_GAME_OPTIONS_CURRENCY_UAH                                   :Hryvnia Wcrain
+STR_GAME_OPTIONS_CURRENCY_VND                                   :Dong Fietnam
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :Awtogadw
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :Dewiswch pa mor aml y dylid awtogadw gemau
@@ -1305,6 +1315,10 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Cyfradd chwyddi
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Costau rhedeg: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Gosod lefel costau cynnal a chadw ar gerbydau a thanadeiledd
+###length 3
+STR_CONFIG_SETTING_RUNNING_COSTS_LOW                            :Isel
+STR_CONFIG_SETTING_RUNNING_COSTS_MEDIUM                         :Cymhedrol
+STR_CONFIG_SETTING_RUNNING_COSTS_HIGH                           :Uchel
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Cyflymder adeiladu: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Cyfyngu'r nifer o weithredoedd adeiliadu ar gyfer AIau
@@ -1326,6 +1340,10 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :Dim cymhorthdal
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Costau adeiladu: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Gosod lefel costau prynnu ac adeiladu
+###length 3
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_LOW                       :Isel
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_MEDIUM                    :Cymhedrol
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :Uchel
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Dirwasgiadau: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Os y galluogir, gall dirwasgiadau ddigwydd yn ysbeidiol. Yn ystod dirwasgiad bydd lefelau gweithgynhyrchu'n is o lawer (gan ddychwelyd at y lefel gwreiddiol wedi diwedd y dirwasgiad)
@@ -1671,6 +1689,9 @@ STR_CONFIG_SETTING_SCROLLMODE_LMB                               :Symud map gyda 
 
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Sgrolio prif ffenestr llyfn: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Rheoli syt y mae'r prif olygfa'n sgrolio at leoliad penodol pan yn clicio ar y map bychan neu yn rhoi gorchymyn i sgrolio at wrthrych penodol
+
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT                  :Ymddygiad traddodiadol dewis llamlenni bar offer: {STRING}
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT_HELPTEXT         :Dewisiad ymddygiad llamlenni bar offer. Os yw i ffwrdd, bydd llamlenni yn aros ar agor nes fod dewis yn cael ei wneud. Os yw ymlaen, bydd llamlenni bar offer yn gweithredu pan fo botwm y llygoden yn cael ei ollwng.
 
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Dangos cymorth mesur wrth ddefnyddio'r offer adeiladu amrywiol: {STRING}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP_HELPTEXT                     :Dangos pellterau teil a gwahaniaethau uchder wrth lusgo tra'n adeiladu
@@ -2082,9 +2103,9 @@ STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :Mae llwythi ARF
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :Dull dosrannu ar gyfer llwythi eraill: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :Mae "anghymesur" yn golygu y gall llwythi mympwyol eu gyrru yn y naill cyfeiriad neu'r llall. Mae "â llaw" yn golygu ni fydd dosrannu diofyn yn digwydd ar gyfer y llwythi hyn
 ###length 3
-STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :â llaw
-STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :anghymesur
-STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :cymesur
+STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :Â llaw
+STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :Anghymesur
+STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :Cymesur
 
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY                           :Manylder dosrannu: {STRING}
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY_HELPTEXT                  :Mae'r gosodiad yma'n pennu faint o amser prosesydd y bydd cyfrifo'r graff cyswllt yn ei gymeryd. Os yw'n cymryd gormod o amser efallai bydd peth oedi ar y gêm. Os ydych yn gosod gwerth isel, fodd bynnag, ni fydd y dosraniad yn fanwl gywir, a gallwch nodi nad yw llwythi'n cael ei yrru i'r mannau y byddech y disgwyl
@@ -2192,8 +2213,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... nid 
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... yn anwybyddu set Graffeg Sylfaenol '{STRING}': ni ganfuwyd
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... yn anwybyddu setiau Sain Sylfaenol '{STRING}': ni ganfuwyd
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... yn anwybyddu set Sain Sylfaenol '{STRING}': ni ganfuwyd
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Allan o gof
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Methwyd dyroddi {BYTES} o storfa corluniau. Lleihawyd y storfa corluniau at {BYTES}. Bydd hyn yn lleihau perfformiad OpenTTD. I leihau gofynion cof gallwch roi cynnig ar analluogi graffigiau 32 did a/neu lefelau mwyháu
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Gwall gyda'r gosodiadau fideo...
@@ -2201,7 +2220,8 @@ STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... dim 
 STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :{WHITE}... gyriant caledwedd graffig wedi chwalu'r gêm. Cyflymu caledwedd wedi;i analluogi
 
 # Intro window
-STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
+STR_INTRO_CAPTION                                               :{WHITE}OpenTTD
+STR_INTRO_VERSION                                               :OpenTTD {REV}
 
 STR_INTRO_NEW_GAME                                              :{BLACK}Gêm Newydd
 STR_INTRO_LOAD_GAME                                             :{BLACK}Llwytho Gêm
@@ -2820,6 +2840,11 @@ STR_PICKER_MODE_USED_TOOLTIP                                    :Toglu dangos ei
 STR_PICKER_MODE_SAVED                                           :Wedi'u Cadw
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :Toglu dangos eitemau wedi'u cadw yn unig
 
+STR_PICKER_PREVIEW_SHRINK                                       :-
+STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Lleihau ucher delewddau rhagolwg. Mae Ctrl+Clic yn lleihau at yr isafswm
+STR_PICKER_PREVIEW_EXPAND                                       :+
+STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Cynyddu ucher delewddau rhagolwg. Mae Ctrl+Clic yn cynyddu at yr uchafswm
+
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Dewis dosbarth gorsaf i'w ddangos
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Dewis math gorsaf i'w adeiladu. Mae Ctrl+Clic yn adio neu tynnu o'r eitemau a gedwir
 STR_PICKER_WAYPOINT_CLASS_TOOLTIP                               :Dewis dosbarth pwynt llwybro i'w ddangos
@@ -2850,9 +2875,11 @@ STR_HOUSE_PICKER_CLASS_ZONE3                                    :Maestrefi Allan
 STR_HOUSE_PICKER_CLASS_ZONE4                                    :Maestrefi Mewnol
 STR_HOUSE_PICKER_CLASS_ZONE5                                    :Canol y ddinas
 
-STR_HOUSE_PICKER_PROTECT                                        :Atal uwchraddiadau
+STR_HOUSE_PICKER_PROTECT                                        :Rhwystro uwchraddiadau
 STR_HOUSE_PICKER_PROTECT_TOOLTIP                                :Dewis a fydd y tŷ yma'n cael ei amddiffyn rhag disodli wrth i'r dref tyfu
 
+STR_HOUSE_PICKER_REPLACE                                        :Disodli blaenorol
+STR_HOUSE_PICKER_REPLACE_TOOLTIP                                :Dewis a fydd y tŷ blaenorol ar y teil yn cael ei ddisodli'n ddiofyn pan yn gosod tŷ newydd
 
 STR_STATION_CLASS_DFLT                                          :Rhagosodiad
 STR_STATION_CLASS_DFLT_STATION                                  :Gorsaf rhagosodedig
@@ -3514,15 +3541,12 @@ STR_SAVE_PRESET_CAPTION                                         :{WHITE}Cadw rha
 STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}Rhestr o ragosodiadau ar gael, Dewiswch un i'w gopïo i'r enw cadw isod
 STR_SAVE_PRESET_TITLE                                           :{BLACK}Rhowch enw ar gyfer y rhagosodiad
 STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}Enw a ddewiswyd ar gyfer cadw'r rhagosodiad
-STR_SAVE_PRESET_CANCEL                                          :{BLACK}Canslo
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}Peidio newid y rhagosodiad
 STR_SAVE_PRESET_SAVE                                            :{BLACK}Cadw
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}Cadw'r rhagosodiad i'r enw a ddewiswyd
 
 # NewGRF parameters window
 STR_BASEGRF_PARAMETERS_CAPTION                                  :{WHITE}Newid paramedrau graffeg sylfaenol
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}Newid paramedrau NewGRF
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Cau
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}Ailosod
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}Gosod pob paramedr i'w werth rhagosodedig
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :Paramedr {NUM}
@@ -3657,6 +3681,7 @@ STR_EDIT_SIGN_CAPTION                                           :{WHITE}Golygu t
 STR_EDIT_SIGN_LOCATION_TOOLTIP                                  :{BLACK}Canoli'r brif olygfa ar leoliad yr arwydd. Mae Ctrl+Clic yn agor ffenestr olygfa newydd ar leoliad yr arwydd
 STR_EDIT_SIGN_NEXT_SIGN_TOOLTIP                                 :{BLACK}Mynd i'r arwydd nesaf
 STR_EDIT_SIGN_PREVIOUS_SIGN_TOOLTIP                             :{BLACK}Mynd i'r arwydd blaenorol
+STR_EDIT_SIGN_TEXT_COLOUR_TOOLTIP                               :{BLACK}Lliw testun yr arwydd
 
 STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}Rhowch enw ar gyfer yr arwydd
 
@@ -3664,7 +3689,7 @@ STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}Rhowch e
 STR_TOWN_DIRECTORY_CAPTION                                      :{WHITE}Trefi ({COMMA} o {COMMA})
 STR_TOWN_DIRECTORY_NONE                                         :{ORANGE}- Dim -
 STR_TOWN_DIRECTORY_TOWN                                         :{ORANGE}{TOWN}{BLACK} ({COMMA})
-STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{YELLOW} (Dinas){BLACK} ({COMMA})
+STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{BLACK} ({COMMA}) {YELLOW}{CITY_ICON}
 STR_TOWN_DIRECTORY_LIST_TOOLTIP                                 :{BLACK}Enwau trefi - cliciwch ar enw tref i ganoli'r brif olygfa ar y dref. Ctrl+Clic i agor ffenest golwg newydd ar leoliad y dref
 STR_TOWN_POPULATION                                             :{BLACK}Poblogaeth y Byd: {COMMA}
 
@@ -3688,6 +3713,8 @@ STR_TOWN_VIEW_CENTER_TOOLTIP                                    :{BLACK}Canoli'r
 STR_TOWN_VIEW_LOCAL_AUTHORITY_BUTTON                            :{BLACK}Awdurdod Lleol
 STR_TOWN_VIEW_LOCAL_AUTHORITY_TOOLTIP                           :{BLACK}Dangos gwybodaeth am yr awdurdod lleol
 STR_TOWN_VIEW_RENAME_TOOLTIP                                    :{BLACK}newid enw'r dref
+STR_TOWN_VIEW_CARGO_GRAPH                                       :Graff Llwythi
+STR_TOWN_VIEW_CARGO_GRAPH_TOOLTIP                               :Dangos graff o hanes llwythi'r dref
 
 STR_TOWN_VIEW_EXPAND_BUTTON                                     :{BLACK}Ehangu
 STR_TOWN_VIEW_EXPAND_TOOLTIP                                    :{BLACK}Cynyddu maint tref
@@ -4101,7 +4128,7 @@ STR_GROUP_LIVERY_TOOLTIP                                        :{BLACK}Newid li
 STR_GROUP_REPLACE_PROTECTION_TOOLTIP                            :{BLACK}Cliciwch i amddiffyn y grŵp rhag awtoddisodli bydol. Mae Ctrl+clic hefyd yn amddiffyn is-grwpiau
 
 STR_QUERY_GROUP_DELETE_CAPTION                                  :{WHITE}Dileu Grŵp
-STR_GROUP_DELETE_QUERY_TEXT                                     :{WHITE} Ydych chi'n siwer eich bod am ddileu'r grŵp yma ac unrhyw ddisgynyddion?
+STR_GROUP_DELETE_QUERY_TEXT                                     :{WHITE} Ydych chi'n siwr eich bod am ddileu'r grŵp yma ac unrhyw ddisgynyddion?
 
 STR_GROUP_ADD_SHARED_VEHICLE                                    :Ychwanegu cerbyd a rennir
 STR_GROUP_REMOVE_ALL_VEHICLES                                   :Dileu pob cerbyd
@@ -4159,6 +4186,7 @@ STR_PURCHASE_INFO_ALL_BUT                                       :Popeth ond{CARG
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Grym Tynnu Uchaf: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Pellter cyrhaeddiad: {GOLD}{COMMA} teil
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Math awyren: {GOLD}{STRING}
+STR_PURCHASE_INFO_RAILTYPES                                     :{BLACK}Mathau rheilffordd: {GOLD}{STRING}
 
 ###length 3
 STR_CARGO_TYPE_FILTER_ALL                                       :Pob math o lwyth
@@ -4342,6 +4370,7 @@ STR_ENGINE_PREVIEW_RUNCOST_YEAR                                 :Cost Rhedeg: {C
 STR_ENGINE_PREVIEW_RUNCOST_PERIOD                               :Cost Rhedeg: {CURRENCY_LONG}/cyfnod
 STR_ENGINE_PREVIEW_CAPACITY                                     :Cynhwysedd: {CARGO_LONG}
 STR_ENGINE_PREVIEW_CAPACITY_2                                   :Cynhwysedd: {CARGO_LONG}, {CARGO_LONG}
+STR_ENGINE_PREVIEW_RAILTYPES                                    :Mathau rheilffordd: {STRING}
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}Disodli {STRING} - {STRING}
@@ -4887,8 +4916,6 @@ STR_AI_LIST_URL                                                 :{LTBLUE}URL: {O
 
 STR_AI_LIST_ACCEPT                                              :{BLACK}Derbyn
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Dewis y sgript a amlygwyd
-STR_AI_LIST_CANCEL                                              :{BLACK}Canslo
-STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Peidio newid y sgript
 
 STR_SCREENSHOT_CAPTION                                          :{WHITE}Creu ciplun
 STR_SCREENSHOT_SCREENSHOT                                       :{BLACK}Ciplun arferol
@@ -4901,7 +4928,6 @@ STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Ciplun m
 # Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}Paramedrau AI
 STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :{WHITE}Paramedrau Sgript Gêm
-STR_AI_SETTINGS_CLOSE                                           :{BLACK}Cau
 STR_AI_SETTINGS_RESET                                           :{BLACK}Ailosod
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
 
@@ -5241,6 +5267,13 @@ STR_ERROR_START_AND_END_MUST_BE_IN                              :{WHITE}Rhaid i'
 STR_ERROR_ENDS_OF_BRIDGE_MUST_BOTH                              :{WHITE}... rhaid i ddau ben y bont orffwys ar y tir
 STR_ERROR_BRIDGE_TOO_LONG                                       :{WHITE}... pont rhy hir
 STR_ERROR_BRIDGE_THROUGH_MAP_BORDER                             :{WHITE}Byddai'r bont yn gorffen y tu allan i'r map
+STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}Mae'r bont {HEIGHT} yn rhy isel ar gyfer gorsaf
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROADSTOP                           :{WHITE}Mae'r bont {HEIGHT} yn rhy isel ar gyfer arhosfan lôn
+STR_ERROR_BRIDGE_TOO_LOW_FOR_DOCK                               :{WHITE}Mae'r bont {HEIGHT} yn rhy isel ar gyfer doc
+STR_ERROR_BRIDGE_TOO_LOW_FOR_BUOY                               :{WHITE}Mae'r bont {HEIGHT} yn rhy isel ar gyfer bwi
+STR_ERROR_BRIDGE_TOO_LOW_FOR_RAIL_WAYPOINT                      :{WHITE}Mae'r bont {HEIGHT} yn rhy isel ar gyfer pwynt llwybro rheilffordd
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROAD_WAYPOINT                      :{WHITE}Mae'r bont {HEIGHT} yn rhy isel ar gyfer pwynt llwybro ffordd
+STR_ERROR_BRIDGE_TOO_LOW_FOR_LOCK                               :{WHITE}Mae'r bont {HEIGHT} yn rhy isel ar gyfer loc
 
 # Tunnel related errors
 STR_ERROR_CAN_T_BUILD_TUNNEL_HERE                               :{WHITE}Methu adeiladu twnnel yma...
@@ -5857,6 +5890,8 @@ STR_SAVEGAME_NAME_SPECTATOR                                     :Gwyliwr, {1:STR
 
 # Viewport strings
 STR_VIEWPORT_TOWN_POP                                           :{TOWN} ({COMMA})
+STR_VIEWPORT_TOWN_CITY                                          :{TOWN} {CITY_ICON}
+STR_VIEWPORT_TOWN_CITY_POP                                      :{TOWN} ({COMMA}) {CITY_ICON}
 STR_VIEWPORT_STATION                                            :{STATION} {STATION_FEATURES}
 
 # Simple strings to get specific types of data

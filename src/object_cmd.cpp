@@ -259,7 +259,7 @@ void UpdateObjectColours(const Company *c)
 	}
 }
 
-extern CommandCost CheckBuildableTile(TileIndex tile, uint invalid_dirs, int &allowed_z, bool allow_steep, bool check_bridge);
+extern CommandCost CheckBuildableTile(TileIndex tile, DiagDirections invalid_dirs, int &allowed_z, bool allow_steep, bool check_bridge);
 static CommandCost ClearTile_Object(TileIndex tile, DoCommandFlags flags);
 
 /**
@@ -344,7 +344,7 @@ CommandCost CmdBuildObject(DoCommandFlags flags, TileIndex tile, ObjectType type
 			}
 
 			if (callback == CALLBACK_FAILED) {
-				cost.AddCost(CheckBuildableTile(t, 0, allowed_z, false, false));
+				cost.AddCost(CheckBuildableTile(t, {}, allowed_z, false, false));
 			} else {
 				/* The meaning of bit 10 is inverted for a grf version < 8. */
 				if (spec->grf_prop.grffile->grf_version < 8) ToggleBit(callback, 10);
@@ -1077,11 +1077,14 @@ static bool TryBuildLightHouse()
 	}
 
 	/* Only build lighthouses at tiles where the border is sea. */
-	if (!IsTileType(tile, MP_WATER)) return false;
+	if (!IsTileType(tile, MP_WATER) || GetWaterClass(tile) != WATER_CLASS_SEA) return false;
 
 	for (int j = 0; j < 19; j++) {
 		int h;
 		if (IsTileType(tile, MP_CLEAR) && IsTileFlat(tile, &h) && h <= 2 && !IsBridgeAbove(tile)) {
+			for (auto t : SpiralTileSequence(tile, 9)) {
+				if (IsObjectTypeTile(t, OBJECT_LIGHTHOUSE)) return false;
+			}
 			BuildObject(OBJECT_LIGHTHOUSE, tile);
 			assert(tile < Map::Size());
 			return true;

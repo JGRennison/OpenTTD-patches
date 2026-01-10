@@ -160,7 +160,7 @@ protected:
 		return *static_cast<Tpf *>(this);
 	}
 
-	inline static Cache &stGetGlobalCache()
+	static inline Cache &stGetGlobalCache()
 	{
 		static int last_rail_change_counter = 0;
 		static Cache C;

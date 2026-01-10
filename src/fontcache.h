@@ -29,15 +29,20 @@ private:
 protected:
 	FontCache *parent;                ///< The parent of this font cache.
 	const FontSize fs;                ///< The size of the font.
-	int height;                       ///< The height of the font.
-	int ascender;                     ///< The ascender value of the font.
-	int descender;                    ///< The descender value of the font.
+	int height = 0; ///< The height of the font.
+	int ascender = 0; ///< The ascender value of the font.
+	int descender = 0; ///< The descender value of the font.
 
 public:
 	FontCache(FontSize fs);
 	virtual ~FontCache();
 
 	static void InitializeFontCaches();
+
+	/** Default unscaled font heights. */
+	static const int DEFAULT_FONT_HEIGHT[FS_END];
+	/** Default unscaled font ascenders. */
+	static const int DEFAULT_FONT_ASCENDER[FS_END];
 
 	static int GetDefaultFontHeight(FontSize fs);
 
@@ -166,9 +171,9 @@ inline void InitializeUnicodeGlyphMap()
 	}
 }
 
-inline void ClearFontCache()
+inline void ClearFontCache(FontSizes fontsizes)
 {
-	for (FontSize fs = FS_BEGIN; fs < FS_END; fs++) {
+	for (FontSize fs : fontsizes.IterateSetBits()) {
 		FontCache::Get(fs)->ClearFontCache();
 	}
 }
@@ -230,7 +235,7 @@ inline FontCacheSubSetting *GetFontCacheSubSetting(FontSize fs)
 
 uint GetFontCacheFontSize(FontSize fs);
 std::string GetFontCacheFontName(FontSize fs);
-void InitFontCache(bool monospace);
+void InitFontCache(FontSizes fontsizes);
 void UninitFontCache();
 
 bool GetFontAAState();

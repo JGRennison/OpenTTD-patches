@@ -65,14 +65,14 @@ public:
 
 class SlIndustryAccepted : public DefaultSaveLoadHandler<SlIndustryAccepted, Industry> {
 public:
-	inline static const SaveLoad description[] = {
+	static inline const SaveLoad description[] = {
 		 SLE_VAR(Industry::AcceptedCargo, cargo, SLE_UINT8),
 		 SLE_VAR(Industry::AcceptedCargo, waiting, SLE_UINT16),
 		 SLE_VAR(Industry::AcceptedCargo, last_accepted, SLE_INT32),
 		SLE_CONDVAR(Industry::AcceptedCargo, accumulated_waiting, SLE_UINT32, SLV_INDUSTRY_ACCEPTED_HISTORY, SL_MAX_VERSION),
 		SLEG_CONDSTRUCTLIST("history", SlIndustryAcceptedHistory, SLV_INDUSTRY_ACCEPTED_HISTORY, SL_MAX_VERSION),
 	};
-	inline const static SaveLoadCompatTable compat_description = {};
+	static inline const SaveLoadCompatTable compat_description = {};
 
 	void Save(Industry *i) const override
 	{
@@ -95,11 +95,11 @@ public:
 
 class SlIndustryProducedHistory : public DefaultSaveLoadHandler<SlIndustryProducedHistory, Industry::ProducedCargo> {
 public:
-	inline static const SaveLoad description[] = {
+	static inline const SaveLoad description[] = {
 		 SLE_VAR(Industry::ProducedHistory, production, SLE_FILE_U16 | SLE_VAR_U32),
 		 SLE_VAR(Industry::ProducedHistory, transported, SLE_FILE_U16 | SLE_VAR_U32),
 	};
-	inline const static SaveLoadCompatTable compat_description = {};
+	static inline const SaveLoadCompatTable compat_description = {};
 
 	void Save(Industry::ProducedCargo *p) const override
 	{
@@ -130,13 +130,13 @@ public:
 
 class SlIndustryProduced : public DefaultSaveLoadHandler<SlIndustryProduced, Industry> {
 public:
-	inline static const SaveLoad description[] = {
+	static inline const SaveLoad description[] = {
 		 SLE_VAR(Industry::ProducedCargo, cargo, SLE_UINT8),
 		 SLE_VAR(Industry::ProducedCargo, waiting, SLE_UINT16),
 		 SLE_VAR(Industry::ProducedCargo, rate, SLE_UINT8),
 		SLEG_STRUCTLIST("history", SlIndustryProducedHistory),
 	};
-	inline const static SaveLoadCompatTable compat_description = {};
+	static inline const SaveLoadCompatTable compat_description = {};
 
 	void Save(Industry *i) const override
 	{
@@ -248,7 +248,7 @@ struct INDYChunkHandler : ChunkHandler {
 			if (IsSavegameVersionBefore(SLV_161) && !IsSavegameVersionBefore(SLV_76)) {
 				/* Store the old persistent storage. The GRFID will be added later. */
 				assert(PersistentStorage::CanAllocateItem());
-				i->psa = new PersistentStorage(0, 0, {});
+				i->psa = new PersistentStorage(0, GSF_INVALID, TileIndex{});
 				std::copy(std::begin(_old_ind_persistent_storage.storage), std::end(_old_ind_persistent_storage.storage), std::begin(i->psa->storage));
 			}
 			if (IsSavegameVersionBefore(SLV_INDUSTRY_CARGO_REORGANISE)) {

@@ -678,10 +678,6 @@ public:
 	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
-			case WID_NG_CANCEL: // Cancel button
-				CloseWindowById(WC_NETWORK_WINDOW, WN_NETWORK_WINDOW_GAME);
-				break;
-
 			case WID_NG_NAME:    // Sort by name
 			case WID_NG_CLIENTS: // Sort by connected clients
 			case WID_NG_MAPSIZE: // Sort by map size
@@ -935,7 +931,6 @@ static constexpr NWidgetPart _nested_network_game_widgets[] = {
 				NWidget(WWT_PUSHTXTBTN, COLOUR_WHITE, WID_NG_SEARCH_LAN), SetResize(1, 0), SetFill(1, 0), SetStringTip(STR_NETWORK_SERVER_LIST_SEARCH_SERVER_LAN, STR_NETWORK_SERVER_LIST_SEARCH_SERVER_LAN_TOOLTIP),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_WHITE, WID_NG_ADD), SetResize(1, 0), SetFill(1, 0), SetStringTip(STR_NETWORK_SERVER_LIST_ADD_SERVER, STR_NETWORK_SERVER_LIST_ADD_SERVER_TOOLTIP),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_WHITE, WID_NG_START), SetResize(1, 0), SetFill(1, 0), SetStringTip(STR_NETWORK_SERVER_LIST_START_SERVER, STR_NETWORK_SERVER_LIST_START_SERVER_TOOLTIP),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_WHITE, WID_NG_CANCEL), SetResize(1, 0), SetFill(1, 0), SetStringTip(STR_BUTTON_CANCEL),
 			EndContainer(),
 		EndContainer(),
 		/* Resize button. */
@@ -1130,7 +1125,7 @@ struct NetworkStartServerWindow : public Window {
 		if (this->widget_id == WID_NSS_SETPWD) {
 			_settings_client.network.server_password = std::move(*str);
 		} else {
-			auto value = ParseInteger<int32_t>(*str);
+			auto value = ParseInteger<int32_t>(*str, 10, true);
 			if (!value.has_value()) return;
 			this->SetWidgetDirty(this->widget_id);
 			switch (this->widget_id) {
@@ -1678,8 +1673,7 @@ public:
 				this->line_height = std::max(height, (uint)GetCharacterHeight(FS_NORMAL)) + padding.height;
 
 				resize.width = 1;
-				resize.height = this->line_height;
-				fill.height = this->line_height;
+				fill.height = resize.height = this->line_height;
 				size.height = std::max(size.height, 5 * this->line_height);
 				break;
 			}

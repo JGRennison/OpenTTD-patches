@@ -249,13 +249,32 @@ bool HasBridgeFlatRamp(Slope tileh, Axis axis)
 	return (tileh != SLOPE_FLAT);
 }
 
-static inline std::span<const PalSpriteID> GetBridgeSpriteTable(int index, BridgePieces table)
+/**
+ * Test if bridge piece uses a custom sprite table.
+ * @param bridge_type Bridge type.
+ * @param piece Bridge piece.
+ * @return True iff a custom sprite table is used for the bridge piece.
+ */
+static bool BridgeHasCustomSpriteTable(BridgeType bridge_type, BridgePieces piece)
 {
-	const BridgeSpec *bridge = GetBridgeSpec(index);
-	assert(table < NUM_BRIDGE_PIECES);
-	if (table < bridge->sprite_table.size() && !bridge->sprite_table[table].empty()) return bridge->sprite_table[table];
+	assert(piece < NUM_BRIDGE_PIECES);
+	const BridgeSpec *bridge = GetBridgeSpec(bridge_type);
+	return piece < bridge->sprite_table.size() && !bridge->sprite_table[piece].empty();
+}
 
-	return _bridge_sprite_table[index][table];
+/**
+ * Get the sprite table for a rail/road bridge piece.
+ * @param bridge_type Bridge type.
+ * @param piece Bridge piece.
+ * @return Sprite table for the bridge piece.
+ */
+static std::span<const PalSpriteID> GetBridgeSpriteTable(BridgeType bridge_type, BridgePieces piece)
+{
+	const BridgeSpec *bridge = GetBridgeSpec(bridge_type);
+	assert(piece < NUM_BRIDGE_PIECES);
+	if (piece < bridge->sprite_table.size() && !bridge->sprite_table[piece].empty()) return bridge->sprite_table[piece];
+
+	return _bridge_sprite_table[bridge_type][piece];
 }
 
 
@@ -608,17 +627,13 @@ CommandCost CmdBuildBridge(DoCommandFlags flags, TileIndex tile_end, TileIndex t
 		if (terraform_cost_south.Failed() || (terraform_cost_south.GetCost() != 0 && !allow_on_slopes)) return CommandCost(STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION);
 		cost.AddCost(terraform_cost_south.GetCost());
 
-		const TileIndex heads[] = {tile_start, tile_end};
-		for (int i = 0; i < 2; i++) {
-			if (IsBridgeAbove(heads[i])) {
-				TileIndex north_head = GetNorthernBridgeEnd(heads[i]);
+		/* Check for bridges above the bridge ramps. */
+		for (TileIndex tile : {tile_start, tile_end}) {
+			if (!IsBridgeAbove(tile)) continue;
 
-				if (direction == GetBridgeAxis(heads[i])) return CommandCost(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
+			if (direction == GetBridgeAxis(tile)) return CommandCost(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
 
-				if (z_start + 1 == GetBridgeHeight(north_head)) {
-					return CommandCost(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
-				}
-			}
+			if (z_start + 1 == GetBridgeHeight(GetNorthernBridgeEnd(tile))) return CommandCost(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
 		}
 
 		TileIndexDiff delta = TileOffsByAxis(direction);
@@ -1675,8 +1690,9 @@ static void GetBridgeRoadCatenary(const RoadTypeInfo *rti, TileIndex head_tile, 
  * @param z            the z of the bridge
  * @param offset       sprite offset identifying flat to sloped bridge tiles
  * @param head         are we drawing bridge head?
+ * @param is_custom_layout Set if the bridge uses a custom sprite layout.
  */
-static void DrawBridgeRoadBits(TileIndex head_tile, int x, int y, int z, int offset, bool head)
+static void DrawBridgeRoadBits(TileIndex head_tile, int x, int y, int z, int offset, bool head, bool is_custom_layout)
 {
 	RoadType road_rt = GetRoadTypeRoad(head_tile);
 	RoadType tram_rt = GetRoadTypeTram(head_tile);
@@ -1700,6 +1716,9 @@ static void DrawBridgeRoadBits(TileIndex head_tile, int x, int y, int z, int off
 		if (road_rti != nullptr) {
 			if (road_rti->UsesOverlay()) {
 				seq_back[0] = GetCustomRoadSprite(road_rti, head_tile, ROTSG_BRIDGE, head ? TCX_NORMAL : TCX_ON_BRIDGE) + offset;
+			} else if (is_custom_layout) {
+				/* For custom layouts draw a custom bridge deck. */
+				seq_back[0] = SPR_BRIDGE_DECKS_ROAD + offset;
 			}
 		} else if (tram_rti != nullptr) {
 			if (tram_rti->UsesOverlay()) {
@@ -2362,14 +2381,17 @@ static void DrawTile_TunnelBridge(TileInfo *ti, DrawTileProcParams params)
 		assert( (base_offset & 0x07) == 0x00);
 
 		DrawFoundation(ti, GetBridgeFoundation(ti->tileh, DiagDirToAxis(tunnelbridge_direction)));
+		bool is_custom_layout = false; // Set if rail/road bridge uses a custom layout.
 
 		/* HACK Wizardry to convert the bridge ramp direction into a sprite offset */
 		base_offset += (6 - tunnelbridge_direction) % 4;
 
 		/* Table number BRIDGE_PIECE_HEAD always refers to the bridge heads for any bridge type */
 		if (transport_type != TRANSPORT_WATER) {
+			BridgeType bridge_type = GetBridgeType(ti->tile);
 			if (ti->tileh == SLOPE_FLAT) base_offset += 4; // sloped bridge head
-			psid = &GetBridgeSpriteTable(GetBridgeType(ti->tile), BRIDGE_PIECE_HEAD)[base_offset];
+			psid = &GetBridgeSpriteTable(bridge_type, BRIDGE_PIECE_HEAD)[base_offset];
+			is_custom_layout = BridgeHasCustomSpriteTable(bridge_type, BRIDGE_PIECE_HEAD);
 		} else {
 			psid = _aqueduct_sprites + base_offset;
 		}
@@ -2407,13 +2429,13 @@ static void DrawTile_TunnelBridge(TileInfo *ti, DrawTileProcParams params)
 			}
 
 			/* DrawBridgeRoadBits() calls EndSpriteCombine() and StartSpriteCombine() */
-			DrawBridgeRoadBits(ti->tile, ti->x, ti->y, z, offset, true);
+			DrawBridgeRoadBits(ti->tile, ti->x, ti->y, z, offset, true, is_custom_layout);
 
 			EndSpriteCombine();
 		} else if (transport_type == TRANSPORT_RAIL) {
 			const RailTypeInfo *rti = GetRailTypeInfo(GetRailType(ti->tile));
-			if (rti->UsesOverlay()) {
-				SpriteID surface = GetCustomRailSprite(rti, ti->tile, RTSG_BRIDGE);
+			if (is_custom_layout || rti->UsesOverlay()) {
+				SpriteID surface = rti->UsesOverlay() ? GetCustomRailSprite(rti, ti->tile, RTSG_BRIDGE) : rti->base_sprites.bridge_deck;
 				if (surface != 0) {
 					if (HasBridgeFlatRamp(ti->tileh, DiagDirToAxis(tunnelbridge_direction))) {
 						AddSortableSpriteToDraw(surface + ((DiagDirToAxis(tunnelbridge_direction) == AXIS_X) ? RTBO_X : RTBO_Y), PAL_NONE, ti->x, ti->y, 16, 16, 0, ti->z + 8);
@@ -2421,9 +2443,6 @@ static void DrawTile_TunnelBridge(TileInfo *ti, DrawTileProcParams params)
 						AddSortableSpriteToDraw(surface + RTBO_SLOPE + tunnelbridge_direction, PAL_NONE, ti->x, ti->y, 16, 16, 8, ti->z);
 					}
 				}
-				/* Don't fallback to non-overlay sprite -- the spec states that
-				 * if an overlay is present then the bridge surface must be
-				 * present. */
 			}
 
 			/* PBS debugging, draw reserved tracks darker */
@@ -2561,6 +2580,7 @@ void DrawBridgeMiddle(const TileInfo *ti)
 	TileIndex rampnorth = GetNorthernBridgeEnd(ti->tile);
 	TileIndex rampsouth = GetSouthernBridgeEnd(ti->tile);
 	TransportType transport_type = GetTunnelBridgeTransportType(rampsouth);
+	bool is_custom_layout; // Set if rail/road bridge uses a custom layout.
 
 	Axis axis = GetBridgeAxis(ti->tile);
 	BridgePieces piece = CalcBridgePiece(
@@ -2582,9 +2602,11 @@ void DrawBridgeMiddle(const TileInfo *ti)
 		}
 
 		psid = &GetBridgeSpriteTable(type, piece)[base_offset];
+		is_custom_layout = BridgeHasCustomSpriteTable(type, piece);
 	} else {
 		drawfarpillar = true;
 		psid = _aqueduct_sprites;
+		is_custom_layout = false;
 	}
 
 	if (axis != AXIS_X) psid += 4;
@@ -2618,11 +2640,11 @@ void DrawBridgeMiddle(const TileInfo *ti)
 
 	if (transport_type == TRANSPORT_ROAD) {
 		/* DrawBridgeRoadBits() calls EndSpriteCombine() and StartSpriteCombine() */
-		DrawBridgeRoadBits(rampsouth, x, y, bridge_z, axis ^ 1, false);
+		DrawBridgeRoadBits(rampsouth, x, y, bridge_z, axis ^ 1, false, is_custom_layout);
 	} else if (transport_type == TRANSPORT_RAIL) {
 		const RailTypeInfo *rti = GetRailTypeInfo(GetRailType(rampsouth));
-		if (rti->UsesOverlay() && !IsInvisibilitySet(TO_BRIDGES)) {
-			SpriteID surface = GetCustomRailSprite(rti, rampsouth, RTSG_BRIDGE, TCX_ON_BRIDGE);
+		if ((is_custom_layout || rti->UsesOverlay()) && !IsInvisibilitySet(TO_BRIDGES)) {
+			SpriteID surface = rti->UsesOverlay() ? GetCustomRailSprite(rti, rampsouth, RTSG_BRIDGE, TCX_ON_BRIDGE) : rti->base_sprites.bridge_deck;
 			if (surface != 0) {
 				AddSortableSpriteToDraw(surface + axis, PAL_NONE, x, y, 16, 16, 0, bridge_z, IsTransparencySet(TO_BRIDGES));
 			}
@@ -3322,7 +3344,7 @@ static VehicleEnterTileStates VehicleEnter_TunnelBridge(Vehicle *v, TileIndex ti
 					if (frame != TILE_SIZE) return {};
 					Train *t = Train::From(v);
 					t->track = TRACK_BIT_WORMHOLE;
-					SetBit(t->First()->flags, VRF_CONSIST_SPEED_REDUCTION);
+					t->First()->flags.Set(VehicleRailFlag::ConsistSpeedReduction);
 
 					/* Do not call PrepareToEnterBridge because that also increments z_pos if
 					 * GVF_GOINGUP_BIT is set.
@@ -3413,7 +3435,7 @@ static VehicleEnterTileStates VehicleEnter_TunnelBridge(Vehicle *v, TileIndex ti
 					t->direction = bridge_dir;
 					t->track = TRACK_BIT_WORMHOLE;
 				}
-				SetBit(t->First()->flags, VRF_CONSIST_SPEED_REDUCTION);
+				t->First()->flags.Set(VehicleRailFlag::ConsistSpeedReduction);
 				ClrBit(t->gv_flags, GVF_GOINGUP_BIT);
 				ClrBit(t->gv_flags, GVF_GOINGDOWN_BIT);
 				return VehicleEnterTileState::EnteredWormhole;

@@ -321,6 +321,7 @@ struct GUISettings : public TimeSettings {
 	bool        departure_default_via;                           ///< default via type for station departure board window
 	bool        departure_default_show_empty;                    ///< default show empty mode for departure board window
 	RightClickClose right_click_wnd_close;                       ///< close window with right click
+	bool        toolbar_dropdown_autoselect;                     ///< should toolbar dropdown buttons autoselect when releasing the mouse button
 	bool        pause_on_newgame;                                ///< whether to start new games paused or not
 	SignalGUISettings signal_gui_mode;                           ///< select which signal types are shown in the signal GUI
 	SignalCycleSettings cycle_signal_types;                      ///< Which signal types to cycle with the build signal tool.

@@ -198,7 +198,7 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 
 	/* handle breakdown power reduction */
 	uint32_t max_te = this->gcache.cached_max_te; // [N]
-	if (Type == VEH_TRAIN && mode == AS_ACCEL && HasBit(Train::From(this)->flags, VRF_BREAKDOWN_POWER)) {
+	if (Type == VEH_TRAIN && mode == AS_ACCEL && Train::From(this)->flags.Test(VehicleRailFlag::BreakdownPower)) {
 		/* We'd like to cache this, but changing cached_power has too many unwanted side-effects */
 		uint32_t power_temp;
 		this->CalculatePower(power_temp, max_te, true);
@@ -232,7 +232,7 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 	}
 
 	/* If power is 0 because of a breakdown, we make the force 0 if accelerating */
-	if (Type == VEH_TRAIN && mode == AS_ACCEL && HasBit(Train::From(this)->flags, VRF_BREAKDOWN_POWER) && power == 0) {
+	if (Type == VEH_TRAIN && mode == AS_ACCEL && Train::From(this)->flags.Test(VehicleRailFlag::BreakdownPower) && power == 0) {
 		force = 0;
 	}
 
@@ -293,7 +293,7 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 		accel = force < resistance ? std::min(-1, accel) : std::max(1, accel);
 		if (this->type == VEH_TRAIN) {
 			if (_settings_game.vehicle.train_acceleration_model == AM_ORIGINAL &&
-					HasBit(Train::From(this)->flags, VRF_BREAKDOWN_POWER)) {
+					Train::From(this)->flags.Test(VehicleRailFlag::BreakdownPower)) {
 				/* We need to apply the power reducation for non-realistic acceleration here */
 				uint32_t power;
 				CalculatePower(power, max_te, true);
@@ -304,7 +304,7 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 			if (this->cur_speed < 3 && accel < 5 &&
 					this->IsFrontEngine() && !(this->current_order_time & 0x3FF) &&
 					!(this->current_order.IsType(OT_LOADING)) &&
-					!(Train::From(this)->flags & (VRF_IS_BROKEN | (1 << VRF_TRAIN_STUCK))) &&
+					!(Train::From(this)->flags.Any(VehicleRailFlagsIsBroken | VehicleRailFlags{VehicleRailFlag::Stuck})) &&
 					this->owner == _local_company) {
 				ShowTrainTooHeavyAdviceMessage(this);
 			}

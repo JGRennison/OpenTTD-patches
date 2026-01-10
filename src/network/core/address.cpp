@@ -218,8 +218,7 @@ bool NetworkAddress::IsInNetmask(std::string_view netmask)
 SOCKET NetworkAddress::Resolve(int family, int socktype, int flags, SocketList *sockets, LoopProc func)
 {
 	struct addrinfo *ai;
-	struct addrinfo hints;
-	memset(&hints, 0, sizeof (hints));
+	struct addrinfo hints{};
 	hints.ai_family   = family;
 	hints.ai_flags    = flags;
 	hints.ai_socktype = socktype;
@@ -276,7 +275,7 @@ SOCKET NetworkAddress::Resolve(int family, int socktype, int flags, SocketList *
 		if (sockets == nullptr) {
 			this->address_length = (int)runp->ai_addrlen;
 			assert(sizeof(this->address) >= runp->ai_addrlen);
-			memcpy(&this->address, runp->ai_addr, runp->ai_addrlen);
+			std::copy_n(reinterpret_cast<const std::byte *>(runp->ai_addr), runp->ai_addrlen, reinterpret_cast<std::byte *>(&this->address));
 #ifdef __EMSCRIPTEN__
 			/* Emscripten doesn't zero sin_zero, but as we compare addresses
 			 * to see if they are the same address, we need them to be zero'd.
@@ -286,7 +285,7 @@ SOCKET NetworkAddress::Resolve(int family, int socktype, int flags, SocketList *
 			 */
 			if (this->address.ss_family == AF_INET) {
 				sockaddr_in *address_ipv4 = (sockaddr_in *)&this->address;
-				memset(address_ipv4->sin_zero, 0, sizeof(address_ipv4->sin_zero));
+				std::ranges::fill(address_ipv4->sin_zero, 0);
 			}
 #endif
 			break;

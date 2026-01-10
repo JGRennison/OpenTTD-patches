@@ -996,7 +996,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :Selecció de la
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Lliura esterlina
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Dòlar americà
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1042,6 +1042,7 @@ STR_GAME_OPTIONS_CURRENCY_MYR                                   :Ringgit
 STR_GAME_OPTIONS_CURRENCY_LVL                                   :Lats letó
 STR_GAME_OPTIONS_CURRENCY_PTE                                   :Escut portuguès
 STR_GAME_OPTIONS_CURRENCY_UAH                                   :Hryvnia ucraïnès
+STR_GAME_OPTIONS_CURRENCY_VND                                   :Dong vietnamita
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :Desa automàticament
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :Selecciona l'interval de desada automàtica de la partida
@@ -1315,6 +1316,10 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Tipus d'interè
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Costos d'utilització: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Fixa el nivell de manteniment i els costos d'utilització dels vehicles i infraestructures
+###length 3
+STR_CONFIG_SETTING_RUNNING_COSTS_LOW                            :Baix
+STR_CONFIG_SETTING_RUNNING_COSTS_MEDIUM                         :Mitjà
+STR_CONFIG_SETTING_RUNNING_COSTS_HIGH                           :Alt
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Ritme de construcció: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Limita la quantitat d'accions de construcció per part de les IA
@@ -1336,6 +1341,10 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :Sense subsidis
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Costos de construcció: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Fixa el nivell de construcció i els preus de compra
+###length 3
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_LOW                       :Baix
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_MEDIUM                    :Mitjà
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :Alt
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Recessions: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Si està activat, poden haver recessions periòdicament. Durant una recessió, tota la producció és significativament més baixa, tornant al nivell previ quan s'acabi el període de recessió.
@@ -1681,6 +1690,9 @@ STR_CONFIG_SETTING_SCROLLMODE_LMB                               :Mou el mapa amb
 
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Desplaçament suau de la vista: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Controla com la vista principal es desplaça a una posició específica quan es fa clic al minimapa o quan s'envia una ordre de desplaçar-se a un objecte específic al mapa. Si està activat, la vista es desplaça suaument; si està desactivat, salta directament al punt assenyalat
+
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT                  :Comportament de la selecció dels menús de la barra d'eines tradicional: {STRING}
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT_HELPTEXT         :Escolliu el comportament de selecció dels menús de les barres d'eines. Si està desactivat, els menús es mantindran oberts fins que es faci una selecció. Si està activat, els menús de la barra d'eines s'activaran quan se solti el botó del ratolí.
 
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Mostra un cartell de mesura quan estiguis utilitzant vàries eines de construcció: {STRING}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP_HELPTEXT                     :Mostra les distàncies-cel·la i les diferències d'alçada quan s'arrossegui durant la construcció
@@ -2092,9 +2104,9 @@ STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :La classe de c�
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :Mode de distribució per altres classes de càrrega: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :"Asimètric" vol dir que quantitats arbitràries de càrrega poden ser enviades en qualsevol sentit. "Manual" significa que no s'aplicarà cap distribució automàtica a aquestes càrregues.
 ###length 3
-STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :manual
-STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :asimètric
-STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :simètric
+STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :Manual
+STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :Asimètric
+STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :Simètric
 
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY                           :Precisió de la distribució: {STRING}
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY_HELPTEXT                  :Com més alt el valor indicat, més temps de processador requerirà el càlcul del graf de distribució. Si requereix massa temps podeu notar ralentització. Si indiqueu un valor baix, però, la distribució serà poc acurada, i us podeu trobar que la càrrega no és enviada als llocs que espereu.
@@ -2202,8 +2214,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}...el fo
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}...s'ignorarà el conjunt de gràfics base «{STRING}» perquè no s'ha trobat.
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}...s'ignorarà el conjunt de sons base «{STRING}» perquè no s'ha trobat.
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}...s'ignorarà el conjunt de peces de música «{STRING}» perquè no s'ha trobat.
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Memòria exhaurida
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}L'assignació de {BYTES} de memòria cau de sprites ha fallat. S'ha reduït aquest tipus de memòria a {BYTES}. Això reduirà el rendiment de l'OpenTTD. Per reduir els requeriments de memòria, proveu de desactivar els gràfics de 32bpp i/o els nivells extra de zoom.
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}S'ha produït un error en la configuració de vídeo...
@@ -2211,7 +2221,8 @@ STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... no s
 STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :{WHITE}... el controlador de la GPU ha fallat durant la partida. Es desactiva l'acceleració per maquinari.
 
 # Intro window
-STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
+STR_INTRO_CAPTION                                               :{WHITE}OpenTTD
+STR_INTRO_VERSION                                               :OpenTTD {REV}
 
 STR_INTRO_NEW_GAME                                              :{BLACK}Partida nova
 STR_INTRO_LOAD_GAME                                             :{BLACK}Carrega una partida
@@ -2829,6 +2840,11 @@ STR_PICKER_MODE_USED                                            :Fets servir
 STR_PICKER_MODE_USED_TOOLTIP                                    :Commuta entre mostrar o no només els elements que ja s'hagin construït.
 STR_PICKER_MODE_SAVED                                           :Desats
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :Commuta entre mostrar tots o bé només els elements desats.
+
+STR_PICKER_PREVIEW_SHRINK                                       :‒
+STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Redueix l'alçària de les vistes prèvies. Amb Ctrl+clic, es redueix fins al mínim.
+STR_PICKER_PREVIEW_EXPAND                                       :+
+STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Augmenta l'alçària de les vistes prèvies. Amb Ctrl+clic, s'augmenta fins al màxim.
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Trieu quina classe d'estació voleu veure.
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Trieu quin tipus d'estació voleu construir. Amb Ctrl+clic, s'afegeix o es trau l'element de la llista de desats.
@@ -3526,15 +3542,12 @@ STR_SAVE_PRESET_CAPTION                                         :{WHITE}Guardar 
 STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}Llista de totes les configuracions NewGRF preestablertes; seleccioneu-ne una per a copiar el nom
 STR_SAVE_PRESET_TITLE                                           :{BLACK}Introduïu un nom per a l'actual configuració NewGRF
 STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}Nom amb què guardar la nova configuració preestablerta de NewGRF
-STR_SAVE_PRESET_CANCEL                                          :{BLACK}Cancel·la
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}No guardar els canvies en la configuració NewGRF preestablerta
 STR_SAVE_PRESET_SAVE                                            :{BLACK}Guarda
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}Guarda la configuració NewGRF preestablerta amb el nom seleccionat
 
 # NewGRF parameters window
 STR_BASEGRF_PARAMETERS_CAPTION                                  :{WHITE}Canvia els paràmetres dels gràfics base
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}Canvia els paràmetres NewGRF
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Tanca
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}Restableix
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}Estableix tots els paràmetres al seu valor predeterminat
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :Paràmetre {NUM}
@@ -3677,7 +3690,7 @@ STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}Posa un 
 STR_TOWN_DIRECTORY_CAPTION                                      :{WHITE}Poblacions ({COMMA} de {COMMA})
 STR_TOWN_DIRECTORY_NONE                                         :{ORANGE}- Cap -
 STR_TOWN_DIRECTORY_TOWN                                         :{ORANGE}{TOWN}{BLACK} ({COMMA})
-STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{BLACK} ({COMMA} -{YELLOW} ciutat{BLACK})
+STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{BLACK} ({COMMA}) {YELLOW}{CITY_ICON}
 STR_TOWN_DIRECTORY_LIST_TOOLTIP                                 :{BLACK}Noms de les poblacions - feu clic al nom d'una població per a centrar-hi la vista principal. Amb Ctrl+clic, s'obre una vista nova centrada on hi ha la població.
 STR_TOWN_POPULATION                                             :{BLACK}Població mundial: {COMMA}
 
@@ -4904,8 +4917,6 @@ STR_AI_LIST_URL                                                 :{LTBLUE}URL: {O
 
 STR_AI_LIST_ACCEPT                                              :{BLACK}D'acord
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Selecciona l'script marcat.
-STR_AI_LIST_CANCEL                                              :{BLACK}Cancel·la
-STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}No canviïs l'script.
 
 STR_SCREENSHOT_CAPTION                                          :{WHITE}Pren una captura de pantalla
 STR_SCREENSHOT_SCREENSHOT                                       :{BLACK}Captura de pantalla normal
@@ -4918,7 +4929,6 @@ STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Captura 
 # Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}Paràmetres d'IA
 STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :{WHITE}Paràmetres de l'script de partida
-STR_AI_SETTINGS_CLOSE                                           :{BLACK}Tanca
 STR_AI_SETTINGS_RESET                                           :{BLACK}Restableix
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
 
@@ -5258,6 +5268,13 @@ STR_ERROR_START_AND_END_MUST_BE_IN                              :{WHITE}Inici i 
 STR_ERROR_ENDS_OF_BRIDGE_MUST_BOTH                              :{WHITE}... els extrems del pont han d'estar tots dos a terra
 STR_ERROR_BRIDGE_TOO_LONG                                       :{WHITE}... el pont és massa llarg
 STR_ERROR_BRIDGE_THROUGH_MAP_BORDER                             :{WHITE}El pont acabaria fora del mapa
+STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}El pont és {HEIGHT} massa baix per a l'estació.
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROADSTOP                           :{WHITE}El pont és {HEIGHT} massa baix per a la parada de carretera.
+STR_ERROR_BRIDGE_TOO_LOW_FOR_DOCK                               :{WHITE}El pont és {HEIGHT} massa baix per al moll.
+STR_ERROR_BRIDGE_TOO_LOW_FOR_BUOY                               :{WHITE}El pont és {HEIGHT} massa baix per a la boia.
+STR_ERROR_BRIDGE_TOO_LOW_FOR_RAIL_WAYPOINT                      :{WHITE}El pont és {HEIGHT} massa baix per al punt de pas.
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROAD_WAYPOINT                      :{WHITE}El pont és {HEIGHT} massa baix per al punt de pas de carretera.
+STR_ERROR_BRIDGE_TOO_LOW_FOR_LOCK                               :{WHITE}El pont és {HEIGHT} massa baix per a la resclosa.
 
 # Tunnel related errors
 STR_ERROR_CAN_T_BUILD_TUNNEL_HERE                               :{WHITE}Aquí no es pot construir el túnel...
@@ -5874,6 +5891,8 @@ STR_SAVEGAME_NAME_SPECTATOR                                     :{G=Masculin}Esp
 
 # Viewport strings
 STR_VIEWPORT_TOWN_POP                                           :{TOWN} ({COMMA})
+STR_VIEWPORT_TOWN_CITY                                          :{TOWN} {CITY_ICON}
+STR_VIEWPORT_TOWN_CITY_POP                                      :{TOWN} ({COMMA}) {CITY_ICON}
 STR_VIEWPORT_STATION                                            :{STATION} {STATION_FEATURES}
 
 # Simple strings to get specific types of data

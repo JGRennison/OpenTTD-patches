@@ -203,17 +203,17 @@ void VehicleServiceInDepot(Vehicle *v)
 	dbg_assert(v != nullptr);
 	const Engine *e = Engine::Get(v->engine_type);
 	if (v->type == VEH_TRAIN) {
-		if (v->Next() != nullptr) VehicleServiceInDepot(v->Next());
-		if (!(Train::From(v)->IsEngine()) && !(Train::From(v)->IsRearDualheaded())) return;
-		ClrBit(Train::From(v)->flags, VRF_NEED_REPAIR);
-		ClrBit(Train::From(v)->flags, VRF_HAS_HIT_RV);
-		ClrBit(Train::From(v)->flags, VRF_CONSIST_BREAKDOWN);
-		Train::From(v)->critical_breakdown_count = 0;
+		Train *t = Train::From(v);
+		if (t->Next() != nullptr) VehicleServiceInDepot(t->Next());
+		if (!(t->IsEngine()) && !(t->IsRearDualheaded())) return;
+		t->flags.Reset({VehicleRailFlag::NeedRepair, VehicleRailFlag::HasHitRoadVehicle, VehicleRailFlag::ConsistBreakdown});
+		t->critical_breakdown_count = 0;
 		const RailVehicleInfo &rvi = e->VehInfo<RailVehicleInfo>();
-		v->vcache.cached_max_speed = rvi.max_speed;
-		if (Train::From(v)->IsFrontEngine()) {
-			Train::From(v)->ConsistChanged(CCF_REFIT);
-			Train::From(v)->flags &= ~((1 << VRF_BREAKDOWN_BRAKING) | VRF_IS_BROKEN);
+		t->vcache.cached_max_speed = rvi.max_speed;
+		if (t->IsFrontEngine()) {
+			t->ConsistChanged(CCF_REFIT);
+			t->flags.Reset(VehicleRailFlag::BreakdownBraking);
+			t->flags.Reset(VehicleRailFlagsIsBroken);
 		}
 	} else if (v->type == VEH_ROAD) {
 		RoadVehicle::From(v)->critical_breakdown_count = 0;
@@ -269,7 +269,7 @@ bool Vehicle::NeedsServicing() const
 	bool needs_service = true;
 	const Company *c = Company::Get(this->owner);
 	if (service_not_due
-			&& !(this->type == VEH_TRAIN && HasBit(Train::From(this)->flags, VRF_CONSIST_BREAKDOWN) && Train::From(this)->ConsistNeedsRepair())
+			&& !(this->type == VEH_TRAIN && Train::From(this)->flags.Test(VehicleRailFlag::ConsistBreakdown) && Train::From(this)->ConsistNeedsRepair())
 			&& !(this->type == VEH_ROAD && RoadVehicle::From(this)->critical_breakdown_count > 0)
 			&& !(this->type == VEH_SHIP && Ship::From(this)->critical_breakdown_count > 0)) {
 		needs_service = false;
@@ -548,10 +548,10 @@ VehiclesNearTileXYBaseIterator::VehiclesNearTileXYBaseIterator(int32_t x, int32_
 	this->pos_rect.bottom = std::max<int>(0, y + max_dist);
 
 	/* Hash area to scan */
-	this->hxmin = this->hx = pos_rect.left / TILE_SIZE;
-	this->hxmax = pos_rect.right / TILE_SIZE;
-	this->hymin = this->hy = pos_rect.top / TILE_SIZE;
-	this->hymax = pos_rect.bottom / TILE_SIZE;
+	this->hxmin = this->hx = this->pos_rect.left / TILE_SIZE;
+	this->hxmax = this->pos_rect.right / TILE_SIZE;
+	this->hymin = this->hy = this->pos_rect.top / TILE_SIZE;
+	this->hymax = this->pos_rect.bottom / TILE_SIZE;
 
 	VehicleTypeTileHash &vhash = _vehicle_tile_hashes[this->veh_type];
 	auto iter = vhash.find(TileXY(this->hx, this->hy));
@@ -1195,9 +1195,9 @@ void Vehicle::PreDestructor()
 		TraceRestrictRemoveVehicleFromAllSlots(this->index);
 		this->vehicle_flags.Reset(VehicleFlag::HaveSlot);
 	}
-	if (this->type == VEH_TRAIN && HasBit(Train::From(this)->flags, VRF_PENDING_SPEED_RESTRICTION)) {
+	if (this->type == VEH_TRAIN && Train::From(this)->flags.Test(VehicleRailFlag::PendingSpeedRestriction)) {
 		_pending_speed_restriction_change_map.erase(this->index);
-		ClrBit(Train::From(this)->flags, VRF_PENDING_SPEED_RESTRICTION);
+		Train::From(this)->flags.Reset(VehicleRailFlag::PendingSpeedRestriction);
 	}
 
 	if (this->Previous() == nullptr) {
@@ -1418,13 +1418,15 @@ void ShowTrainTooHeavyAdviceMessage(const Vehicle *v)
 }
 
 bool _tick_caches_valid = false;
+bool _tick_effect_veh_cache_valid = false;
+
 std::vector<Train *> _tick_train_front_cache;
 std::vector<RoadVehicle *> _tick_road_veh_front_cache;
 std::vector<Aircraft *> _tick_aircraft_front_cache;
 std::vector<Ship *> _tick_ship_cache;
 std::vector<Vehicle *> _tick_other_veh_cache;
 
-std::vector<VehicleID> _remove_from_tick_effect_veh_cache;
+robin_hood::unordered_flat_set<VehicleID> _remove_from_tick_effect_veh_cache;
 btree::btree_set<VehicleID> _tick_effect_veh_cache;
 
 void ClearVehicleTickCaches()
@@ -1433,9 +1435,12 @@ void ClearVehicleTickCaches()
 	_tick_road_veh_front_cache.clear();
 	_tick_aircraft_front_cache.clear();
 	_tick_ship_cache.clear();
-	_tick_effect_veh_cache.clear();
-	_remove_from_tick_effect_veh_cache.clear();
 	_tick_other_veh_cache.clear();
+
+	if (!_tick_effect_veh_cache_valid) {
+		_tick_effect_veh_cache.clear();
+		_remove_from_tick_effect_veh_cache.clear();
+	}
 }
 
 void RemoveFromOtherVehicleTickCache(const Vehicle *v)
@@ -1485,11 +1490,12 @@ void RebuildVehicleTickCaches()
 				break;
 
 			case VEH_EFFECT:
-				_tick_effect_veh_cache.insert(i);
+				if (!_tick_effect_veh_cache_valid) _tick_effect_veh_cache.insert(_tick_effect_veh_cache.end(), i);
 				break;
 		}
 	}
 	_tick_caches_valid = true;
+	_tick_effect_veh_cache_valid = true;
 }
 
 void ValidateVehicleTickCaches()
@@ -2301,7 +2307,7 @@ void CheckVehicleBreakdown(Vehicle *v)
 	if ((uint32_t) (0xffff - v->reliability) * breakdown_scaling_x2 * chance > GB(r1, 0, 24) * 10 * 2) {
 		uint32_t r2 = Random();
 		v->breakdown_ctr = GB(r1, 24, 6) + 0xF;
-		if (v->type == VEH_TRAIN) SetBit(Train::From(v)->First()->flags, VRF_CONSIST_BREAKDOWN);
+		if (v->type == VEH_TRAIN) Train::From(v)->First()->flags.Set(VehicleRailFlag::ConsistBreakdown);
 		v->breakdown_delay = GB(r2, 0, 7) + 0x80;
 		v->breakdown_chance = 0;
 		DetermineBreakdownType(v, r2);
@@ -2343,11 +2349,12 @@ bool Vehicle::HandleBreakdown()
 						GetTargetAirportIfValid(Aircraft::From(this)) != nullptr)) return false;
 				FindBreakdownDestination(Aircraft::From(this));
 			} else if (this->type == VEH_TRAIN) {
+				Train *t = Train::From(this);
 				if (this->breakdown_type == BREAKDOWN_LOW_POWER ||
 						this->First()->cur_speed <= ((this->breakdown_type == BREAKDOWN_LOW_SPEED) ? this->breakdown_severity : 0)) {
 					switch (this->breakdown_type) {
 						case BREAKDOWN_RV_CRASH:
-							if (_settings_game.vehicle.improved_breakdowns) SetBit(Train::From(this)->flags, VRF_HAS_HIT_RV);
+							if (_settings_game.vehicle.improved_breakdowns) t->flags.Set(VehicleRailFlag::HasHitRoadVehicle);
 						/* FALL THROUGH */
 						case BREAKDOWN_CRITICAL:
 							if (!PlayVehicleSound(this, VSE_BREAKDOWN)) {
@@ -2359,29 +2366,29 @@ bool Vehicle::HandleBreakdown()
 							}
 							/* Max Speed reduction*/
 							if (_settings_game.vehicle.improved_breakdowns) {
-								if (!HasBit(Train::From(this)->flags, VRF_NEED_REPAIR)) {
-									SetBit(Train::From(this)->flags, VRF_NEED_REPAIR);
-									Train::From(this)->critical_breakdown_count = 1;
-								} else if (Train::From(this)->critical_breakdown_count != 255) {
-									Train::From(this)->critical_breakdown_count++;
+								if (!t->flags.Test(VehicleRailFlag::NeedRepair)) {
+									t->flags.Set(VehicleRailFlag::NeedRepair);
+									t->critical_breakdown_count = 1;
+								} else if (t->critical_breakdown_count != 255) {
+									t->critical_breakdown_count++;
 								}
-								Train::From(this->First())->ConsistChanged(CCF_TRACK);
+								t->First()->ConsistChanged(CCF_TRACK);
 							}
 						/* FALL THROUGH */
 						case BREAKDOWN_EM_STOP:
-							CheckBreakdownFlags(Train::From(this->First()));
-							SetBit(Train::From(this->First())->flags, VRF_BREAKDOWN_STOPPED);
+							CheckBreakdownFlags(t->First());
+							t->First()->flags.Set(VehicleRailFlag::BreakdownStopped);
 							break;
 						case BREAKDOWN_BRAKE_OVERHEAT:
-							CheckBreakdownFlags(Train::From(this->First()));
-							SetBit(Train::From(this->First())->flags, VRF_BREAKDOWN_STOPPED);
+							CheckBreakdownFlags(t->First());
+							t->First()->flags.Set(VehicleRailFlag::BreakdownStopped);
 							break;
 						case BREAKDOWN_LOW_SPEED:
-							CheckBreakdownFlags(Train::From(this->First()));
-							SetBit(Train::From(this->First())->flags, VRF_BREAKDOWN_SPEED);
+							CheckBreakdownFlags(t->First());
+							t->First()->flags.Set(VehicleRailFlag::BreakdownSpeed);
 							break;
 						case BREAKDOWN_LOW_POWER:
-							SetBit(Train::From(this->First())->flags, VRF_BREAKDOWN_POWER);
+							t->First()->flags.Set(VehicleRailFlag::BreakdownPower);
 							break;
 						default: NOT_REACHED();
 					}
@@ -2391,7 +2398,7 @@ bool Vehicle::HandleBreakdown()
 				} else {
 					this->breakdown_ctr = 2; // wait until slowdown
 					this->breakdowns_since_last_service--;
-					SetBit(Train::From(this)->flags, VRF_BREAKDOWN_BRAKING);
+					Train::From(this)->flags.Set(VehicleRailFlag::BreakdownBraking);
 					return false;
 				}
 				if (!this->vehstatus.Test(VehState::Hidden) && (this->breakdown_type == BREAKDOWN_LOW_SPEED || this->breakdown_type == BREAKDOWN_LOW_POWER)
@@ -2646,7 +2653,7 @@ void VehicleEnterDepot(Vehicle *v)
 			UpdateSignalsOnSegment(t->tile, INVALID_DIAGDIR, t->owner);
 			t->wait_counter = 0;
 			t->force_proceed = TFP_NONE;
-			ClrBit(t->flags, VRF_TOGGLE_REVERSE);
+			t->flags.Reset(VehicleRailFlag::Reversed);
 			t->ConsistChanged(CCF_ARRANGE);
 			t->reverse_distance = 0;
 			t->UpdateTrainSpeedAdaptationLimit(0);
@@ -3527,8 +3534,7 @@ void Vehicle::LeaveStation()
 	if (this->type == VEH_TRAIN) {
 		station_tile = Train::From(this)->GetStationLoadingVehicle()->tile;
 		for (Train *v = Train::From(this); v != nullptr; v = v->Next()) {
-			ClrBit(v->flags, VRF_BEYOND_PLATFORM_END);
-			ClrBit(v->flags, VRF_NOT_YET_IN_PLATFORM);
+			v->flags.Reset({VehicleRailFlag::BeyondPlatformEnd, VehicleRailFlag::NotYetInPlatform});
 			v->vehicle_flags.Reset(VehicleFlag::CargoUnloading);
 		}
 	}
@@ -3607,8 +3613,9 @@ void Vehicle::LeaveStation()
 			TriggerStationAnimation(st, station_tile, StationAnimationTrigger::VehicleDeparts);
 		}
 
-		SetBit(Train::From(this)->flags, VRF_LEAVING_STATION);
-		if (Train::From(this)->lookahead != nullptr) Train::From(this)->lookahead->zpos_refresh_remaining = 0;
+		Train *t = Train::From(this);
+		t->flags.Set(VehicleRailFlag::LeavingStation);
+		if (t->lookahead != nullptr) t->lookahead->zpos_refresh_remaining = 0;
 	}
 	if (this->type == VEH_ROAD && !this->vehstatus.Test(VehState::Crashed)) {
 		/* Trigger road stop animation */
@@ -3657,13 +3664,13 @@ void Vehicle::AdvanceLoadingInStation()
 	assert(this->current_order.IsType(OT_LOADING));
 	dbg_assert(this->type == VEH_TRAIN);
 
-	ClrBit(Train::From(this)->flags, VRF_ADVANCE_IN_PLATFORM);
+	Train::From(this)->flags.Reset(VehicleRailFlag::AdvanceInPlatform);
 
 	for (Train *v = Train::From(this); v != nullptr; v = v->Next()) {
-		if (HasBit(v->flags, VRF_NOT_YET_IN_PLATFORM)) {
-			ClrBit(v->flags, VRF_NOT_YET_IN_PLATFORM);
+		if (v->flags.Test(VehicleRailFlag::NotYetInPlatform)) {
+			v->flags.Reset(VehicleRailFlag::NotYetInPlatform);
 		} else {
-			SetBit(v->flags, VRF_BEYOND_PLATFORM_END);
+			v->flags.Set(VehicleRailFlag::BeyondPlatformEnd);
 		}
 	}
 
@@ -3751,7 +3758,7 @@ void Vehicle::HandleLoading(bool mode)
 
 			/* Not the first call for this tick, or still loading */
 			if (mode || !this->vehicle_flags.Test(VehicleFlag::LoadingFinished) || (this->current_order_time < wait_time && this->current_order.GetLeaveType() != OLT_LEAVE_EARLY) || ShouldVehicleContinueWaiting(this)) {
-				if (!mode && this->type == VEH_TRAIN && HasBit(Train::From(this)->flags, VRF_ADVANCE_IN_PLATFORM)) this->AdvanceLoadingInStation();
+				if (!mode && this->type == VEH_TRAIN && Train::From(this)->flags.Test(VehicleRailFlag::AdvanceInPlatform)) this->AdvanceLoadingInStation();
 				return;
 			}
 
@@ -4056,7 +4063,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlags flags, DepotCommandFlags command
 
 		if (this->type == VEH_TRAIN) {
 			for (Train *v = Train::From(this); v != nullptr; v = v->Next()) {
-				ClrBit(v->flags, VRF_BEYOND_PLATFORM_END);
+				v->flags.Reset(VehicleRailFlag::BeyondPlatformEnd);
 			}
 		}
 
@@ -4081,7 +4088,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlags flags, DepotCommandFlags command
 		this->cur_timetable_order_index = INVALID_VEH_ORDER_ID;
 
 		/* If there is no depot in front and the train is not already reversing, reverse automatically (trains only) */
-		if (this->type == VEH_TRAIN && (closest_depot.reverse ^ HasBit(Train::From(this)->flags, VRF_REVERSING))) {
+		if (this->type == VEH_TRAIN && (closest_depot.reverse != Train::From(this)->flags.Test(VehicleRailFlag::Reversing))) {
 			Command<CMD_REVERSE_TRAIN_DIRECTION>::Do(DoCommandFlag::Execute, this->index, false);
 		}
 
@@ -4189,7 +4196,7 @@ static void SpawnAdvancedVisualEffect(const Vehicle *v)
 	}
 
 	Direction l_dir = v->direction;
-	if (v->type == VEH_TRAIN && HasBit(Train::From(v)->flags, VRF_REVERSE_DIRECTION)) l_dir = ReverseDir(l_dir);
+	if (v->type == VEH_TRAIN && Train::From(v)->flags.Test(VehicleRailFlag::Flipped)) l_dir = ReverseDir(l_dir);
 	Direction t_dir = ChangeDir(l_dir, DIRDIFF_90RIGHT);
 
 	int8_t x_center = _vehicle_smoke_pos[l_dir] * l_center;
@@ -4272,7 +4279,7 @@ void Vehicle::ShowVisualEffect(uint max_speed) const
 		 * - is entering a station with an order to stop there and its speed is equal to maximum station entering speed
 		 * - is approaching a reversing point and its speed is equal to maximum approach speed
 		 */
-		if (HasBit(t->flags, VRF_REVERSING) ||
+		if (t->flags.Test(VehicleRailFlag::Reversing) ||
 				t->cur_speed > max_speed ||
 				(HasStationTileRail(t->tile) && t->IsFrontEngine() && t->current_order.ShouldStopAtStation(t, GetStationIndex(t->tile), IsRailWaypoint(t->tile)) &&
 				t->cur_speed >= max_speed) ||
@@ -4384,7 +4391,7 @@ void Vehicle::ShowVisualEffect(uint max_speed) const
 			int x = _vehicle_smoke_pos[v->direction] * effect_offset;
 			int y = _vehicle_smoke_pos[(v->direction + 2) % 8] * effect_offset;
 
-			if (v->type == VEH_TRAIN && HasBit(Train::From(v)->flags, VRF_REVERSE_DIRECTION)) {
+			if (v->type == VEH_TRAIN && Train::From(v)->flags.Test(VehicleRailFlag::Flipped)) {
 				x = -x;
 				y = -y;
 			}
@@ -4567,27 +4574,27 @@ void DumpVehicleFlagsGeneric(const Vehicle *v, T dump, U dump_header)
 	if (v->type == VEH_TRAIN) {
 		const Train *t = Train::From(v);
 		dump_header("tf:", "train flags:");
-		dump('R', "VRF_REVERSING",                     HasBit(t->flags, VRF_REVERSING));
-		dump('W', "VRF_WAITING_RESTRICTION",           HasBit(t->flags, VRF_WAITING_RESTRICTION));
-		dump('P', "VRF_POWEREDWAGON",                  HasBit(t->flags, VRF_POWEREDWAGON));
-		dump('r', "VRF_REVERSE_DIRECTION",             HasBit(t->flags, VRF_REVERSE_DIRECTION));
-		dump('h', "VRF_HAS_HIT_RV",                    HasBit(t->flags, VRF_HAS_HIT_RV));
-		dump('e', "VRF_EL_ENGINE_ALLOWED_NORMAL_RAIL", HasBit(t->flags, VRF_EL_ENGINE_ALLOWED_NORMAL_RAIL));
-		dump('q', "VRF_TOGGLE_REVERSE",                HasBit(t->flags, VRF_TOGGLE_REVERSE));
-		dump('s', "VRF_TRAIN_STUCK",                   HasBit(t->flags, VRF_TRAIN_STUCK));
-		dump('L', "VRF_LEAVING_STATION",               HasBit(t->flags, VRF_LEAVING_STATION));
-		dump('b', "VRF_BREAKDOWN_BRAKING",             HasBit(t->flags, VRF_BREAKDOWN_BRAKING));
-		dump('p', "VRF_BREAKDOWN_POWER",               HasBit(t->flags, VRF_BREAKDOWN_POWER));
-		dump('v', "VRF_BREAKDOWN_SPEED",               HasBit(t->flags, VRF_BREAKDOWN_SPEED));
-		dump('z', "VRF_BREAKDOWN_STOPPED",             HasBit(t->flags, VRF_BREAKDOWN_STOPPED));
-		dump('F', "VRF_NEED_REPAIR",                   HasBit(t->flags, VRF_NEED_REPAIR));
-		dump('B', "VRF_BEYOND_PLATFORM_END",           HasBit(t->flags, VRF_BEYOND_PLATFORM_END));
-		dump('Y', "VRF_NOT_YET_IN_PLATFORM",           HasBit(t->flags, VRF_NOT_YET_IN_PLATFORM));
-		dump('A', "VRF_ADVANCE_IN_PLATFORM",           HasBit(t->flags, VRF_ADVANCE_IN_PLATFORM));
-		dump('K', "VRF_CONSIST_BREAKDOWN",             HasBit(t->flags, VRF_CONSIST_BREAKDOWN));
-		dump('J', "VRF_CONSIST_SPEED_REDUCTION",       HasBit(t->flags, VRF_CONSIST_SPEED_REDUCTION));
-		dump('X', "VRF_PENDING_SPEED_RESTRICTION",     HasBit(t->flags, VRF_PENDING_SPEED_RESTRICTION));
-		dump('c', "VRF_SPEED_ADAPTATION_EXEMPT",       HasBit(t->flags, VRF_SPEED_ADAPTATION_EXEMPT));
+		dump('R', "Reversing",                   t->flags.Test(VehicleRailFlag::Reversing));
+		dump('W', "WaitingRestriction",          t->flags.Test(VehicleRailFlag::WaitingRestriction));
+		dump('P', "PoweredWagon",                t->flags.Test(VehicleRailFlag::PoweredWagon));
+		dump('r', "Flipped",                     t->flags.Test(VehicleRailFlag::Flipped));
+		dump('h', "HasHitRoadVehicle",           t->flags.Test(VehicleRailFlag::HasHitRoadVehicle));
+		dump('e', "AllowedOnNormalRail",         t->flags.Test(VehicleRailFlag::AllowedOnNormalRail));
+		dump('q', "Reversed",                    t->flags.Test(VehicleRailFlag::Reversed));
+		dump('s', "Stuck",                       t->flags.Test(VehicleRailFlag::Stuck));
+		dump('L', "LeavingStation",              t->flags.Test(VehicleRailFlag::LeavingStation));
+		dump('b', "BreakdownBraking",            t->flags.Test(VehicleRailFlag::BreakdownBraking));
+		dump('p', "BreakdownPower",              t->flags.Test(VehicleRailFlag::BreakdownPower));
+		dump('v', "BreakdownSpeed",              t->flags.Test(VehicleRailFlag::BreakdownSpeed));
+		dump('z', "BreakdownStopped",            t->flags.Test(VehicleRailFlag::BreakdownStopped));
+		dump('F', "NeedRepair",                  t->flags.Test(VehicleRailFlag::NeedRepair));
+		dump('B', "BeyondPlatformEnd",           t->flags.Test(VehicleRailFlag::BeyondPlatformEnd));
+		dump('Y', "NotYetInPlatform",            t->flags.Test(VehicleRailFlag::NotYetInPlatform));
+		dump('A', "AdvanceInPlatform",           t->flags.Test(VehicleRailFlag::AdvanceInPlatform));
+		dump('K', "ConsistBreakdown",            t->flags.Test(VehicleRailFlag::ConsistBreakdown));
+		dump('J', "ConsistSpeedReduction",       t->flags.Test(VehicleRailFlag::ConsistSpeedReduction));
+		dump('X', "PendingSpeedRestriction",     t->flags.Test(VehicleRailFlag::PendingSpeedRestriction));
+		dump('c', "SpeedAdaptationExempt",       t->flags.Test(VehicleRailFlag::SpeedAdaptationExempt));
 	}
 	if (v->type == VEH_ROAD) {
 		const RoadVehicle *rv = RoadVehicle::From(v);

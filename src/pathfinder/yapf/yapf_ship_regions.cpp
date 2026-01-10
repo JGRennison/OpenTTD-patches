@@ -166,7 +166,7 @@ protected:
 public:
 	inline void PfFollowNode(Node &old_node)
 	{
-		TVisitWaterRegionPatchCallBack visit_func = [&](const WaterRegionPatchDesc &water_region_patch)
+		VisitWaterRegionPatchCallback visit_func = [&](const WaterRegionPatchDesc &water_region_patch)
 		{
 			Node &node = Yapf().CreateNewNode();
 			node.Set(&old_node, water_region_patch);
@@ -197,7 +197,7 @@ public:
 				}
 			}
 		} else {
-			TileIndex tile = v->dest_tile;
+			TileIndex tile = v->dest_tile == INVALID_TILE ? TileIndex{} : v->dest_tile;
 			pf.AddOrigin(GetWaterRegionPatchInfo(tile));
 		}
 

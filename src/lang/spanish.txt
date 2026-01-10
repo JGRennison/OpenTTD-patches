@@ -996,7 +996,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :Selecciona la n
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Libra británica
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Dólar estadounidense
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1042,6 +1042,7 @@ STR_GAME_OPTIONS_CURRENCY_MYR                                   :Ringgit malasio
 STR_GAME_OPTIONS_CURRENCY_LVL                                   :Lats letón
 STR_GAME_OPTIONS_CURRENCY_PTE                                   :Escudo portugués
 STR_GAME_OPTIONS_CURRENCY_UAH                                   :Grivna ucraniana
+STR_GAME_OPTIONS_CURRENCY_VND                                   :Dong vietnamita
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :Autoguardado
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :Selección del intervalo entre guardados automáticos del juego
@@ -1217,10 +1218,10 @@ STR_SUBSIDY_X3                                                  :x3
 STR_SUBSIDY_X4                                                  :x4
 
 ###length 4
-STR_CLIMATE_TEMPERATE_LANDSCAPE                                 :Terreno templado
-STR_CLIMATE_SUB_ARCTIC_LANDSCAPE                                :Terreno subártico
-STR_CLIMATE_SUB_TROPICAL_LANDSCAPE                              :Terreno subtropical
-STR_CLIMATE_TOYLAND_LANDSCAPE                                   :Terreno juguetelandia
+STR_CLIMATE_TEMPERATE_LANDSCAPE                                 :Clima Templado
+STR_CLIMATE_SUB_ARCTIC_LANDSCAPE                                :Clima Subártico
+STR_CLIMATE_SUB_TROPICAL_LANDSCAPE                              :Clima Subtropical
+STR_CLIMATE_TOYLAND_LANDSCAPE                                   :Clima País de los Juguetes
 
 ###length 7
 STR_TERRAIN_TYPE_VERY_FLAT                                      :Muy llano
@@ -1315,6 +1316,10 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Porcentaje de i
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Costes de operación: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Permite fijar el nivel de los costes de mantenimiento y operación de vehículos e infraestructuras
+###length 3
+STR_CONFIG_SETTING_RUNNING_COSTS_LOW                            :Bajos
+STR_CONFIG_SETTING_RUNNING_COSTS_MEDIUM                         :Medios
+STR_CONFIG_SETTING_RUNNING_COSTS_HIGH                           :Altos
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Velocidad de construcción: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Limita la velocidad de las acciones de construcción para las IA
@@ -1336,6 +1341,10 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :Sin subvencione
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Costes de construcción: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Fija el nivel de los costes de construcción y compra
+###length 3
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_LOW                       :Bajos
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_MEDIUM                    :Medios
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :Altos
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Recesiones: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Si se activa, ocurrirán recesiones periódicamente. Durante una recesión, toda la producción es significativamente menor (volverá a su nivel anterior cuando acabe la recesión)
@@ -1579,8 +1588,8 @@ STR_CONFIG_SETTING_SHOW_NEWGRF_NAME_HELPTEXT                    :Añade una lín
 STR_CONFIG_SETTING_SHOW_CARGO_IN_LISTS                          :Mostrar las cargas que pueden llevar los vehículos en las ventanas con listas: {STRING}
 STR_CONFIG_SETTING_SHOW_CARGO_IN_LISTS_HELPTEXT                 :Si se activa, las cargas que los vehículos pueden transportar aparecerán encima de éstos en las listas de vehículos
 
-STR_CONFIG_SETTING_LANDSCAPE                                    :Terreno: {STRING}
-STR_CONFIG_SETTING_LANDSCAPE_HELPTEXT                           :Los terrenos definen escenarios con diferentes tipos de carga y requisitos de crecimiento de municipios. Es posible modificarlos empleando NewGRF y scripts de juego
+STR_CONFIG_SETTING_LANDSCAPE                                    :Clima: {STRING}
+STR_CONFIG_SETTING_LANDSCAPE_HELPTEXT                           :Los climas definen escenarios con diferentes tipos de carga y requisitos de crecimiento de municipios. Es posible modificarlos empleando NewGRF y scripts de juego
 
 STR_CONFIG_SETTING_LAND_GENERATOR                               :Generador de terreno: {STRING}
 STR_CONFIG_SETTING_LAND_GENERATOR_HELPTEXT                      :El generador original depende del tipo de gráficos base, y crea formas de terreno fijas. TerraGenesis es un generador basado en ruido Perlin que permite un mayor control de configuración
@@ -1681,6 +1690,9 @@ STR_CONFIG_SETTING_SCROLLMODE_LMB                               :Mueve el mapa c
 
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Desplazamiento de vista suavizado: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Controla la forma en la que la vista principal se mueve a una posición específica como resultado de hacer clic en el mapa o al enviar la orden de moverse a un objeto determinado del mapa. Si se activa, la vista se mueve de forma suave. Si se desactiva, la vista se mueve directamente al destino
+
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT                  :Comportamiento tradicional de selección del menú de la barra de herramientas: {STRING}
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT_HELPTEXT         :Elige el comportamiento de los menús de la barra de herramientas. Si está desactivado, los menús permanecerán abiertos hasta que se realice una selección. Si está activado, los menús se activarán cuando se suelte el botón del ratón.
 
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Mostrar medidas usando las herramientas de construcción: {STRING}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP_HELPTEXT                     :Muestra distancias en número de casillas y las diferencias de altura al arrastrar durante operaciones de construcción
@@ -2092,9 +2104,9 @@ STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :El tipo de carg
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :Modo de distribución para otras clases de carga: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :"Asimétrica" significa que se pueden mover cantidades arbitrarias de carga en ambas direcciones. "Manual" significa que no habrá distribución automática para estos tipos de carga
 ###length 3
-STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :manual
-STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :asimétrico
-STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :simétrico
+STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :Manual
+STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :Asimétrica
+STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :Simétrica
 
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY                           :Precisión de la distribución: {STRING}
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY_HELPTEXT                  :Este valor determina el tiempo de CPU empleado en calcular el grafo de distribución. Si es demasiado elevado puede producir ralentización en el juego. Si es demasiado bajo la distribución puede ser poco precisa, causando que ocasionalmente se produzcan errores en los lugares a los que se destina la carga
@@ -2202,8 +2214,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... el f
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... ignorando conjunto de gráficos base '{STRING}': no encontrado
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... ignorando conjunto de sonidos base '{STRING}': no encontrado
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... ignorando conjunto de música base '{STRING}': no encontrado
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}No hay memoria suficiente
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Hubo un fallo al reservar {BYTES} de caché de sprites. La caché de sprites ha sido reducida a {BYTES}. Esto reducirá el rendimiento de OpenTTD. Para reducir los requisitos de memoria es posible deshabilitar los gráficos 32bpp o los niveles de zoom adicionales
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Error en los ajustes de vídeo...
@@ -2211,7 +2221,8 @@ STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... no s
 STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :{WHITE}... el controlador de GPU ha hecho fallar el juego. Se ha deshabilitado la aceleración por hardware
 
 # Intro window
-STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
+STR_INTRO_CAPTION                                               :{WHITE}OpenTTD
+STR_INTRO_VERSION                                               :OpenTTD {REV}
 
 STR_INTRO_NEW_GAME                                              :{BLACK}Nueva Partida
 STR_INTRO_LOAD_GAME                                             :{BLACK}Cargar Partida
@@ -2233,10 +2244,10 @@ STR_INTRO_TOOLTIP_PLAY_SCENARIO                                 :{BLACK}Comienza
 STR_INTRO_TOOLTIP_SCENARIO_EDITOR                               :{BLACK}Crea un mundo/escenario de juego personalizado
 STR_INTRO_TOOLTIP_MULTIPLAYER                                   :{BLACK}Empieza una partida en multijugador
 
-STR_INTRO_TOOLTIP_TEMPERATE                                     :{BLACK}Selecciona el estilo de terreno 'templado'
-STR_INTRO_TOOLTIP_SUB_ARCTIC_LANDSCAPE                          :{BLACK}Selecciona el estilo de terreno 'subártico'
-STR_INTRO_TOOLTIP_SUB_TROPICAL_LANDSCAPE                        :{BLACK}Selecciona el estilo de terreno 'subtropical'
-STR_INTRO_TOOLTIP_TOYLAND_LANDSCAPE                             :{BLACK}Selecciona el estilo de terreno 'juguetelandia'
+STR_INTRO_TOOLTIP_TEMPERATE                                     :{BLACK}Selecciona mapa de clima 'templado'
+STR_INTRO_TOOLTIP_SUB_ARCTIC_LANDSCAPE                          :{BLACK}Selecciona mapa de clima 'subártico'
+STR_INTRO_TOOLTIP_SUB_TROPICAL_LANDSCAPE                        :{BLACK}Selecciona mapa de clima 'subtropical'
+STR_INTRO_TOOLTIP_TOYLAND_LANDSCAPE                             :{BLACK}Selecciona mapa de clima 'país de los juguetes'
 
 STR_INTRO_TOOLTIP_GAME_OPTIONS                                  :{BLACK}Abrir las opciones de juego
 STR_INTRO_TOOLTIP_HIGHSCORE                                     :{BLACK}Abre la tabla de puntuaciones
@@ -2829,6 +2840,11 @@ STR_PICKER_MODE_USED                                            :Utilizados
 STR_PICKER_MODE_USED_TOOLTIP                                    :Muestra/Oculta sólo elementos existentes
 STR_PICKER_MODE_SAVED                                           :Guardados
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :Muestra/Oculta sólo los elementos guardados
+
+STR_PICKER_PREVIEW_SHRINK                                       :-
+STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Reduce la altura de las imágenes de previsualización. Ctrl+clic para reducir al máximo
+STR_PICKER_PREVIEW_EXPAND                                       :+
+STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Incrementa la altura de las imágenes de previsualización. Ctrl+clic para aumentar al máximo
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Selecciona una clase de estación para mostrar
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Selecciona un tipo de estación para construir. Ctrl+clic para añadir o eliminar en elementos guardados
@@ -3526,15 +3542,12 @@ STR_SAVE_PRESET_CAPTION                                         :{WHITE}Guardar 
 STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}Lista de perfiles disponibles; selecciona uno para copiar el nombre del perfil abajo
 STR_SAVE_PRESET_TITLE                                           :{BLACK}Introduce un nombre para el perfil
 STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}Nombre actualmente seleccionado del perfil a guardar
-STR_SAVE_PRESET_CANCEL                                          :{BLACK}Cancelar
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}No modificar el perfil
 STR_SAVE_PRESET_SAVE                                            :{BLACK}Guardar
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}Guarda el perfil con el nombre elegido
 
 # NewGRF parameters window
 STR_BASEGRF_PARAMETERS_CAPTION                                  :{WHITE}Cambiar los parámetros gráficos base
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}Cambiar parámetros NewGRF
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Cerrar
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}Reiniciar
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}Fija todos los parámetros a su valor por defecto
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :Parámetro {NUM}
@@ -3677,7 +3690,7 @@ STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}Introduc
 STR_TOWN_DIRECTORY_CAPTION                                      :{WHITE}Municipios ({COMMA} of {COMMA})
 STR_TOWN_DIRECTORY_NONE                                         :{ORANGE}- Ninguna -
 STR_TOWN_DIRECTORY_TOWN                                         :{ORANGE}{TOWN}{BLACK} ({COMMA})
-STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{YELLOW} (Ciudad){BLACK} ({COMMA})
+STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{BLACK} ({COMMA}) {YELLOW}{CITY_ICON}
 STR_TOWN_DIRECTORY_LIST_TOOLTIP                                 :{BLACK}Nombres de los municipios - Clica sobre un nombre para centrar la vista principal en el municipio. Ctrl+clic abre una ventana de visualización en dicha posición
 STR_TOWN_POPULATION                                             :{BLACK}Población mundial: {COMMA}
 
@@ -4904,8 +4917,6 @@ STR_AI_LIST_URL                                                 :{LTBLUE}URL: {O
 
 STR_AI_LIST_ACCEPT                                              :{BLACK}Aceptar
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Seleccionar el script resaltado
-STR_AI_LIST_CANCEL                                              :{BLACK}Cancelar
-STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}No cambiar de script
 
 STR_SCREENSHOT_CAPTION                                          :Realizar captura de pantalla
 STR_SCREENSHOT_SCREENSHOT                                       :{BLACK}Normal
@@ -4918,7 +4929,6 @@ STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Minimapa
 # Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}Parámetros de IA
 STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :{WHITE}Parámetros del script de juego
-STR_AI_SETTINGS_CLOSE                                           :{BLACK}Cerrar
 STR_AI_SETTINGS_RESET                                           :{BLACK}Reiniciar
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
 
@@ -5258,6 +5268,13 @@ STR_ERROR_START_AND_END_MUST_BE_IN                              :{WHITE}Comienzo
 STR_ERROR_ENDS_OF_BRIDGE_MUST_BOTH                              :{WHITE}... los dos extremos de un puente han de estar sobre tierra
 STR_ERROR_BRIDGE_TOO_LONG                                       :{WHITE}... puente demasiado largo
 STR_ERROR_BRIDGE_THROUGH_MAP_BORDER                             :{WHITE}El puente terminaría fuera del mapa
+STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}El puente es {HEIGHT} demasiado bajo para la estación
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROADSTOP                           :{WHITE}El puente es {HEIGHT} demasiado bajo para la estación de carretera
+STR_ERROR_BRIDGE_TOO_LOW_FOR_DOCK                               :{WHITE}El puente es {HEIGHT} demasiado bajo para el muelle
+STR_ERROR_BRIDGE_TOO_LOW_FOR_BUOY                               :{WHITE}El puente es {HEIGHT} demasiado bajo para la boya
+STR_ERROR_BRIDGE_TOO_LOW_FOR_RAIL_WAYPOINT                      :{WHITE}El puente es {HEIGHT} demasiado bajo para el punto de ruta de ferrocarril
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROAD_WAYPOINT                      :{WHITE}El puente es {HEIGHT} demasiado bajo para el punto de ruta de carretera
+STR_ERROR_BRIDGE_TOO_LOW_FOR_LOCK                               :{WHITE}El puente es {HEIGHT} demasiado bajo para la esclusa
 
 # Tunnel related errors
 STR_ERROR_CAN_T_BUILD_TUNNEL_HERE                               :{WHITE}No se puede construir túnel aquí...
@@ -5480,7 +5497,7 @@ STR_TOWN_BUILDING_NAME_CINEMA_1                                 :Cine
 STR_TOWN_BUILDING_NAME_SHOPPING_MALL_1                          :Centro comercial
 STR_TOWN_BUILDING_NAME_IGLOO_1                                  :Iglú
 STR_TOWN_BUILDING_NAME_TEPEES_1                                 :Tipis
-STR_TOWN_BUILDING_NAME_TEAPOT_HOUSE_1                           :Casa de Té
+STR_TOWN_BUILDING_NAME_TEAPOT_HOUSE_1                           :Casa Tetera
 STR_TOWN_BUILDING_NAME_PIGGY_BANK_1                             :Banco Cerdito
 
 ##id 0x4800
@@ -5874,6 +5891,8 @@ STR_SAVEGAME_NAME_SPECTATOR                                     :observador, {1:
 
 # Viewport strings
 STR_VIEWPORT_TOWN_POP                                           :{TOWN} ({COMMA})
+STR_VIEWPORT_TOWN_CITY                                          :{TOWN} {CITY_ICON}
+STR_VIEWPORT_TOWN_CITY_POP                                      :{TOWN} ({COMMA}) {CITY_ICON}
 STR_VIEWPORT_STATION                                            :{STATION} {STATION_FEATURES}
 
 # Simple strings to get specific types of data

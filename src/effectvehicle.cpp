@@ -17,8 +17,8 @@
 #include "effectvehicle_func.h"
 #include "effectvehicle_base.h"
 #include "core/checksum_func.hpp"
-#include "core/container_func.hpp"
 #include "3rdparty/cpp-btree/btree_set.h"
+#include "3rdparty/robin_hood/robin_hood.h"
 
 #include <algorithm>
 
@@ -668,19 +668,16 @@ TransparencyOption EffectVehicle::GetTransparencyOption() const
 	return _effect_procs[this->subtype].transparency;
 }
 
-extern std::vector<VehicleID> _remove_from_tick_effect_veh_cache;
+extern robin_hood::unordered_flat_set<VehicleID> _remove_from_tick_effect_veh_cache;
 extern btree::btree_set<VehicleID> _tick_effect_veh_cache;
-extern bool _tick_caches_valid;
 
 void EffectVehicle::AddEffectVehicleToTickCache()
 {
-	if (!_tick_caches_valid) return;
-	if (container_unordered_remove(_remove_from_tick_effect_veh_cache, this->index) > 0) return;
+	if (_remove_from_tick_effect_veh_cache.erase(this->index) > 0) return;
 	_tick_effect_veh_cache.insert(this->index);
 }
 
 void EffectVehicle::RemoveEffectVehicleFromTickCache()
 {
-	if (!_tick_caches_valid) return;
-	_remove_from_tick_effect_veh_cache.push_back(this->index);
+	_remove_from_tick_effect_veh_cache.insert(this->index);
 }

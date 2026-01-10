@@ -676,7 +676,7 @@ STR_NEWS_NEW_VEHICLE_TYPE                                       :{BIG_FONT}{BLAC
 
 
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :पौंड
 STR_GAME_OPTIONS_CURRENCY_USD                                   :डोल्लर
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :युरो
@@ -784,6 +784,7 @@ STR_CONFIG_SETTING_REALISTIC                                    :खरेखु
 ###setting-zero-is-special
 
 
+###length 3
 
 
 
@@ -792,6 +793,7 @@ STR_CONFIG_SETTING_REALISTIC                                    :खरेखु
 
 ###setting-zero-is-special
 
+###length 3
 
 
 
@@ -903,6 +905,7 @@ STR_CONFIG_SETTING_WARN_LOST_VEHICLE                            : वाहन �
 ###length 4
 
 ###length 4
+
 
 
 
@@ -1189,6 +1192,7 @@ STR_NETWORK_SERVER_MESSAGE                                      :*** {STRING}
 # Rail waypoint construction window
 
 # Rail station construction window
+
 
 
 

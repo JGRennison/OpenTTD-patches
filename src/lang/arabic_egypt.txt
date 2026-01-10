@@ -888,7 +888,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :اختيار و
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :جنية
 STR_GAME_OPTIONS_CURRENCY_USD                                   :دولار
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :يورو
@@ -1151,6 +1151,7 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :يمين
 STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :سعر الفائدة على القرض يتحكم أيضًا في التضخم ، إذا تم تمكينه
 
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :تحديد مستوى تكاليف الصيانة والتشغيل للمركبات والبنية التحتية
+###length 3
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           ::سرعة البناء {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :الحد من كمية البناء للذكاء الاصطناعي
@@ -1165,6 +1166,7 @@ STR_CONFIG_SETTING_SUBSIDY_MULTIPLIER_HELPTEXT                  :حدد المب
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :تكاليف البناء: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :تحديد مستوى تكاليف البناء والشراء
+###length 3
 
 STR_CONFIG_SETTING_RECESSIONS                                   :حالات الركود: {STRING}
 
@@ -1400,6 +1402,7 @@ STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREY_TO_RED                :رمادي إل
 ###length 4
 
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :تحريك سلس في نوافذ المشاهدة: {STRING}
+
 
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :عرض المقاسات عند استخدام ادوات البناء المختلفة: {STRING}
 
@@ -1759,7 +1762,6 @@ STR_CONFIG_ERROR_INVALID_GRF_SYSTEM                             :نظام الا
 STR_CONFIG_ERROR_INVALID_GRF_INCOMPATIBLE                       :غير متطابق مع هذه النسخة من OpenTTD
 STR_CONFIG_ERROR_INVALID_GRF_UNKNOWN                            :مجهول
 STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_LEVEL             :{WHITE}... نسبة الضغط '{STRING}' غير صحيحة
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}نفذت الذاكرة
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... لم يتم العثور على GPU متوافق. تم تعطيل تسريع الأجهزة
@@ -2268,6 +2270,7 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}طول �
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}اختر طول المحطة
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}أسحب وأفلت
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}بناء محطة بطريقة السحب والإفلات
+
 
 
 
@@ -2865,14 +2868,11 @@ STR_SAVE_PRESET_CAPTION                                         :{WHITE}حفظ �
 STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}لائحة الإعدادات المسبقة. اختر واحدة لنسخها للإسم المحفوظ بالإسفل
 STR_SAVE_PRESET_TITLE                                           :{BLACK}أدخل اسم للإعداد المسبق
 STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}الإسم المختار لحفظ الإعداد المسبق
-STR_SAVE_PRESET_CANCEL                                          :{BLACK}إلغاء
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}لا تغير الإعداد المسبق
 STR_SAVE_PRESET_SAVE                                            :{BLACK}إحفظ
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK} احفظ الإعدادات للإسم المختار حاليا
 
 # NewGRF parameters window
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}غير خصائص الاضافات الجديدة
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}اغلق
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}استرجاع القياسي
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}استرجاع جميع الخصائص لقيمها الاصلية
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :نمط {NUM}
@@ -4029,15 +4029,12 @@ STR_AI_LIST_URL                                                 :{LTBLUE}الع�
 
 STR_AI_LIST_ACCEPT                                              :{BLACK} موافق
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK} اختر الذكاء الصناعي المنتقى
-STR_AI_LIST_CANCEL                                              :{BLACK} الغاء
-STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK} لا تغير الذكاء الصناعي
 
 STR_SCREENSHOT_SCREENSHOT                                       :{BLACK}لقطة شاشة عادية
 STR_SCREENSHOT_ZOOMIN_SCREENSHOT                                :{BLACK}التقط لقطة شاشة كاملة
 STR_SCREENSHOT_WORLD_SCREENSHOT                                 :{BLACK}صور الخاريطة الكاملة
 
 # Script Parameters
-STR_AI_SETTINGS_CLOSE                                           :{BLACK} اغلاق
 STR_AI_SETTINGS_RESET                                           :{BLACK} اعادة ضبط
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
 

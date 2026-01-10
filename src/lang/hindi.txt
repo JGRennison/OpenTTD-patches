@@ -331,7 +331,7 @@ STR_EXTRA_VIEW_MOVE_MAIN_TO_VIEW_TOOLTIP                        :{BLACK}इस �
 
 
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_FIM                                   :फिनलैंड मार्का
 STR_GAME_OPTIONS_CURRENCY_ISK                                   :आइसलैंडिक क्रोना
 STR_GAME_OPTIONS_CURRENCY_HKD                                   :हाँग काँग डॉलर
@@ -422,6 +422,7 @@ STR_CONFIG_SETTING_COMPANIES_OFF                                :बन्द
 ###setting-zero-is-special
 
 
+###length 3
 
 
 
@@ -430,6 +431,7 @@ STR_CONFIG_SETTING_COMPANIES_OFF                                :बन्द
 
 ###setting-zero-is-special
 
+###length 3
 
 
 STR_CONFIG_SETTING_TRAIN_REVERSING_HELPTEXT                     :यदि सक्षम किया गया है, तो ट्रेनें गैर-टर्मिनस स्टेशनों पर रिवर्स नहीं होंगी, भले ही रिवर्स करते समय उनके अगले गंतव्य के लिए छोटा रास्ता हो।
@@ -556,6 +558,7 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :बैंगन
 ###length 4
 
 ###length 4
+
 
 
 
@@ -883,6 +886,7 @@ STR_TOOLBAR_DISABLED_NO_VEHICLE_AVAILABLE                       :{BLACK}अक�
 
 
 
+
 STR_STATION_CLASS_DFLT                                          :मानक स्टेशन
 STR_STATION_CLASS_WAYP                                          :पथ-संकेत
 
@@ -1028,8 +1032,6 @@ STR_SAVE_PRESET_CAPTION                                         :{WHITE}प्�
 STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}उपलब्ध प्रीसेट की सूची, इसे नीचे सेव नाम पर कॉपी करने के लिए एक का चयन करें
 STR_SAVE_PRESET_TITLE                                           :{BLACK}प्रीसेट के लिए एक नाम दर्ज करें
 STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}सहेजने के लिए प्रीसेट के लिए वर्तमान में चयनित नाम
-STR_SAVE_PRESET_CANCEL                                          :{BLACK}रद्द
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}प्रीसेट न बदलें
 STR_SAVE_PRESET_SAVE                                            :{BLACK}सेव
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}प्रीसेट को वर्तमान चयनित नाम पर सहेजें
 

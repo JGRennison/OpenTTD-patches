@@ -1640,6 +1640,12 @@ inline void InvalidateVehicleTickCaches()
 	_tick_caches_valid = false;
 }
 
+inline void InvalidateEffectVehicleTickCache()
+{
+	extern bool _tick_effect_veh_cache_valid;
+	_tick_effect_veh_cache_valid = false;
+}
+
 void ClearVehicleTickCaches();
 void RemoveFromOtherVehicleTickCache(const Vehicle *v);
 void UpdateAllVehiclesIsDrawn();

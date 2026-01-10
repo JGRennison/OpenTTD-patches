@@ -23,6 +23,6 @@ std::map<std::string, bool> _unknown_cheat_fields;
 /** Reinitialise all the cheats. */
 void InitializeCheats()
 {
-	memset(&_cheats, 0, sizeof(Cheats));
+	_cheats = {};
 	_unknown_cheat_fields.clear();
 }

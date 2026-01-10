@@ -477,7 +477,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 
 			case WID_VT_ARRIVAL_DEPARTURE_SELECTION:
 			case WID_VT_TIMETABLE_PANEL:
-				resize.height = std::max<int>(GetCharacterHeight(FS_NORMAL), GetSpriteSize(SPR_LOCK).height);
+				fill.height = resize.height = std::max<int>(GetCharacterHeight(FS_NORMAL), GetSpriteSize(SPR_LOCK).height);
 				size.height = 8 * resize.height + padding.height;
 				break;
 
@@ -1202,7 +1202,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 				if (this->query_is_speed_query) {
 					uint64_t display_speed = 0;
 					if (!str->empty()) {
-						auto try_value = ParseInteger<uint64_t>(*str);
+						auto try_value = ParseInteger<uint64_t>(*str, 10, true);
 						if (!try_value.has_value()) return;
 						display_speed = *try_value;
 					}

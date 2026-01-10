@@ -203,7 +203,7 @@ static bool IsSignedVarMemType(VarType vt);
  */
 class ConfigIniFile : public IniFile {
 private:
-	inline static const IniGroupNameList list_group_names = {
+	static inline const IniGroupNameList list_group_names = {
 		"bans",
 		"newgrf",
 		"servers",
@@ -365,15 +365,15 @@ static std::optional<std::vector<uint32_t>> ParseIntList(std::string_view str)
 static bool LoadIntList(std::optional<std::string_view> str, void *array, int nelems, VarType type)
 {
 	size_t elem_size = SlVarSize(type);
+	std::byte *p = static_cast<std::byte *>(array);
 	if (!str.has_value()) {
-		memset(array, 0, nelems * elem_size);
+		std::fill_n(p, nelems * elem_size, static_cast<std::byte>(0));
 		return true;
 	}
 
 	auto opt_items = ParseIntList(*str);
 	if (!opt_items.has_value() || opt_items->size() != (size_t)nelems) return false;
 
-	char *p = static_cast<char *>(array);
 	for (auto item : *opt_items) {
 		WriteValue(p, type, item);
 		p += elem_size;
@@ -1415,6 +1415,15 @@ static void ChangeMinutesPerYear(int32_t new_value)
 	}
 }
 
+/* Get the valid range of the "minutes per calendar year" setting. */
+static std::tuple<int32_t, uint32_t> GetMinutesPerYearRange(const IntSettingDesc &)
+{
+	/* Allow a non-default value only if using Wallclock timekeeping units. */
+	if (_settings_newgame.economy.timekeeping_units == TKU_WALLCLOCK) return { CalTime::FROZEN_MINUTES_PER_YEAR, CalTime::MAX_MINUTES_PER_YEAR };
+
+	return { CalTime::DEF_MINUTES_PER_YEAR, CalTime::DEF_MINUTES_PER_YEAR };
+}
+
 static std::tuple<int32_t, uint32_t> GetServiceIntervalRange(const IntSettingDesc &)
 {
 	VehicleDefaultSettings *vds;
@@ -1532,7 +1541,7 @@ static void TrainBrakingModelChanged(int32_t new_value)
 				v->lookahead.reset();
 				continue;
 			}
-			if (!HasBit(v->flags, VRF_TRAIN_STUCK)) {
+			if (!v->flags.Test(VehicleRailFlag::Stuck)) {
 				_settings_game.vehicle.train_braking_model = TBM_REALISTIC;
 				FreeTrainTrackReservation(v);
 				_settings_game.vehicle.train_braking_model = new_value;
@@ -2428,7 +2437,7 @@ static bool CalendarModeDisabledGUI(SettingOnGuiCtrlData &data)
  */
 static void PrepareOldDiffCustom()
 {
-	memset(_old_diff_custom, 0, sizeof(_old_diff_custom));
+	_old_diff_custom.fill(0);
 }
 
 /**

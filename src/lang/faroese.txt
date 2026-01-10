@@ -830,7 +830,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :Gjaldsoyra eind
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :Úrval av gjaldsoyra eindum
 
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Bretsk Pund
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Dollarar
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Evrir
@@ -1066,6 +1066,7 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Rentustigi á l
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Rakstrar kostnaður: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Set hvussu høgur/lágur rakstrarkostnaðurin av flutningstólum og innankervi skal vera
+###length 3
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Byggingar fer: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Avmarka hvussu nógv AI kann byggja
@@ -1082,6 +1083,7 @@ STR_CONFIG_SETTING_SUBSIDY_MULTIPLIER_HELPTEXT                  :Vel hvussu nóg
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Bygnings kostnaður: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Set hvussu høgur/lágur bygnings- og keypskostnaður skal vera
+###length 3
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Ringar tíðir: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Um hetta er tendra kunnu ringar tíðir koma fyri við nøkrum ára millumbili. Meðan ringar tíðir eru, er øll framleiðsla munandi lægri (fer aftur á støði ta var áðrenn tá ringu tíðinar eru av)
@@ -1353,6 +1355,7 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Blákollulitur
 
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Mjúka sýnisglugga skrulling: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Stýr hvussu høvuðs sýni skrullar til eitt ávíst stað tá tú trýstir á lítlakorti ella tú tú gevur eini boð um at skrulla til ein ávísan lut á kortinum. Um gilda, skrullar sýni mjúgdliga, um ógilda leypur sýni beint til staði
+
 
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Vís eina mátingar vegleiðing tá tú brúkar ymisku byggji amboðini: {STRING}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP_HELPTEXT                     :Vís punta fjarstøðir og hæddar munir tá tú togar undir bygging
@@ -1694,8 +1697,6 @@ STR_CONFIG_ERROR_INVALID_GRF_NOT_FOUND                          :ikki funni
 STR_CONFIG_ERROR_INVALID_GRF_SYSTEM                             :system NewGRF
 STR_CONFIG_ERROR_INVALID_GRF_INCOMPATIBLE                       :ósambæriligur við hesa útgávuna av OpenTTD
 STR_CONFIG_ERROR_INVALID_GRF_UNKNOWN                            :ókendur
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Einki minni eftir
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Leitan eftir {BYTES} av spritecache eydnaðist ikki. Spritecache var skerd til {BYTES}. Hetta vil skerja framførsluna av OpenTTD. Fyri at minka um minnis krøvini kann tú royna at sløkkja fyri 32bpp grafikki og/ella suma-in stig
 
 # Video initalization errors
 
@@ -2164,6 +2165,7 @@ STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Bygg ein
 
 
 
+
 STR_STATION_CLASS_DFLT                                          :Vanlig støð
 STR_STATION_CLASS_WAYP                                          :Waypoint
 
@@ -2614,7 +2616,6 @@ STR_NEWGRF_SETTINGS_INCOMPATIBLE                                :{RED}Samsvarar 
 
 # NewGRF parameters window
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}Broyt NewGRF parametur
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Lat aftur
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}Endustilla
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}Áset øll parametur til teirra vanligu virði
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :Parametur {NUM}
@@ -3585,13 +3586,10 @@ STR_AI_LIST_URL                                                 :{LTBLUE}URL: {O
 
 STR_AI_LIST_ACCEPT                                              :{BLACK}Góðtak
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Vel undirstrikaða scripti
-STR_AI_LIST_CANCEL                                              :{BLACK}Angra
-STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Ikki broyta scripti
 
 
 # Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :AI
-STR_AI_SETTINGS_CLOSE                                           :{BLACK}Lat aftur
 STR_AI_SETTINGS_RESET                                           :{BLACK}Endurstilla
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
 

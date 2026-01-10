@@ -438,6 +438,7 @@ static void ShutdownGame()
 
 	ViewportMapClearTunnelCache();
 	InvalidateVehicleTickCaches();
+	InvalidateEffectVehicleTickCache();
 	ClearVehicleTickCaches();
 	InvalidateTemplateReplacementImages();
 	ResetDisasterVehicleTargeting();
@@ -897,7 +898,7 @@ int openttd_main(std::span<char * const> arguments)
 	InitializeLanguagePacks();
 
 	/* Initialize the font cache */
-	InitFontCache(false);
+	InitFontCache(FONTSIZES_REQUIRED);
 
 	/* This must be done early, since functions use the SetWindowDirty* calls */
 	InitWindowSystem();

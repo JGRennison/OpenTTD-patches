@@ -30,6 +30,7 @@
 #include "group_cmd.h"
 #include "dropdown_type.h"
 #include "dropdown_func.h"
+#include "3rdparty/cpp-btree/btree_set.h"
 
 #include "widgets/autoreplace_widget.h"
 
@@ -123,7 +124,7 @@ class ReplaceVehicleWindow : public Window {
 	 */
 	void GenerateReplaceVehList(bool draw_left)
 	{
-		std::vector<EngineID> variants;
+		btree::btree_set<EngineID> variants;
 		EngineID selected_engine = EngineID::Invalid();
 		VehicleType type = (VehicleType)this->window_number;
 		uint8_t side = draw_left ? 0 : 1;
@@ -162,8 +163,7 @@ class ReplaceVehicleWindow : public Window {
 
 			if (side == 1) {
 				EngineID parent = e->info.variant_id;
-				while (parent != EngineID::Invalid()) {
-					variants.push_back(parent);
+				while (parent != EngineID::Invalid() && variants.insert(parent).second) {
 					parent = Engine::Get(parent)->info.variant_id;
 				}
 			}
@@ -315,7 +315,7 @@ public:
 
 			case WID_RV_LEFT_MATRIX:
 			case WID_RV_RIGHT_MATRIX:
-				resize.height = GetEngineListHeight((VehicleType)this->window_number);
+				fill.height = resize.height = GetEngineListHeight((VehicleType)this->window_number);
 				size.height = (this->window_number <= VEH_ROAD ? 8 : 4) * resize.height;
 				break;
 

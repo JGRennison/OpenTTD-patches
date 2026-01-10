@@ -764,6 +764,8 @@ STR_GRAPH_LAST_24_MONTHS                                        :{TINY_FONT}{BLA
 STR_GRAPH_LAST_24_QUARTERS                                      :{TINY_FONT}{BLACK}6 років (щоквартально)
 STR_GRAPH_LAST_24_YEARS                                         :{TINY_FONT}{BLACK}24 роки (щорічно)
 
+STR_GRAPH_TOGGLE_RANGE                                          :Перемкнути графік для цього проміжку даних
+STR_GRAPH_SELECT_SCALE                                          :Змінити горизонтальну шкалу графа
 
 STR_GRAPH_CARGO_PAYMENT_RATES_CAPTION                           :{WHITE}Тарифи доставки вантажів
 STR_GRAPH_CARGO_PAYMENT_RATES_DAYS                              :{TINY_FONT}{BLACK}Днів у русі
@@ -773,12 +775,16 @@ STR_GRAPH_CARGO_ENABLE_ALL                                      :{TINY_FONT}{BLA
 STR_GRAPH_CARGO_DISABLE_ALL                                     :{TINY_FONT}{BLACK}Нічого
 STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL                              :{BLACK}Показувати всі види вантажів на графіку
 STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}Не показувати ніякі типи вантажів на графіку
-STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}Ввімк/вимик графік типів вантажу
+STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}Перемкнути графік вантажу цього типу
 STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLACK}{STRING}
 
+STR_GRAPH_INDUSTRY_CAPTION                                      :{WHITE}{INDUSTRY} - Історія вантажів
 STR_GRAPH_INDUSTRY_RANGE_PRODUCED                               :Вироблено
 STR_GRAPH_INDUSTRY_RANGE_TRANSPORTED                            :Перевезено
+STR_GRAPH_INDUSTRY_RANGE_DELIVERED                              :Доставлено
+STR_GRAPH_INDUSTRY_RANGE_WAITING                                :Очікує
 
+STR_GRAPH_TOWN_CARGO_CAPTION                                    :{WHITE}{TOWN} - Історія вантажів
 STR_GRAPH_TOWN_RANGE_PRODUCED                                   :Постачання
 STR_GRAPH_TOWN_RANGE_TRANSPORTED                                :Перевезено
 
@@ -786,7 +792,7 @@ STR_GRAPH_PERFORMANCE_DETAIL_TOOLTIP                            :{BLACK}Пока
 
 # Graph key window
 STR_GRAPH_KEY_CAPTION                                           :{WHITE}Легенда графіків
-STR_GRAPH_KEY_COMPANY_SELECTION_TOOLTIP                         :{BLACK}Натисніть тут для ввімк/вимик. графіку окремої компанії
+STR_GRAPH_KEY_COMPANY_SELECTION_TOOLTIP                         :{BLACK}Натисніть тут для перемикання графіку окремої компанії
 
 # Company league window
 STR_COMPANY_LEAGUE_TABLE_CAPTION                                :{WHITE}Рейтингова таблиця
@@ -911,7 +917,7 @@ STR_SMALLMAP_TYPE_OWNERS                                        :Власник�
 STR_SMALLMAP_TOOLTIP_SHOW_LAND_CONTOURS_ON_MAP                  :{BLACK}Показати рельєф на карті
 STR_SMALLMAP_TOOLTIP_SHOW_VEHICLES_ON_MAP                       :{BLACK}Показати транспорт на карті
 STR_SMALLMAP_TOOLTIP_SHOW_INDUSTRIES_ON_MAP                     :{BLACK}Показати підприємства на карті
-STR_SMALLMAP_TOOLTIP_SHOW_LINK_STATS_ON_MAP                     :{BLACK}Показувати потік вантажу на карті
+STR_SMALLMAP_TOOLTIP_SHOW_LINK_STATS_ON_MAP                     :{BLACK}Показувати вантажопотік на карті
 STR_SMALLMAP_TOOLTIP_SHOW_TRANSPORT_ROUTES_ON                   :{BLACK}Показати маршрути на карті
 STR_SMALLMAP_TOOLTIP_SHOW_VEGETATION_ON_MAP                     :{BLACK}Показати рослинність на карті
 STR_SMALLMAP_TOOLTIP_SHOW_LAND_OWNERS_ON_MAP                    :{BLACK}Показати власників землі на карті
@@ -1126,7 +1132,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :Виберіт�
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Британський фунт
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Американський долар
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Євро
@@ -1172,6 +1178,7 @@ STR_GAME_OPTIONS_CURRENCY_MYR                                   :Малайзі�
 STR_GAME_OPTIONS_CURRENCY_LVL                                   :Латвійські лати
 STR_GAME_OPTIONS_CURRENCY_PTE                                   :Португальське ескудо
 STR_GAME_OPTIONS_CURRENCY_UAH                                   :Українська гривня
+STR_GAME_OPTIONS_CURRENCY_VND                                   :В'єтнамський донг
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :Автозбереження
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :Виберіть інтервал автозбереження
@@ -1445,6 +1452,10 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Процент�
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Вартість експлуатації: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Встановіть вартість обслуговування та вартість експлуатації на транспорт та інфраструктуру
+###length 3
+STR_CONFIG_SETTING_RUNNING_COSTS_LOW                            :мало
+STR_CONFIG_SETTING_RUNNING_COSTS_MEDIUM                         :посередньо
+STR_CONFIG_SETTING_RUNNING_COSTS_HIGH                           :багато
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Швидкість побудови: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Обмеження кількості будівельних дій для ШІ
@@ -1466,6 +1477,10 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :Без субс
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Зведення коштуватиме: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Встановити рівень витрат на побудову та придбання
+###length 3
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_LOW                       :низька
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_MEDIUM                    :середня
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :висока
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Рецесії: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Якщо увімкнено, рецесії можуть відбуватися кожні кілька років. Під час рецессії обсяг виробництва на всіх підприємствах значно знижений (він повертається на попередній рівень, коли рецесія закінчується)
@@ -1575,7 +1590,7 @@ STR_CONFIG_SETTING_STOP_LOCATION_NEAR_END                       :на почат
 STR_CONFIG_SETTING_STOP_LOCATION_MIDDLE                         :посередині
 STR_CONFIG_SETTING_STOP_LOCATION_FAR_END                        :наприкінці
 
-STR_CONFIG_SETTING_AUTOSCROLL                                   :Прокручувати вікно, коли курсор з краю: {STRING}
+STR_CONFIG_SETTING_AUTOSCROLL                                   :Прокручувати вікно, коли курсор на межі: {STRING}
 STR_CONFIG_SETTING_AUTOSCROLL_HELPTEXT                          :При включенні вміст вікон огляду буде прокручуватись при підведенні курсора до краю вікна
 ###length 4
 STR_CONFIG_SETTING_AUTOSCROLL_DISABLED                          :Вимкнено
@@ -1774,8 +1789,8 @@ STR_CONFIG_SETTING_HEIGHTMAP_ROTATION_CLOCKWISE                 :за годин
 
 STR_CONFIG_SETTING_SE_FLAT_WORLD_HEIGHT                         :Основний рівень суші плаского рельєфу: {STRING}
 ###length 2
-STR_CONFIG_SETTING_EDGES_NOT_EMPTY                              :{WHITE}Одна або більше клітинок з північного краю не є вільними
-STR_CONFIG_SETTING_EDGES_NOT_WATER                              :{WHITE}Одна або більше клітинок на одному з країв не є водними
+STR_CONFIG_SETTING_EDGES_NOT_EMPTY                              :{WHITE}Одна або більше клітинок з північного краю не вільні
+STR_CONFIG_SETTING_EDGES_NOT_WATER                              :{WHITE}Одна або більше клітинок на одному з країв не водна
 
 STR_CONFIG_SETTING_STATION_SPREAD                               :Максимальний розмір станцій: {STRING}
 STR_CONFIG_SETTING_STATION_SPREAD_HELPTEXT                      :Максимально допустимий лінійний розмір станцій. Зауважте, що занадто високе значення параметра може уповільнити гру.
@@ -1811,6 +1826,9 @@ STR_CONFIG_SETTING_SCROLLMODE_LMB                               :Переміщ�
 
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Плавна прокрутка у вікні: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Налаштування способу прокрутки основного екрану при клацанні мишею по зменшенній карті, або інших діях, що призводять до переміщення по карті (кнопки "Оглянути", тощо). При включенні опції переміщення карти відбувається плавно. При виключенні - відбувається моментальне переміщення в необхідну точку
+
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT                  :Стандартний вибір в панелі інструментів: {STRING}
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT_HELPTEXT         :Поведінка обрання пунктів меню панелей інструментів. "Вимкнуто" — пункти меню панелей інструментів залишаються відкритими до вибору пункту меню. "Увімкнуто" — пункти меню панелей інструментів діють коли відпущена кнопка миші.
 
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Показувати підказки про розміри під час побудови: {STRING}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP_HELPTEXT                     :Відображати довжини та різниці висот в підказках в процесі побудови
@@ -2162,7 +2180,7 @@ STR_CONFIG_SETTING_TOOLBAR_POS_HELPTEXT                         :Горизон�
 STR_CONFIG_SETTING_STATUSBAR_POS                                :Позиція панелі статусу: {STRING}
 STR_CONFIG_SETTING_STATUSBAR_POS_HELPTEXT                       :Горизонтальна позиція панелі статусу, що внизу екрана.
 STR_CONFIG_SETTING_SNAP_RADIUS                                  :Радіус прилипання вікон: {STRING}
-STR_CONFIG_SETTING_SNAP_RADIUS_HELPTEXT                         :Дистанція між вікнами, при якій вікно, що переміщують, буде автоматично вирівноватися та "прилипати" до сусідніх вікон.
+STR_CONFIG_SETTING_SNAP_RADIUS_HELPTEXT                         :Проміжок між вікнами перед переміщенням вікна автоматично вирівноватиметься відносно сусідніх вікон.
 STR_CONFIG_SETTING_SNAP_RADIUS_VALUE                            :{COMMA} піксел{P ь і ів}
 ###setting-zero-is-special
 STR_CONFIG_SETTING_SNAP_RADIUS_DISABLED                         :Відключено
@@ -2332,8 +2350,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... фо
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... базовий набір графіки '{STRING}' не знайдено
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... базовий набір звуків '{STRING}' не знайдено
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... базовий набір музики '{STRING}' не знайдено
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Не вистачає пам'яті
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Не вдалося розподілити {BYTES} спрайт-кешу. Спрайт кеш було зменшено до {BYTES}. Це зменшить швидкість роботи OpenTTD. Аби зменшити використання пам'яті спробуйте заборонити 32-бітну графіку і/або ступені масшатабування екрану
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Помилка з налаштуванням зображення...
@@ -2341,7 +2357,8 @@ STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... не
 STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :{WHITE}... драйвер графічного процесора спричинив виліт гри. Відключено прискорення апаратного забезпечення
 
 # Intro window
-STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
+STR_INTRO_CAPTION                                               :{WHITE}OpenTTD
+STR_INTRO_VERSION                                               :OpenTTD {REV}
 
 STR_INTRO_NEW_GAME                                              :{BLACK}Нова гра
 STR_INTRO_LOAD_GAME                                             :{BLACK}Завантажити гру
@@ -2548,7 +2565,7 @@ STR_NETWORK_SERVER_LIST_SERVER_FULL                             :{SILVER}Сер�
 STR_NETWORK_SERVER_LIST_SERVER_BANNED                           :{SILVER}ТЕБЕ ЗАБЛОКОВАНО НА СЕРВЕРІ
 STR_NETWORK_SERVER_LIST_SERVER_TOO_OLD                          :{SILVER}СЕРЕВЕР НЕЙМОВІРНО СТАРИЙ
 STR_NETWORK_SERVER_LIST_VERSION_MISMATCH                        :{SILVER}Версія не співпадає
-STR_NETWORK_SERVER_LIST_GRF_MISMATCH                            :{SILVER}NEWGRF ПОМИЛКА
+STR_NETWORK_SERVER_LIST_GRF_MISMATCH                            :{SILVER}НЕСУМІСНІСТЬ NEWGRF
 
 STR_NETWORK_SERVER_LIST_JOIN_GAME                               :{BLACK}Приєднатися
 STR_NETWORK_SERVER_LIST_REFRESH                                 :{BLACK}Оновити сервер
@@ -2696,7 +2713,7 @@ STR_NETWORK_CHAT_OSKTITLE                                       :{BLACK}Введ
 # Network messages
 STR_NETWORK_ERROR_NOTAVAILABLE                                  :{WHITE}Не знайдено мережевого пристрою
 STR_NETWORK_ERROR_NOCONNECTION                                  :{WHITE}З'єднання з сервером затяглося або скасоване
-STR_NETWORK_ERROR_NEWGRF_MISMATCH                               :{WHITE}Не можна з'єднатись внаслідок неспівпадання NewGRF
+STR_NETWORK_ERROR_NEWGRF_MISMATCH                               :{WHITE}Неможливо з'єднатись внаслідок несумісності NewGRF
 STR_NETWORK_ERROR_DESYNC                                        :{WHITE}Помилка синхронізації з мережевою грою
 STR_NETWORK_ERROR_LOSTCONNECTION                                :{WHITE}З'єднання втрачено
 STR_NETWORK_ERROR_SAVEGAMEERROR                                 :{WHITE}Неможливо завантажити гру
@@ -2728,7 +2745,7 @@ STR_NETWORK_ERROR_CLIENT_DESYNC                                 :помилка 
 STR_NETWORK_ERROR_CLIENT_SAVEGAME                               :неможливо завантажити карту
 STR_NETWORK_ERROR_CLIENT_CONNECTION_LOST                        :з'єднання втрачено
 STR_NETWORK_ERROR_CLIENT_PROTOCOL_ERROR                         :помилка протоколу
-STR_NETWORK_ERROR_CLIENT_NEWGRF_MISMATCH                        :Неспівпадання NewGRF
+STR_NETWORK_ERROR_CLIENT_NEWGRF_MISMATCH                        :Несумісність NewGRF
 STR_NETWORK_ERROR_CLIENT_NOT_AUTHORIZED                         :відмова авторизації
 STR_NETWORK_ERROR_CLIENT_NOT_EXPECTED                           :отримано невірний або неочікуваний пакет
 STR_NETWORK_ERROR_CLIENT_WRONG_REVISION                         :невірна версія гри
@@ -2847,10 +2864,10 @@ STR_CONTENT_DOWNLOAD_COMPLETE                                   :{WHITE}Зава
 STR_CONTENT_DOWNLOAD_PROGRESS_SIZE                              :{WHITE}{BYTES} з {BYTES} завантажено ({NUM} %)
 
 # Content downloading error messages
-STR_CONTENT_ERROR_COULD_NOT_CONNECT                             :{WHITE}Не можна приєднатись до серверу вмісту...
+STR_CONTENT_ERROR_COULD_NOT_CONNECT                             :{WHITE}Неможливо приєднатись до сервера вмісту...
 STR_CONTENT_ERROR_COULD_NOT_DOWNLOAD                            :{WHITE}Не вдалося завантажити...
 STR_CONTENT_ERROR_COULD_NOT_DOWNLOAD_FILE_NOT_WRITABLE          :{WHITE}... файл не відкритий для запису
-STR_CONTENT_ERROR_COULD_NOT_EXTRACT                             :{WHITE}Не можна розпакувати завантажений файл
+STR_CONTENT_ERROR_COULD_NOT_EXTRACT                             :{WHITE}Неможлмво розпакувати завантажений файл
 
 STR_MISSING_GRAPHICS_SET_CAPTION                                :{WHITE}Відстуня графіка
 STR_MISSING_GRAPHICS_SET_MESSAGE                                :{BLACK}OpenTTD потребує пакет графіки для гри. Завантажити його?
@@ -2963,6 +2980,11 @@ STR_PICKER_MODE_USED_TOOLTIP                                    :Переклю�
 STR_PICKER_MODE_SAVED                                           :Збережено
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :Переключити на показ лише збережених елементів
 
+STR_PICKER_PREVIEW_SHRINK                                       :-
+STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Зменшити висоту попереднього перегляду зображень. Ctrl+клац зменшує до нижньої межі
+STR_PICKER_PREVIEW_EXPAND                                       :+
+STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Збільшити висоту попереднього перегляду зображень. Ctrl+клац збільшує до верхньої межі
+
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Виберіть тип станцій для відображення
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Виберіть тип станції для побудови. Клацніть Ctrl+Клік, щоб додати або видалити зі списку збереженого
 STR_PICKER_WAYPOINT_CLASS_TOOLTIP                               :Виберіть тип точки шляху для відображення
@@ -2997,6 +3019,7 @@ STR_HOUSE_PICKER_PROTECT                                        :Заборон�
 STR_HOUSE_PICKER_PROTECT_TOOLTIP                                :Укажіть, чи буде захищено цю будівлю від змін у разі зростання міста
 
 STR_HOUSE_PICKER_REPLACE                                        :Замінити наявний
+STR_HOUSE_PICKER_REPLACE_TOOLTIP                                :Чи наявний будинок автоматично видалятиметься з клітинки розташування
 
 STR_STATION_CLASS_DFLT                                          :Звичайна
 STR_STATION_CLASS_DFLT_STATION                                  :Звичайна станція
@@ -3658,15 +3681,12 @@ STR_SAVE_PRESET_CAPTION                                         :{WHITE}Збер
 STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}Список доступних шаблонів, скопіюйте один для збереження імені нижче
 STR_SAVE_PRESET_TITLE                                           :{BLACK}Введіть ім'я для шаблону
 STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}Обране поточне ім'я для збереження в шаблоні
-STR_SAVE_PRESET_CANCEL                                          :{BLACK}Скасувати
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}Не змінювати шаблон
 STR_SAVE_PRESET_SAVE                                            :{BLACK}Зберегти
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}Зберегти шаблон для поточного обраного імені
 
 # NewGRF parameters window
 STR_BASEGRF_PARAMETERS_CAPTION                                  :{WHITE}Змінити параметри базового набору графіки
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}Змінити параметри NewGRF
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Закрити
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}Очистити
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}Встановити всім параметрам стандартні значення
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :Параметр {NUM}
@@ -3780,11 +3800,11 @@ STR_NEWGRF_BUGGY_INVALID_CARGO_PRODUCTION_CALLBACK              :{WHITE}'{PUSH_C
 STR_NEWGRF_INVALID_CARGO                                        :<невідомий вантаж>
 STR_NEWGRF_INVALID_CARGO_ABBREV                                 :??
 STR_NEWGRF_INVALID_CARGO_QUANTITY                               :{COMMA} <невідомого вантажу>
-STR_NEWGRF_INVALID_ENGINE                                       :<невірна модель транспорту>
+STR_NEWGRF_INVALID_ENGINE                                       :<недопустима модель транспорту>
 STR_NEWGRF_INVALID_INDUSTRYTYPE                                 :<невірне виробництво>
 
 # Placeholders for other invalid stuff, e.g. vehicles that have gone (Game Script).
-STR_INVALID_VEHICLE                                             :<невірний транспорт>
+STR_INVALID_VEHICLE                                             :<недопустимий транспорт>
 
 # NewGRF scanning window
 STR_NEWGRF_SCAN_CAPTION                                         :{WHITE}Шукаю NewGRF'и
@@ -3801,6 +3821,7 @@ STR_EDIT_SIGN_CAPTION                                           :{WHITE}Реда
 STR_EDIT_SIGN_LOCATION_TOOLTIP                                  :{BLACK}Показати позначку в центрі екрану. Ctrl+клац мишею відкриє нове вікно у місці розташування позначки
 STR_EDIT_SIGN_NEXT_SIGN_TOOLTIP                                 :{BLACK}Наступне позначення
 STR_EDIT_SIGN_PREVIOUS_SIGN_TOOLTIP                             :{BLACK}Попереднє позначення
+STR_EDIT_SIGN_TEXT_COLOUR_TOOLTIP                               :{BLACK}Колір тексту напису
 
 STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}Введіть назву знака
 
@@ -3808,7 +3829,7 @@ STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}Введ
 STR_TOWN_DIRECTORY_CAPTION                                      :{WHITE}Міста ({COMMA} of {COMMA})
 STR_TOWN_DIRECTORY_NONE                                         :{ORANGE}- немає -
 STR_TOWN_DIRECTORY_TOWN                                         :{ORANGE}{TOWN}{BLACK} ({COMMA})
-STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{YELLOW} (Мегаполіс){BLACK} ({COMMA})
+STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{BLACK} ({COMMA}) {YELLOW}{CITY_ICON}
 STR_TOWN_DIRECTORY_LIST_TOOLTIP                                 :{BLACK}Назви міст - натисніть на назву, щоб показати місто у центрі екрану. Ctrl+клац мишею відкриває нове вікно з видом на місто
 STR_TOWN_POPULATION                                             :{BLACK}Населення світу: {COMMA}
 
@@ -3832,6 +3853,8 @@ STR_TOWN_VIEW_CENTER_TOOLTIP                                    :{BLACK}Пока
 STR_TOWN_VIEW_LOCAL_AUTHORITY_BUTTON                            :{BLACK}Місцева влада
 STR_TOWN_VIEW_LOCAL_AUTHORITY_TOOLTIP                           :{BLACK}Інформація про місцеву владу
 STR_TOWN_VIEW_RENAME_TOOLTIP                                    :{BLACK}Перейменувати місто
+STR_TOWN_VIEW_CARGO_GRAPH                                       :Вантажопотік
+STR_TOWN_VIEW_CARGO_GRAPH_TOOLTIP                               :Показати графік історії міських вантажів
 
 STR_TOWN_VIEW_EXPAND_BUTTON                                     :{BLACK}Розширити
 STR_TOWN_VIEW_EXPAND_TOOLTIP                                    :{BLACK}Збільшити розмір міста
@@ -4164,6 +4187,8 @@ STR_INDUSTRY_VIEW_PRODUCTION_LAST_MONTH_TITLE                   :{BLACK}Виро
 STR_INDUSTRY_VIEW_PRODUCTION_LAST_MINUTE_TITLE                  :{BLACK}Вироблено за минулу хвилину:
 STR_INDUSTRY_VIEW_TRANSPORTED                                   :{YELLOW}{CARGO_LONG}{STRING}{BLACK} ({COMMA}% перевезено)
 STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}Показати підприємство у центрі екрану. Ctrl+клац мишею відкриє нове вікно з видом на підприємство
+STR_INDUSTRY_VIEW_CARGO_GRAPH                                   :{BLACK}Графік вантажів
+STR_INDUSTRY_VIEW_CARGO_GRAPH_TOOLTIP                           :{BLACK}Показати графік історії промислових вантажів
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Обсяг виробництва: {YELLOW}{COMMA}%
 STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}Підприємство оголосило про близьке закриття!
 
@@ -4301,6 +4326,7 @@ STR_PURCHASE_INFO_ALL_BUT                                       :Всі, крі�
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Максимальне тягове зусилля: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Дальність: {GOLD}{COMMA} клітинок
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Тип літака: {GOLD}{STRING}
+STR_PURCHASE_INFO_RAILTYPES                                     :{BLACK}Залізничні колії: {GOLD}{STRING}
 
 ###length 3
 STR_CARGO_TYPE_FILTER_ALL                                       :Всі типи вантажів
@@ -4484,6 +4510,7 @@ STR_ENGINE_PREVIEW_RUNCOST_YEAR                                 :Вартіст�
 STR_ENGINE_PREVIEW_RUNCOST_PERIOD                               :Вартість експлуатації: {CURRENCY_LONG}/період
 STR_ENGINE_PREVIEW_CAPACITY                                     :Місткість: {CARGO_LONG}
 STR_ENGINE_PREVIEW_CAPACITY_2                                   :Місткість: {CARGO_LONG}, {CARGO_LONG}
+STR_ENGINE_PREVIEW_RAILTYPES                                    :Залізничні колії: {STRING}
 
 # Autoreplace window
 STR_REPLACE_VEHICLES_WHITE                                      :{WHITE}Оновити {STRING} - {STRING}
@@ -5031,8 +5058,6 @@ STR_AI_LIST_URL                                                 :{LTBLUE}URL: {O
 
 STR_AI_LIST_ACCEPT                                              :{BLACK}Прийняти
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Вибрати виділений скрипт
-STR_AI_LIST_CANCEL                                              :{BLACK}Скасувати
-STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Не міняти скрипт
 
 STR_SCREENSHOT_CAPTION                                          :{WHITE}Зробити знімок екрану
 STR_SCREENSHOT_SCREENSHOT                                       :{BLACK}Звичайний зняток
@@ -5045,7 +5070,6 @@ STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Знят
 # Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}Налаштування ШІ
 STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :{WHITE}Налаштування ігрового скрипту
-STR_AI_SETTINGS_CLOSE                                           :{BLACK}Закрити
 STR_AI_SETTINGS_RESET                                           :{BLACK}Скидання
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
 
@@ -5144,6 +5168,7 @@ STR_ERROR_FLAT_LAND_REQUIRED                                    :{WHITE}Потр
 STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION                        :{WHITE}Схил не в тому напрямку
 STR_ERROR_CAN_T_DO_THIS                                         :{WHITE}Неможливо зробити це...
 STR_ERROR_BUILDING_MUST_BE_DEMOLISHED                           :{WHITE}Спочатку знесіть споруду
+STR_ERROR_BUILDING_IS_PROTECTED                                 :{WHITE}... будівля захищена
 STR_ERROR_CAN_T_CLEAR_THIS_AREA                                 :{WHITE}Неможливо очистити цю ділянку...
 STR_ERROR_SITE_UNSUITABLE                                       :{WHITE}... невідповідне місце
 STR_ERROR_ALREADY_BUILT                                         :{WHITE}... вже побудовано
@@ -5170,7 +5195,7 @@ STR_ERROR_EXCAVATION_WOULD_DAMAGE                               :{WHITE}Робо
 STR_ERROR_ALREADY_AT_SEA_LEVEL                                  :{WHITE}Вже понижено до рівня моря
 STR_ERROR_TOO_HIGH                                              :{WHITE}Дуже високо
 STR_ERROR_ALREADY_LEVELLED                                      :{WHITE}... вже рівна
-STR_ERROR_BRIDGE_TOO_HIGH_AFTER_LOWER_LAND                      :{WHITE}Пізніше, міст над цим місцем буде занадто високо.
+STR_ERROR_BRIDGE_TOO_HIGH_AFTER_LOWER_LAND                      :{WHITE}Інакше міст над цим місцем буде занадто високо.
 
 # Company related errors
 STR_ERROR_CAN_T_CHANGE_COMPANY_NAME                             :{WHITE}Неможливо перейменувати компанію...
@@ -5297,11 +5322,11 @@ STR_ERROR_ROAD_VEHICLE_MUST_BE_STOPPED_INSIDE_DEPOT             :{WHITE}... по
 STR_ERROR_SHIP_MUST_BE_STOPPED_INSIDE_DEPOT                     :{WHITE}... корабель має стояти в доці
 STR_ERROR_AIRCRAFT_MUST_BE_STOPPED_INSIDE_HANGAR                :{WHITE}... літак повинен стояти в ангарі
 
-STR_ERROR_TRAINS_CAN_ONLY_BE_ALTERED_INSIDE_A_DEPOT             :{WHITE}Поїзд можна змінювати тільки тоді, коли зупинений в депо
+STR_ERROR_TRAINS_CAN_ONLY_BE_ALTERED_INSIDE_A_DEPOT             :{WHITE}Можна змінювати тільки зупинені в депо поїзди
 STR_ERROR_TRAIN_TOO_LONG                                        :{WHITE}Поїзд дуже довгий
 STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE                  :{WHITE}Не можна розвернути поїзд...
 STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE_MULTIPLE_UNITS   :{WHITE}... складається з декількох частин
-STR_ERROR_INCOMPATIBLE_RAIL_TYPES                               :Залізничні колій несумісні
+STR_ERROR_INCOMPATIBLE_RAIL_TYPES                               :Залізничні колії несумісні
 
 STR_ERROR_CAN_T_MOVE_VEHICLE                                    :{WHITE}Неможливо перемістити транспорт...
 STR_ERROR_REAR_ENGINE_FOLLOW_FRONT                              :{WHITE}задній потяг буде завжди йти за переднім
@@ -5384,6 +5409,13 @@ STR_ERROR_START_AND_END_MUST_BE_IN                              :{WHITE}Поча
 STR_ERROR_ENDS_OF_BRIDGE_MUST_BOTH                              :{WHITE}... обидва кінці мосту мають бути на землі
 STR_ERROR_BRIDGE_TOO_LONG                                       :{WHITE}... міст надто довгий
 STR_ERROR_BRIDGE_THROUGH_MAP_BORDER                             :{WHITE}Міст закінчиться поза картою
+STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}Висота мосту: {HEIGHT}, що занадто низько для станції
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROADSTOP                           :{WHITE}Висота мосту: {HEIGHT}, що занадто низько для дорожньої станції
+STR_ERROR_BRIDGE_TOO_LOW_FOR_DOCK                               :{WHITE}Висота мосту: {HEIGHT}, що занадто низько для доку
+STR_ERROR_BRIDGE_TOO_LOW_FOR_BUOY                               :{WHITE}Висота мосту: {HEIGHT}, що занадто низько для бакена
+STR_ERROR_BRIDGE_TOO_LOW_FOR_RAIL_WAYPOINT                      :{WHITE}Висота мосту: {HEIGHT}, що занадто низько для колійної точки маршруту
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROAD_WAYPOINT                      :{WHITE}Висота мосту: {HEIGHT}, що занадто низько для дорожньої точки маршруту
+STR_ERROR_BRIDGE_TOO_LOW_FOR_LOCK                               :{WHITE}Висота мосту: {HEIGHT}, що занадто низько для шлюзу
 
 # Tunnel related errors
 STR_ERROR_CAN_T_BUILD_TUNNEL_HERE                               :{WHITE}Неможливо збудувати тунель...
@@ -6037,6 +6069,8 @@ STR_SAVEGAME_NAME_SPECTATOR                                     :Спостер�
 
 # Viewport strings
 STR_VIEWPORT_TOWN_POP                                           :{TOWN} ({COMMA})
+STR_VIEWPORT_TOWN_CITY                                          :{TOWN} {CITY_ICON}
+STR_VIEWPORT_TOWN_CITY_POP                                      :{TOWN} ({COMMA}) {CITY_ICON}
 STR_VIEWPORT_STATION                                            :{STATION} {STATION_FEATURES}
 
 # Simple strings to get specific types of data

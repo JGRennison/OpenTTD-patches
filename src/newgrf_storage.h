@@ -11,6 +11,7 @@
 #define NEWGRF_STORAGE_H
 
 #include "core/pool_type.hpp"
+#include "newgrf.h"
 #include "tile_type.h"
 #include <array>
 
@@ -31,9 +32,9 @@ enum PersistentStorageMode : uint8_t {
  * so we have a generalised access to the virtual methods.
  */
 struct BasePersistentStorageArray {
-	uint32_t grfid = 0;            ///< GRFID associated to this persistent storage. A value of zero means "default".
-	uint8_t feature = 0;           ///< NOSAVE: Used to identify in the owner of the array in debug output.
-	TileIndex tile = INVALID_TILE; ///< NOSAVE: Used to identify in the owner of the array in debug output.
+	uint32_t grfid = 0;                   ///< GRFID associated to this persistent storage. A value of zero means "default".
+	GrfSpecFeature feature = GSF_INVALID; ///< NOSAVE: Used to identify in the owner of the array in debug output.
+	TileIndex tile = INVALID_TILE;        ///< NOSAVE: Used to identify in the owner of the array in debug output.
 
 	virtual ~BasePersistentStorageArray();
 
@@ -213,7 +214,7 @@ extern PersistentStoragePool _persistent_storage_pool;
  */
 struct PersistentStorage : PersistentStorageArray<int32_t, 256>, PersistentStoragePool::PoolItem<&_persistent_storage_pool> {
 	/** We don't want GCC to zero our struct! It already is zeroed and has an index! */
-	PersistentStorage(const uint32_t new_grfid, uint8_t feature, TileIndex tile)
+	PersistentStorage(const uint32_t new_grfid, GrfSpecFeature feature, TileIndex tile)
 	{
 		this->grfid = new_grfid;
 		this->feature = feature;

@@ -30,10 +30,10 @@ using SocketList = std::map<SOCKET, NetworkAddress>;    ///< Type for a mapping 
  */
 class NetworkAddress {
 private:
-	std::string hostname;     ///< The hostname
-	int address_length;       ///< The length of the resolved address
-	sockaddr_storage address; ///< The resolved address
-	bool resolved;            ///< Whether the address has been (tried to be) resolved
+	std::string hostname{}; ///< The hostname
+	int address_length{}; ///< The length of the resolved address
+	sockaddr_storage address{}; ///< The resolved address
+	bool resolved = false; ///< Whether the address has been (tried to be) resolved
 
 	/**
 	 * Helper function to resolve something to a socket.
@@ -61,12 +61,11 @@ public:
 	 * @param address The IP address with port.
 	 * @param address_length The length of the address.
 	 */
-	NetworkAddress(sockaddr *address, int address_length) :
+	NetworkAddress(const sockaddr *address, int address_length) :
 		address_length(address_length),
 		resolved(address_length != 0)
 	{
-		memset(&this->address, 0, sizeof(this->address));
-		memcpy(&this->address, address, address_length);
+		std::copy_n(reinterpret_cast<const std::byte *>(address), address_length, reinterpret_cast<std::byte *>(&this->address));
 	}
 
 	/**
@@ -84,8 +83,6 @@ public:
 			hostname.remove_suffix(1);
 		}
 		this->hostname = hostname;
-
-		memset(&this->address, 0, sizeof(this->address));
 		this->address.ss_family = family;
 		this->SetPort(port);
 	}

@@ -23,11 +23,11 @@ namespace upstream_sl {
 
 class SlGamelogMode : public DefaultSaveLoadHandler<SlGamelogMode, LoggedChange> {
 public:
-	inline static const SaveLoad description[] = {
+	static inline const SaveLoad description[] = {
 		SLE_VAR(LoggedChange, mode.mode,         SLE_UINT8),
 		SLE_VAR(LoggedChange, mode.landscape,    SLE_UINT8),
 	};
-	inline const static SaveLoadCompatTable compat_description = _gamelog_mode_sl_compat;
+	static inline const SaveLoadCompatTable compat_description = _gamelog_mode_sl_compat;
 
 	void Save(LoggedChange *lc) const override
 	{
@@ -49,14 +49,14 @@ static std::string _revision_text;
 
 class SlGamelogRevision : public DefaultSaveLoadHandler<SlGamelogRevision, LoggedChange> {
 public:
-	inline static const SaveLoad description[] = {
+	static inline const SaveLoad description[] = {
 		SLEG_CONDARR("revision.text", _old_revision_text, SLE_UINT8, GAMELOG_REVISION_LENGTH, SL_MIN_VERSION,     SLV_STRING_GAMELOG),
 		SLEG_CONDSSTR("revision.text",    _revision_text, SLE_STR,                            SLV_STRING_GAMELOG, SL_MAX_VERSION),
 		SLE_VAR(LoggedChange, revision.newgrf,   SLE_UINT32),
 		SLE_VAR(LoggedChange, revision.slver,    SLE_UINT16),
 		SLE_VAR(LoggedChange, revision.modified, SLE_UINT8),
 	};
-	inline const static SaveLoadCompatTable compat_description = _gamelog_revision_sl_compat;
+	static inline const SaveLoadCompatTable compat_description = _gamelog_revision_sl_compat;
 
 	void Save(LoggedChange *lc) const override
 	{
@@ -82,11 +82,11 @@ public:
 
 class SlGamelogOldver : public DefaultSaveLoadHandler<SlGamelogOldver, LoggedChange> {
 public:
-	inline static const SaveLoad description[] = {
+	static inline const SaveLoad description[] = {
 		SLE_VAR(LoggedChange, oldver.type,       SLE_UINT32),
 		SLE_VAR(LoggedChange, oldver.version,    SLE_UINT32),
 	};
-	inline const static SaveLoadCompatTable compat_description = _gamelog_oldver_sl_compat;
+	static inline const SaveLoadCompatTable compat_description = _gamelog_oldver_sl_compat;
 
 	void Save(LoggedChange *lc) const override
 	{
@@ -105,12 +105,12 @@ public:
 
 class SlGamelogSetting : public DefaultSaveLoadHandler<SlGamelogSetting, LoggedChange> {
 public:
-	inline static const SaveLoad description[] = {
+	static inline const SaveLoad description[] = {
 		SLE_STR(LoggedChange, setting.name,      SLE_STR,    128),
 		SLE_VAR(LoggedChange, setting.oldval,    SLE_INT32),
 		SLE_VAR(LoggedChange, setting.newval,    SLE_INT32),
 	};
-	inline const static SaveLoadCompatTable compat_description = _gamelog_setting_sl_compat;
+	static inline const SaveLoadCompatTable compat_description = _gamelog_setting_sl_compat;
 
 	void Save(LoggedChange *lc) const override
 	{
@@ -129,11 +129,11 @@ public:
 
 class SlGamelogGrfadd : public DefaultSaveLoadHandler<SlGamelogGrfadd, LoggedChange> {
 public:
-	inline static const SaveLoad description[] = {
+	static inline const SaveLoad description[] = {
 		SLE_VAR(LoggedChange, grfadd.grfid,      SLE_UINT32    ),
 		SLE_ARR(LoggedChange, grfadd.md5sum,     SLE_UINT8,  16),
 	};
-	inline const static SaveLoadCompatTable compat_description = _gamelog_grfadd_sl_compat;
+	static inline const SaveLoadCompatTable compat_description = _gamelog_grfadd_sl_compat;
 
 	void Save(LoggedChange *lc) const override
 	{
@@ -152,10 +152,10 @@ public:
 
 class SlGamelogGrfrem : public DefaultSaveLoadHandler<SlGamelogGrfrem, LoggedChange> {
 public:
-	inline static const SaveLoad description[] = {
+	static inline const SaveLoad description[] = {
 		SLE_VAR(LoggedChange, grfrem.grfid,      SLE_UINT32),
 	};
-	inline const static SaveLoadCompatTable compat_description = _gamelog_grfrem_sl_compat;
+	static inline const SaveLoadCompatTable compat_description = _gamelog_grfrem_sl_compat;
 
 	void Save(LoggedChange *lc) const override
 	{
@@ -174,11 +174,11 @@ public:
 
 class SlGamelogGrfcompat : public DefaultSaveLoadHandler<SlGamelogGrfcompat, LoggedChange> {
 public:
-	inline static const SaveLoad description[] = {
+	static inline const SaveLoad description[] = {
 		SLE_VAR(LoggedChange, grfcompat.grfid,   SLE_UINT32    ),
 		SLE_ARR(LoggedChange, grfcompat.md5sum,  SLE_UINT8,  16),
 	};
-	inline const static SaveLoadCompatTable compat_description = _gamelog_grfcompat_sl_compat;
+	static inline const SaveLoadCompatTable compat_description = _gamelog_grfcompat_sl_compat;
 
 	void Save(LoggedChange *lc) const override
 	{
@@ -197,10 +197,10 @@ public:
 
 class SlGamelogGrfparam : public DefaultSaveLoadHandler<SlGamelogGrfparam, LoggedChange> {
 public:
-	inline static const SaveLoad description[] = {
+	static inline const SaveLoad description[] = {
 		SLE_VAR(LoggedChange, grfparam.grfid,    SLE_UINT32),
 	};
-	inline const static SaveLoadCompatTable compat_description = _gamelog_grfparam_sl_compat;
+	static inline const SaveLoadCompatTable compat_description = _gamelog_grfparam_sl_compat;
 
 	void Save(LoggedChange *lc) const override
 	{
@@ -219,11 +219,11 @@ public:
 
 class SlGamelogGrfmove : public DefaultSaveLoadHandler<SlGamelogGrfmove, LoggedChange> {
 public:
-	inline static const SaveLoad description[] = {
+	static inline const SaveLoad description[] = {
 		SLE_VAR(LoggedChange, grfmove.grfid,     SLE_UINT32),
 		SLE_VAR(LoggedChange, grfmove.offset,    SLE_INT32),
 	};
-	inline const static SaveLoadCompatTable compat_description = _gamelog_grfmove_sl_compat;
+	static inline const SaveLoadCompatTable compat_description = _gamelog_grfmove_sl_compat;
 
 	void Save(LoggedChange *lc) const override
 	{
@@ -242,12 +242,12 @@ public:
 
 class SlGamelogGrfbug : public DefaultSaveLoadHandler<SlGamelogGrfbug, LoggedChange> {
 public:
-	inline static const SaveLoad description[] = {
+	static inline const SaveLoad description[] = {
 		SLE_VAR(LoggedChange, grfbug.data,       SLE_UINT64),
 		SLE_VAR(LoggedChange, grfbug.grfid,      SLE_UINT32),
 		SLE_VAR(LoggedChange, grfbug.bug,        SLE_UINT8),
 	};
-	inline const static SaveLoadCompatTable compat_description = _gamelog_grfbug_sl_compat;
+	static inline const SaveLoadCompatTable compat_description = _gamelog_grfbug_sl_compat;
 
 	void Save(LoggedChange *lc) const override
 	{
@@ -269,10 +269,10 @@ static bool _is_emergency_save = true;
 class SlGamelogEmergency : public DefaultSaveLoadHandler<SlGamelogEmergency, LoggedChange> {
 public:
 	/* We need to store something, so store a "true" value. */
-	inline static const SaveLoad description[] = {
+	static inline const SaveLoad description[] = {
 		SLEG_CONDVAR("is_emergency_save", _is_emergency_save, SLE_BOOL, SLV_RIFF_TO_ARRAY, SL_MAX_VERSION),
 	};
-	inline const static SaveLoadCompatTable compat_description = _gamelog_emergency_sl_compat;
+	static inline const SaveLoadCompatTable compat_description = _gamelog_emergency_sl_compat;
 
 	void Save(LoggedChange *lc) const override
 	{
@@ -294,7 +294,7 @@ public:
 
 class SlGamelogAction : public DefaultSaveLoadHandler<SlGamelogAction, LoggedAction> {
 public:
-	inline static const SaveLoad description[] = {
+	static inline const SaveLoad description[] = {
 		SLE_SAVEBYTE(LoggedChange, ct),
 		SLEG_STRUCT("mode", SlGamelogMode),
 		SLEG_STRUCT("revision", SlGamelogRevision),
@@ -308,7 +308,7 @@ public:
 		SLEG_STRUCT("grfbug", SlGamelogGrfbug),
 		SLEG_STRUCT("emergency", SlGamelogEmergency),
 	};
-	inline const static SaveLoadCompatTable compat_description = _gamelog_action_sl_compat;
+	static inline const SaveLoadCompatTable compat_description = _gamelog_action_sl_compat;
 
 	void Save(LoggedAction *la) const override
 	{

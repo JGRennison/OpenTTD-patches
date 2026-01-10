@@ -178,7 +178,7 @@ static const Depot *FindClosestShipDepot(const Vehicle *v, uint max_distance)
 		patches_to_search.pop_front();
 
 		/* Add neighbours of the current patch to the search queue. */
-		TVisitWaterRegionPatchCallBack visit_func = [&](const WaterRegionPatchDesc &water_region_patch) {
+		VisitWaterRegionPatchCallback visit_func = [&](const WaterRegionPatchDesc &water_region_patch) {
 			/* Note that we check the max distance per axis, not the total distance. */
 			if (Delta(water_region_patch.x, start_patch.x) > max_region_distance ||
 					Delta(water_region_patch.y, start_patch.y) > max_region_distance) return;
@@ -444,7 +444,7 @@ static bool CheckShipLeaveDepot(Ship *v)
 	}
 
 	/* Don't leave depot if no destination set */
-	if (v->dest_tile == 0) return true;
+	if (v->dest_tile == INVALID_TILE) return true;
 
 	/* Don't leave depot if another vehicle is already entering/leaving */
 	/* This helps avoid CPU load if many ships are set to start at the same time */
@@ -578,7 +578,7 @@ static Track ChooseShipTrack(Ship *v, TileIndex tile, TrackBits tracks)
 	bool path_found = true;
 	Track track;
 
-	if (v->dest_tile == 0) {
+	if (v->dest_tile == INVALID_TILE) {
 		/* No destination, don't invoke pathfinder. */
 		track = TrackBitsToTrack(v->state);
 		if (!IsDiagonalTrack(track)) track = TrackToOppositeTrack(track);
@@ -994,7 +994,7 @@ static void ShipController(Ship *v)
 						const DiagDirection exitdir = VehicleExitDir(v->direction, v->state);
 						const TileIndex tile = TileAddByDiagDir(v->tile, exitdir);
 						if (TrackdirBitsToTrackBits(GetTileTrackdirBits(tile, TRANSPORT_WATER, 0, exitdir)) == TRACK_BIT_NONE) return ReverseShip(v);
-					} else if (v->dest_tile != 0) {
+					} else if (v->dest_tile != INVALID_TILE) {
 						/* We have a target, let's see if we reached it... */
 						if (v->current_order.IsType(OT_GOTO_WAYPOINT) &&
 								DistanceManhattan(v->dest_tile, gp.new_tile) <= 3) {

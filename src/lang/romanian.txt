@@ -977,7 +977,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :Alege unitatea 
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Liră sterlină
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Dolar american
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1294,6 +1294,7 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Rata dobânzii;
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Costuri de funcționare: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Alege nivelul de întreținere și costul de rulare al vehiculelor sau al infrastructurii
+###length 3
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Viteza de construcție: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Limitează numărul de acțiuni de construcție pentru AI
@@ -1315,6 +1316,7 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :Fără subvenț
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Costuri de construcție: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Alege nivelul de construcție și costurile de achiziție
+###length 3
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Recesiuni: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Dacă este activată, recesiunile pot apărea periodic. În timpul unei recesiuni toată producția este semnificativ mai scăzută (revine la nivelul anterior când recesiunea se încheie)
@@ -1660,6 +1662,7 @@ STR_CONFIG_SETTING_SCROLLMODE_LMB                               :Mută harta cu 
 
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Derulare ușoară vizor: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Controlează modul de deplasare a imaginii din ecranul principal când se face click pe harta mică sau când se execută o comandă de deplasare către un obiect anume de pe hartă. Dacă este activată, imaginea se deplasează în mod fluid, altfel imaginea sare direct la zona dorită
+
 
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Arată o indicație de distanță la folosirea uneltelor de construcție: {STRING}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP_HELPTEXT                     :Afișează distanțele în pătrățele și diferențele de înălțime la mișcarea mouse-ului în timpul operațiilor de construcție
@@ -2180,8 +2183,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... form
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... setul de bază pentru grafică '{STRING}' este ignorat: nu a fost găsit
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... setul de bază pentru sunete '{STRING}' este ignorat: nu a fost găsit
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... setul de bază pentru muzică '{STRING}' este ignorat: nu a fost găsit
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Fără memorie
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Nu s-au putut rezerva {BYTES} pentru cache al sprite-urilor. Mărimea cache-ului a fost redusă la {BYTES}. Performanța OpenTTD va fi redusă. Pentru a micșora cerințele jocului cu privire la memorie, poți încerca să dezactivezi modul grafic 32bpp și/sau reducerea numărului de nivele zoom
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Eroare în setările video...
@@ -2802,6 +2803,7 @@ STR_PICKER_MODE_USED                                            :Folosit
 STR_PICKER_MODE_USED_TOOLTIP                                    :Comutați afișarea numai a elementelor existente
 STR_PICKER_MODE_SAVED                                           :Salvat
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :Comutați afișarea numai a elementelor salvate
+
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Selectați o clasă de stație de afișat
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Selectați un tip de stație de construit. Ctrl+Click pentru a adăuga sau elimina elementele salvate
@@ -3486,15 +3488,12 @@ STR_SAVE_PRESET_CAPTION                                         :{WHITE}Salveaz�
 STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}Lista presetărilor disponibile; alegeți una pentru salvare cu numele de mai jos
 STR_SAVE_PRESET_TITLE                                           :{BLACK}Adaugă denumire presetare
 STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}Numele selectat pentru salvarea presetării
-STR_SAVE_PRESET_CANCEL                                          :{BLACK}Anulează
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}Nu schimba setarea implicită
 STR_SAVE_PRESET_SAVE                                            :{BLACK}Salvează
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}Salvează setarea pe numele selectat
 
 # NewGRF parameters window
 STR_BASEGRF_PARAMETERS_CAPTION                                  :{WHITE}Schimbați parametrii grafici de bază
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}Schimbă parametrii NewGRF
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Închide
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}Resetează
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}Setează toții parametrii la valorile implicite
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :Parametru {NUM}
@@ -4845,8 +4844,6 @@ STR_AI_LIST_URL                                                 :{LTBLUE}URL: {O
 
 STR_AI_LIST_ACCEPT                                              :{BLACK}Acceptă
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Alege scriptul marcat
-STR_AI_LIST_CANCEL                                              :{BLACK}Anulează
-STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Nu schimba scriptul
 
 STR_SCREENSHOT_CAPTION                                          :{WHITE}Capturează ecranul
 STR_SCREENSHOT_SCREENSHOT                                       :{BLACK}Captură de ecran obișnuită
@@ -4859,7 +4856,6 @@ STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Captură
 # Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}IA
 STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :Script de joc
-STR_AI_SETTINGS_CLOSE                                           :{BLACK}Închide
 STR_AI_SETTINGS_RESET                                           :{BLACK}Resetează
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
 

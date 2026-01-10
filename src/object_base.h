@@ -46,8 +46,8 @@ struct Object : ObjectPool::PoolItem<&_object_pool> {
 	static inline void IncTypeCount(ObjectType type)
 	{
 		dbg_assert(type < NUM_OBJECTS);
-		if (type >= counts.size()) counts.resize(type + 1);
-		counts[type]++;
+		if (type >= counts.size()) Object::counts.resize(type + 1);
+		Object::counts[type]++;
 	}
 
 	/**
@@ -58,8 +58,8 @@ struct Object : ObjectPool::PoolItem<&_object_pool> {
 	static inline void DecTypeCount(ObjectType type)
 	{
 		dbg_assert(type < NUM_OBJECTS);
-		dbg_assert(type < counts.size());
-		counts[type]--;
+		dbg_assert(type < Object::counts.size());
+		Object::counts[type]--;
 	}
 
 	/**
@@ -70,8 +70,8 @@ struct Object : ObjectPool::PoolItem<&_object_pool> {
 	static inline uint16_t GetTypeCount(ObjectType type)
 	{
 		dbg_assert(type < NUM_OBJECTS);
-		if (type >= counts.size()) return 0;
-		return counts[type];
+		if (type >= Object::counts.size()) return 0;
+		return Object::counts[type];
 	}
 
 	/** Resets object counts. */

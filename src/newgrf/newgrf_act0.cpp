@@ -299,7 +299,7 @@ static void FeatureChangeInfo(ByteReader &buf)
 	}
 
 	/* Mark the feature as used by the grf */
-	SetBit(_cur_gps.grffile->grf_features, feature);
+	_cur_gps.grffile->grf_features.Set(feature);
 
 	while (numprops-- && buf.HasData()) {
 		GRFFilePropertyDescriptor desc = ReadAction0PropertyID(buf, feature);

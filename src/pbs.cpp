@@ -1044,7 +1044,7 @@ static int ScanTrainPositionForLookAheadStation(Train *t, TileIndex start_tile)
 		} else {
 			prev = StationID::Invalid();
 		}
-		if (!HasBit(u->flags, VRF_BEYOND_PLATFORM_END)) break;
+		if (!u->flags.Test(VehicleRailFlag::BeyondPlatformEnd)) break;
 	}
 	return start_offset_tiles;
 }

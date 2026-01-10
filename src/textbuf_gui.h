@@ -59,6 +59,8 @@ void ShowQueryString(std::string_view str, StringID caption, uint max_len, Windo
 void ShowQueryString(std::string_view str, EncodedString &&caption, uint maxsize, Window *parent, CharSetFilter afilter, QueryStringFlags flags);
 void ShowQuery(EncodedString &&caption, EncodedString &&message, Window *parent, QueryCallbackProc *callback, bool focus = false);
 
+void UpdateQueryStringDefault(std::string_view str);
+
 /** The number of 'characters' on the on-screen keyboard. */
 static const uint OSK_KEYBOARD_ENTRIES = 50;
 

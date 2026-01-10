@@ -237,7 +237,7 @@ struct NewGRFParametersWindow : public Window {
 				this->line_height = std::max(SETTING_BUTTON_HEIGHT, GetCharacterHeight(FS_NORMAL)) + padding.height;
 
 				resize.width = 1;
-				resize.height = this->line_height;
+				fill.height = resize.height = this->line_height;
 				size.height = 5 * this->line_height;
 				break;
 
@@ -442,17 +442,13 @@ struct NewGRFParametersWindow : public Window {
 				this->InvalidateData();
 				SetWindowDirty(WC_GAME_OPTIONS, WN_GAME_OPTIONS_NEWGRF_STATE);
 				break;
-
-			case WID_NP_ACCEPT:
-				this->Close();
-				break;
 		}
 	}
 
 	void OnQueryTextFinished(std::optional<std::string> str) override
 	{
 		if (!str.has_value() || str->empty()) return;
-		auto value = ParseInteger<int32_t>(*str);
+		auto value = ParseInteger<int32_t>(*str, 10, true);
 		if (!value.has_value()) return;
 		GRFParameterInfo &par_info = this->GetParameterInfo(this->clicked_row);
 		this->grf_config.SetValue(par_info, *value);
@@ -540,9 +536,8 @@ static constexpr NWidgetPart _nested_newgrf_parameter_widgets[] = {
 		EndContainer(),
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL),
-		NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_MAUVE, WID_NP_ACCEPT), SetResize(1, 0), SetFill(1, 0), SetStringTip(STR_NEWGRF_PARAMETERS_CLOSE),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_MAUVE, WID_NP_RESET), SetResize(1, 0), SetFill(1, 0), SetStringTip(STR_NEWGRF_PARAMETERS_RESET, STR_NEWGRF_PARAMETERS_RESET_TOOLTIP),
+		NWidget(WWT_PUSHTXTBTN, COLOUR_MAUVE, WID_NP_RESET), SetStringTip(STR_NEWGRF_PARAMETERS_RESET, STR_NEWGRF_PARAMETERS_RESET_TOOLTIP),
+		NWidget(WWT_PANEL, COLOUR_MAUVE), SetResize(1, 0), SetFill(1, 0),
 		EndContainer(),
 		NWidget(WWT_RESIZEBOX, COLOUR_MAUVE),
 	EndContainer(),
@@ -767,7 +762,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 			case WID_NS_FILE_LIST:
 			{
 				Dimension d = maxdim(GetScaledSpriteSize(SPR_SQUARE), GetScaledSpriteSize(SPR_WARNING_SIGN));
-				resize.height = std::max<uint>(d.height + 2U, GetCharacterHeight(FS_NORMAL));
+				fill.height = resize.height = std::max<uint>(d.height + 2U, GetCharacterHeight(FS_NORMAL));
 				size.height = std::max(size.height, padding.height + 6 * resize.height);
 				break;
 			}
@@ -775,7 +770,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 			case WID_NS_AVAIL_LIST:
 			{
 				Dimension d = maxdim(GetScaledSpriteSize(SPR_SQUARE), GetScaledSpriteSize(SPR_WARNING_SIGN));
-				resize.height = std::max<uint>(d.height + 2U, GetCharacterHeight(FS_NORMAL));
+				fill.height = resize.height = std::max<uint>(d.height + 2U, GetCharacterHeight(FS_NORMAL));
 				size.height = std::max(size.height, padding.height + 8 * resize.height);
 				break;
 			}
@@ -1422,16 +1417,18 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 
 					this->vscroll->ScrollTowards(to_pos);
 					this->preset = -1;
-					this->InvalidateData();
+					this->InvalidateData(GOID_NEWGRF_LIST_EDITED);
 				}
 			} else if (this->avail_sel != nullptr) {
 				int to_pos = std::min(this->vscroll->GetScrolledRowFromWidget(pt.y, this, WID_NS_FILE_LIST, WidgetDimensions::scaled.framerect.top), this->vscroll->GetCount() - 1);
 				this->AddGRFToActive(to_pos);
+				this->InvalidateData(GOID_NEWGRF_LIST_EDITED);
 			}
 		} else if (widget == WID_NS_AVAIL_LIST && this->active_sel != nullptr) {
 			/* Remove active NewGRF file by dragging it over available list. */
 			Point dummy = {-1, -1};
 			this->OnClick(dummy, WID_NS_REMOVE, 1);
+			this->InvalidateData(GOID_NEWGRF_LIST_EDITED);
 		}
 
 		ResetObjectToPlace();
@@ -1591,7 +1588,7 @@ void ShowMissingContentWindow(const GRFConfigList &list)
 
 		auto ci = std::make_unique<ContentInfo>();
 		ci->type = CONTENT_TYPE_NEWGRF;
-		ci->state = ContentInfo::DOES_NOT_EXIST;
+		ci->state = ContentInfo::State::DoesNotExist;
 		ci->name = c->GetName();
 		ci->unique_id = std::byteswap(c->ident.grfid);
 		ci->md5sum = c->flags.Test(GRFConfigFlag::Compatible) ? c->original_md5sum : c->ident.md5sum;
@@ -2088,7 +2085,6 @@ static constexpr NWidgetPart _nested_save_preset_widgets[] = {
 				SetStringTip(STR_SAVE_PRESET_TITLE, STR_SAVE_PRESET_EDITBOX_TOOLTIP),
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SVP_CANCEL), SetStringTip(STR_SAVE_PRESET_CANCEL, STR_SAVE_PRESET_CANCEL_TOOLTIP), SetFill(1, 0), SetResize(1, 0),
 		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_SVP_SAVE), SetStringTip(STR_SAVE_PRESET_SAVE, STR_SAVE_PRESET_SAVE_TOOLTIP), SetFill(1, 0), SetResize(1, 0),
 		NWidget(WWT_RESIZEBOX, COLOUR_GREY),
 	EndContainer(),
@@ -2127,7 +2123,6 @@ struct SavePresetWindow : public Window {
 
 		this->querystrings[WID_SVP_EDITBOX] = &this->presetname_editbox;
 		this->presetname_editbox.ok_button = WID_SVP_SAVE;
-		this->presetname_editbox.cancel_button = WID_SVP_CANCEL;
 
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_SVP_SCROLLBAR);
@@ -2142,12 +2137,11 @@ struct SavePresetWindow : public Window {
 	{
 		switch (widget) {
 			case WID_SVP_PRESET_LIST: {
-				resize.height = GetCharacterHeight(FS_NORMAL);
+				fill.height = resize.height = GetCharacterHeight(FS_NORMAL);
 				size.height = 0;
 				for (uint i = 0; i < this->presets.size(); i++) {
 					Dimension d = GetStringBoundingBox(this->presets[i]);
 					size.width = std::max(size.width, d.width + padding.width);
-					resize.height = std::max(resize.height, d.height);
 				}
 				size.height = ClampU((uint)this->presets.size(), 5, 20) * resize.height + padding.height;
 				break;
@@ -2192,10 +2186,6 @@ struct SavePresetWindow : public Window {
 				}
 				break;
 			}
-
-			case WID_SVP_CANCEL:
-				this->Close();
-				break;
 
 			case WID_SVP_SAVE: {
 				Window *w = FindWindowById(WC_GAME_OPTIONS, WN_GAME_OPTIONS_NEWGRF_STATE);

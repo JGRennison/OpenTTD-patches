@@ -647,7 +647,7 @@ void TraceRestrictProgram::Execute(const Train *v, const TraceRestrictProgramInp
 								break;
 
 							case TRTSVF_BROKEN_DOWN:
-								has_status = v->flags & VRF_IS_BROKEN;
+								has_status = v->flags.Any(VehicleRailFlagsIsBroken);
 								break;
 
 							case TRTSVF_NEEDS_REPAIR:
@@ -655,7 +655,7 @@ void TraceRestrictProgram::Execute(const Train *v, const TraceRestrictProgramInp
 								break;
 
 							case TRTSVF_REVERSING:
-								has_status = v->reverse_distance > 0 || HasBit(v->flags, VRF_REVERSING);
+								has_status = v->reverse_distance > 0 || v->flags.Test(VehicleRailFlag::Reversing);
 								break;
 
 							case TRTSVF_HEADING_TO_STATION_WAYPOINT:

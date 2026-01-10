@@ -496,7 +496,7 @@ struct VariableGRFFileProps : VariableGRFFilePropsBase {
 	 * Set the SpriteGroup at the specified index.
 	 * @param index Index to set.
 	 * @param spritegroup SpriteGroup to set.
-	*/
+	 */
 	void SetSpriteGroup(Tkey index, const struct SpriteGroup *spritegroup)
 	{
 		this->SetSpriteGroupImpl(static_cast<IndexType>(index), spritegroup);

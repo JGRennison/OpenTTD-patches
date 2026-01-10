@@ -995,7 +995,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :選擇幣值單
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :英鎊
 STR_GAME_OPTIONS_CURRENCY_USD                                   :美元
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :歐元
@@ -1041,6 +1041,7 @@ STR_GAME_OPTIONS_CURRENCY_MYR                                   :馬來西亞令
 STR_GAME_OPTIONS_CURRENCY_LVL                                   :拉脫維亞勒斯
 STR_GAME_OPTIONS_CURRENCY_PTE                                   :葡萄牙埃斯庫多
 STR_GAME_OPTIONS_CURRENCY_UAH                                   :烏克蘭赫里夫尼亞
+STR_GAME_OPTIONS_CURRENCY_VND                                   :越南盾
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :自動存檔
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :選擇自動存檔頻率
@@ -1107,7 +1108,7 @@ STR_GAME_OPTIONS_REFRESH_RATE_ITEM                              :{NUM}Hz
 STR_GAME_OPTIONS_REFRESH_RATE_WARNING                           :{WHITE}高於60Hz的畫面更新率可能會影響遊戲性能
 
 STR_GAME_OPTIONS_BASE_GRF                                       :基本圖形集
-STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :選擇要使用的基本圖形集（無法在遊戲中更改，只能從主選單中更改）
+STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :選擇使用的基本圖形集（無法在遊戲中更改，只能從主選單中更改）
 STR_GAME_OPTIONS_BASE_GRF_DESCRIPTION_TOOLTIP                   :關於基本圖形集的額外資訊
 
 STR_GAME_OPTIONS_BASE_SFX                                       :基本音效集
@@ -1115,7 +1116,7 @@ STR_GAME_OPTIONS_BASE_SFX_TOOLTIP                               :選擇要使用
 STR_GAME_OPTIONS_BASE_SFX_DESCRIPTION_TOOLTIP                   :關於基本音效集的額外資訊
 
 STR_GAME_OPTIONS_BASE_MUSIC                                     :基本音樂集
-STR_GAME_OPTIONS_BASE_MUSIC_TOOLTIP                             :選擇要使用的基本音樂集
+STR_GAME_OPTIONS_BASE_MUSIC_TOOLTIP                             :選擇使用的基本音樂集
 STR_GAME_OPTIONS_BASE_MUSIC_DESCRIPTION_TOOLTIP                 :關於基本音樂集的額外資訊
 
 STR_GAME_OPTIONS_ONLINE_CONTENT                                 :取得內容
@@ -1314,6 +1315,10 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :設定貸款息
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :營運成本：{STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :設定車輛的營運與維護成本水平。
+###length 3
+STR_CONFIG_SETTING_RUNNING_COSTS_LOW                            :低
+STR_CONFIG_SETTING_RUNNING_COSTS_MEDIUM                         :適中
+STR_CONFIG_SETTING_RUNNING_COSTS_HIGH                           :高
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :建造速度：{STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :限制電腦 AI 的建造速度。
@@ -1335,6 +1340,10 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :沒有補助
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :建造成本：{STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :設定建造和購買物件的成本水平。
+###length 3
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_LOW                       :低
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_MEDIUM                    :適中
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :高
 
 STR_CONFIG_SETTING_RECESSIONS                                   :經濟衰退：{STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :如果此選項被啟用，經濟衰退將會週期性發生。屆時所有工業生產都會大幅下降，直至衰退結束後回到之前的水平
@@ -1680,6 +1689,9 @@ STR_CONFIG_SETTING_SCROLLMODE_LMB                               :使用左鍵移
 
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :畫面平滑移動：{STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :設定在小地圖中點選一個位置時，主畫面的顯示方式。啟用時，畫面會平緩移動到所點選的位置；否則畫面會直接跳到所點選的位置
+
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT                  :自動選取下拉式功能表項目：{STRING}
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT_HELPTEXT         :自訂下拉式功能表的動作。如果設定關閉，在點選功能表開啟下拉式選單時將維持開啟狀態，直到作出選擇為止。如果設定啟用，下拉式功能表則將在放開滑鼠按鈕時選取當前所選的項目。
 
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :使用某些建設工具時顯示度量提示：{STRING}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP_HELPTEXT                     :當點選建造工具後拖曳滑鼠時，是否顯示兩端的方格距離及高度差異。
@@ -2201,8 +2213,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... 本�
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}……正在忽略「 {STRING} 」基本圖形集：找不到檔案
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}……正在忽略「 {STRING} 」基本音效集：找不到檔案
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}……正在忽略「 {STRING} 」基本音樂集：找不到檔案
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}記憶體不足
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}無法編配 {BYTES} 作為子畫面快取。子畫面快取的大小已降至 {BYTES} 。 OpenTTD的效能會受到影響。請嘗試停用 32bpp 圖形及／或減少放大倍數，以減低記憶體要求
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}圖像設定錯誤...
@@ -2210,7 +2220,8 @@ STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}……�
 STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :{WHITE}……GPU 驅動程式導致遊戲崩潰。硬體加速已被停用
 
 # Intro window
-STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
+STR_INTRO_CAPTION                                               :{WHITE}OpenTTD
+STR_INTRO_VERSION                                               :OpenTTD {REV}
 
 STR_INTRO_NEW_GAME                                              :{BLACK}開新遊戲
 STR_INTRO_LOAD_GAME                                             :{BLACK}載入遊戲
@@ -2828,6 +2839,11 @@ STR_PICKER_MODE_USED                                            :已啟用
 STR_PICKER_MODE_USED_TOOLTIP                                    :切換僅顯示現有的項目
 STR_PICKER_MODE_SAVED                                           :已儲存
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :切換僅顯示已儲存的項目
+
+STR_PICKER_PREVIEW_SHRINK                                       :-
+STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :縮小預覽圖。按住 <Ctrl> 鍵點選以最小化
+STR_PICKER_PREVIEW_EXPAND                                       :+
+STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :放大預覽圖。按住 <Ctrl> 鍵點選以最大化
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :選擇顯示的車站種類
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :選擇建設的車站類型。按住 <Ctrl> 點選可在儲存項目中新增或刪除
@@ -3525,15 +3541,12 @@ STR_SAVE_PRESET_CAPTION                                         :{WHITE}儲存�
 STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}現有的預設值名稱。點選一個預設值名稱，它會被複製到下方的輸入欄
 STR_SAVE_PRESET_TITLE                                           :{BLACK}輸入預設值名稱
 STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}預設值會儲存成現時選定的名稱
-STR_SAVE_PRESET_CANCEL                                          :{BLACK}取消
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}請勿修改預設值
 STR_SAVE_PRESET_SAVE                                            :{BLACK}存檔
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}儲存預設值到選擇的名稱
 
 # NewGRF parameters window
 STR_BASEGRF_PARAMETERS_CAPTION                                  :{WHITE}變更基本圖形集參數
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}變更 NewGRF 參數
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}關閉
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}重設
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}將所有參數設為預設值
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :參數 {NUM}
@@ -3676,7 +3689,7 @@ STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}輸入�
 STR_TOWN_DIRECTORY_CAPTION                                      :{WHITE}市鎮（{COMMA} 座，總共 {COMMA} 座）
 STR_TOWN_DIRECTORY_NONE                                         :{ORANGE}- 無 -
 STR_TOWN_DIRECTORY_TOWN                                         :{ORANGE}{TOWN}{BLACK} ({COMMA})
-STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{YELLOW} (城市){BLACK} ({COMMA})
+STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{BLACK}（{COMMA}）{YELLOW}{CITY_ICON}
 STR_TOWN_DIRECTORY_LIST_TOOLTIP                                 :{BLACK}市鎮名稱 - 點選名稱可將市鎮置於畫面正中央。按住 <Ctrl> 點選可於市鎮位置開啟新檢視視窗
 STR_TOWN_POPULATION                                             :{BLACK}世界人口：{COMMA}
 
@@ -4903,8 +4916,6 @@ STR_AI_LIST_URL                                                 :{LTBLUE}URL：{
 
 STR_AI_LIST_ACCEPT                                              :{BLACK}接受
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}選擇標示到的腳本
-STR_AI_LIST_CANCEL                                              :{BLACK}取消
-STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}不改變腳本
 
 STR_SCREENSHOT_CAPTION                                          :{WHITE}螢幕截圖
 STR_SCREENSHOT_SCREENSHOT                                       :{BLACK}普通截圖
@@ -4917,7 +4928,6 @@ STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}小地�
 # Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}AI 參數
 STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :{WHITE}遊戲腳本參數
-STR_AI_SETTINGS_CLOSE                                           :{BLACK}關閉
 STR_AI_SETTINGS_RESET                                           :{BLACK}重設
 STR_AI_SETTINGS_SETTING                                         :{STRING}：{ORANGE}{STRING}
 
@@ -5257,6 +5267,13 @@ STR_ERROR_START_AND_END_MUST_BE_IN                              :{WHITE}開始�
 STR_ERROR_ENDS_OF_BRIDGE_MUST_BOTH                              :{WHITE}... 橋樑的兩端應在陸地上
 STR_ERROR_BRIDGE_TOO_LONG                                       :{WHITE}……橋樑過長
 STR_ERROR_BRIDGE_THROUGH_MAP_BORDER                             :{WHITE}橋的終點將會在地圖外
+STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}橋樑過低，橋高僅有 {HEIGHT}，不足以興建車站
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROADSTOP                           :{WHITE}橋樑過低，橋高僅有 {HEIGHT}，不足以興建車站
+STR_ERROR_BRIDGE_TOO_LOW_FOR_DOCK                               :{WHITE}橋樑過低，橋高僅有 {HEIGHT}，不足以興建碼頭
+STR_ERROR_BRIDGE_TOO_LOW_FOR_BUOY                               :{WHITE}橋樑過低，橋高僅有 {HEIGHT}，不足以放置浮標
+STR_ERROR_BRIDGE_TOO_LOW_FOR_RAIL_WAYPOINT                      :{WHITE}橋樑過低，橋高僅有 {HEIGHT}，不足以興建中途站
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROAD_WAYPOINT                      :{WHITE}橋樑過低，橋高僅有 {HEIGHT}，不足以興建中途站
+STR_ERROR_BRIDGE_TOO_LOW_FOR_LOCK                               :{WHITE}橋樑過低，橋高僅有 {HEIGHT}，不足以興建水閘
 
 # Tunnel related errors
 STR_ERROR_CAN_T_BUILD_TUNNEL_HERE                               :{WHITE}無法在此挖掘隧道...
@@ -5873,6 +5890,8 @@ STR_SAVEGAME_NAME_SPECTATOR                                     :觀眾，{1:STR
 
 # Viewport strings
 STR_VIEWPORT_TOWN_POP                                           :{TOWN} （ {COMMA} ）
+STR_VIEWPORT_TOWN_CITY                                          :{TOWN}{CITY_ICON}
+STR_VIEWPORT_TOWN_CITY_POP                                      :{TOWN}（{COMMA}）{CITY_ICON}
 STR_VIEWPORT_STATION                                            :{STATION} {STATION_FEATURES}
 
 # Simple strings to get specific types of data

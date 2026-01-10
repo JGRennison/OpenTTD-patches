@@ -849,7 +849,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :Diru unitateak
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :Diru unitatearen aukeraketa
 
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Libra
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Dolar Amerikarrak
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euroa
@@ -1085,6 +1085,7 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Maileguen inter
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Mantenimendu kostea: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Ibilgailu eta azpigiturak mantentzea kostatuko duena ezarri
+###length 3
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Eraikitzeko abiadura: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :IA-en eraikuntza ekintza kopurua mugatu
@@ -1101,6 +1102,7 @@ STR_CONFIG_SETTING_SUBSIDY_MULTIPLIER_HELPTEXT                  :Subsidio garrai
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Eraikuntza kosteak: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Erosketa eta eraikuntza kostuak ezarri
+###length 3
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Atzerapen ekonomikoak: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Gaitua dagoenean, atzeratze ekonomikoa urte gutxika gertatuko da. Atzeratze ekonomikoan, ekoizpen orokorra dexente gutxituko da (Aurreko balioetara bueltatuko da atzerapena amaitzerakoan)
@@ -1379,6 +1381,7 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Bioleta
 
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Mapan zehar mugitzerakoan, abiadura moteltzea: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Kontrolatu nola mugituko den ikuspegia lehio nagusitik zehar, puntu jakin batera joateko mapa txikian sakatzen denean edo objektu zehatz batera joateko agintzen denean
+
 
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Eraikitze tresna ezberdinak erabiltzerakoan neurtresna erakutsi: {STRING}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP_HELPTEXT                     :Erakutsi lauki kopuruak eta garaiera ezberdintasunak eraikuntza ekintzetan sagua arrastatzerakoan
@@ -1779,7 +1782,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... Gord
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... jaramonik ez egiten Grafiko baseari '{STRING}': ez da aurkitu
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... jaramonik ez egiten Soinu Paketeari '{STRING}': ez da aurkitu
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... jaramonik ez egiten musika paketeari'{STRING}': ez da aurkitu
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Memoriaz kanpo
 
 # Video initalization errors
 
@@ -2256,6 +2258,7 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}Geltokia
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Geltokiaren luzera aukeratu
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Arrastratzerakoan eraiki
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Geltokia eraiki arrastratzerakoan
+
 
 
 
@@ -2775,11 +2778,9 @@ STR_NEWGRF_SETTINGS_DISABLED                                    :{RED}Desgaitua
 STR_NEWGRF_SETTINGS_INCOMPATIBLE                                :{RED}OpenTTD-ren bertsio honekin bateraezina
 
 # NewGRF save preset window
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}Ez aldatu berezko balioa
 
 # NewGRF parameters window
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}NewGRF parametroak aldatu
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Itxi
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}Lehengoratu
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}Parametro guztiak hasierako baloreetan jarri
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :{NUM} Parametroa
@@ -3919,13 +3920,10 @@ STR_AI_LIST_URL                                                 :{LTBLUE}URL: {O
 
 STR_AI_LIST_ACCEPT                                              :{BLACK}Onartu
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Piztutako script-a aukeratu
-STR_AI_LIST_CANCEL                                              :{BLACK}Ezeztatu
-STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Ez aldatu script-a
 
 
 # Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :IA
-STR_AI_SETTINGS_CLOSE                                           :{BLACK}Itxi
 STR_AI_SETTINGS_RESET                                           :{BLACK}Berrabiarazi
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
 

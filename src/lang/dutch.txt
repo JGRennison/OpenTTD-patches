@@ -995,7 +995,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :Valuta kiezen
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Britse Pond
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Dollar
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1041,6 +1041,7 @@ STR_GAME_OPTIONS_CURRENCY_MYR                                   :Maleisische Rin
 STR_GAME_OPTIONS_CURRENCY_LVL                                   :Letse lats
 STR_GAME_OPTIONS_CURRENCY_PTE                                   :Portugese Escudo
 STR_GAME_OPTIONS_CURRENCY_UAH                                   :Oekraïense hryvnia
+STR_GAME_OPTIONS_CURRENCY_VND                                   :Vietnamese Dong
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :Automatisch opslaan
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :Tijdsduur kiezen tussen automatisch opgeslagen spellen
@@ -1314,6 +1315,10 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Percentage rent
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Onderhoudskosten: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Het niveau van onderhoud en lopende kosten van voertuigen en infrastuctuur
+###length 3
+STR_CONFIG_SETTING_RUNNING_COSTS_LOW                            :Laag
+STR_CONFIG_SETTING_RUNNING_COSTS_MEDIUM                         :Gemiddeld
+STR_CONFIG_SETTING_RUNNING_COSTS_HIGH                           :Hoog
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Bouwsnelheid: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Beperk de hoeveelheid bouwactiviteiten voor computerspeler
@@ -1335,6 +1340,10 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :Geen subsidie
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Bouwkosten: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Het niveau van bouw- en aankoopkosten instellen
+###length 3
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_LOW                       :Laag
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_MEDIUM                    :Gemiddeld
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :Hoog
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Recessies: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Wanneer dit is ingeschakeld kunnen nu en dan recessies optreden. Tijdens een recessie is alle productie aanzienlijk lager (deze keert terug naar het vorige niveau als de recessie voorbij is).
@@ -1680,6 +1689,9 @@ STR_CONFIG_SETTING_SCROLLMODE_LMB                               :Kaart verplaats
 
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Kijkvenster vloeiend verplaatsen: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Bepaalt hoe het hoofdvenster naar een specifieke positie schuift wanneer je op de minikaart klikt of je opdracht geeft om naar een specifiek object op de kaart te bladeren. Als dit is ingeschakeld, dan schuift het kijkvenster soepel; als dit is uitgeschakeld, ga je rechtstreeks naar de gewenste plek.
+
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT                  :Traditioneel gedrag voor kiezen werkbalkmenu's: {STRING}
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT_HELPTEXT         :Kies het gedrag van werkbalkmenu's. Bij Uit, blijven de werkbalkmenu's open tot je een keus hebt gemaakt. Bij Aan, worden werkbalkmenu's actief als je de muisknop loslaat.
 
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Maten weergeven bij het gebruik van diverse bouwgereedschappen: {STRING}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP_HELPTEXT                     :Geef tegelafstanden en hoogteverschillen weer bij het slepen tijdens het bouwen
@@ -2201,8 +2213,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... inde
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... negeert standaard graphicsset '{STRING}': niet gevonden
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... negeert standaard geluidsset '{STRING}': niet gevonden
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... negeert standaard muziekset '{STRING}': niet gevonden
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Geen geheugen meer
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Toewijzen van {BYTES} van spritecache mislukt. De spritecache werd teruggebracht tot {BYTES}. Dit verlaagt de prestaties van OpenTTD. Om het benodigde geheugen te verminderen, kun je proberen om 32bpp-beeldelementen en/of inzoomniveaus uit te schakelen
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Fout met video-instellingen...
@@ -2210,7 +2220,8 @@ STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... geen
 STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :{WHITE}... Spel is vastgelopen door het GPU-stuurprogramma. Hardwareversnelling wordt uitgeschakeld
 
 # Intro window
-STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
+STR_INTRO_CAPTION                                               :{WHITE}OpenTTD
+STR_INTRO_VERSION                                               :OpenTTD {REV}
 
 STR_INTRO_NEW_GAME                                              :{BLACK}Nieuw spel
 STR_INTRO_LOAD_GAME                                             :{BLACK}Spel laden
@@ -2828,6 +2839,11 @@ STR_PICKER_MODE_USED                                            :Gebruikt
 STR_PICKER_MODE_USED_TOOLTIP                                    :Weergave van alleen bestaande onderdelen omschakelen
 STR_PICKER_MODE_SAVED                                           :Opgeslagen
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :Weergave van alleen opgeslagen onderdelen omschakelen
+
+STR_PICKER_PREVIEW_SHRINK                                       :-
+STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Verklein de hoogte van voorbeelden. Ctrl+klikken verkleint tot minimaal
+STR_PICKER_PREVIEW_EXPAND                                       :+
+STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Vergroot de hoogte van voorbeelden. Ctrl+klikken vergroot tot maximaal
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Selecteer een klasse stations voor weergave
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Selecteer een type station om te bouwen. Ctrl+klik om toe te voegen aan of te verwijderen uit opgeslagen onderdelen
@@ -3525,15 +3541,12 @@ STR_SAVE_PRESET_CAPTION                                         :{WHITE}Voorkeur
 STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}Lijst met beschikbare voorkeursinstellingen, Selecteer om deze te kopiëren naar de opslagnaam hieronder.
 STR_SAVE_PRESET_TITLE                                           :{BLACK}Voer een naam in voor de voorkeursinstelling
 STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}Huidige gekozen naam voor de voorkeursinstelling om op te slaan
-STR_SAVE_PRESET_CANCEL                                          :{BLACK}Annuleren
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}Voorkeursinstelling niet wijzigen
 STR_SAVE_PRESET_SAVE                                            :{BLACK}Opslaan
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}Sla de huidige voorkeursinstelling op onder de huidige gekozen naam
 
 # NewGRF parameters window
 STR_BASEGRF_PARAMETERS_CAPTION                                  :{WHITE}Grafische basisinstellingen wijzigen
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}NewGRF-parameters wijzigen
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Sluiten
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}Terugstellen
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}Stel alle parameters terug naar de standaardwaarde
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :Parameter {NUM}
@@ -3676,7 +3689,7 @@ STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}Geef een
 STR_TOWN_DIRECTORY_CAPTION                                      :{WHITE}Steden ({COMMA} van {COMMA})
 STR_TOWN_DIRECTORY_NONE                                         :{ORANGE} Geen
 STR_TOWN_DIRECTORY_TOWN                                         :{ORANGE}{TOWN}{BLACK} ({COMMA})
-STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{YELLOW} (groeistad){BLACK} ({COMMA})
+STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{BLACK} ({COMMA}) {YELLOW}{CITY_ICON}
 STR_TOWN_DIRECTORY_LIST_TOOLTIP                                 :{BLACK}Plaatsnamen - klik op naam om het scherm te centreren op de stad. Ctrl+klik opent een nieuw kijkvenster op de locatie van de stad
 STR_TOWN_POPULATION                                             :{BLACK}Wereldbevolking: {COMMA}
 
@@ -4903,8 +4916,6 @@ STR_AI_LIST_URL                                                 :{LTBLUE}Webadre
 
 STR_AI_LIST_ACCEPT                                              :{BLACK}Accepteren
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Gemarkeerd script selecteren
-STR_AI_LIST_CANCEL                                              :{BLACK}Annuleren
-STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Script niet wijzigen
 
 STR_SCREENSHOT_CAPTION                                          :{WHITE}Een schermafbeelding maken
 STR_SCREENSHOT_SCREENSHOT                                       :{BLACK}Normale schermafbeelding
@@ -4917,7 +4928,6 @@ STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Schermaf
 # Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}AI-parameters
 STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :{WHITE}Spelscript-parameters
-STR_AI_SETTINGS_CLOSE                                           :{BLACK}Sluiten
 STR_AI_SETTINGS_RESET                                           :{BLACK}Terugstellen
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
 
@@ -5257,6 +5267,13 @@ STR_ERROR_START_AND_END_MUST_BE_IN                              :{WHITE}Begin en
 STR_ERROR_ENDS_OF_BRIDGE_MUST_BOTH                              :{WHITE}... uiteinden van brug moeten beiden op land zijn
 STR_ERROR_BRIDGE_TOO_LONG                                       :{WHITE}... brug te lang
 STR_ERROR_BRIDGE_THROUGH_MAP_BORDER                             :{WHITE}Brug zou eindigen buiten de kaart
+STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}Brug is {HEIGHT} te laag voor station
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROADSTOP                           :{WHITE}Brug is {HEIGHT} te laag voor halte
+STR_ERROR_BRIDGE_TOO_LOW_FOR_DOCK                               :{WHITE}Brug is {HEIGHT} te laag voor dok
+STR_ERROR_BRIDGE_TOO_LOW_FOR_BUOY                               :{WHITE}Brug {HEIGHT} te laag voor boei
+STR_ERROR_BRIDGE_TOO_LOW_FOR_RAIL_WAYPOINT                      :{WHITE}Brug {HEIGHT} te laag voor spoorroutepunt
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROAD_WAYPOINT                      :{WHITE}Brug is {HEIGHT} te laag voor wegroutepunt
+STR_ERROR_BRIDGE_TOO_LOW_FOR_LOCK                               :{WHITE}Brug is {HEIGHT} te laag voor sluis
 
 # Tunnel related errors
 STR_ERROR_CAN_T_BUILD_TUNNEL_HERE                               :{WHITE}Kan hier geen tunnel bouwen...
@@ -5873,6 +5890,8 @@ STR_SAVEGAME_NAME_SPECTATOR                                     :Toeschouwer, {1
 
 # Viewport strings
 STR_VIEWPORT_TOWN_POP                                           :{TOWN} ({COMMA})
+STR_VIEWPORT_TOWN_CITY                                          :{TOWN} {CITY_ICON}
+STR_VIEWPORT_TOWN_CITY_POP                                      :{TOWN} ({COMMA}) {CITY_ICON}
 STR_VIEWPORT_STATION                                            :{STATION} {STATION_FEATURES}
 
 # Simple strings to get specific types of data

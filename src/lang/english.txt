@@ -267,6 +267,7 @@ STR_UNITS_YEARS                                                 :{NUM}{NBSP}year
 STR_UNITS_PERIODS                                               :{NUM}{NBSP}period{P "" s}
 
 STR_LIST_SEPARATOR                                              :,{SPACE}
+STR_TRUNCATION_ELLIPSIS                                         :...
 
 # Common window strings
 STR_LIST_FILTER_TITLE                                           :{BLACK}Filter:
@@ -995,7 +996,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :Currency units 
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({RAW_STRING})
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :British Pound
 STR_GAME_OPTIONS_CURRENCY_USD                                   :American Dollar
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1041,6 +1042,7 @@ STR_GAME_OPTIONS_CURRENCY_MYR                                   :Malaysian Ringg
 STR_GAME_OPTIONS_CURRENCY_LVL                                   :Latvian Lats
 STR_GAME_OPTIONS_CURRENCY_PTE                                   :Portuguese Escudo
 STR_GAME_OPTIONS_CURRENCY_UAH                                   :Ukrainian Hryvnia
+STR_GAME_OPTIONS_CURRENCY_VND                                   :Vietnamese Dong
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :Autosave
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :Select interval between automatic game saves
@@ -1314,6 +1316,10 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Loan interest r
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Running costs: {STRING2}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Set level of maintenance and running costs of vehicles and infrastructure
+###length 3
+STR_CONFIG_SETTING_RUNNING_COSTS_LOW                            :Low
+STR_CONFIG_SETTING_RUNNING_COSTS_MEDIUM                         :Medium
+STR_CONFIG_SETTING_RUNNING_COSTS_HIGH                           :High
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Construction speed: {STRING2}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Limit the amount of construction actions for AIs
@@ -1335,6 +1341,10 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :No subsidies
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Construction costs: {STRING2}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Set level of construction and purchase costs
+###length 3
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_LOW                       :Low
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_MEDIUM                    :Medium
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :High
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Recessions: {STRING2}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :If enabled, recessions may occur periodically. During a recession all production is significantly lower (it returns to previous level when the recession is over)
@@ -1682,6 +1692,9 @@ STR_CONFIG_SETTING_SCROLLMODE_LMB                               :Move map with L
 
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Smooth viewport scrolling: {STRING2}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Control how the main view scrolls to a specific position when clicking on the smallmap or when issuing a command to scroll to a specific object on the map. If enabled, the viewport scrolls smoothly, if disabled it jumps directly to the targeted spot
+
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT                  :Traditional toolbar menu selection behaviour: {STRING2}
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT_HELPTEXT         :Choose selection behaviour of toolbar menus. If off, toolbar menus will stay open until a selection is made. If on, toolbar menus will activate when the mouse button is released.
 
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Show a measurement tooltip when using various build-tools: {STRING2}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP_HELPTEXT                     :Display tile-distances and height differences when dragging during construction operations
@@ -2093,9 +2106,9 @@ STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :The ARMOURED ca
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :Distribution mode for other cargo classes: {STRING2}
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :"Asymmetric" means that arbitrary amounts of cargo can be sent in either direction. "Manual" means that no automatic distribution will take place for those cargoes
 ###length 3
-STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :manual
-STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :asymmetric
-STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :symmetric
+STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :Manual
+STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :Asymmetric
+STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :Symmetric
 
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY                           :Distribution accuracy: {STRING2}
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY_HELPTEXT                  :The higher you set this the more CPU time the calculation of the link graph will take. If it takes too long you may notice lag. If you set it to a low value, however, the distribution will be inaccurate, and you may notice cargo not being sent to the places you expect it to go
@@ -2203,8 +2216,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... save
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... ignoring Base Graphics set '{RAW_STRING}': not found
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... ignoring Base Sounds set '{RAW_STRING}': not found
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... ignoring Base Music set '{RAW_STRING}': not found
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Out of memory
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Allocating {BYTES} of spritecache failed. The spritecache was reduced to {BYTES}. This will reduce the performance of OpenTTD. To reduce memory requirements you can try to disable 32bpp graphics and/or zoom-in levels
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Error with video settings...
@@ -2831,6 +2842,11 @@ STR_PICKER_MODE_USED                                            :Used
 STR_PICKER_MODE_USED_TOOLTIP                                    :Toggle showing only existing items
 STR_PICKER_MODE_SAVED                                           :Saved
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :Toggle showing only saved items
+
+STR_PICKER_PREVIEW_SHRINK                                       :-
+STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Reduce the height of preview images. Ctrl+Click to reduce to minimum
+STR_PICKER_PREVIEW_EXPAND                                       :+
+STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Increase the height of preview images. Ctrl+Click to increase to maximum
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Select a station class to display
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Select a station type to build. Ctrl+Click to add or remove in saved items
@@ -3528,15 +3544,12 @@ STR_SAVE_PRESET_CAPTION                                         :{WHITE}Save pre
 STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}List of available presets, select one to copy it to the save name below
 STR_SAVE_PRESET_TITLE                                           :{BLACK}Enter a name for the preset
 STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}Currently selected name for the preset to save
-STR_SAVE_PRESET_CANCEL                                          :{BLACK}Cancel
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}Don't change the preset
 STR_SAVE_PRESET_SAVE                                            :{BLACK}Save
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}Save the preset to the current selected name
 
 # NewGRF parameters window
 STR_BASEGRF_PARAMETERS_CAPTION                                  :{WHITE}Change base graphics parameters
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}Change NewGRF parameters
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Close
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}Reset
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}Set all parameters to their default value
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :Parameter {NUM}
@@ -3679,7 +3692,7 @@ STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}Enter a 
 STR_TOWN_DIRECTORY_CAPTION                                      :{WHITE}Towns ({COMMA} of {COMMA})
 STR_TOWN_DIRECTORY_NONE                                         :{ORANGE}- None -
 STR_TOWN_DIRECTORY_TOWN                                         :{ORANGE}{TOWN}{BLACK} ({COMMA})
-STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{YELLOW} (City){BLACK} ({COMMA})
+STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{BLACK} ({COMMA}) {YELLOW}{CITY_ICON}
 STR_TOWN_DIRECTORY_LIST_TOOLTIP                                 :{BLACK}Town names - click on name to centre main view on town. Ctrl+Click to open a new viewport on town location
 STR_TOWN_POPULATION                                             :{BLACK}World population: {COMMA}
 
@@ -4906,8 +4919,6 @@ STR_AI_LIST_URL                                                 :{LTBLUE}URL: {O
 
 STR_AI_LIST_ACCEPT                                              :{BLACK}Accept
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Select highlighted script
-STR_AI_LIST_CANCEL                                              :{BLACK}Cancel
-STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Don't change the script
 
 STR_SCREENSHOT_CAPTION                                          :{WHITE}Take a screenshot
 STR_SCREENSHOT_SCREENSHOT                                       :{BLACK}Normal screenshot
@@ -4920,7 +4931,6 @@ STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Minimap 
 # Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}AI Parameters
 STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :{WHITE}Game Script Parameters
-STR_AI_SETTINGS_CLOSE                                           :{BLACK}Close
 STR_AI_SETTINGS_RESET                                           :{BLACK}Reset
 STR_AI_SETTINGS_SETTING                                         :{RAW_STRING}: {ORANGE}{STRING1}
 

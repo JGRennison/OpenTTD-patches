@@ -997,7 +997,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :Naudas vienību
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Lielbritānijas sterliņu mārciņas
 STR_GAME_OPTIONS_CURRENCY_USD                                   :ASV dolāri
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Eiro
@@ -1043,6 +1043,7 @@ STR_GAME_OPTIONS_CURRENCY_MYR                                   :Malaizijas Ring
 STR_GAME_OPTIONS_CURRENCY_LVL                                   :Latvijas lati
 STR_GAME_OPTIONS_CURRENCY_PTE                                   :Portugāles eskudo
 STR_GAME_OPTIONS_CURRENCY_UAH                                   :Ukrainas Grivna
+STR_GAME_OPTIONS_CURRENCY_VND                                   :Vjetnamas Dongs
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :Automātiskā saglabāšana
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :Izvēlēties spēles automātiskās saglabāšanas starplaikus
@@ -1316,6 +1317,10 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Aizdevumu proce
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Kārtējās izmaksas: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Iestaties uzturēšanas un ekspluatācijas izmaksu līmeni transportlīdzekļiem un infrastruktūrai
+###length 3
+STR_CONFIG_SETTING_RUNNING_COSTS_LOW                            :Zemas
+STR_CONFIG_SETTING_RUNNING_COSTS_MEDIUM                         :Vidējas
+STR_CONFIG_SETTING_RUNNING_COSTS_HIGH                           :Augstas
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Būvēšanas ātrums: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :MI (mākslīgā intelekta) būvniecības darbību daudzuma ierobežošana
@@ -1337,6 +1342,10 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :Bez subsīdijā
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Būvēšanas izmaksas: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Iestatīt būvēšanas un pirkumu izmaksas
+###length 3
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_LOW                       :Zemas
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_MEDIUM                    :Vidējas
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :Augstas
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Lejupslīde: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Ja ieslēgts, periodiski var rasties recesijas. Recesijas laikā visa ražošana ir ievērojami zemāka (tā atgriežas iepriekšējā līmenī, kad recesija ir beigusies)
@@ -1682,6 +1691,9 @@ STR_CONFIG_SETTING_SCROLLMODE_LMB                               :Pārvietot kart
 
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Plūdena skatvietas ritināšana: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Noteikt, kā galvenais skats ritina uz norādīto pozīciju, kad klikšķina uz mazās kartes vai kad dod komandu ritināt uz noteiktu kartes objektu. Ja ieslēgs, skatvieta ritinās gludi. Ja izslēgts, skats pārlec uz izvēlēto punktu.
+
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT                  :Tradicionālā rīkjoslas izvēlnes atlases darbība: {STRING}
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT_HELPTEXT         :Izvēlieties rīkjoslas izvēļņu atlases darbību. Ja izslēgts, rīkjoslas izvēlnes paliks atvērtas, līdz tiks veikta atlase. Ja ieslēgts, rīkjoslas izvēlnes tiks aktivizētas, atlaižot peles pogu.
 
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Rādīt mērījumu rīkjoslu, izmantojot dažādus būvniecības rīkus: {STRING}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP_HELPTEXT                     :Rāda lauciņu attālumus un augstuma starpības, ar vilkšanu veicot būvniecības darbības
@@ -2093,9 +2105,9 @@ STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :APSARGĀJAMĀ k
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :Izplatīšanas modelis citām kravu klasēm: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :"Asimetrisks" nozīmē, ka jebkurā virzienā var nosūtīt patvaļīgu daudzumu kravas. "Manuāli" nozīmē, ka šīm kravām automātiska sadale nenotiks
 ###length 3
-STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :manuāli
-STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :asimetriska
-STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :simetriska
+STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :Manuāli
+STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :Asimetriska
+STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :Simetriska
 
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY                           :Sadales precizitāte: {STRING}
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY_HELPTEXT                  :Jo lielāku vērtību iestatīsiet, jo vairāk CPU laika aizies saišu grafa aprēķināšanai. Ja tas aizņem pārāk daudz laika, jūs varētu pamanīt spēles iebremzēšanos. Ja iestatīsiet pārāk mazu, izplatīšana būs neprecīza un jūs varētu pamanīt, ka krava tiek nosūtīta uz negaidītām vietām.
@@ -2205,8 +2217,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... spē
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... ignorē pamata grafikas kopu '{STRING}': nav atrasta
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... ignorē pamata skaņas kopu '{STRING}': nav atrasta
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... ignorē pamata mūzikas kopu '{STRING}': nav atrasta
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Nepietiek atmiņas
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Neizdevās piešķirt {BYTES} spraitu kešam. Spraitu kešs tika samazināts uz {BYTES}. Tas samazinās OpenTTD veiktspēju. Lai samazinātu prasības pret atmiņu, varat mēģināt izslēgt 32bpp grafiku un/vai tuvināšanas līmeņus
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Kļūda ar video iestatījumiem
@@ -2214,7 +2224,8 @@ STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... nav 
 STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :{WHITE}... GPU dzinulis apturēja spēli. Aparatūras paātrinājums ir izslēgts
 
 # Intro window
-STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
+STR_INTRO_CAPTION                                               :{WHITE}OpenTTD
+STR_INTRO_VERSION                                               :OpenTTD {REV}
 
 STR_INTRO_NEW_GAME                                              :{BLACK}Jauna spēle
 STR_INTRO_LOAD_GAME                                             :{BLACK}Ielādēt spēli
@@ -2832,6 +2843,11 @@ STR_PICKER_MODE_USED                                            :Lietots
 STR_PICKER_MODE_USED_TOOLTIP                                    :Pārslēgt tikai esošo vienumu rādīšanu
 STR_PICKER_MODE_SAVED                                           :Saglabāts
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :Pārslēgt tikai saglabāto vienumu rādīšanu
+
+STR_PICKER_PREVIEW_SHRINK                                       :-
+STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Samaziniet priekšskatījuma attēlu augstumu. Ctrl+klikšķis, lai samazinātu līdz minimumam.
+STR_PICKER_PREVIEW_EXPAND                                       :+
+STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Palieliniet priekšskatījuma attēlu augstumu. Ctrl+klikšķis, lai palielinātu līdz maksimālajam.
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Izvēlieties rādāmo staciju klasi
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Izvēlieties izveidojamās stacijas veidu. Ctrl+klikšķis, lai pievienotu vai noņemtu saglabātos vienumus
@@ -3528,15 +3544,12 @@ STR_SAVE_PRESET_CAPTION                                         :{WHITE}Iepriek�
 STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}Saraksts ar pieejamajiem priekšiestatījumiem, izvēlieties vienu, kuru kopēt uz zemāk esošo nosaukumu
 STR_SAVE_PRESET_TITLE                                           :{BLACK}Ievadiet priekšiestatījuma nosaukumu
 STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}Pašlaik izvēlētā iepriekšiestatījuma nosaukums saglabāšanai
-STR_SAVE_PRESET_CANCEL                                          :{BLACK}Atcelt
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}Nemainīt iepriekšiestatījumu
 STR_SAVE_PRESET_SAVE                                            :{BLACK}Saglabāt
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}pašreizējos iestatījumus saglābāt kā sākontnējos iestatījumus
 
 # NewGRF parameters window
 STR_BASEGRF_PARAMETERS_CAPTION                                  :{WHITE}Mainiet pamata grafikas parametrus
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}Mainīt NewGRF parametrus
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Aizvērt
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}Atjaunot
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}Iestatīt visiem parametriem to noklusējuma vērtības
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :{NUM}. parametrs
@@ -3681,7 +3694,7 @@ STR_TOWN_DIRECTORY_CAPTION                                      :{WHITE}Pilsēta
 STR_TOWN_DIRECTORY_NONE                                         :{G=m}{ORANGE}- Neviens -
 STR_TOWN_DIRECTORY_NONE.kas                                     :{ORANGE}- Neviena -
 STR_TOWN_DIRECTORY_TOWN                                         :{ORANGE}{TOWN}{BLACK} ({COMMA})
-STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{YELLOW} (Pilsēta){BLACK} ({COMMA})
+STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{BLACK} ({COMMA}) {YELLOW}{CITY_ICON}
 STR_TOWN_DIRECTORY_LIST_TOOLTIP                                 :{BLACK}Pilsētu nosaukumi - klikšķināt uz nosaukuma, lai centrētu skatu uz to.Ctrl+klikšķis atvērs skatu uz pilsētu jaunā skatlaukā
 STR_TOWN_POPULATION                                             :{BLACK}Pasaules iedzīvotāju skaits: {COMMA}
 
@@ -4911,8 +4924,6 @@ STR_AI_LIST_URL                                                 :{LTBLUE}Tīmek�
 
 STR_AI_LIST_ACCEPT                                              :{BLACK}Apstiprināt
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Izvēlēties izcelto skriptu
-STR_AI_LIST_CANCEL                                              :{BLACK}Atcelt
-STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Nemainīt skriptu
 
 STR_SCREENSHOT_CAPTION                                          :{WHITE}Uzņemt ekrānuzņēmumu
 STR_SCREENSHOT_SCREENSHOT                                       :{BLACK}Parasts ekrānuzņēmums
@@ -4925,7 +4936,6 @@ STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Minikart
 # Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}MI (mākslīgā intelekta) parametri
 STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :{WHITE}Spēles Skripta Parametri
-STR_AI_SETTINGS_CLOSE                                           :{BLACK}Aizvērt
 STR_AI_SETTINGS_RESET                                           :{BLACK}Atiestatīt
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
 
@@ -5881,6 +5891,8 @@ STR_SAVEGAME_NAME_SPECTATOR                                     :Novērotājs, {
 
 # Viewport strings
 STR_VIEWPORT_TOWN_POP                                           :{TOWN} ({COMMA})
+STR_VIEWPORT_TOWN_CITY                                          :{TOWN} {CITY_ICON}
+STR_VIEWPORT_TOWN_CITY_POP                                      :{TOWN} ({COMMA}) {CITY_ICON}
 STR_VIEWPORT_STATION                                            :{STATION} {STATION_FEATURES}
 
 # Simple strings to get specific types of data

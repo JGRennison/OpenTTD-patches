@@ -162,6 +162,9 @@ void SetLocalCompany(CompanyID new_company)
 	MarkWholeScreenDirty();
 	InvalidateWindowClassesData(WC_SIGN_LIST, -1);
 	InvalidateWindowClassesData(WC_GOALS_LIST);
+	InvalidateWindowClassesData(WC_COMPANY_COLOUR, -1);
+	ResetVehicleColourMap();
+
 	ClearZoningCaches();
 	InvalidatePlanCaches();
 
@@ -1344,6 +1347,8 @@ CommandCost CmdRenameCompany(DoCommandFlags flags, const std::string &text)
 		} else {
 			c->name = text;
 		}
+
+		InvalidateWindowClassesData(WC_COMPANY, WID_C_COMPANY_NAME);
 		MarkWholeScreenDirty();
 		CompanyAdminUpdate(c);
 
@@ -1397,7 +1402,7 @@ CommandCost CmdRenamePresident(DoCommandFlags flags, const std::string &text)
 			}
 		}
 
-		InvalidateWindowClassesData(WC_COMPANY, 1);
+		InvalidateWindowClassesData(WC_COMPANY, WID_C_PRESIDENT_NAME);
 		MarkWholeScreenDirty();
 		CompanyAdminUpdate(c);
 

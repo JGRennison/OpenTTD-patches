@@ -913,7 +913,7 @@ struct GameOptionsWindow : Window {
 			}
 
 			case WID_GO_OPTIONSPANEL:
-				resize.height = SETTING_HEIGHT = std::max({(int)_setting_circle_size.height, SETTING_BUTTON_HEIGHT, GetCharacterHeight(FS_NORMAL)}) + WidgetDimensions::scaled.vsep_normal;
+				fill.height = resize.height = SETTING_HEIGHT = std::max({(int)_setting_circle_size.height, SETTING_BUTTON_HEIGHT, GetCharacterHeight(FS_NORMAL)}) + WidgetDimensions::scaled.vsep_normal;
 				resize.width = 1;
 
 				size.height = 8 * resize.height + WidgetDimensions::scaled.framerect.Vertical();
@@ -1093,9 +1093,8 @@ struct GameOptionsWindow : Window {
 				this->SetWidgetDisabledState(WID_GO_GUI_FONT_AA, _fcsettings.prefer_sprite);
 				this->SetDirty();
 
-				InitFontCache(false);
-				InitFontCache(true);
-				ClearFontCache();
+				InitFontCache(FONTSIZES_ALL);
+				ClearFontCache(FONTSIZES_ALL);
 
 				FontChanged();
 				break;
@@ -1106,7 +1105,7 @@ struct GameOptionsWindow : Window {
 				this->SetWidgetLoweredState(WID_GO_GUI_FONT_AA, _fcsettings.global_aa);
 				MarkWholeScreenDirty();
 
-				ClearFontCache();
+				ClearFontCache(FONTSIZES_ALL);
 				break;
 #endif /* HAS_TRUETYPE_FONT */
 
@@ -1462,7 +1461,7 @@ struct GameOptionsWindow : Window {
 		if (!str.has_value()) return;
 
 		if (this->current_query_text_item == QueryTextItem::AutosaveCustomRealTimeMinutes) {
-			auto try_value = ParseInteger<int>(*str);
+			auto try_value = ParseInteger<int>(*str, 10, true);
 			if (!try_value.has_value()) return;
 			_settings_client.gui.autosave_interval = Clamp(*try_value, 1, 8000);
 			ChangeAutosaveFrequency(false);
@@ -1481,7 +1480,7 @@ struct GameOptionsWindow : Window {
 			if (sd->flags.Test(SettingFlag::GuiVelocity) && GetGameSettings().locale.units_velocity == 3) {
 				llvalue = atof(str->c_str()) * 10;
 			} else {
-				auto try_llvalue = ParseInteger<int64_t>(*str);
+				auto try_llvalue = ParseInteger<int64_t>(*str, 10, true);
 				if (!try_llvalue.has_value()) return;
 				llvalue = *try_llvalue;
 			}
@@ -2226,7 +2225,7 @@ struct CustomCurrencyWindow : Window {
 
 		switch (this->query_widget) {
 			case WID_CC_RATE: {
-				auto val = ParseInteger(*str);
+				auto val = ParseInteger(*str, 10, true);
 				if (!val.has_value()) return;
 				GetCustomCurrency().rate = Clamp(*val, 1, UINT16_MAX);
 				break;
@@ -2247,7 +2246,7 @@ struct CustomCurrencyWindow : Window {
 			case WID_CC_YEAR: { // Year to switch to euro
 				CalTime::Year year = CF_NOEURO;
 				if (!str->empty()) {
-					auto val = ParseInteger(*str);
+					auto val = ParseInteger(*str, 10, true);
 					if (!val.has_value()) return;
 					year = Clamp(static_cast<CalTime::Year>(*val), MIN_EURO_YEAR, CalTime::MAX_YEAR);
 				}

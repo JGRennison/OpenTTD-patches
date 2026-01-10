@@ -995,7 +995,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :Currency units 
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :British Pound
 STR_GAME_OPTIONS_CURRENCY_USD                                   :American Dollar
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1041,6 +1041,7 @@ STR_GAME_OPTIONS_CURRENCY_MYR                                   :Malaysian Ringg
 STR_GAME_OPTIONS_CURRENCY_LVL                                   :Latvian Lats
 STR_GAME_OPTIONS_CURRENCY_PTE                                   :Portuguese Escudo
 STR_GAME_OPTIONS_CURRENCY_UAH                                   :Ukrainian Hryvnia
+STR_GAME_OPTIONS_CURRENCY_VND                                   :Vietnamese Dong
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :Autosave
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :Select interval between automatic game saves
@@ -1314,6 +1315,10 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Loan interest r
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Running costs: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Set level of maintenance and running costs of vehicles and infrastructure
+###length 3
+STR_CONFIG_SETTING_RUNNING_COSTS_LOW                            :Low
+STR_CONFIG_SETTING_RUNNING_COSTS_MEDIUM                         :Medium
+STR_CONFIG_SETTING_RUNNING_COSTS_HIGH                           :High
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Construction speed: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Limit the amount of construction actions for AIs
@@ -1335,6 +1340,10 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :No subsidies
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Construction costs: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Set level of construction and purchase costs
+###length 3
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_LOW                       :Low
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_MEDIUM                    :Medium
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :High
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Recessions: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :If enabled, recessions may occur periodically. During a recession all production is significantly lower (it returns to previous level when the recession is over)
@@ -1680,6 +1689,9 @@ STR_CONFIG_SETTING_SCROLLMODE_LMB                               :Move map with L
 
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Smooth viewport scrolling: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Control how the main view scrolls to a specific position when clicking on the smallmap or when issuing a command to scroll to a specific object on the map. If enabled, the viewport scrolls smoothly, if disabled it jumps directly to the targeted spot
+
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT                  :Traditional toolbar menu selection behavior: {STRING}
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT_HELPTEXT         :Choose selection behavior of toolbar menus. If off, toolbar menus will stay open until a selection is made. If on, toolbar menus will activate when the mouse button is released.
 
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Show a measurement tooltip when using various build-tools: {STRING}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP_HELPTEXT                     :Display tile-distances and height differences when dragging during construction operations
@@ -2091,9 +2103,9 @@ STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :The ARMORED car
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :Distribution mode for other cargo classes: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :"Asymmetric" means that arbitrary amounts of cargo can be sent in either direction. "Manual" means that no automatic distribution will take place for those cargos
 ###length 3
-STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :manual
-STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :asymmetric
-STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :symmetric
+STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :Manual
+STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :Asymmetric
+STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :Symmetric
 
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY                           :Distribution accuracy: {STRING}
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY_HELPTEXT                  :The higher you set this the more CPU time the calculation of the link graph will take. If it takes too long you may notice lag. If you set it to a low value, however, the distribution will be inaccurate, and you may notice cargo not being sent to the places you expect it to go
@@ -2201,8 +2213,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... save
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... ignoring Base Graphics set '{STRING}': not found
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... ignoring Base Sounds set '{STRING}': not found
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... ignoring Base Music set '{STRING}': not found
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Out of memory
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Allocating {BYTES} of spritecache failed. The spritecache was reduced to {BYTES}. This will reduce the performance of OpenTTD. To reduce memory requirements you can try to disable 32bpp graphics and/or zoom-in levels
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Error with video settings...
@@ -2210,7 +2220,8 @@ STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... no c
 STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :{WHITE}... GPU driver crashed the game. Hardware acceleration disabled
 
 # Intro window
-STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
+STR_INTRO_CAPTION                                               :{WHITE}OpenTTD
+STR_INTRO_VERSION                                               :OpenTTD {REV}
 
 STR_INTRO_NEW_GAME                                              :{BLACK}New Game
 STR_INTRO_LOAD_GAME                                             :{BLACK}Load Game
@@ -2828,6 +2839,11 @@ STR_PICKER_MODE_USED                                            :Used
 STR_PICKER_MODE_USED_TOOLTIP                                    :Toggle showing only existing items
 STR_PICKER_MODE_SAVED                                           :Saved
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :Toggle showing only saved items
+
+STR_PICKER_PREVIEW_SHRINK                                       :-
+STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Reduce the height of preview images. Ctrl+Click to reduce to minimum
+STR_PICKER_PREVIEW_EXPAND                                       :+
+STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Increase the height of preview images. Ctrl+Click to increase to maximum
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Select a station class to display
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Select a station type to build. Ctrl+Click to add or remove in saved items
@@ -3525,15 +3541,12 @@ STR_SAVE_PRESET_CAPTION                                         :{WHITE}Save pre
 STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}List of available presets, select one to copy it to the save name below
 STR_SAVE_PRESET_TITLE                                           :{BLACK}Enter a name for the preset
 STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}Currently selected name for the preset to save
-STR_SAVE_PRESET_CANCEL                                          :{BLACK}Cancel
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}Don't change the preset
 STR_SAVE_PRESET_SAVE                                            :{BLACK}Save
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}Save the preset to the current selected name
 
 # NewGRF parameters window
 STR_BASEGRF_PARAMETERS_CAPTION                                  :{WHITE}Change base graphics parameters
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}Change NewGRF parameters
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Close
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}Reset
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}Set all parameters to their default value
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :Parameter {NUM}
@@ -3676,7 +3689,7 @@ STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}Enter a 
 STR_TOWN_DIRECTORY_CAPTION                                      :{WHITE}Towns ({COMMA} of {COMMA})
 STR_TOWN_DIRECTORY_NONE                                         :{ORANGE}- None -
 STR_TOWN_DIRECTORY_TOWN                                         :{ORANGE}{TOWN}{BLACK} ({COMMA})
-STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{YELLOW} (City){BLACK} ({COMMA})
+STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{BLACK} ({COMMA}) {YELLOW}{CITY_ICON}
 STR_TOWN_DIRECTORY_LIST_TOOLTIP                                 :{BLACK}Town names - click on name to center main view on town. Ctrl+Click to open a new viewport on town location
 STR_TOWN_POPULATION                                             :{BLACK}World population: {COMMA}
 
@@ -4903,8 +4916,6 @@ STR_AI_LIST_URL                                                 :{LTBLUE}URL: {O
 
 STR_AI_LIST_ACCEPT                                              :{BLACK}Accept
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Select highlighted script
-STR_AI_LIST_CANCEL                                              :{BLACK}Cancel
-STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Don't change the script
 
 STR_SCREENSHOT_CAPTION                                          :{WHITE}Take a screenshot
 STR_SCREENSHOT_SCREENSHOT                                       :{BLACK}Normal screenshot
@@ -4917,7 +4928,6 @@ STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Minimap 
 # Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}AI Parameters
 STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :{WHITE}Game Script Parameters
-STR_AI_SETTINGS_CLOSE                                           :{BLACK}Close
 STR_AI_SETTINGS_RESET                                           :{BLACK}Reset
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
 
@@ -5257,6 +5267,13 @@ STR_ERROR_START_AND_END_MUST_BE_IN                              :{WHITE}Start an
 STR_ERROR_ENDS_OF_BRIDGE_MUST_BOTH                              :{WHITE}... ends of bridge must both be on land
 STR_ERROR_BRIDGE_TOO_LONG                                       :{WHITE}... bridge too long
 STR_ERROR_BRIDGE_THROUGH_MAP_BORDER                             :{WHITE}Bridge would end out of the map
+STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}Bridge is {HEIGHT} too low for station
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROADSTOP                           :{WHITE}Bridge is {HEIGHT} too low for road stop
+STR_ERROR_BRIDGE_TOO_LOW_FOR_DOCK                               :{WHITE}Bridge is {HEIGHT} too low for dock
+STR_ERROR_BRIDGE_TOO_LOW_FOR_BUOY                               :{WHITE}Bridge is {HEIGHT} too low for buoy
+STR_ERROR_BRIDGE_TOO_LOW_FOR_RAIL_WAYPOINT                      :{WHITE}Bridge is {HEIGHT} too low for rail waypoint
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROAD_WAYPOINT                      :{WHITE}Bridge is {HEIGHT} too low for road waypoint
+STR_ERROR_BRIDGE_TOO_LOW_FOR_LOCK                               :{WHITE}Bridge is {HEIGHT} too low for lock
 
 # Tunnel related errors
 STR_ERROR_CAN_T_BUILD_TUNNEL_HERE                               :{WHITE}Can't build tunnel here...
@@ -5873,6 +5890,8 @@ STR_SAVEGAME_NAME_SPECTATOR                                     :Spectator, {1:S
 
 # Viewport strings
 STR_VIEWPORT_TOWN_POP                                           :{TOWN} ({COMMA})
+STR_VIEWPORT_TOWN_CITY                                          :{TOWN} {CITY_ICON}
+STR_VIEWPORT_TOWN_CITY_POP                                      :{TOWN} ({COMMA}) {CITY_ICON}
 STR_VIEWPORT_STATION                                            :{STATION} {STATION_FEATURES}
 
 # Simple strings to get specific types of data

@@ -996,7 +996,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :화폐 단위 �
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :영국 파운드
 STR_GAME_OPTIONS_CURRENCY_USD                                   :미국 달러
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :유로
@@ -1042,6 +1042,7 @@ STR_GAME_OPTIONS_CURRENCY_MYR                                   :말레이시아
 STR_GAME_OPTIONS_CURRENCY_LVL                                   :라트비아 라츠
 STR_GAME_OPTIONS_CURRENCY_PTE                                   :포르투갈 이스쿠두
 STR_GAME_OPTIONS_CURRENCY_UAH                                   :우크라이나 흐리우냐
+STR_GAME_OPTIONS_CURRENCY_VND                                   :베트남 동
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :자동 저장
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :게임 자동 저장 간격을 선택
@@ -1315,6 +1316,10 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :대출 금리�
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :유지비: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :차량과 기반시설의 유지비 수준을 설정하십시오
+###length 3
+STR_CONFIG_SETTING_RUNNING_COSTS_LOW                            :낮음
+STR_CONFIG_SETTING_RUNNING_COSTS_MEDIUM                         :보통
+STR_CONFIG_SETTING_RUNNING_COSTS_HIGH                           :높음
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :건설 속도: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :인공지능의 건설 행동량을 제한하여 건설 속도를 조절할 수 있습니다
@@ -1336,6 +1341,10 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :보조금 없�
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :건설 가격: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :건설 및 구매 가격의 수준을 설정하십시오.
+###length 3
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_LOW                       :낮음
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_MEDIUM                    :보통
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :높음
 
 STR_CONFIG_SETTING_RECESSIONS                                   :경제 불황: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :이 설정을 켜면, 주기적으로 경제 불황이 발생할 수 있습니다. 불황 기간 동안에는 모든 화물의 생산량이 확연하게 줄어듭니다. (불황이 끝나면 이전 수준으로 회복됩니다.)
@@ -1681,6 +1690,9 @@ STR_CONFIG_SETTING_SCROLLMODE_LMB                               :마우스 왼�
 
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :게임 화면을 이동시킬 때 부드럽게 이동: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :소형 지도를 클릭하여 특정 지역으로 스크롤되거나 지도 상의 특정 장소로 이동하는 경우에 주 화면이 어떻게 스크롤 되는지를 설정합니다. 이 설정을 켜면, 화면이 목표 지점까지 부드럽게 이동하고, 설정을 끄면 목표 지점으로 곧바로 넘어가게 됩니다.
+
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT                  :도구 메뉴 자동 선택: {STRING}
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT_HELPTEXT         :메뉴를 선택했을 때의 행동을 고릅니다. 이 설정을 끄면, 메뉴에서 항목을 선택하기 전까지는 메뉴가 열린 상태로 유지됩니다. 이 설정을 켜면, 마우스 버튼을 놓는 순간 메뉴가 바로 클릭됩니다.
 
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :건설도구 사용시 거리 도움말 표시: {STRING}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP_HELPTEXT                     :철도/도로 등의 기반시설을 건설할 때 거리와 높이 차이 등을 표시합니다
@@ -2202,8 +2214,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... '{ST
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... 기본 그래픽 세트({STRING})가 무시되었습니다: 파일을 찾을 수 없습니다
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... 기본 효과음 세트({STRING})가 무시되었습니다: 파일을 찾을 수 없습니다
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... 기본 배경음 세트({STRING})가 무시되었습니다: 파일을 찾을 수 없습니다
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}메모리 초과
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}{BYTES}의 스프라이트 캐시 할당에 실패하였습니다. 스프라이트 캐시 용량이 {BYTES}로 감소합니다. 이는 OpenTTD의 성능을 저하시킬 것입니다. 메모리 요구사항을 낮추려면 32bpp를 비활성화하거나 화면 확대 설정을 기본값에 가깝게 조절하십시오.
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}비디오 설정 오류 발생...
@@ -2211,7 +2221,8 @@ STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... 호�
 STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :{WHITE}... GPU 드라이버가 게임을 종료시켰습니다. 하드웨어 가속이 비활성화됩니다
 
 # Intro window
-STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
+STR_INTRO_CAPTION                                               :{WHITE}OpenTTD
+STR_INTRO_VERSION                                               :OpenTTD {REV}
 
 STR_INTRO_NEW_GAME                                              :{BLACK}새 게임
 STR_INTRO_LOAD_GAME                                             :{BLACK}불러오기
@@ -2829,6 +2840,11 @@ STR_PICKER_MODE_USED                                            :사용한 것
 STR_PICKER_MODE_USED_TOOLTIP                                    :존재하는 항목만 표시 전환
 STR_PICKER_MODE_SAVED                                           :즐겨찾기
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :즐겨찾기된 항목만 표시 전환
+
+STR_PICKER_PREVIEW_SHRINK                                       :-
+STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :미리보기 이미지의 높이를 줄입니다. CTRL+클릭하면 최대로 줄입니다
+STR_PICKER_PREVIEW_EXPAND                                       :+
+STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :미리보기 이미지의 높이를 늘입니다. CTRL+클릭하면 최대로 늘입니다
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :표시할 역 종류를 선택하세요
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :설치하려는 역 종류를 선택하세요. CTRL+클릭하면 즐겨찾기 추가/제거가 가능합니다
@@ -3526,15 +3542,12 @@ STR_SAVE_PRESET_CAPTION                                         :{WHITE}프리�
 STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}사용 가능한 프리셋 목록입니다. 아래에 같은 이름을 복사하려면 선택하세요
 STR_SAVE_PRESET_TITLE                                           :{BLACK}프리셋의 이름을 입력하세요
 STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}저장할 프리셋에 지정할 이름입니다
-STR_SAVE_PRESET_CANCEL                                          :{BLACK}취소
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}프리셋을 바꾸지 않습니다
 STR_SAVE_PRESET_SAVE                                            :{BLACK}저장
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}이 프리셋을 선택한 이름으로 저장합니다
 
 # NewGRF parameters window
 STR_BASEGRF_PARAMETERS_CAPTION                                  :{WHITE}기본 그래픽 매개 변수를 변경합니다
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}NewGRF 매개 변숫값 변경
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}닫기
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}초기화
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}모든 매개 변숫값을 기본값으로 설정합니다
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :매개 변수 {NUM}번
@@ -3677,7 +3690,7 @@ STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}팻말 �
 STR_TOWN_DIRECTORY_CAPTION                                      :{WHITE}도시 목록 ({1:COMMA}개 중 {0:COMMA}개)
 STR_TOWN_DIRECTORY_NONE                                         :{ORANGE}(없음)
 STR_TOWN_DIRECTORY_TOWN                                         :{ORANGE}{TOWN}{BLACK} ({COMMA})
-STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{YELLOW} (대도시){BLACK} ({COMMA})
+STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{BLACK} ({COMMA}) {YELLOW}{CITY_ICON}
 STR_TOWN_DIRECTORY_LIST_TOOLTIP                                 :{BLACK}도시 이름 - 이 도시로 시점을 변경하려면 클릭하세요. CTRL+클릭하면 이 도시 위치를 기준으로 새로운 외부 화면을 엽니다
 STR_TOWN_POPULATION                                             :{BLACK}총 인구 수: {COMMA}
 
@@ -4904,8 +4917,6 @@ STR_AI_LIST_URL                                                 :{LTBLUE}주소:
 
 STR_AI_LIST_ACCEPT                                              :{BLACK}적용
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}선택한 스크립트를 적용합니다
-STR_AI_LIST_CANCEL                                              :{BLACK}취소
-STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}인공지능 스크립트를 바꾸지 않습니다
 
 STR_SCREENSHOT_CAPTION                                          :{WHITE}스크린 샷 찍기
 STR_SCREENSHOT_SCREENSHOT                                       :{BLACK}일반 스크린 샷
@@ -4918,7 +4929,6 @@ STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}미니�
 # Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}인공지능 매개 변수
 STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :{WHITE}게임 스크립트 매개 변수
-STR_AI_SETTINGS_CLOSE                                           :{BLACK}닫기
 STR_AI_SETTINGS_RESET                                           :{BLACK}초기화
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
 
@@ -5258,6 +5268,13 @@ STR_ERROR_START_AND_END_MUST_BE_IN                              :{WHITE}시작�
 STR_ERROR_ENDS_OF_BRIDGE_MUST_BOTH                              :{WHITE}... 다리의 양 끝은 모두 땅이어야 합니다
 STR_ERROR_BRIDGE_TOO_LONG                                       :{WHITE}... 다리가 너무 깁니다!
 STR_ERROR_BRIDGE_THROUGH_MAP_BORDER                             :{WHITE}다리 끝이 지도 밖을 넘어갑니다
+STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}다리 밑에 역을 두기에는 다리 높이가 {HEIGHT}만큼 낮습니다
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROADSTOP                           :{WHITE}다리 밑에 도로 정류장을 두기에는 다리 높이가 {HEIGHT}만큼 낮습니다
+STR_ERROR_BRIDGE_TOO_LOW_FOR_DOCK                               :{WHITE}다리 밑에 항구를 두기에는 다리 높이가 {HEIGHT}만큼 낮습니다
+STR_ERROR_BRIDGE_TOO_LOW_FOR_BUOY                               :{WHITE}다리 밑에 부표를 두기에는 다리 높이가 {HEIGHT}만큼 낮습니다
+STR_ERROR_BRIDGE_TOO_LOW_FOR_RAIL_WAYPOINT                      :{WHITE}다리 밑에 철도 경유지를 두기에는 다리 높이가 {HEIGHT}만큼 낮습니다
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROAD_WAYPOINT                      :{WHITE}다리 밑에 도로 경유지를 두기에는 다리 높이가 {HEIGHT}만큼 낮습니다
+STR_ERROR_BRIDGE_TOO_LOW_FOR_LOCK                               :{WHITE}다리 밑에 항구를 두기에는 다리 높이가 {HEIGHT}만큼 낮습니다
 
 # Tunnel related errors
 STR_ERROR_CAN_T_BUILD_TUNNEL_HERE                               :{WHITE}여기에 터널을 지을 수 없습니다...
@@ -5874,6 +5891,8 @@ STR_SAVEGAME_NAME_SPECTATOR                                     :관전자의 �
 
 # Viewport strings
 STR_VIEWPORT_TOWN_POP                                           :{TOWN} ({COMMA})
+STR_VIEWPORT_TOWN_CITY                                          :{TOWN} {CITY_ICON}
+STR_VIEWPORT_TOWN_CITY_POP                                      :{TOWN} ({COMMA}) {CITY_ICON}
 STR_VIEWPORT_STATION                                            :{STATION} {STATION_FEATURES}
 
 # Simple strings to get specific types of data

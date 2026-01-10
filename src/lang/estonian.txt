@@ -1023,7 +1023,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :Valuuta valimin
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Suurbritannia nael
 STR_GAME_OPTIONS_CURRENCY_USD                                   :USA dollar
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1337,6 +1337,7 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Laenu intressim
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Käituskulud: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Määrab sõidukite ja taristu hooldus- ja käituskulude hinnataseme
+###length 3
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Ehitustempo: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Piirab arvuti ehitustoimingute arvu
@@ -1358,6 +1359,7 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :Toetusteta
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Ehituse hinnad: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Määrab ehitus- ja ostukulude hinnataseme
+###length 3
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Majanduslangused: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Kui on aktiveeritud siis võib majanduslangus toimuda iga paari aasta tagant. Majanduslanguse ajal on kõik tootmismahud tunduvalt madalamad (majanduslanguse lõppedes taastuvad endised tootmismahud)
@@ -1701,6 +1703,7 @@ STR_CONFIG_SETTING_SCROLLMODE_LMB                               :Kaarti liigutat
 
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Keskenda vaade sujuvalt: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Mõjutab, kuidas põhivõõde liigub sihtpunkti pärast pisikaardil klõpsamist, või vaate muutmise käsu sisestamist. Sisse lüliitades liigub vaade sujuvalt, muidu hüppab vaade kohe sihtpunkti
+
 
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Näita ehitustarvikute kasutamisel mõõdistamisabi: {STRING}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP_HELPTEXT                     :Näitab ehitamise ajal kahe ruudu kaugus- ja kõrgusvahemikke
@@ -2216,8 +2219,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... män
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... eiratakse põhigraafika komplekti «{STRING}»: ei leitud
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... eiratakse põhihelide komplekti «{STRING}»: ei leitud
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... eiratakse põhimuusika komplekti «{STRING}»: ei leitud
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Vahemälu on täis
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Pildipuhvri (ingl k «spritecache») suurendamine {BYTES} võrra ebaõnnestus. Pildipuhvri uus suurus on {BYTES}. Seetõttu on OpenTTD nüüd aeglasem. 32 bpp graafika keelamine ja suurendusastme ülempiirangu vähendamine piirab vahemälu tarbimist
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Videoseadete viga...
@@ -2833,6 +2834,7 @@ STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Lohistam
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Ehita jaam kasutades hiirega lohistamist
 
 STR_PICKER_MODE_ALL                                             :Kõik
+
 
 STR_PICKER_ROADSTOP_TRUCK_CLASS_TOOLTIP                         :Vali, milliseid veoautojaamu näidatakse
 STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :Vali näidatud asulaosa
@@ -3486,15 +3488,12 @@ STR_SAVE_PRESET_CAPTION                                         :{WHITE}Salvesta
 STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}Võimalike eeltöötluste nimekiri, vali üks et see kopeerida allpool asuvasse salvestuse nimesse
 STR_SAVE_PRESET_TITLE                                           :{BLACK}Sisesta eelseadistuse nimi
 STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}Hetkel eelseadistusele valitud nimi
-STR_SAVE_PRESET_CANCEL                                          :{BLACK}Tühista
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}Ära muuda eelseadistust
 STR_SAVE_PRESET_SAVE                                            :{BLACK}Salvesta
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}Salvesta eelseadistus praegusele valitud nimele
 
 # NewGRF parameters window
 STR_BASEGRF_PARAMETERS_CAPTION                                  :{WHITE}Muuda põhigraafika komplekti parameetreid
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}Muuda NewGRF parameetreid
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Sulge
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}Nulli
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}Säti kõikidele parameetritele vaikeväärtused
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :Parameeter {NUM}
@@ -4838,8 +4837,6 @@ STR_AI_LIST_URL                                                 :{LTBLUE}URL: {O
 
 STR_AI_LIST_ACCEPT                                              :{BLACK}Nõustu
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Vali esiletõstetud skript
-STR_AI_LIST_CANCEL                                              :{BLACK}Loobu
-STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Ära skripti muuda
 
 STR_SCREENSHOT_CAPTION                                          :{WHITE}Tee ekraanipilt
 STR_SCREENSHOT_SCREENSHOT                                       :{BLACK}Tavaline ekraanipilt
@@ -4852,7 +4849,6 @@ STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Pisikaar
 # Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :AI
 STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :GameScript
-STR_AI_SETTINGS_CLOSE                                           :{BLACK}Sulge
 STR_AI_SETTINGS_RESET                                           :{BLACK}Nulli
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
 

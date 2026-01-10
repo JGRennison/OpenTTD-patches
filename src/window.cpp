@@ -652,12 +652,18 @@ static void DispatchLeftClickEvent(Window *w, int x, int y, int click_count)
 	WidgetType widget_type = (nw != nullptr) ? nw->type : WWT_EMPTY;
 
 	bool focused_widget_changed = false;
+
 	/* If clicked on a window that previously did not have focus */
-	if (_focused_window != w &&                 // We already have focus, right?
-			!w->window_desc.flags.Test(WindowDefaultFlag::NoFocus) &&  // Don't lose focus to toolbars
-			widget_type != WWT_CLOSEBOX) {          // Don't change focused window if 'X' (close button) was clicked
-		focused_widget_changed = true;
-		SetFocusedWindow(w);
+	if (_focused_window != w) {
+		/* Don't switch focus to an unfocusable window, or if the 'X' (close button) was clicked. */
+		if (!w->window_desc.flags.Test(WindowDefaultFlag::NoFocus) && widget_type != WWT_CLOSEBOX) {
+			focused_widget_changed = true;
+			SetFocusedWindow(w);
+		} else if (_focused_window != nullptr && _focused_window->window_class == WC_DROPDOWN_MENU) {
+			/* The previously focused window was a dropdown menu, but the user clicked on another window that
+			 * isn't focusable. Close the dropdown menu anyway. */
+			SetFocusedWindow(nullptr);
+		}
 	}
 
 	if (nw == nullptr) return; // exit if clicked outside of widgets
@@ -855,7 +861,10 @@ static void DispatchMouseWheelEvent(Window *w, NWidgetCore *nwid, int wheel)
 	if (nwid->type == NWID_VSCROLLBAR) {
 		NWidgetScrollbar *sb = static_cast<NWidgetScrollbar *>(nwid);
 		if (sb->GetCount() > sb->GetCapacity()) {
-			if (sb->UpdatePosition(wheel)) w->SetDirty();
+			if (sb->UpdatePosition(wheel)) {
+				w->OnScrollbarScroll(nwid->GetIndex());
+				w->SetDirty();
+			}
 		}
 		return;
 	}
@@ -863,7 +872,10 @@ static void DispatchMouseWheelEvent(Window *w, NWidgetCore *nwid, int wheel)
 	/* Scroll the widget attached to the scrollbar. */
 	Scrollbar *sb = (nwid->GetScrollbarIndex() >= 0 ? w->GetScrollbar(nwid->GetScrollbarIndex()) : nullptr);
 	if (sb != nullptr && sb->GetCount() > sb->GetCapacity()) {
-		if (sb->UpdatePosition(wheel)) w->SetDirty();
+		if (sb->UpdatePosition(wheel)) {
+			w->OnScrollbarScroll(nwid->GetScrollbarIndex());
+			w->SetDirty();
+		}
 	}
 }
 
@@ -2532,7 +2544,10 @@ static void HandleScrollbarScrolling(Window *w)
 	if (sb->disp_flags.Any({NWidgetDisplayFlag::ScrollbarUp, NWidgetDisplayFlag::ScrollbarDown})) {
 		if (_scroller_click_timeout == 1) {
 			_scroller_click_timeout = 3;
-			if (sb->UpdatePosition(rtl == sb->disp_flags.Test(NWidgetDisplayFlag::ScrollbarUp) ? 1 : -1)) w->SetDirty();
+			if (sb->UpdatePosition(rtl == sb->disp_flags.Test(NWidgetDisplayFlag::ScrollbarUp) ? 1 : -1)) {
+				w->OnScrollbarScroll(w->mouse_capture_widget);
+				w->SetDirty();
+			}
 		}
 		return;
 	}
@@ -2543,7 +2558,10 @@ static void HandleScrollbarScrolling(Window *w)
 
 	int pos = RoundDivSU((i + _scrollbar_start_pos) * range, std::max(1, _scrollbar_size));
 	if (rtl) pos = range - pos;
-	if (sb->SetPosition(pos)) w->SetDirty();
+	if (sb->SetPosition(pos)) {
+		w->OnScrollbarScroll(w->mouse_capture_widget);
+		w->SetDirty();
+	}
 }
 
 /**
@@ -3302,11 +3320,20 @@ void InputLoop()
 	HandleMouseEvents();
 }
 
+static std::chrono::time_point<std::chrono::steady_clock> _realtime_tick_start;
+
+bool CanContinueRealtimeTick()
+{
+	auto now = std::chrono::steady_clock::now();
+	return std::chrono::duration_cast<std::chrono::milliseconds>(now - _realtime_tick_start).count() < (MILLISECONDS_PER_TICK * 3 / 4);
+}
+
 /**
  * Dispatch OnRealtimeTick event over all windows
  */
 void CallWindowRealtimeTickEvent(uint delta_ms)
 {
+	_realtime_tick_start = std::chrono::steady_clock::now();
 	for (Window *w : Window::Iterate()) {
 		w->OnRealtimeTick(delta_ms);
 	}

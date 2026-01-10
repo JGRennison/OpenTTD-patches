@@ -23,32 +23,33 @@
 struct Train;
 
 /** Rail vehicle flags. */
-enum VehicleRailFlags : uint8_t {
-	VRF_REVERSING                     = 0,
-	VRF_WAITING_RESTRICTION           = 1, ///< Train is waiting due to a routing restriction, only valid when VRF_TRAIN_STUCK is also set.
+enum VehicleRailFlag : uint8_t {
+	Reversing                 = 0,  ///< Train is slowing down to reverse.
+	WaitingRestriction        = 1,  ///< Train is waiting due to a routing restriction, only valid when VehicleRailFlag::Stuck is also set.
 	/* gap, was VRF_HAVE_SLOT */
-	VRF_POWEREDWAGON                  = 3, ///< Wagon is powered.
-	VRF_REVERSE_DIRECTION             = 4, ///< Reverse the visible direction of the vehicle.
-	VRF_HAS_HIT_RV                    = 5, ///< Train has hit road vehicle
-	VRF_EL_ENGINE_ALLOWED_NORMAL_RAIL = 6, ///< Electric train engine is allowed to run on normal rail. */
-	VRF_TOGGLE_REVERSE                = 7, ///< Used for vehicle var 0xFE bit 8 (toggled each time the train is reversed, accurate for first vehicle only).
-	VRF_TRAIN_STUCK                   = 8, ///< Train can't get a path reservation.
-	VRF_LEAVING_STATION               = 9, ///< Train is just leaving a station.
-	VRF_BREAKDOWN_BRAKING             = 10,///< used to mark a train that is braking because it is broken down
-	VRF_BREAKDOWN_POWER               = 11,///< used to mark a train in which the power of one (or more) of the engines is reduced because of a breakdown
-	VRF_BREAKDOWN_SPEED               = 12,///< used to mark a train that has a reduced maximum speed because of a breakdown
-	VRF_BREAKDOWN_STOPPED             = 13,///< used to mark a train that is stopped because of a breakdown
-	VRF_NEED_REPAIR                   = 14,///< used to mark a train that has a reduced maximum speed because of a critical breakdown
-	VRF_BEYOND_PLATFORM_END           = 16,
-	VRF_NOT_YET_IN_PLATFORM           = 17,
-	VRF_ADVANCE_IN_PLATFORM           = 18,
-	VRF_CONSIST_BREAKDOWN             = 19,///< one or more vehicles in this consist have a breakdown of some sort (breakdown_ctr != 0)
-	VRF_CONSIST_SPEED_REDUCTION       = 20,///< one or more vehicles in this consist may be in a depot or on a bridge (may be false positive but not false negative)
-	VRF_PENDING_SPEED_RESTRICTION     = 21,///< This vehicle has one or more pending speed restriction changes
-	VRF_SPEED_ADAPTATION_EXEMPT       = 22,///< This vehicle is exempt from train speed adaptation
+	PoweredWagon              = 3,  ///< Wagon is powered.
+	Flipped                   = 4,  ///< Reverse the visible direction of the vehicle.
+	HasHitRoadVehicle         = 5,  ///< Train has hit road vehicle
+	AllowedOnNormalRail       = 6,  ///< Electric train engine is allowed to run on normal rail.
+	Reversed                  = 7,  ///< Used for vehicle var 0xFE bit 8 (toggled each time the train is reversed, accurate for first vehicle only).
+	Stuck                     = 8,  ///< Train can't get a path reservation.
+	LeavingStation            = 9,  ///< Train is just leaving a station.
+	BreakdownBraking          = 10, ///< Train is braking because it is broken down.
+	BreakdownPower            = 11, ///< Train in which the power of one (or more) of the engines is reduced because of a breakdown.
+	BreakdownSpeed            = 12, ///< Train has a reduced maximum speed because of a breakdown.
+	BreakdownStopped          = 13, ///< Train is stopped because of a breakdown.
+	NeedRepair                = 14, ///< Train has a reduced maximum speed because of a critical breakdown.
+	BeyondPlatformEnd         = 16,
+	NotYetInPlatform          = 17,
+	AdvanceInPlatform         = 18,
+	ConsistBreakdown          = 19, ///< One or more vehicles in this consist have a breakdown of some sort (breakdown_ctr != 0).
+	ConsistSpeedReduction     = 20, ///< One or more vehicles in this consist may be in a depot or on a bridge (may be false positive but not false negative).
+	PendingSpeedRestriction   = 21, ///< This vehicle has one or more pending speed restriction changes.
+	SpeedAdaptationExempt     = 22, ///< This vehicle is exempt from train speed adaptation.
 };
+using VehicleRailFlags = EnumBitSet<VehicleRailFlag, uint32_t>;
 
-static constexpr uint32_t VRF_IS_BROKEN = (1 << VRF_BREAKDOWN_POWER) | (1 << VRF_BREAKDOWN_SPEED) | (1 << VRF_BREAKDOWN_STOPPED); ///< Bitmask of all flags that indicate a broken train (braking is not included)
+static constexpr VehicleRailFlags VehicleRailFlagsIsBroken{VehicleRailFlag::BreakdownPower, VehicleRailFlag::BreakdownSpeed, VehicleRailFlag::BreakdownStopped}; ///< Bitmask of all flags that indicate a broken train (braking is not included)
 
 /** Modes for ignoring signals. */
 enum TrainForceProceeding : uint8_t {
@@ -152,7 +153,7 @@ struct TrainCache {
  */
 struct Train final : public GroundVehicle<Train, VEH_TRAIN> {
 	TrackBits track{};
-	uint32_t flags = 0;
+	VehicleRailFlags flags{};
 	TrainCache tcache{};
 
 	/* Link between the two ends of a multiheaded engine */
@@ -296,7 +297,7 @@ public:
 	const Train *GetStationLoadingVehicle() const
 	{
 		const Train *v = this->First();
-		while (v && HasBit(v->flags, VRF_BEYOND_PLATFORM_END)) v = v->Next();
+		while (v != nullptr && v->flags.Test(VehicleRailFlag::BeyondPlatformEnd)) v = v->Next();
 		return v;
 	}
 
@@ -329,7 +330,7 @@ public:
 		}
 
 		/* Powered wagons have extra weight added. */
-		if (HasBit(this->flags, VRF_POWEREDWAGON)) {
+		if (this->flags.Test(VehicleRailFlag::PoweredWagon)) {
 			weight += RailVehInfo(this->gcache.first_engine)->pow_wag_weight;
 		}
 
@@ -408,7 +409,7 @@ protected: // These functions should not be called outside acceleration code.
 	inline uint16_t GetPoweredPartPower(const Train *head) const
 	{
 		/* For powered wagons the engine defines the type of engine (i.e. railtype) */
-		if (HasBit(this->flags, VRF_POWEREDWAGON) && (head->IsVirtual() || HasPowerOnRail(head->railtypes, GetRailTypeByTrackBit(this->tile, this->track)))) {
+		if (this->flags.Test(VehicleRailFlag::PoweredWagon) && (head->IsVirtual() || HasPowerOnRail(head->railtypes, GetRailTypeByTrackBit(this->tile, this->track)))) {
 			return RailVehInfo(this->gcache.first_engine)->pow_wag_power;
 		}
 
@@ -464,7 +465,7 @@ protected: // These functions should not be called outside acceleration code.
 	 */
 	inline AccelStatus GetAccelerationStatus() const
 	{
-		return (this->vehstatus.Test(VehState::Stopped) || HasBit(this->flags, VRF_REVERSING) || HasBit(this->flags, VRF_TRAIN_STUCK) || HasBit(this->flags, VRF_BREAKDOWN_BRAKING)) ? AS_BRAKE : AS_ACCEL;
+		return (this->vehstatus.Test(VehState::Stopped) || this->flags.Any({VehicleRailFlag::Reversing, VehicleRailFlag::Stuck, VehicleRailFlag::BreakdownBraking})) ? AS_BRAKE : AS_ACCEL;
 	}
 
 	/**

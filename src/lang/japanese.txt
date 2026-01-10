@@ -936,7 +936,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :通貨単位
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :通貨単位の選択
 
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :英ポンド
 STR_GAME_OPTIONS_CURRENCY_USD                                   :米ドル
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :欧州連合・ユーロ
@@ -1222,6 +1222,7 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :借入利率を
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :維持費: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :車両や施設のメンテナンスコストを設定します
+###length 3
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :建設速度: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :AIの建設速度を設定します
@@ -1242,6 +1243,7 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :補助金なし
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :建設費: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :建設・購入費用のレベルを設定します
+###length 3
 
 STR_CONFIG_SETTING_RECESSIONS                                   :景気後退: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :設定を有効にすると数年おきに短期間、景気の後退が起こる可能性が出ます。景気後退の間はすべての生産がかなりの落ち込みを見せます (景気後退が終わると元のレベルに戻ります)。
@@ -1565,6 +1567,7 @@ STR_CONFIG_SETTING_SCROLLMODE_LMB                               :左クリック
 
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :画面のスムーズスクロール: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :ミニマップでの移動や「現在位置に移動」などのコマンドを使用した際にメイン画面がどのように移動するかを設定します。有効にした場合はスムーズにスクロールして移動します。無効の場合は目的地に直接ジャンプします
+
 
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :測定ツールチップ表示: {STRING}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP_HELPTEXT                     :タイルをまたぐような建設活動の際に、距離や面積、高低差などの情報を表示するようになります
@@ -2061,8 +2064,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}デー�
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}ファイルが見つからないため、基本グラフィックセット'{STRING}'は読み込まれませんでした
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}ファイルが見つからないため、基本効果音セット '{STRING}'は読み込まれませんでした
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}ファイルが見つからないため、基本音楽セット'{STRING}'は読み込まれませんでした
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}メモリー不足
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}スプライトキャッシュ中、{BYTES}の割り当てに失敗しました。スプライトキャッシュは{BYTES}に減ったため、OpenTTDの処理速度が低下する恐れがあります。必要メモリ量を減らすには32bitグラフィックを無効にするか、最大ズームイン・ズームアウトのレベルを下げてください
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}ビデオ設定にエラーがあります...
@@ -2070,7 +2071,7 @@ STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... 対�
 STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :{WHITE}... GPUドライバーがゲームをクラッシュさせました。ハードウェアアクセラレーションは無効になりました
 
 # Intro window
-STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
+STR_INTRO_CAPTION                                               :{WHITE}OpenTTD
 
 STR_INTRO_NEW_GAME                                              :{BLACK}新しいゲーム
 STR_INTRO_LOAD_GAME                                             :{BLACK}ロード
@@ -2651,6 +2652,7 @@ STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}任意�
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}ドラッグ&ドロップで任意のサイズの駅を建設します
 
 STR_PICKER_MODE_ALL                                             :すべて
+
 
 
 
@@ -3279,14 +3281,11 @@ STR_SAVE_PRESET_CAPTION                                         :{WHITE}プリ�
 STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}使用可能なプリセットの一覧です。選択すると下のセーブ名のプリセットに内容をコピーします
 STR_SAVE_PRESET_TITLE                                           :{BLACK}プリセット名を入力
 STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}現在選択している名前をプリセットの保存に使用します
-STR_SAVE_PRESET_CANCEL                                          :{BLACK}キャンセル
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}プリセットを変更しません
 STR_SAVE_PRESET_SAVE                                            :{BLACK}セーブ
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}現在選択している名前でプリセットを保存します
 
 # NewGRF parameters window
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}NewGRFパラメータの変更
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}閉じる
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}リセット
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}全パラメータを標準値に変更する
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :パラメーター {NUM}
@@ -4566,8 +4565,6 @@ STR_AI_LIST_URL                                                 :{LTBLUE}URL: {O
 
 STR_AI_LIST_ACCEPT                                              :{BLACK}適用
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}選択したスクリプトを使用します
-STR_AI_LIST_CANCEL                                              :{BLACK}キャンセル
-STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}スクリプトを変更しません
 
 STR_SCREENSHOT_CAPTION                                          :{WHITE}スクリーンショットを撮る
 STR_SCREENSHOT_SCREENSHOT                                       :{BLACK}通常のスクリーンショット
@@ -4580,7 +4577,6 @@ STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}ミニ�
 # Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}AIのパラメーター
 STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :{WHITE}ゲームスクリプトのパラメーター
-STR_AI_SETTINGS_CLOSE                                           :{BLACK}閉じる
 STR_AI_SETTINGS_RESET                                           :{BLACK}リセット
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
 

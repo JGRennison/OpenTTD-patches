@@ -299,7 +299,7 @@ static void RealChangeBlitter(std::string_view repl_blitter)
 
 	/* Clear caches that might have sprites for another blitter. */
 	VideoDriver::GetInstance()->ClearSystemSprites();
-	ClearFontCache();
+	ClearFontCache(FONTSIZES_ALL);
 	GfxClearSpriteCache();
 	ReInitAllWindows(false);
 }
@@ -380,7 +380,7 @@ void CheckBlitter()
 {
 	if (!SwitchNewGRFBlitter()) return;
 
-	ClearFontCache();
+	ClearFontCache(FONTSIZES_ALL);
 	GfxClearSpriteCache();
 	ReInitAllWindows(false);
 }
@@ -478,7 +478,7 @@ void GfxLoadSprites()
 
 	SwitchNewGRFBlitter();
 	VideoDriver::GetInstance()->ClearSystemSprites();
-	ClearFontCache();
+	ClearFontCache(FONTSIZES_ALL);
 	GfxInitSpriteMem();
 	GfxInitPalettes();
 	LoadSpriteTables();
@@ -682,7 +682,7 @@ template <>
 
 	const GraphicsSet *best = nullptr;
 
-	auto IsBetter = [&best] (const auto *current) {
+	auto IsBetter = [&best] (const GraphicsSet *current) {
 		/* Nothing chosen yet. */
 		if (best == nullptr) return true;
 		/* Not being a fallback is better. */
@@ -697,11 +697,11 @@ template <>
 		return best->palette != PAL_DOS && current->palette == PAL_DOS;
 	};
 
-	for (const GraphicsSet *c = BaseMedia<GraphicsSet>::available_sets; c != nullptr; c = c->next) {
+	for (const auto &c : BaseMedia<GraphicsSet>::available_sets) {
 		/* Skip unusable sets */
 		if (c->GetNumMissing() != 0) continue;
 
-		if (IsBetter(c)) best = c;
+		if (IsBetter(c.get())) best = c.get();
 	}
 
 	BaseMedia<GraphicsSet>::used_set = best;

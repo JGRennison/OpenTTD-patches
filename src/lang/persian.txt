@@ -916,7 +916,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :انتخاب و
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :پوند
 STR_GAME_OPTIONS_CURRENCY_USD                                   :دلار
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :یورو
@@ -1178,6 +1178,7 @@ STR_CONFIG_SETTING_MAXIMUM_INITIAL_LOAN                         :حداکثر ا
 STR_CONFIG_SETTING_INTEREST_RATE                                :نرخ سود: {STRING}
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :هزینه نگهداری: {STRING}
+###length 3
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :سرعت ساخت و ساز: {STRING}
 
@@ -1190,6 +1191,7 @@ STR_CONFIG_SETTING_SUBSIDY_MULTIPLIER                           :ضریب سوب
 ###setting-zero-is-special
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :هزینه های ساخت و ساز: {STRING}
+###length 3
 
 
 
@@ -1435,6 +1437,7 @@ STR_CONFIG_SETTING_LINKGRAPH_COLOURS_GREYSCALE                  :مقیاس خا
 ###length 4
 
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :تصویر صاف در نمای اضافه: {STRING}
+
 
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :نمایش متن کمکی وقتی از چندین ابزار استفاده می شود: {STRING}
 
@@ -1771,7 +1774,7 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... قا
 # Video initalization errors
 
 # Intro window
-STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
+STR_INTRO_CAPTION                                               :{WHITE}OpenTTD
 
 STR_INTRO_NEW_GAME                                              :{BLACK}بازی جدید
 STR_INTRO_LOAD_GAME                                             :{BLACK}بارگذاری بازی های ذخیره شده
@@ -2287,6 +2290,7 @@ STR_PICKER_MODE_USED                                            :استفاده 
 STR_PICKER_MODE_USED_TOOLTIP                                    :فعال / غیرفعال کردن نمایش فقط موارد موجود
 STR_PICKER_MODE_SAVED                                           :ذخیره شده
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :فعال / غیرفعال کردن نمایش فقط موارد ذخیر شده
+
 
 
 STR_HOUSE_PICKER_CAPTION                                        :انتخاب خانه
@@ -2877,14 +2881,11 @@ STR_SAVE_PRESET_CAPTION                                         :{WHITE}ذخیر
 STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}لیست های موجود،برای کپی یکی را انتخاب کنید
 STR_SAVE_PRESET_TITLE                                           :{BLACK}یک نام برای لیست وارد کنید
 STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}لیست انتخاب شده برای ذخیره
-STR_SAVE_PRESET_CANCEL                                          :{BLACK}لغو
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}تغییر ندادن لیست
 STR_SAVE_PRESET_SAVE                                            :{BLACK}ذخیره
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}ذخیره لیست در نام انتخاب شده
 
 # NewGRF parameters window
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}تغییر پارامترهای NewGRF
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}بسته
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}برگرداندن تغییرات
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}ثبت مقدار پیش فرض برای همه پارامترها
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :پارامتر{NUM}
@@ -3820,13 +3821,10 @@ STR_AI_LIST_URL                                                 :{LTBLUE}آدر�
 
 STR_AI_LIST_ACCEPT                                              :{BLACK}قبول
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}انتخاب کد مشخص شده
-STR_AI_LIST_CANCEL                                              :{BLACK}لغو
-STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}کد را تغییر نده
 
 
 # Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :هوش مصنوعی(AI)
-STR_AI_SETTINGS_CLOSE                                           :{BLACK}بستن
 STR_AI_SETTINGS_RESET                                           :{BLACK}بازنشاندن
 
 

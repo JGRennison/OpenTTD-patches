@@ -347,21 +347,17 @@ static bool PadSprites(SpriteLoader::SpriteCollection &sprite, LowZoomLevels spr
 	/* Get minimum top left corner coordinates. */
 	int min_xoffs = INT32_MAX;
 	int min_yoffs = INT32_MAX;
-	for (ZoomLevel zoom = ZoomLevel::Begin; zoom != ZoomLevel::SpriteEnd; zoom++) {
-		if (sprite_avail.Test(zoom)) {
-			min_xoffs = std::min(min_xoffs, ScaleByZoom(sprite[zoom].x_offs, zoom));
-			min_yoffs = std::min(min_yoffs, ScaleByZoom(sprite[zoom].y_offs, zoom));
-		}
+	for (ZoomLevel zoom : sprite_avail.IterateSetBits()) {
+		min_xoffs = std::min(min_xoffs, ScaleByZoom(sprite[zoom].x_offs, zoom));
+		min_yoffs = std::min(min_yoffs, ScaleByZoom(sprite[zoom].y_offs, zoom));
 	}
 
 	/* Get maximum dimensions taking necessary padding at the top left into account. */
 	int max_width  = INT32_MIN;
 	int max_height = INT32_MIN;
-	for (ZoomLevel zoom = ZoomLevel::Begin; zoom != ZoomLevel::SpriteEnd; zoom++) {
-		if (sprite_avail.Test(zoom)) {
-			max_width  = std::max(max_width, ScaleByZoom(sprite[zoom].width + sprite[zoom].x_offs - UnScaleByZoom(min_xoffs, zoom), zoom));
-			max_height = std::max(max_height, ScaleByZoom(sprite[zoom].height + sprite[zoom].y_offs - UnScaleByZoom(min_yoffs, zoom), zoom));
-		}
+	for (ZoomLevel zoom : sprite_avail.IterateSetBits()) {
+		max_width  = std::max(max_width, ScaleByZoom(sprite[zoom].width + sprite[zoom].x_offs - UnScaleByZoom(min_xoffs, zoom), zoom));
+		max_height = std::max(max_height, ScaleByZoom(sprite[zoom].height + sprite[zoom].y_offs - UnScaleByZoom(min_yoffs, zoom), zoom));
 	}
 
 	/* Align height and width if required to match the needs of the sprite encoder. */
@@ -372,19 +368,17 @@ static bool PadSprites(SpriteLoader::SpriteCollection &sprite, LowZoomLevels spr
 	}
 
 	/* Pad sprites where needed. */
-	for (ZoomLevel zoom = ZoomLevel::Begin; zoom != ZoomLevel::SpriteEnd; zoom++) {
-		if (sprite_avail.Test(zoom)) {
-			auto &cur_sprite = sprite[zoom];
-			/* Scaling the sprite dimensions in the blitter is done with rounding up,
-			 * so a negative padding here is not an error. */
-			int pad_left   = std::max(0, cur_sprite.x_offs - UnScaleByZoom(min_xoffs, zoom));
-			int pad_top    = std::max(0, cur_sprite.y_offs - UnScaleByZoom(min_yoffs, zoom));
-			int pad_right  = std::max(0, UnScaleByZoom(max_width, zoom) - cur_sprite.width - pad_left);
-			int pad_bottom = std::max(0, UnScaleByZoom(max_height, zoom) - cur_sprite.height - pad_top);
+	for (ZoomLevel zoom : sprite_avail.IterateSetBits()) {
+		auto &cur_sprite = sprite[zoom];
+		/* Scaling the sprite dimensions in the blitter is done with rounding up,
+		 * so a negative padding here is not an error. */
+		int pad_left   = std::max(0, cur_sprite.x_offs - UnScaleByZoom(min_xoffs, zoom));
+		int pad_top    = std::max(0, cur_sprite.y_offs - UnScaleByZoom(min_yoffs, zoom));
+		int pad_right  = std::max(0, UnScaleByZoom(max_width, zoom) - cur_sprite.width - pad_left);
+		int pad_bottom = std::max(0, UnScaleByZoom(max_height, zoom) - cur_sprite.height - pad_top);
 
-			if (pad_left > 0 || pad_right > 0 || pad_top > 0 || pad_bottom > 0) {
-				if (!PadSingleSprite(&cur_sprite, zoom, pad_left, pad_top, pad_right, pad_bottom)) return false;
-			}
+		if (pad_left > 0 || pad_right > 0 || pad_top > 0 || pad_bottom > 0) {
+			if (!PadSingleSprite(&cur_sprite, zoom, pad_left, pad_top, pad_right, pad_bottom)) return false;
 		}
 	}
 
@@ -605,7 +599,7 @@ static void *ReadSprite(const SpriteCache *sc, SpriteID id, SpriteType sprite_ty
 	}
 
 	if (sprite_type == SpriteType::Font && _font_zoom != ZoomLevel::Min) {
-		/* Make ZoomLevel::Min be ZOOM_LVL_GUI */
+		/* Make ZoomLevel::Min the desired font zoom level. */
 		sprite[ZoomLevel::Min] = sprite[_font_zoom];
 	}
 
@@ -933,7 +927,7 @@ void *CacheSpriteAllocator::AllocatePtr(size_t mem_req)
 
 void *UniquePtrSpriteAllocator::AllocatePtr(size_t size)
 {
-	this->data = std::make_unique<uint8_t[]>(size);
+	this->data = std::make_unique<std::byte[]>(size);
 	return this->data.get();
 }
 

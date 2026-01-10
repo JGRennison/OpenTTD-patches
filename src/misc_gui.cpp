@@ -1271,6 +1271,16 @@ void ShowQueryString(std::string_view str, EncodedString &&caption, uint maxsize
 }
 
 /**
+ * Updates default text value of query string window.
+ * @param str String for the default text shown in the textbox.
+ */
+void UpdateQueryStringDefault(std::string_view str)
+{
+	QueryStringWindow<1> *w = dynamic_cast<QueryStringWindow<1> *>(FindWindowByClass(WC_QUERY_STRING));
+	if (w != nullptr) w->editboxes[0].orig = str;
+}
+
+/**
  * Window used for asking the user a YES/NO question.
  */
 struct QueryWindow : public Window {

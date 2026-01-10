@@ -1062,7 +1062,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :Aonadan airgead
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :Tagh aonadan airgeadra
 
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Not Breatannach
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Dolar Aimeireaganach
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Eòro
@@ -1306,6 +1306,7 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Luach-rèidh ia
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Cosgaisean ruith: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Suidhich ìre nan cosgaisean ruith is obrach-càraidh aig carbadan is a' bhun-structar
+###length 3
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Luaths na togail: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Cuingich meud nan gnìomhan togail aig na IFan
@@ -1322,6 +1323,7 @@ STR_CONFIG_SETTING_SUBSIDY_MULTIPLIER_HELPTEXT                  :Suidhich na th�
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Cosgaisean togail: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Suidhich ìre nan cosgaisean togail is ceannachd
+###length 3
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Crìonaidhean eaconamaidh: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Ma tha seo air, faodaidh crìonadh eaconamaidh tachairt gach beagan bhliadhnaichean. Rè crìonaidh eaconamaidh, tha a h-uile toradh mòran nas ìsle (tillidh e dhan ìre roimhe nuair a bhios an crìonadh eaconamaidh seachad)
@@ -1615,6 +1617,7 @@ STR_CONFIG_SETTING_SCROLLMODE_RMB                               :Gluais am mapa 
 
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Sgroladh mìn nam port-seallaidh: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Tagh mar a ghluaiseas am prìomh-shealladh gu ionad sònraichte. Ma tha seo dheth, thèid leum dhan ionad a chaidh a thaghadh sa bhad
+
 
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Seall gliocasan-sgrìn tomhais le innealan togail: {STRING}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP_HELPTEXT                     :Seall faide eadar leacan is diofar an àirde nuair a nì thu slaodadh fhad ’s a bhios tu a' togail rudeigin
@@ -2060,8 +2063,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... chan
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... a' leigeil seachad an seata grafaigeachd bunasach “{STRING}": cha deach a lorg
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... a' leigeil seachad an seata fuaime bunasach “{STRING}": cha deach a lorg
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... a' leigeil seachad an seata ciùil bunasach “{STRING}": cha deach a lorg
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Chan eil cuimhne gu leòr agad
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Dh'fhàillig le sònrachadh aig {BYTES} dhe thasgadan nam sprites. Chaidh tasgadan nam sprites a lùghdachadh gu {BYTES}. Le sin, bidh an dèanadas aig OpenTTD nas lugha. Gus nach bidh feum ann airson a leithid dhe chuimhne, feuch an cuir thu grafaigeachd 32bpp is/no leibheilean sùmaidh à comas
 
 # Video initalization errors
 
@@ -2559,6 +2560,7 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}Faide na
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Tagh dè cho fad ’s a bhios an stèisean
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Slaod is leig às
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Tog stèisean le slaodadh is leigeil às
+
 
 
 
@@ -3130,14 +3132,11 @@ STR_SAVE_PRESET_CAPTION                                         :{WHITE}Sàbhail
 STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}Liosta dhe na ro-shocrachaidhean ri làimh, tagh fear gus lethbhreac dheth a chur gun ainm sàbhalaidh gu h-ìosal
 STR_SAVE_PRESET_TITLE                                           :{BLACK}Cuir a-steach ainm an ro-shocrachaidh
 STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}An t-ainm a chaidh a thaghadh an-dràsta gus an ro-shocrachadh a shàbhaladh ann
-STR_SAVE_PRESET_CANCEL                                          :{BLACK}Sguir dheth
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}Na atharraich an ro-shocrachadh
 STR_SAVE_PRESET_SAVE                                            :{BLACK}Sàbhail
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}Sàbhail an ro-shocrachadh dhan ainm air a thaghadh an-dràsta
 
 # NewGRF parameters window
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}Atharraich paramadairean NewGRF
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Dùin
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}Ath-shuidhich
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}Suidhich a h-uile paramadair air a luach tùsail
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :Paramadair {NUM}
@@ -4303,13 +4302,10 @@ STR_AI_LIST_URL                                                 :{LTBLUE}URL: {O
 
 STR_AI_LIST_ACCEPT                                              :{BLACK}Gabh ris
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Cleachd an sgriobt a thagh thu
-STR_AI_LIST_CANCEL                                              :{BLACK}Sguir dheth
-STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Na atharraich an sgriobt
 
 
 # Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :IF
-STR_AI_SETTINGS_CLOSE                                           :{BLACK}Dùin
 STR_AI_SETTINGS_RESET                                           :{BLACK}Ath-shuidhich
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
 

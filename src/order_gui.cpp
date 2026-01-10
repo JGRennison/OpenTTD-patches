@@ -2101,8 +2101,12 @@ public:
 				/* FALL THROUGH */
 
 			case WID_O_SEL_OCCUPANCY:
-			case WID_O_ORDER_LIST:
 				resize.height = GetCharacterHeight(FS_NORMAL);
+				size.height = 6 * resize.height + padding.height;
+				break;
+
+			case WID_O_ORDER_LIST:
+				fill.height = resize.height = GetCharacterHeight(FS_NORMAL);
 				size.height = 6 * resize.height + padding.height;
 				break;
 

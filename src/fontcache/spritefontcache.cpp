@@ -43,26 +43,26 @@ SpriteFontCache::SpriteFontCache(FontSize fs) : FontCache(fs)
 }
 
 /**
- * Get SpriteID associated with a GlyphID.
- * @param key Glyph to find.
- * @return SpriteID of glyph, or 0 if not present.
+ * Get SpriteID associated with a character.
+ * @param key Character to find.
+ * @return SpriteID for character, or 0 if not present.
  */
-SpriteID SpriteFontCache::GetUnicodeGlyph(GlyphID key)
+SpriteID SpriteFontCache::GetUnicodeGlyph(char32_t key)
 {
-	const auto found = this->glyph_to_spriteid_map.find(key & ~SPRITE_GLYPH);
-	if (found == std::end(this->glyph_to_spriteid_map)) return 0;
+	const auto found = this->char_map.find(key);
+	if (found == std::end(this->char_map)) return 0;
 	return found->second;
 }
 
 void SpriteFontCache::SetUnicodeGlyph(char32_t key, SpriteID sprite)
 {
-	this->glyph_to_spriteid_map[key] = sprite;
+	this->char_map[key] = sprite;
 }
 
 void SpriteFontCache::InitializeUnicodeGlyphMap()
 {
 	/* Clear out existing glyph map if it exists */
-	this->glyph_to_spriteid_map.clear();
+	this->char_map.clear();
 
 	SpriteID base;
 	switch (this->fs) {
@@ -104,14 +104,14 @@ void SpriteFontCache::ClearFontCache()
 
 const Sprite *SpriteFontCache::GetGlyph(GlyphID key)
 {
-	SpriteID sprite = this->GetUnicodeGlyph(static_cast<char32_t>(key & ~SPRITE_GLYPH));
+	SpriteID sprite = static_cast<SpriteID>(key & ~SPRITE_GLYPH);
 	if (sprite == 0) sprite = this->GetUnicodeGlyph('?');
 	return GetSprite(sprite, SpriteType::Font, {});
 }
 
 uint SpriteFontCache::GetGlyphWidth(GlyphID key)
 {
-	SpriteID sprite = this->GetUnicodeGlyph(static_cast<char32_t>(key & ~SPRITE_GLYPH));
+	SpriteID sprite = static_cast<SpriteID>(key & ~SPRITE_GLYPH);
 	if (sprite == 0) sprite = this->GetUnicodeGlyph('?');
 	return SpriteExists(sprite) ? GetSprite(sprite, SpriteType::Font, {})->width + ScaleFontTrad(this->fs != FS_NORMAL ? 1 : 0) : 0;
 }
@@ -121,7 +121,7 @@ GlyphID SpriteFontCache::MapCharToGlyph(char32_t key, [[maybe_unused]] bool allo
 	assert(IsPrintable(key));
 	SpriteID sprite = this->GetUnicodeGlyph(key);
 	if (sprite == 0) return 0;
-	return SPRITE_GLYPH | key;
+	return SPRITE_GLYPH | sprite;
 }
 
 bool SpriteFontCache::GetDrawGlyphShadow()

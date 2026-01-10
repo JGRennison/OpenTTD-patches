@@ -973,7 +973,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :Избор на
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Британска лира
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Американски долар
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Евро
@@ -1297,6 +1297,7 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Лихвен п
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Цени за опериране на превозните средства: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Задава ниво на цените за опериране и поддръжка на превозните средства и инфраструктурата
+###length 3
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Скорост на строителните дейности: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Ограничава количеството строителни дейности за ИИ
@@ -1318,6 +1319,7 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :Няма суб
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Цени на конструкции: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Задава ниво на конструиране и цени за закупуване
+###length 3
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Рецесии: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Ако е разрешено, рецесии може да се появяват на всеки няколко години. По време на рецесия цялото производство е значително намалено (връща се на предишно ниво след края на рецесията)
@@ -1663,6 +1665,7 @@ STR_CONFIG_SETTING_SCROLLMODE_LMB                               :Премест�
 
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Плавно местене на камера: {STRING.n}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Ако настройката е активирана, когато натиснете на малката карта, камерата ще се придвижи до тази позиция плавно. Ако не е активирана, камерата ще отиде там директно
+
 
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Подсказка за разстояние при строене: {STRING.f}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP_HELPTEXT                     :Показване на разстояните между полетата и разликите във височините им докато строите
@@ -2178,8 +2181,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... save
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... пропуска набора от основната графика '{STRING}': не е открит
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... пропуска набора от основни звуци '{STRING}': не е открит
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... пропруска набора от основни песни '{STRING}': не е открит
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Недостатъчно памет
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Разпределянето на {BYTES} от кеша за спрайтовете не бе успешно. Кешът за спрайтовете беше намален до {BYTES}. Това ще намали производителността на OpenTTD. За да намалите изискванията за памет, можете да опитате да деактивирате 32bpp графики и/или нивата на увеличение
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Грешка с видео настройките...
@@ -2800,6 +2801,7 @@ STR_PICKER_MODE_USED                                            :Използв�
 STR_PICKER_MODE_USED_TOOLTIP                                    :Превключване показването само на съществуващи обекти
 STR_PICKER_MODE_SAVED                                           :Записани
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :Превключване показването само на записани обекти
+
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Изберане на тип станция за показване
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Изберете тип станция за изграждане. Ctrl+Click, за да добавите или премахнете от запазените елементи
@@ -3473,15 +3475,12 @@ STR_SAVE_PRESET_CAPTION                                         :{WHITE}Запа
 STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}Списък на наличните предварително зададени настройки. Изберете една, за да я копирате в името за запис по-долу
 STR_SAVE_PRESET_TITLE                                           :{BLACK}Въведете име за шаблона
 STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}Текущо избраното име за именуване на шаблона
-STR_SAVE_PRESET_CANCEL                                          :{BLACK}Отказ
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}Не променяй шаблона
 STR_SAVE_PRESET_SAVE                                            :{BLACK}Запис
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}Запази шаблона с текущо избраното име
 
 # NewGRF parameters window
 STR_BASEGRF_PARAMETERS_CAPTION                                  :{WHITE}Промяна на параметрите на базовата графика
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}Промени параметрите на новите графики (NewGRF)
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Затвори
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}Изчисти
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}Върни всички параметри към началните им стойности
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :Параметър {NUM}
@@ -4831,8 +4830,6 @@ STR_AI_LIST_URL                                                 :{LTBLUE}URL: {O
 
 STR_AI_LIST_ACCEPT                                              :{BLACK}Приеми
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Изберете маркирания ИИ
-STR_AI_LIST_CANCEL                                              :{BLACK}Отмени
-STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Не променяй ИИ
 
 STR_SCREENSHOT_CAPTION                                          :{WHITE}Снимка на екрана
 STR_SCREENSHOT_SCREENSHOT                                       :{BLACK}Нормална снимка на екрана
@@ -4845,7 +4842,6 @@ STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Сним
 # Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :ИИ
 STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :Игрови скрипт
-STR_AI_SETTINGS_CLOSE                                           :{BLACK}Затвори
 STR_AI_SETTINGS_RESET                                           :{BLACK}Рестартиране
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
 

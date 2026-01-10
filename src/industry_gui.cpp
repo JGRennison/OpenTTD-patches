@@ -442,7 +442,7 @@ public:
 				for (const auto &indtype : this->list) {
 					d = maxdim(d, GetStringBoundingBox(GetIndustrySpec(indtype)->name));
 				}
-				resize.height = std::max<uint>({this->legend.height, d.height, count.height}) + padding.height;
+				fill.height = resize.height = std::max<uint>({this->legend.height, d.height, count.height}) + padding.height;
 				d.width += this->badge_classes.GetTotalColumnsWidth() + this->legend.width + WidgetDimensions::scaled.hsep_wide + WidgetDimensions::scaled.hsep_normal + count.width + padding.width;
 				d.height = 5 * resize.height;
 				size = maxdim(size, d);
@@ -1201,7 +1201,7 @@ public:
 		if (!str.has_value() || str->empty()) return;
 
 		Industry *i = Industry::Get(this->window_number);
-		auto value = ParseInteger(*str);
+		auto value = ParseInteger(*str, 10, true);
 		if (!value.has_value()) return;
 		switch (this->editbox_line) {
 			case IL_NONE: NOT_REACHED();
@@ -1379,10 +1379,6 @@ static bool CargoFilter(const Industry * const *industry, const std::pair<CargoT
 
 static GUIIndustryList::FilterFunction * const _industry_filter_funcs[] = { &CargoFilter };
 
-/** Enum referring to the Hotkeys in the industry directory window */
-enum IndustryDirectoryHotkeys : int32_t {
-	IDHK_FOCUS_FILTER_BOX, ///< Focus the filter box
-};
 /**
  * The list of industries.
  */
@@ -1825,7 +1821,7 @@ public:
 
 			case WID_ID_INDUSTRY_LIST: {
 				Dimension d = GetStringBoundingBox(STR_INDUSTRY_DIRECTORY_NONE);
-				resize.height = d.height;
+				fill.height = resize.height = d.height;
 				d.height *= 5;
 				d.width += padding.width;
 				d.height += padding.height;
@@ -1962,24 +1958,11 @@ public:
 		}
 	}
 
-	EventState OnHotkey(int hotkey) override
-	{
-		switch (hotkey) {
-			case IDHK_FOCUS_FILTER_BOX:
-				this->SetFocusedWidget(WID_ID_FILTER);
-				SetFocusedWindow(this); // The user has asked to give focus to the text box, so make sure this window is focused.
-				break;
-			default:
-				return ES_NOT_HANDLED;
-		}
-		return ES_HANDLED;
-	}
-
 	static HotkeyList hotkeys;
 };
 
 static Hotkey industrydirectory_hotkeys[] = {
-	Hotkey('F', "focus_filter_box", IDHK_FOCUS_FILTER_BOX),
+	Hotkey('F', "focus_filter_box", WID_ID_FILTER),
 };
 HotkeyList IndustryDirectoryWindow::hotkeys("industrydirectory", industrydirectory_hotkeys);
 
@@ -2710,7 +2693,7 @@ struct IndustryCargoesWindow : public Window {
 	{
 		switch (widget) {
 			case WID_IC_PANEL:
-				resize.height = CargoesField::normal_height;
+				fill.height = resize.height = CargoesField::normal_height;
 				size.width = CargoesField::industry_width * 3 + CargoesField::cargo_field_width * 2 + WidgetDimensions::scaled.frametext.Horizontal();
 				size.height = CargoesField::small_height + 2 * resize.height + WidgetDimensions::scaled.frametext.Vertical();
 				break;

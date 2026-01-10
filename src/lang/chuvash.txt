@@ -465,7 +465,7 @@ STR_NEWS_MESSAGE_CAPTION                                        :{WHITE}Пӗлт
 
 
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_RUR                                   :Вырӑсла тенкӗ
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :Хӑй управ
@@ -574,6 +574,7 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :Сылтӑмр�
 ###setting-zero-is-special
 
 
+###length 3
 
 
 
@@ -582,6 +583,7 @@ STR_CONFIG_SETTING_HORIZONTAL_POS_RIGHT                         :Сылтӑмр�
 
 ###setting-zero-is-special
 
+###length 3
 
 
 
@@ -699,6 +701,7 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_GREEN                   :Симĕс
 ###length 4
 
 ###length 4
+
 
 
 
@@ -1066,6 +1069,7 @@ STR_CONTENT_DETAIL_VERSION                                      :{SILVER}Вер�
 
 
 
+
 # Signal window
 
 # Bridge selection window
@@ -1241,7 +1245,6 @@ STR_NEWGRF_SETTINGS_VERSION                                     :{BLACK}Верс
 # NewGRF save preset window
 
 # NewGRF parameters window
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Хуп
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}Сикӗ
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :Ӗнерленӳ {NUM}
 STR_NEWGRF_PARAMETERS_SETTING                                   :{STRING}: {ORANGE}{STRING}

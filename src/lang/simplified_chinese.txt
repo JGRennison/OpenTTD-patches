@@ -995,7 +995,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :选择货币单
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING}（{STRING}）
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :英镑
 STR_GAME_OPTIONS_CURRENCY_USD                                   :美元
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :欧元
@@ -1041,6 +1041,7 @@ STR_GAME_OPTIONS_CURRENCY_MYR                                   :马来西亚林
 STR_GAME_OPTIONS_CURRENCY_LVL                                   :拉脱维亚拉特
 STR_GAME_OPTIONS_CURRENCY_PTE                                   :葡萄牙埃斯库多
 STR_GAME_OPTIONS_CURRENCY_UAH                                   :乌克兰格里夫纳
+STR_GAME_OPTIONS_CURRENCY_VND                                   :越南盾
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :自动保存
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :选择自动保存周期
@@ -1314,6 +1315,10 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :贷款利率。
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :运营费用：{STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :设置载具的营运与维护成本水平
+###length 3
+STR_CONFIG_SETTING_RUNNING_COSTS_LOW                            :低
+STR_CONFIG_SETTING_RUNNING_COSTS_MEDIUM                         :适中
+STR_CONFIG_SETTING_RUNNING_COSTS_HIGH                           :高
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :建设速度：{STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :AI 建设频率的上限
@@ -1335,6 +1340,10 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :没有财政补
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :建设费用：{STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :设定建造的成本水平
+###length 3
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_LOW                       :低
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_MEDIUM                    :适中
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :高
 
 STR_CONFIG_SETTING_RECESSIONS                                   :经济衰退：{STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :启用时，经济衰退将每隔几经济周期发生一次。经济衰退时所有工业货物产量都将大幅下降，直至衰退结束为止
@@ -1680,6 +1689,9 @@ STR_CONFIG_SETTING_SCROLLMODE_LMB                               :鼠标左键移
 
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :平滑视角滚动：{STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :设置在缩略图上点击或者发出转到特定目标的命令时主视角的转换方式。启用时，视角平缓滚动，否则直接跳转到目标位置
+
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT                  :自动选择工具栏下拉菜单项目：{STRING}
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT_HELPTEXT         :选择工具栏下拉菜单的行为。关闭时，点选工具栏按钮后下拉菜单将保持常开，直到做出选择为止。启用时，将自动选取鼠标松开时指向的项目。
 
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :建设时显示测量数据：{STRING}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP_HELPTEXT                     :建设时显示距离格数和地形高差
@@ -2201,8 +2213,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}……�
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}……正忽略基础图形组“{STRING}”：未找到
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}……正忽略基础音效组“{STRING}”：未找到
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}……正忽略基础音乐组“{STRING}”：未找到
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}内存不足
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}无法分配 {BYTES} 的 Sprite 缓存。Sprite 缓存的大小已降至 {BYTES}。OpenTTD 的性能将受到影响。请尝试停用 32bpp 图形及／或减少放大倍数，以降低内存需求
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}图形设置错误……
@@ -2210,7 +2220,8 @@ STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}……�
 STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :{WHITE}……GPU 驱动程序导致游戏崩溃。硬件加速已禁用
 
 # Intro window
-STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
+STR_INTRO_CAPTION                                               :{WHITE}OpenTTD
+STR_INTRO_VERSION                                               :OpenTTD {REV}
 
 STR_INTRO_NEW_GAME                                              :{BLACK}新游戏
 STR_INTRO_LOAD_GAME                                             :{BLACK}读取存档
@@ -2828,6 +2839,11 @@ STR_PICKER_MODE_USED                                            :已使用
 STR_PICKER_MODE_USED_TOOLTIP                                    :切换为仅显示现有的项目
 STR_PICKER_MODE_SAVED                                           :已保存
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :切换为仅显示已保存的项目
+
+STR_PICKER_PREVIEW_SHRINK                                       :-
+STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :缩小预览图。按住 <Ctrl> 键点击以最小化
+STR_PICKER_PREVIEW_EXPAND                                       :+
+STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :放大预览图。按住 <Ctrl> 键点击以最大化
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :选择显示的车站类别
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :选择建造的车站类型。按住 <Ctrl> 键操作以保存或删除当前项目
@@ -3525,15 +3541,12 @@ STR_SAVE_PRESET_CAPTION                                         :{WHITE}保存�
 STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}可用的预设名称，请选择一个来复制到存档列表中
 STR_SAVE_PRESET_TITLE                                           :{BLACK}输入预设名称
 STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}保存预设值到当前选定的名称
-STR_SAVE_PRESET_CANCEL                                          :{BLACK}取消
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}不修改默认设置
 STR_SAVE_PRESET_SAVE                                            :{BLACK}保存
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}以当前选定的名称保存预设
 
 # NewGRF parameters window
 STR_BASEGRF_PARAMETERS_CAPTION                                  :{WHITE}改变基础图形组参数
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}调整 NewGRF 参数
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}关闭
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}重置
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}全部参数恢复默认
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :参数 {NUM}
@@ -3676,7 +3689,7 @@ STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}为标�
 STR_TOWN_DIRECTORY_CAPTION                                      :{WHITE}城镇（{COMMA} 座，共 {COMMA}座）
 STR_TOWN_DIRECTORY_NONE                                         :{ORANGE}- 无 -
 STR_TOWN_DIRECTORY_TOWN                                         :{ORANGE}{TOWN}{BLACK}（{COMMA}）
-STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{YELLOW}（都市）{BLACK}（{COMMA}）
+STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{BLACK}（{COMMA}）{YELLOW}{CITY_ICON}
 STR_TOWN_DIRECTORY_LIST_TOOLTIP                                 :{BLACK} 城镇名称 - 点击名称可以将屏幕中心{}移动到城镇所在的位置。按住 <Ctrl> 点选将会在新视点中显示城镇位置
 STR_TOWN_POPULATION                                             :{BLACK}地图人口总数：{COMMA}
 
@@ -4903,8 +4916,6 @@ STR_AI_LIST_URL                                                 :{LTBLUE}链接�
 
 STR_AI_LIST_ACCEPT                                              :{BLACK}接受
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}选择高亮的 AI
-STR_AI_LIST_CANCEL                                              :{BLACK}取消
-STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}不修改本 AI
 
 STR_SCREENSHOT_CAPTION                                          :{WHITE}进行截图
 STR_SCREENSHOT_SCREENSHOT                                       :{BLACK}普通截图
@@ -4917,7 +4928,6 @@ STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}小地�
 # Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}AI 参数
 STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :{WHITE}游戏脚本参数
-STR_AI_SETTINGS_CLOSE                                           :{BLACK}关闭
 STR_AI_SETTINGS_RESET                                           :{BLACK}重设
 STR_AI_SETTINGS_SETTING                                         :{STRING}：{ORANGE}{STRING}
 
@@ -5257,6 +5267,13 @@ STR_ERROR_START_AND_END_MUST_BE_IN                              :{WHITE}起止�
 STR_ERROR_ENDS_OF_BRIDGE_MUST_BOTH                              :{WHITE}……桥梁两端必须都位于地面上
 STR_ERROR_BRIDGE_TOO_LONG                                       :{WHITE}……桥梁太长
 STR_ERROR_BRIDGE_THROUGH_MAP_BORDER                             :{WHITE}桥梁终点将越出地图
+STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}桥梁过低，尚需 {HEIGHT}净空以建设车站
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROADSTOP                           :{WHITE}桥梁过低，尚需 {HEIGHT}净空以建设车站
+STR_ERROR_BRIDGE_TOO_LOW_FOR_DOCK                               :{WHITE}桥梁过低，尚需 {HEIGHT}净空以建设码头
+STR_ERROR_BRIDGE_TOO_LOW_FOR_BUOY                               :{WHITE}桥梁过低，尚需 {HEIGHT}净空以放置浮标
+STR_ERROR_BRIDGE_TOO_LOW_FOR_RAIL_WAYPOINT                      :{WHITE}桥梁过低，尚需 {HEIGHT}净空以建设路点
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROAD_WAYPOINT                      :{WHITE}桥梁过低，尚需 {HEIGHT}净空以建设路点
+STR_ERROR_BRIDGE_TOO_LOW_FOR_LOCK                               :{WHITE}桥梁过低，尚需 {HEIGHT}净空以建设船闸
 
 # Tunnel related errors
 STR_ERROR_CAN_T_BUILD_TUNNEL_HERE                               :{WHITE}不能在这里开凿隧道……
@@ -5873,6 +5890,8 @@ STR_SAVEGAME_NAME_SPECTATOR                                     :观众，{1:STR
 
 # Viewport strings
 STR_VIEWPORT_TOWN_POP                                           :{TOWN}（{COMMA}）
+STR_VIEWPORT_TOWN_CITY                                          :{TOWN}{CITY_ICON}
+STR_VIEWPORT_TOWN_CITY_POP                                      :{TOWN}（{COMMA}）{CITY_ICON}
 STR_VIEWPORT_STATION                                            :{STATION} {STATION_FEATURES}
 
 # Simple strings to get specific types of data

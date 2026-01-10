@@ -1153,7 +1153,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :Valiutos pasiri
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Svarai sterlingų
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Amerikos Doleris
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Eurai
@@ -1463,6 +1463,7 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Paskolos palūk
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Eksploatacijos išlaidų lygmuo: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Nustatyti infrastruktūros bei transporto priemonių ekploatacijos išlaidų lygmenį
+###length 3
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Statymo greitis: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Kompiuterinio priešininko statymo sparta
@@ -1483,6 +1484,7 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :Be subsidijų
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Statybos kaštų lygis: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Nustatykite statybos kaštų lygmenį
+###length 3
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Nuosmukiai: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Įgalinus šią nusotatą, kas keletą metų gali užklupti ekonomikos nuosmukis. Nuosmukio metų smarkiai smunka gamyba (kuri atsistato nuosmukiai pasibaigus)
@@ -1809,6 +1811,7 @@ STR_CONFIG_SETTING_SCROLLMODE_LMB                               :Tempti žemėla
 
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Tolydi vaizdo slinktis: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Įjungus šią nuostatą ir pakeitus pagrindinio lango rodomą vietą (pvz., spragtelėjus žemėlapyje), vaizdas slinksis tolydžiai. Priešingu atveju vaizdas pasikeis akimirksniu, šuoliškai.
+
 
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Rodyti matavimo pastabą, kai naudojami įvairūs statybų įrankiai: {STRING}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP_HELPTEXT                     :Velkant statybos operacijų metu rodyti atstumus ir aukščių skirtumus tarp pradinio ir galutinio taškų
@@ -2327,8 +2330,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... nepr
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... nerastas grafikos rinkinys „{STRING}“
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... nerastas garsų rinkinys „{STRING}“
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... nerastas muzikos įrašų rinkinys „{STRING}“
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Pritrūko atminties
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Nepavyko rezervuoti sprukliams {BYTES} laikinosios atminties. Spruklių laikinoji atmintis sumažinta iki {BYTES}, o tai pablogins OpenTTD veikimo spartą. Galite pamėginti išjungti 32-ų bitų grafiką ir/arba sumažinti priartinimo lygį — tai turėtų sumažinti atminties poreikį.
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Vaizdo nuostatų klaida...
@@ -2929,6 +2930,7 @@ STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Vilkti
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Statyti stotelę vilkimo būdu
 
 STR_PICKER_MODE_ALL                                             :Visi
+
 
 
 
@@ -3571,15 +3573,12 @@ STR_SAVE_PRESET_CAPTION                                         :{WHITE}Išsaugo
 STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}Visų rinkinių sąrašas
 STR_SAVE_PRESET_TITLE                                           :{BLACK}Įveskite rinkinio pavadinimą
 STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}Šiuo metu pasirinktas rinkinio pavadinimas
-STR_SAVE_PRESET_CANCEL                                          :{BLACK}Atšaukti
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}Nieko nedaryti ir grįžti atgal
 STR_SAVE_PRESET_SAVE                                            :{BLACK}Išsaugoti
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}Išsaugoti rinkinį pasiriktu pavadinimu
 
 # NewGRF parameters window
 STR_BASEGRF_PARAMETERS_CAPTION                                  :{WHITE}Pakeisti bazinius grafikos parametrus
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}Plėtinio nuostatos
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Užverti
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}Atstatyti
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}Atstatyti pradines reikšmes visoms nuostatoms
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :Nuostata {NUM}
@@ -4940,8 +4939,6 @@ STR_AI_LIST_URL                                                 :{LTBLUE}URL: {O
 
 STR_AI_LIST_ACCEPT                                              :{BLACK}Priimti
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Pasirinkti pažymėtą scenarijų
-STR_AI_LIST_CANCEL                                              :{BLACK}Atšaukti
-STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Nekeisti scenarijaus
 
 STR_SCREENSHOT_CAPTION                                          :{WHITE}Padaryti ekrano kopiją
 STR_SCREENSHOT_SCREENSHOT                                       :{BLACK}Įprasta kopija
@@ -4954,7 +4951,6 @@ STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Mini že
 # Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :DI
 STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :Žaidimo scenarijus
-STR_AI_SETTINGS_CLOSE                                           :{BLACK}Uždaryti
 STR_AI_SETTINGS_RESET                                           :{BLACK}Atstatyti
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
 

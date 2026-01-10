@@ -996,7 +996,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :Seleção de un
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Libra Britânica
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Dólar Norte Americano
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1042,6 +1042,7 @@ STR_GAME_OPTIONS_CURRENCY_MYR                                   :Ringgit da Mal�
 STR_GAME_OPTIONS_CURRENCY_LVL                                   :Lats da Letônia
 STR_GAME_OPTIONS_CURRENCY_PTE                                   :Escudo Português
 STR_GAME_OPTIONS_CURRENCY_UAH                                   :Hryvnia Ucraniana
+STR_GAME_OPTIONS_CURRENCY_VND                                   :Dong Vietnamita
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :Salvar automaticamente
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :Escolher o intervalo para salvar o jogo automaticamente
@@ -1315,6 +1316,10 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Taxa de juros d
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Custos operacionais: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Definir o nível dos custos de manutenção e operacionais de veículos e da infraestrutura
+###length 3
+STR_CONFIG_SETTING_RUNNING_COSTS_LOW                            :Baixos
+STR_CONFIG_SETTING_RUNNING_COSTS_MEDIUM                         :Médios
+STR_CONFIG_SETTING_RUNNING_COSTS_HIGH                           :Altos
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Velocidade de construção: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Limitar a quantidade ações de construção para IAs
@@ -1336,6 +1341,10 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :Sem subsídios
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Custos de construção: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Definir o nível dos custos de construção e de aquisição
+###length 3
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_LOW                       :Baixos
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_MEDIUM                    :Médios
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :Altos
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Recessões: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Se ativado, recessões podem ocorrer periodicamente. Durante uma recessão, toda a produção é significativamente menor (ela retorna ao nível anterior quando a recessão termina)
@@ -1681,6 +1690,9 @@ STR_CONFIG_SETTING_SCROLLMODE_LMB                               :Mover mapa com 
 
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Suavizar deslocamento da visualização: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Controlar como a visualização principal se move para uma localização específica ao clicar no minimapa ou quando é dado um comando para ir até um objeto específico no mapa. Se ativado, a visualização se move suavemente. Se desativado, a visualização salta diretamente para o destino escolhido
+
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT                  :Comportamento do menu de seleção da barra de ferramentas: {STRING}
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT_HELPTEXT         :Escolha o comportamento dos menus de seleção da barra de ferramentas. Se desativado, os menus da barra de ferramentas permanecerão abertos até que uma seleção seja feita. Se ativado, os menus da barra de ferramentas serão ativados quando o botão do mouse for solto.
 
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Mostrar medidas quando usar as ferramentas de construção: {STRING}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP_HELPTEXT                     :Mostrar distâncias em quadrados e diferenças de altura quando Clicar+Arrastar nas ações de construção
@@ -2092,9 +2104,9 @@ STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :A classe de car
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :Modo de distribuição para outras classes de carga: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :"Assimétrico" significa que quantidades arbitrárias de carga podem ser enviadas em qualquer direção. "Manual" significa que não haverá distribuição automática dessas cargas
 ###length 3
-STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :manual
-STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :assimétrico
-STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :simétrico
+STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :Manual
+STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :Assimétrica
+STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :Simétrica
 
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY                           :Precisão da distribuição: {STRING}
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY_HELPTEXT                  :Quanto maior este valor, mais tempo de CPU será necessário para calcular a rede de conexões. Se demorar muito, você poderá notar um atraso. Entretanto, se o valor for muito pequeno, a distribuição será imprecisa e você irá perceber que cargas não estão sendo enviadas para os locais esperados
@@ -2202,8 +2214,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... jogo
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... ignorando conjunto de Gráficos Básicos '{STRING}': não encontrado
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... ignorando conjunto de Sons Básicos '{STRING}': não encontrado
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... ignorando conjunto de Músicas Básicas '{STRING}': não encontrado
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Memória insuficiente
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Falha ao alocar {BYTES} de memória para sprites. A memória reservada para sprites foi reduzida para {BYTES}. Isto irá reduzir o desempenho do OpenTTD. Para diminuir o uso de memória você pode desabilitar gráficos de 32bpp e/ou diminuir os níveis de ampliação das visualizações
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Erro nas configurações de vídeo...
@@ -2211,7 +2221,8 @@ STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... nenh
 STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :{WHITE}... controlador gráfico travou o jogo. Aceleração por hardware desativada
 
 # Intro window
-STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
+STR_INTRO_CAPTION                                               :{WHITE}OpenTTD
+STR_INTRO_VERSION                                               :OpenTTD {REV}
 
 STR_INTRO_NEW_GAME                                              :{BLACK}Novo Jogo
 STR_INTRO_LOAD_GAME                                             :{BLACK}Abrir Jogo
@@ -2830,6 +2841,11 @@ STR_PICKER_MODE_USED_TOOLTIP                                    :Mostrar somente
 STR_PICKER_MODE_SAVED                                           :Salvos
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :Mostrar somente itens salvos
 
+STR_PICKER_PREVIEW_SHRINK                                       :-
+STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Reduzir a altura das imagens na pré-visualização. Ctrl+Clique para reduzir ao mínimo
+STR_PICKER_PREVIEW_EXPAND                                       :+
+STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Aumentar a altura das imagens na pré-visualização. Ctrl+Clique para aumentar ao máximo
+
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Selecionar uma classe de estação para mostrar
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Escolher um tipo de estação para construir. Ctrl+Clique para adicionar ou remover nos itens salvos
 STR_PICKER_WAYPOINT_CLASS_TOOLTIP                               :Selecionar uma classe de ponto de controle para mostrar
@@ -3277,7 +3293,7 @@ STR_FRAMERATE_GRAPH_SECONDS                                     :{TINY_FONT}{COM
 STR_FRAMERATE_GAMELOOP                                          :{BLACK}Total no ciclo de jogo:
 STR_FRAMERATE_GL_ECONOMY                                        :{BLACK}  Movimentação de carga:
 STR_FRAMERATE_GL_TRAINS                                         :{BLACK}  Tiques de trem:
-STR_FRAMERATE_GL_ROADVEHS                                       :{BLACK}  Tiques de veículo:
+STR_FRAMERATE_GL_ROADVEHS                                       :{BLACK}  Tiques de veículo rodoviário:
 STR_FRAMERATE_GL_SHIPS                                          :{BLACK}  Tiques de embarcação:
 STR_FRAMERATE_GL_AIRCRAFT                                       :{BLACK}  Tiques de aeronave:
 STR_FRAMERATE_GL_LANDSCAPE                                      :{BLACK}  Tiques do mundo:
@@ -3526,15 +3542,12 @@ STR_SAVE_PRESET_CAPTION                                         :{WHITE}Salvar p
 STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}Lista de predefinições disponíveis, selecione uma para usar o nome na gravação abaixo
 STR_SAVE_PRESET_TITLE                                           :{BLACK}Introduza um nome para a predefinição
 STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}Nome que está selecionado para salvar a predefinição
-STR_SAVE_PRESET_CANCEL                                          :{BLACK}Cancelar
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}Não alterar a predefinição
 STR_SAVE_PRESET_SAVE                                            :{BLACK}Salvar
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}Salvar a predefinição com o nome selecionado
 
 # NewGRF parameters window
 STR_BASEGRF_PARAMETERS_CAPTION                                  :{WHITE}Alterar parâmetros dos gráficos básicos
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}Alterar parâmetros de NewGRF
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Fechar
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}Restaurar
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}Restaurar todos os parâmetros para os valores padrão
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :Parâmetro {NUM}
@@ -3677,7 +3690,7 @@ STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}Introduz
 STR_TOWN_DIRECTORY_CAPTION                                      :{WHITE}Localidades ({COMMA} of {COMMA})
 STR_TOWN_DIRECTORY_NONE                                         :{ORANGE}- Nenhum -
 STR_TOWN_DIRECTORY_TOWN                                         :{ORANGE}{TOWN}{BLACK} ({COMMA})
-STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{YELLOW} (Cidade){BLACK} ({COMMA})
+STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{BLACK} ({COMMA}) {YELLOW}{CITY_ICON}
 STR_TOWN_DIRECTORY_LIST_TOOLTIP                                 :{BLACK}Nomes das localidades - clique em um nome para centralizar a visualização principal na cidade. Ctrl+Clique para abrir uma nova visualização na localização da localidade
 STR_TOWN_POPULATION                                             :{BLACK}População mundial: {COMMA}
 
@@ -4904,8 +4917,6 @@ STR_AI_LIST_URL                                                 :{LTBLUE}URL: {O
 
 STR_AI_LIST_ACCEPT                                              :{BLACK}Aceitar
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Usar o script selecionado
-STR_AI_LIST_CANCEL                                              :{BLACK}Cancelar
-STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Não mudar o script
 
 STR_SCREENSHOT_CAPTION                                          :{WHITE}Fazer uma captura de tela
 STR_SCREENSHOT_SCREENSHOT                                       :{BLACK}Captura de tela normal
@@ -4918,7 +4929,6 @@ STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Captura 
 # Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}Parâmetros da IA
 STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :{WHITE}Parâmetros do Script de Jogo
-STR_AI_SETTINGS_CLOSE                                           :{BLACK}Fechar
 STR_AI_SETTINGS_RESET                                           :{BLACK}Restaurar
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
 
@@ -5258,6 +5268,13 @@ STR_ERROR_START_AND_END_MUST_BE_IN                              :{WHITE}Início 
 STR_ERROR_ENDS_OF_BRIDGE_MUST_BOTH                              :{WHITE}... os extremos da ponte devem estar sobre a terra
 STR_ERROR_BRIDGE_TOO_LONG                                       :{WHITE}... ponte muito longa
 STR_ERROR_BRIDGE_THROUGH_MAP_BORDER                             :{WHITE}A ponte terminaria fora do mapa
+STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}A ponte está {HEIGHT} abaixo do necessário para a estação
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROADSTOP                           :{WHITE}A ponte está {HEIGHT} abaixo do necessário para a parada rodoviária
+STR_ERROR_BRIDGE_TOO_LOW_FOR_DOCK                               :{WHITE}A ponte está {HEIGHT} abaixo do necessário para a doca
+STR_ERROR_BRIDGE_TOO_LOW_FOR_BUOY                               :{WHITE}A ponte está {HEIGHT} abaixo do necessário para a boia
+STR_ERROR_BRIDGE_TOO_LOW_FOR_RAIL_WAYPOINT                      :{WHITE}A ponte está {HEIGHT} abaixo do necessário para o ponto de controle ferroviário
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROAD_WAYPOINT                      :{WHITE}A ponte está {HEIGHT} abaixo do necessário para o ponto de controle rodoviário
+STR_ERROR_BRIDGE_TOO_LOW_FOR_LOCK                               :{WHITE}A ponte está {HEIGHT} abaixo do necessário para a eclusa
 
 # Tunnel related errors
 STR_ERROR_CAN_T_BUILD_TUNNEL_HERE                               :{WHITE}Não é possível construir túnel aqui...
@@ -5874,6 +5891,8 @@ STR_SAVEGAME_NAME_SPECTATOR                                     :Espectador, {1:
 
 # Viewport strings
 STR_VIEWPORT_TOWN_POP                                           :{TOWN} ({COMMA})
+STR_VIEWPORT_TOWN_CITY                                          :{TOWN} {CITY_ICON}
+STR_VIEWPORT_TOWN_CITY_POP                                      :{TOWN} ({COMMA}) {CITY_ICON}
 STR_VIEWPORT_STATION                                            :{STATION} {STATION_FEATURES}
 
 # Simple strings to get specific types of data

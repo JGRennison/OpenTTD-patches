@@ -155,9 +155,7 @@ bool VideoDriver_Win32Base::MakeWindow(bool full_screen, bool resize)
 	}
 
 	if (full_screen) {
-		DEVMODE settings;
-
-		memset(&settings, 0, sizeof(settings));
+		DEVMODE settings{};
 		settings.dmSize = sizeof(settings);
 		settings.dmFields =
 			DM_BITSPERPEL |
@@ -1566,7 +1564,7 @@ const char *VideoDriver_Win32OpenGL::AllocateContext()
 		rc = wglCreateContext(this->dc);
 		if (rc == nullptr) return "Can't create OpenGL context";
 	}
-	if (!wglMakeCurrent(this->dc, rc)) return "Can't active GL context";
+	if (!wglMakeCurrent(this->dc, rc)) return "Can't activate GL context";
 
 	this->ToggleVsync(_video_vsync);
 

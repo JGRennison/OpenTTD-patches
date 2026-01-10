@@ -833,7 +833,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :Unit kewangan
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :Pilihan unit kewangan
 
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Paun British
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Dolar Amerika
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1065,6 +1065,7 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Kadar faedah pi
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Kos penyelenggaraan: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Tetapkan tahap penyelenggaraan dan kos perjalanan kenderaan dan infrastuktur
+###length 3
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Kelajuan pembinaan: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Had jumlah pembinaan untuk AI
@@ -1081,6 +1082,7 @@ STR_CONFIG_SETTING_SUBSIDY_MULTIPLIER_HELPTEXT                  :Tetapkan jumlah
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Kos pembinaan: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Tetapkan tahap pembinaan dan kos pembelian
+###length 3
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Kemelesetan: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Jika diupayakan, kemelesetan mungkin berlaku setiap tahun. Semasa kemelesetan, pengeluaran adalah lebih rendah (ia kembali ke tahap sebelumnya apabila kemelesetan berakhir)
@@ -1327,6 +1329,7 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Ungu
 ###length 4
 
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Skrol tetingkap pemandangan yang licin: {STRING}
+
 
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Tunjukkan bantuan ukuran ketika menggunakan alat binaan: {STRING}
 
@@ -2109,6 +2112,7 @@ STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Bina ste
 
 
 
+
 STR_STATION_CLASS_DFLT                                          :Stesen lazim
 STR_STATION_CLASS_WAYP                                          :Tandatuju
 
@@ -2616,12 +2620,10 @@ STR_NEWGRF_SETTINGS_INCOMPATIBLE                                :{RED}Tidak sera
 # NewGRF save preset window
 STR_SAVE_PRESET_CAPTION                                         :{WHITE}Simpan pratetapan
 STR_SAVE_PRESET_TITLE                                           :{BLACK}Masukkan nama untuk pratetapan
-STR_SAVE_PRESET_CANCEL                                          :{BLACK}Batal
 STR_SAVE_PRESET_SAVE                                            :{BLACK}Simpan
 
 # NewGRF parameters window
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}Ubah parameter NewGRF
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Tutup
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}Tetapan semula
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}Tetapkan semua parameter kepada nilai asal mereka
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :Parameter {NUM}
@@ -3721,13 +3723,10 @@ STR_AI_LIST_URL                                                 :{LTBLUE}URL: {O
 
 STR_AI_LIST_ACCEPT                                              :{BLACK}Terima
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Pilih skrip yang diserlahkan
-STR_AI_LIST_CANCEL                                              :{BLACK}Batal
-STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Jangan ubah skrip
 
 
 # Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :AI
-STR_AI_SETTINGS_CLOSE                                           :{BLACK}Tutup
 STR_AI_SETTINGS_RESET                                           :{BLACK}Semula
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
 

@@ -134,8 +134,8 @@ struct CompanyOldAI {
 
 class SlCompanyOldAIBuildRec : public DefaultSaveLoadHandler<SlCompanyOldAIBuildRec, CompanyOldAI> {
 public:
-	inline static const SaveLoad description[] = {{}}; // Needed to keep DefaultSaveLoadHandler happy.
-	inline const static SaveLoadCompatTable compat_description = _company_old_ai_buildrec_compat;
+	static inline const SaveLoad description[] = {{}}; // Needed to keep DefaultSaveLoadHandler happy.
+	static inline const SaveLoadCompatTable compat_description = _company_old_ai_buildrec_compat;
 
 	SaveLoadTable GetDescription() const override { return {}; }
 
@@ -151,11 +151,11 @@ public:
 
 class SlCompanyOldAI : public DefaultSaveLoadHandler<SlCompanyOldAI, CompanyProperties> {
 public:
-	inline static const SaveLoad description[] = {
+	static inline const SaveLoad description[] = {
 		SLE_CONDVAR(CompanyOldAI, num_build_rec, SLE_UINT8, SL_MIN_VERSION, SLV_107),
 		SLEG_STRUCTLIST("buildrec", SlCompanyOldAIBuildRec),
 	};
-	inline const static SaveLoadCompatTable compat_description = _company_old_ai_compat;
+	static inline const SaveLoadCompatTable compat_description = _company_old_ai_compat;
 
 	void Load(CompanyProperties *c) const override
 	{
@@ -170,7 +170,7 @@ public:
 
 class SlCompanySettings : public DefaultSaveLoadHandler<SlCompanySettings, CompanyProperties> {
 public:
-	inline static const SaveLoad description[] = {
+	static inline const SaveLoad description[] = {
 		/* Engine renewal settings */
 		SLE_CONDREF(CompanyProperties, engine_renew_list,            REF_ENGINE_RENEWS,   SLV_19, SL_MAX_VERSION),
 		SLE_CONDVAR(CompanyProperties, settings.engine_renew,        SLE_BOOL,            SLV_16, SL_MAX_VERSION),
@@ -185,7 +185,7 @@ public:
 		SLE_CONDVAR(CompanyProperties, settings.vehicle.servint_aircraft,  SLE_UINT16,     SLV_120, SL_MAX_VERSION),
 		SLE_CONDVAR(CompanyProperties, settings.vehicle.servint_ships,     SLE_UINT16,     SLV_120, SL_MAX_VERSION),
 	};
-	inline const static SaveLoadCompatTable compat_description = _company_settings_compat;
+	static inline const SaveLoadCompatTable compat_description = _company_settings_compat;
 
 	void Save(CompanyProperties *c) const override
 	{
@@ -207,7 +207,7 @@ public:
 
 class SlCompanyEconomy : public DefaultSaveLoadHandler<SlCompanyEconomy, CompanyProperties> {
 public:
-	inline static const SaveLoad description[] = {
+	static inline const SaveLoad description[] = {
 		SLE_CONDVAR(CompanyEconomyEntry, income,              SLE_FILE_I32 | SLE_VAR_I64, SL_MIN_VERSION, SLV_2),
 		SLE_CONDVAR(CompanyEconomyEntry, income,              SLE_INT64,                  SLV_2, SL_MAX_VERSION),
 		SLE_CONDVAR(CompanyEconomyEntry, expenses,            SLE_FILE_I32 | SLE_VAR_I64, SL_MIN_VERSION, SLV_2),
@@ -220,7 +220,7 @@ public:
 		SLE_CONDARR(CompanyEconomyEntry, delivered_cargo,     SLE_UINT32, NUM_CARGO,    SLV_EXTEND_CARGOTYPES, SL_MAX_VERSION),
 		    SLE_VAR(CompanyEconomyEntry, performance_history, SLE_INT32),
 	};
-	inline const static SaveLoadCompatTable compat_description = _company_economy_compat;
+	static inline const SaveLoadCompatTable compat_description = _company_economy_compat;
 
 	void Save(CompanyProperties *c) const override
 	{
@@ -267,12 +267,12 @@ public:
 
 class SlCompanyLiveries : public DefaultSaveLoadHandler<SlCompanyLiveries, CompanyProperties> {
 public:
-	inline static const SaveLoad description[] = {
+	static inline const SaveLoad description[] = {
 		SLE_CONDVAR(Livery, in_use,  SLE_UINT8, SLV_34, SL_MAX_VERSION),
 		SLE_CONDVAR(Livery, colour1, SLE_UINT8, SLV_34, SL_MAX_VERSION),
 		SLE_CONDVAR(Livery, colour2, SLE_UINT8, SLV_34, SL_MAX_VERSION),
 	};
-	inline const static SaveLoadCompatTable compat_description = _company_liveries_compat;
+	static inline const SaveLoadCompatTable compat_description = _company_liveries_compat;
 
 	/**
 	 * Get the number of liveries used by this savegame version.
@@ -335,10 +335,10 @@ public:
 		std::string key;
 	};
 
-	inline static const SaveLoad description[] = {
+	static inline const SaveLoad description[] = {
 		SLE_SSTR(KeyWrapper, key, SLE_STR),
 	};
-	inline const static SaveLoadCompatTable compat_description = {};
+	static inline const SaveLoadCompatTable compat_description = {};
 
 	std::vector<std::string> &GetVector(CompanyProperties *cprops) const override { return cprops->allow_list; }
 

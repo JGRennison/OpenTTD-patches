@@ -14,6 +14,7 @@
 #include "script_station.hpp"
 #include "script_waypoint.hpp"
 #include "../../depot_map.h"
+#include "../../group.h"
 #include "../../vehicle_base.h"
 #include "../../vehiclelist_func.h"
 #include "../../train.h"
@@ -176,8 +177,9 @@ ScriptVehicleList_Group::ScriptVehicleList_Group(GroupID group_id)
 	if (!ScriptGroup::IsValidGroup(group_id)) return;
 
 	::CompanyID owner = ScriptObject::GetCompany();
+	VehicleType veh_type = ::Group::Get(group_id)->vehicle_type;
 
-	ScriptList::FillListT<FrontVehicleOnlyFillListHelper>({}, this,
+	ScriptList::FillListT<VehicleTypeFrontVehicleOnlyFillListHelper>({ veh_type }, this,
 		[owner](const Vehicle *v) { return v->owner == owner && v->IsPrimaryVehicle(); },
 		[group_id](const Vehicle *v) { return v->group_id == group_id; }
 	);

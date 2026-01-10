@@ -451,7 +451,9 @@ protected:
 		/* Draw the background of the graph itself. */
 		GfxFillRect(r.left, r.top, r.right, r.bottom, GRAPH_BASE_COLOUR);
 
-		/* Draw the vertical grid lines. */
+		/* Draw the grid lines. */
+		int gridline_width = WidgetDimensions::scaled.bevel.top;
+		int grid_colour = GRAPH_GRID_COLOUR;
 
 		/* Don't draw the first line, as that's where the axis will be. */
 		if (rtl) {
@@ -461,13 +463,12 @@ protected:
 			x = r.left + x_sep;
 		}
 
-		int grid_colour = GRAPH_GRID_COLOUR;
 		for (int i = 1; i < this->num_vert_lines + 1; i++) {
 			/* If using wallclock units, we separate periods with a lighter line. */
 			if (EconTime::UsingWallclockUnits()) {
 				grid_colour = (i % 4 == 0) ? GRAPH_YEAR_LINE_COLOUR : GRAPH_GRID_COLOUR;
 			}
-			GfxFillRect(x, r.top, x, r.bottom, grid_colour);
+			GfxFillRect(x, r.top, x + gridline_width - 1, r.bottom, grid_colour);
 			x += x_sep;
 		}
 
@@ -476,20 +477,20 @@ protected:
 
 		for (int i = 0; i < (num_hori_lines + 1); i++) {
 			if (rtl) {
-				GfxFillRect(r.right + 1, y, r.right + ScaleGUITrad(3), y, GRAPH_AXIS_LINE_COLOUR);
+				GfxFillRect(r.right + 1, y, r.right + ScaleGUITrad(3), y + gridline_width - 1, GRAPH_AXIS_LINE_COLOUR);
 			} else {
-				GfxFillRect(r.left - ScaleGUITrad(3), y, r.left - 1, y, GRAPH_AXIS_LINE_COLOUR);
+				GfxFillRect(r.left - ScaleGUITrad(3), y, r.left - 1, y + gridline_width - 1, GRAPH_AXIS_LINE_COLOUR);
 			}
-			GfxFillRect(r.left, y, r.right, y, GRAPH_GRID_COLOUR);
+			GfxFillRect(r.left, y, r.right + gridline_width - 1, y + gridline_width - 1, GRAPH_GRID_COLOUR);
 			y -= y_sep;
 		}
 
 		/* Draw the y axis. */
-		GfxFillRect(r.left, r.top, r.left, r.bottom, GRAPH_AXIS_LINE_COLOUR);
+		GfxFillRect(r.left, r.top, r.left + gridline_width - 1, r.bottom + gridline_width - 1, GRAPH_AXIS_LINE_COLOUR);
 
 		/* Draw the x axis. */
 		y = x_axis_offset + r.top;
-		GfxFillRect(r.left, y, r.right, y, GRAPH_ZERO_LINE_COLOUR);
+		GfxFillRect(r.left, y, r.right + gridline_width - 1, y + gridline_width - 1, GRAPH_ZERO_LINE_COLOUR);
 
 		/* Find the largest value that will be drawn. */
 		if (this->num_on_x_axis == 0) return;
@@ -544,7 +545,7 @@ protected:
 					year++;
 
 					/* Draw a lighter grid line between years. Top and bottom adjustments ensure we don't draw over top and bottom horizontal grid lines. */
-					GfxFillRect(x + x_sep, r.top + 1, x + x_sep, r.bottom - 1, GRAPH_YEAR_LINE_COLOUR);
+					GfxFillRect(x + x_sep, r.top + gridline_width, x + x_sep + gridline_width - 1, r.bottom - 1, GRAPH_YEAR_LINE_COLOUR);
 				}
 				x += x_sep;
 			}
@@ -572,10 +573,11 @@ protected:
 			}
 		}
 
-		/* draw lines and dots */
-		uint linewidth = _settings_client.gui.graph_line_thickness;
-		uint pointoffs1 = (linewidth + 1) / 2;
-		uint pointoffs2 = linewidth + 1 - pointoffs1;
+		/* Draw lines and dots. */
+		uint linewidth = ScaleGUITrad(_settings_client.gui.graph_line_thickness);
+		uint pointwidth = ScaleGUITrad(_settings_client.gui.graph_line_thickness + 1);
+		uint pointoffs1 = pointwidth / 2;
+		uint pointoffs2 = pointwidth - pointoffs1;
 
 		auto draw_dataset = [&](const DataSet &dataset, uint8_t colour) {
 			if (HasBit(this->excluded_data, dataset.exclude_bit)) return;
@@ -599,16 +601,16 @@ protected:
 			for (OverflowSafeInt64 datapoint : this->GetDataSetRange(dataset)) {
 				if (datapoint != INVALID_DATAPOINT) {
 					/*
-						* Check whether we need to reduce the 'accuracy' of the
-						* datapoint value and the highest value to split overflows.
-						* And when 'drawing' 'one million' or 'one million and one'
-						* there is no significant difference, so the least
-						* significant bits can just be removed.
-						*
-						* If there are more bits needed than would fit in a 32 bits
-						* integer, so at about 31 bits because of the sign bit, the
-						* least significant bits are removed.
-						*/
+					 * Check whether we need to reduce the 'accuracy' of the
+					 * datapoint value and the highest value to split overflows.
+					 * And when 'drawing' 'one million' or 'one million and one'
+					 * there is no significant difference, so the least
+					 * significant bits can just be removed.
+					 *
+					 * If there are more bits needed than would fit in a 32 bits
+					 * integer, so at about 31 bits because of the sign bit, the
+					 * least significant bits are removed.
+					 */
 					int mult_range = FindLastBit<uint32_t>(x_axis_offset) + FindLastBit<uint64_t>(abs(datapoint));
 					int reduce_range = std::max(mult_range - 31, 0);
 
@@ -713,16 +715,9 @@ public:
 
 				/* Draw x-axis labels and markings for graphs based on financial quarters and years.  */
 				if (this->draw_dates) {
-					EconTime::Month month = this->month;
-					EconTime::Year year = this->year;
-					for (int i = 0; i < this->num_on_x_axis; i++) {
+					uint year = GetParamMaxValue(this->year.base(), 4, FS_SMALL);
+					for (uint month = 0; month < 12; ++month) {
 						x_label_width = std::max(x_label_width, GetStringBoundingBox(GetString(month == 0 ? STR_GRAPH_X_LABEL_MONTH_YEAR : STR_GRAPH_X_LABEL_MONTH, STR_MONTH_ABBREV_JAN + month, year)).width);
-
-						month += this->month_increment;
-						if (month >= 12) {
-							month = 0;
-							year++;
-						}
 					}
 				} else {
 					/* Draw x-axis labels for graphs not based on quarterly performance (cargo payment rates). */
@@ -759,7 +754,11 @@ public:
 					if (lowered) DrawFrameRect(line, COLOUR_BROWN, FrameFlag::Lowered);
 
 					const Rect text = line.Shrink(WidgetDimensions::scaled.framerect);
-					DrawString(text, str, TC_BLACK, SA_CENTER, false, FS_SMALL);
+					DrawString(text, str, (this->highlight_state && this->highlight_range == index) ? TC_WHITE : TC_BLACK, SA_CENTER, false, FS_SMALL);
+
+					if (HasBit(this->masked_range, index)) {
+						GfxFillRect(line.Shrink(WidgetDimensions::scaled.bevel), GetColourGradient(COLOUR_BROWN, SHADE_DARKER), FILLRECT_CHECKER);
+					}
 
 					if (HasBit(this->masked_range, index)) {
 						GfxFillRect(line.Shrink(WidgetDimensions::scaled.bevel), GetColourGradient(COLOUR_BROWN, SHADE_DARKER), FILLRECT_CHECKER);

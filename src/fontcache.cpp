@@ -22,9 +22,10 @@
 
 #include "safeguards.h"
 
-/** Default heights for the different sizes of fonts. */
-static const int _default_font_height[FS_END]   = {10, 6, 18, 10};
-static const int _default_font_ascender[FS_END] = { 8, 5, 15,  8};
+/** Default unscaled heights for the different sizes of fonts. */
+/* static */ const int FontCache::DEFAULT_FONT_HEIGHT[FS_END] = {10, 6, 18, 10};
+/** Default unscaled ascenders for the different sizes of fonts. */
+/* static */ const int FontCache::DEFAULT_FONT_ASCENDER[FS_END] = {8, 5, 15, 8};
 
 FontCacheSettings _fcsettings;
 
@@ -32,8 +33,7 @@ FontCacheSettings _fcsettings;
  * Create a new font cache.
  * @param fs The size of the font.
  */
-FontCache::FontCache(FontSize fs) : parent(FontCache::Get(fs)), fs(fs), height(_default_font_height[fs]),
-		ascender(_default_font_ascender[fs]), descender(_default_font_ascender[fs] - _default_font_height[fs])
+FontCache::FontCache(FontSize fs) : parent(FontCache::Get(fs)), fs(fs)
 {
 	assert(this->parent == nullptr || this->fs == this->parent->fs);
 	FontCache::caches[this->fs] = this;
@@ -44,14 +44,14 @@ FontCache::FontCache(FontSize fs) : parent(FontCache::Get(fs)), fs(fs), height(_
 /** Clean everything up. */
 FontCache::~FontCache()
 {
-	assert(this->fs == this->parent->fs);
+	assert(this->parent == nullptr || this->fs == this->parent->fs);
 	FontCache::caches[this->fs] = this->parent;
 	Layouter::ResetFontCache(this->fs);
 }
 
 int FontCache::GetDefaultFontHeight(FontSize fs)
 {
-	return _default_font_height[fs];
+	return FontCache::DEFAULT_FONT_HEIGHT[fs];
 }
 
 int font_height_cache[FS_END];
@@ -109,10 +109,10 @@ void SetFont(FontSize fontsize, const std::string &font, uint size)
 		CheckForMissingGlyphs();
 		_fcsettings = std::move(backup);
 	} else {
-		InitFontCache(true);
+		InitFontCache(fontsize);
 	}
 
-	LoadStringWidthTable(fontsize == FS_MONO);
+	LoadStringWidthTable(fontsize);
 	UpdateAllVirtCoords();
 	ReInitAllWindows(true);
 
@@ -196,15 +196,13 @@ std::string GetFontCacheFontName(FontSize fs)
 
 /**
  * (Re)initialize the font cache related things, i.e. load the non-sprite fonts.
- * @param monospace Whether to initialise the monospace or regular fonts.
+ * @param fontsizes Font sizes to be initialised.
  */
-void InitFontCache(bool monospace)
+void InitFontCache(FontSizes fontsizes)
 {
 	FontCache::InitializeFontCaches();
 
-	for (FontSize fs = FS_BEGIN; fs < FS_END; fs++) {
-		if (monospace != (fs == FS_MONO)) continue;
-
+	for (FontSize fs : fontsizes.IterateSetBits()) {
 		FontCache *fc = FontCache::Get(fs);
 		if (fc->HasParent()) delete fc;
 
@@ -224,8 +222,7 @@ void InitFontCache(bool monospace)
 void UninitFontCache()
 {
 	for (FontSize fs = FS_BEGIN; fs < FS_END; fs++) {
-		FontCache *fc = FontCache::Get(fs);
-		if (fc->HasParent()) delete fc;
+		while (FontCache::Get(fs) != nullptr) delete FontCache::Get(fs);
 	}
 
 #ifdef WITH_FREETYPE

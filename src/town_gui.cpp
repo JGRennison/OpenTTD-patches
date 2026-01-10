@@ -413,7 +413,7 @@ public:
 				break;
 
 			case WID_TA_RATING_INFO:
-				resize.height = std::max({this->icon_size.height + WidgetDimensions::scaled.vsep_normal, this->exclusive_size.height + WidgetDimensions::scaled.vsep_normal, (uint)GetCharacterHeight(FS_NORMAL)});
+				fill.height = resize.height = std::max({this->icon_size.height + WidgetDimensions::scaled.vsep_normal, this->exclusive_size.height + WidgetDimensions::scaled.vsep_normal, (uint)GetCharacterHeight(FS_NORMAL)});
 				size.height = 9 * resize.height + padding.height;
 				break;
 		}
@@ -942,11 +942,6 @@ static constexpr NWidgetPart _nested_town_directory_widgets[] = {
 	EndContainer(),
 };
 
-/** Enum referring to the Hotkeys in the town directory window */
-enum TownDirectoryHotkeys : int32_t {
-	TDHK_FOCUS_FILTER_BOX, ///< Focus the filter box
-};
-
 /** Town directory window class. */
 struct TownDirectoryWindow : public Window {
 private:
@@ -1206,7 +1201,7 @@ public:
 				Dimension icon_size = GetSpriteSize(SPR_TOWN_RATING_GOOD);
 				d.width += icon_size.width + 2;
 				d.height = std::max(d.height, icon_size.height);
-				resize.height = d.height;
+				fill.height = resize.height = d.height;
 				d.height *= 5;
 				d.width += padding.width;
 				d.height += padding.height;
@@ -1330,24 +1325,11 @@ public:
 		}
 	}
 
-	EventState OnHotkey(int hotkey) override
-	{
-		switch (hotkey) {
-			case TDHK_FOCUS_FILTER_BOX:
-				this->SetFocusedWidget(WID_TD_FILTER);
-				SetFocusedWindow(this); // The user has asked to give focus to the text box, so make sure this window is focused.
-				break;
-			default:
-				return ES_NOT_HANDLED;
-		}
-		return ES_HANDLED;
-	}
-
 	static HotkeyList hotkeys;
 };
 
 static Hotkey towndirectory_hotkeys[] = {
-	Hotkey('F', "focus_filter_box", TDHK_FOCUS_FILTER_BOX),
+	Hotkey('F', "focus_filter_box", WID_TD_FILTER),
 };
 HotkeyList TownDirectoryWindow::hotkeys("towndirectory", towndirectory_hotkeys);
 
@@ -1629,7 +1611,7 @@ public:
 		/* Was 'cancel' pressed? */
 		if (!str.has_value()) return;
 
-		auto value = ParseInteger(*str);
+		auto value = ParseInteger(*str, 10, true);
 		if (!value.has_value()) return;
 
 		Backup<bool> old_generating_world(_generating_world, true, FILE_LINE);
@@ -2243,12 +2225,41 @@ struct BuildHouseWindow : public PickerWindow {
 	void OnPlaceObject([[maybe_unused]] Point pt, TileIndex tile) override
 	{
 		const HouseSpec *spec = HouseSpec::Get(HousePickerCallbacks::sel_type);
+		if (spec->building_flags.Test(BuildingFlag::Size1x1)) {
+			VpStartPlaceSizing(tile, VPM_X_AND_Y, DDSP_PLACE_HOUSE);
+		} else {
+			this->PlaceSingleHouse(spec, tile);
+		}
+	}
+
+	void PlaceSingleHouse(const HouseSpec *spec, TileIndex tile)
+	{
 		CommandContainer<CMD_PLACE_HOUSE> cmd_container(STR_ERROR_CAN_T_BUILD_HOUSE, tile,
 				CmdPayload<CMD_PLACE_HOUSE>::Make(spec->Index(), BuildHouseWindow::house_protected, TownID::Invalid(), BuildHouseWindow::replace), CommandCallback::PlaySound_CONSTRUCTION_OTHER);
 		if (_ctrl_pressed) {
 			ShowSelectTownWindow(cmd_container);
 		} else {
 			DoCommandPContainer(cmd_container);
+		}
+	}
+
+	void OnPlaceDrag(ViewportPlaceMethod select_method, [[maybe_unused]] ViewportDragDropSelectionProcess select_proc, [[maybe_unused]] Point pt) override
+	{
+		VpSelectTilesWithMethod(pt.x, pt.y, select_method);
+	}
+
+	void OnPlaceMouseUp([[maybe_unused]] ViewportPlaceMethod select_method, [[maybe_unused]] ViewportDragDropSelectionProcess select_proc, [[maybe_unused]] Point pt, TileIndex start_tile, TileIndex end_tile) override
+	{
+		if (pt.x == -1) return;
+
+		assert(select_proc == DDSP_PLACE_HOUSE);
+
+		const HouseSpec *spec = HouseSpec::Get(HousePickerCallbacks::sel_type);
+		if (end_tile == start_tile) {
+			this->PlaceSingleHouse(spec, start_tile);
+		} else {
+			Command<CMD_PLACE_HOUSE_AREA>::Post(STR_ERROR_CAN_T_BUILD_HOUSE, CommandCallback::PlaySound_CONSTRUCTION_OTHER,
+					end_tile, start_tile, spec->Index(), BuildHouseWindow::house_protected, TownID::Invalid(), BuildHouseWindow::replace, _ctrl_pressed);
 		}
 	}
 

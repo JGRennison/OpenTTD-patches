@@ -538,7 +538,7 @@ static CommandCost BuildReplacementVehicle(const Vehicle *old_veh, Vehicle **new
 	}
 
 	/* Try to reverse the vehicle, but do not care if it fails as the new type might not be reversible */
-	if (new_veh->type == VEH_TRAIN && HasBit(Train::From(old_veh)->flags, VRF_REVERSE_DIRECTION)) {
+	if (new_veh->type == VEH_TRAIN && Train::From(old_veh)->flags.Test(VehicleRailFlag::Flipped)) {
 		/* Only copy the reverse state if neither old or new vehicle implements reverse-on-build probability callback. */
 		if (!TestVehicleBuildProbability(old_veh, old_veh->engine_type, BuildProbabilityType::Reversed).has_value() &&
 			!TestVehicleBuildProbability(new_veh, new_veh->engine_type, BuildProbabilityType::Reversed).has_value()) {
@@ -614,7 +614,7 @@ CommandCost CopyHeadSpecificThings(Vehicle *old_head, Vehicle *new_head, DoComma
 
 		if (old_head->type == VEH_TRAIN) {
 			Train::From(new_head)->speed_restriction = Train::From(old_head)->speed_restriction;
-			SB(Train::From(new_head)->flags, VRF_SPEED_ADAPTATION_EXEMPT, 1, GB(Train::From(old_head)->flags, VRF_SPEED_ADAPTATION_EXEMPT, 1));
+			Train::From(new_head)->flags.Set(VehicleRailFlag::SpeedAdaptationExempt, Train::From(old_head)->flags.Test(VehicleRailFlag::SpeedAdaptationExempt));
 		}
 
 		/* Transfer any acquired trace restrict slots to the new vehicle */

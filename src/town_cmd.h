@@ -30,6 +30,7 @@ DEF_CMD_TUPLE_NT(CMD_TOWN_SET_TEXT,                   CmdTownSetText,   CMD_LOG_
 DEF_CMD_TUPLE_NT(CMD_EXPAND_TOWN,                     CmdExpandTown,                                 CMD_DEITY, CMDT_LANDSCAPE_CONSTRUCTION, CmdDataT<TownID, uint32_t, TownExpandModes>)
 DEF_CMD_TUPLE_NT(CMD_DELETE_TOWN,                     CmdDeleteTown,                               CMD_OFFLINE, CMDT_LANDSCAPE_CONSTRUCTION, CmdDataT<TownID>)
 DEF_CMD_TUPLE   (CMD_PLACE_HOUSE,                     CmdPlaceHouse,                                 CMD_DEITY, CMDT_OTHER_MANAGEMENT,       CmdDataT<HouseID, bool, TownID, bool>)
+DEF_CMD_TUPLE   (CMD_PLACE_HOUSE_AREA,                CmdPlaceHouseArea,                             CMD_DEITY, CMDT_OTHER_MANAGEMENT,       CmdDataT<TileIndex, HouseID, bool, TownID, bool, bool>)
 DEF_CMD_TUPLE_NT(CMD_TOWN_SETTING_OVERRIDE,           CmdOverrideTownSetting,           CMD_DEITY | CMD_SERVER, CMDT_OTHER_MANAGEMENT,       CmdDataT<TownID, TownSettingOverrideFlags, bool, uint8_t>)
 DEF_CMD_TUPLE_NT(CMD_TOWN_SETTING_OVERRIDE_NON_ADMIN, CmdOverrideTownSettingNonAdmin,                       {}, CMDT_OTHER_MANAGEMENT,       CmdDataT<TownID, TownSettingOverrideFlags, bool, uint8_t>)
 

@@ -236,6 +236,24 @@ inline DiagDirection AxisToDiagDir(Axis a)
 }
 
 /**
+ * Converts an Axis to DiagDirections
+ *
+ * This function returns both DiagDirections which
+ * belong to the axis.
+ *
+ * @param a The axis
+ * @return The DiagDirections.
+ */
+inline DiagDirections AxisToDiagDirs(Axis a)
+{
+	dbg_assert(IsValidAxis(a));
+	return static_cast<DiagDirections>(5 << a);
+//	return a == AXIS_X
+//		? DiagDirections{DIAGDIR_NE, DIAGDIR_SW}
+//		: DiagDirections{DIAGDIR_SE, DIAGDIR_NW};
+}
+
+/**
  * Converts an Axis to a Direction
  *
  * This function returns the Direction which

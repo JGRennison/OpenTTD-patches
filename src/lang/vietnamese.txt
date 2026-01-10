@@ -995,7 +995,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :Lựa chọn đ
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Bảng Anh
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Đô-la Mỹ
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1041,6 +1041,7 @@ STR_GAME_OPTIONS_CURRENCY_MYR                                   :Ringgit Malaysi
 STR_GAME_OPTIONS_CURRENCY_LVL                                   :Lát-vi-a Lats
 STR_GAME_OPTIONS_CURRENCY_PTE                                   :Escudo Bồ Đào Nha
 STR_GAME_OPTIONS_CURRENCY_UAH                                   :Hryvnia Ukraina
+STR_GAME_OPTIONS_CURRENCY_VND                                   :Việt Nam Đồng
 
 STR_GAME_OPTIONS_AUTOSAVE_FRAME                                 :Lưu tự động
 STR_GAME_OPTIONS_AUTOSAVE_DROPDOWN_TOOLTIP                      :Lựa chọn khoảng thời gian tự động lưu
@@ -1314,6 +1315,10 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Lãi xuất vay
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Chi phí hoạt động: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Thiết lập mức độ tính chi phí bảo trì và vận hành đối với phương tiện và hạ tầng giao thông
+###length 3
+STR_CONFIG_SETTING_RUNNING_COSTS_LOW                            :Thấp
+STR_CONFIG_SETTING_RUNNING_COSTS_MEDIUM                         :Trung bình
+STR_CONFIG_SETTING_RUNNING_COSTS_HIGH                           :Cao
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Tốc độ xây dựng: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Giới hạn hành động xây dựng của AI
@@ -1335,6 +1340,10 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :Không có tr�
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Chi phí xây dựng: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Thiết lập mức độ xây dựng và chi phí mua sắm
+###length 3
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_LOW                       :Thấp
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_MEDIUM                    :Trung bình
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :Cao
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Suy thoái: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Nếu bật, thì các đợt suy thoái sẽ xảy ra vài năm một lần. Trong suy thoái tất cả sản xuất sẽ giảm mạnh (và sẽ trở lại như cũ sau khi suy thoái kết thúc)
@@ -1680,6 +1689,9 @@ STR_CONFIG_SETTING_SCROLLMODE_LMB                               :Kéo cuộn b�
 
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Cuộn uyển chuyển cửa sổ: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Điều khiển cách màn hình chính cuộn tới vị trí cụ thể khi nháy chuột vào bản đồ nhỏ hoặc khi gõ lệnh cuộn tới đối tượng trên bản đồ. Nếu bật, thì sẽ cuộn trượt, nếu tắt thì nhảy thẳng tới vị trí đó.
+
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT                  :Hành vi khi chọn menu từ thanh công cụ truyền thông: {STRING}
+STR_CONFIG_SETTING_TOOLBAR_DROPDOWN_AUTOSELECT_HELPTEXT         :Chọn hành vi lựa chọn của menu thanh công cụ. Nếu tắt, menu thanh công cụ sẽ còn hiển thị cho đến khi đã chọn một lựa chọn. Nếu bật, menu thanh công cụ sẽ hiển thị khi thả nút chuột.
 
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Hiện bảng đo lường khi dùng các công cụ xây dựng: {STRING}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP_HELPTEXT                     :Hiển thị khoảng cách ô và chênh lệch độ cao khi kéo thả trong khi xây dựng
@@ -2091,9 +2103,9 @@ STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :Loại hàng h�
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :Chế độ phân phối đối với các loại hàng hóa mặc định: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :"Không đối xứng" có nghĩa là số lượng hàng hóa tùy ý có thể được gửi theo một trong hai hướng. "Thủ công" có nghĩa là những loại hàng hóa đó sẽ không được phân phối tự động
 ###length 3
-STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :bằng tay
-STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :bất đối xứng
-STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :đối xứng
+STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :Bằng tay
+STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :Bất đối xứng
+STR_CONFIG_SETTING_DISTRIBUTION_SYMMETRIC                       :Đối xứng
 
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY                           :Độ chính xác phân phối: {STRING}
 STR_CONFIG_SETTING_LINKGRAPH_ACCURACY_HELPTEXT                  :Mức chính xác tính toán đồ thị, nếu giá trị càng cao càng tốn CPU và trò chơi có thể chậm phản ứng, tuy nhiên giá trị thấp sẽ khiến việc phân phối sẽ giảm sự chính xác và bạn sẽ thấy sự khác biệt là hàng hóa không gửi đến chỗ cần đến
@@ -2201,8 +2213,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... khô
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... từ chối gói đồ họa chuẩn '{STRING}': không tìm thấy
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... từ chối gói âm thanh chuẩn '{STRING}': không tìm thấy
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... từ chối gói nhạc chuẩn '{STRING}': không tìm thấy
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Hết bộ nhớ
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Phân bổ {BYTES} cho spritecache thất bại. Spritecache đã được giảm còn {BYTES}. Điều này có thể làm giảm hiệu năng của OpenTTD. Để giảm yêu cầu bộ nhớ, bạn có thể thử tắt gói đồ họa 32bpp và/hoặc mức độ phóng to
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Lỗi ở thiết lập hình ảnh...
@@ -2210,7 +2220,8 @@ STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... khô
 STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :{WHITE}... trình điều khiển GPU đã làm trò chơi bị lỗi. Tăng tốc phần cứng đã được tắt
 
 # Intro window
-STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
+STR_INTRO_CAPTION                                               :{WHITE}OpenTTD
+STR_INTRO_VERSION                                               :OpenTTD {REV}
 
 STR_INTRO_NEW_GAME                                              :{BLACK}Màn Chơi Mới
 STR_INTRO_LOAD_GAME                                             :{BLACK}Nạp Ván Chơi
@@ -2829,6 +2840,11 @@ STR_PICKER_MODE_USED_TOOLTIP                                    :Bật/tắt hi�
 STR_PICKER_MODE_SAVED                                           :Đã lưu
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :Bật/tắt hiển thị những hạng mục được lưu
 
+STR_PICKER_PREVIEW_SHRINK                                       :-
+STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Giảm chiều cao của ảnh xem trước. Ctrl+Click để giảm đến mức tối thiểu
+STR_PICKER_PREVIEW_EXPAND                                       :+
+STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Tăng chiều cao của ảnh xem trước. Ctrl+Click để tăng đến mức tối đa
+
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Chọn loại ga bến cần hiển thị
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Chọn loại ga bến để xây. Ctrl+Click để thêm hoặc bớt vào danh sách lưu
 STR_PICKER_WAYPOINT_CLASS_TOOLTIP                               :Chọn loại điểm mốc cần hiển thị
@@ -2879,13 +2895,13 @@ STR_BUILD_SIGNAL_SEMAPHORE_ENTRY_TOOLTIP                        :{BLACK}Đèn (c
 STR_BUILD_SIGNAL_SEMAPHORE_EXIT_TOOLTIP                         :{BLACK}Đèn (cờ) tín hiệu cửa thoát{}Tương tự đèn tín hiệu khoá, nhưng cần có để đổi trạng thái của đèn tín hiệu loại cửa nhập & kết hợp nằm trước nó.
 STR_BUILD_SIGNAL_SEMAPHORE_COMBO_TOOLTIP                        :{BLACK}Đèn (cờ) tín hiệu kết hợp{}Nó vừa là đèn tín hiệu cửa thoát (với đèn nhập ở phía trước nó) và vừa là đèn tín hiệu cửa nhập (đối với đèn thoát ở sau nó). Loại đèn này cho phép tạo nhiều lớp đèn cho một hệ thống tín hiệu phức tạp.
 STR_BUILD_SIGNAL_SEMAPHORE_PBS_TOOLTIP                          :{BLACK}Đèn (cờ) tín hiệu giành đường{}Đèn tín hiệu giành đường cho phép nhiều hơn 1 đoàn tàu có thể đi vào 1 khu vực khoá, nếu như mỗi đoàn tàu có thể giành lấy một con đường tới một điểm đến một cách an toàn. Đèn tín hiệu giành đường tiêu chuẩn cho thể cho phép đi qua từ phía sau của đèn.
-STR_BUILD_SIGNAL_SEMAPHORE_PBS_OWAY_TOOLTIP                     :{BLACK}Đèn (cờ) tín hiệu giành đường một chiều{}Đèn tín hiệu giành đường cho phép nhiều hơn 1 đoàn tàu có thể đi vào 1 khu vực khoá, nếu như mỗi đoàn tàu có thể giành lấy một con đường tới một điểm đến một cách an toàn. Đèn tín hiệu giành đường tiêu chuẩn cho thể cho phép đi qua từ phía sau của đèn.
+STR_BUILD_SIGNAL_SEMAPHORE_PBS_OWAY_TOOLTIP                     :{BLACK}Đèn (cờ) tín hiệu giành đường một chiều{}Đèn tín hiệu giành đường cho phép nhiều hơn 1 đoàn tàu có thể đi vào 1 khu vực khoá, nếu như mỗi đoàn tàu có thể giành lấy một con đường tới một điểm đến một cách an toàn. Đèn tín hiệu giành đường một chiều không cho phép đi ngược từ phía sau của đèn.
 STR_BUILD_SIGNAL_ELECTRIC_NORM_TOOLTIP                          :{BLACK}Đèn tín hiệu (điện){}Đèn tín hiệu cơ bản, chỉ cho phép một đoàn toàn đi vào một khu vực khoá của đèn.
 STR_BUILD_SIGNAL_ELECTRIC_ENTRY_TOOLTIP                         :{BLACK}Đèn tín hiệu cửa nhập (điện){}Sẽ xanh nếu một hoặc nhiều đèn tín hiệu cửa thoát ở phía sau màu xanh. Không thì sẽ đỏ.
 STR_BUILD_SIGNAL_ELECTRIC_EXIT_TOOLTIP                          :{BLACK}Đèn tín hiệu cửa thoát (điện){}Tương tự đèn tín hiệu khoá, nhưng cần có để đổi trạng thái của đèn tín hiệu loại cửa nhập & kết hợp nằm trước nó.
 STR_BUILD_SIGNAL_ELECTRIC_COMBO_TOOLTIP                         :{BLACK}Đèn tín hiệu kết hợp (điện){}Nó vừa là đèn tín hiệu cửa thoát (với đèn nhập ở phía trước nó) và vừa là đèn tín hiệu cửa nhập (đối với đèn thoát ở sau nó). Loại đèn này cho phép tạo nhiều lớp đèn cho một hệ thống tín hiệu phức tạp.
 STR_BUILD_SIGNAL_ELECTRIC_PBS_TOOLTIP                           :{BLACK}Đèn tín hiệu giành đường (điện){}Đèn tín hiệu giành đường cho phép nhiều hơn 1 đoàn tàu có thể đi vào 1 khu vực khoá, nếu như mỗi đoàn tàu có thể giành lấy một con đường tới một điểm đến một cách an toàn. Đèn tín hiệu giành đường tiêu chuẩn cho thể cho phép đi qua từ phía sau của đèn.
-STR_BUILD_SIGNAL_ELECTRIC_PBS_OWAY_TOOLTIP                      :{BLACK}Đèn tín hiệu giành đường một chiều (điện){}Đèn tín hiệu giành đường cho phép nhiều hơn 1 đoàn tàu có thể đi vào 1 khu vực khoá, nếu như mỗi đoàn tàu có thể giành lấy một con đường tới một điểm đến một cách an toàn. Đèn tín hiệu giành đường tiêu chuẩn cho thể cho phép đi qua từ phía sau của đèn.
+STR_BUILD_SIGNAL_ELECTRIC_PBS_OWAY_TOOLTIP                      :{BLACK}Đèn tín hiệu giành đường một chiều (điện){}Đèn tín hiệu giành đường cho phép nhiều hơn 1 đoàn tàu có thể đi vào 1 khu vực khoá, nếu như mỗi đoàn tàu có thể giành lấy một con đường tới điểm đến một cách an toàn. Đèn tín hiệu giành đường một chiều không cho phép đi ngược lại từ phía sau của đèn.
 STR_BUILD_SIGNAL_CONVERT_TOOLTIP                                :{BLACK}Chuyển đổi đèn tín hiệu{}Khi sử dụng, nháy vào đèn hiệu đang có, sẽ chuyển đổi loại đèn đã chọn, Ctrl+Click sẽ đổi loại đèn. Shift để hiện chi phí dự tính
 STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_TOOLTIP                   :{BLACK}Mật độ khi kéo chuỗi đèn hiệu
 STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_DECREASE_TOOLTIP          :{BLACK}Giảm khoảng cách kéo chuỗi đèn hiệu
@@ -3525,15 +3541,12 @@ STR_SAVE_PRESET_CAPTION                                         :{WHITE}Lưu thi
 STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}Danh sách những thiết lập có sẵn, chọn một để sao chép tên thiết lập
 STR_SAVE_PRESET_TITLE                                           :{BLACK}Nhập tên cho thiết lập
 STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}Tên hiện tại cho thiết lập được lưu
-STR_SAVE_PRESET_CANCEL                                          :{BLACK}Hủy bỏ
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}Không thay đổi thiết lập
 STR_SAVE_PRESET_SAVE                                            :{BLACK}Lưu
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}Lưu thiết lập bằng tên được chọn
 
 # NewGRF parameters window
 STR_BASEGRF_PARAMETERS_CAPTION                                  :{WHITE}Thay đổi các thông số của gói đồ họa chuẩn
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}Thay Đổi Tham Số NewGRF
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Đóng
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}Đặt mặc định
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}Đặt tất cả các tham số về mặc định
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :Tham số {NUM}
@@ -3676,7 +3689,7 @@ STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}Nhập t
 STR_TOWN_DIRECTORY_CAPTION                                      :{WHITE}Đô Thị ({COMMA} đến {COMMA})
 STR_TOWN_DIRECTORY_NONE                                         :{ORANGE}- Không Có -
 STR_TOWN_DIRECTORY_TOWN                                         :{ORANGE}{TOWN}{BLACK} ({COMMA})
-STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{YELLOW} (đô thị){BLACK} ({COMMA})
+STR_TOWN_DIRECTORY_CITY                                         :{ORANGE}{TOWN}{BLACK} ({COMMA}) {YELLOW}{CITY_ICON}
 STR_TOWN_DIRECTORY_LIST_TOOLTIP                                 :{BLACK}Tên các đô thị - nháy vào tên để xem trung tâm đô thị. Ctrl+Click mở cửa sổ mới của đô thị
 STR_TOWN_POPULATION                                             :{BLACK}Dân số thế giới: {COMMA}
 
@@ -4903,8 +4916,6 @@ STR_AI_LIST_URL                                                 :{LTBLUE}URL: {O
 
 STR_AI_LIST_ACCEPT                                              :{BLACK}Chấp nhận
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Chấp nhận AI đã chọn
-STR_AI_LIST_CANCEL                                              :{BLACK}Huỷ bỏ
-STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Không đổi tập lệnh
 
 STR_SCREENSHOT_CAPTION                                          :{WHITE}Chụp màn hình
 STR_SCREENSHOT_SCREENSHOT                                       :{BLACK}Chụp màn hình bình thường
@@ -4917,7 +4928,6 @@ STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Chụp m
 # Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}Tham Số AI
 STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :{WHITE}Tham Số Game Script
-STR_AI_SETTINGS_CLOSE                                           :{BLACK}Đóng
 STR_AI_SETTINGS_RESET                                           :{BLACK}Thiết Lập Lại
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
 
@@ -5257,6 +5267,13 @@ STR_ERROR_START_AND_END_MUST_BE_IN                              :{WHITE}Điểu 
 STR_ERROR_ENDS_OF_BRIDGE_MUST_BOTH                              :{WHITE}... hai đầu cầu phải được gá vào đất
 STR_ERROR_BRIDGE_TOO_LONG                                       :{WHITE}... cầu quá dài
 STR_ERROR_BRIDGE_THROUGH_MAP_BORDER                             :{WHITE}Cầu có thể vượt quá phạm vi bản đồ
+STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}Cầu thấp hơn {HEIGHT} đơn vị cho ga
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROADSTOP                           :{WHITE}Cầu thấp hơn {HEIGHT} đơn vị cho điểm dừng chân
+STR_ERROR_BRIDGE_TOO_LOW_FOR_DOCK                               :{WHITE}Cầu thấp hơn {HEIGHT} đơn vị để xây dựng cảng
+STR_ERROR_BRIDGE_TOO_LOW_FOR_BUOY                               :{WHITE}Cầu thấp hơn {HEIGHT} đơn vị cho phao
+STR_ERROR_BRIDGE_TOO_LOW_FOR_RAIL_WAYPOINT                      :{WHITE}Cầu thấp hơn {HEIGHT} đơn vị cho điểm mốc đường ray
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROAD_WAYPOINT                      :{WHITE}Cầu thấp hơn {HEIGHT} đơn vị cho điểm mốc đường
+STR_ERROR_BRIDGE_TOO_LOW_FOR_LOCK                               :Cầu thấp hơn {HEIGHT} đơn vị, tàu không qua được khóa
 
 # Tunnel related errors
 STR_ERROR_CAN_T_BUILD_TUNNEL_HERE                               :{WHITE}Không thể đào hầm ở đây...
@@ -5873,6 +5890,8 @@ STR_SAVEGAME_NAME_SPECTATOR                                     :Tham quan, {1:S
 
 # Viewport strings
 STR_VIEWPORT_TOWN_POP                                           :{TOWN} ({COMMA})
+STR_VIEWPORT_TOWN_CITY                                          :{TOWN} {CITY_ICON}
+STR_VIEWPORT_TOWN_CITY_POP                                      :{TOWN} ({COMMA}) {CITY_ICON}
 STR_VIEWPORT_STATION                                            :{STATION} {STATION_FEATURES}
 
 # Simple strings to get specific types of data

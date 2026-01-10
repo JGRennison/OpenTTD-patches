@@ -865,7 +865,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_FRAME                           :Valutaeining
 STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :Vel valutaeining
 
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Pund
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Dollar
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1109,6 +1109,7 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Lånerente; kon
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Køyrekostnadar: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Set vedlikehaldsnivå og driftskostnadar for køyretøy og infrastruktur
+###length 3
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Fart for bygging: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Avgrensing av farten AIar kan gjere konstruksjonshandlingar i.
@@ -1125,6 +1126,7 @@ STR_CONFIG_SETTING_SUBSIDY_MULTIPLIER_HELPTEXT                  :Kor mykje ekstr
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Byggjekostnadar: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Nivået kostnadene for konstruksjon og kjøp ligg på
+###length 3
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Nedgangstider: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Skru på at det frå tid til anna kjem nedgangstider. Under nedgangstider fell all produksjon kraftig. (Han går opp att når nedgangstida er over.)
@@ -1386,6 +1388,7 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Fiolett
 ###length 4
 
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Jamn rulling i tilleggsvindauge: {STRING}
+
 
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Syne eit målingverktøytips når ymse byggjeverktøy brukast: {STRING}
 
@@ -1795,8 +1798,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... lagr
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... utelèt grafikksettet "{STRING}": ikkje funne
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... utelèt lydsettet "{STRING}": ikkje funne
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... utelèt musikksettet "{STRING}": ikkje funne
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}Ikkje meir minne
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}Fordeling {BYTES} av spritecache feila. Spritecache vart redusert til {BYTES}. Dette vil redusera ytelsen til OpenTTD. For å redusera minnebehova kan du prøva å deaktivera 32bpp grafikk og/eller zoom-nivåer
 
 # Video initalization errors
 
@@ -2280,6 +2281,7 @@ STR_STATION_BUILD_PLATFORM_LENGTH                               :{BLACK}Plattfor
 STR_STATION_BUILD_PLATFORM_LENGTH_TOOLTIP                       :{BLACK}Vel kor lang stasjonen skal vere
 STR_STATION_BUILD_DRAG_DROP                                     :{BLACK}Dra og slipp
 STR_STATION_BUILD_DRAG_DROP_TOOLTIP                             :{BLACK}Bygg stasjon med dra og slipp
+
 
 
 
@@ -2804,14 +2806,11 @@ STR_SAVE_PRESET_CAPTION                                         :{WHITE}Lagre f�
 STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}Liste av tilgjengelege førval, vel ein for å kopiera han til same navn nedanfor
 STR_SAVE_PRESET_TITLE                                           :{BLACK}Skriv inn eit namn for førehandsinnstillinga
 STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}Vald namn for førehandsinnstillinga som skal lagrast
-STR_SAVE_PRESET_CANCEL                                          :{BLACK}Avbryt
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}Ikkje endre førehandsinnstillinga
 STR_SAVE_PRESET_SAVE                                            :{BLACK}Lagre
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}Lagra førehandsinnstillingane til valt namn
 
 # NewGRF parameters window
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}Endre NewGRF-parametrar
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Lukk
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}Nullstill
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}Set alle parametrar til standardverdi
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :Parameter {NUM}
@@ -3969,13 +3968,10 @@ STR_AI_LIST_URL                                                 :{LTBLUE}URL: {O
 
 STR_AI_LIST_ACCEPT                                              :{BLACK}Godta
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Merk utheva AI
-STR_AI_LIST_CANCEL                                              :{BLACK}Avbryt
-STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}Ikkje endre AI
 
 
 # Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :AI
-STR_AI_SETTINGS_CLOSE                                           :{BLACK}Lukk
 STR_AI_SETTINGS_RESET                                           :{BLACK}Tilbakestill
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
 

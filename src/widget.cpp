@@ -47,7 +47,7 @@ static std::string GetStringForWidget(const Window *w, const NWidgetCore *nwid, 
 /**
  * Scale a RectPadding to GUI zoom level.
  * @param r RectPadding at ZOOM_BASE (traditional "normal" interface size).
- * @return RectPadding at #ZOOM_LVL_GUI (current interface size).
+ * @return RectPadding at current interface size.
  */
 static inline RectPadding ScaleGUITrad(const RectPadding &r)
 {
@@ -57,7 +57,7 @@ static inline RectPadding ScaleGUITrad(const RectPadding &r)
 /**
  * Scale a Dimension to GUI zoom level.
  * @param d Dimension at ZOOM_BASE (traditional "normal" interface size).
- * @return Dimension at #ZOOM_LVL_GUI (current interface size).
+ * @return Dimension at current interface size.
  */
 static inline Dimension ScaleGUITrad(const Dimension &dim)
 {
@@ -243,6 +243,7 @@ static void ScrollbarClickPositioning(Window *w, NWidgetScrollbar *sb, int x, in
 
 	if (changed) {
 		/* Position changed so refresh the window */
+		w->OnScrollbarScroll(sb->GetIndex());
 		w->SetDirty();
 	} else {
 		/* No change so only refresh this scrollbar */
@@ -2226,9 +2227,11 @@ void NWidgetBackground::SetupSmallestSize(Window *w)
 		if (w != nullptr) { // A non-nullptr window pointer acts as switch to turn dynamic widget size on.
 			if (this->type == WWT_FRAME || this->type == WWT_INSET) {
 				std::string text = GetStringForWidget(w, this);
-				Dimension background = GetStringBoundingBox(text, this->text_size);
-				background.width += (this->type == WWT_FRAME) ? (WidgetDimensions::scaled.frametext.Horizontal()) : (WidgetDimensions::scaled.inset.Horizontal());
-				d = maxdim(d, background);
+				if (!text.empty()) {
+					Dimension background = GetStringBoundingBox(text, this->text_size);
+					background.width += (this->type == WWT_FRAME) ? (WidgetDimensions::scaled.frametext.Horizontal()) : (WidgetDimensions::scaled.inset.Horizontal());
+					d = maxdim(d, background);
+				}
 			}
 			if (this->index >= 0) {
 				Dimension padding;

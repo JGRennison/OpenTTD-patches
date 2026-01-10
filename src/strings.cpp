@@ -311,6 +311,7 @@ struct LoadedLanguagePack {
 	std::array<uint, TEXT_TAB_END> langtab_start; ///< Offset into langpack offs
 
 	std::string list_separator; ///< Current list separator string.
+	std::string ellipsis; ///< Current ellipsis string.
 };
 
 static LoadedLanguagePack _langpack;
@@ -324,6 +325,15 @@ static bool _scan_for_gender_data = false;  ///< Are we scanning for the gender 
 std::string_view GetListSeparator()
 {
 	return _langpack.list_separator;
+}
+
+/**
+ * Get the ellipsis string for the current language.
+ * @returns string containing ellipsis to use.
+ */
+std::string_view GetEllipsis()
+{
+	return _langpack.ellipsis;
 }
 
 std::string_view GetStringPtr(StringID string)
@@ -2514,6 +2524,7 @@ bool ReadLanguagePack(const LanguageMetadata *lang)
 	_config_language_file = c_file;
 	SetCurrentGrfLangID(_current_language->newgrflangid);
 	_langpack.list_separator = GetString(STR_LIST_SEPARATOR);
+	_langpack.ellipsis = GetString(STR_TRUNCATION_ELLIPSIS);
 
 	FillDecimalSeparatorChar();
 
@@ -2723,7 +2734,7 @@ std::string_view GetCurrentLanguageIsoCode()
  */
 bool MissingGlyphSearcher::FindMissingGlyphs()
 {
-	InitFontCache(this->Monospace());
+	InitFontCache(this->Monospace() ? FontSizes{FS_MONO} : FONTSIZES_REQUIRED);
 
 	this->Reset();
 	for (auto text = this->NextString(); text.has_value(); text = this->NextString()) {
@@ -2735,17 +2746,7 @@ bool MissingGlyphSearcher::FindMissingGlyphs()
 				fc = FontCache::Get(size);
 			} else if (!IsInsideMM(c, SCC_SPRITE_START, SCC_SPRITE_END) && IsPrintable(c) && !IsTextDirectionChar(c) && fc->MapCharToGlyph(c, false) == 0) {
 				/* The character is printable, but not in the normal font. This is the case we were testing for. */
-				std::string size_name;
-
-				switch (size) {
-					case FS_NORMAL: size_name = "medium"; break;
-					case FS_SMALL: size_name = "small"; break;
-					case FS_LARGE: size_name = "large"; break;
-					case FS_MONO: size_name = "mono"; break;
-					default: NOT_REACHED();
-				}
-
-				Debug(fontcache, 0, "Font is missing glyphs to display char 0x{:X} in {} font size", (int)c, size_name);
+				Debug(fontcache, 0, "Font is missing glyphs to display char 0x{:X} in {} font size", static_cast<uint32_t>(c), FontSizeToName(size));
 				return true;
 			}
 		}
@@ -2849,7 +2850,7 @@ void CheckForMissingGlyphs(bool base_font, MissingGlyphSearcher *searcher)
 			/* Our fallback font does miss characters too, so keep the
 			 * user chosen font as that is more likely to be any good than
 			 * the wild guess we made */
-			InitFontCache(searcher->Monospace());
+			InitFontCache(searcher->Monospace() ? FontSizes{FS_MONO} : FONTSIZES_REQUIRED);
 		}
 	}
 #endif
@@ -2865,13 +2866,13 @@ void CheckForMissingGlyphs(bool base_font, MissingGlyphSearcher *searcher)
 		ShowErrorMessage(GetEncodedString(STR_JUST_RAW_STRING, (std::string_view)err_str), {}, WL_WARNING);
 
 		/* Reset the font width */
-		LoadStringWidthTable(searcher->Monospace());
+		LoadStringWidthTable(searcher->Monospace() ? FontSizes{FS_MONO} : FONTSIZES_REQUIRED);
 		ReInitAllWindows(false);
 		return;
 	}
 
 	/* Update the font with cache */
-	LoadStringWidthTable(searcher->Monospace());
+	LoadStringWidthTable(searcher->Monospace() ? FontSizes{FS_MONO} : FONTSIZES_REQUIRED);
 	ReInitAllWindows(false);
 
 #if !(defined(WITH_ICU_I18N) && defined(WITH_HARFBUZZ)) && !defined(WITH_UNISCRIBE) && !defined(WITH_COCOA)

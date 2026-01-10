@@ -495,7 +495,7 @@ struct NewGRFInspectWindow final : Window {
 			}
 
 			case WID_NGRFI_MAINPANEL:
-				resize.height = std::max(11, GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal);
+				fill.height = resize.height = std::max(11, GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal);
 				resize.width  = 1;
 
 				size.height = 5 * resize.height + WidgetDimensions::scaled.frametext.Vertical();
@@ -1163,7 +1163,7 @@ struct NewGRFInspectWindow final : Window {
 		if (!str.has_value()) return;
 
 		if (this->current_edit_param == 0 && this->sprite_dump) {
-			auto val = ParseInteger<int32_t>(*str);
+			auto val = ParseInteger<int32_t>(*str, 10, true);
 			if (!val.has_value()) return;
 			auto iter = this->nfo_line_lines.find(*val);
 			if (iter != this->nfo_line_lines.end()) {
@@ -1518,7 +1518,7 @@ struct SpriteAlignerWindow : Window {
 
 	std::string GetWidgetString(WidgetID widget, StringID stringid) const override
 	{
-		const Sprite *spr = GetSprite(this->current_sprite, SpriteType::Normal, LowZoomMask(ZOOM_LVL_GUI));
+		const Sprite *spr = GetSprite(this->current_sprite, SpriteType::Normal, LowZoomMask(_gui_zoom));
 		switch (widget) {
 			case WID_SA_CAPTION:
 				if (this->act5_type != nullptr) {
@@ -1573,9 +1573,8 @@ struct SpriteAlignerWindow : Window {
 					d = maxdim(d, GetStringBoundingBox(GetString(STR_SPRITE_ALIGNER_SPRITE, spritefile->GetSimplifiedFilename(), GetParamMaxDigits(6))));
 				}
 				size.width = d.width + padding.width;
-				resize.height = GetCharacterHeight(FS_NORMAL) + padding.height;
+				fill.height = resize.height = GetCharacterHeight(FS_NORMAL) + padding.height;
 				resize.width = 1;
-				fill.height = resize.height;
 				break;
 			}
 
@@ -1589,7 +1588,7 @@ struct SpriteAlignerWindow : Window {
 		switch (widget) {
 			case WID_SA_SPRITE: {
 				/* Center the sprite ourselves */
-				const Sprite *spr = GetSprite(this->current_sprite, SpriteType::Normal, LowZoomMask(ZOOM_LVL_GUI));
+				const Sprite *spr = GetSprite(this->current_sprite, SpriteType::Normal, LowZoomMask(_gui_zoom));
 				Rect ir = r.Shrink(WidgetDimensions::scaled.bevel);
 				int x;
 				int y;
@@ -1756,7 +1755,7 @@ struct SpriteAlignerWindow : Window {
 	{
 		if (!str.has_value()) return;
 
-		auto value = ParseInteger(*str);
+		auto value = ParseInteger(*str, 10, true);
 		if (!value.has_value()) return;
 		this->current_sprite = *value;
 		if (this->current_sprite >= GetMaxSpriteID()) this->current_sprite = 0;

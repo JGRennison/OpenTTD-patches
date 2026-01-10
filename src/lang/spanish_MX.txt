@@ -994,7 +994,7 @@ STR_GAME_OPTIONS_CURRENCY_UNITS_DROPDOWN_TOOLTIP                :Elegir divisa
 
 STR_GAME_OPTIONS_CURRENCY_CODE                                  :{STRING} ({STRING})
 
-###length 45
+###length 46
 STR_GAME_OPTIONS_CURRENCY_GBP                                   :Libra británica
 STR_GAME_OPTIONS_CURRENCY_USD                                   :Dólar estadounidense
 STR_GAME_OPTIONS_CURRENCY_EUR                                   :Euro
@@ -1313,6 +1313,10 @@ STR_CONFIG_SETTING_INTEREST_RATE_HELPTEXT                       :Tasa de interé
 
 STR_CONFIG_SETTING_RUNNING_COSTS                                :Costos de operación: {STRING}
 STR_CONFIG_SETTING_RUNNING_COSTS_HELPTEXT                       :Nivel de costos de mantenimiento y operación de vehículos e infraestructura
+###length 3
+STR_CONFIG_SETTING_RUNNING_COSTS_LOW                            :Bajos
+STR_CONFIG_SETTING_RUNNING_COSTS_MEDIUM                         :Medios
+STR_CONFIG_SETTING_RUNNING_COSTS_HIGH                           :Altos
 
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED                           :Velocidad de construcción: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_SPEED_HELPTEXT                  :Restringir la velocidad de las acciones de construcción de jugadores no humanos
@@ -1334,6 +1338,10 @@ STR_CONFIG_SETTING_SUBSIDY_DURATION_DISABLED                    :Sin subsidios
 
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS                           :Costos de construcción: {STRING}
 STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HELPTEXT                  :Nivel de costos de construcción y adquisición
+###length 3
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_LOW                       :Bajos
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_MEDIUM                    :Medios
+STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :Altos
 
 STR_CONFIG_SETTING_RECESSIONS                                   :Recesiones: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Al activarse, habrá recesiones periódicamente en las que toda la producción decaerá considerablemente, restableciéndose al final de cada recesión
@@ -1679,6 +1687,7 @@ STR_CONFIG_SETTING_SCROLLMODE_LMB                               :Recorrer mapa c
 
 STR_CONFIG_SETTING_SMOOTH_SCROLLING                             :Desplazamiento suave: {STRING}
 STR_CONFIG_SETTING_SMOOTH_SCROLLING_HELPTEXT                    :Desplazamiento de la vista principal a una ubicación en el minimapa o al ver un objeto determinado en el mapa. Al activarse, el desplazamiento es suave; al desactivarse, el desplazamiento es instantáneo
+
 
 STR_CONFIG_SETTING_MEASURE_TOOLTIP                              :Mostrar información de medidas al usar las herramientas de construcción: {STRING}
 STR_CONFIG_SETTING_MEASURE_TOOLTIP_HELPTEXT                     :Mostrar distancias en número de casillas y las diferencias de altura cuando se realicen labores de construcción
@@ -2200,8 +2209,6 @@ STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... el f
 STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... gráficos base '{STRING}' ignorados: no encontrados
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... sonidos base '{STRING}' ignorados: no encontrados
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... música base '{STRING}' ignorada: no encontrada
-STR_CONFIG_ERROR_OUT_OF_MEMORY                                  :{WHITE}No hay memoria suficiente
-STR_CONFIG_ERROR_SPRITECACHE_TOO_BIG                            :{WHITE}La asignación de {BYTES} de caché de sprites ha fallado. La caché de sprites ha sido reducida a {BYTES}, lo que reducirá el desempeño de OpenTTD. Para reducir los requisitos de memoria es posible deshabilitar los gráficos de 32bpp o reducir los grados de acercamiento
 
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Error en la configuración de video...
@@ -2209,7 +2216,8 @@ STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... no s
 STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :{WHITE}... el controlador de GPU provocó una falla total en el juego. Se desactivó la aceleración por hardware
 
 # Intro window
-STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}
+STR_INTRO_CAPTION                                               :{WHITE}OpenTTD
+STR_INTRO_VERSION                                               :OpenTTD {REV}
 
 STR_INTRO_NEW_GAME                                              :{BLACK}Nueva partida
 STR_INTRO_LOAD_GAME                                             :{BLACK}Cargar partida
@@ -2827,6 +2835,11 @@ STR_PICKER_MODE_USED                                            :Usados
 STR_PICKER_MODE_USED_TOOLTIP                                    :Ver solo los elementos existentes
 STR_PICKER_MODE_SAVED                                           :Guardados
 STR_PICKER_MODE_SAVED_TOOLTIP                                   :Ver solo los elementos guardados
+
+STR_PICKER_PREVIEW_SHRINK                                       :-
+STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Reducir la altura de las imágenes previas. Ctrl+Clic reduce al mínimo
+STR_PICKER_PREVIEW_EXPAND                                       :+
+STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Incrementar la altura de las imágenes previas. Ctrl+Clic aumenta al máximo
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Elegir qué clase de estación mostrar
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Elegir qué tipo de estación construir. Ctrl+Clic lo añade o elimina de guardados
@@ -3522,15 +3535,12 @@ STR_SAVE_PRESET_CAPTION                                         :{WHITE}Guardar 
 STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}Lista de perfiles disponibles (elegir uno para copiar el nombre en el perfil inferior)
 STR_SAVE_PRESET_TITLE                                           :{BLACK}Indicar un nombre para el perfil
 STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}Nombre del perfil a guardar
-STR_SAVE_PRESET_CANCEL                                          :{BLACK}Cancelar
-STR_SAVE_PRESET_CANCEL_TOOLTIP                                  :{BLACK}No modificar el perfil
 STR_SAVE_PRESET_SAVE                                            :{BLACK}Guardar
 STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}Guardar el perfil con el nombre elegido
 
 # NewGRF parameters window
 STR_BASEGRF_PARAMETERS_CAPTION                                  :{WHITE}Cambiar parámetros de gráficos base
 STR_NEWGRF_PARAMETERS_CAPTION                                   :{WHITE}Cambiar parámetros de NewGRF
-STR_NEWGRF_PARAMETERS_CLOSE                                     :{BLACK}Cerrar
 STR_NEWGRF_PARAMETERS_RESET                                     :{BLACK}Restablecer
 STR_NEWGRF_PARAMETERS_RESET_TOOLTIP                             :{BLACK}Restablecer todos los parámetros a sus valores predeterminados
 STR_NEWGRF_PARAMETERS_DEFAULT_NAME                              :Parámetro {NUM}
@@ -4895,8 +4905,6 @@ STR_AI_LIST_URL                                                 :{LTBLUE}URL: {O
 
 STR_AI_LIST_ACCEPT                                              :{BLACK}Aceptar
 STR_AI_LIST_ACCEPT_TOOLTIP                                      :{BLACK}Elegir el script marcado
-STR_AI_LIST_CANCEL                                              :{BLACK}Cancelar
-STR_AI_LIST_CANCEL_TOOLTIP                                      :{BLACK}No cambiar de script
 
 STR_SCREENSHOT_CAPTION                                          :{WHITE}Tomar captura de pantalla
 STR_SCREENSHOT_SCREENSHOT                                       :{BLACK}Captura normal
@@ -4909,7 +4917,6 @@ STR_SCREENSHOT_MINIMAP_SCREENSHOT                               :{BLACK}Captura 
 # Script Parameters
 STR_AI_SETTINGS_CAPTION_AI                                      :{WHITE}Parámetros de IA
 STR_AI_SETTINGS_CAPTION_GAMESCRIPT                              :{WHITE}Parámetros de script de juego
-STR_AI_SETTINGS_CLOSE                                           :{BLACK}Cerrar
 STR_AI_SETTINGS_RESET                                           :{BLACK}Restablecer parámetros
 STR_AI_SETTINGS_SETTING                                         :{STRING}: {ORANGE}{STRING}
 
