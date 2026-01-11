@@ -2335,7 +2335,6 @@ struct TownCargoGraphWindow : BaseCargoGraphWindow {
 		this->num_on_x_axis = GRAPH_NUM_MONTHS;
 		this->num_vert_lines = GRAPH_NUM_MONTHS;
 		this->month_increment = 1;
-		this->x_values_reversed = true;
 		this->x_values_increment = ECONOMY_MONTH_MINUTES;
 		this->draw_dates = !EconTime::UsingWallclockUnits();
 		this->ranges = RANGE_LABELS;
@@ -2380,7 +2379,7 @@ struct TownCargoGraphWindow : BaseCargoGraphWindow {
 
 	void UpdateStatistics(bool initialize) override
 	{
-		int mo = EconTime::CurMonth() - this->num_vert_lines;
+		int mo = (EconTime::CurMonth() / this->month_increment - this->num_vert_lines) * this->month_increment;
 		auto yr = EconTime::CurYear();
 		while (mo < 0) {
 			yr--;
