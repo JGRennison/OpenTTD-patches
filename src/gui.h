@@ -30,10 +30,6 @@ void ShowGameOptions();
 /* train_gui.cpp */
 void ShowOrdersWindow(const Vehicle *v);
 
-/* dock_gui.cpp */
-Window *ShowBuildDocksToolbar();
-Window *ShowBuildDocksScenToolbar();
-
 /* airport_gui.cpp */
 Window *ShowBuildAirToolbar();
 

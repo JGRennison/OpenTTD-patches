@@ -12,8 +12,10 @@
 #include "window_gui.h"
 #include "station_cmd.h"
 #include "station_gui.h"
+#include "station_map.h"
 #include "command_func.h"
 #include "water.h"
+#include "water_map.h"
 #include "window_func.h"
 #include "vehicle_func.h"
 #include "sound_func.h"
@@ -40,6 +42,8 @@
 
 static void ShowBuildDockStationPicker(Window *parent);
 static void ShowBuildDocksDepotPicker(Window *parent);
+Window *ShowBuildDocksToolbar();
+Window *ShowBuildDocksScenToolbar();
 
 static Axis _ship_depot_direction;
 
@@ -421,6 +425,47 @@ static WindowDesc _build_docks_scen_toolbar_desc(__FILE__, __LINE__,
 Window *ShowBuildDocksScenToolbar()
 {
 	return AllocateWindowDescFront<BuildDocksToolbarWindow>(_build_docks_scen_toolbar_desc, TRANSPORT_WATER);
+}
+
+/**
+ * This handles canals, rivers, locks, and aqueducts by opening the toolbar.
+ * For docks and buoys, it also triggers the appropriate placement tool.
+ *
+ * @param tile The tile that was picked.
+ */
+void ShowBuildDocksToolbarFromTile(TileIndex tile)
+{
+	BuildDocksToolbarWindow *w;
+
+	if (_game_mode == GM_EDITOR) {
+		w = static_cast<BuildDocksToolbarWindow *>(ShowBuildDocksScenToolbar());
+	} else {
+		w = static_cast<BuildDocksToolbarWindow *>(ShowBuildDocksToolbar());
+	}
+	if (w == nullptr) return;
+
+	if (IsTileType(tile, MP_STATION)) {
+		StationType station_type = GetStationType(tile);
+		switch (station_type) {
+			case StationType::Dock:
+				if (HandlePlacePushButton(w, WID_DT_STATION, SPR_CURSOR_DOCK, HT_SPECIAL)) {
+					ShowBuildDockStationPicker(w);
+				}
+				w->last_clicked_widget = WID_DT_STATION;
+				return;
+
+			case StationType::Buoy:
+				HandlePlacePushButton(w, WID_DT_BUOY, SPR_CURSOR_BUOY, HT_RECT);
+				w->last_clicked_widget = WID_DT_BUOY;
+				return;
+
+			default:
+				return;
+		}
+	}
+
+	/* For MP_WATER tiles (canals, rivers, locks) and MP_TUNNELBRIDGE (aqueducts),
+	 * just open the toolbar without selecting a specific tool. */
 }
 
 /** Widget numbers of the build-dock GUI. */
