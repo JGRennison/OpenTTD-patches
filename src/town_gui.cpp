@@ -2101,12 +2101,16 @@ static CargoTypes GetProducedCargoOfHouse(const HouseSpec *hs)
 }
 
 struct BuildHouseWindow : public PickerWindow {
+private:
+	uint coverage_height = 0; ///< Height of the coverage texts.
+public:
 	std::string house_info{};
 	static inline bool house_protected;
 	static inline bool replace;
 
 	BuildHouseWindow(WindowDesc &desc, WindowNumber wno, Window *parent) : PickerWindow(desc, parent, wno, HousePickerCallbacks::instance)
 	{
+		this->coverage_height = 2 * GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal;
 		HousePickerCallbacks::instance.SetClimateMask();
 		this->ConstructWindow();
 	}
@@ -2257,6 +2261,25 @@ struct BuildHouseWindow : public PickerWindow {
 		this->SetWidgetDisabledState(WID_BH_PROTECT_TOGGLE, hasflag);
 	}
 
+	void OnPaint() override
+	{
+		this->DrawWidgets();
+
+		if (this->IsShaded()) return;
+		/* House Information, including 'Accepts' and 'Supplies' texts. */
+		Rect r = this->GetWidget<NWidgetBase>(WID_BH_INFO)->GetCurrentRect();
+		const int bottom = r.bottom;
+		r.bottom = INT_MAX; // Allow overflow as we want to know the required height.
+		r.top = DrawStringMultiLine(r, this->house_info) + WidgetDimensions::scaled.vsep_normal;
+		/* Resize background if the window is too small.
+		 * Never make the window smaller to avoid oscillating if the size change affects the acceptance.
+		 * (This is the case, if making the window bigger moves the mouse into the window.) */
+		if (r.top > bottom) {
+			this->coverage_height += r.top - bottom;
+			ReInit();
+		}
+	}
+
 	void OnPlaceObject([[maybe_unused]] Point pt, TileIndex tile) override
 	{
 		const HouseSpec *spec = HouseSpec::Get(HousePickerCallbacks::sel_type);
@@ -2312,6 +2335,19 @@ struct BuildHouseWindow : public PickerWindow {
 		} else {
 			Command<Commands::PlaceHouseArea>::Post(STR_ERROR_CAN_T_BUILD_HOUSE, CommandCallback::PlaySound_CONSTRUCTION_OTHER,
 					end_tile, start_tile, house_types, BuildHouseWindow::house_protected, TownID::Invalid(), BuildHouseWindow::replace, _ctrl_pressed);
+		}
+	}
+
+	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
+	{
+		switch (widget) {
+			case WID_BH_INFO:
+				size.height = this->coverage_height;
+				break;
+
+			default:
+				this->PickerWindow::UpdateWidgetSize(widget, size, padding, fill, resize);
+				break;
 		}
 	}
 
