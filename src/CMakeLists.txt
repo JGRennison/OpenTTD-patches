@@ -163,6 +163,7 @@ add_files(
     disaster_vehicle.cpp
     disaster_vehicle.h
     dock_gui.cpp
+    dock_gui.h
     driver.cpp
     driver.h
     dropdown.cpp
