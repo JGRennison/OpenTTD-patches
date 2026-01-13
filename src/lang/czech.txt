@@ -342,6 +342,7 @@ STR_UNITS_YEARS                                                 :{NUM}{NBSP}{P r
 STR_UNITS_PERIODS                                               :{NUM}{NBSP}období
 
 STR_LIST_SEPARATOR                                              :,{SPACE}
+STR_TRUNCATION_ELLIPSIS                                         :...
 
 # Common window strings
 STR_LIST_FILTER_TITLE                                           :{BLACK}Filtrovat řetězec:
@@ -2188,7 +2189,7 @@ STR_CONFIG_SETTING_DISTRIBUTION_MAIL_HELPTEXT                   :"Symetricky" zn
 STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED                        :Mód distribuce pro náklady pancéřových vozů: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_ARMOURED_HELPTEXT               :Třída nákladu ARMOURED (Cennosti) obsahuje cennosti v mírném podnebí, diamanty v subtropickém nebo zlato v subarktickém podnebí. NewGRF soubory toto mohou změnit. "Symetrický" znamená, že ze stanice A do stanice B bude odesláno zhruba stejné množství tohoto nákladu jako ze stanice B do stanice A. "Asymetrický" znamená, že v obou směrech může být zasláno libovolné množství tohoto nákladu. "Manuální" znamená, že u daného nákladu nebude probíhat žádná automatická distribuce. Při hraní v subarktickém nebo subtropickém podnebí se doporučuje nastavit asymetrickou nebo manuální distribuci, protože banky v těchto podnebích náklad pouze přijímají. Pro mírné podnebí můžete zvolit i symetrickou, protože banky v něm posílají cennosti zpět do výchozí banky.
 STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT                         :Módy distribuce pro ostatní třídy nákladu: {STRING}
-STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :"Asymmetricky" znamená, že v obou směrech může být zasláno libovolné množství nákladu. "Manuální" znamená, že u těchto nákladů nebude probíhat žádná automatická distribuce.
+STR_CONFIG_SETTING_DISTRIBUTION_DEFAULT_HELPTEXT                :"Asymetrický" znamená, že v obou směrech může být zasláno libovolné množství nákladu. "Manuální" znamená, že u těchto nákladů nebude probíhat žádná automatická distribuce.
 ###length 3
 STR_CONFIG_SETTING_DISTRIBUTION_MANUAL                          :manuální
 STR_CONFIG_SETTING_DISTRIBUTION_ASYMMETRIC                      :Asymmetrický

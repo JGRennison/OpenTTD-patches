@@ -646,6 +646,7 @@ STR_UNITS_YEARS                                                 :{NUM}{NBSP}{P r
 STR_UNITS_PERIODS                                               :{NUM}{NBSP}okres{P "" y ów}
 
 STR_LIST_SEPARATOR                                              :,{SPACE}
+STR_TRUNCATION_ELLIPSIS                                         :...
 
 # Common window strings
 STR_LIST_FILTER_TITLE                                           :{BLACK}Filtr:
@@ -1603,12 +1604,12 @@ STR_CLIMATE_SUB_TROPICAL_LANDSCAPE                              :Krajobraz tropi
 STR_CLIMATE_TOYLAND_LANDSCAPE                                   :Krajobraz zabawkowy
 
 ###length 7
-STR_TERRAIN_TYPE_VERY_FLAT                                      :Bardzo płaski
-STR_TERRAIN_TYPE_FLAT                                           :Płaski
-STR_TERRAIN_TYPE_HILLY                                          :Pagórkowaty
-STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Górzysty
-STR_TERRAIN_TYPE_ALPINIST                                       :Alpejski
-STR_TERRAIN_TYPE_CUSTOM                                         :Niestandardowa wysokość
+STR_TERRAIN_TYPE_VERY_FLAT                                      :Bardzo płasko
+STR_TERRAIN_TYPE_FLAT                                           :Płasko
+STR_TERRAIN_TYPE_HILLY                                          :Pagórkowato
+STR_TERRAIN_TYPE_MOUNTAINOUS                                    :Górzyście
+STR_TERRAIN_TYPE_ALPINIST                                       :Alpejsko
+STR_TERRAIN_TYPE_CUSTOM                                         :Własna
 STR_TERRAIN_TYPE_CUSTOM_VALUE                                   :Niestandardowa wysokość ({NUM})
 
 ###length 4
