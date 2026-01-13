@@ -130,7 +130,7 @@ static void _GenerateWorld()
 		/* Must start economy early because of the costs. */
 		StartupEconomy();
 		if (!CheckTownRoadTypes()) {
-			HandleGeneratingWorldAbortion();
+			HandleGeneratingWorldAbortion(true);
 			return;
 		}
 
@@ -165,7 +165,7 @@ static void _GenerateWorld()
 			/* Only generate towns, tree and industries in newgame mode. */
 			if (_game_mode != GM_EDITOR) {
 				if (!GenerateTowns(_settings_game.economy.town_layout)) {
-					HandleGeneratingWorldAbortion();
+					HandleGeneratingWorldAbortion(true);
 					return;
 				}
 				GenerateIndustries();
@@ -292,11 +292,12 @@ bool IsGeneratingWorldAborted()
 
 /**
  * Really handle the abortion, i.e. clean up some of the mess
+ * @param no_retry Do not retry map generation.
  */
-void HandleGeneratingWorldAbortion()
+void HandleGeneratingWorldAbortion(bool no_retry)
 {
 	/* Clean up - in SE create an empty map, otherwise, go to intro menu */
-	_switch_mode = (_game_mode == GM_EDITOR) ? SM_EDITOR : SM_MENU;
+	_switch_mode = (_game_mode == GM_EDITOR && !no_retry) ? SM_EDITOR : SM_MENU;
 
 	if (GenWorldInfo::abortp != nullptr) GenWorldInfo::abortp();
 

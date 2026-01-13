@@ -82,7 +82,7 @@ void GenerateWorldSetAbortCallback(GWAbortProc *proc);
 void GenerateWorld(GenWorldMode mode, uint size_x, uint size_y, bool reset_settings = true);
 void AbortGeneratingWorld();
 bool IsGeneratingWorldAborted();
-void HandleGeneratingWorldAbortion();
+void HandleGeneratingWorldAbortion(bool no_retry = false);
 void ExecuteWithGenerateWorld(std::function<void()> func);
 void ScheduleExecuteWithGenerateWorld(std::function<void()> func);
 void LoadTownData();
