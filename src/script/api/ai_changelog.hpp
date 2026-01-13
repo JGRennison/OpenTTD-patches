@@ -30,6 +30,7 @@
  * \li AICargo::CC_POTABLE
  * \li AICargo::CC_NON_POTABLE
  * \li AIVehicleList_Waypoint
+ * \li AIError::ERR_BRIDGE_TOO_LOW
  * \li AIEngine::GetAllRailTypes
  * \li AITile::IsHouseTile
  *
