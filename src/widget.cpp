@@ -1523,7 +1523,8 @@ void NWidgetHorizontal::SetupSmallestSize(Window *w)
 				uint remainder = (cur_height - child_height) % step_size;
 				if (remainder > 0) { // Child did not fit entirely, widen the container.
 					cur_height += step_size - remainder;
-					assert(cur_height < max_smallest); // Safeguard against infinite height expansion.
+					if (unlikely(cur_height >= max_smallest)) Debug(misc, 0, "cur_height >= max_smallest: {}, {}", cur_height, max_smallest);
+					dbg_assert(cur_height < max_smallest); // Safeguard against infinite height expansion.
 					/* Remaining children will adapt to the new cur_height, thus speeding up the computation. */
 				}
 			}
@@ -1706,7 +1707,8 @@ void NWidgetVertical::SetupSmallestSize(Window *w)
 				uint remainder = (cur_width - child_width) % step_size;
 				if (remainder > 0) { // Child did not fit entirely, widen the container.
 					cur_width += step_size - remainder;
-					assert(cur_width < max_smallest); // Safeguard against infinite width expansion.
+					if (unlikely(cur_width >= max_smallest)) Debug(misc, 0, "cur_width >= max_smallest: {}, {}", cur_width, max_smallest);
+					dbg_assert(cur_width < max_smallest); // Safeguard against infinite width expansion.
 					/* Remaining children will adapt to the new cur_width, thus speeding up the computation. */
 				}
 			}
