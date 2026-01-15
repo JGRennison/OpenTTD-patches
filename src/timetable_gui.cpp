@@ -475,7 +475,6 @@ struct TimetableWindow : GeneralVehicleWindow {
 				[[fallthrough]];
 			}
 
-			case WID_VT_ARRIVAL_DEPARTURE_SELECTION:
 			case WID_VT_TIMETABLE_PANEL:
 				fill.height = resize.height = std::max<int>(GetCharacterHeight(FS_NORMAL), GetSpriteSize(SPR_LOCK).height);
 				size.height = 8 * resize.height + padding.height;
