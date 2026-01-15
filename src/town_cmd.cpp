@@ -3237,6 +3237,7 @@ CommandCost CmdPlaceHouse(DoCommandFlags flags, TileIndex tile, HouseID house, b
 
 	/* Make sure there is no slope? */
 	CanBuildHouseHereFlags build_flags{CanBuildHouseHereFlag::IgnoreRoadTypes};
+	if (replace) build_flags.Set(CanBuildHouseHereFlag::Replace);
 	if (hs->building_flags.Test(BuildingFlag::NotSloped)) build_flags.Set(CanBuildHouseHereFlag::NoSlope);
 
 	CommandCost cost = IsAnotherHouseTypeAllowedInTown(t, house);
