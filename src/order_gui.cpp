@@ -2106,7 +2106,7 @@ public:
 				break;
 
 			case WID_O_ORDER_LIST:
-				fill.height = resize.height = GetCharacterHeight(FS_NORMAL);
+				resize.height = GetCharacterHeight(FS_NORMAL);
 				size.height = 6 * resize.height + padding.height;
 				break;
 
