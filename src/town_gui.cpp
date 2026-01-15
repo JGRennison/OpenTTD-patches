@@ -35,6 +35,7 @@
 #include "core/backup_type.hpp"
 #include "core/geometry_func.hpp"
 #include "core/string_consumer.hpp"
+#include "core/random_func.hpp"
 #include "genworld.h"
 #include "fios.h"
 #include "stringfilter_type.h"
@@ -2261,7 +2262,8 @@ struct BuildHouseWindow : public PickerWindow {
 	void OnPlaceObject([[maybe_unused]] Point pt, TileIndex tile) override
 	{
 		const HouseSpec *spec = HouseSpec::Get(HousePickerCallbacks::sel_type);
-		if (spec->building_flags.Test(BuildingFlag::Size1x1)) {
+
+		if (spec->building_flags.Test(BuildingFlag::Size1x1) || this->callbacks.place_collection) {
 			VpStartPlaceSizing(tile, VPM_X_AND_Y, DDSP_PLACE_HOUSE);
 		} else {
 			this->PlaceSingleHouse(spec, tile);
@@ -2290,12 +2292,23 @@ struct BuildHouseWindow : public PickerWindow {
 
 		assert(select_proc == DDSP_PLACE_HOUSE);
 
-		const HouseSpec *spec = HouseSpec::Get(HousePickerCallbacks::sel_type);
+		HouseIDCmdVector house_types;
+		if (this->callbacks.place_collection) {
+			house_types.ids.reserve(HousePickerCallbacks::sel_collection.size());
+			for (const int &type : HousePickerCallbacks::sel_collection) {
+				house_types.ids.emplace_back(HouseSpec::Get(type)->Index());
+			}
+		} else {
+			house_types.ids.emplace_back(HouseSpec::Get(HousePickerCallbacks::sel_type)->Index());
+		}
+		if (house_types.ids.empty()) return;
+
 		if (end_tile == start_tile) {
+			const HouseSpec *spec = HouseSpec::Get(house_types.ids.at(RandomRange(house_types.ids.size())));
 			this->PlaceSingleHouse(spec, start_tile);
 		} else {
 			Command<CMD_PLACE_HOUSE_AREA>::Post(STR_ERROR_CAN_T_BUILD_HOUSE, CommandCallback::PlaySound_CONSTRUCTION_OTHER,
-					end_tile, start_tile, spec->Index(), BuildHouseWindow::house_protected, TownID::Invalid(), BuildHouseWindow::replace, _ctrl_pressed);
+					end_tile, start_tile, house_types, BuildHouseWindow::house_protected, TownID::Invalid(), BuildHouseWindow::replace, _ctrl_pressed);
 		}
 	}
 

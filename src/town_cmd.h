@@ -19,6 +19,37 @@ enum TownAcceptanceEffect : uint8_t;
 enum TownSettingOverrideFlags : uint8_t;
 using HouseID = uint16_t;
 
+struct HouseIDCmdVector {
+	static constexpr bool command_payload_as_ref = true;
+	static constexpr size_t MAX_HOUSE_IDS = 1024;
+
+	std::vector<HouseID> ids;
+
+	template <typename T>
+	void Serialise(T &&buffer) const
+	{
+		buffer.Send_generic_integer(this->ids.size());
+		for (HouseID id : this->ids) {
+			buffer.Send_generic_integer(id);
+		}
+	}
+
+	template <typename T>
+	bool Deserialise(T &buffer, StringValidationSettings default_string_validation)
+	{
+		size_t size{};
+		buffer.Recv_generic_integer(size);
+		if (size > MAX_HOUSE_IDS) return false;
+		this->ids.resize(size);
+		for (HouseID &id : this->ids) {
+			buffer.Recv_generic_integer(id);
+		}
+		return true;
+	}
+
+	void fmt_format_value(struct format_target &) const;
+};
+
 DEF_CMD_TUPLE   (CMD_FOUND_TOWN,                      CmdFoundTown,                    CMD_DEITY | CMD_NO_TEST, CMDT_LANDSCAPE_CONSTRUCTION, CmdDataT<TownSize, bool, TownLayout, bool, uint32_t, std::string>) // founding random town can fail only in exec run
 DEF_CMD_TUPLE_NT(CMD_RENAME_TOWN,                     CmdRenameTown,                    CMD_DEITY | CMD_SERVER, CMDT_OTHER_MANAGEMENT,       CmdDataT<TownID, std::string>)
 DEF_CMD_TUPLE_NT(CMD_RENAME_TOWN_NON_ADMIN,           CmdRenameTownNonAdmin,                                {}, CMDT_OTHER_MANAGEMENT,       CmdDataT<TownID, std::string>)
@@ -30,7 +61,7 @@ DEF_CMD_TUPLE_NT(CMD_TOWN_SET_TEXT,                   CmdTownSetText,   CMD_LOG_
 DEF_CMD_TUPLE_NT(CMD_EXPAND_TOWN,                     CmdExpandTown,                                 CMD_DEITY, CMDT_LANDSCAPE_CONSTRUCTION, CmdDataT<TownID, uint32_t, TownExpandModes>)
 DEF_CMD_TUPLE_NT(CMD_DELETE_TOWN,                     CmdDeleteTown,                               CMD_OFFLINE, CMDT_LANDSCAPE_CONSTRUCTION, CmdDataT<TownID>)
 DEF_CMD_TUPLE   (CMD_PLACE_HOUSE,                     CmdPlaceHouse,                                 CMD_DEITY, CMDT_OTHER_MANAGEMENT,       CmdDataT<HouseID, bool, TownID, bool>)
-DEF_CMD_TUPLE   (CMD_PLACE_HOUSE_AREA,                CmdPlaceHouseArea,                             CMD_DEITY, CMDT_OTHER_MANAGEMENT,       CmdDataT<TileIndex, HouseID, bool, TownID, bool, bool>)
+DEF_CMD_TUPLE   (CMD_PLACE_HOUSE_AREA,                CmdPlaceHouseArea,                             CMD_DEITY, CMDT_OTHER_MANAGEMENT,       CmdDataT<TileIndex, HouseIDCmdVector, bool, TownID, bool, bool>)
 DEF_CMD_TUPLE_NT(CMD_TOWN_SETTING_OVERRIDE,           CmdOverrideTownSetting,           CMD_DEITY | CMD_SERVER, CMDT_OTHER_MANAGEMENT,       CmdDataT<TownID, TownSettingOverrideFlags, bool, uint8_t>)
 DEF_CMD_TUPLE_NT(CMD_TOWN_SETTING_OVERRIDE_NON_ADMIN, CmdOverrideTownSettingNonAdmin,                       {}, CMDT_OTHER_MANAGEMENT,       CmdDataT<TownID, TownSettingOverrideFlags, bool, uint8_t>)
 

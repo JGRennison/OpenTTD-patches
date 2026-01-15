@@ -3262,13 +3262,13 @@ CommandCost CmdPlaceHouse(DoCommandFlags flags, TileIndex tile, HouseID house, b
  * @param flags Type of operation.
  * @param tile End tile of area dragging.
  * @param start_tile Start tile of area dragging.
- * @param HouseID The HouseID of the house spec.
+ * @param house_ids List of HouseID values for house specs.
  * @param is_protected Whether the house is protected from the town upgrading it.
  * @param replace Whether we can replace existing houses.
  * @param diagonal Whether to use the Diagonal or Orthogonal tile iterator.
  * @return Empty cost or an error.
  */
-CommandCost CmdPlaceHouseArea(DoCommandFlags flags, TileIndex tile, TileIndex start_tile, HouseID house, bool is_protected, TownID town_id, bool replace, bool diagonal)
+CommandCost CmdPlaceHouseArea(DoCommandFlags flags, TileIndex tile, TileIndex start_tile, const HouseIDCmdVector &house_ids, bool is_protected, TownID town_id, bool replace, bool diagonal)
 {
 	if (start_tile >= Map::Size()) return CMD_ERROR;
 
@@ -3276,12 +3276,17 @@ CommandCost CmdPlaceHouseArea(DoCommandFlags flags, TileIndex tile, TileIndex st
 
 	if (Town::GetNumItems() == 0) return CommandCost(STR_ERROR_MUST_FOUND_TOWN_FIRST);
 
-	if (static_cast<size_t>(house) >= HouseSpec::Specs().size()) return CMD_ERROR;
-	const HouseSpec *hs = HouseSpec::Get(house);
-	if (!hs->enabled) return CMD_ERROR;
+	const std::vector<HouseID> &houses = house_ids.ids;
+	if (houses.empty() || houses.size() > HouseIDCmdVector::MAX_HOUSE_IDS) return CMD_ERROR;
+	if (std::any_of(houses.begin(), houses.end(), [](HouseID house) { return static_cast<size_t>(house) >= HouseSpec::Specs().size(); })) return CMD_ERROR;
 
-	/* Only allow placing an area of 1x1 houses. */
-	if (!hs->building_flags.Test(BuildingFlag::Size1x1)) return CMD_ERROR;
+	for (const HouseID &house : houses) {
+		const HouseSpec *hs = HouseSpec::Get(house);
+		if (!hs->enabled) return CMD_ERROR;
+
+		/* Only allow placing an area of 1x1 houses. */
+		if (!hs->building_flags.Test(BuildingFlag::Size1x1)) return CMD_ERROR;
+	}
 
 	/* Use the built object limit to rate limit house placement. */
 	const Company *c = Company::GetIfValid(_current_company);
@@ -3290,9 +3295,17 @@ CommandCost CmdPlaceHouseArea(DoCommandFlags flags, TileIndex tile, TileIndex st
 	CommandCost last_error = CMD_ERROR;
 	bool had_success = false;
 
+	SavedRandomSeeds saved_seeds;
+	SaveRandomSeeds(&saved_seeds);
+
+	auto guard = scope_guard([&]() {
+		if (!flags.Test(DoCommandFlag::Execute)) RestoreRandomSeeds(saved_seeds);
+	});
+
 	OrthogonalOrDiagonalTileIterator iter(tile, start_tile, diagonal);
 	for (; *iter != INVALID_TILE; ++iter) {
 		TileIndex t = *iter;
+		const HouseID house = houses.at(RandomRange(houses.size()));
 		CommandCost ret = Command<CMD_PLACE_HOUSE>::Do(DoCommandFlags{flags}.Reset(DoCommandFlag::Execute), t, house, is_protected, town_id, replace);
 
 		/* If we've reached the limit, stop building (or testing). */
@@ -3308,6 +3321,20 @@ CommandCost CmdPlaceHouseArea(DoCommandFlags flags, TileIndex tile, TileIndex st
 	}
 
 	return had_success ? CommandCost{} : last_error;
+}
+
+void HouseIDCmdVector::fmt_format_value(struct format_target &buf) const
+{
+	buf.format("{} ids: [", this->ids.size());
+	for (size_t idx = 0; idx < this->ids.size(); idx++) {
+		if (idx >= 3) {
+			buf.append("...");
+			break;
+		}
+		if (idx > 0) buf.append(", ");
+		buf.format("{}", this->ids[idx]);
+	}
+	buf.push_back(']');
 }
 
 /**
