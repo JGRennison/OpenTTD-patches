@@ -655,7 +655,7 @@ void SetupColoursAndInitialWindow()
 		const uint8_t *b = GetNonSprite(GetColourPalette(i), SpriteType::Recolour);
 		assert(b != nullptr);
 		for (ColourShade j = SHADE_BEGIN; j < SHADE_END; j++) {
-			SetColourGradient(i, j, b[0xC6 + j]);
+			SetColourGradient(i, j, PixelColour{b[0xC6 + j]});
 		}
 	}
 

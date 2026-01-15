@@ -861,7 +861,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 			colour = TC_WHITE;
 		} else {
 			Colours order_colour = order->GetColour();
-			if (order_colour != INVALID_COLOUR) colour = TC_IS_PALETTE_COLOUR | (TextColour)_colour_value[order_colour];
+			if (order_colour != INVALID_COLOUR) colour = _colour_value[order_colour].ToTextColour();
 		}
 	}
 

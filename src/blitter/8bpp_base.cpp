@@ -30,21 +30,21 @@ void *Blitter_8bppBase::MoveTo(void *video, int x, int y)
 	return (uint8_t *)video + x + y * this->GetScreenPitch();
 }
 
-void Blitter_8bppBase::SetPixel(void *video, int x, int y, uint8_t colour)
+void Blitter_8bppBase::SetPixel(void *video, int x, int y, PixelColour colour)
 {
-	*((uint8_t *)video + x + y * this->GetScreenPitch()) = colour;
+	*((uint8_t *)video + x + y * this->GetScreenPitch()) = colour.p;
 }
 
-void Blitter_8bppBase::SetPixel32(void *video, int x, int y, uint8_t colour, uint32_t colour32)
+void Blitter_8bppBase::SetPixel32(void *video, int x, int y, PixelColour colour, uint32_t colour32)
 {
 	this->Blitter_8bppBase::SetPixel(video, x, y, colour);
 }
 
-void Blitter_8bppBase::DrawLine(void *video, int x, int y, int x2, int y2, int screen_width, int screen_height, uint8_t colour, int width, int dash)
+void Blitter_8bppBase::DrawLine(void *video, int x, int y, int x2, int y2, int screen_width, int screen_height, PixelColour colour, int width, int dash)
 {
 	const int screen_pitch = this->GetScreenPitch();
 	this->DrawLineGeneric(x, y, x2, y2, screen_width, screen_height, width, dash, [=](int x, int y) {
-		*((uint8_t *)video + x + y * screen_pitch) = colour;
+		*((uint8_t *)video + x + y * screen_pitch) = colour.p;
 	});
 }
 
@@ -72,16 +72,16 @@ void Blitter_8bppBase::SetRectNoD7(void *video, int x, int y, const uint8_t *col
 	} while (--lines);
 }
 
-void Blitter_8bppBase::DrawRect(void *video, int width, int height, uint8_t colour)
+void Blitter_8bppBase::DrawRect(void *video, int width, int height, PixelColour colour)
 {
 	const int screen_pitch = this->GetScreenPitch();
 	do {
-		memset(video, colour, width);
+		memset(video, colour.p, width);
 		video = (uint8_t *)video + screen_pitch;
 	} while (--height);
 }
 
-void Blitter_8bppBase::DrawRectAt(void *video, int x, int y, int width, int height, uint8_t colour)
+void Blitter_8bppBase::DrawRectAt(void *video, int x, int y, int width, int height, PixelColour colour)
 {
 	this->Blitter_8bppBase::DrawRect((uint8_t *)video + x + y * this->GetScreenPitch(), width, height, colour);
 }

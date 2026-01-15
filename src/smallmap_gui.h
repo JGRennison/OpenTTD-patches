@@ -54,7 +54,7 @@ void BuildOwnerLegend();
 
 /** Structure for holding relevant data for legends in small map */
 struct LegendAndColour {
-	uint8_t colour;            ///< Colour of the item on the map.
+	PixelColour colour;        ///< Colour of the item on the map.
 	StringID legend;           ///< String corresponding to the coloured item.
 	IndustryType type;         ///< Type of industry. Only valid for industry entries.
 	uint8_t height;            ///< Height in tiles. Only valid for height legend entries.

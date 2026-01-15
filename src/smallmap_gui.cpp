@@ -52,16 +52,16 @@ static const uint8_t _linkstat_colours_in_legenda[] = {0, 1, 3, 5, 7, 9, 11};
 #define MK(a, b) {a, b, IT_INVALID, 0, CompanyID::Invalid(), true, false, false}
 
 /** Macro for a height legend entry with configurable colour. */
-#define MC(col_break)  {0, STR_TINY_BLACK_HEIGHT, IT_INVALID, 0, CompanyID::Invalid(), true, false, col_break}
+#define MC(col_break) {{}, STR_TINY_BLACK_HEIGHT, IT_INVALID, 0, CompanyID::Invalid(), true, false, col_break}
 
 /** Macro for non-company owned property entry of LegendAndColour */
 #define MO(a, b) {a, b, IT_INVALID, 0, CompanyID::Invalid(), true, false, false}
 
 /** Macro used for forcing a rebuild of the owner legend the first time it is used. */
-#define MOEND() {0, STR_NULL, IT_INVALID, 0, OWNER_NONE, true, true, false}
+#define MOEND() {{}, STR_NULL, IT_INVALID, 0, OWNER_NONE, true, true, false}
 
 /** Macro for end of list marker in arrays of LegendAndColour */
-#define MKEND() {0, STR_NULL, IT_INVALID, 0, CompanyID::Invalid(), true, true, false}
+#define MKEND() {{}, STR_NULL, IT_INVALID, 0, CompanyID::Invalid(), true, true, false}
 
 /**
  * Macro for break marker in arrays of LegendAndColour.
@@ -138,7 +138,7 @@ static const LegendAndColour _legend_vegetation[] = {
 
 LegendAndColour _legend_land_owners[NUM_NO_COMPANY_ENTRIES + MAX_COMPANIES + 1] = {
 	MO(PC_WATER,           STR_SMALLMAP_LEGENDA_WATER),
-	MO(0x00,               STR_SMALLMAP_LEGENDA_NO_OWNER), // This colour will vary depending on settings.
+	MO({},                 STR_SMALLMAP_LEGENDA_NO_OWNER), // This colour will vary depending on settings.
 	MO(PC_DARK_RED,        STR_SMALLMAP_LEGENDA_TOWNS),
 	MO(PC_DARK_GREY,       STR_SMALLMAP_LEGENDA_INDUSTRIES),
 	/* The legend will be terminated the first time it is used. */
@@ -274,9 +274,9 @@ static const LegendAndColour * const _legend_table[] = {
 
 /** Available colour schemes for height maps. */
 SmallMapColourScheme _heightmap_schemes[] = {
-	{{}, _green_map_heights,      MKCOLOUR_XXXX(0x54)}, ///< Green colour scheme.
-	{{}, _dark_green_map_heights, MKCOLOUR_XXXX(0x62)}, ///< Dark green colour scheme.
-	{{}, _violet_map_heights,     MKCOLOUR_XXXX(0x81)}, ///< Violet colour scheme.
+	{{}, _green_map_heights,      MKCOLOUR_XXXX(PixelColour{0x54})}, ///< Green colour scheme.
+	{{}, _dark_green_map_heights, MKCOLOUR_XXXX(PixelColour{0x62})}, ///< Dark green colour scheme.
+	{{}, _violet_map_heights,     MKCOLOUR_XXXX(PixelColour{0x81})}, ///< Violet colour scheme.
 };
 
 /**
@@ -324,7 +324,7 @@ void BuildLandLegend()
 		_legend_land_contours[i].col_break = j % rows == 0;
 		_legend_land_contours[i].end = false;
 		_legend_land_contours[i].height = j * delta;
-		_legend_land_contours[i].colour = static_cast<uint8_t>(_heightmap_schemes[_settings_client.gui.smallmap_land_colour].height_colours[_legend_land_contours[i].height]);
+		_legend_land_contours[i].colour = PixelColour{static_cast<uint8_t>(_heightmap_schemes[_settings_client.gui.smallmap_land_colour].height_colours[_legend_land_contours[i].height])};
 		j++;
 	}
 	_legend_land_contours[i].end = true;
@@ -335,7 +335,7 @@ void BuildLandLegend()
  */
 void BuildOwnerLegend()
 {
-	_legend_land_owners[1].colour = static_cast<uint8_t>(_heightmap_schemes[_settings_client.gui.smallmap_land_colour].default_colour);
+	_legend_land_owners[1].colour = PixelColour{static_cast<uint8_t>(_heightmap_schemes[_settings_client.gui.smallmap_land_colour].default_colour)};
 
 	int i = NUM_NO_COMPANY_ENTRIES;
 	for (const Company *c : Company::Iterate()) {
@@ -629,7 +629,7 @@ static inline uint32_t GetSmallMapOwnerPixels(TileIndex tile, TileType t)
 }
 
 /** Vehicle colours in #SMT_VEHICLES mode. Indexed by #VehicleType. */
-static const uint8_t _vehicle_type_colours[6] = {
+static const PixelColour _vehicle_type_colours[6] = {
 	PC_RED, PC_YELLOW, PC_LIGHT_BLUE, PC_WHITE, PC_BLACK, PC_RED
 };
 
@@ -752,7 +752,7 @@ inline uint32_t SmallMapWindow::GetTileColours(const TileArea &ta) const
 						if (type == _smallmap_industry_highlight) {
 							if (_smallmap_industry_highlight_state) return MKCOLOUR_XXXX(PC_WHITE);
 						} else {
-							return GetIndustrySpec(type)->map_colour * 0x01010101;
+							return GetIndustrySpec(type)->map_colour.p * 0x01010101;
 						}
 					}
 					/* Otherwise make it disappear */
@@ -837,13 +837,15 @@ void SmallMapWindow::DrawSmallMapColumn(void *dst, uint xc, uint yc, int pitch, 
 		}
 		ta.ClampToMap(); // Clamp to map boundaries (may contain MP_VOID tiles!).
 
-		uint32_t val = this->GetTileColours(ta);
-		uint8_t *val8 = (uint8_t *)&val;
+		uint32_t tile_colours = this->GetTileColours(ta);
+		auto get_val_colour = [tile_colours](uint8_t idx) -> PixelColour {
+			return PixelColour{static_cast<uint8_t>(tile_colours >> (idx * 8))};
+		};
 		if (this->ui_zoom == 1) {
 			int idx = std::max(0, -start_pos);
 			if (y >= 0 && y < end_y) {
 				for (int pos = std::max(0, start_pos); pos < end_pos; pos++) {
-					blitter->SetPixel(dst, idx, 0, val8[idx]);
+					blitter->SetPixel(dst, idx, 0, get_val_colour(idx));
 					idx++;
 				}
 			}
@@ -856,7 +858,7 @@ void SmallMapWindow::DrawSmallMapColumn(void *dst, uint xc, uint yc, int pitch, 
 					int j = hidden_mod;
 					int x = hidden_x;
 					for (int pos = std::max(0, start_pos); pos < end_pos; pos++) {
-						blitter->SetPixel(ndst, x, 0, val8[idx]);
+						blitter->SetPixel(ndst, x, 0, get_val_colour(idx));
 						j++;
 						x++;
 						if (j == this->ui_zoom) {
@@ -892,7 +894,7 @@ void SmallMapWindow::DrawVehicles(const DrawPixelInfo *dpi, Blitter *blitter) co
 		if (!IsInsideMM(y, -this->ui_zoom + 1, dpi->height)) continue; // y is out of bounds.
 
 		/* Calculate pointer to pixel and the colour */
-		uint8_t colour = (this->map_type == SMT_VEHICLES) ? _vehicle_type_colours[v->type] : PC_WHITE;
+		PixelColour colour = (this->map_type == SMT_VEHICLES) ? _vehicle_type_colours[v->type] : PC_WHITE;
 
 		/* And draw either one or two pixels depending on clipping */
 		auto min_i = std::max(0, -y);
@@ -1305,7 +1307,7 @@ void SmallMapWindow::RebuildColourIndexIfNecessary()
 					i = 1;
 				}
 
-				uint8_t legend_colour = tbl->colour;
+				PixelColour legend_colour = tbl->colour;
 
 				std::array<StringParameter, 2> params{};
 				switch (this->map_type) {

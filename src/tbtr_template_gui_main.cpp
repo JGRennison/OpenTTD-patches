@@ -716,7 +716,7 @@ public:
 
 			const int offset = (rtl ? -(int)this->fold_sprite_dim.width : (int)this->fold_sprite_dim.width) / 2;
 			const int level_width = rtl ? -WidgetDimensions::scaled.hsep_indent : WidgetDimensions::scaled.hsep_indent;
-			const int linecolour = GetColourGradient(COLOUR_ORANGE, SHADE_NORMAL);
+			const PixelColour linecolour = GetColourGradient(COLOUR_ORANGE, SHADE_NORMAL);
 
 			if (it->indent > 0) {
 				/* Draw tree continuation lines. */

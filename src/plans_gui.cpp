@@ -510,7 +510,7 @@ public:
 						} else {
 							AppendStringInPlace(buf, STR_PLANS_LIST_ITEM_PLAN, list[i].plan_id + 1, p->lines.size(), p->creation_date);
 						}
-						DrawString(text_left, text_right, y + (this->resize.step_height - GetCharacterHeight(FS_NORMAL)) / 2, buf, TC_IS_PALETTE_COLOUR | (TextColour)_colour_value[p->colour]);
+						DrawString(text_left, text_right, y + (this->resize.step_height - GetCharacterHeight(FS_NORMAL)) / 2, buf, _colour_value[p->colour].ToTextColour());
 					} else {
 						PlanLine &pl = p->lines[list[i].line_id];
 						DrawBoolButton(btn_left, y + (this->resize.step_height - SETTING_BUTTON_HEIGHT) / 2, COLOUR_YELLOW, COLOUR_GREY, pl.visible, true);
