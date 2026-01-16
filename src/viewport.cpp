@@ -538,7 +538,7 @@ static bool ScrollViewportPixelCacheGeneric(Viewport *vp, std::vector<uint8_t> &
 	blitter.ScrollBuffer(cache.data(), 0, 0, width, height, offset_x, offset_y);
 
 	auto fill_rect = [&](int x, int y, int w, int h) {
-		blitter.DrawRectAt(cache.data(), x, y, w, h, 0xD7);
+		blitter.DrawRectAt(cache.data(), x, y, w, h, PixelColour{0xD7});
 		if (fill_region != nullptr) fill_region(vp, x, y, w, h);
 	};
 
@@ -2550,13 +2550,13 @@ void ViewportDrawDirtyBlocks(const DrawPixelInfo *dpi, bool increment_colour)
 	int bottom = UnScaleByZoom(dpi->height, dpi->zoom);
 
 	const uint dirty_block_colour = increment_colour ? _dirty_block_colour.fetch_add(1, std::memory_order_relaxed) : _dirty_block_colour.load(std::memory_order_relaxed);
-	int colour = _string_colourmap[dirty_block_colour & 0xF];
+	PixelColour colour = _string_colourmap[dirty_block_colour & 0xF];
 
 	dst = dpi->dst_ptr;
 
 	uint8_t bo = UnScaleByZoom(dpi->left + dpi->top, dpi->zoom) & 1;
 	do {
-		for (int i = (bo ^= 1); i < right; i += 2) blitter->SetPixel(dst, i, 0, (uint8_t)colour);
+		for (int i = (bo ^= 1); i < right; i += 2) blitter->SetPixel(dst, i, 0, colour);
 		dst = blitter->MoveTo(dst, 0, 1);
 	} while (--bottom > 0);
 }
@@ -2582,7 +2582,7 @@ static void ViewportDrawStrings(ViewportDrawerDynamic *vdd, ZoomLevel zoom, cons
 		}
 
 		if (ss.flags.Test(ViewportStringFlag::TextColour)) {
-			if (ss.colour != INVALID_COLOUR) colour = static_cast<TextColour>(GetColourGradient(ss.colour, SHADE_LIGHTER) | TC_IS_PALETTE_COLOUR);
+			if (ss.colour != INVALID_COLOUR) colour = GetColourGradient(ss.colour, SHADE_LIGHTER).ToTextColour();
 		}
 
 		int left = x + WidgetDimensions::scaled.fullbevel.left;
@@ -2747,7 +2747,7 @@ void ViewportRouteOverlay::DrawVehicleRoutePath(const Viewport *vp, ViewportDraw
 
 	DrawPixelInfo dpi_for_text = vdd->MakeDPIForText();
 
-	uint8_t colour = _colour_value[this->line_colour];
+	PixelColour colour = _colour_value[this->line_colour];
 
 	for (const auto &iter : this->route_paths) {
 		const int from_tile_x = TileX(iter.from_tile) * TILE_SIZE + TILE_SIZE / 2;
@@ -2978,7 +2978,7 @@ void ViewportRouteOverlay::DrawVehicleRouteSteps(const Viewport *vp)
 		for (uint i = 0; i < 256; i++) {
 			palette[i] = (uint8_t)i;
 		}
-		palette[15] = _colour_value[this->line_colour];
+		palette[15] = _colour_value[this->line_colour].p;
 		use_palette = &palette;
 	}
 
@@ -3027,7 +3027,7 @@ static void ViewportDrawPlans(const Viewport *vp, Blitter *blitter, DrawPixelInf
 			}
 
 			const uint8_t dash_level = _settings_client.gui.dash_level_of_plan_lines;
-			const uint8_t line_colour = pl.focused ? PC_RED : _colour_value[p->colour];
+			const PixelColour line_colour = pl.focused ? PC_RED : _colour_value[p->colour];
 			const uint8_t background_width = (dash_level == 0) ? 3 : 0;
 			const uint8_t line_width = (dash_level == 0) ? 1 : 3;
 
@@ -3090,33 +3090,53 @@ static void ViewportDrawPlans(const Viewport *vp, Blitter *blitter, DrawPixelInf
 	}
 }
 
-#define SLOPIFY_COLOUR(tile, vF, vW, vS, vE, vN, action) { \
-	if (show_slope) { \
-		const Slope slope = GetTileSlope((tile)); \
-		switch (slope) { \
-			case SLOPE_FLAT: \
-			case SLOPE_ELEVATED: \
-				action (vF); break; \
-			default: { \
-				switch (slope & SLOPE_EW) { \
-					case SLOPE_W: action (vW); break; \
-					case SLOPE_E: action (vE); break; \
-					default:      action (slope & SLOPE_S) ? (vS) : (vN); break; \
-				} \
-				break; \
-			} \
-		} \
-	} else { \
-		action (vF); \
-	} \
+template <typename T>
+inline T SlopifyColourGeneric(TileIndex tile, T vF, T vW, T vS, T vE, T vN)
+{
+	const Slope slope = GetTileSlope(tile);
+	switch (slope) {
+		case SLOPE_FLAT:
+		case SLOPE_ELEVATED:
+			return vF;
+		default: {
+			switch (slope & SLOPE_EW) {
+				case SLOPE_W: return vW;
+				case SLOPE_E: return vE;
+				default:      return (slope & SLOPE_S) ? vS : vN;
+			}
+		}
+	}
 }
-#define RETURN_SLOPIFIED_COLOUR(tile, colour, colour_light, colour_dark) SLOPIFY_COLOUR(tile, colour, colour_light, colour_dark, colour_dark, colour_light, return)
-#define ASSIGN_SLOPIFIED_COLOUR(tile, colour, colour_light, colour_dark, to_var) SLOPIFY_COLOUR(tile, colour, colour_light, colour_dark, colour_dark, colour_light, to_var =)
-#define GET_SLOPE_INDEX(slope_index) SLOPIFY_COLOUR(tile, 0, 1, 2, 3, 4, slope_index =)
 
-#define COL8TO32(x) _cur_palette.palette[x].data
-#define COLOUR_FROM_INDEX(x) ((const uint8_t *)&(x))[colour_index]
-#define IS32(x) (is_32bpp ? COL8TO32(x) : (x))
+inline uint8_t SlopifyColour(TileIndex tile, uint32_t colour)
+{
+	uint8_t c = static_cast<uint8_t>(colour);
+	uint8_t light = _lighten_colour[c];
+	uint8_t dark = _darken_colour[c];
+	return SlopifyColourGeneric<uint8_t>(tile, c, light, dark, dark, light);
+}
+
+inline PixelColour SlopifyColour(TileIndex tile, PixelColour colour)
+{
+	return PixelColour{SlopifyColour(tile, colour.p)};
+}
+
+inline uint8_t GetSlopeIndex(TileIndex tile)
+{
+	return SlopifyColourGeneric<uint8_t>(tile, 0, 1, 2, 3, 4);
+}
+
+static constexpr inline PixelColour ColourFromIndex(uint32_t values, uint8_t colour_index)
+{
+	return PixelColour{static_cast<uint8_t>(values >> (colour_index * 8))};
+}
+
+static constexpr inline uint8_t UnwrapPixelColour(PixelColour x) { return x.p; }
+static constexpr inline uint8_t UnwrapPixelColour(uint8_t x) { return x; }
+
+#define COL8TO32(x) _cur_palette.palette[UnwrapPixelColour(x)].data
+#define COLOUR_FROM_INDEX(x) ColourFromIndex(x, colour_index)
+#define IS32(x) (is_32bpp ? COL8TO32(x) : UnwrapPixelColour(x))
 
 /* Variables containing Colour if 32bpp or palette index if 8bpp. */
 uint32_t _vp_map_vegetation_clear_colours[16][6][8]; ///< [Slope][ClearGround][Multi (see LoadClearGroundMainColours())]
@@ -3149,7 +3169,7 @@ static const ClearGround _treeground_to_clearground[5] = {
 };
 
 template <bool is_32bpp>
-static inline uint32_t ViewportMapGetColourVegetationTree(const TileIndex tile, const TreeGround tg, const uint td, const uint tc, const uint colour_index, Slope slope)
+static inline uint32_t ViewportMapGetColourVegetationTree(const TileIndex tile, const TreeGround tg, const uint td, const uint tc, const uint8_t colour_index, Slope slope)
 {
 	if (IsTransparencySet(TO_TREES)) {
 		ClearGround cg = _treeground_to_clearground[tg];
@@ -3166,7 +3186,7 @@ static inline uint32_t ViewportMapGetColourVegetationTree(const TileIndex tile, 
 			return Blitter_32bppBase::MakeTransparent(ground_colour, 192, 256).data;
 		} else {
 			/* 8bpp transparent snow trees give blue. Definitely don't want that. Prefer grey. */
-			if (cg == CLEAR_SNOW && td > 1) return GREY_SCALE(13 - tc);
+			if (cg == CLEAR_SNOW && td > 1) return GREY_SCALE(13 - tc).p;
 			return _pal2trsp_remap_ptr[ground_colour];
 		}
 	} else {
@@ -3179,7 +3199,7 @@ static inline uint32_t ViewportMapGetColourVegetationTree(const TileIndex tile, 
 	}
 }
 
-static bool ViewportMapGetColourVegetationCustomObject(uint32_t &colour, const TileIndex tile, const uint colour_index, bool is_32bpp, bool show_slope)
+static bool ViewportMapGetColourVegetationCustomObject(uint32_t &colour, const TileIndex tile, const uint8_t colour_index, bool is_32bpp, bool show_slope)
 {
 	ObjectViewportMapType vmtype = OVMT_DEFAULT;
 	const ObjectSpec *spec = ObjectSpec::GetByTile(tile);
@@ -3199,13 +3219,13 @@ static bool ViewportMapGetColourVegetationCustomObject(uint32_t &colour, const T
 
 	auto do_water = [&](bool coast) -> bool {
 		if (is_32bpp) {
-			uint slope_index = 0;
-			if (!coast) GET_SLOPE_INDEX(slope_index);
+			uint8_t slope_index = 0;
+			if (!coast && show_slope) slope_index = GetSlopeIndex(tile);
 			colour = _vp_map_water_colour[slope_index];
 			return true;
 		}
-		colour = ApplyMask(MKCOLOUR_XXXX(GREY_SCALE(3)), &_smallmap_vehicles_andor[MP_WATER]);
-		colour = COLOUR_FROM_INDEX(colour);
+		uint32_t mask = ApplyMask(MKCOLOUR_XXXX(GREY_SCALE(3)), &_smallmap_vehicles_andor[MP_WATER]);
+		colour = COLOUR_FROM_INDEX(mask).p;
 		return false;
 	};
 
@@ -3263,10 +3283,11 @@ static bool ViewportMapGetColourVegetationCustomObject(uint32_t &colour, const T
 			}
 			return true;
 		}
-		case OVMT_HOUSE:
-			colour = ApplyMask(MKCOLOUR_XXXX(GREY_SCALE(3)), &_smallmap_vehicles_andor[MP_HOUSE]);
-			colour = COLOUR_FROM_INDEX(colour);
+		case OVMT_HOUSE: {
+			uint32_t mask = ApplyMask(MKCOLOUR_XXXX(GREY_SCALE(3)), &_smallmap_vehicles_andor[MP_HOUSE]);
+			colour = COLOUR_FROM_INDEX(mask).p;
 			return false;
+		}
 		case OVMT_WATER:
 			return do_water(false);
 
@@ -3276,13 +3297,13 @@ static bool ViewportMapGetColourVegetationCustomObject(uint32_t &colour, const T
 }
 
 template <bool is_32bpp, bool show_slope>
-static inline uint32_t ViewportMapGetColourVegetation(const TileIndex tile, TileType t, const uint colour_index)
+static inline uint32_t ViewportMapGetColourVegetation(const TileIndex tile, TileType t, const uint8_t colour_index)
 {
-	uint32_t colour;
+	PixelColour colour;
 
 	auto set_default_colour = [&](TileType ttype) {
-		colour = ApplyMask(MKCOLOUR_XXXX(GREY_SCALE(3)), &_smallmap_vehicles_andor[ttype]);
-		colour = COLOUR_FROM_INDEX(colour);
+		uint32_t mask = ApplyMask(MKCOLOUR_XXXX(GREY_SCALE(3)), &_smallmap_vehicles_andor[ttype]);
+		colour = COLOUR_FROM_INDEX(mask);
 	};
 
 	switch (t) {
@@ -3301,7 +3322,7 @@ static inline uint32_t ViewportMapGetColourVegetation(const TileIndex tile, Tile
 
 		case MP_INDUSTRY:
 			if (IsTileForestIndustry(tile)) {
-				colour = ((colour_index & 1) != 0) ? PC_GREEN : 0x7B;
+				colour = ((colour_index & 1) != 0) ? PC_GREEN : PixelColour{0x7B};
 			} else {
 				colour = GREY_SCALE(3);
 			}
@@ -3318,23 +3339,24 @@ static inline uint32_t ViewportMapGetColourVegetation(const TileIndex tile, Tile
 		case MP_OBJECT: {
 			set_default_colour(MP_OBJECT);
 			if (GetObjectHasViewportMapViewOverride(tile)) {
-				if (ViewportMapGetColourVegetationCustomObject(colour, tile, colour_index, is_32bpp, show_slope)) return colour;
+				uint32_t custom_colour;
+				if (ViewportMapGetColourVegetationCustomObject(custom_colour, tile, colour_index, is_32bpp, show_slope)) return custom_colour;
 			}
 			break;
 		}
 
 		case MP_WATER:
 			if (is_32bpp) {
-				uint slope_index = 0;
-				if (IsTileType(tile, MP_WATER) && GetWaterTileType(tile) != WATER_TILE_COAST) GET_SLOPE_INDEX(slope_index);
+				uint8_t slope_index = 0;
+				if (show_slope && IsTileType(tile, MP_WATER) && GetWaterTileType(tile) != WATER_TILE_COAST) slope_index = GetSlopeIndex(tile);
 				return _vp_map_water_colour[slope_index];
 			}
 			set_default_colour(t);
 			break;
 
 		default:
-			colour = ApplyMask(MKCOLOUR_XXXX(GREY_SCALE(3)), &_smallmap_vehicles_andor[t]);
-			colour = COLOUR_FROM_INDEX(colour);
+			uint32_t mask = ApplyMask(MKCOLOUR_XXXX(GREY_SCALE(3)), &_smallmap_vehicles_andor[t]);
+			colour = COLOUR_FROM_INDEX(mask);
 			set_default_colour(t);
 			break;
 	}
@@ -3342,13 +3364,13 @@ static inline uint32_t ViewportMapGetColourVegetation(const TileIndex tile, Tile
 	if (is_32bpp) {
 		return COL8TO32(colour);
 	} else {
-		if (show_slope) ASSIGN_SLOPIFIED_COLOUR(tile, colour, _lighten_colour[colour], _darken_colour[colour], colour);
-		return colour;
+		if (show_slope) colour = SlopifyColour(tile, colour);
+		return colour.p;
 	}
 }
 
 template <bool is_32bpp, bool show_slope>
-static inline uint32_t ViewportMapGetColourIndustries(const TileIndex tile, const TileType t, const uint colour_index)
+static inline uint32_t ViewportMapGetColourIndustries(const TileIndex tile, const TileType t, const uint8_t colour_index)
 {
 	extern LegendAndColour _legend_from_industries[NUM_INDUSTRYTYPES + 1];
 	extern uint _industry_to_list_pos[NUM_INDUSTRYTYPES];
@@ -3395,23 +3417,23 @@ static inline uint32_t ViewportMapGetColourIndustries(const TileIndex tile, cons
 	}
 
 	if (is_32bpp && t2 == MP_WATER) {
-		uint slope_index = 0;
-		if (t != MP_INDUSTRY && IsTileType(tile, MP_WATER) && GetWaterTileType(tile) != WATER_TILE_COAST) GET_SLOPE_INDEX(slope_index); ///< Ignore industry on water not shown on map.
+		uint8_t slope_index = 0;
+		if (show_slope && t != MP_INDUSTRY && IsTileType(tile, MP_WATER) && GetWaterTileType(tile) != WATER_TILE_COAST) slope_index = GetSlopeIndex(tile); ///< Ignore industry on water not shown on map.
 		return _vp_map_water_colour[slope_index];
 	}
 
 	const int h = TileHeight(tile);
 	const SmallMapColourScheme * const cs = &_heightmap_schemes[_settings_client.gui.smallmap_land_colour];
 	const uint32_t colours = ApplyMask(_settings_client.gui.show_height_on_viewport_map ? cs->height_colours[h] : cs->default_colour, &_smallmap_vehicles_andor[t2]);
-	uint32_t colour = COLOUR_FROM_INDEX(colours);
+	PixelColour colour = COLOUR_FROM_INDEX(colours);
 
-	if (show_slope) ASSIGN_SLOPIFIED_COLOUR(tile, colour, _lighten_colour[colour], _darken_colour[colour], colour);
+	if (show_slope) colour = SlopifyColour(tile, colour);
 
 	return IS32(colour);
 }
 
 template <bool is_32bpp, bool show_slope>
-static inline uint32_t ViewportMapGetColourOwner(const TileIndex tile, TileType t, const uint colour_index)
+static inline uint32_t ViewportMapGetColourOwner(const TileIndex tile, TileType t, const uint8_t colour_index)
 {
 	extern LegendAndColour _legend_land_owners[NUM_NO_COMPANY_ENTRIES + MAX_COMPANIES + 1];
 	extern TypedIndexContainer<std::array<uint32_t, MAX_COMPANIES>, CompanyID> _company_to_list_pos;
@@ -3428,17 +3450,17 @@ static inline uint32_t ViewportMapGetColourOwner(const TileIndex tile, TileType 
 	} else if ((o < MAX_COMPANIES && !_legend_land_owners[_company_to_list_pos[o]].show_on_map) || o == OWNER_NONE || o == OWNER_WATER) {
 		if (t == MP_WATER) {
 			if (is_32bpp) {
-				uint slope_index = 0;
-				if (IsTileType(tile, MP_WATER) && GetWaterTileType(tile) != WATER_TILE_COAST) GET_SLOPE_INDEX(slope_index);
+				uint8_t slope_index = 0;
+				if (show_slope && IsTileType(tile, MP_WATER) && GetWaterTileType(tile) != WATER_TILE_COAST) slope_index = GetSlopeIndex(tile);
 				return _vp_map_water_colour[slope_index];
 			} else {
-				return PC_WATER;
+				return PC_WATER.p;
 			}
 		}
 
 		const SmallMapColourScheme * const cs = &_heightmap_schemes[_settings_client.gui.smallmap_land_colour];
-		uint32_t colour = COLOUR_FROM_INDEX(_settings_client.gui.show_height_on_viewport_map ? cs->height_colours[TileHeight(tile)] : cs->default_colour);
-		if (show_slope) ASSIGN_SLOPIFIED_COLOUR(tile, colour, _lighten_colour[colour], _darken_colour[colour], colour);
+		PixelColour colour = COLOUR_FROM_INDEX(_settings_client.gui.show_height_on_viewport_map ? cs->height_colours[TileHeight(tile)] : cs->default_colour);
+		if (show_slope) colour = SlopifyColour(tile, colour);
 		return IS32(colour);
 
 	} else if (o == OWNER_TOWN) {
@@ -3447,29 +3469,29 @@ static inline uint32_t ViewportMapGetColourOwner(const TileIndex tile, TileType 
 
 	/* Train stations are sometimes hard to spot.
 	 * So we give the player a hint by mixing his colour with black. */
-	uint32_t colour = _legend_land_owners[_company_to_list_pos[o]].colour;
+	uint32_t colour = _legend_land_owners[_company_to_list_pos[o]].colour.p;
 	if (t != MP_STATION) {
-		if (show_slope) ASSIGN_SLOPIFIED_COLOUR(tile, colour, _lighten_colour[colour], _darken_colour[colour], colour);
+		if (show_slope) colour = SlopifyColour(tile, colour);
 	} else {
-		if (GetStationType(tile) == StationType::Rail) colour = colour_index & 1 ? colour : PC_BLACK;
+		if (GetStationType(tile) == StationType::Rail) colour = colour_index & 1 ? colour : PC_BLACK.p;
 	}
 	if (is_32bpp) return COL8TO32(colour);
 	return colour;
 }
 
 template <bool is_32bpp, bool show_slope>
-static inline uint32_t ViewportMapGetColourRoutes(const TileIndex tile, TileType t, const uint colour_index)
+static inline uint32_t ViewportMapGetColourRoutes(const TileIndex tile, TileType t, const uint8_t colour_index)
 {
-	uint32_t colour;
+	PixelColour colour;
 
 	switch (t) {
 		case MP_WATER:
 			if (is_32bpp) {
-				uint slope_index = 0;
-				if (IsTileType(tile, MP_WATER) && GetWaterTileType(tile) != WATER_TILE_COAST) GET_SLOPE_INDEX(slope_index);
+				uint8_t slope_index = 0;
+				if (show_slope && IsTileType(tile, MP_WATER) && GetWaterTileType(tile) != WATER_TILE_COAST) slope_index = GetSlopeIndex(tile);
 				return _vp_map_water_colour[slope_index];
 			} else {
-				return PC_WATER;
+				return PC_WATER.p;
 			}
 
 		case MP_INDUSTRY:
@@ -3498,7 +3520,7 @@ static inline uint32_t ViewportMapGetColourRoutes(const TileIndex tile, TileType
 					if (is_32bpp) {
 						return _vp_map_water_colour[0];
 					} else {
-						return PC_WATER;
+						return PC_WATER.p;
 					}
 
 				default: {
@@ -3546,7 +3568,7 @@ static inline uint32_t ViewportMapGetColourRoutes(const TileIndex tile, TileType
 		}
 	}
 
-	if (show_slope) ASSIGN_SLOPIFIED_COLOUR(tile, colour, _lighten_colour[colour], _darken_colour[colour], colour);
+	if (show_slope) colour = SlopifyColour(tile, colour);
 	return IS32(colour);
 }
 
@@ -3630,7 +3652,7 @@ static uint32_t ViewportMapVoidColour()
 
 /** Get the colour of a tile, can be 32bpp RGB or 8bpp palette index. */
 template <bool is_32bpp, bool show_slope>
-uint32_t ViewportMapGetColour(const Viewport * const vp, int x, int y, const uint colour_index)
+uint32_t ViewportMapGetColour(const Viewport * const vp, int x, int y, const uint8_t colour_index)
 {
 	if (x >= static_cast<int>(Map::MaxX() * TILE_SIZE) || y >= static_cast<int>(Map::MaxY() * TILE_SIZE)) return ViewportMapVoidColour();
 
@@ -3803,10 +3825,10 @@ static void ViewportMapDrawBridgeTunnel(Viewport * const vp, const TunnelBridgeT
 	const Owner o = GetTileOwner(tile);
 	if (o < MAX_COMPANIES && !_legend_land_owners[_company_to_list_pos[o]].show_on_map) return;
 
-	uint8_t colour;
+	PixelColour colour;
 	if (vp->map_type == VPMT_OWNER && _settings_client.gui.use_owner_colour_for_tunnelbridge && o < MAX_COMPANIES) {
 		colour = _legend_land_owners[_company_to_list_pos[o]].colour;
-		colour = is_tunnel ? _darken_colour[colour] : _lighten_colour[colour];
+		colour = PixelColour{is_tunnel ? _darken_colour[colour.p] : _lighten_colour[colour.p]};
 	} else if (vp->map_type == VPMT_ROUTES && IsTileType(tile, MP_TUNNELBRIDGE)) {
 		switch (GetTunnelBridgeTransportType(tile)) {
 			case TRANSPORT_WATER:
@@ -3853,7 +3875,7 @@ static void ViewportMapDrawBridgeTunnel(Viewport * const vp, const TunnelBridgeT
 				if (is_32bpp) {
 					reinterpret_cast<uint32_t *>(vp->land_pixel_cache.data())[idx] = COL8TO32(colour);
 				} else {
-					reinterpret_cast<uint8_t *>(vp->land_pixel_cache.data())[idx] = colour;
+					reinterpret_cast<uint8_t *>(vp->land_pixel_cache.data())[idx] = colour.p;
 				}
 			}
 		}
@@ -3879,7 +3901,7 @@ void ViewportMapDraw(Viewport * const vp)
 	const  int sx = UnScaleByZoomLower(_vdd->dpi.left, _vdd->dpi.zoom);
 	const  int sy = UnScaleByZoomLower(_vdd->dpi.top, _vdd->dpi.zoom);
 	const uint line_padding = 2 * (sy & 1);
-	uint       colour_index_base = (sx + line_padding) & 3;
+	uint8_t    colour_index_base = static_cast<uint8_t>((sx + line_padding) & 3);
 
 	const  int incr_a = (1 << (to_underlying(vp->zoom) - 2)) / ZOOM_BASE;
 	const  int incr_b = (1 << (to_underlying(vp->zoom) - 1)) / ZOOM_BASE;
@@ -3898,7 +3920,7 @@ void ViewportMapDraw(Viewport * const vp)
 	/* Render base map. */
 	do { // For each line
 		int i = w;
-		uint colour_index = colour_index_base;
+		uint8_t colour_index = colour_index_base;
 		colour_index_base ^= 2;
 		int c = b - a;
 		int d = b + a;

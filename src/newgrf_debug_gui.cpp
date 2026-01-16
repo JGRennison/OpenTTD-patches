@@ -695,7 +695,7 @@ struct NewGRFInspectWindow final : Window {
 				if (group != nullptr) {
 					for (uint i = 0; i < std::size(this->marked_groups); i++) {
 						if (this->marked_groups[i] == group) {
-							static const uint8_t mark_colours[] = { PC_YELLOW, PC_GREEN, PC_ORANGE, PC_DARK_BLUE, PC_RED, PC_LIGHT_BLUE, 0xAE /* purple */, 0x6C /* brown */ };
+							static const PixelColour mark_colours[] = { PC_YELLOW, PC_GREEN, PC_ORANGE, PC_DARK_BLUE, PC_RED, PC_LIGHT_BLUE, PixelColour{0xAE} /* purple */, PixelColour{0x6C} /* brown */ };
 							static_assert(std::tuple_size_v<decltype(this->marked_groups)> == lengthof(mark_colours));
 							Rect mark_ir = ir.Indent(WidgetDimensions::scaled.hsep_normal, rtl).WithWidth(WidgetDimensions::scaled.hsep_normal, rtl).Translate(0, (scroll_offset * this->resize.step_height));
 							GfxFillRect(mark_ir.left, mark_ir.top, mark_ir.right, mark_ir.top + this->resize.step_height - 1, mark_colours[i]);

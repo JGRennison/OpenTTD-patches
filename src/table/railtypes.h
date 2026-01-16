@@ -107,7 +107,7 @@ static const RailTypeInfo _original_railtypes[] = {
 		RailTypeLabelList(),
 
 		/* map colour */
-		0x0A,
+		PC_GREY,
 
 		/* introduction date */
 		CalTime::INVALID_DATE,
@@ -218,7 +218,7 @@ static const RailTypeInfo _original_railtypes[] = {
 		RailTypeLabelList(),
 
 		/* map colour */
-		0x0A,
+		PC_GREY,
 
 		/* introduction date */
 		CalTime::INVALID_DATE,
@@ -325,7 +325,7 @@ static const RailTypeInfo _original_railtypes[] = {
 		RailTypeLabelList(),
 
 		/* map colour */
-		0x0A,
+		PC_GREY,
 
 		/* introduction date */
 		CalTime::INVALID_DATE,
@@ -432,7 +432,7 @@ static const RailTypeInfo _original_railtypes[] = {
 		RailTypeLabelList(),
 
 		/* map colour */
-		0x0A,
+		PC_GREY,
 
 		/* introduction date */
 		CalTime::INVALID_DATE,

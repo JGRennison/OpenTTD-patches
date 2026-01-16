@@ -589,50 +589,50 @@ static Owner GetMinimapOwner(TileIndex tile)
  * @param tile The tile of which we would like to get the colour.
  * @return The color palette value
  */
-static uint8_t GetTopographyValue(TileIndex tile)
+static PixelColour GetTopographyValue(TileIndex tile)
 {
 	const auto tile_type = GetTileType(tile);
 
 	if (tile_type == MP_STATION) {
 		switch (GetStationType(tile)) {
 			case StationType::Rail:
-				return MKCOLOUR(PC_GREY);
+				return PC_GREY;
 			case StationType::Airport:
-				return MKCOLOUR(PC_GREY);
+				return PC_GREY;
 			case StationType::Truck:
-				return MKCOLOUR(PC_BLACK);
+				return PC_BLACK;
 			case StationType::Bus:
-				return MKCOLOUR(PC_BLACK);
+				return PC_BLACK;
 			case StationType::Oilrig:
 			case StationType::Dock:
-				return MKCOLOUR(PC_GREY);
+				return PC_GREY;
 			case StationType::Buoy:
-				return MKCOLOUR(PC_WATER);
+				return PC_WATER;
 			case StationType::RailWaypoint:
-				return MKCOLOUR(PC_GREY);
+				return PC_GREY;
 			case StationType::RoadWaypoint:
-				return MKCOLOUR(PC_GREY);
+				return PC_GREY;
 			default: NOT_REACHED();
 		}
 	}
 
 	if (IsBridgeAbove(tile)) {
-		return MKCOLOUR(PC_DARK_GREY);
+		return PC_DARK_GREY;
 	}
 
 	switch (tile_type) {
 		case MP_TUNNELBRIDGE:
-			return MKCOLOUR(PC_DARK_GREY);
+			return PC_DARK_GREY;
 		case MP_RAILWAY:
-			return MKCOLOUR(PC_GREY);
+			return PC_GREY;
 		case MP_ROAD:
-			return MKCOLOUR(PC_BLACK);
+			return PC_BLACK;
 		case MP_HOUSE:
-			return MKCOLOUR(0xB5);
+			return PixelColour{0xB5};
 		case MP_WATER:
-			return MKCOLOUR(PC_WATER);
+			return PC_WATER;
 		case MP_INDUSTRY:
-			return MKCOLOUR(0xA2);
+			return PixelColour{0xA2};
 		default: {
 			const auto tile_z = GetTileZ(tile);
 			const auto max_z = _settings_game.construction.map_height_limit;
@@ -640,39 +640,39 @@ static uint8_t GetTopographyValue(TileIndex tile)
 
 			switch (color_index) {
 				case 0:
-					return MKCOLOUR(0x50);
+					return PixelColour{0x50};
 				case 1:
-					return MKCOLOUR(0x51);
+					return PixelColour{0x51};
 				case 2:
-					return MKCOLOUR(0x52);
+					return PixelColour{0x52};
 				case 3:
-					return MKCOLOUR(0x53);
+					return PixelColour{0x53};
 				case 4:
-					return MKCOLOUR(0x54);
+					return PixelColour{0x54};
 				case 5:
-					return MKCOLOUR(0x55);
+					return PixelColour{0x55};
 				case 6:
-					return MKCOLOUR(0x56);
+					return PixelColour{0x56};
 				case 7:
-					return MKCOLOUR(0x57);
+					return PixelColour{0x57};
 				case 8:
-					return MKCOLOUR(0x3B);
+					return PixelColour{0x3B};
 				case 9:
-					return MKCOLOUR(0x3A);
+					return PixelColour{0x3A};
 				case 10:
-					return MKCOLOUR(0x39);
+					return PixelColour{0x39};
 				case 11:
-					return MKCOLOUR(0x38);
+					return PixelColour{0x38};
 				case 12:
-					return MKCOLOUR(0x37);
+					return PixelColour{0x37};
 				case 13:
-					return MKCOLOUR(0x36);
+					return PixelColour{0x36};
 				case 14:
-					return MKCOLOUR(0x35);
+					return PixelColour{0x35};
 				case 15:
-					return MKCOLOUR(0x69);
+					return PixelColour{0x69};
 				default:
-					return MKCOLOUR(0x46);
+					return PixelColour{0x46};
 			}
 		}
 	}
@@ -684,60 +684,60 @@ static uint8_t GetTopographyValue(TileIndex tile)
  * @param tile The tile of which we would like to get the colour.
  * @return The color palette value
  */
-static uint8_t GetIndustryValue(TileIndex tile)
+static PixelColour GetIndustryValue(TileIndex tile)
 {
 	const auto tile_type = GetTileType(tile);
 
 	if (tile_type == MP_STATION) {
 		switch (GetStationType(tile)) {
 			case StationType::Rail:
-				return MKCOLOUR(PC_DARK_GREY);
+				return PC_DARK_GREY;
 			case StationType::Airport:
-				return MKCOLOUR(GREY_SCALE(12));
+				return GREY_SCALE(12);
 			case StationType::Truck:
-				return MKCOLOUR(PC_GREY);
+				return PC_GREY;
 			case StationType::Bus:
-				return MKCOLOUR(PC_GREY);
+				return PC_GREY;
 			case StationType::Oilrig:
 			case StationType::Dock:
-				return MKCOLOUR(PC_GREY);
+				return PC_GREY;
 			case StationType::Buoy:
-				return MKCOLOUR(PC_BLACK);
+				return PC_BLACK;
 			case StationType::RailWaypoint:
-				return MKCOLOUR(PC_GREY);
+				return PC_GREY;
 			case StationType::RoadWaypoint:
-				return MKCOLOUR(PC_GREY);
+				return PC_GREY;
 			default: NOT_REACHED();
 		}
 	}
 
 	if (IsBridgeAbove(tile)) {
-		return MKCOLOUR(GREY_SCALE(12));
+		return GREY_SCALE(12);
 	}
 
 	switch (tile_type) {
 		case MP_TUNNELBRIDGE:
-			return MKCOLOUR(GREY_SCALE(12));
+			return GREY_SCALE(12);
 		case MP_RAILWAY:
-			return MKCOLOUR(PC_DARK_GREY);
+			return PC_DARK_GREY;
 		case MP_ROAD:
-			return MKCOLOUR(PC_GREY);
+			return PC_GREY;
 		case MP_HOUSE:
-			return MKCOLOUR(GREY_SCALE(4));
+			return GREY_SCALE(4);
 		case MP_WATER:
-			return MKCOLOUR(0x12);
+			return PixelColour{0x12};
 		case MP_INDUSTRY: {
 			const IndustryType industry_type = Industry::GetByTile(tile)->type;
 
 			return GetIndustrySpec(industry_type)->map_colour;
 		}
 		default:
-			return MKCOLOUR(GREY_SCALE(2));
+			return GREY_SCALE(2);
 	}
 }
 
 template <typename T>
-void MinimapScreenCallback(void *userdata, void *buf, uint y, uint pitch, uint n, T colorCallback)
+void MinimapScreenCallback(void *userdata, void *buf, uint y, uint pitch, uint n, T color_callback)
 {
 	uint32_t *ubuf = (uint32_t *)buf;
 	uint num = (pitch * n);
@@ -746,12 +746,12 @@ void MinimapScreenCallback(void *userdata, void *buf, uint y, uint pitch, uint n
 		uint col = (Map::SizeX() - 1) - (i % pitch);
 
 		TileIndex tile = TileXY(col, row);
-		uint8_t val = colorCallback(tile);
+		PixelColour val = color_callback(tile);
 
 		uint32_t colour_buf = 0;
-		colour_buf  = (_cur_palette.palette[val].b << 0);
-		colour_buf |= (_cur_palette.palette[val].g << 8);
-		colour_buf |= (_cur_palette.palette[val].r << 16);
+		colour_buf  = (_cur_palette.palette[val.p].b << 0);
+		colour_buf |= (_cur_palette.palette[val.p].g << 8);
+		colour_buf |= (_cur_palette.palette[val.p].r << 16);
 
 		*ubuf = colour_buf;
 		ubuf++;   // Skip alpha
@@ -767,9 +767,9 @@ void MinimapScreenCallback(void *userdata, void *buf, uint y, uint pitch, uint n
 static void MinimapScreenCallback(void *userdata, void *buf, uint y, uint pitch, uint n)
 {
 	/* Fill with the company colours */
-	TypedIndexContainer<std::array<uint8_t, OWNER_END + 1>, CompanyID> owner_colours;
+	TypedIndexContainer<std::array<PixelColour, OWNER_END + 1>, CompanyID> owner_colours;
 	for (const Company *c : Company::Iterate()) {
-		owner_colours[c->index] = MKCOLOUR(GetColourGradient(c->colour, SHADE_LIGHT));
+		owner_colours[c->index] = GetColourGradient(c->colour, SHADE_LIGHT);
 	}
 
 	/* Fill with some special colours */
@@ -779,7 +779,7 @@ static void MinimapScreenCallback(void *userdata, void *buf, uint y, uint pitch,
 	owner_colours[OWNER_DEITY]   = PC_DARK_GREY; // industry
 	owner_colours[OWNER_END]     = PC_BLACK;
 
-	MinimapScreenCallback(userdata, buf, y, pitch, n, [&](TileIndex tile) -> uint8_t {
+	MinimapScreenCallback(userdata, buf, y, pitch, n, [&](TileIndex tile) -> PixelColour {
 		return owner_colours[GetMinimapOwner(tile)];
 	});
 }

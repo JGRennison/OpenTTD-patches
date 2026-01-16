@@ -15,15 +15,15 @@
 
 #define MKCOLOUR(x)         TO_LE32(x)
 
-#define MKCOLOUR_XXXX(x)    (MKCOLOUR(0x01010101) * (uint)(x))
-#define MKCOLOUR_0XX0(x)    (MKCOLOUR(0x00010100) * (uint)(x))
-#define MKCOLOUR_X00X(x)    (MKCOLOUR(0x01000001) * (uint)(x))
+#define MKCOLOUR_XXXX(x)    (MKCOLOUR(0x01010101) * (uint)(x.p))
+#define MKCOLOUR_0XX0(x)    (MKCOLOUR(0x00010100) * (uint)(x.p))
+#define MKCOLOUR_X00X(x)    (MKCOLOUR(0x01000001) * (uint)(x.p))
 
 #define MKCOLOUR_XYYX(x, y) (MKCOLOUR_X00X(x) | MKCOLOUR_0XX0(y))
 
-#define MKCOLOUR_0000       MKCOLOUR_XXXX(0x00)
-#define MKCOLOUR_F00F       MKCOLOUR_X00X(0xFF)
-#define MKCOLOUR_FFFF       MKCOLOUR_XXXX(0xFF)
+#define MKCOLOUR_0000       MKCOLOUR_XXXX(PixelColour{0x00})
+#define MKCOLOUR_F00F       MKCOLOUR_X00X(PixelColour{0xFF})
+#define MKCOLOUR_FFFF       MKCOLOUR_XXXX(PixelColour{0xFF})
 
 #include "table/heightmap_colours.h"
 #include "table/darklight_colours.h"

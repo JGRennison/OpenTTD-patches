@@ -1987,7 +1987,7 @@ void ShowGameOptions()
  */
 void DrawArrowButtons(int x, int y, Colours button_colour, uint8_t state, bool clickable_left, bool clickable_right)
 {
-	int colour = GetColourGradient(button_colour, SHADE_DARKER);
+	PixelColour colour = GetColourGradient(button_colour, SHADE_DARKER);
 	Dimension dim = NWidgetScrollbar::GetHorizontalDimension();
 
 	Rect lr = {x,                  y, x + (int)dim.width     - 1, y + (int)dim.height - 1};
@@ -2019,7 +2019,7 @@ void DrawArrowButtons(int x, int y, Colours button_colour, uint8_t state, bool c
  */
 void DrawUpDownButtons(int x, int y, Colours button_colour, uint8_t state, bool clickable_up, bool clickable_down)
 {
-	int colour = GetColourGradient(button_colour, SHADE_DARKER);
+	PixelColour colour = GetColourGradient(button_colour, SHADE_DARKER);
 
 	Rect r = {x, y, x + SETTING_BUTTON_WIDTH - 1, y + SETTING_BUTTON_HEIGHT - 1};
 	Rect ur = r.WithWidth(SETTING_BUTTON_WIDTH / 2, (_current_text_dir == TD_RTL));
@@ -2045,7 +2045,7 @@ void DrawUpDownButtons(int x, int y, Colours button_colour, uint8_t state, bool 
  */
 void DrawDropDownButton(int x, int y, Colours button_colour, bool state, bool clickable)
 {
-	int colour = GetColourGradient(button_colour, SHADE_DARKER);
+	PixelColour colour = GetColourGradient(button_colour, SHADE_DARKER);
 
 	Rect r = {x, y, x + SETTING_BUTTON_WIDTH - 1, y + SETTING_BUTTON_HEIGHT - 1};
 

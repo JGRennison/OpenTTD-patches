@@ -118,13 +118,24 @@ bool DrawStringMultiLineWithClipping(int left, int right, int top, int bottom, s
 
 void DrawCharCentered(char32_t c, const Rect &r, TextColour colour);
 
-void GfxFillRect(class Blitter *blitter, const DrawPixelInfo *dpi, int left, int top, int right, int bottom, int colour, FillRectMode mode = FILLRECT_OPAQUE);
-void GfxFillRect(int left, int top, int right, int bottom, int colour, FillRectMode mode = FILLRECT_OPAQUE);
-void GfxFillPolygon(std::span<const Point> shape, int colour, FillRectMode mode = FILLRECT_OPAQUE, GfxFillRectModeFunctor *fill_functor = nullptr);
-void GfxDrawLine(class Blitter * blitter, const DrawPixelInfo *dpi, int left, int top, int right, int bottom, int colour, int width = 1, int dash = 0);
-void GfxDrawLine(int left, int top, int right, int bottom, int colour, int width = 1, int dash = 0);
+struct PixelColourOrPaletteID {
+	uint32_t value;
+
+	constexpr PixelColourOrPaletteID() : value(0) {}
+	constexpr PixelColourOrPaletteID(PixelColour colour) : value(colour.p) {}
+	constexpr PixelColourOrPaletteID(PaletteID pal) : value(pal) {}
+
+	PixelColour AsPixelColour() const { return PixelColour{static_cast<uint8_t>(this->value)}; }
+	PaletteID AsPaletteID() const { return static_cast<PaletteID>(this->value); }
+};
+
+void GfxFillRect(class Blitter *blitter, const DrawPixelInfo *dpi, int left, int top, int right, int bottom, PixelColourOrPaletteID colour, FillRectMode mode = FILLRECT_OPAQUE);
+void GfxFillRect(int left, int top, int right, int bottom, PixelColourOrPaletteID colour, FillRectMode mode = FILLRECT_OPAQUE);
+void GfxFillPolygon(std::span<const Point> shape, PixelColourOrPaletteID colour, FillRectMode mode = FILLRECT_OPAQUE, GfxFillRectModeFunctor *fill_functor = nullptr);
+void GfxDrawLine(class Blitter * blitter, const DrawPixelInfo *dpi, int left, int top, int right, int bottom, PixelColour colour, int width = 1, int dash = 0);
+void GfxDrawLine(int left, int top, int right, int bottom, PixelColour colour, int width = 1, int dash = 0);
 void DrawBox(const DrawPixelInfo *dpi, int x, int y, int dx1, int dy1, int dx2, int dy2, int dx3, int dy3);
-void DrawRectOutline(const Rect &r, int colour, int width = 1, int dash = 0);
+void DrawRectOutline(const Rect &r, PixelColour colour, int width = 1, int dash = 0);
 
 /* Versions of DrawString/DrawStringMultiLine that accept a Rect instead of separate left, right, top and bottom parameters. */
 inline int DrawString(const Rect &r, std::string_view str, TextColour colour = TC_FROMSTRING, StringAlignment align = SA_LEFT, bool underline = false, FontSize fontsize = FS_NORMAL)
@@ -152,7 +163,7 @@ inline bool DrawStringMultiLineWithClipping(const Rect &r, std::string_view str,
 	return DrawStringMultiLineWithClipping(r.left, r.right, r.top, r.bottom, str, colour, align, underline, fontsize);
 }
 
-inline void GfxFillRect(const Rect &r, int colour, FillRectMode mode = FILLRECT_OPAQUE)
+inline void GfxFillRect(const Rect &r, PixelColourOrPaletteID colour, FillRectMode mode = FILLRECT_OPAQUE)
 {
 	GfxFillRect(r.left, r.top, r.right, r.bottom, colour, mode);
 }
