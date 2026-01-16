@@ -2,6 +2,11 @@
 
 * * *
 
+### v0.69.1 (2026-01-16)
+* Fix incorrect rendering of some types of NewGRF rail station.
+* Fix replace mode being ignored when using the manual house placer.
+* Fix crash which could occur in some cases when using the order/timetable windows.
+
 ### v0.69.0 (2026-01-14)
 * Fix incorrect graphics for two different rail types on the same tile, with some rail type NewGRFs.
 * Fix handling of dual-power electrified rail and standard rail engines.
