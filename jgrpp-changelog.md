@@ -2,6 +2,29 @@
 
 * * *
 
+### v0.69.0 (2026-01-14)
+* Fix incorrect graphics for two different rail types on the same tile, with some rail type NewGRFs.
+* Fix handling of dual-power electrified rail and standard rail engines.
+* Fix incorrect arrival time at current order after conditional jump in timetable window.
+* Fix string display error when showing vehicle breakdown information in the vehicle window.
+* Fix vertical resizing in build rail station window.
+* Fix crash which could occur when using NewGRF badge filters.
+* Ignore road type house building restrictions when building manually using the house placer tool.
+* Scroll towards newly inserted orders in the orders window.
+* Blue signal posts for signals with routing restrictions now supports OpenGFX2 Classic.
+* Add picker tool support for docks, buoys and water infrastructure.
+* Add setting to control wetlands generation percentage.
+* Add settings for better town placement; prefer locations near sea, lakes or rivers, or in a valley.
+* Bridges:
+  * Remove settings for road stops and docks under bridges, now always enabled.
+  * Fix incorrect height clearance for bridges over docks.
+  * Allow bridges over locks.
+* JSON order list import/export:
+  * Fix truncation of imported timetable times above 65k ticks.
+* Add setting for main menu style.
+* Includes support for 15.0 savegames and content.
+* Bump trunk base from commit 04a6a55e94b40789ca3190f253280170887a196f to commit 821784004d5267c154de133b81cea4d45f801bf5.
+
 ### v0.68.2 (2025-12-03)
 * Fix crash in timetable window when all orders are removed when selected.
 * Fix crash which could occur when scanning AI/GS scripts with errors on Windows.

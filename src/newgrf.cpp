@@ -1585,6 +1585,7 @@ void LoadNewGRFFile(GRFConfig &config, GrfLoadingStage stage, Subdirectory subdi
 		LoadNewGRFFileFromFile(config, stage, file);
 		if (!config.flags.Test(GRFConfigFlag::System)) file.flags |= SFF_USERGRF;
 		if (config.ident.grfid == std::byteswap<uint32_t>(0xFFFFFFFE)) file.flags |= SFF_OPENTTDGRF;
+		if (config.ident.grfid == std::byteswap<uint32_t>(0xFF4F5432)) file.flags |= SFF_OPENGFX2;
 	}
 }
 

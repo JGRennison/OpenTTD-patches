@@ -18,14 +18,14 @@
 class Blitter_40bppAnim : public Blitter_32bppOptimized {
 public:
 
-	void SetPixel(void *video, int x, int y, uint8_t colour) override;
-	void SetPixel32(void *video, int x, int y, uint8_t colour, uint32_t colour32) override;
+	void SetPixel(void *video, int x, int y, PixelColour colour) override;
+	void SetPixel32(void *video, int x, int y, PixelColour colour, uint32_t colour32) override;
 	void SetRect(void *video, int x, int y, const uint8_t *colours, uint lines, uint width, uint pitch) override;
 	void SetRect32(void *video, int x, int y, const uint32_t *colours, uint lines, uint width, uint pitch) override;
 	void SetRectNoD7(void *video, int x, int y, const uint8_t *colours, uint lines, uint width, uint pitch) override;
-	void DrawRect(void *video, int width, int height, uint8_t colour) override;
-	void DrawRectAt(void *video, int x, int y, int width, int height, uint8_t colour) override;
-	void DrawLine(void *video, int x, int y, int x2, int y2, int screen_width, int screen_height, uint8_t colour, int width, int dash) override;
+	void DrawRect(void *video, int width, int height, PixelColour colour) override;
+	void DrawRectAt(void *video, int x, int y, int width, int height, PixelColour colour) override;
+	void DrawLine(void *video, int x, int y, int x2, int y2, int screen_width, int screen_height, PixelColour colour, int width, int dash) override;
 	void CopyFromBuffer(void *video, const void *src, int width, int height) override;
 	void CopyToBuffer(const void *video, void *dst, int width, int height) override;
 	void CopyImageToBuffer(const void *video, void *dst, int width, int height, int dst_pitch) override;

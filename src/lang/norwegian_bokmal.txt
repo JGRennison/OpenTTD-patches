@@ -269,6 +269,7 @@ STR_UNITS_YEARS                                                 :{NUM}{NBSP}år
 STR_UNITS_PERIODS                                               :{NUM}{NBSP}period{P "" er}
 
 STR_LIST_SEPARATOR                                              :,{SPACE}
+STR_TRUNCATION_ELLIPSIS                                         :...
 
 # Common window strings
 STR_LIST_FILTER_TITLE                                           :{BLACK}Filtrer:
@@ -1222,7 +1223,7 @@ STR_SUBSIDY_X4                                                  :x4
 STR_CLIMATE_TEMPERATE_LANDSCAPE                                 :Temperert landskap
 STR_CLIMATE_SUB_ARCTIC_LANDSCAPE                                :Subarktisk landskap
 STR_CLIMATE_SUB_TROPICAL_LANDSCAPE                              :Subtropisk landskap
-STR_CLIMATE_TOYLAND_LANDSCAPE                                   :Leketøylandskap
+STR_CLIMATE_TOYLAND_LANDSCAPE                                   :Leketøyland
 
 ###length 7
 STR_TERRAIN_TYPE_VERY_FLAT                                      :Veldig flatt

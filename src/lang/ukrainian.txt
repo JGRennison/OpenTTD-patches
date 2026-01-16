@@ -401,6 +401,7 @@ STR_UNITS_PERIODS.d                                             :{NUM}{NBSP}пе
 STR_UNITS_PERIODS.z                                             :{NUM}{NBSP}періодів
 
 STR_LIST_SEPARATOR                                              :,{SPACE}
+STR_TRUNCATION_ELLIPSIS                                         :...
 
 # Common window strings
 STR_LIST_FILTER_TITLE                                           :{BLACK}Фільтр:

@@ -20,6 +20,8 @@
 #include "rail_gui.h"
 #include "road.h"
 #include "road_gui.h"
+#include "dock_gui.h"
+#include "water_map.h"
 #include "date_func.h"
 #include "vehicle_func.h"
 #include "sound_func.h"
@@ -1160,6 +1162,11 @@ static void UsePickerTool(TileIndex tile)
 					ShowBuildRoadStopPickerAndSelect(station_type, GetRoadStopSpec(tile), HasRoadTypeRoad(tile) ? RTT_ROAD : RTT_TRAM);
 					break;
 
+				case StationType::Dock:
+				case StationType::Buoy:
+					ShowBuildDocksToolbarFromTile(tile);
+					break;
+
 				default:
 					break;
 			}
@@ -1176,9 +1183,27 @@ static void UsePickerTool(TileIndex tile)
 					ShowBuildRoadToolbarFromTile(tile);
 					break;
 
+				case TRANSPORT_WATER:
+					ShowBuildDocksToolbarFromTile(tile);
+					break;
+
 				default:
 					break;
 			}
+			break;
+
+		case MP_WATER:
+			/* Handle canals, rivers, and locks by opening the waterways toolbar.
+			 * Rivers only work if river building is enabled or in scenario editor. */
+			if (IsLock(tile) || IsCanal(tile)) {
+				ShowBuildDocksToolbarFromTile(tile);
+			} else if (IsRiver(tile) && (_settings_game.construction.enable_build_river || _game_mode == GM_EDITOR)) {
+				ShowBuildDocksToolbarFromTile(tile);
+			/* Depots for now only opens waterways toolbar like other depots */
+			} else if (GetWaterTileType(tile) == WATER_TILE_DEPOT) {
+				ShowBuildDocksToolbarFromTile(tile);
+			}
+			/* Sea & coast tiles are ignored*/
 			break;
 
 		case MP_OBJECT: {

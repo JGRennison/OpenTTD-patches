@@ -305,11 +305,11 @@ void DrawFrameRect(int left, int top, int right, int bottom, Colours colour, Fra
 	} else {
 		assert(colour < COLOUR_END);
 
-		const uint dark         = GetColourGradient(colour, SHADE_DARK);
-		const uint medium_dark  = GetColourGradient(colour, SHADE_LIGHT);
-		const uint medium_light = GetColourGradient(colour, SHADE_LIGHTER);
-		const uint light        = GetColourGradient(colour, SHADE_LIGHTEST);
-		uint interior;
+		const PixelColour dark         = GetColourGradient(colour, SHADE_DARK);
+		const PixelColour medium_dark  = GetColourGradient(colour, SHADE_LIGHT);
+		const PixelColour medium_light = GetColourGradient(colour, SHADE_LIGHTER);
+		const PixelColour light        = GetColourGradient(colour, SHADE_LIGHTEST);
+		PixelColour interior;
 
 		Rect outer = {left, top, right, bottom};                   // Outside rectangle
 		Rect inner = outer.Shrink(WidgetDimensions::scaled.bevel); // Inside rectangle
@@ -472,7 +472,7 @@ static inline void DrawMatrix(const Rect &r, Colours colour, bool clicked, uint3
 		row_height = r.Height() / num_rows;
 	}
 
-	int col = GetColourGradient(colour, SHADE_LIGHTER);
+	PixelColour col = GetColourGradient(colour, SHADE_LIGHTER);
 
 	int x = r.left;
 	for (int ctr = num_columns; ctr > 1; ctr--) {
@@ -518,8 +518,8 @@ static inline void DrawVerticalScrollbar(const Rect &r, Colours colour, bool up_
 	DrawImageButtons(r.WithHeight(height, false),  NWID_VSCROLLBAR, colour, up_clicked,   SPR_ARROW_UP,   SA_CENTER);
 	DrawImageButtons(r.WithHeight(height, true),   NWID_VSCROLLBAR, colour, down_clicked, SPR_ARROW_DOWN, SA_CENTER);
 
-	int c1 = GetColourGradient(colour, SHADE_DARK);
-	int c2 = GetColourGradient(colour, SHADE_LIGHTEST);
+	PixelColour c1 = GetColourGradient(colour, SHADE_DARK);
+	PixelColour c2 = GetColourGradient(colour, SHADE_LIGHTEST);
 
 	/* draw "shaded" background */
 	GfxFillRect(r.left, r.top + height, r.right, r.bottom - height, c2);
@@ -557,8 +557,8 @@ static inline void DrawHorizontalScrollbar(const Rect &r, Colours colour, bool l
 	DrawImageButtons(r.WithWidth(width, false), NWID_HSCROLLBAR, colour, left_clicked,  SPR_ARROW_LEFT,  SA_CENTER);
 	DrawImageButtons(r.WithWidth(width, true),  NWID_HSCROLLBAR, colour, right_clicked, SPR_ARROW_RIGHT, SA_CENTER);
 
-	int c1 = GetColourGradient(colour, SHADE_DARK);
-	int c2 = GetColourGradient(colour, SHADE_LIGHTEST);
+	PixelColour c1 = GetColourGradient(colour, SHADE_DARK);
+	PixelColour c2 = GetColourGradient(colour, SHADE_LIGHTEST);
 
 	/* draw "shaded" background */
 	GfxFillRect(r.left + width, r.top, r.right - width, r.bottom, c2);
@@ -596,8 +596,8 @@ static inline void DrawFrame(const Rect &r, Colours colour, TextColour text_colo
 
 	if (!str.empty()) x2 = DrawString(r.left + WidgetDimensions::scaled.frametext.left, r.right - WidgetDimensions::scaled.frametext.right, r.top, str, text_colour, align, false, fs);
 
-	int c1 = GetColourGradient(colour, SHADE_DARK);
-	int c2 = GetColourGradient(colour, SHADE_LIGHTEST);
+	PixelColour c1 = GetColourGradient(colour, SHADE_DARK);
+	PixelColour c2 = GetColourGradient(colour, SHADE_LIGHTEST);
 
 	/* If the frame has text, adjust the top bar to fit half-way through */
 	Rect inner = r.Shrink(ScaleGUITrad(1));
@@ -794,7 +794,7 @@ void Window::DrawWidgets() const
 			Rect outer = widget->GetCurrentRect();
 			Rect inner = outer.Shrink(WidgetDimensions::scaled.bevel).Expand(1);
 
-			int colour = _string_colourmap[_window_highlight_colour ? widget->GetHighlightColour() : TC_WHITE];
+			PixelColour colour = _string_colourmap[_window_highlight_colour ? widget->GetHighlightColour() : TC_WHITE];
 
 			GfxFillRect(outer.left,     outer.top,    inner.left,      inner.bottom, colour);
 			GfxFillRect(inner.left + 1, outer.top,    inner.right - 1, inner.top,    colour);
@@ -1523,7 +1523,8 @@ void NWidgetHorizontal::SetupSmallestSize(Window *w)
 				uint remainder = (cur_height - child_height) % step_size;
 				if (remainder > 0) { // Child did not fit entirely, widen the container.
 					cur_height += step_size - remainder;
-					assert(cur_height < max_smallest); // Safeguard against infinite height expansion.
+					if (unlikely(cur_height >= max_smallest)) Debug(misc, 0, "cur_height >= max_smallest: {}, {}", cur_height, max_smallest);
+					dbg_assert(cur_height < max_smallest); // Safeguard against infinite height expansion.
 					/* Remaining children will adapt to the new cur_height, thus speeding up the computation. */
 				}
 			}
@@ -1706,7 +1707,8 @@ void NWidgetVertical::SetupSmallestSize(Window *w)
 				uint remainder = (cur_width - child_width) % step_size;
 				if (remainder > 0) { // Child did not fit entirely, widen the container.
 					cur_width += step_size - remainder;
-					assert(cur_width < max_smallest); // Safeguard against infinite width expansion.
+					if (unlikely(cur_width >= max_smallest)) Debug(misc, 0, "cur_width >= max_smallest: {}, {}", cur_width, max_smallest);
+					dbg_assert(cur_width < max_smallest); // Safeguard against infinite width expansion.
 					/* Remaining children will adapt to the new cur_width, thus speeding up the computation. */
 				}
 			}
@@ -3473,4 +3475,21 @@ std::unique_ptr<NWidgetBase> MakeCompanyButtonRows(WidgetID widget_first, Widget
 	}
 	if (hor != nullptr) vert->Add(std::move(hor));
 	return vert;
+}
+
+/**
+ * Unfocuses the focused widget of the window,
+ * if the focused widget is contained inside the container.
+ * @param parent_window Window which contains this container.
+ */
+void NWidgetContainer::UnfocusWidgets(Window *parent_window)
+{
+	assert(parent_window != nullptr);
+	if (parent_window->nested_focus != nullptr) {
+		for (auto &widget : this->children) {
+			if (parent_window->nested_focus == widget.get()) {
+				parent_window->UnfocusFocusedWidget();
+			}
+		}
+	}
 }

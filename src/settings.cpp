@@ -109,6 +109,8 @@
 
 #include "safeguards.h"
 
+using namespace std::literals::string_view_literals;
+
 ClientSettings _settings_client;
 GameSettings _settings_game;     ///< Game settings of a running game or the scenario editor.
 GameSettings _settings_newgame;  ///< Game settings for new games (updated from the intro screen).
@@ -1935,7 +1937,7 @@ static void RoadSideChanged(int32_t new_value)
 static std::optional<uint32_t> ConvertLandscape(std::string_view value)
 {
 	/* try with the old values */
-	static constexpr std::initializer_list<std::string_view> _old_landscape_values{"normal", "hilly", "desert", "candy"};
+	static constexpr std::initializer_list<std::string_view> _old_landscape_values{"normal"sv, "hilly"sv, "desert"sv, "candy"sv};
 	return OneOfManySettingDesc::ParseSingleValue(value, _old_landscape_values);
 }
 
@@ -2974,7 +2976,7 @@ void LoadFromConfig(bool startup)
 		}
 
 		if (generic_version < IFV_AUTOSAVE_RENAME && IsConversionNeeded(generic_ini, "gui", "autosave", "autosave_interval", &old_item)) {
-			static constexpr std::initializer_list<std::string_view> _old_autosave_interval{"off", "monthly", "quarterly", "half year", "yearly", "custom_days", "custom_realtime_minutes"};
+			static constexpr std::initializer_list<std::string_view> _old_autosave_interval{"off"sv, "monthly"sv, "quarterly"sv, "half year"sv, "yearly"sv, "custom_days"sv, "custom_realtime_minutes"sv};
 			auto old_value = OneOfManySettingDesc::ParseSingleValue(*old_item->value, _old_autosave_interval);
 
 			if (old_value.has_value()) {

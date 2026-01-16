@@ -340,30 +340,30 @@ uint32_t StationScopeResolver::GetNearbyStationInfo(uint32_t parameter, StationS
 	switch (variable) {
 		/* Calculated station variables */
 		case 0x40:
-			if (!this->cache.Refresh(0)) this->cache.v40 = GetPlatformInfoHelper(this->tile, false, false, false);
+			if (this->cache.Refresh(0)) this->cache.v40 = GetPlatformInfoHelper(this->tile, false, false, false);
 			return this->cache.v40;
 
 		case 0x41:
-			if (!this->cache.Refresh(1)) this->cache.v41 = GetPlatformInfoHelper(this->tile, true,  false, false);
+			if (this->cache.Refresh(1)) this->cache.v41 = GetPlatformInfoHelper(this->tile, true,  false, false);
 			return this->cache.v41;
 
 		case 0x42: return GetTerrainType(this->tile) | (GetReverseRailTypeTranslation(GetRailType(this->tile), this->statspec->grf_prop.grffile) << 8);
 		case 0x43: return GetCompanyInfo(this->st->owner); // Station owner
 		case 0x44: return HasStationReservation(this->tile) ? 7 : 4; // PBS status
 		case 0x45:
-			if (!this->cache.Refresh(2)) this->cache.v45 = GetRailContinuationInfo(this->tile);
+			if (this->cache.Refresh(2)) this->cache.v45 = GetRailContinuationInfo(this->tile);
 			return this->cache.v45;
 
 		case 0x46:
-			if (!this->cache.Refresh(3)) this->cache.v46 = GetPlatformInfoHelper(this->tile, false, false, true);
+			if (this->cache.Refresh(3)) this->cache.v46 = GetPlatformInfoHelper(this->tile, false, false, true);
 			return this->cache.v46;
 
 		case 0x47:
-			if (!this->cache.Refresh(4)) this->cache.v47 = GetPlatformInfoHelper(this->tile, true,  false, true);
+			if (this->cache.Refresh(4)) this->cache.v47 = GetPlatformInfoHelper(this->tile, true,  false, true);
 			return this->cache.v47;
 
 		case 0x49:
-			if (!this->cache.Refresh(5)) this->cache.v49 = GetPlatformInfoHelper(this->tile, false, true, false);
+			if (this->cache.Refresh(5)) this->cache.v49 = GetPlatformInfoHelper(this->tile, false, true, false);
 			return this->cache.v49;
 
 		case 0x4A: // Animation frame of tile

@@ -17,6 +17,7 @@ enum SpriteFileFlags : uint8_t {
 	SFF_USERGRF               = 1 << 0,
 	SFF_PROGSIG               = 1 << 1,
 	SFF_OPENTTDGRF            = 1 << 2,
+	SFF_OPENGFX2              = 1 << 3,
 };
 DECLARE_ENUM_AS_BIT_SET(SpriteFileFlags)
 

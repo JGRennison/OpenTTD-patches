@@ -4144,7 +4144,7 @@ static bool ConRailTypeMapColourCtl(std::span<std::string_view> argv)
 	}
 
 	RailType rt = ParseType<RailType>(argv[1]).value_or(RAILTYPE_END);
-	auto map_colour = ParseInteger(argv[2]);
+	auto map_colour = ParseInteger<uint8_t>(argv[2]);
 	if (!map_colour.has_value()) {
 		IConsolePrint(CC_ERROR, "Failed to parse: {}", argv[2]);
 		return true;
@@ -4153,7 +4153,7 @@ static bool ConRailTypeMapColourCtl(std::span<std::string_view> argv)
 	if (rt >= RAILTYPE_END) return true;
 	extern RailTypeInfo _railtypes[RAILTYPE_END];
 
-	_railtypes[rt].map_colour = (uint8_t)*map_colour;
+	_railtypes[rt].map_colour = PixelColour{*map_colour};
 	MarkAllViewportMapLandscapesDirty();
 
 	return true;
