@@ -603,8 +603,8 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 		}
 #endif
 
-		extern void ValidateVehicleTickCaches();
-		ValidateVehicleTickCaches();
+		extern void ValidateVehicleTickCaches(std::function<void(std::string_view)> log);
+		ValidateVehicleTickCaches(cclog_output);
 
 		for (Vehicle *v : Vehicle::Iterate()) {
 			if (v->Previous()) assert_msg(v->Previous()->Next() == v, "{}", v->index);

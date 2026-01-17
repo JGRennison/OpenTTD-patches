@@ -1423,7 +1423,7 @@ bool _tick_effect_veh_cache_valid = false;
 std::vector<Train *> _tick_train_front_cache;
 std::vector<RoadVehicle *> _tick_road_veh_front_cache;
 std::vector<Aircraft *> _tick_aircraft_front_cache;
-std::vector<Ship *> _tick_ship_cache;
+std::vector<Ship *> _tick_ship_front_cache;
 std::vector<Vehicle *> _tick_other_veh_cache;
 
 robin_hood::unordered_flat_set<VehicleID> _remove_from_tick_effect_veh_cache;
@@ -1434,7 +1434,7 @@ void ClearVehicleTickCaches()
 	_tick_train_front_cache.clear();
 	_tick_road_veh_front_cache.clear();
 	_tick_aircraft_front_cache.clear();
-	_tick_ship_cache.clear();
+	_tick_ship_front_cache.clear();
 	_tick_other_veh_cache.clear();
 
 	if (!_tick_effect_veh_cache_valid) {
@@ -1486,7 +1486,7 @@ void RebuildVehicleTickCaches()
 				break;
 
 			case VEH_SHIP:
-				if (is_front) _tick_ship_cache.push_back(Ship::From(v));
+				if (is_front) _tick_ship_front_cache.push_back(Ship::From(v));
 				break;
 
 			case VEH_EFFECT:
@@ -1498,14 +1498,14 @@ void RebuildVehicleTickCaches()
 	_tick_effect_veh_cache_valid = true;
 }
 
-void ValidateVehicleTickCaches()
+void ValidateVehicleTickCaches(std::function<void(std::string_view)> log)
 {
 	if (!_tick_caches_valid) return;
 
 	std::vector<Train *> saved_tick_train_front_cache = std::move(_tick_train_front_cache);
 	std::vector<RoadVehicle *> saved_tick_road_veh_front_cache = std::move(_tick_road_veh_front_cache);
 	std::vector<Aircraft *> saved_tick_aircraft_front_cache = std::move(_tick_aircraft_front_cache);
-	std::vector<Ship *> saved_tick_ship_cache = std::move(_tick_ship_cache);
+	std::vector<Ship *> saved_tick_ship_front_cache = std::move(_tick_ship_front_cache);
 	btree::btree_set<VehicleID> saved_tick_effect_veh_cache = std::move(_tick_effect_veh_cache);
 	for (VehicleID id : _remove_from_tick_effect_veh_cache) {
 		saved_tick_effect_veh_cache.erase(id);
@@ -1516,12 +1516,22 @@ void ValidateVehicleTickCaches()
 
 	RebuildVehicleTickCaches();
 
-	assert(saved_tick_train_front_cache == saved_tick_train_front_cache);
-	assert(saved_tick_road_veh_front_cache == _tick_road_veh_front_cache);
-	assert(saved_tick_aircraft_front_cache == _tick_aircraft_front_cache);
-	assert(saved_tick_ship_cache == _tick_ship_cache);
-	assert(saved_tick_effect_veh_cache == _tick_effect_veh_cache);
-	assert(saved_tick_other_veh_cache == _tick_other_veh_cache);
+	format_buffer_sized<128> buffer;
+	auto report_error = [&](const char *label) {
+		buffer.clear();
+		buffer.append("ValidateVehicleTickCaches: cache mismatch: ");
+		buffer.append(label);
+		log(buffer);
+	};
+	auto check = [&]<typename T>(const T &saved, const T &orig, const char *label) {
+		if (saved != orig) report_error(label);
+	};
+	check(saved_tick_train_front_cache, _tick_train_front_cache, "Train front");
+	check(saved_tick_road_veh_front_cache, _tick_road_veh_front_cache, "Road vehicle front");
+	check(saved_tick_aircraft_front_cache, _tick_aircraft_front_cache, "Aircraft front");
+	check(saved_tick_ship_front_cache, _tick_ship_front_cache, "Ship front");
+	check(saved_tick_effect_veh_cache, _tick_effect_veh_cache, "Effect vehicle");
+	check(saved_tick_other_veh_cache, _tick_other_veh_cache, "Other vehicles");
 }
 
 void VehicleTickCargoAging(Vehicle *v)
@@ -1681,7 +1691,7 @@ void CallVehicleTicks()
 	if (!_tick_aircraft_front_cache.empty()) RecordSyncEvent(NSRE_VEH_AIR);
 	{
 		PerformanceMeasurer framerate(PFE_GL_SHIPS);
-		for (Ship *s : _tick_ship_cache) {
+		for (Ship *s : _tick_ship_front_cache) {
 			v = s;
 			if (!s->Ship::Tick()) continue;
 			for (Ship *u = s; u != nullptr; u = u->Next()) {
@@ -1690,7 +1700,7 @@ void CallVehicleTicks()
 			if (!s->vehstatus.Test(VehState::Stopped)) VehicleTickMotion(s, s);
 		}
 	}
-	if (!_tick_ship_cache.empty()) RecordSyncEvent(NSRE_VEH_SHIP);
+	if (!_tick_ship_front_cache.empty()) RecordSyncEvent(NSRE_VEH_SHIP);
 	{
 		for (Vehicle *u : _tick_other_veh_cache) {
 			if (!u) continue;
