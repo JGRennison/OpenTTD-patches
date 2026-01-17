@@ -1417,15 +1417,6 @@ static void ChangeMinutesPerYear(int32_t new_value)
 	}
 }
 
-/* Get the valid range of the "minutes per calendar year" setting. */
-static std::tuple<int32_t, uint32_t> GetMinutesPerYearRange(const IntSettingDesc &)
-{
-	/* Allow a non-default value only if using Wallclock timekeeping units. */
-	if (_settings_newgame.economy.timekeeping_units == TKU_WALLCLOCK) return { CalTime::FROZEN_MINUTES_PER_YEAR, CalTime::MAX_MINUTES_PER_YEAR };
-
-	return { CalTime::DEF_MINUTES_PER_YEAR, CalTime::DEF_MINUTES_PER_YEAR };
-}
-
 static std::tuple<int32_t, uint32_t> GetServiceIntervalRange(const IntSettingDesc &)
 {
 	VehicleDefaultSettings *vds;
