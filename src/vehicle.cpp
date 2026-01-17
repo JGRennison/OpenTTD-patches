@@ -1500,19 +1500,24 @@ void RebuildVehicleTickCaches()
 
 void ValidateVehicleTickCaches(std::function<void(std::string_view)> log)
 {
+	const bool effect_veh_was_valid = _tick_effect_veh_cache_valid;
+	_tick_effect_veh_cache_valid = false;
 	if (!_tick_caches_valid) return;
 
 	std::vector<Train *> saved_tick_train_front_cache = std::move(_tick_train_front_cache);
 	std::vector<RoadVehicle *> saved_tick_road_veh_front_cache = std::move(_tick_road_veh_front_cache);
 	std::vector<Aircraft *> saved_tick_aircraft_front_cache = std::move(_tick_aircraft_front_cache);
 	std::vector<Ship *> saved_tick_ship_front_cache = std::move(_tick_ship_front_cache);
-	btree::btree_set<VehicleID> saved_tick_effect_veh_cache = std::move(_tick_effect_veh_cache);
-	for (VehicleID id : _remove_from_tick_effect_veh_cache) {
-		saved_tick_effect_veh_cache.erase(id);
-	}
-	_tick_effect_veh_cache_valid = false;
 	std::vector<Vehicle *> saved_tick_other_veh_cache = std::move(_tick_other_veh_cache);
 	saved_tick_other_veh_cache.erase(std::remove(saved_tick_other_veh_cache.begin(), saved_tick_other_veh_cache.end(), nullptr), saved_tick_other_veh_cache.end());
+
+	btree::btree_set<VehicleID> saved_tick_effect_veh_cache;
+	if (effect_veh_was_valid) {
+		saved_tick_effect_veh_cache = std::move(_tick_effect_veh_cache);
+		for (VehicleID id : _remove_from_tick_effect_veh_cache) {
+			saved_tick_effect_veh_cache.erase(id);
+		}
+	}
 
 	RebuildVehicleTickCaches();
 
@@ -1530,8 +1535,8 @@ void ValidateVehicleTickCaches(std::function<void(std::string_view)> log)
 	check(saved_tick_road_veh_front_cache, _tick_road_veh_front_cache, "Road vehicle front");
 	check(saved_tick_aircraft_front_cache, _tick_aircraft_front_cache, "Aircraft front");
 	check(saved_tick_ship_front_cache, _tick_ship_front_cache, "Ship front");
-	check(saved_tick_effect_veh_cache, _tick_effect_veh_cache, "Effect vehicle");
 	check(saved_tick_other_veh_cache, _tick_other_veh_cache, "Other vehicles");
+	if (effect_veh_was_valid) check(saved_tick_effect_veh_cache, _tick_effect_veh_cache, "Effect vehicle");
 }
 
 void VehicleTickCargoAging(Vehicle *v)
