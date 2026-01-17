@@ -727,7 +727,7 @@ void TraceRestrictProgram::Execute(const Train *v, const TraceRestrictProgramInp
 					}
 
 					case TRIT_COND_CATEGORY: {
-						switch (static_cast<TraceRestrictCatgeoryCondAuxField>(item.GetAuxField())) {
+						switch (static_cast<TraceRestrictCategoryCondAuxField>(item.GetAuxField())) {
 							case TRCCAF_ENGINE_CLASS: {
 								EngineClass ec = (EngineClass)condvalue;
 								result = (item.GetCondOp() != TRCO_IS);
@@ -1354,7 +1354,7 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictPr
 
 				case TRIT_COND_CATEGORY:
 					if (invalid_binary_condition()) return unknown_instruction();
-					switch (static_cast<TraceRestrictCatgeoryCondAuxField>(item.GetAuxField())) {
+					switch (static_cast<TraceRestrictCategoryCondAuxField>(item.GetAuxField())) {
 						case TRCCAF_ENGINE_CLASS:
 							break;
 
