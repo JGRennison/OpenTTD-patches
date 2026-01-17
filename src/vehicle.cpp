@@ -1510,6 +1510,7 @@ void ValidateVehicleTickCaches()
 	for (VehicleID id : _remove_from_tick_effect_veh_cache) {
 		saved_tick_effect_veh_cache.erase(id);
 	}
+	_tick_effect_veh_cache_valid = false;
 	std::vector<Vehicle *> saved_tick_other_veh_cache = std::move(_tick_other_veh_cache);
 	saved_tick_other_veh_cache.erase(std::remove(saved_tick_other_veh_cache.begin(), saved_tick_other_veh_cache.end(), nullptr), saved_tick_other_veh_cache.end());
 
