@@ -2,6 +2,10 @@
 
 * * *
 
+### v0.69.2 (2026-01-18)
+* Fix crash which could occur when merging/deleting companies or after a multiplayer desync.
+* Fix incorrect handling of the wallclock mode minutes per year setting.
+
 ### v0.69.1 (2026-01-16)
 * Fix incorrect rendering of some types of NewGRF rail station.
 * Fix replace mode being ignored when using the manual house placer.
