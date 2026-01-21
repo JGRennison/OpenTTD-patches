@@ -4180,7 +4180,7 @@ bool ProcessOrders(Vehicle *v)
 
 	/* Check if we've reached a 'via' destination. */
 	if (((v->current_order.IsType(OT_GOTO_STATION) && (v->current_order.GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION)) ||
-			(v->current_order.IsType(OT_GOTO_WAYPOINT) && !v->current_order.IsWaitTimetabled())) &&
+			(v->current_order.IsType(OT_GOTO_WAYPOINT) && (!v->current_order.IsWaitTimetabled() || v->type != VEH_TRAIN))) &&
 			IsTileType(v->tile, MP_STATION) &&
 			v->current_order.GetDestination() == GetStationIndex(v->tile)) {
 		v->DeleteUnreachedImplicitOrders();

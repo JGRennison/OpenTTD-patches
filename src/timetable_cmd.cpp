@@ -201,6 +201,9 @@ CommandCost CmdChangeTimetable(DoCommandFlags flags, VehicleID veh, VehicleOrder
 
 		case MTF_SET_WAIT_FIXED:
 			wait_fixed = data != 0;
+			if (v->type != VEH_TRAIN && wait_fixed) {
+				return CommandCost(STR_ERROR_TIMETABLE_ONLY_WAIT_AT_STATIONS);
+			}
 			break;
 
 		case MTF_SET_TRAVEL_FIXED:
@@ -230,8 +233,13 @@ CommandCost CmdChangeTimetable(DoCommandFlags flags, VehicleID veh, VehicleOrder
 				}
 				break;
 
-			case OT_GOTO_DEPOT:
 			case OT_GOTO_WAYPOINT:
+				if (v->type != VEH_TRAIN && !clear_field) {
+					return CommandCost(STR_ERROR_TIMETABLE_ONLY_WAIT_AT_STATIONS);
+				}
+				break;
+
+			case OT_GOTO_DEPOT:
 				break;
 
 			case OT_CONDITIONAL:

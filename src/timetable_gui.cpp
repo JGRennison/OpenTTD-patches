@@ -624,6 +624,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 						if (order->IsType(OT_GOTO_WAYPOINT)) {
 							disable = false;
 							disable_time = false;
+							if (v->type != VEH_TRAIN && !order->IsWaitTimetabled() && !order->IsWaitFixed()) disable_time = true;
 							clearable_when_wait_locked = true;
 						} else if (order->IsType(OT_CONDITIONAL)) {
 							disable = true;
