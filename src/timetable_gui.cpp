@@ -306,7 +306,7 @@ void ProcessTimetableWarnings(const Vehicle *v, std::function<void(std::string_v
 			have_conditional = true;
 			if (!order->IsWaitTimetabled()) have_non_timetabled_conditional_branch = true;
 		} else {
-			if (order->GetWaitTime() == 0 && order->IsType(OT_GOTO_STATION) && !(order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION)) {
+			if (order->GetWaitTime() == 0 && !order->IsWaitTimetabled() && order->IsType(OT_GOTO_STATION) && !(order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION)) {
 				have_missing_wait = true;
 			}
 			if (order->GetTravelTime() == 0 && !order->IsTravelTimetabled()) {
@@ -340,7 +340,7 @@ void ProcessTimetableWarnings(const Vehicle *v, std::function<void(std::string_v
 			for (const Order *o : v->Orders()) {
 				if (o->IsType(OT_IMPLICIT) || o->HasNoTimetableTimes()) continue;
 
-				if (o->IsWaitTimetabled() && ((o->IsType(OT_GOTO_STATION) && !(o->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION)) ||
+				if (o->IsWaitTimetabled() && o->GetWaitTime() > 0 && ((o->IsType(OT_GOTO_STATION) && !(o->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION)) ||
 						(o->IsType(OT_GOTO_WAYPOINT) && v->type == VEH_TRAIN))) {
 					return false;
 				}
