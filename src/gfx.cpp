@@ -632,7 +632,7 @@ static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, 
 
 			FontCache *fc = f->fc;
 			TextColour colour = f->colour;
-			if (colour == TC_INVALID || HasFlag(default_colour, TC_FORCED)) colour = default_colour;
+			if (colour == TC_INVALID || HasFlag(default_colour, TC_FORCED)) colour = initial_colour;
 			bool colour_has_shadow = (colour & TC_NO_SHADE) == 0 && (colour & ~TC_FORCED) != TC_BLACK;
 			/* Update the last colour for the truncation ellipsis. */
 			last_colour = colour;
