@@ -336,6 +336,18 @@ void ProcessTimetableWarnings(const Vehicle *v, std::function<void(std::string_v
 	}
 
 	if (v->vehicle_flags.Test(VehicleFlag::TimetableSeparation)) {
+		auto no_set_waiting_orders = [&]() -> bool {
+			for (const Order *o : v->Orders()) {
+				if (o->IsType(OT_IMPLICIT) || o->HasNoTimetableTimes()) continue;
+
+				if (o->IsWaitTimetabled() && ((o->IsType(OT_GOTO_STATION) && !(o->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION)) ||
+						(o->IsType(OT_GOTO_WAYPOINT) && v->type == VEH_TRAIN))) {
+					return false;
+				}
+			}
+			return true;
+		};
+
 		if (have_conditional) handler(STR_TIMETABLE_WARNING_AUTOSEP_CONDITIONAL, true);
 		if (have_autoseparate_bad_non_stop_type) handler(STR_TIMETABLE_WARNING_AUTOSEP_WRONG_STOP_TYPE, true);
 		if (have_missing_wait || have_missing_travel) {
@@ -348,6 +360,8 @@ void ProcessTimetableWarnings(const Vehicle *v, std::function<void(std::string_v
 			}
 		} else if (v->GetNumOrders() == 0) {
 			handler(STR_TIMETABLE_AUTOSEP_TIMETABLE_INCOMPLETE, false);
+		} else if (no_set_waiting_orders()) {
+			handler(STR_TIMETABLE_AUTOSEP_NO_WAIT_TIME_SET, true);
 		} else if (!have_conditional) {
 			handler(v->IsOrderListShared() ? STR_TIMETABLE_AUTOSEP_OK : STR_TIMETABLE_AUTOSEP_SINGLE_VEH, false);
 		}

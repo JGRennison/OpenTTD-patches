@@ -1959,6 +1959,7 @@ STR_TIMETABLE_ASSIGN_SCHEDULE_ID                                :Schedule {NUM}
 STR_TIMETABLE_AUTOSEP_TIMETABLE_INCOMPLETE                      :{BLACK}This timetable is not being auto separated because it is incomplete
 STR_TIMETABLE_AUTOSEP_OK                                        :{BLACK}This timetable is being auto separated
 STR_TIMETABLE_AUTOSEP_SINGLE_VEH                                :{BLACK}This timetable is not being auto separated because there is only 1 vehicle
+STR_TIMETABLE_AUTOSEP_NO_WAIT_TIME_SET                          :{BLACK}This timetable is not being auto separated because there are no orders with timetabled wait times
 STR_TIMETABLE_WARNING_AUTOSEP_CONDITIONAL                       :{BLACK}Cannot auto separate timetable: conditional order(s) present
 STR_TIMETABLE_WARNING_AUTOSEP_MISSING_TIMINGS                   :{BLACK}Cannot auto separate timetable: wait or travel time(s) missing
 STR_TIMETABLE_WARNING_AUTOSEP_WRONG_STOP_TYPE                   :{BLACK}All orders should be 'non-stop' when using auto separation
