@@ -2220,6 +2220,7 @@ class TraceRestrictWindow: public Window {
 	TraceRestrictInstructionItem expecting_inserted_item{};                     ///< set to instruction when performing an instruction insertion, used to handle selection update on insertion
 	int current_placement_widget = -1;                                          ///< which widget has a SetObjectToPlaceWnd, if any
 	int current_left_aux_plane = 0;                                             ///< current plane for TR_WIDGET_SEL_TOP_LEFT_AUX widget
+	int current_right_plane = 0;                                                ///< current plane for TR_WIDGET_SEL_TOP_RIGHT widget
 	int base_copy_plane = 0;                                                    ///< base plane for TR_WIDGET_SEL_COPY widget
 	int base_share_plane = 0;                                                   ///< base plane for TR_WIDGET_SEL_SHARE widget
 
@@ -3264,6 +3265,7 @@ public:
 			}
 
 			case TR_WIDGET_VALUE_DROPDOWN: {
+				if (this->current_right_plane != DPR_VALUE_DROPDOWN) return {}; // Not currently shown, return empty to avoid parameter errors with stale strings
 				TraceRestrictInstructionItem item = this->GetSelected().instruction;
 				TraceRestrictTypePropertySet type = GetTraceRestrictTypeProperties(item);
 				if ((type.value_type == TRVT_PF_PENALTY &&
@@ -3277,6 +3279,7 @@ public:
 			}
 
 			case TR_WIDGET_LEFT_AUX_DROPDOWN: {
+				if (this->current_left_aux_plane != DPLA_DROPDOWN) return {}; // Not currently shown, return empty to avoid parameter errors with stale strings
 				TraceRestrictInstructionItem item = this->GetSelected().instruction;
 				TraceRestrictTypePropertySet type = GetTraceRestrictTypeProperties(item);
 				if (type.value_type == TRVT_SLOT_INDEX_INT || type.value_type == TRVT_COUNTER_INDEX_INT || type.value_type == TRVT_TIME_DATE_INT) {
@@ -3612,7 +3615,8 @@ private:
 		extern const TraceRestrictProgram *_viewport_highlight_tracerestrict_program;
 		this->SetWidgetLoweredState(TR_WIDGET_HIGHLIGHT, prog != nullptr && _viewport_highlight_tracerestrict_program == prog);
 
-		auto left_aux_guard = scope_guard([&]() {
+		auto plane_update_guard = scope_guard([&]() {
+			this->current_right_plane = right_sel->shown_plane;
 			if (this->current_left_aux_plane != left_aux_sel->shown_plane) {
 				this->current_left_aux_plane = left_aux_sel->shown_plane;
 				this->ReInit();

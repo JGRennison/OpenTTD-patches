@@ -282,7 +282,7 @@ enum TraceRestrictPhysPropRatioCondAuxField : uint8_t {
 /**
  * TraceRestrictItem auxiliary type field, for category type conditionals
  */
-enum TraceRestrictCatgeoryCondAuxField : uint8_t {
+enum TraceRestrictCategoryCondAuxField : uint8_t {
 	TRCCAF_ENGINE_CLASS           = 0,       ///< value field is an EngineClass type
 	/* space up to 3 */
 };
@@ -1190,7 +1190,7 @@ inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceRestrict
 				break;
 
 			case TRIT_COND_CATEGORY:
-				switch (static_cast<TraceRestrictCatgeoryCondAuxField>(item.GetAuxField())) {
+				switch (static_cast<TraceRestrictCategoryCondAuxField>(item.GetAuxField())) {
 					case TRCCAF_ENGINE_CLASS:
 						out.value_type = TRVT_ENGINE_CLASS;
 						break;

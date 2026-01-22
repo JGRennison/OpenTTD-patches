@@ -1323,8 +1323,8 @@ static void TileLoop_Trees(TileIndex tile)
 								if (new_z >= LowestTreePlacementSnowLine() && new_z > GetTileZ(old_tile)) return;
 							}
 
-							/* Don't plant trees, if ground was freshly cleared. */
-							if (IsTileType(tile, MP_CLEAR) && GetClearGround(tile) == CLEAR_GRASS && GetClearDensity(tile) != 3) return;
+							/* Don't plant trees, if ground was freshly cleared */
+							if (IsTileType(tile, MP_CLEAR) && GetClearGround(tile) == CLEAR_GRASS && !IsSnowTile(tile) && GetClearDensity(tile) != 3) return;
 
 							PlantTreesOnTile(tile, tree_type, 0, TreeGrowthStage::Growing1);
 						}

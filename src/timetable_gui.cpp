@@ -306,7 +306,7 @@ void ProcessTimetableWarnings(const Vehicle *v, std::function<void(std::string_v
 			have_conditional = true;
 			if (!order->IsWaitTimetabled()) have_non_timetabled_conditional_branch = true;
 		} else {
-			if (order->GetWaitTime() == 0 && order->IsType(OT_GOTO_STATION) && !(order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION)) {
+			if (order->GetWaitTime() == 0 && !order->IsWaitTimetabled() && order->IsType(OT_GOTO_STATION) && !(order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION)) {
 				have_missing_wait = true;
 			}
 			if (order->GetTravelTime() == 0 && !order->IsTravelTimetabled()) {
@@ -336,6 +336,18 @@ void ProcessTimetableWarnings(const Vehicle *v, std::function<void(std::string_v
 	}
 
 	if (v->vehicle_flags.Test(VehicleFlag::TimetableSeparation)) {
+		auto no_set_waiting_orders = [&]() -> bool {
+			for (const Order *o : v->Orders()) {
+				if (o->IsType(OT_IMPLICIT) || o->HasNoTimetableTimes()) continue;
+
+				if (o->IsWaitTimetabled() && o->GetWaitTime() > 0 && ((o->IsType(OT_GOTO_STATION) && !(o->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION)) ||
+						(o->IsType(OT_GOTO_WAYPOINT) && v->type == VEH_TRAIN))) {
+					return false;
+				}
+			}
+			return true;
+		};
+
 		if (have_conditional) handler(STR_TIMETABLE_WARNING_AUTOSEP_CONDITIONAL, true);
 		if (have_autoseparate_bad_non_stop_type) handler(STR_TIMETABLE_WARNING_AUTOSEP_WRONG_STOP_TYPE, true);
 		if (have_missing_wait || have_missing_travel) {
@@ -348,6 +360,8 @@ void ProcessTimetableWarnings(const Vehicle *v, std::function<void(std::string_v
 			}
 		} else if (v->GetNumOrders() == 0) {
 			handler(STR_TIMETABLE_AUTOSEP_TIMETABLE_INCOMPLETE, false);
+		} else if (no_set_waiting_orders()) {
+			handler(STR_TIMETABLE_AUTOSEP_NO_WAIT_TIME_SET, true);
 		} else if (!have_conditional) {
 			handler(v->IsOrderListShared() ? STR_TIMETABLE_AUTOSEP_OK : STR_TIMETABLE_AUTOSEP_SINGLE_VEH, false);
 		}
@@ -610,6 +624,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 						if (order->IsType(OT_GOTO_WAYPOINT)) {
 							disable = false;
 							disable_time = false;
+							if (v->type != VEH_TRAIN && !order->IsWaitTimetabled() && !order->IsWaitFixed()) disable_time = true;
 							clearable_when_wait_locked = true;
 						} else if (order->IsType(OT_CONDITIONAL)) {
 							disable = true;

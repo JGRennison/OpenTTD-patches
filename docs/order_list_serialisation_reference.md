@@ -51,52 +51,54 @@ When they represent a complex slot.
 ## Orders
 Fields can depend on the `type` of the order
 #### Common fields
-| Field              | Type | Notes / Legal Values                                                                                                                        |
-| ------------------ | ---- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `type`             | enum | **Required**, can be: `go-to-station`, `go-to-depot`, `go-to-waypoint`, `conditional`, `implicit`, `slot`, `slot-group`, `counter`, `label` |
-| `colour`           | enum | Same as `route-overlay-colour`                                                                                                              |
-| `travel-time`      | int  | Timetable travel time.                                                                                                                      |
-| `wait-time`        | int  | Timetable wait time.                                                                                                                        |
-| `travel-fixed`     | bool | `true` if travel time is fixed / locked.                                                                                                    |
-| `wait-fixed`       | bool | `true` if wait time is fixed / locked.                                                                                                      |
-| `stopping-pattern` | enum | `go-to`, `go-nonstop-to`, `go-via`, `go-nonstop-via`                                                                                        |
-| `stop-location`    | enum | `near-end`, `middle`, `far-end`, `through`                                                                                                  |
-| `stop-direction`   | enum | `north-east`, `south-east`, `north-west`, `south-west`                                                                                      |
+| Field              | Type | Notes / Legal Values                                                                                                                                            |
+| ------------------ | ---- | --------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `type`             | enum | **Required**, can be: `go-to-station`, `go-to-depot`, `go-to-waypoint`, `conditional`, `implicit`, `slot`, `slot-group`, `counter`, `label`                     |
+| `colour`           | enum | `dark-blue`, `pale-green`, `pink`, `yellow`, `red`, `light-blue`, `green`, `dark-green`, `blue`, `cream`, `mauve`, `purple`, `orange`, `brown`, `grey`, `white` |
 #### Go to (any) common fields (`type: go-to-*`)
-| Field              | Type | Notes / Legal Values                                                                                                                        |
-| ------------------ | ---- | ------------------------------------------------------------------------------------------------------------------------------------------- |
-| `max-speed`        | int  | Maximum speed to this destination                                                                                                           |
-
+| Field                  | Type   | Notes / Legal Values                                                                                  |
+| ---------------------- | ------ | ----------------------------------------------------------------------------------------------------- |
+| `travel-time`          | int    | Timetable travel time.                                                                                |
+| `travel-fixed`         | bool   | `true` if travel time is fixed / locked.                                                              |
+| `max-speed`            | int    | Maximum speed to this destination                                                                     |
+| `destination-location` | object | Export Only `{X:int, Y:int}` tile location.  Omitted when `depot-id` is nearest.                      |
+| `destination-name`     | string | Export only.                                                                                          |
+| `stopping-pattern`     | enum   | `go-to`, `go-nonstop-to`, `go-via`, `go-nonstop-via` Note: Can't go via Depots                        |
 #### Go to station (`type: go-to-station`)
 | Field                  | Type           | Notes / Legal Values                                                                      |
 | ---------------------- | -------------- | ----------------------------------------------------------------------------------------- |
 | `destination-id`       | int            | Station ID                                                                                |
-| `destination-name`     | string         | Export only.                                                                              |
-| `destination-location` | object         | `{X:int, Y:int}` tile location.                                                           |
 | `load`                 | enum           | `normal`, `full-load`, `full-load-any`, `no-load`                                         |
 | `unload`               | enum           | `normal`, `unload`, `transfer`, `no-unload`                                               |
+| `stop-location`        | enum           | `near-end`, `middle`, `far-end`, `through`                                                |
+| `stop-direction`       | enum           | `north-east`, `south-east`, `north-west`, `south-west`                                    |
 | `load-by-cargo-type`   | array\<object> | `{"<cargo-id>": {"load": <load>, "unload": <unload>}}`                                    |
+| `wait-time`            | int            | Timetable wait time.                                                                      |
+| `wait-fixed`           | bool           | `true` if wait time is fixed / locked.                                                    |
 | `timetable-leave-type` | enum           | `normal`, `leave-early`, `leave-early-if-any-cargo-full`, `leave-early-if-all-cargo-full` |
 #### Go to Depot (`type: go-to-depot`)
 | Field          | Type    | Nortes / Legal Values                                  |
 | -------------- | ------- | ------------------------------------------------------ |
 | `depot-id`     | int/str | Depot ID or `"nearest"`                                |
 | `depot-action` | enum    | `service-only`, `stop`, `sell`, `unbunch`, `always-go` |
+| `wait-time`    | int     | Timetable wait time.                                   |
+| `wait-fixed`   | bool    | `true` if wait time is fixed / locked.                 |
 #### Go to Waypoint (`type: go-to-waypoint`)
 | Field                  | Type   | Notes / Legal Values            |
 | ---------------------- | ------ | ------------------------------- |
-| `destination-id`       | int    | Waypoint ID.                    |
 | `destination-name`     | string | Export only.                    |
-| `destination-location` | object | `{X:int, Y:int}` tile location. |
 | `waypoint-reverse`     | bool   | Reverse direction at waypoint.  |
 #### Conditional (`type: conditional`)
-| Field                  | Type   | Notes / Legal Values                                                                                                                                                                                                                                                                                                                                                            |
-| ---------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `condition-variable`   | enum   | **Required**<br>`always`, `load-percentage`, `cargo-load-percentage`, `reliability`, `max-reliability`, `requires-service`, `age`, `remaining-lifetime`, `cargo-waiting`, `cargo-waiting-amount`, `cargo-waiting-amount-percentage`, `free-platforms`, `slot-occupancy`, `vehicle-in-slot`, `vehicle-in-slot-group`, `counter-value`, `timetable`, `time-date`, `dispatch-slot` |
-| `jump-to`              | string | Label of order to jump to.                                                                                                                                                                                                                                                                                                                                                      |
-| `condition-comparator` | enum   | `==`, `!=`, `<`, `<=`, `>`, `>=`, `true`, `false`                                                                                                                                                                                                                                                                                                                               |
-| `condition-value[1-4]` | int    | Depends on variable. Values can be easy to parse but often are not (may include raw binary data).                                                                                                                                                                                                                                                                               |
-| `condition-station`    | int    | Station ID if station-based condition.                                                                                                                                                                                                                                                                                                                                          |
+| Field                     | Type   | Notes / Legal Values                                                                                                                                                                                                                                                                                                                                                            |
+| ------------------------- | ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `condition-variable`      | enum   | **Required**<br>`always`, `load-percentage`, `cargo-load-percentage`, `reliability`, `max-reliability`, `requires-service`, `age`, `remaining-lifetime`, `cargo-waiting`, `cargo-waiting-amount`, `cargo-waiting-amount-percentage`, `free-platforms`, `slot-occupancy`, `vehicle-in-slot`, `vehicle-in-slot-group`, `counter-value`, `timetable`, `time-date`, `dispatch-slot` |
+| `jump-to`                 | string | Label of order to jump to.                                                                                                                                                                                                                                                                                                                                                      |
+| `condition-comparator`    | enum   | `==`, `!=`, `<`, `<=`, `>`, `>=`, `true`, `false`                                                                                                                                                                                                                                                                                                                               |
+| `condition-value[1-4]`    | int    | Depends on variable. Values can be easy to parse but often are not (may include raw binary data).                                                                                                                                                                                                                                                                               |
+| `condition-station`       | int    | Station ID if station-based condition.                                                                                                                                                                                                                                                                                                                                          |
+| `jump-taken-travel-time`  | int    | Timetable travel time when jump taken.                                                                                                                                                                                                                                                                                                                                          |
+| `jump-taken-travel-fixed` | bool   | `true` if the jump taken travel time is fixed / blocked.                                                                                                                                                                                                                                                                                                                        |
+
 #### Completely parsed `condition-variables`
 In cases where commonly used`condition-values` are hard to parse there exists a dedicated import/export pipeline which replaces the raw values with named fields.
 If you wish to add a `condition-variable` to this list, please submit a PR or ask Luca (contact info above).
