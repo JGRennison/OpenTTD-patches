@@ -10,6 +10,7 @@
 #ifndef VEHICLE_BASE_H
 #define VEHICLE_BASE_H
 
+#include "sprite.h"
 #include "track_type.h"
 #include "command_type.h"
 #include "order_base.h"
@@ -340,13 +341,7 @@ public:
 	UnitID unitnumber = 0;                       ///< unit number, for display purposes only
 	VehicleSpriteSeq sprite_seq{};               ///< Vehicle appearance.
 	Rect16 sprite_seq_bounds{};
-	uint8_t x_extent = 0;                        ///< x-extent of vehicle bounding box
-	uint8_t y_extent = 0;                        ///< y-extent of vehicle bounding box
-	uint8_t z_extent = 0;                        ///< z-extent of vehicle bounding box
-	int8_t x_bb_offs = 0;                        ///< x offset of vehicle bounding box
-	int8_t y_bb_offs = 0;                        ///< y offset of vehicle bounding box
-	int8_t x_offs = 0;                           ///< x offset for vehicle sprite
-	int8_t y_offs = 0;                           ///< y offset for vehicle sprite
+	SpriteBounds bounds{};                       ///< Bounding box of vehicle.
 
 	uint8_t progress = 0;                        ///< The percentage (if divided by 256) this vehicle already crossed the tile unit.
 	TextEffectID fill_percent_te_id = INVALID_TE_ID; ///< a text-effect id to a loading indicator object
@@ -1586,7 +1581,7 @@ public:
 		extern std::vector<Rect> _viewport_vehicle_normal_redraw_rects;
 		extern std::vector<Rect> _viewport_vehicle_map_redraw_rects;
 
-		Point pt = RemapCoords(this->x_pos + this->x_offs, this->y_pos + this->y_offs, this->z_pos);
+		Point pt = RemapCoords(this->x_pos + this->bounds.origin.x, this->y_pos + this->bounds.origin.y, this->z_pos);
 		if (EXPECTED_TYPE >= VEH_COMPANY_END || IsPointInViewportVehicleRedrawArea(_viewport_vehicle_normal_redraw_rects, pt)) {
 			UpdateViewportNormalViewportMode(force_update, pt);
 			return;

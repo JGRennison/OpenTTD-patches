@@ -38,6 +38,7 @@
 #include "network/network_func.h"
 #include "guitimer_func.h"
 #include "news_func.h"
+#include "sound_func.h"
 #include "core/backup_type.hpp"
 #include "timer/timer.h"
 #include "timer/timer_window.h"
@@ -634,6 +635,7 @@ void Window::HandleButtonClick(WidgetID widget)
 	this->LowerWidget(widget);
 	this->SetTimeout();
 	this->SetWidgetDirty(widget);
+	SndClickBeep();
 }
 
 static void StartWindowDrag(Window *w);

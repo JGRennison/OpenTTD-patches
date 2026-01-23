@@ -1056,9 +1056,5 @@ bool SetDisasterVehicleTargetingVehicle(VehicleID vehicle, VehicleID disaster_ve
 
 void DisasterVehicle::UpdateDeltaXY()
 {
-	this->x_offs        = -1;
-	this->y_offs        = -1;
-	this->x_extent      =  2;
-	this->y_extent      =  2;
-	this->z_extent      =  5;
+	this->bounds = {{-1, -1, 0}, {2, 2, 5}, {}};
 }

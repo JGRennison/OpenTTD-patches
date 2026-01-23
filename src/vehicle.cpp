@@ -1925,8 +1925,7 @@ static void DoDrawVehicle(const Vehicle *v)
 	for (uint i = 0; i < v->sprite_seq.count; ++i) {
 		PaletteID pal2 = v->sprite_seq.seq[i].pal;
 		if (!pal2 || v->vehstatus.Test(VehState::Crashed)) pal2 = pal;
-		AddSortableSpriteToDraw(v->sprite_seq.seq[i].sprite, pal2, v->x_pos + v->x_offs, v->y_pos + v->y_offs,
-			v->x_extent, v->y_extent, v->z_extent, v->z_pos, shadowed, v->x_bb_offs, v->y_bb_offs, 0, nullptr, special_flags);
+		AddSortableSpriteToDraw(v->sprite_seq.seq[i].sprite, pal2, v->x_pos, v->y_pos, v->z_pos, v->bounds, shadowed, nullptr, special_flags);
 	}
 	EndSpriteCombine();
 }
@@ -2830,7 +2829,8 @@ void Vehicle::UpdateViewport(bool dirty)
 
 	Rect new_coord = ConvertRect<Rect16, Rect>(this->sprite_seq_bounds);
 
-	Point pt = RemapCoords(this->x_pos + this->x_offs, this->y_pos + this->y_offs, this->z_pos);
+	/* z-bounds are not used. */
+	Point pt = RemapCoords(this->x_pos + this->bounds.origin.x + this->bounds.offset.x, this->y_pos + this->bounds.origin.y + this->bounds.offset.y, this->z_pos);
 	new_coord.left   += pt.x;
 	new_coord.top    += pt.y;
 	new_coord.right  += pt.x + 2 * ZOOM_BASE;
@@ -2860,7 +2860,7 @@ void Vehicle::UpdateViewportDeferred()
 {
 	Rect new_coord = ConvertRect<Rect16, Rect>(this->sprite_seq_bounds);
 
-	Point pt = RemapCoords(this->x_pos + this->x_offs, this->y_pos + this->y_offs, this->z_pos);
+	Point pt = RemapCoords(this->x_pos + this->bounds.origin.x, this->y_pos + this->bounds.origin.y, this->z_pos);
 	new_coord.left   += pt.x;
 	new_coord.top    += pt.y;
 	new_coord.right  += pt.x + 2 * ZOOM_BASE;

@@ -898,7 +898,6 @@ static CallBackFunction ToolbarZoomInClick(Window *w)
 {
 	if (DoZoomInOutWindow(ZOOM_IN, GetMainWindow())) {
 		w->HandleButtonClick((_game_mode == GM_EDITOR) ? (WidgetID)WID_TE_ZOOM_IN : (WidgetID)WID_TN_ZOOM_IN);
-		SndClickBeep();
 	}
 	return CBF_NONE;
 }
@@ -909,7 +908,6 @@ static CallBackFunction ToolbarZoomOutClick(Window *w)
 {
 	if (DoZoomInOutWindow(ZOOM_OUT, GetMainWindow())) {
 		w->HandleButtonClick((_game_mode == GM_EDITOR) ? (WidgetID)WID_TE_ZOOM_OUT : (WidgetID)WID_TN_ZOOM_OUT);
-		SndClickBeep();
 	}
 	return CBF_NONE;
 }
@@ -1463,7 +1461,6 @@ static CallBackFunction ToolbarScenGenTown(int index)
 static CallBackFunction ToolbarScenGenIndustry(Window *w)
 {
 	w->HandleButtonClick(WID_TE_INDUSTRY);
-	SndClickBeep();
 	ShowBuildIndustryWindow();
 	return CBF_NONE;
 }
@@ -1511,7 +1508,6 @@ static CallBackFunction ToolbarScenBuildTram(int index)
 static CallBackFunction ToolbarScenBuildDocks(Window *w)
 {
 	w->HandleButtonClick(WID_TE_WATER);
-	SndClickBeep();
 	ShowBuildDocksScenToolbar();
 	return CBF_NONE;
 }
@@ -1519,7 +1515,6 @@ static CallBackFunction ToolbarScenBuildDocks(Window *w)
 static CallBackFunction ToolbarScenPlantTrees(Window *w)
 {
 	w->HandleButtonClick(WID_TE_TREES);
-	SndClickBeep();
 	ShowBuildTreesToolbar();
 	return CBF_NONE;
 }
@@ -1527,7 +1522,6 @@ static CallBackFunction ToolbarScenPlantTrees(Window *w)
 static CallBackFunction ToolbarScenPlaceSign(Window *w)
 {
 	w->HandleButtonClick(WID_TE_SIGNS);
-	SndClickBeep();
 	return SelectSignTool();
 }
 

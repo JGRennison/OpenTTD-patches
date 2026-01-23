@@ -940,12 +940,12 @@ void SpriteGroupDumper::DumpSpriteGroup(format_buffer &buffer, const SpriteGroup
 				if (element.IsParentSprite()) {
 					buffer.format("  section: {:X}, image: ({:X}, {:X}), d: ({}, {}, {}), s: ({}, {}, {})",
 							offset, element.image.sprite, element.image.pal,
-							element.delta_x, element.delta_y, element.delta_z,
-							element.size_x, element.size_y, element.size_z);
+							element.origin.x, element.origin.y, element.origin.z,
+							element.extent.x, element.extent.y, element.extent.z);
 				} else {
 					buffer.format("  section: {:X}, image: ({:X}, {:X}), d: ({}, {})",
 							offset, element.image.sprite, element.image.pal,
-							element.delta_x, element.delta_y);
+							element.origin.x, element.origin.y);
 				}
 				print_reg_info(offset, element.IsParentSprite());
 			}

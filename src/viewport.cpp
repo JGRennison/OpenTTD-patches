@@ -1272,11 +1272,16 @@ static void AddCombinedSprite(SpriteID image, PaletteID pal, int x, int y, int z
  * @param sub Only draw a part of the sprite.
  * @param special_flags Special flags (special sorting, etc).
  */
-void AddSortableSpriteToDraw(SpriteID image, PaletteID pal, int x, int y, int w, int h, int dz, int z, bool transparent, int bb_offset_x, int bb_offset_y, int bb_offset_z, const SubSprite *sub, ViewportSortableSpriteSpecialFlags special_flags)
+void AddSortableSpriteToDraw(SpriteID image, PaletteID pal, int x, int y, int z, const SpriteBounds &bounds, bool transparent, const SubSprite *sub, ViewportSortableSpriteSpecialFlags special_flags)
 {
 	int32_t left, right, top, bottom;
 
 	dbg_assert((image & SPRITE_MASK) < MAX_SPRITES);
+
+	/* Move to bounding box. */
+	x += bounds.origin.x;
+	y += bounds.origin.y;
+	z += bounds.origin.z;
 
 	/* make the sprites transparent with the right palette */
 	if (transparent) {
@@ -1285,22 +1290,22 @@ void AddSortableSpriteToDraw(SpriteID image, PaletteID pal, int x, int y, int w,
 	}
 
 	if (_vd.combine_sprites == SPRITE_COMBINE_ACTIVE) {
-		AddCombinedSprite(image, pal, x, y, z, sub);
+		AddCombinedSprite(image, pal, x + bounds.offset.x, y + bounds.offset.y, z + bounds.offset.z, sub);
 		return;
 	}
 
 	_vd.last_child = NO_CHILD_STORE;
 
-	Point pt = RemapCoords(x, y, z);
+	Point pt = RemapCoords(x + bounds.offset.x, y + bounds.offset.y, z + bounds.offset.z);
 	int tmp_left, tmp_top, tmp_x = pt.x, tmp_y = pt.y;
 	uint16_t tmp_width, tmp_height;
 
 	/* Compute screen extents of sprite */
 	if (unlikely(image == SPR_EMPTY_BOUNDING_BOX)) {
-		left = tmp_left = RemapCoords(x + w          , y + bb_offset_y, z + bb_offset_z).x;
-		right           = RemapCoords(x + bb_offset_x, y + h          , z + bb_offset_z).x + 1;
-		top  = tmp_top  = RemapCoords(x + bb_offset_x, y + bb_offset_y, z + dz         ).y;
-		bottom          = RemapCoords(x + w          , y + h          , z + bb_offset_z).y + 1;
+		left = tmp_left = RemapCoords(x + bounds.extent.x, y, z).x;
+		right           = RemapCoords(x, y + bounds.extent.y, z).x + 1;
+		top  = tmp_top  = RemapCoords(x, y, z + bounds.extent.z).y;
+		bottom          = RemapCoords(x + bounds.extent.x, y + bounds.extent.y, z).y + 1;
 		tmp_width = right - left;
 		tmp_height = bottom - top;
 	} else {
@@ -1315,10 +1320,10 @@ void AddSortableSpriteToDraw(SpriteID image, PaletteID pal, int x, int y, int w,
 
 	if (unlikely(_draw_bounding_boxes && (image != SPR_EMPTY_BOUNDING_BOX))) {
 		/* Compute maximal extents of sprite and its bounding box */
-		left   = std::min(left  , RemapCoords(x + w          , y + bb_offset_y, z + bb_offset_z).x);
-		right  = std::max(right , RemapCoords(x + bb_offset_x, y + h          , z + bb_offset_z).x + 1);
-		top    = std::min(top   , RemapCoords(x + bb_offset_x, y + bb_offset_y, z + dz         ).y);
-		bottom = std::max(bottom, RemapCoords(x + w          , y + h          , z + bb_offset_z).y + 1);
+		left   = std::min(left  , RemapCoords(x + bounds.extent.x, y, z).x);
+		right  = std::max(right , RemapCoords(x, y + bounds.extent.y, z).x + 1);
+		top    = std::min(top   , RemapCoords(x, y, z + bounds.extent.z).y);
+		bottom = std::max(bottom, RemapCoords(x + bounds.extent.x, y + bounds.extent.y, z).y + 1);
 	}
 
 	/* Do not add the sprite to the viewport, if it is outside */
@@ -1343,14 +1348,14 @@ void AddSortableSpriteToDraw(SpriteID image, PaletteID pal, int x, int y, int w,
 	_vdd->parent_sprite_subsprites.Set(&ps, sub);
 	ps.special_flags = special_flags;
 
-	ps.xmin = x + bb_offset_x;
-	ps.xmax = x + std::max(bb_offset_x, w) - 1;
+	ps.xmin = x;
+	ps.xmax = x + bounds.extent.x - 1;
 
-	ps.ymin = y + bb_offset_y;
-	ps.ymax = y + std::max(bb_offset_y, h) - 1;
+	ps.ymin = y;
+	ps.ymax = y + bounds.extent.y - 1;
 
-	ps.zmin = z + bb_offset_z;
-	ps.zmax = z + std::max(bb_offset_z, dz) - 1;
+	ps.zmin = z;
+	ps.zmax = z + bounds.extent.z - 1;
 
 	ps.first_child = -1;
 	ps.width = tmp_width;
@@ -1638,7 +1643,7 @@ static void DrawAutorailSelection(const TileInfo *ti, HighLightStyle autorail_ty
 	}
 
 	if (bridge_head_mode) {
-		AddSortableSpriteToDraw(image, pal, ti->x, ti->y, 16, 16, 0, ti->z + 15);
+		AddSortableSpriteToDraw(image, pal, ti->x, ti->y, ti->z + 15, {{}, {16, 16, 0}, {}});
 	} else {
 		DrawSelectionSprite(image, pal, ti, 7, foundation_part);
 	}

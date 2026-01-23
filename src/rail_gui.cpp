@@ -1932,6 +1932,7 @@ public:
 
 				/* If 'remove' button of rail build toolbar is active, disable it. */
 				ClearRemoveState();
+				SndClickBeep();
 				break;
 
 			case WID_BS_CONVERT:
@@ -1940,6 +1941,7 @@ public:
 					_trace_restrict_button = false;
 					_program_signal_button = false;
 				}
+				SndClickBeep();
 				break;
 
 			case WID_BS_TRACE_RESTRICT:

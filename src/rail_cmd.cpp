@@ -3218,8 +3218,10 @@ static void GetSignalXY(TileIndex tile, uint pos, bool opposite, uint &x, uint &
 	y = TileY(tile) * TILE_SIZE + SignalPositions[side][pos].y;
 }
 
-void DrawRestrictedSignal(SignalType type, SpriteID sprite, int x, int y, int z, int dz, int bb_offset_z)
+void DrawRestrictedSignal(SignalType type, SpriteID sprite, int x, int y, int z, uint8_t dz, int8_t bb_offset_z)
 {
+	const SpriteBounds bounds{{0, 0, bb_offset_z}, {1, 1, dz}, {0, 0, -bb_offset_z}};
+
 	SpriteFile *file = GetOriginFile(sprite);
 	if (file != nullptr && (file->flags & (SFF_OPENTTDGRF | SFF_OPENGFX2))) {
 		static const SubSprite lower_part = { -50,  -8, 50,  50 };
@@ -3227,16 +3229,16 @@ void DrawRestrictedSignal(SignalType type, SpriteID sprite, int x, int y, int z,
 		static const SubSprite lower_part_plain = { -50,  -5, 50,  50 };
 		static const SubSprite upper_part_plain = { -50, -50, 50, -6 };
 
-		AddSortableSpriteToDraw(sprite, SPR_TRACERESTRICT_BASE + 2, x, y, 1, 1, dz, z, false, 0, 0, bb_offset_z, (type == SIGTYPE_BLOCK) ? &lower_part_plain : &lower_part);
-		AddSortableSpriteToDraw(sprite,                   PAL_NONE, x, y, 1, 1, dz, z, false, 0, 0, bb_offset_z, (type == SIGTYPE_BLOCK) ? &upper_part_plain : &upper_part);
+		AddSortableSpriteToDraw(sprite, SPR_TRACERESTRICT_BASE + 2, x, y, z, bounds, false, (type == SIGTYPE_BLOCK) ? &lower_part_plain : &lower_part);
+		AddSortableSpriteToDraw(sprite,                   PAL_NONE, x, y, z, bounds, false, (type == SIGTYPE_BLOCK) ? &upper_part_plain : &upper_part);
 	} else if (type == SIGTYPE_PBS || type == SIGTYPE_PBS_ONEWAY) {
 		static const SubSprite lower_part = { -50, -10, 50,  50 };
 		static const SubSprite upper_part = { -50, -50, 50, -11 };
 
-		AddSortableSpriteToDraw(sprite, SPR_TRACERESTRICT_BASE, x, y, 1, 1, dz, z, false, 0, 0, bb_offset_z, &lower_part);
-		AddSortableSpriteToDraw(sprite,               PAL_NONE, x, y, 1, 1, dz, z, false, 0, 0, bb_offset_z, &upper_part);
+		AddSortableSpriteToDraw(sprite, SPR_TRACERESTRICT_BASE, x, y, z, bounds, false, &lower_part);
+		AddSortableSpriteToDraw(sprite,               PAL_NONE, x, y, z, bounds, false, &upper_part);
 	} else {
-		AddSortableSpriteToDraw(sprite, SPR_TRACERESTRICT_BASE + (type == SIGTYPE_NO_ENTRY ? 0 : 1), x, y, 1, 1, dz, z, false, 0, 0, bb_offset_z);
+		AddSortableSpriteToDraw(sprite, SPR_TRACERESTRICT_BASE + (type == SIGTYPE_NO_ENTRY ? 0 : 1), x, y, z, bounds);
 	}
 }
 
@@ -3363,7 +3365,7 @@ void DrawSingleSignal(TileIndex tile, const RailTypeInfo *rti, Track track, Sign
 	if (!is_custom_sprite && show_restricted && variant == SIG_ELECTRIC && _settings_client.gui.show_restricted_signal_recolour) {
 		DrawRestrictedSignal(type, sprite, x, y, z, BB_HEIGHT_UNDER_BRIDGE, 0);
 	} else {
-		AddSortableSpriteToDraw(sprite, pal, x, y, 1, 1, BB_HEIGHT_UNDER_BRIDGE, z);
+		AddSortableSpriteToDraw(sprite, pal, x, y, z, {{}, {1, 1, BB_HEIGHT_UNDER_BRIDGE}, {}});
 	}
 	const Sprite *sp = GetSprite(sprite, SpriteType::Normal, {});
 	if (sp->x_offs < -SIGNAL_DIRTY_LEFT || sp->x_offs + sp->width > SIGNAL_DIRTY_RIGHT || sp->y_offs < -SIGNAL_DIRTY_TOP || sp->y_offs + sp->height > SIGNAL_DIRTY_BOTTOM) {
@@ -3457,12 +3459,11 @@ static uint32_t _drawtile_track_palette;
 
 
 /** Offsets for drawing fences */
-struct FenceOffset {
-	Corner height_ref;  //!< Corner to use height offset from.
-	int x_offs;         //!< Bounding box X offset.
-	int y_offs;         //!< Bounding box Y offset.
-	int x_size;         //!< Bounding box X size.
-	int y_size;         //!< Bounding box Y size.
+struct FenceOffset : SpriteBounds {
+	Corner height_ref; ///< Corner to use height offset from.
+
+	constexpr FenceOffset(Corner height_ref, int8_t origin_x, int8_t origin_y, uint8_t extent_x, uint8_t extent_y) :
+		SpriteBounds({origin_x, origin_y, 0}, {extent_x, extent_y, 4}, {}), height_ref(height_ref) {}
 };
 
 /** Offsets for drawing fences */
@@ -3498,12 +3499,7 @@ static void DrawTrackFence(const TileInfo *ti, SpriteID base_image, uint num_spr
 	if (_fence_offsets[rfo].height_ref != CORNER_INVALID) {
 		z += GetSlopePixelZInCorner(RemoveHalftileSlope(ti->tileh), _fence_offsets[rfo].height_ref);
 	}
-	AddSortableSpriteToDraw(base_image + (rfo % num_sprites), _drawtile_track_palette,
-		ti->x + _fence_offsets[rfo].x_offs,
-		ti->y + _fence_offsets[rfo].y_offs,
-		_fence_offsets[rfo].x_size,
-		_fence_offsets[rfo].y_size,
-		4, z);
+	AddSortableSpriteToDraw(base_image + (rfo % num_sprites), _drawtile_track_palette, ti->x, ti->y, z, _fence_offsets[rfo]);
 }
 
 /**
