@@ -116,6 +116,8 @@ static ChangeInfoResult GlobalVarChangeInfo(uint first, uint last, int prop, con
 	/* Properties which are handled as a whole */
 	switch (prop) {
 		case 0x09: // Cargo Translation Table; loading during both reservation and activation stage (in case it is selected depending on defined cargos)
+			/* Explicitly defined cargo translation table means it's no longer a fallback list. LoadTranslationTable erases any existing list. */
+			_cur_gps.grffile->cargo_list_is_fallback = false;
 			return LoadTranslationTable<CargoLabel>(first, last, buf, [](GRFFile &grf) -> std::vector<CargoLabel> & { return grf.cargo_list; }, "Cargo");
 
 		case 0x12: // Rail type translation table; loading during both reservation and activation stage (in case it is selected depending on defined railtypes)
@@ -377,6 +379,8 @@ static ChangeInfoResult GlobalVarReserveInfo(uint first, uint last, int prop, co
 	/* Properties which are handled as a whole */
 	switch (prop) {
 		case 0x09: // Cargo Translation Table; loading during both reservation and activation stage (in case it is selected depending on defined cargos)
+			/* Explicitly defined cargo translation table means it's no longer a fallback list. LoadTranslationTable erases any existing list. */
+			_cur_gps.grffile->cargo_list_is_fallback = false;
 			return LoadTranslationTable<CargoLabel>(first, last, buf, [](GRFFile &grf) -> std::vector<CargoLabel> & { return grf.cargo_list; }, "Cargo");
 
 		case 0x12: // Rail type translation table; loading during both reservation and activation stage (in case it is selected depending on defined railtypes)
