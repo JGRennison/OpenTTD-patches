@@ -3220,7 +3220,7 @@ static void GetSignalXY(TileIndex tile, uint pos, bool opposite, uint &x, uint &
 
 void DrawRestrictedSignal(SignalType type, SpriteID sprite, int x, int y, int z, uint8_t dz, int8_t bb_offset_z)
 {
-	const SpriteBounds bounds{{0, 0, bb_offset_z}, {1, 1, dz}, {0, 0, -bb_offset_z}};
+	const SpriteBounds bounds{{0, 0, bb_offset_z}, {1, 1, dz}, {0, 0, static_cast<int8_t>(-bb_offset_z)}};
 
 	SpriteFile *file = GetOriginFile(sprite);
 	if (file != nullptr && (file->flags & (SFF_OPENTTDGRF | SFF_OPENGFX2))) {
