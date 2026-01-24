@@ -1989,7 +1989,10 @@ CommandCost CmdBuildSingleSignal(DoCommandFlags flags, TileIndex tile, Track tra
 		Company::Get(GetTileOwner(tile))->infrastructure.signal += CountBits(GetPresentSignals(tile));
 		DirtyCompanyInfrastructureWindows(GetTileOwner(tile));
 
-		if (IsPbsSignalNonExtended(sigtype) || (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && HasBit(GetRailReservationTrackBits(tile), track))) {
+		if (sigtype == SIGTYPE_NO_ENTRY) {
+			uint mask = GetPresentSignals(tile) & SignalOnTrack(track);
+			SetSignalStates(tile, GetSignalStates(tile) & ~mask);
+		} else if (IsPbsSignalNonExtended(sigtype) || (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && HasBit(GetRailReservationTrackBits(tile), track))) {
 			/* PBS signals should show red unless they are on reserved tiles without a train. */
 			uint mask = GetPresentSignals(tile) & SignalOnTrack(track);
 			SetSignalStates(tile, (GetSignalStates(tile) & ~mask) | ((HasBit(GetRailReservationTrackBits(tile), track) && EnsureNoVehicleOnGround(tile).Succeeded() ? UINT_MAX : 0) & mask));
