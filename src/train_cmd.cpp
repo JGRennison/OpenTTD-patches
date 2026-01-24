@@ -438,6 +438,9 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 		InvalidateWindowData(WC_VEHICLE_REFIT, this->index, VIWD_CONSIST_CHANGED);
 		InvalidateWindowData(WC_VEHICLE_ORDERS, this->index, VIWD_CONSIST_CHANGED);
 		InvalidateNewGRFInspectWindow(GSF_TRAINS, this->index.base());
+
+		/* If the consist is changed while in a depot, the vehicle view window must be invalidated to update the availability of refitting. */
+		InvalidateWindowData(WC_VEHICLE_VIEW, this->index, VIWD_CONSIST_CHANGED);
 	}
 	if (allowed_changes.Test(ConsistChangeFlag::Length)) {
 		for (Train *u = this->Next(); u != nullptr; u = u->Next()) {
