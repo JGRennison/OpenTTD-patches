@@ -33,6 +33,7 @@
 #include "misc_cmd.h"
 #include "vehicle_base.h"
 #include "order_serialisation.h"
+#include "core/backup_type.hpp"
 
 #include "widgets/fios_widget.h"
 
@@ -767,6 +768,7 @@ public:
 				for (auto &pair : _load_check_data.companies) {
 					const CompanyProperties &c = *pair.second;
 					if (c.name.empty()) {
+						AutoRestoreBackup landscape_backup(_settings_game.game_creation.landscape, _load_check_data.settings.game_creation.landscape);
 						DrawString(tr, GetString(STR_SAVELOAD_DETAIL_COMPANY_INDEX, pair.first + 1, c.name_1, c.name_2));
 					} else {
 						DrawString(tr, GetString(STR_SAVELOAD_DETAIL_COMPANY_INDEX, pair.first + 1, STR_JUST_RAW_STRING, c.name));
