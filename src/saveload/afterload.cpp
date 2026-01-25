@@ -4544,6 +4544,20 @@ bool AfterLoadGame()
 		_settings_game.construction.map_edge_mode = _settings_game.construction.freeform_edges ? 0 : 2;
 	}
 
+	if (SlXvIsFeatureMissing(XSLFI_SIGNAL_STATE_FIX, 1) && SlXvIsFeaturePresent(XSLFI_EXTRA_SIGNAL_TYPES)) {
+		for (TileIndex t(0); t < map_size; t++) {
+			if (IsTileType(t, MP_RAILWAY) && HasSignals(t)) {
+				auto check_signal = [&](Track track) {
+					if (HasSignalOnTrack(t, track) && GetSignalType(t, track) == SIGTYPE_NO_ENTRY) {
+						SetSignalStates(t, GetSignalStates(t) & ~SignalOnTrack(track));
+					}
+				};
+				check_signal(TRACK_LOWER);
+				check_signal(TRACK_UPPER);
+			}
+		}
+	}
+
 	for (Company *c : Company::Iterate()) {
 		UpdateCompanyLiveries(c);
 	}

@@ -986,7 +986,7 @@ using DrawTreeTileOverlayFlags = EnumBitSet<DrawTreeTileOverlayFlag, uint64_t>;
 static void DrawTreeTileOverlay(TileInfo *ti, TreeType tree_type, TreeGrowthStage growth_stage, uint trees, DrawTreeTileOverlayFlags flags);
 
 struct TreeListEnt : PalSpriteID {
-	uint8_t x, y;
+	int8_t x, y;
 };
 
 static void DrawTile_Trees(TileInfo *ti, DrawTileProcParams params)
@@ -1083,7 +1083,8 @@ void DrawTreeTileOverlay(TileInfo *ti, TreeType tree_type, TreeGrowthStage growt
 			}
 		}
 
-		AddSortableSpriteToDraw(te[mi].sprite, te[mi].pal, ti->x + te[mi].x, ti->y + te[mi].y, 16 - te[mi].x, 16 - te[mi].y, 0x30, z, IsTransparencySet(TO_TREES), -te[mi].x, -te[mi].y);
+		SpriteBounds bounds{{}, {TILE_SIZE, TILE_SIZE, 48}, {te[mi].x, te[mi].y, 0}};
+		AddSortableSpriteToDraw(te[mi].sprite, te[mi].pal, ti->x, ti->y, z, bounds, IsTransparencySet(TO_TREES));
 
 		/* replace the removed one with the last one */
 		te[mi] = te[trees - 1];

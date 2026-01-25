@@ -338,15 +338,7 @@ static void DrawTile_Town(TileInfo *ti, DrawTileProcParams params)
 	/* Add a house on top of the ground? */
 	SpriteID image = dcts->building.sprite;
 	if (image != 0) {
-		AddSortableSpriteToDraw(image, dcts->building.pal,
-			ti->x + dcts->subtile_x,
-			ti->y + dcts->subtile_y,
-			dcts->width,
-			dcts->height,
-			dcts->dz,
-			ti->z,
-			IsTransparencySet(TO_HOUSES)
-		);
+		AddSortableSpriteToDraw(image, dcts->building.pal, *ti, *dcts, IsTransparencySet(TO_HOUSES));
 
 		if (IsTransparencySet(TO_HOUSES)) return;
 	}

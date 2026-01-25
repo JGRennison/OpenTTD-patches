@@ -454,7 +454,7 @@ class NIHVehicle : public NIHelper {
 		}
 
 		output.Print("  Cached sprite bounds: ({}, {}) to ({}, {}), offs: ({}, {})",
-				v->sprite_seq_bounds.left, v->sprite_seq_bounds.top, v->sprite_seq_bounds.right, v->sprite_seq_bounds.bottom, v->x_offs, v->y_offs);
+				v->sprite_seq_bounds.left, v->sprite_seq_bounds.top, v->sprite_seq_bounds.right, v->sprite_seq_bounds.bottom, v->bounds.origin.x, v->bounds.origin.y);
 
 		output.Print("  Current image cacheable: {} ({:X}), spritenum: {:X}",
 				v->cur_image_valid_dir != INVALID_DIR ? "yes" : "no", v->cur_image_valid_dir, v->spritenum);
@@ -837,12 +837,12 @@ class NIHStation : public NIHelper {
 				if (element.IsParentSprite()) {
 					output.buffer.format("  section: {:X}, image: ({:X}, {:X}), d: ({}, {}, {}), s: ({}, {}, {})",
 							offset, element.image.sprite, element.image.pal,
-							element.delta_x, element.delta_y, element.delta_z,
-							element.size_x, element.size_y, element.size_z);
+							element.origin.x, element.origin.y, element.origin.z,
+							element.extent.x, element.extent.y, element.extent.z);
 				} else {
 					output.buffer.format("  section: {:X}, image: ({:X}, {:X}), d: ({}, {})",
 							offset, element.image.sprite, element.image.pal,
-							element.delta_x, element.delta_y);
+							element.origin.x, element.origin.y);
 				}
 				print_reg_info(offset, element.IsParentSprite()); // this calls output.FinishPrint() as needed
 			}

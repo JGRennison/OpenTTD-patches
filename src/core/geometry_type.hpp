@@ -28,16 +28,33 @@ inline int CentreBounds(int min, int max, int size)
 	return (min + max - size + 1) / 2;
 }
 
-/** Coordinates of a point in 2D */
-struct Point {
-	int x;
-	int y;
+/** A coordinate with two dimensons. */
+template <typename T>
+struct Coord2D {
+	T x = 0; ///< X coordinate.
+	T y = 0; ///< Y coordinate.
 
-	constexpr Point() : x(0), y(0) {}
-	constexpr Point(int x, int y) : x(x), y(y) {}
+	constexpr Coord2D() = default;
+	constexpr Coord2D(T x, T y) : x(x), y(y) {}
 
-	bool operator==(const Point&) const = default;
+	bool operator==(const Coord2D&) const = default;
 };
+
+/** A coordinate with three dimensions. */
+template <typename T>
+struct Coord3D {
+	T x = 0; ///< X coordinate.
+	T y = 0; ///< Y coordinate.
+	T z = 0; ///< Z coordinate.
+
+	constexpr Coord3D() = default;
+	constexpr Coord3D(T x, T y, T z) : x(x), y(y), z(z) {}
+
+	bool operator==(const Coord3D&) const = default;
+};
+
+/** Coordinates of a point in 2D */
+using Point = Coord2D<int>;
 
 /** Dimensions (a width and height) of a rectangle in 2D */
 struct Dimension {

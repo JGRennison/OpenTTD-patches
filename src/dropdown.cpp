@@ -12,6 +12,7 @@
 #include "dropdown_func.h"
 #include "string_func.h"
 #include "strings_func.h"
+#include "sound_func.h"
 #include "window_gui.h"
 #include "window_func.h"
 #include "guitimer_func.h"
@@ -471,6 +472,9 @@ void ShowDropDownListAt(Window *w, DropDownList &&list, int selected, WidgetID b
  */
 void ShowDropDownList(Window *w, DropDownList &&list, int selected, WidgetID button, uint width, DropDownModeFlags mode_flags, DropDownSyncFocus sync_parent_focus)
 {
+	/* Handle the beep of the player's click. */
+	SndClickBeep();
+
 	/* Our parent's button widget is used to determine where to place the drop
 	 * down list window. */
 	NWidgetCore *nwi = w->GetWidget<NWidgetCore>(button);

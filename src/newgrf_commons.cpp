@@ -622,7 +622,7 @@ SpriteLayoutProcessor::SpriteLayoutProcessor(const NewGRFSpriteLayout &raw_layou
 	 * Also include the groundsprite into the sequence for easier processing. */
 	DrawTileSeqStruct &copy = this->result_seq.emplace_back();
 	copy.image = this->raw_layout->ground;
-	copy.delta_z = static_cast<int8_t>(0x80);
+	copy.origin.z = static_cast<int8_t>(0x80);
 
 	this->result_seq.insert(this->result_seq.end(), this->raw_layout->seq.begin(), this->raw_layout->seq.end());
 
@@ -704,13 +704,13 @@ void SpriteLayoutProcessor::ProcessRegisters(uint8_t resolved_var10, uint32_t re
 
 					if (result.IsParentSprite()) {
 						if (flags & TLF_BB_XY_OFFSET) {
-							result.delta_x += static_cast<int32_t>(GetRegister(regs->delta.parent[0]));
-							result.delta_y += static_cast<int32_t>(GetRegister(regs->delta.parent[1]));
+							result.origin.x += static_cast<int32_t>(GetRegister(regs->delta.parent[0]));
+							result.origin.y += static_cast<int32_t>(GetRegister(regs->delta.parent[1]));
 						}
-						if (flags & TLF_BB_Z_OFFSET)    result.delta_z += static_cast<int32_t>(GetRegister(regs->delta.parent[2]));
+						if (flags & TLF_BB_Z_OFFSET)    result.origin.z += static_cast<int32_t>(GetRegister(regs->delta.parent[2]));
 					} else {
-						if (flags & TLF_CHILD_X_OFFSET) result.delta_x += static_cast<int32_t>(GetRegister(regs->delta.child[0]));
-						if (flags & TLF_CHILD_Y_OFFSET) result.delta_y += static_cast<int32_t>(GetRegister(regs->delta.child[1]));
+						if (flags & TLF_CHILD_X_OFFSET) result.origin.x += static_cast<int32_t>(GetRegister(regs->delta.child[0]));
+						if (flags & TLF_CHILD_Y_OFFSET) result.origin.y += static_cast<int32_t>(GetRegister(regs->delta.child[1]));
 					}
 				}
 			}

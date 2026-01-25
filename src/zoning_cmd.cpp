@@ -48,7 +48,7 @@ static btree::btree_set<uint32_t> _zoning_cache_outer;
 void DrawZoningSprites(SpriteID image, SpriteID colour, const TileInfo *ti)
 {
 	if (colour != ZONING_INVALID_SPRITE_ID) {
-		AddSortableSpriteToDraw(image + ti->tileh, colour, ti->x, ti->y, 0x10, 0x10, 1, ti->z + 7);
+		AddSortableSpriteToDraw(image + ti->tileh, colour, ti->x, ti->y, ti->z + 7, {{}, {0x10, 0x10, 1}, {}});
 	}
 }
 
