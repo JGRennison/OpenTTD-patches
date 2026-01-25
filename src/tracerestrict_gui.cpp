@@ -1335,8 +1335,12 @@ static uint ConvertIntegerValue(TraceRestrictValueType type, uint in, bool to_di
 {
 	switch (type) {
 		case TRVT_INT:
-		case TRVT_TICK_COUNT:
 			return in;
+
+		case TRVT_TICK_COUNT:
+			return to_display
+				? ConvertTicksToDisplayTimeUnit(in)
+				: ConvertDisplayTimeUnitToTicks(in);
 
 		case TRVT_SPEED:
 			return to_display
