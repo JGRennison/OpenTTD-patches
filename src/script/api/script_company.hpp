@@ -463,6 +463,9 @@ public:
 	/**
 	 * Get primary colour of a livery for your company.
 	 * @param scheme Livery scheme to get.
+	 * @game @pre ScriptCompanyMode::IsValid().
+	 * @pre scheme >= LS_DEFAULT.
+	 * @pre scheme <= LS_LS_FREIGHT_TRAM.
 	 * @return Primary colour of livery.
 	 */
 	static ScriptCompany::Colours GetPrimaryLiveryColour(LiveryScheme scheme);
@@ -470,6 +473,9 @@ public:
 	/**
 	 * Get secondary colour of a livery for your company.
 	 * @param scheme Livery scheme to get.
+	 * @game @pre ScriptCompanyMode::IsValid().
+	 * @pre scheme >= LS_DEFAULT.
+	 * @pre scheme <= LS_LS_FREIGHT_TRAM.
 	 * @return Secondary colour of livery.
 	 */
 	static ScriptCompany::Colours GetSecondaryLiveryColour(LiveryScheme scheme);
