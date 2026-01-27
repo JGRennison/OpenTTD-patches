@@ -182,6 +182,9 @@ private:
 	{
 		Debug(misc, 1, "[libpng] warning: {} - {}", message, (const char *)png_get_error_ptr(png_ptr));
 	}
+
+private:
+	static ScreenshotProvider_Png instance;
 };
 
-static ScreenshotProvider_Png s_screenshot_provider_png;
+/* static */ ScreenshotProvider_Png ScreenshotProvider_Png::instance{};
