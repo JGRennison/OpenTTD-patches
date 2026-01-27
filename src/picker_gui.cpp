@@ -262,7 +262,8 @@ void PickerWindow::ConstructWindow()
 		this->callbacks.FillUsedItems(this->callbacks.used);
 
 		SetWidgetDisabledState(WID_PW_MODE_ALL, !this->callbacks.HasClassChoice());
-		this->GetWidget<NWidgetStacked>(WID_PW_TYPE_RAND_SEL)->SetDisplayedPlane(this->callbacks.IsCollectionRandomisationSupported() ? 0 : SZSP_HORIZONTAL);
+		this->random_hidden = !this->callbacks.IsCollectionRandomisationSupported() || !HasBit(this->callbacks.mode, PFM_SAVED);
+		this->GetWidget<NWidgetStacked>(WID_PW_TYPE_RAND_SEL)->SetDisplayedPlane(this->random_hidden ? SZSP_HORIZONTAL : 0);
 		this->callbacks.place_collection = HasBit(this->callbacks.mode, PFM_SAVED) && IsWidgetLowered(WID_PW_TYPE_RANDOM);
 
 		this->GetWidget<NWidgetCore>(WID_PW_TYPE_ITEM)->SetToolTip(this->callbacks.GetTypeTooltip());
@@ -379,7 +380,13 @@ DropDownList PickerWindow::BuildCollectionDropDownList()
 
 void PickerWindow::SetDisabledRandomItemButton()
 {
-	if (!this->callbacks.IsCollectionRandomisationSupported()) return;
+	bool hidden = !this->callbacks.IsCollectionRandomisationSupported() || !HasBit(this->callbacks.mode, PFM_SAVED);
+	if (hidden != this->random_hidden && this->has_type_picker) {
+		this->GetWidget<NWidgetStacked>(WID_PW_TYPE_RAND_SEL)->SetDisplayedPlane(hidden ? SZSP_HORIZONTAL : 0);
+		this->random_hidden = hidden;
+		this->ReInit();
+	}
+	if (hidden) return;
 
 	NWidgetCore *random_widget = this->GetWidget<NWidgetCore>(WID_PW_TYPE_RANDOM);
 	if (random_widget == nullptr) return;

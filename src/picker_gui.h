@@ -251,6 +251,7 @@ public:
 	bool has_class_picker = false; ///< Set if this window has a class picker 'component'.
 	bool has_type_picker = false; ///< Set if this window has a type picker 'component'.
 	bool has_collection_picker = false; ///< Set if this window has a collection picker 'component'.
+	bool random_hidden = false; ///< Whether random button is currently hidden.
 	int preview_height = 0; ///< Height of preview images.
 	btree::btree_set<std::string> inactive; ///< Set of collections with inactive items.
 
