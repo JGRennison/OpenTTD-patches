@@ -81,12 +81,12 @@ void InitializeObjects()
  */
 void SetObjectFoundationType(TileIndex tile, Slope tileh, ObjectType type, const ObjectSpec *spec)
 {
-	if (type == OBJECT_OWNED_LAND) {
+	if (type == OBJECT_OWNED_LAND || spec->flags.Test(ObjectFlag::HasNoFoundation)) {
 		SetObjectEffectiveFoundationType(tile, OEFT_NONE);
 		return;
 	}
 
-	if (!spec->flags.Test(ObjectFlag::HasNoFoundation) && spec->ctrl_flags.Test(ObjectCtrlFlag::EdgeFoundation)) {
+	if (spec->ctrl_flags.Test(ObjectCtrlFlag::EdgeFoundation)) {
 		if (tileh == SLOPE_ELEVATED) tileh = GetTileSlope(tile);
 
 		if (tileh == SLOPE_FLAT) {
