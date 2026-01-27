@@ -1423,8 +1423,8 @@ static bool GrowTownWithBridge(const Town *t, const TileIndex tile, const DiagDi
 	/* Don't allow a bridge where the start and end tiles are adjacent with no span between. */
 	if (bridge_length == 1) return false;
 
-	if (!MayTownModifyRoad(bridge_tile)) return false;
-	if (IsValidTile(bridge_tile + delta) && !MayTownModifyRoad(bridge_tile + delta)) return false;
+	if (!IsValidTile(bridge_tile) || !IsValidTile(bridge_tile + delta)) return false;
+	if (!MayTownModifyRoad(bridge_tile) || !MayTownModifyRoad(bridge_tile + delta)) return false;
 
 	/* Make sure the road can be continued past the bridge. At this point, bridge_tile holds the end tile of the bridge. */
 	if (!CanRoadContinueIntoNextTile(t, bridge_tile, bridge_dir)) return false;
