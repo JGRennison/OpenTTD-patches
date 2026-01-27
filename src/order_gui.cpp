@@ -2432,7 +2432,7 @@ public:
 						this->GetWidget<NWidgetCore>(WID_O_COND_SLOT)->SetString((slot_id != INVALID_TRACE_RESTRICT_SLOT_ID) ? STR_TRACE_RESTRICT_SLOT_NAME : STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
 						this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_VALUE)->SetDisplayedPlane(DP_COND_VALUE_SLOT);
 					} else if (is_slot_group_occupancy) {
-						TraceRestrictSlotGroupID slot_group_id = (order != nullptr && TraceRestrictSlotGroup::IsValidID(order->GetXData()) ? TraceRestrictSlotGroupID(order->GetXDataLow()) : INVALID_TRACE_RESTRICT_SLOT_GROUP);
+						TraceRestrictSlotGroupID slot_group_id = (order != nullptr && TraceRestrictSlotGroup::IsValidID(order->GetXDataLow()) ? TraceRestrictSlotGroupID(order->GetXDataLow()) : INVALID_TRACE_RESTRICT_SLOT_GROUP);
 
 						this->GetWidget<NWidgetCore>(WID_O_COND_SLOT_GROUP)->SetString((slot_group_id != INVALID_TRACE_RESTRICT_SLOT_GROUP) ? STR_TRACE_RESTRICT_SLOT_GROUP_NAME : STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
 						this->GetWidget<NWidgetStacked>(WID_O_SEL_COND_VALUE)->SetDisplayedPlane(DP_COND_VALUE_SLOT_GROUP);
@@ -2781,7 +2781,8 @@ public:
 				const Order *order = this->vehicle->GetOrder(sel);
 
 				if (order != nullptr && order->IsType(OT_CONDITIONAL)) {
-					return GetString(stringid, order->GetXData());
+					uint32_t value = (widget == WID_O_COND_COUNTER) ? order->GetXDataHigh() : order->GetXDataLow();
+					return GetString(stringid, value);
 				}
 				return GetString(STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
 			}
