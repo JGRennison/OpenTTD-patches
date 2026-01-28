@@ -3305,7 +3305,7 @@ CommandCost CmdPlaceHouseArea(DoCommandFlags flags, TileIndex tile, TileIndex st
 	OrthogonalOrDiagonalTileIterator iter(tile, start_tile, diagonal);
 	for (; *iter != INVALID_TILE; ++iter) {
 		TileIndex t = *iter;
-		const HouseID house = houses.at(RandomRange(houses.size()));
+		const HouseID house = houses.at(RandomRange(static_cast<uint32_t>(houses.size())));
 		CommandCost ret = Command<CMD_PLACE_HOUSE>::Do(DoCommandFlags{flags}.Reset(DoCommandFlag::Execute), t, house, is_protected, town_id, replace);
 
 		/* If we've reached the limit, stop building (or testing). */
