@@ -35,8 +35,7 @@ constexpr WaterRegionPatchLabel INVALID_WATER_REGION_PATCH = 0;
 /**
  * Describes a single interconnected patch of water within a particular water region.
  */
-struct WaterRegionPatchDesc
-{
+struct WaterRegionPatchDesc {
 	uint32_t x; ///< The X coordinate of the water region, i.e. X=2 is the 3rd water region along the X-axis
 	uint32_t y; ///< The Y coordinate of the water region, i.e. Y=2 is the 3rd water region along the Y-axis
 	WaterRegionPatchLabel label; ///< Unique label identifying the patch within the region
@@ -48,8 +47,7 @@ struct WaterRegionPatchDesc
 /**
  * Describes a single square water region.
  */
-struct WaterRegionDesc
-{
+struct WaterRegionDesc {
 	uint32_t x; ///< The X coordinate of the water region, i.e. X=2 is the 3rd water region along the X-axis
 	uint32_t y; ///< The Y coordinate of the water region, i.e. Y=2 is the 3rd water region along the Y-axis
 

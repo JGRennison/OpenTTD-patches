@@ -434,7 +434,7 @@ static void ShutdownGame()
 	/* No NewGRFs were loaded when it was still bootstrapping. */
 	if (_game_mode != GM_BOOTSTRAP) ResetNewGRFData();
 
-	UninitFontCache();
+	FontCache::UninitializeFontCaches();
 
 	ViewportMapClearTunnelCache();
 	InvalidateVehicleTickCaches();
@@ -688,7 +688,6 @@ int openttd_main(std::span<char * const> arguments)
 
 	auto options = CreateOptions();
 	GetOptData mgo(arguments.subspan(1), options);
-	int ret = 0;
 
 	int i;
 	while ((i = mgo.GetOpt()) != -1) {
@@ -785,8 +784,7 @@ int openttd_main(std::span<char * const> arguments)
 		case 'K': {
 			DeterminePaths(arguments[0], only_local_path);
 			if (StrEmpty(mgo.opt)) {
-				ret = 1;
-				return ret;
+				return 1;
 			}
 
 			char title[80];
@@ -806,7 +804,7 @@ int openttd_main(std::span<char * const> arguments)
 					buf.push_back('\n');
 					fwrite(buf.data(), 1, buf.size(), stderr);
 				}
-				return ret;
+				return 1;
 			}
 
 			if (i == 'q') {
@@ -814,7 +812,7 @@ int openttd_main(std::span<char * const> arguments)
 			} else {
 				WriteSavegameDebugData(title);
 			}
-			return ret;
+			return 0;
 		}
 		case 'Q': {
 			extern int _skip_all_newgrf_scanning;
@@ -841,17 +839,15 @@ int openttd_main(std::span<char * const> arguments)
 			format_buffer buffer;
 			CrashLog::VersionInfoLog(buffer);
 			fwrite(buffer.data(), 1, buffer.size(), stdout);
-			return ret;
+			return 0;
 		}
 		case 'X': only_local_path = true; break;
-		case 'h':
-			i = -2; // Force printing of help.
-			break;
+		case 'h': break; // handled below
 		}
-		if (i == -2) break;
+		if (i == 'h' || i == -2) break;
 	}
 
-	if (i == -2 || !mgo.arguments.empty()) {
+	if (i == 'h' || i == -2 || !mgo.arguments.empty()) {
 		/* Either the user typed '-h', they made an error, or they added unrecognized command line arguments.
 		 * In all cases, print the help, and exit.
 		 *
@@ -863,7 +859,10 @@ int openttd_main(std::span<char * const> arguments)
 		BaseSounds::FindSets();
 		BaseMusic::FindSets();
 		ShowHelp();
-		return ret;
+
+		/* Return zero when asked to print help, and 1 for all other cases. */
+		if (i == 'h') return 0;
+		return 1;
 	}
 
 	DeterminePaths(arguments[0], only_local_path);
@@ -898,7 +897,7 @@ int openttd_main(std::span<char * const> arguments)
 	InitializeLanguagePacks();
 
 	/* Initialize the font cache */
-	InitFontCache(FONTSIZES_REQUIRED);
+	FontCache::LoadFontCaches(FONTSIZES_REQUIRED);
 
 	/* This must be done early, since functions use the SetWindowDirty* calls */
 	InitWindowSystem();
@@ -968,7 +967,7 @@ int openttd_main(std::span<char * const> arguments)
 
 	if (!HandleBootstrap()) {
 		ShutdownGame();
-		return ret;
+		return 0;
 	}
 
 #ifdef DEDICATED
@@ -1025,7 +1024,7 @@ int openttd_main(std::span<char * const> arguments)
 	_general_worker_pool.Stop();
 
 	PostMainLoop();
-	return ret;
+	return 0;
 }
 
 void InitMusicDriver(bool init_volume)

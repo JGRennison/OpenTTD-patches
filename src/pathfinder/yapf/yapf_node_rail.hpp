@@ -16,8 +16,7 @@
 #include "yapf_type.hpp"
 
 /** key for cached segment cost for rail YAPF */
-struct CYapfRailSegmentKey
-{
+struct CYapfRailSegmentKey {
 	using HashKey = uint32_t;
 
 	uint32_t value;
@@ -65,8 +64,7 @@ struct CYapfRailSegmentKey
 };
 
 /** cached segment cost for rail YAPF */
-struct CYapfRailSegment
-{
+struct CYapfRailSegment {
 	typedef CYapfRailSegmentKey Key;
 
 	CYapfRailSegmentKey key;

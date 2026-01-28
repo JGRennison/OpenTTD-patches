@@ -10,6 +10,7 @@
 #ifndef FONTCACHE_H
 #define FONTCACHE_H
 
+#include "provider_manager.h"
 #include "string_type.h"
 #include "spritecache.h"
 
@@ -25,19 +26,24 @@ void UpdateFontHeightCache();
 class FontCache {
 	friend class MockFontCache;
 private:
-	static FontCache *caches[FS_END]; ///< All the font caches.
+	static std::array<std::unique_ptr<FontCache>, FS_END> caches; ///< All the font caches.
 protected:
-	FontCache *parent;                ///< The parent of this font cache.
-	const FontSize fs;                ///< The size of the font.
+	std::unique_ptr<FontCache> parent; ///< The parent of this font cache.
+	const FontSize fs; ///< The size of the font.
 	int height = 0; ///< The height of the font.
 	int ascender = 0; ///< The ascender value of the font.
 	int descender = 0; ///< The descender value of the font.
 
+	FontCache(FontSize fs) : fs(fs) {}
+	static void Register(std::unique_ptr<FontCache> &&fc);
+
 public:
-	FontCache(FontSize fs);
-	virtual ~FontCache();
+	virtual ~FontCache() = default;
 
 	static void InitializeFontCaches();
+	static void UninitializeFontCaches();
+	static void LoadFontCaches(FontSizes fontsizes);
+	static void ClearFontCaches(FontSizes fontsizes);
 
 	/** Default unscaled font heights. */
 	static const int DEFAULT_FONT_HEIGHT[FS_END];
@@ -130,7 +136,7 @@ public:
 	static inline FontCache *Get(FontSize fs)
 	{
 		assert(fs < FS_END);
-		return FontCache::caches[fs];
+		return FontCache::caches[fs].get();
 	}
 
 	/**
@@ -146,13 +152,6 @@ public:
 	 */
 	virtual bool IsBuiltInFont() = 0;
 };
-
-inline void ClearFontCache(FontSizes fontsizes)
-{
-	for (FontSize fs : fontsizes.IterateSetBits()) {
-		FontCache::Get(fs)->ClearFontCache();
-	}
-}
 
 /** Get the Sprite for a glyph */
 inline const Sprite *GetGlyph(FontSize size, char32_t key)
@@ -211,11 +210,38 @@ inline FontCacheSubSetting *GetFontCacheSubSetting(FontSize fs)
 
 uint GetFontCacheFontSize(FontSize fs);
 std::string GetFontCacheFontName(FontSize fs);
-void InitFontCache(FontSizes fontsizes);
-void UninitFontCache();
 
 bool GetFontAAState();
 void SetFont(FontSize fontsize, const std::string &font, uint size);
+
+/** Different types of font that can be loaded. */
+enum class FontType : uint8_t {
+	Sprite, ///< Bitmap sprites from GRF files.
+	TrueType, ///< Scalable TrueType fonts.
+};
+
+/** Factory for FontCaches. */
+class FontCacheFactory : public BaseProvider<FontCacheFactory> {
+public:
+	FontCacheFactory(std::string_view name, std::string_view description) : BaseProvider<FontCacheFactory>(name, description)
+	{
+		ProviderManager<FontCacheFactory>::Register(*this);
+	}
+
+	virtual ~FontCacheFactory()
+	{
+		ProviderManager<FontCacheFactory>::Unregister(*this);
+	}
+
+	virtual std::unique_ptr<FontCache> LoadFont(FontSize fs, FontType fonttype) = 0;
+	virtual bool FindFallbackFont(struct FontCacheSettings *settings, const std::string &language_isocode, class MissingGlyphSearcher *callback) = 0;
+};
+
+class FontProviderManager : ProviderManager<FontCacheFactory> {
+public:
+	static std::unique_ptr<FontCache> LoadFont(FontSize fs, FontType fonttype);
+	static bool FindFallbackFont(FontCacheSettings *settings, const std::string &language_isocode, MissingGlyphSearcher *callback);
+};
 
 /* Implemented in spritefontcache.cpp */
 void InitializeUnicodeGlyphMap();

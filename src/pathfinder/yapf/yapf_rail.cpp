@@ -68,8 +68,7 @@ struct CYapfReserveTrackSafePositionNodes {
 };
 
 template <class Types>
-class CYapfReserveTrack
-{
+class CYapfReserveTrack {
 public:
 	typedef typename Types::Tpf Tpf; ///< the pathfinder class (derived from THIS class)
 	typedef typename Types::TrackFollower TrackFollower;
@@ -356,8 +355,7 @@ public:
 };
 
 template <class Types>
-class CYapfFollowAnyDepotRailT
-{
+class CYapfFollowAnyDepotRailT {
 public:
 	typedef typename Types::Tpf Tpf; ///< the pathfinder class (derived from THIS class)
 	typedef typename Types::TrackFollower TrackFollower;
@@ -468,8 +466,7 @@ public:
 };
 
 template <class Types>
-class CYapfFollowAnySafeTileRailT : public CYapfReserveTrack<Types>
-{
+class CYapfFollowAnySafeTileRailT : public CYapfReserveTrack<Types> {
 public:
 	typedef typename Types::Tpf Tpf; ///< the pathfinder class (derived from THIS class)
 	typedef typename Types::TrackFollower TrackFollower;
@@ -559,8 +556,7 @@ public:
 };
 
 template <class Types>
-class CYapfFollowRailT : public CYapfReserveTrack<Types>
-{
+class CYapfFollowRailT : public CYapfReserveTrack<Types> {
 public:
 	typedef typename Types::Tpf Tpf; ///< the pathfinder class (derived from THIS class)
 	typedef typename Types::TrackFollower TrackFollower;

@@ -1360,7 +1360,7 @@ static void GfxMainBlitter(const GfxBlitterCtx &ctx, const Sprite *sprite, int x
  */
 void LoadStringWidthTable(FontSizes fontsizes)
 {
-	ClearFontCache(fontsizes);
+	FontCache::ClearFontCaches(fontsizes);
 
 	for (FontSize fs : fontsizes.IterateSetBits()) {
 		for (uint i = 0; i != 224; i++) {
@@ -2275,7 +2275,7 @@ void UpdateGUIZoom()
 	_gui_zoom = new_zoom;
 
 	if (old_scale != _gui_scale) {
-		ClearFontCache(FONTSIZES_ALL);
+		FontCache::ClearFontCaches(FONTSIZES_ALL);
 	}
 	UpdateFontHeightCache();
 }
@@ -2309,7 +2309,7 @@ bool AdjustGUIZoom(AdjustGUIZoomMode mode)
 	if (old_font_zoom != _font_zoom) {
 		GfxClearFontSpriteCache();
 	}
-	ClearFontCache(FONTSIZES_ALL);
+	FontCache::ClearFontCaches(FONTSIZES_ALL);
 	UpdateFontHeightCache();
 	LoadStringWidthTable();
 

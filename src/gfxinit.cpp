@@ -299,7 +299,7 @@ static void RealChangeBlitter(std::string_view repl_blitter)
 
 	/* Clear caches that might have sprites for another blitter. */
 	VideoDriver::GetInstance()->ClearSystemSprites();
-	ClearFontCache(FONTSIZES_ALL);
+	FontCache::ClearFontCaches(FONTSIZES_ALL);
 	GfxClearSpriteCache();
 	ReInitAllWindows(false);
 }
@@ -380,7 +380,7 @@ void CheckBlitter()
 {
 	if (!SwitchNewGRFBlitter()) return;
 
-	ClearFontCache(FONTSIZES_ALL);
+	FontCache::ClearFontCaches(FONTSIZES_ALL);
 	GfxClearSpriteCache();
 	ReInitAllWindows(false);
 }
@@ -478,7 +478,7 @@ void GfxLoadSprites()
 
 	SwitchNewGRFBlitter();
 	VideoDriver::GetInstance()->ClearSystemSprites();
-	ClearFontCache(FONTSIZES_ALL);
+	FontCache::ClearFontCaches(FONTSIZES_ALL);
 	GfxInitSpriteMem();
 	GfxInitPalettes();
 	LoadSpriteTables();

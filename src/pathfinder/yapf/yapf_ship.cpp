@@ -24,8 +24,7 @@ constexpr int MAX_SHIP_PF_NODES = (NUMBER_OR_WATER_REGIONS_LOOKAHEAD + 1) * WATE
 constexpr int SHIP_LOST_PATH_LENGTH = 8; // The length of the (aimless) path assigned when a ship is lost.
 
 template <class Types>
-class CYapfDestinationTileWaterT
-{
+class CYapfDestinationTileWaterT {
 public:
 	typedef typename Types::Tpf Tpf; ///< the pathfinder class (derived from THIS class).
 	typedef typename Types::TrackFollower TrackFollower;
@@ -123,8 +122,7 @@ public:
 
 /** Node Follower module of YAPF for ships */
 template <class Types>
-class CYapfFollowShipT
-{
+class CYapfFollowShipT {
 public:
 	typedef typename Types::Tpf Tpf; ///< the pathfinder class (derived from THIS class).
 	typedef typename Types::TrackFollower TrackFollower;
@@ -322,8 +320,7 @@ public:
 
 /** Cost Provider module of YAPF for ships. */
 template <class Types>
-class CYapfCostShipT
-{
+class CYapfCostShipT {
 public:
 	typedef typename Types::Tpf Tpf; ///< the pathfinder class (derived from THIS class).
 	typedef typename Types::TrackFollower TrackFollower;
@@ -353,6 +350,23 @@ public:
 	}
 
 	/**
+	 * Whether the provided direction is a preferred direction for a given tile. This is used to separate ships travelling in opposite directions.
+	 * @param tile Tile of current node.
+	 * @param td Trackdir of current node.
+	 * @returns true if a preferred direction, false otherwise.
+	 */
+	inline static bool IsPreferredShipDirection(TileIndex tile, Trackdir td)
+	{
+		const bool odd_x = TileX(tile) & 1;
+		const bool odd_y = TileY(tile) & 1;
+		if (td == TRACKDIR_X_NE) return odd_y;
+		if (td == TRACKDIR_X_SW) return !odd_y;
+		if (td == TRACKDIR_Y_NW) return odd_x;
+		if (td == TRACKDIR_Y_SE) return !odd_x;
+		return (odd_x ^ odd_y) ^ HasBit(TRACKDIR_BIT_RIGHT_N | TRACKDIR_BIT_LEFT_S | TRACKDIR_BIT_UPPER_W | TRACKDIR_BIT_LOWER_E, td);
+	}
+
+	/**
 	 * Called by YAPF to calculate the cost from the origin to the given node.
 	 * Calculates only the cost of given node, adds it to the parent node cost
 	 * and stores the result into Node::cost member.
@@ -373,6 +387,9 @@ public:
 			}
 			c += count * 3 * YAPF_TILE_LENGTH;
 		}
+
+		/* Encourage separation between ships traveling in different directions. */
+		if (!IsPreferredShipDirection(n.GetTile(), n.GetTrackdir())) c += YAPF_TILE_LENGTH;
 
 		/* Skipped tile cost for aqueducts. */
 		c += YAPF_TILE_LENGTH * tf->tiles_skipped;

@@ -27,8 +27,7 @@ const uint MAX_RV_PF_TILES = 1 << 11;
 const uint MAX_RV_LEADER_TARGETS = 4;
 
 template <class Types>
-class CYapfCostRoadT
-{
+class CYapfCostRoadT {
 public:
 	typedef typename Types::Tpf Tpf; ///< pathfinder (derived from THIS class)
 	typedef typename Types::TrackFollower TrackFollower; ///< track follower helper
@@ -222,8 +221,7 @@ public:
 
 
 template <class Types>
-class CYapfDestinationAnyDepotRoadT
-{
+class CYapfDestinationAnyDepotRoadT {
 public:
 	typedef typename Types::Tpf Tpf; ///< the pathfinder class (derived from THIS class)
 	typedef typename Types::TrackFollower TrackFollower;
@@ -260,8 +258,7 @@ public:
 
 
 template <class Types>
-class CYapfDestinationTileRoadT
-{
+class CYapfDestinationTileRoadT {
 public:
 	typedef typename Types::Tpf Tpf; ///< the pathfinder class (derived from THIS class)
 	typedef typename Types::TrackFollower TrackFollower;
@@ -365,8 +362,7 @@ public:
 };
 
 template <class Types>
-class CYapfFollowRoadT
-{
+class CYapfFollowRoadT {
 public:
 	typedef typename Types::Tpf Tpf; ///< the pathfinder class (derived from THIS class)
 	typedef typename Types::TrackFollower TrackFollower;

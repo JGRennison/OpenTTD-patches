@@ -10,6 +10,9 @@
 #ifndef PROVIDER_MANAGER_H
 #define PROVIDER_MANAGER_H
 
+#include <ranges>
+#include <vector>
+
 /**
  * The ProviderManager manages a single Provider-type.
  *

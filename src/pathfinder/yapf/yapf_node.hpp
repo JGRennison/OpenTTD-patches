@@ -45,8 +45,7 @@ struct CYapfNodeKeyExitDir {
 	}
 };
 
-struct CYapfNodeKeyTrackDir : public CYapfNodeKeyExitDir
-{
+struct CYapfNodeKeyTrackDir : public CYapfNodeKeyExitDir {
 	using HashKey = uint32_t;
 
 	inline HashKey GetHashKey() const
