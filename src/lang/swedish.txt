@@ -637,8 +637,8 @@ STR_GRAPH_CARGO_PAYMENT_RATES_SECONDS                           :{TINY_FONT}{BLA
 STR_GRAPH_CARGO_PAYMENT_RATES_TITLE                             :{TINY_FONT}{BLACK}Betalning för leverans av 10 enheter (eller 10,000 liter) gods på ett avstånd av 20 rutor
 STR_GRAPH_CARGO_ENABLE_ALL                                      :{TINY_FONT}{BLACK}Alla
 STR_GRAPH_CARGO_DISABLE_ALL                                     :{TINY_FONT}{BLACK}Inga
-STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL                              :{BLACK}Visa alla godstyper på grafen över fraktförtjänster
-STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}Visa inga godstyper på grafen över fraktförtjänster
+STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL                              :{BLACK}Visa alla godstyper på grafen
+STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}Visa inga godstyper på grafen
 STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}Slå på/av denna godstyps graf
 STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLACK}{STRING}
 
@@ -2845,6 +2845,8 @@ STR_PICKER_PREVIEW_SHRINK                                       :-
 STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Minska höjden på förhandsvisningen. Ctrl+Click för att minska till minimum
 STR_PICKER_PREVIEW_EXPAND                                       :+
 STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Öka höjden på förhandsvisningen. Ctrl+Click för att öka till max
+
+
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Välj vilken klass av stationer som ska visas
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Välj en stationstyp att bygga. Ctrl+Klick för att lägga till eller ta bort i sparade objekt

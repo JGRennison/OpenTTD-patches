@@ -638,8 +638,8 @@ STR_GRAPH_CARGO_PAYMENT_RATES_SECONDS                           :{TINY_FONT}{BLA
 STR_GRAPH_CARGO_PAYMENT_RATES_TITLE                             :{TINY_FONT}{BLACK}Zahlung für 10 gelieferte Einheiten (oder 10.000 Liter) Fracht über eine Strecke von 20 Feldern
 STR_GRAPH_CARGO_ENABLE_ALL                                      :{TINY_FONT}{BLACK}Alle
 STR_GRAPH_CARGO_DISABLE_ALL                                     :{TINY_FONT}{BLACK}Keine
-STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL                              :{BLACK}Zeige alle Frachtarten im Frachtraten-Diagramm an
-STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}Zeige keine Fracht im Frachtraten-Diagramm an
+STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL                              :{BLACK}Zeige alle Frachtarten im Diagramm an
+STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}Zeige keine Fracht im Diagramm an
 STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}Diagramm für diesen Frachttyp ein/aus
 STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLACK}{STRING}
 
@@ -2846,6 +2846,8 @@ STR_PICKER_PREVIEW_SHRINK                                       :-
 STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Höhe von Vorschaubildern verringern. Strg+Klick, um Minimum zu verringern
 STR_PICKER_PREVIEW_EXPAND                                       :+
 STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Höhe von Vorschaubildern erhöhen. Strg+Klick, um Maximum zu erhöhen
+
+
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Wählen Sie eine anzuzeigende Stationsklasse
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Wählen Sie einen Stationstyp zum Bauen. Strg+Klick, um in gespeicherten Einträgen hinzuzufügen oder zu entfernen

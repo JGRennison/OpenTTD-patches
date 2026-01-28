@@ -638,8 +638,8 @@ STR_GRAPH_CARGO_PAYMENT_RATES_SECONDS                           :{TINY_FONT}{BLA
 STR_GRAPH_CARGO_PAYMENT_RATES_TITLE                             :{TINY_FONT}{BLACK}20 karelik yolda 10 birim (ya da 10,000 litre) için ödeme
 STR_GRAPH_CARGO_ENABLE_ALL                                      :{TINY_FONT}{BLACK}Tümü
 STR_GRAPH_CARGO_DISABLE_ALL                                     :{TINY_FONT}{BLACK}Hiçbiri
-STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL                              :{BLACK}Kargo ödeme tablosunda tüm kargo türlerini göster
-STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}Kargo ödeme tablosunda hiçbir kargo türünü gösterme
+STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL                              :{BLACK}Grafikte bütün kargoları göster
+STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}Grafikte hiçbir kargoyu gösterme
 STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}Bu kargo türünün grafiğini aç
 STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLACK}{STRING}
 
@@ -2846,6 +2846,8 @@ STR_PICKER_PREVIEW_SHRINK                                       :-
 STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Önizleme resimlerinin yüksekliğini azaltır. En düşüğe çekmek için Ctrl + Sol Tık yapın
 STR_PICKER_PREVIEW_EXPAND                                       :+
 STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Önizleme resimlerinin yüksekliğini arttır. En yükseğe çekmek için Ctrl + Sol Tık yapın
+
+
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Görüntülenecek istasyon sınıfını seçin
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :İnşa edilecek istasyon türünü seçin. Kayıtlı öğelerde ekleme çıkarma için Ctrl+Tıklayabilirsiniz
@@ -5430,7 +5432,7 @@ STR_ERROR_NO_STOP_COMPATIBLE_TRAM_TYPE                          :{WHITE}Uyumlu b
 STR_ERROR_NO_STOP_ARTICULATED_VEHICLE                           :{WHITE} Körüklü karayolu taşıtları için uygun durak yoktur.{}Körüklü karayolu taşıtları üzerinden geçme durağı gerektirir, körfez durağı değil
 STR_ERROR_AIRPORT_NO_PLANES                                     :{WHITE}Bu uçak bu helikopter pistine inemez
 STR_ERROR_AIRPORT_NO_HELICOPTERS                                :{WHITE}Helikopter bu havalimanı'na inemez
-STR_ERROR_NO_RAIL_WAYPOINT                                      :{WHITE} Demiryolu ara noktası yok
+STR_ERROR_NO_RAIL_WAYPOINT                                      :{WHITE} Hiç ray ara noktası yok
 STR_ERROR_NO_ROAD_WAYPOINT                                      :{WHITE} Hiç karayolu ara noktası yok
 STR_ERROR_NO_BUOY                                               :{WHITE}Şamandıra yok
 

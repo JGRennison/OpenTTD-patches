@@ -638,8 +638,8 @@ STR_GRAPH_CARGO_PAYMENT_RATES_SECONDS                           :{TINY_FONT}{BLA
 STR_GRAPH_CARGO_PAYMENT_RATES_TITLE                             :{TINY_FONT}{BLACK}Pago por entregar 10 unidades (o 10 000 litros) de carga a una distancia de 20 casillas
 STR_GRAPH_CARGO_ENABLE_ALL                                      :{TINY_FONT}{BLACK}Todas
 STR_GRAPH_CARGO_DISABLE_ALL                                     :{TINY_FONT}{BLACK}Ninguna
-STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL                              :{BLACK}Muestra todos los tipos de carga en la gráfica de tarifas de pago de cargas
-STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}Oculta todos los tipos de carga en la gráfica de tarifas de pago de cargas
+STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL                              :{BLACK}Muestra todos los tipos de carga en la gráfica
+STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}Oculta todos los tipos de carga en la gráfica
 STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}Alterna entre mostrar/ocultar la gráfica para este tipo de carga
 STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLACK}{STRING}
 
@@ -2846,6 +2846,8 @@ STR_PICKER_PREVIEW_SHRINK                                       :-
 STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Reduce la altura de las imágenes de previsualización. Ctrl+clic para reducir al máximo
 STR_PICKER_PREVIEW_EXPAND                                       :+
 STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Incrementa la altura de las imágenes de previsualización. Ctrl+clic para aumentar al máximo
+
+
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Selecciona una clase de estación para mostrar
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Selecciona un tipo de estación para construir. Ctrl+clic para añadir o eliminar en elementos guardados

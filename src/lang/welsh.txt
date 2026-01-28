@@ -637,8 +637,8 @@ STR_GRAPH_CARGO_PAYMENT_RATES_SECONDS                           :{TINY_FONT}{BLA
 STR_GRAPH_CARGO_PAYMENT_RATES_TITLE                             :{TINY_FONT}{BLACK}Tâl am gludo llwyth o 10 uned (neu 10,000 litr) pellter o 20 sgwâr
 STR_GRAPH_CARGO_ENABLE_ALL                                      :{TINY_FONT}{BLACK}Popeth
 STR_GRAPH_CARGO_DISABLE_ALL                                     :{TINY_FONT}{BLACK}Dim
-STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL                              :{BLACK}Dangos pob llwyth ar y graff cyfraddau taliadau llwythi
-STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}Peidio a dangos llwythi ar y graff cyfraddau talaidau llwythi
+STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL                              :{BLACK}Dangos pob llwyth ar y graff
+STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}Peidio a dangos llwythi ar y graff
 STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}Toglu'r graff ar gyfer y math llwyth yma
 STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLACK}{STRING}
 
@@ -2845,6 +2845,8 @@ STR_PICKER_PREVIEW_SHRINK                                       :-
 STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Lleihau ucher delewddau rhagolwg. Mae Ctrl+Clic yn lleihau at yr isafswm
 STR_PICKER_PREVIEW_EXPAND                                       :+
 STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Cynyddu ucher delewddau rhagolwg. Mae Ctrl+Clic yn cynyddu at yr uchafswm
+
+
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Dewis dosbarth gorsaf i'w ddangos
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Dewis math gorsaf i'w adeiladu. Mae Ctrl+Clic yn adio neu tynnu o'r eitemau a gedwir

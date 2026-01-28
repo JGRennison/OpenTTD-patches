@@ -637,8 +637,8 @@ STR_GRAPH_CARGO_PAYMENT_RATES_SECONDS                           :{TINY_FONT}{BLA
 STR_GRAPH_CARGO_PAYMENT_RATES_TITLE                             :{TINY_FONT}{BLACK}Payment for delivering 10 units (or 10,000 litres) of cargo a distance of 20 squares
 STR_GRAPH_CARGO_ENABLE_ALL                                      :{TINY_FONT}{BLACK}All
 STR_GRAPH_CARGO_DISABLE_ALL                                     :{TINY_FONT}{BLACK}None
-STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL                              :{BLACK}Display all cargos on the cargo payment rates graph
-STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}Display no cargos on the cargo payment rates graph
+STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL                              :{BLACK}Display all cargoes on the graph
+STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}Display no cargoes on the graph
 STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}Toggle graph of this cargo type
 STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLACK}{STRING}
 
@@ -2846,18 +2846,38 @@ STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Reduce the heig
 STR_PICKER_PREVIEW_EXPAND                                       :+
 STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Increase the height of preview images. Ctrl+Click to increase to maximum
 
+STR_PICKER_DEFAULT_COLLECTION                                   :Default collection
+STR_PICKER_SELECT_COLLECTION_TOOLTIP                            :Select a collection
+STR_PICKER_COLLECTION_ADD                                       :Add
+STR_PICKER_COLLECTION_ADD_TOOLTIP                               :Create a new collection
+STR_PICKER_COLLECTION_RENAME                                    :Rename
+STR_PICKER_COLLECTION_RENAME_TOOLTIP                            :Rename a collection
+STR_PICKER_COLLECTION_DELETE                                    :Delete
+STR_PICKER_COLLECTION_DELETE_TOOLTIP                            :Delete a collection
+
+STR_PICKER_COLLECTION_RENAME_QUERY                              :Rename this collection
+STR_PICKER_COLLECTION_DELETE_QUERY                              :Delete collection
+STR_PICKER_COLLECTION_DELETE_QUERY_TEXT                         :{YELLOW}Are you sure you want to delete this collection?
+STR_PICKER_COLLECTION_DELETE_QUERY_DISABLED_TEXT                :{YELLOW}Are you sure you want to delete this collection? There are items from disabled NewGRFs in it!
+
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Select a station class to display
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Select a station type to build. Ctrl+Click to add or remove in saved items
+STR_PICKER_STATION_COLLECTION_TOOLTIP                           :Select a collection of stations to display
 STR_PICKER_WAYPOINT_CLASS_TOOLTIP                               :Select a waypoint class to display
 STR_PICKER_WAYPOINT_TYPE_TOOLTIP                                :Select a waypoint to build. Ctrl+Click to add or remove in saved items
+STR_PICKER_WAYPOINT_COLLECTION_TOOLTIP                          :Select a collection of waypoints to display
 STR_PICKER_ROADSTOP_BUS_CLASS_TOOLTIP                           :Select a bus station class to display
 STR_PICKER_ROADSTOP_BUS_TYPE_TOOLTIP                            :Select a bus station type to build. Ctrl+Click to add or remove in saved items
+STR_PICKER_ROADSTOP_BUS_COLLECTION_TOOLTIP                      :Select a collection of bus stations to display
 STR_PICKER_ROADSTOP_TRUCK_CLASS_TOOLTIP                         :Select a lorry station class to display
 STR_PICKER_ROADSTOP_TRUCK_TYPE_TOOLTIP                          :Select a lorry station type to build. Ctrl+Click to add or remove in saved items
+STR_PICKER_ROADSTOP_TRUCK_COLLECTION_TOOLTIP                    :Select a collection of lorry stations to display
 STR_PICKER_OBJECT_CLASS_TOOLTIP                                 :Select an object class to display
 STR_PICKER_OBJECT_TYPE_TOOLTIP                                  :Select an object type to build. Ctrl+Click to add or remove in saved items. Ctrl+Click+Drag to select the area diagonally. Also press Shift to show cost estimate only
+STR_PICKER_OBJECT_COLLECTION_TOOLTIP                            :Select a collection of objects to display
 STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :Select a town zone to display
 STR_PICKER_HOUSE_TYPE_TOOLTIP                                   :Select a house type to build. Ctrl+Click to add or remove in saved items
+STR_PICKER_HOUSE_COLLECTION_TOOLTIP                             :Select a collection of houses to display
 
 STR_HOUSE_PICKER_CAPTION                                        :House Selection
 STR_HOUSE_PICKER_NAME                                           :{BLACK}Name: {ORANGE}{STRING}
@@ -5430,7 +5450,7 @@ STR_ERROR_NO_STOP_COMPATIBLE_TRAM_TYPE                          :{WHITE}There ar
 STR_ERROR_NO_STOP_ARTICULATED_VEHICLE                           :{WHITE}There are no stops which are suitable for articulated road vehicles.{}Articulated road vehicles require a drive-through stop, not a bay stop
 STR_ERROR_AIRPORT_NO_PLANES                                     :{WHITE}This plane cannot land at this heliport
 STR_ERROR_AIRPORT_NO_HELICOPTERS                                :{WHITE}This helicopter cannot land at this airport
-STR_ERROR_NO_RAIL_WAYPOINT                                      :{WHITE}There is no railway waypoint
+STR_ERROR_NO_RAIL_WAYPOINT                                      :{WHITE}There is no rail waypoint
 STR_ERROR_NO_ROAD_WAYPOINT                                      :{WHITE}There is no road waypoint
 STR_ERROR_NO_BUOY                                               :{WHITE}There is no buoy
 

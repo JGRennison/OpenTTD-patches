@@ -638,8 +638,8 @@ STR_GRAPH_CARGO_PAYMENT_RATES_SECONDS                           :{TINY_FONT}{BLA
 STR_GRAPH_CARGO_PAYMENT_RATES_TITLE                             :{TINY_FONT}{BLACK}10 단위(1만 리터)의 화물을 20칸 거리만큼 운송할 때의 운송비 지급량
 STR_GRAPH_CARGO_ENABLE_ALL                                      :{TINY_FONT}{BLACK}모두
 STR_GRAPH_CARGO_DISABLE_ALL                                     :{TINY_FONT}{BLACK}없음
-STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL                              :{BLACK}화물 운송단가 비율 그래프에서 모든 화물을 표시
-STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}화물 운송단가 비율 그래프에서 모든 화물을 표시 안 함
+STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL                              :{BLACK}그래프에 모든 화물을 표시
+STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}그래프에 모든 화물을 숨김
 STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}이 화물의 그래프를 표시하거나 숨깁니다
 STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLACK}{STRING}
 
@@ -2846,6 +2846,8 @@ STR_PICKER_PREVIEW_SHRINK                                       :-
 STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :미리보기 이미지의 높이를 줄입니다. CTRL+클릭하면 최대로 줄입니다
 STR_PICKER_PREVIEW_EXPAND                                       :+
 STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :미리보기 이미지의 높이를 늘입니다. CTRL+클릭하면 최대로 늘입니다
+
+
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :표시할 역 종류를 선택하세요
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :설치하려는 역 종류를 선택하세요. CTRL+클릭하면 즐겨찾기 추가/제거가 가능합니다

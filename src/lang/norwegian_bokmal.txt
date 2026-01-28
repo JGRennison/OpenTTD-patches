@@ -639,8 +639,8 @@ STR_GRAPH_CARGO_PAYMENT_RATES_SECONDS                           :{TINY_FONT}{BLA
 STR_GRAPH_CARGO_PAYMENT_RATES_TITLE                             :{TINY_FONT}{BLACK}Betaling for levering av ti vareenheter (eller 10,000 liter) over en avstand på 20 ruter
 STR_GRAPH_CARGO_ENABLE_ALL                                      :{TINY_FONT}{BLACK}Alle
 STR_GRAPH_CARGO_DISABLE_ALL                                     :{TINY_FONT}{BLACK}Ingen
-STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL                              :{BLACK}Vis alle varer på varetakstgrafen
-STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}Skjul alle varer på varetakstgrafen
+STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL                              :{BLACK}Vis alle varer på grafen
+STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}Skjul alle varer på grafen
 STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}Vis/skjul graf for en bestemt varetype
 STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLACK}{STRING}
 
@@ -2847,6 +2847,8 @@ STR_PICKER_PREVIEW_SHRINK                                       :-
 STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Reduser høyden på forhåndsvisninger. Ctrl+klikk for så liten som mulig
 STR_PICKER_PREVIEW_EXPAND                                       :+
 STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Øk høyden på forhåndsvisninger. Ctrl+klikk for så stor som mulig
+
+
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Velg stasjonsklassen du vil vise
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Velg type stasjon å bygge. Ctrl+klikk for å legge til eller fjerne lagrede elementer
@@ -5432,7 +5434,7 @@ STR_ERROR_NO_STOP_COMPATIBLE_TRAM_TYPE                          :{WHITE}Det er i
 STR_ERROR_NO_STOP_ARTICULATED_VEHICLE                           :{WHITE}Det er ingen holdeplasser som egner seg for leddede kjøretøy{}Leddede kjøretøy krever holdeplasser med gjennomkjøring
 STR_ERROR_AIRPORT_NO_PLANES                                     :{WHITE}Dette flyet kan ikke lande på denne helikopterplassen
 STR_ERROR_AIRPORT_NO_HELICOPTERS                                :{WHITE}Dette helikopteret kan ikke lande på denne flyplassen
-STR_ERROR_NO_RAIL_WAYPOINT                                      :{WHITE}Det finnes ingen jernbaneveipunkt
+STR_ERROR_NO_RAIL_WAYPOINT                                      :{WHITE}Det finnes ingen baneveipunkt
 STR_ERROR_NO_ROAD_WAYPOINT                                      :{WHITE}Det finnes ingen veipunkt for vei
 STR_ERROR_NO_BUOY                                               :{WHITE}Det finnes ingen bøye
 

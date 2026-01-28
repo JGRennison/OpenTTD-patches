@@ -637,8 +637,8 @@ STR_GRAPH_CARGO_PAYMENT_RATES_SECONDS                           :{TINY_FONT}{BLA
 STR_GRAPH_CARGO_PAYMENT_RATES_TITLE                             :{TINY_FONT}{BLACK}Betaling for at transportere 10 enheder (eller 10,000 liter) last en distance på 20 enheder.
 STR_GRAPH_CARGO_ENABLE_ALL                                      :{TINY_FONT}{BLACK}Slå alt til
 STR_GRAPH_CARGO_DISABLE_ALL                                     :{TINY_FONT}{BLACK}Ingen
-STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL                              :{BLACK}Vis alt fragt på fragtbetalings rate grafen
-STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}Vis intet fragt på fragtbetalings rate grafen
+STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL                              :{BLACK}Vis alle fragter på grafen
+STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}Vis ingen fragter på grafen
 STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}Skift grafen for denne lasttype til/fra
 STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLACK}{STRING}
 
@@ -2846,18 +2846,38 @@ STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Reducer højden
 STR_PICKER_PREVIEW_EXPAND                                       :+
 STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Forøg højden på forhåndsvisningsbilleder. Ctrl+klik for at øge til maksimum
 
+STR_PICKER_DEFAULT_COLLECTION                                   :Standardsamling
+STR_PICKER_SELECT_COLLECTION_TOOLTIP                            :Vælg en samling
+STR_PICKER_COLLECTION_ADD                                       :Tilføje
+STR_PICKER_COLLECTION_ADD_TOOLTIP                               :Opret en ny samling
+STR_PICKER_COLLECTION_RENAME                                    :Omdøb
+STR_PICKER_COLLECTION_RENAME_TOOLTIP                            :Omdøb en samling
+STR_PICKER_COLLECTION_DELETE                                    :Slet
+STR_PICKER_COLLECTION_DELETE_TOOLTIP                            :Slet en samling
+
+STR_PICKER_COLLECTION_RENAME_QUERY                              :Omdøb denne samling
+STR_PICKER_COLLECTION_DELETE_QUERY                              :Slet en samling
+STR_PICKER_COLLECTION_DELETE_QUERY_TEXT                         :{YELLOW}Er du sikker på, at du vil slette denne samling?
+STR_PICKER_COLLECTION_DELETE_QUERY_DISABLED_TEXT                :{YELLOW}Er du sikker på, at du vil slette denne samling? Den indeholder elementer fra deaktiverede NewGRF'er!
+
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Vælg en stationsklasse, der skal vises
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Vælg en stationstype at bygge. Ctrl+klik for at tilføje eller fjerne i gemte elementer
+STR_PICKER_STATION_COLLECTION_TOOLTIP                           :Vælg en samling af stationer, der skal vises
 STR_PICKER_WAYPOINT_CLASS_TOOLTIP                               :Vælg et rutepunkt-klasse, der skal vises
 STR_PICKER_WAYPOINT_TYPE_TOOLTIP                                :Vælg et rutepunkt at bygge. Ctrl+klik for at tilføje eller fjerne i gemte elementer
+STR_PICKER_WAYPOINT_COLLECTION_TOOLTIP                          :Vælg en samling af waypoints, der skal vises
 STR_PICKER_ROADSTOP_BUS_CLASS_TOOLTIP                           :Vælg en busstationsklasse, der skal vises
 STR_PICKER_ROADSTOP_BUS_TYPE_TOOLTIP                            :Vælg en busstationstype at bygge. Ctrl+klik for at tilføje eller fjerne i gemte elementer
+STR_PICKER_ROADSTOP_BUS_COLLECTION_TOOLTIP                      :Vælg en samling af bus stationer, der skal vises
 STR_PICKER_ROADSTOP_TRUCK_CLASS_TOOLTIP                         :Vælg en lastbilstationsklasse, der skal vises
 STR_PICKER_ROADSTOP_TRUCK_TYPE_TOOLTIP                          :Select a lorry station tyVælg en lastbilstationstype at bygge. Ctrl+klik for at tilføje eller fjerne i gemte elementerpe to build. Ctrl+Click to add or remove in saved items
+STR_PICKER_ROADSTOP_TRUCK_COLLECTION_TOOLTIP                    :Vælg en samling af lastbil stationer, der skal vises
 STR_PICKER_OBJECT_CLASS_TOOLTIP                                 :Vælg en objektklasse, der skal vises
 STR_PICKER_OBJECT_TYPE_TOOLTIP                                  :Vælg en objekttype, der skal bygges. Ctrl+klik for at tilføje eller fjerne i gemte elementer. Ctrl+klik+træk for at markere området diagonalt. Tryk også på Shift for kun at vise omkostningsestimat
+STR_PICKER_OBJECT_COLLECTION_TOOLTIP                            :Vælg en samling af objekter, der skal vises
 STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :Vælg en byzone, der skal vises
 STR_PICKER_HOUSE_TYPE_TOOLTIP                                   :Vælg en hustype at bygge. Ctrl+klik for at tilføje eller fjerne i gemte elementer
+STR_PICKER_HOUSE_COLLECTION_TOOLTIP                             :Vælg en samling af huse, der skal vises
 
 STR_HOUSE_PICKER_CAPTION                                        :Husvalg
 STR_HOUSE_PICKER_NAME                                           :{BLACK}Navn: {ORANGE}{STRING}
@@ -5430,7 +5450,7 @@ STR_ERROR_NO_STOP_COMPATIBLE_TRAM_TYPE                          :{WHITE}Der er i
 STR_ERROR_NO_STOP_ARTICULATED_VEHICLE                           :{WHITE}Der er ingen stop, der er egnede til leddelte vejkøretøjer.{}Leddelte vejkøretøjer kræver et gennemkørselsstop, ikke et slutstop
 STR_ERROR_AIRPORT_NO_PLANES                                     :{WHITE}Dette fly kan ikke lande på denne heliport
 STR_ERROR_AIRPORT_NO_HELICOPTERS                                :{WHITE}Denne helikopter kan ikke lande i denne lufthavn
-STR_ERROR_NO_RAIL_WAYPOINT                                      :{WHITE}Der er ikke noget Jernbane vejpunkt
+STR_ERROR_NO_RAIL_WAYPOINT                                      :{WHITE}Der er ikke noget jernbane-rutepunkt
 STR_ERROR_NO_ROAD_WAYPOINT                                      :{WHITE}Der er intet rutepunkt
 STR_ERROR_NO_BUOY                                               :{WHITE}Der er ingen bøje
 

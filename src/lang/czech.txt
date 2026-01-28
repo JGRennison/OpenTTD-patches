@@ -724,8 +724,8 @@ STR_GRAPH_CARGO_PAYMENT_RATES_SECONDS                           :{TINY_FONT}{BLA
 STR_GRAPH_CARGO_PAYMENT_RATES_TITLE                             :{TINY_FONT}{BLACK}Platba za doručení 10 jednotek (nebo 10 000 litrů) nákladu do vzdálenosti 20 čtverečků
 STR_GRAPH_CARGO_ENABLE_ALL                                      :{TINY_FONT}{BLACK}Vše
 STR_GRAPH_CARGO_DISABLE_ALL                                     :{TINY_FONT}{BLACK}Nic
-STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL                              :{BLACK}Zobraz všechny druhy nákladu na grafu přepravních sazeb
-STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}Skryje všechny položky na grafu přepravních sazeb
+STR_GRAPH_CARGO_TOOLTIP_ENABLE_ALL                              :{BLACK}V grafu zobrazit všechny náklady
+STR_GRAPH_CARGO_TOOLTIP_DISABLE_ALL                             :{BLACK}V grafu nezobrazovat žádné náklady
 STR_GRAPH_CARGO_PAYMENT_TOGGLE_CARGO                            :{BLACK}Zobrazit nebo skrýt graf pro tento druh nákladu
 STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLACK}{STRING}
 
@@ -2932,6 +2932,8 @@ STR_PICKER_PREVIEW_SHRINK                                       :-
 STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Snížit výšku náhledových obrázků. Klikni s Ctrl pro minimální výšku
 STR_PICKER_PREVIEW_EXPAND                                       :+
 STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Zvýšit výšku náhledových obrázků. Klikni s Ctrl pro maximální výšku
+
+
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Vyber typ stanice pro zobrazení
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Zvol typ stanice pro stavbu. Podrž Ctrl pro přidaní nebo odebrání z oblíbených položek
@@ -5533,7 +5535,7 @@ STR_ERROR_NO_STOP_COMPATIBLE_TRAM_TYPE                          :{WHITE}Zde nen�
 STR_ERROR_NO_STOP_ARTICULATED_VEHICLE                           :{WHITE}Nejsou zde žádné stanice vhodné pro kloubové silniční vozidla.{}Kloubové silniční vozidla vyžadují průjezdnou stanici.
 STR_ERROR_AIRPORT_NO_PLANES                                     :{WHITE}Toto letadlo nemůže přistát na tomto letišti
 STR_ERROR_AIRPORT_NO_HELICOPTERS                                :{WHITE}Tato helikoptéra nemůže přistát na tomto letišti
-STR_ERROR_NO_RAIL_WAYPOINT                                      :{WHITE}Zde není žádné železniční směrování
+STR_ERROR_NO_RAIL_WAYPOINT                                      :{WHITE}Zde není žádný železniční průjezdný bod
 STR_ERROR_NO_ROAD_WAYPOINT                                      :{WHITE}Zde není žádné silniční směrování
 STR_ERROR_NO_BUOY                                               :{WHITE}Zde není žádná bójka
 

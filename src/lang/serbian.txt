@@ -2930,6 +2930,8 @@ STR_PICKER_PREVIEW_EXPAND                                       :+
 STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Uvećava visinu slika u pregledu. Ctrl+klik povećava na maksimum
 
 
+
+
 STR_HOUSE_PICKER_CAPTION                                        :Odabir kuće
 
 STR_HOUSE_PICKER_CLASS_ZONE1                                    :Ivica
