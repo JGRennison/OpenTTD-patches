@@ -2343,8 +2343,8 @@ static void DrawTile_TunnelBridge(TileInfo *ti, DrawTileProcParams params)
 			const RailTypeInfo *rti = GetRailTypeInfo(GetRailType(ti->tile));
 			DrawTrackBits(ti, GetCustomBridgeHeadTrackBits(ti->tile));
 			if (HasBit(_display_opt, DO_FULL_DETAIL)) {
-				extern void DrawTrackDetails(const TileInfo *ti, const RailTypeInfo *rti, const RailGroundType rgt);
-				DrawTrackDetails(ti, rti, GetTunnelBridgeGroundType(ti->tile));
+				extern void DrawTrackDetails(const TileInfo *ti, const RailTypeInfo *rti, const RailGroundType rgt, PaletteID pal);
+				DrawTrackDetails(ti, rti, GetTunnelBridgeGroundType(ti->tile), GetCompanyPalette(GetTileOwner(ti->tile)));
 			}
 			if (HasRailCatenaryDrawn(GetRailType(ti->tile), GetTileSecondaryRailTypeIfValid(ti->tile))) {
 				DrawRailCatenary(ti);

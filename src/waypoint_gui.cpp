@@ -48,7 +48,6 @@ private:
 	{
 		if (!this->wp->IsInUse()) return this->wp->xy;
 
-		TileArea ta;
 		StationType type;
 		switch (this->vt) {
 			case VEH_TRAIN:
@@ -66,8 +65,7 @@ private:
 			default:
 				NOT_REACHED();
 		}
-		this->wp->GetTileArea(&ta, type);
-		return ta.GetCenterTile();
+		return this->wp->GetTileArea(type).GetCenterTile();
 	}
 
 public:

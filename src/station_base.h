@@ -980,7 +980,7 @@ public:
 
 	uint32_t GetNewGRFVariable(const ResolverObject &object, uint16_t variable, uint8_t parameter, bool &available) const override;
 
-	void GetTileArea(TileArea *ta, StationType type) const override;
+	TileArea GetTileArea(StationType type) const override;
 };
 
 /** Iterator to iterate over all tiles belonging to an airport. */

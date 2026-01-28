@@ -44,7 +44,7 @@ struct Waypoint final : SpecializedStation<Waypoint, true> {
 
 	uint32_t GetNewGRFVariable(const struct ResolverObject &object, uint16_t variable, uint8_t parameter, bool &available) const override;
 
-	void GetTileArea(TileArea *ta, StationType type) const override;
+	TileArea GetTileArea(StationType type) const override;
 
 	uint GetPlatformLength(TileIndex, DiagDirection) const override
 	{
