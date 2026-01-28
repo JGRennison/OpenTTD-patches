@@ -393,7 +393,7 @@ int GetTrainDetailsWndVScroll(VehicleID veh_id, TrainDetailsWindowTabs det_tab)
 		num = max_cargo.GetCount();
 
 		if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) {
-			num += 5; // needs five more because first line is description string and we have the weight and speed info and the feeder share
+			num += 7; // needs seven more because first line is description string and we have the weight, speed, power/weight ratio, TE/weight ratio and the feeder share
 		} else {
 			num += 2; // needs one more because first line is description string and we have the feeder share
 		}
@@ -534,6 +534,20 @@ void DrawTrainDetails(const Train *v, const Rect &r, int vscroll_pos, uint16_t v
 				const int empty_max_speed = GetTrainEstimatedMaxAchievableSpeed(v, empty_weight, v->GetDisplayMaxSpeed());
 				const int loaded_max_speed = GetTrainEstimatedMaxAchievableSpeed(v, loaded_weight, v->GetDisplayMaxSpeed());
 				DrawString(r.left, r.right, y + text_y_offset, GetString(STR_VEHICLE_DETAILS_TRAIN_MAX_SPEED, empty_max_speed, loaded_max_speed));
+				y += line_height;
+			}
+
+			if (--vscroll_pos < 0 && vscroll_pos >= -vscroll_cap) {
+				const int64_t empty_power_weight_ratio = GetTrainPowerToWeightRatio(v, empty_weight);
+				const int64_t loaded_power_weight_ratio = GetTrainPowerToWeightRatio(v, loaded_weight);
+				DrawString(r.left, r.right, y + text_y_offset, GetString(STR_VEHICLE_DETAILS_TRAIN_POWER_WEIGHT_RATIO, empty_power_weight_ratio, loaded_power_weight_ratio));
+				y += line_height;
+			}
+
+			if (--vscroll_pos < 0 && vscroll_pos >= -vscroll_cap) {
+				const int64_t empty_force_weight_ratio = GetTrainMaxTractiveEffortToWeightRatio(v, empty_weight);
+				const int64_t loaded_force_weight_ratio = GetTrainMaxTractiveEffortToWeightRatio(v, loaded_weight);
+				DrawString(r.left, r.right, y + text_y_offset, GetString(STR_VEHICLE_DETAILS_TRAIN_TE_WEIGHT_RATIO, empty_force_weight_ratio, loaded_force_weight_ratio));
 				y += line_height;
 			}
 

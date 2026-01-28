@@ -570,5 +570,7 @@ int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, bool up
 
 int GetTrainRealisticAccelerationAtSpeed(const int speed, const int mass, const uint32_t cached_power, const uint32_t max_te, const uint32_t air_drag, const RailTypes railtypes);
 int GetTrainEstimatedMaxAchievableSpeed(const Train *train, int mass, const int speed_cap);
+int64_t GetTrainPowerToWeightRatio(const Train *train, int mass);
+int64_t GetTrainMaxTractiveEffortToWeightRatio(const Train *train, int mass);
 
 #endif /* TRAIN_H */

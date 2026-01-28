@@ -7713,6 +7713,18 @@ int GetTrainEstimatedMaxAchievableSpeed(const Train *train, int mass, const int 
 	return max_speed;
 }
 
+int64_t GetTrainPowerToWeightRatio(const Train *train, int mass)
+{
+	if (mass < 1) mass = 1;
+	return ((int64_t)train->gcache.cached_power * 100) / mass;
+}
+
+int64_t GetTrainMaxTractiveEffortToWeightRatio(const Train *train, int mass)
+{
+	if (mass < 1) mass = 1;
+	return ((int64_t)train->gcache.cached_max_te * 100) / mass;
+}
+
 void SetSignalTrainAdaptationSpeed(const Train *v, TileIndex tile, uint16_t track)
 {
 	SignalSpeedKey speed_key = {};
