@@ -56,6 +56,7 @@ luxembourgish.txt
 macedonian.txt
 malay.txt
 maltese.txt
+maori.txt
 marathi.txt
 norwegian_bokmal.txt
 norwegian_nynorsk.txt
