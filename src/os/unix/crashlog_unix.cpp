@@ -25,6 +25,7 @@
 #include <sys/types.h>
 #include <sys/wait.h>
 #include <sys/mman.h>
+#include <sys/stat.h>
 
 #if defined(WITH_DBG_GDB)
 #include <sys/syscall.h>
