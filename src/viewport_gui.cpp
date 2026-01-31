@@ -312,7 +312,7 @@ void ShowStationViewportTooltip(Window *w, const TileIndex tile)
 	}
 
 	if (!msg.empty()) {
-		GuiShowTooltips(w, GetEncodedString(STR_JUST_RAW_STRING, msg), TCC_HOVER_VIEWPORT);
+		GuiShowTooltips(w, GetEncodedRawString(msg), TCC_HOVER_VIEWPORT);
 	}
 }
 

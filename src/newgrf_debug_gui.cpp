@@ -1221,7 +1221,7 @@ struct NewGRFInspectWindow final : Window {
 			AppendStringInPlace(buf, STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_COLLAPSE);
 			buf.push_back('\n');
 			AppendStringInPlace(buf, STR_NEWGRF_INSPECT_SPRITE_DUMP_PANEL_TOOLTIP_HIGHLIGHT_TEMP);
-			GuiShowTooltips(this, GetEncodedString(STR_JUST_RAW_STRING, (std::string_view)buf), close_cond);
+			GuiShowTooltips(this, GetEncodedRawString(buf), close_cond);
 			return true;
 		}
 

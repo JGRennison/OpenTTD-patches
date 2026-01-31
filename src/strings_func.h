@@ -192,6 +192,8 @@ template <typename... Args>
 	return GetEncodedStringWithArgs(string, MakeReferenceParameters(std::forward<Args>(args)...));
 }
 
+[[nodiscard]] EncodedString GetEncodedRawString(std::string_view str);
+
 /**
  * Resolve the given StringID and append in place into an existing format_buffer with most special stringcodes replaced by the string parameters.
  * @param result The format_target to append to.

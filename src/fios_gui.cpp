@@ -638,6 +638,7 @@ public:
 
 				Rect tr = r.Shrink(WidgetDimensions::scaled.inset).WithHeight(this->resize.step_height);
 				auto [first, last] = this->vscroll->GetVisibleRangeIterators(this->display_list);
+				format_buffer_sized<128> buffer;
 				for (auto it = first; it != last; ++it) {
 					const FiosItem *item = *it;
 
@@ -646,7 +647,7 @@ public:
 					} else if (item == this->highlighted) {
 						GfxFillRect(br.left, tr.top, br.right, tr.bottom, PC_VERY_DARK_BLUE);
 					}
-					DrawString(tr, item->title.GetDecodedString(), _fios_colours[item->type.detailed]);
+					DrawString(tr, item->title.GetDecodedStringView(buffer), _fios_colours[item->type.detailed]);
 					tr = tr.Translate(0, this->resize.step_height);
 				}
 				break;
@@ -1069,9 +1070,10 @@ public:
 				this->display_list.push_back(&it);
 			}
 		} else {
+			format_buffer_sized<128> buffer;
 			for (auto &it : this->fios_items) {
 				this->string_filter.ResetState();
-				this->string_filter.AddLine(it.title.GetDecodedString());
+				this->string_filter.AddLine(it.title.GetDecodedStringView(buffer));
 				/* We set the vector to show this fios element as filtered depending on the result of the filter */
 				if (this->string_filter.GetState()) {
 					this->display_list.push_back(&it);

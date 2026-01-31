@@ -211,7 +211,7 @@ void FiosGetDrives(FileList &file_list)
 		fios->mtime = 0;
 		fios->name += (char)(s[0] & 0xFF);
 		fios->name += ':';
-		fios->title = GetEncodedString(STR_JUST_RAW_STRING, fios->name);
+		fios->title = GetEncodedRawString(fios->name);
 		while (*s++ != '\0') { /* Nothing */ }
 	}
 }

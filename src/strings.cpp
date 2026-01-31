@@ -133,7 +133,7 @@ EncodedString GetEncodedStringWithArgs(StringID str, std::span<const StringParam
 			/* Don't allow an encoded string to contain another encoded string. */
 			{
 				auto [len, c] = DecodeUtf8(value);
-				assert(len == 0 || (c != SCC_ENCODED && c != SCC_ENCODED_INTERNAL && c != SCC_RECORD_SEPARATOR));
+				assert(len == 0 || (c != SCC_ENCODED && c != SCC_ENCODED_INTERNAL && c != SCC_RECORD_SEPARATOR && c != SCC_ENCODED_RAW_STRING));
 			}
 #endif /* WITH_ASSERT */
 			this->result.push_back_utf8(SCC_ENCODED_STRING);
@@ -158,6 +158,30 @@ EncodedString GetEncodedStringWithArgs(StringID str, std::span<const StringParam
 	}
 
 	return EncodedString{result.to_string()};
+}
+
+/**
+ * Get an internal-only encoded string of a raw-string.
+ * @param str The raw std::string_view.
+ * @return The encoded string.
+ */
+EncodedString GetEncodedRawString(std::string_view str)
+{
+	EncodedString result;
+	result.string.reserve(str.size() + 3);
+	std::array<char, 3> cc = EncodeUtf8ControlCodeStatic<SCC_ENCODED_RAW_STRING>();
+	result.string.assign(cc.data(), cc.size());
+
+#ifdef WITH_ASSERT
+	/* Don't allow an encoded string to contain another encoded string. */
+	{
+		auto [len, c] = DecodeUtf8(str);
+		assert(len == 0 || (c != SCC_ENCODED && c != SCC_ENCODED_INTERNAL && c != SCC_RECORD_SEPARATOR && c != SCC_ENCODED_RAW_STRING));
+	}
+#endif /* WITH_ASSERT */
+	result.string.append(str);
+
+	return result;
 }
 
 /**
@@ -240,6 +264,25 @@ std::string EncodedString::GetDecodedString() const
 	format_buffer buffer;
 	FormatString(StringBuilder(buffer), this->string, args);
 	return buffer.to_string();
+}
+
+/**
+ * Decode the encoded string, using the buffer for storage if required.
+ * If possible returns a view into the encoded string
+ * @returns Decoded raw string view.
+ */
+std::string_view EncodedString::GetDecodedStringView(format_buffer_base &buffer) const
+{
+	std::array<char, 3> raw_prefix = EncodeUtf8ControlCodeStatic<SCC_ENCODED_RAW_STRING>();
+	const std::string_view view = this->string;
+	if (view.size() >= 3 && std::equal(raw_prefix.begin(), raw_prefix.end(), view.begin())) {
+		/* Fast path */
+		return view.substr(3);
+	}
+
+	buffer.clear();
+	this->AppendDecodedStringInPlace(buffer);
+	return buffer;
 }
 
 /**
@@ -1440,6 +1483,10 @@ static void FormatString(StringBuilder builder, std::string_view str_arg, String
 				case SCC_ENCODED:
 				case SCC_ENCODED_INTERNAL:
 					DecodeEncodedString(consumer, b == SCC_ENCODED, builder);
+					break;
+
+				case SCC_ENCODED_RAW_STRING:
+					builder.Put(consumer.Read(std::string_view::npos));
 					break;
 
 				case SCC_NEWGRF_STRINL: {
@@ -2846,7 +2893,7 @@ void CheckForMissingGlyphs(bool base_font, MissingGlyphSearcher *searcher)
 			format_buffer err_str;
 			err_str.push_back_utf8(SCC_YELLOW);
 			err_str.append("The current font is missing some of the characters used in the texts for this language. Using system fallback font instead.");
-			ShowErrorMessage(GetEncodedString(STR_JUST_RAW_STRING, (std::string_view)err_str), {}, WL_WARNING);
+			ShowErrorMessage(GetEncodedRawString(err_str), {}, WL_WARNING);
 		}
 
 		if (bad_font && base_font) {
@@ -2866,7 +2913,7 @@ void CheckForMissingGlyphs(bool base_font, MissingGlyphSearcher *searcher)
 		format_buffer err_str;
 		err_str.push_back_utf8(SCC_YELLOW);
 		err_str.append("The current font is missing some of the characters used in the texts for this language. Go to Help & Manuals > Fonts, or read the file docs/fonts.md in your OpenTTD directory, to see how to solve this.");
-		ShowErrorMessage(GetEncodedString(STR_JUST_RAW_STRING, (std::string_view)err_str), {}, WL_WARNING);
+		ShowErrorMessage(GetEncodedRawString(err_str), {}, WL_WARNING);
 
 		/* Reset the font width */
 		LoadStringWidthTable(searcher->Monospace() ? FontSizes{FS_MONO} : FONTSIZES_REQUIRED);
@@ -2891,9 +2938,8 @@ void CheckForMissingGlyphs(bool base_font, MissingGlyphSearcher *searcher)
 	if (_current_text_dir != TD_LTR) {
 		format_buffer err_str;
 		err_str.push_back_utf8(SCC_YELLOW);
-		err_str.push_back_utf8(SCC_YELLOW);
 		err_str.append("This version of OpenTTD does not support right-to-left languages. Recompile with ICU + Harfbuzz enabled.");
-		ShowErrorMessage(GetEncodedString(STR_JUST_RAW_STRING, (std::string_view)err_str), {}, WL_ERROR);
+		ShowErrorMessage(GetEncodedRawString(err_str), {}, WL_ERROR);
 	}
 #endif /* !(WITH_ICU_I18N && WITH_HARFBUZZ) && !WITH_UNISCRIBE && !WITH_COCOA */
 }

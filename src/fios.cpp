@@ -59,7 +59,9 @@ bool FiosItem::operator< (const FiosItem &other) const
 	if ((_savegame_sort_order & SORT_BY_NAME) == 0 && (*this).mtime != other.mtime) {
 		r = this->mtime - other.mtime;
 	} else {
-		r = StrNaturalCompare(this->title.GetDecodedString(), other.title.GetDecodedString());
+		format_buffer_sized<128> buffer_a;
+		format_buffer_sized<128> buffer_b;
+		r = StrNaturalCompare(this->title.GetDecodedStringView(buffer_a), other.title.GetDecodedStringView(buffer_b));
 	}
 	if (r == 0) return false;
 	return (_savegame_sort_order & SORT_DESCENDING) ? r > 0 : r < 0;
@@ -113,10 +115,12 @@ void FileList::BuildFileList(AbstractFileType abstract_filetype, SaveLoadOperati
  */
 const FiosItem *FileList::FindItem(const std::string_view file)
 {
+	format_buffer_sized<128> buffer;
+
 	for (const auto &it : *this) {
 		const FiosItem *item = &it;
 		if (file == item->name) return item;
-		if (file == item->title.GetDecodedString()) return item;
+		if (file == item->title.GetDecodedStringView(buffer)) return item;
 	}
 
 	/* If no name matches, try to parse it as number */
@@ -130,7 +134,7 @@ const FiosItem *FileList::FindItem(const std::string_view file)
 	for (const auto &it : *this) {
 		const FiosItem *item = &it;
 		if (long_file == item->name) return item;
-		if (long_file == item->title.GetDecodedString()) return item;
+		if (long_file == item->title.GetDecodedStringView(buffer)) return item;
 	}
 
 	return nullptr;
@@ -366,7 +370,7 @@ bool FiosFileScanner::AddFile(const std::string &filename, size_t, const std::st
 		auto ps = filename.rfind(PATHSEPCHAR);
 		t = filename.c_str() + (ps == std::string::npos ? 0 : ps + 1);
 	}
-	fios->title = GetEncodedString(STR_JUST_RAW_STRING, StrMakeValid(t));
+	fios->title = GetEncodedRawString(StrMakeValid(t));
 
 	return true;
 }

@@ -534,7 +534,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				add_suffix(STR_SCHDISPATCH_REUSE_DEPARTURE_SLOTS_TOOLTIP);
 				add_suffix(STR_SCHDISPATCH_RENAME_DEPARTURE_TAG_TOOLTIP);
 				add_suffix(STR_SCHDISPATCH_EDIT_DEPARTURE_ROUTE_TOOLTIP);
-				GuiShowTooltips(this, GetEncodedString(STR_JUST_RAW_STRING, (std::string_view)buf), close_cond);
+				GuiShowTooltips(this, GetEncodedRawString(buf), close_cond);
 				return true;
 			}
 
@@ -546,7 +546,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				};
 				add_suffix(STR_SCHDISPATCH_TAG_DEPARTURE_TOOLTIP);
 				add_suffix(STR_SCHDISPATCH_ROUTE_DEPARTURE_TOOLTIP);
-				GuiShowTooltips(this, GetEncodedString(STR_JUST_RAW_STRING, (std::string_view)buf), close_cond);
+				GuiShowTooltips(this, GetEncodedRawString(buf), close_cond);
 				return true;
 			}
 
@@ -632,7 +632,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 							AppendStringInPlace(buf, name.empty() ? STR_SCHDISPATCH_TAG_DEPARTURE : STR_SCHDISPATCH_TAG_DEPARTURE_NAMED, 1 + flag_bit - DispatchSlot::SDSF_FIRST_TAG, name);
 						}
 					}
-					GuiShowTooltips(this, GetEncodedString(STR_JUST_RAW_STRING, (std::string_view)buf), close_cond);
+					GuiShowTooltips(this, GetEncodedRawString(buf), close_cond);
 				}
 				return true;
 			}

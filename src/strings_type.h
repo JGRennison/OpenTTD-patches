@@ -173,6 +173,8 @@ public:
 	EncodedString ReplaceParam(size_t param, StringParameter &&value) const;
 	void AppendDecodedStringInPlace(struct format_target &result) const;
 
+	std::string_view GetDecodedStringView(struct format_buffer_base &buffer) const;
+
 	inline void clear() { this->string.clear(); }
 	inline bool empty() const { return this->string.empty(); }
 
@@ -191,6 +193,7 @@ private:
 	explicit EncodedString(std::string &&string) : string(std::move(string)) {}
 
 	friend EncodedString GetEncodedStringWithArgs(StringID str, std::span<const StringParameter> params);
+	friend EncodedString GetEncodedRawString(std::string_view str);
 
 	friend class ScriptText;
 };

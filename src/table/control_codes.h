@@ -29,6 +29,8 @@ enum StringControlCode : uint16_t {
 	SCC_ENCODED_NUMERIC, ///< Encoded numeric parameter.
 	SCC_ENCODED_STRING, ///< Encoded string parameter.
 
+	SCC_ENCODED_RAW_STRING, ///< Internal-only control code for pass-through encoded string
+
 	/* Font selection codes, must be in same order as FontSize enum */
 	SCC_FIRST_FONT,
 	SCC_NORMALFONT = SCC_FIRST_FONT, ///< Switch to normal size font
