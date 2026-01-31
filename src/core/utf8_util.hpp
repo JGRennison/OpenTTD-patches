@@ -35,7 +35,19 @@ bool IsUtf8CharInControlCharRange(const char *str)
 		}
 	}
 	return false;
+}
 
+template <char32_t C>
+constexpr std::array<char, 3> EncodeUtf8ControlCodeStatic()
+{
+	static_assert(C >= 0x800);
+	static_assert(C < 0x10000);
+
+	return {
+		static_cast<char>(0xE0 + GB(C, 12, 4)),
+		static_cast<char>(0x80 + GB(C,  6, 6)),
+		static_cast<char>(0x80 + GB(C,  0, 6)),
+	};
 }
 
 static constexpr size_t UTF8_CONTROL_CHAR_LENGTH = 3;
