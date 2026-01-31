@@ -23,6 +23,7 @@
 #include "core/string_builder.hpp"
 #include "core/string_consumer.hpp"
 #include "core/utf8.hpp"
+#include "core/utf8_util.hpp"
 #include "rev.h"
 #include "core/endian_func.hpp"
 #include "date_func.h"
@@ -43,7 +44,6 @@
 #include "tbtr_template_vehicle_func.h"
 #include "core/backup_type.hpp"
 #include "gfx_layout.h"
-#include "core/utf8.hpp"
 #include "core/y_combinator.hpp"
 #include "3rdparty/svector/svector.h"
 #include <stack>
@@ -67,6 +67,8 @@ TextDirection _current_text_dir = TD_LTR; ///< Text direction of the currently s
 char32_t _decimal_separator_char; ///< For GetDecimalSeparatorChar.
 
 std::string _temp_special_strings[16];
+
+static void FormatString(StringBuilder builder, std::string_view str, StringParameters &args, uint case_index = 0, bool game_script = false, bool dry_run = false);
 
 /**
  * Get the next parameter from our parameters.
@@ -222,9 +224,10 @@ EncodedString EncodedString::ReplaceParam(size_t param, StringParameter &&data) 
  * Decode the encoded string and append in place into an existing format_buffer.
  * @param result The format_buffer to append to.
  */
-void EncodedString::AppendDecodedStringInPlace(format_buffer &result) const
+void EncodedString::AppendDecodedStringInPlace(format_target &result) const
 {
-	AppendStringInPlace(result, STR_JUST_RAW_STRING, this->string);
+	StringParameters args{};
+	FormatString(StringBuilder(result), this->string, args);
 }
 
 /**
@@ -233,7 +236,10 @@ void EncodedString::AppendDecodedStringInPlace(format_buffer &result) const
  */
 std::string EncodedString::GetDecodedString() const
 {
-	return GetString(STR_JUST_RAW_STRING, this->string);
+	StringParameters args{};
+	format_buffer buffer;
+	FormatString(StringBuilder(buffer), this->string, args);
+	return buffer.to_string();
 }
 
 /**
@@ -268,8 +274,6 @@ uint64_t GetParamMaxValue(uint64_t max_value, uint min_count, FontSize size)
 
 static void StationGetSpecialString(StringBuilder builder, StationFacilities x);
 static bool GetSpecialNameString(StringBuilder builder, StringID string, StringParameters &args);
-
-static void FormatString(StringBuilder builder, std::string_view str, StringParameters &args, uint case_index = 0, bool game_script = false, bool dry_run = false);
 
 /**
  * Parse most format codes within a string and write the result to a buffer.

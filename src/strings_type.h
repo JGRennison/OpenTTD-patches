@@ -171,7 +171,7 @@ public:
 
 	std::string GetDecodedString() const;
 	EncodedString ReplaceParam(size_t param, StringParameter &&value) const;
-	void AppendDecodedStringInPlace(struct format_buffer &result) const;
+	void AppendDecodedStringInPlace(struct format_target &result) const;
 
 	inline void clear() { this->string.clear(); }
 	inline bool empty() const { return this->string.empty(); }
