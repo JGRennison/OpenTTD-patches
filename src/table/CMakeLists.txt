@@ -30,12 +30,14 @@ add_files(
     roadtypes.h
     roadveh_movement.h
     settings_compat.h
+    signal_data.h
     sprites.h
     station_land.h
     strgen_tables.h
     string_colours.h
     town_land.h
     townname.h
+    track_data.h
     track_land.h
     train_cmd.h
     tree_land.h

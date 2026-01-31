@@ -28,6 +28,8 @@
 #include "pathfinder/follow_track.hpp"
 #include "3rdparty/cpp-btree/btree_set.h"
 
+#include "table/signal_data.h"
+
 #include "safeguards.h"
 
 uint8_t _extra_aspects = 0;

@@ -1370,7 +1370,10 @@ CommandCost CmdCloneVehicle(DoCommandFlags flags, TileIndex tile, VehicleID veh_
 	CommandCost ret = CheckOwnership(v->owner);
 	if (ret.Failed()) return ret;
 
-	if (v->type == VEH_TRAIN && (!v->IsFrontEngine() || Train::From(v)->crash_anim_pos >= 4400)) return CMD_ERROR;
+	/* Crashed trains can only be cloned before cleanup begins. */
+	if (v->type == VEH_TRAIN && (!v->IsFrontEngine() || (Train::From(v)->vehstatus.Test(VehState::Crashed) && Train::From(v)->crash_anim_pos >= 4400))) {
+		return CommandCost(STR_ERROR_VEHICLE_IS_DESTROYED);
+	}
 
 	/* check that we can allocate enough vehicles */
 	if (!flags.Test(DoCommandFlag::Execute)) {

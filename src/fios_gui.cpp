@@ -435,13 +435,13 @@ private:
 	QueryString filename_editbox; ///< Filename editbox.
 	AbstractFileType abstract_filetype{}; /// Type of file to select.
 	SaveLoadOperation fop{}; ///< File operation to perform.
-	FileList fios_items{}; ///< Save game list.
+	FileList fios_items{}; ///< Item list.
 	FiosItem o_dir{}; ///< Original dir (home dir for this browser)
-	const FiosItem *selected = nullptr; ///< Selected game in #fios_items, or \c nullptr.
+	const FiosItem *selected = nullptr; ///< Selected item in #fios_items, or \c nullptr.
 	const FiosItem *highlighted = nullptr; ///< Item in fios_items highlighted by mouse pointer, or \c nullptr.
 	Scrollbar *vscroll = nullptr;
 
-	StringFilter string_filter{}; ///< Filter for available games.
+	StringFilter string_filter{}; ///< Filter for available items.
 	QueryString filter_editbox; ///< Filter editbox;
 	std::vector<FiosItem *> display_list{}; ///< Filtered display list
 
@@ -455,6 +455,23 @@ private:
 	{
 		/* File name has already been written to _file_to_saveload */
 		if (confirmed) _switch_mode = SM_SAVE_HEIGHTMAP;
+	}
+
+	static void DeleteFileConfirmationCallback(Window *window, bool confirmed)
+	{
+		auto *save_load_window = static_cast<SaveLoadWindow*>(window);
+
+		assert(save_load_window->selected != nullptr);
+
+		if (confirmed) {
+			if (!FioRemove(save_load_window->selected->name)) {
+				ShowErrorMessage(GetEncodedString(STR_ERROR_UNABLE_TO_DELETE_FILE), {}, WL_ERROR);
+			} else {
+				save_load_window->InvalidateData(SLIWD_RESCAN_FILES);
+				/* Reset file name to current date on successful delete */
+				if (save_load_window->abstract_filetype == FT_SAVEGAME) save_load_window->GenerateFileName();
+			}
+		}
 	}
 
 public:
@@ -982,13 +999,8 @@ public:
 		if (this->fop != SLO_SAVE) return;
 
 		if (this->IsWidgetLowered(WID_SL_DELETE_SELECTION)) { // Delete button clicked
-			if (!FiosDelete(this->filename_editbox.text.GetText().c_str(), this->abstract_filetype)) {
-				ShowErrorMessage(GetEncodedString(STR_ERROR_UNABLE_TO_DELETE_FILE), {}, WL_ERROR);
-			} else {
-				this->InvalidateData(SLIWD_RESCAN_FILES);
-				/* Reset file name to current date on successful delete */
-				if (this->abstract_filetype == FT_SAVEGAME) GenerateFileName();
-			}
+			ShowQuery(GetEncodedString(STR_SAVELOAD_DELETE_TITLE), GetEncodedString(STR_SAVELOAD_DELETE_WARNING),
+					this, SaveLoadWindow::DeleteFileConfirmationCallback);
 		} else if (this->IsWidgetLowered(WID_SL_SAVE_GAME)) { // Save button clicked
 			if (this->abstract_filetype == FT_SAVEGAME || this->abstract_filetype == FT_SCENARIO) {
 				_file_to_saveload.name = FiosMakeSavegameName(this->filename_editbox.text.GetText().c_str());
@@ -1020,10 +1032,8 @@ public:
 							std::move(message),
 							this, SaveLoadWindow::SaveGameConfirmationCallback);
 					} else {
-						ShowQuery(
-							GetEncodedString(STR_SAVELOAD_OVERWRITE_TITLE),
-							GetEncodedString(STR_SAVELOAD_OVERWRITE_WARNING),
-							this, SaveLoadWindow::SaveGameConfirmationCallback);
+						ShowQuery(GetEncodedString(STR_SAVELOAD_OVERWRITE_TITLE), GetEncodedString(STR_SAVELOAD_OVERWRITE_WARNING),
+								this, SaveLoadWindow::SaveGameConfirmationCallback);
 					}
 				} else {
 					_switch_mode = SM_SAVE_GAME;
@@ -1039,10 +1049,8 @@ public:
 			} else {
 				_file_to_saveload.name = FiosMakeHeightmapName(this->filename_editbox.text.GetText().c_str());
 				if (_settings_client.gui.savegame_overwrite_confirm >= 1 && FioCheckFileExists(_file_to_saveload.name, Subdirectory::SAVE_DIR)) {
-					ShowQuery(
-						GetEncodedString(STR_SAVELOAD_OVERWRITE_TITLE),
-						GetEncodedString(STR_SAVELOAD_OVERWRITE_WARNING),
-						this, SaveLoadWindow::SaveHeightmapConfirmationCallback);
+					ShowQuery(GetEncodedString(STR_SAVELOAD_OVERWRITE_TITLE), GetEncodedString(STR_SAVELOAD_OVERWRITE_WARNING),
+							this, SaveLoadWindow::SaveHeightmapConfirmationCallback);
 				} else {
 					_switch_mode = SM_SAVE_HEIGHTMAP;
 				}
@@ -1116,6 +1124,8 @@ public:
 				/* Selection changes */
 				if (!gui_scope) break;
 
+				if (this->fop == SLO_SAVE) this->SetWidgetDisabledState(WID_SL_DELETE_SELECTION, this->selected == nullptr);
+
 				if (this->fop != SLO_LOAD) break;
 
 				switch (this->abstract_filetype) {
@@ -1153,6 +1163,11 @@ public:
 		if (wid == WID_SL_FILTER) {
 			this->string_filter.SetFilterTerm(this->filter_editbox.text.GetText());
 			this->InvalidateData(SLIWD_FILTER_CHANGES);
+		}
+
+		if (wid == WID_SL_SAVE_OSK_TITLE) {
+			this->selected = nullptr;
+			this->InvalidateData(SLIWD_SELECTION_CHANGES);
 		}
 	}
 };

@@ -432,6 +432,7 @@ struct GameOptionsWindow : Window {
 
 	GameSettings *opt = nullptr;
 	bool reload = false;
+	bool gui_scale_changed = false;
 	int gui_scale = 0;
 	static inline WidgetID active_tab = WID_GO_TAB_GENERAL;
 
@@ -442,7 +443,7 @@ struct GameOptionsWindow : Window {
 	};
 	QueryTextItem current_query_text_item = QueryTextItem::None;
 
-	GameOptionsWindow(WindowDesc &desc) : Window(desc), filter_editbox(50), gui_scale(_gui_scale)
+	GameOptionsWindow(WindowDesc &desc) : Window(desc), filter_editbox(50)
 	{
 		this->opt = &GetGameSettings();
 
@@ -475,6 +476,7 @@ struct GameOptionsWindow : Window {
 	void OnInit() override
 	{
 		_setting_circle_size = maxdim(GetSpriteSize(SPR_CIRCLE_FOLDED), GetSpriteSize(SPR_CIRCLE_UNFOLDED));
+		this->gui_scale = _gui_scale;
 	}
 
 	void Close([[maybe_unused]] int data = 0) override
@@ -1132,7 +1134,16 @@ struct GameOptionsWindow : Window {
 			}
 
 			case WID_GO_GUI_SCALE:
+				/* Any click on the slider deactivates automatic interface scaling, setting it to the current value before being adjusted. */
+				if (_gui_scale_cfg == -1) {
+					_gui_scale_cfg = this->gui_scale;
+					this->SetWidgetLoweredState(WID_GO_GUI_SCALE_AUTO, false);
+					this->SetWidgetDirty(WID_GO_GUI_SCALE_AUTO);
+					this->SetWidgetDirty(WID_GO_GUI_SCALE_AUTO_TEXT);
+				}
+
 				if (ClickSliderWidget(this->GetWidget<NWidgetBase>(widget)->GetCurrentRect(), pt, MIN_INTERFACE_SCALE, MAX_INTERFACE_SCALE, _ctrl_pressed ? 0 : SCALE_NMARKS, this->gui_scale)) {
+					this->gui_scale_changed = true;
 					this->SetWidgetDirty(widget);
 				}
 
@@ -1504,8 +1515,9 @@ struct GameOptionsWindow : Window {
 
 	void OnMouseLoop() override
 	{
-		if (_left_button_down || this->gui_scale == _gui_scale) return;
+		if (_left_button_down || !this->gui_scale_changed) return;
 
+		this->gui_scale_changed = false;
 		_gui_scale_cfg = this->gui_scale;
 
 		if (AdjustGUIZoom(AGZM_MANUAL)) {

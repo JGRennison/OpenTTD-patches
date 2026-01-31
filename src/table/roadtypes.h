@@ -84,7 +84,7 @@ static const RoadTypeInfo _original_roadtypes[] = {
 		ROADTYPE_LABEL_ROAD,
 
 		/* alternate labels */
-		RoadTypeLabelList(),
+		{},
 
 		/* map colour */
 		PC_BLACK,
@@ -171,7 +171,7 @@ static const RoadTypeInfo _original_roadtypes[] = {
 		ROADTYPE_LABEL_TRAM,
 
 		/* alternate labels */
-		RoadTypeLabelList(),
+		{},
 
 		/* map colour */
 		PC_BLACK,

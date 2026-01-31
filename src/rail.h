@@ -122,9 +122,6 @@ enum RailFenceOffset : uint8_t {
 	RFO_SLOPE_NW_SW,   //!< Slope NW,   Track Y,     Fence SW
 };
 
-/** List of rail type labels. */
-typedef std::vector<RailTypeLabel> RailTypeLabelList;
-
 /**
  * This struct contains all the info that is needed to draw and construct tracks.
  */
@@ -256,7 +253,7 @@ public:
 	/**
 	 * Rail type labels this type provides in addition to the main label.
 	 */
-	RailTypeLabelList alternate_labels;
+	std::vector<RailTypeLabel> alternate_labels;
 
 	/**
 	 * Colour on mini-map

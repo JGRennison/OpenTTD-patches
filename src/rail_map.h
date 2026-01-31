@@ -247,9 +247,9 @@ inline void SetTrackReservation(TileIndex t, TrackBits b)
 
 /**
  * Try to reserve a specific track on a tile
- * @pre IsPlainRailTile(t) && HasTrack(tile, t)
+ * @pre IsPlainRailTile(tile) && HasTrack(tile, t)
  * @param tile the tile
- * @param t the rack to reserve
+ * @param t the track to reserve
  * @return true if successful
  */
 inline bool TryReserveTrack(TileIndex tile, Track t)
@@ -266,7 +266,7 @@ inline bool TryReserveTrack(TileIndex tile, Track t)
 
 /**
  * Lift the reservation of a specific track on a tile
- * @pre IsPlainRailTile(t) && HasTrack(tile, t)
+ * @pre IsPlainRailTile(tile) && HasTrack(tile, t)
  * @param tile the tile
  * @param t the track to free
  */
