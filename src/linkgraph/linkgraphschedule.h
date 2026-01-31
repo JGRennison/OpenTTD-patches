@@ -83,7 +83,7 @@ public:
 	 * Remove a link graph from the execution queue.
 	 * @param lg Link graph to be removed.
 	 */
-	void Unqueue(LinkGraph *lg)
+	void Dequeue(LinkGraph *lg)
 	{
 		for (auto iter = this->schedule.begin(); iter != this->schedule.end();) {
 			if (*iter == lg) {

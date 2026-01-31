@@ -585,7 +585,7 @@ void EngineOverrideManager::ResetToDefaultMapping()
  * @param grf_local_id The local id in the newgrf
  * @param grfid The GrfID that defines the scope of grf_local_id.
  *              If a newgrf overrides the engines of another newgrf, the "scope grfid" is the ID of the overridden newgrf.
- *              If dynnamic_engines is disabled, all newgrf share the same ID scope identified by INVALID_GRFID.
+ *              If dynamic_engines is disabled, all newgrf share the same ID scope identified by INVALID_GRFID.
  * @return The engine ID if present, or EngineID::Invalid() if not.
  */
 EngineID EngineOverrideManager::GetID(VehicleType type, uint16_t grf_local_id, uint32_t grfid)

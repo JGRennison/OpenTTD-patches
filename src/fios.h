@@ -29,7 +29,7 @@ enum SaveLoadInvalidateWindowData : uint8_t {
 struct FiosItem {
 	FiosType type;
 	uint64_t mtime;
-	std::string title;
+	EncodedString title;
 	std::string name;
 	bool operator< (const FiosItem &other) const;
 };

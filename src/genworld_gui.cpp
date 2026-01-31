@@ -444,7 +444,7 @@ struct GenerateLandscapeWindow : public Window {
 	WidgetID widget_id{};
 	uint x = 0;
 	uint y = 0;
-	std::string name{};
+	EncodedString name{};
 	GenerateLandscapeWindowMode mode{};
 	bool mapsize_valid = false;
 
@@ -531,7 +531,7 @@ struct GenerateLandscapeWindow : public Window {
 				}
 				return GetString(_sea_lakes[_settings_newgame.difficulty.quantity_sea_lakes]);
 
-			case WID_GL_HEIGHTMAP_NAME_TEXT: return this->name;
+			case WID_GL_HEIGHTMAP_NAME_TEXT: return this->name.GetDecodedString();
 			case WID_GL_RIVER_PULLDOWN:      return GetString(_rivers[_settings_newgame.game_creation.amount_of_rivers]);
 			case WID_GL_SMOOTHNESS_PULLDOWN: return GetString(_smoothness[_settings_newgame.game_creation.tgen_smoothness]);
 			case WID_GL_VARIETY_PULLDOWN:    return GetString(_variety[_settings_newgame.game_creation.variety]);

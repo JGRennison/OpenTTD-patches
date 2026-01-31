@@ -983,7 +983,7 @@ typedef std::set<std::unique_ptr<CargoDataEntry>, CargoSorter> CargoDataSet;
 /**
  * A cargo data entry representing one possible row in the station view window's
  * top part. Cargo data entries form a tree where each entry can have several
- * children. Parents keep track of the sums of their childrens' cargo counts.
+ * children. Parents keep track of the sums of their children's cargo counts.
  */
 class CargoDataEntry {
 public:
@@ -2562,7 +2562,7 @@ struct SelectStationWindow : Window {
 		if (widget != WID_JS_PANEL) return;
 
 		/* Determine the widest string */
-		Dimension d = GetStringBoundingBox(T::IsWaypoint() ? STR_JOIN_WAYPOINT_CREATE_SPLITTED_WAYPOINT : STR_JOIN_STATION_CREATE_SPLITTED_STATION);
+		Dimension d = GetStringBoundingBox(T::IsWaypoint() ? STR_JOIN_WAYPOINT_CREATE_SPLIT_WAYPOINT : STR_JOIN_STATION_CREATE_SPLIT_STATION);
 		for (const auto &station : _stations_nearby_list) {
 			if (station == NEW_STATION) continue;
 			const BaseStation *st = BaseStation::Get(station);
@@ -2586,7 +2586,7 @@ struct SelectStationWindow : Window {
 		auto [first, last] = this->vscroll->GetVisibleRangeIterators(_stations_nearby_list);
 		for (auto it = first; it != last; ++it, tr.top += this->resize.step_height) {
 			if (*it == NEW_STATION) {
-				DrawString(tr, T::IsWaypoint() ? STR_JOIN_WAYPOINT_CREATE_SPLITTED_WAYPOINT : STR_JOIN_STATION_CREATE_SPLITTED_STATION);
+				DrawString(tr, T::IsWaypoint() ? STR_JOIN_WAYPOINT_CREATE_SPLIT_WAYPOINT : STR_JOIN_STATION_CREATE_SPLIT_STATION);
 			} else {
 				const BaseStation *st = BaseStation::Get(*it);
 				DrawString(tr, T::IsWaypoint()
@@ -2699,6 +2699,7 @@ void ShowSelectBaseStationIfNeeded(TileArea ta, StationPickerCmdProc&& proc)
 {
 	if (StationJoinerNeeded<T>(proc)) {
 		if (!_settings_client.gui.persistent_buildingtools) ResetObjectToPlace();
+		FindStationsNearby<T>(ta, false);
 		new SelectStationWindow<T>(_select_station_desc, ta, std::move(proc));
 	} else {
 		proc(false, StationID::Invalid());

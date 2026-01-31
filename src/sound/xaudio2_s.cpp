@@ -175,7 +175,7 @@ const char *SoundDriver_XAudio2::Start(const StringList &parm)
 		CoUninitialize();
 
 		Debug(driver, 0, "xaudio2_s: XAudio2Create failed ({:08x})", (uint)hr);
-		return "Failed to inititialise the XAudio2 engine";
+		return "Failed to initialise the XAudio2 engine";
 	}
 
 	/* Create a mastering voice */

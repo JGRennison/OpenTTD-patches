@@ -141,7 +141,7 @@ void LinkGraphSchedule::JoinNext()
 		next.reset();
 		if (LinkGraph::IsValidID(id)) {
 			LinkGraph *lg = LinkGraph::Get(id);
-			this->Unqueue(lg); // Unqueue to avoid double-queueing recycled IDs.
+			this->Dequeue(lg); // Dequeue to avoid double-queueing recycled IDs.
 			this->Queue(lg);
 		}
 	}

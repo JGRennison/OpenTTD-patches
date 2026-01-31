@@ -702,7 +702,7 @@ void AnimateTile_Industry(TileIndex tile)
 		if ((_scaled_tick_counter & 1) == 0) AnimateSugarSieve(tile);
 		break;
 
-	case GFX_TOFFEE_QUARY:
+	case GFX_TOFFEE_QUARRY:
 		if ((_scaled_tick_counter & 3) == 0) AnimateToffeeQuarry(tile);
 		break;
 
@@ -752,7 +752,7 @@ uint8_t GetAnimatedTileSpeed_Industry(TileIndex tile)
 	case GFX_SUGAR_MINE_SIEVE:
 		return 1;
 
-	case GFX_TOFFEE_QUARY:
+	case GFX_TOFFEE_QUARRY:
 		return 2;
 
 	case GFX_BUBBLE_CATCHER:
@@ -835,7 +835,7 @@ static void MakeIndustryTileBigger(TileIndex tile)
 
 	case GFX_TOY_FACTORY:
 	case GFX_BUBBLE_CATCHER:
-	case GFX_TOFFEE_QUARY:
+	case GFX_TOFFEE_QUARRY:
 		SetAnimationFrame(tile, 0);
 		SetIndustryAnimationLoop(tile, 0);
 		break;
@@ -979,7 +979,7 @@ static void TileLoop_Industry(TileIndex tile)
 		TileLoopIndustry_BubbleGenerator(tile);
 		break;
 
-	case GFX_TOFFEE_QUARY:
+	case GFX_TOFFEE_QUARRY:
 		AddAnimatedTile(tile);
 		break;
 

@@ -10,6 +10,7 @@
 #include "../../stdafx.h"
 #include "../../debug.h"
 #include "../../gfx_func.h"
+#include "../../strings_func.h"
 #include "../../textbuf_gui.h"
 #include "../../fileio_func.h"
 #include <windows.h>
@@ -37,6 +38,8 @@
 #include <atomic>
 #include <map>
 #include <mutex>
+
+#include "table/strings.h"
 
 #include "../../safeguards.h"
 
@@ -208,7 +211,7 @@ void FiosGetDrives(FileList &file_list)
 		fios->mtime = 0;
 		fios->name += (char)(s[0] & 0xFF);
 		fios->name += ':';
-		fios->title = fios->name;
+		fios->title = GetEncodedString(STR_JUST_RAW_STRING, fios->name);
 		while (*s++ != '\0') { /* Nothing */ }
 	}
 }

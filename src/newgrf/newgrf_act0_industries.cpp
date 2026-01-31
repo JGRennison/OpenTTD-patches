@@ -422,7 +422,7 @@ static ChangeInfoResult IndustriesChangeInfo(uint first, uint last, int prop, co
 
 						IndustryTileLayoutTile &it = layout.emplace_back();
 
-						it.ti.x = buf.ReadByte(); // Offsets from northermost tile
+						it.ti.x = buf.ReadByte(); // Offsets from northernmost tile
 						++bytes_read;
 
 						if (it.ti.x == 0xFE && k == 0) {

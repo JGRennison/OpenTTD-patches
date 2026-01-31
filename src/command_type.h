@@ -100,7 +100,7 @@ struct CommandLargeResultBase {
  */
 class CommandCost {
 	Money cost;                                 ///< The cost of this action
-	ExpensesType expense_type;                  ///< the type of expence as shown on the finances view
+	ExpensesType expense_type;                  ///< The type of expense as shown on the finances view
 	CommandCostIntlFlags flags;                 ///< Flags: see CommandCostIntlFlags
 	Owner owner = CompanyID::Invalid();         ///< Originator owner of error.
 	StringID message;                           ///< Warning message for when success is unset

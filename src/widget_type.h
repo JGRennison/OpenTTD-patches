@@ -447,7 +447,7 @@ inline void NWidgetCore::SetString(StringID string)
 
 /**
  * Set string and tool tip of the nested widget.
- * @param stringThe new string.
+ * @param string The new string.
  * @param tool_tip The new tool_tip.
  */
 inline void NWidgetCore::SetStringTip(StringID string, StringID tool_tip)
@@ -705,7 +705,7 @@ public:
 
 	void AdjustPaddingForZoom() override;
 	void SetPIP(uint8_t pip_pre, uint8_t pip_inter, uint8_t pip_post);
-	void SetPIPRatio(uint8_t pip_ratio_pre, uint8_t pip_ratio_inter, uint8_t pip_rato_post);
+	void SetPIPRatio(uint8_t pip_ratio_pre, uint8_t pip_ratio_inter, uint8_t pip_ratio_post);
 
 protected:
 	NWidContainerFlags flags{}; ///< Flags of the container.

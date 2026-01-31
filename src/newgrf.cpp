@@ -1631,7 +1631,7 @@ static void ActivateOldShore()
 }
 
 /**
- * Replocate the old tram depot sprites to the new position, if no new ones were loaded.
+ * Relocate the old tram depot sprites to the new position, if no new ones were loaded.
  */
 static void ActivateOldTramDepot()
 {
