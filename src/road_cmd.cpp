@@ -2597,14 +2597,7 @@ static void TileLoop_Road(TileIndex tile)
 {
 	switch (_settings_game.game_creation.landscape) {
 		case LandscapeType::Arctic: {
-			/* Flat or elevated foundation tiles should look the same as the tiles they visually connect to. */
-			int tile_z = GetTileZ(tile);
-			const auto snowline = GetSnowLine();
-			if (tile_z == snowline || tile_z + 1 == snowline) {
-				std::tie(std::ignore, tile_z) = GetFoundationSlope(tile);
-			}
-
-			if (IsOnSnowOrDesert(tile) != (tile_z > snowline)) {
+			if (IsOnSnowOrDesert(tile) != IsTileMaxZAbove(tile, GetSnowLine())) {
 				ToggleSnowOrDesert(tile);
 				MarkTileDirtyByTile(tile);
 			}
