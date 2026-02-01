@@ -2597,7 +2597,13 @@ static void TileLoop_Road(TileIndex tile)
 {
 	switch (_settings_game.game_creation.landscape) {
 		case LandscapeType::Arctic: {
-			if (IsOnSnowOrDesert(tile) != IsTileMaxZAbove(tile, GetSnowLine())) {
+			const int snowline = GetSnowLine();
+			int tile_z = TileHeight(tile);
+			if (tile_z - 1 <= snowline && tile_z + 1 > snowline) {
+				/* Possible tile heights is in range of snowline, calculate exact value: base height of road (with foundation applied). */
+				std::tie(std::ignore, tile_z) = GetFoundationSlope(tile);
+			}
+			if (IsOnSnowOrDesert(tile) != (tile_z > snowline)) {
 				ToggleSnowOrDesert(tile);
 				MarkTileDirtyByTile(tile);
 			}
