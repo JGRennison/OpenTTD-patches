@@ -420,7 +420,8 @@ static TileIndex FindTreePositionAtSameHeight(TileIndex tile, int height, uint s
 		if (!CanPlantTreesOnTile(cur_tile, true)) continue;
 
 		/* Not too much height difference */
-		if (Delta(GetTileZ(cur_tile), height) > 2) continue;
+		int th = TileHeight(cur_tile);
+		if ((th > height + 2 || th < height) && Delta(GetTileZ(cur_tile), height) > 2) continue;
 
 		/* We found a position */
 		return cur_tile;
@@ -1320,8 +1321,10 @@ static void TileLoop_Trees(TileIndex tile)
 
 							/* Don't spread temperate trees uphill if above lower snow line in arctic */
 							if (_settings_game.game_creation.landscape == LandscapeType::Arctic && IsInsideMM(tree_type, TREE_TEMPERATE, TREE_SUB_ARCTIC)) {
-								const int new_z = GetTileZ(tile);
-								if (new_z >= LowestTreePlacementSnowLine() && new_z > GetTileZ(old_tile)) return;
+								if (TileHeight(tile) >= LowestTreePlacementSnowLine()) {
+									const int new_z = GetTileZ(tile);
+									if (new_z >= LowestTreePlacementSnowLine() && new_z > GetTileZ(old_tile)) return;
+								}
 							}
 
 							/* Don't plant trees, if ground was freshly cleared */
