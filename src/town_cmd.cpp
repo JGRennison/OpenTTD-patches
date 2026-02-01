@@ -4440,7 +4440,7 @@ Town *CalcClosestTownFromTile(TileIndex tile, uint threshold)
 
 	TownID tid = _town_kdtree.FindNearest(TileX(tile), TileY(tile));
 	Town *town = Town::Get(tid);
-	if (DistanceManhattan(tile, town->xy) < threshold) return town;
+	if (threshold == UINT_MAX || DistanceManhattan(tile, town->xy) < threshold) return town;
 	return nullptr;
 }
 
@@ -4471,7 +4471,7 @@ Town *ClosestTownFromTile(TileIndex tile, uint threshold)
 				assert(Town::IsValidID(tid));
 				Town *town = Town::Get(tid);
 
-				if (DistanceManhattan(tile, town->xy) >= threshold) town = nullptr;
+				if (threshold != UINT_MAX && DistanceManhattan(tile, town->xy) >= threshold) town = nullptr;
 
 				return town;
 			}
