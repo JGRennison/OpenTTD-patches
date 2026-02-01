@@ -2953,8 +2953,11 @@ static void TileLoop_TunnelBridge(TileIndex tile)
 			/* As long as we do not have a snow density, we want to use the density
 			 * from the entry edge. For tunnels this is the lowest point for bridges the highest point.
 			 * (Independent of foundations) */
-			int z = IsBridge(tile) ? GetTileMaxZ(tile) : GetTileZ(tile);
-			snow_or_desert = (z > GetSnowLine());
+			if (IsBridge(tile)) {
+				snow_or_desert = IsTileMaxZAbove(tile, GetSnowLine());
+			} else {
+				snow_or_desert = IsTileZAbove(tile, GetSnowLine());
+			}
 			break;
 		}
 

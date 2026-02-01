@@ -384,13 +384,13 @@ uint32_t GetTerrainType(TileIndex tile, TileContext context)
 				case MP_INDUSTRY:
 				case MP_OBJECT:
 					/* These tiles usually have a levelling foundation. So use max Z */
-					has_snow = (GetTileMaxZ(tile) > GetSnowLine());
+					has_snow = IsTileMaxZAbove(tile, GetSnowLine());
 					break;
 
 				case MP_VOID:
 				case MP_WATER:
 				genworld:
-					has_snow = (GetTileZ(tile) > GetSnowLine());
+					has_snow = IsTileZAbove(tile, GetSnowLine());
 					break;
 
 				default: NOT_REACHED();

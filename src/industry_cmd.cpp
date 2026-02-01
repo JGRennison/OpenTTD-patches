@@ -1316,7 +1316,7 @@ static CommandCost CheckNewIndustry_NULL(TileIndex)
 static CommandCost CheckNewIndustry_Forest(TileIndex tile)
 {
 	if (_settings_game.game_creation.landscape == LandscapeType::Arctic) {
-		if (GetTileZ(tile) < HighestSnowLine() + 2) {
+		if (IsTileZBelow(tile, HighestSnowLine() + 2)) {
 			return CommandCost(STR_ERROR_FOREST_CAN_ONLY_BE_PLANTED);
 		}
 	}
@@ -1385,7 +1385,7 @@ static CommandCost CheckNewIndustry_OilRig(TileIndex tile)
 static CommandCost CheckNewIndustry_Farm(TileIndex tile)
 {
 	if (_settings_game.game_creation.landscape == LandscapeType::Arctic) {
-		if (GetTileZ(tile) + 2 >= HighestSnowLine()) {
+		if (IsTileZAbove(tile, HighestSnowLine() - 3)) {
 			return CommandCost(STR_ERROR_SITE_UNSUITABLE);
 		}
 	}

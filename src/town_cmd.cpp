@@ -3133,7 +3133,7 @@ static bool TryBuildTownHouse(Town *t, TileIndex tile, TownExpandModes modes)
 	/* no house allowed at all, bail out */
 	if (CanBuildHouseHere(tile, t->index, {}).Failed()) return false;
 
-	bool above_snowline = _settings_game.game_creation.landscape == LandscapeType::Arctic && GetTileMaxZ(tile) > HighestSnowLine();
+	bool above_snowline = _settings_game.game_creation.landscape == LandscapeType::Arctic && IsTileMaxZAbove(tile, HighestSnowLine());
 	HouseZone zone = GetTownRadiusGroup(t, tile);
 
 	/* bits 0-4 are used

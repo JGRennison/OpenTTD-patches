@@ -739,7 +739,7 @@ struct CmdPlantTreeHelper {
 					break;
 				}
 				if (_settings_game.game_creation.landscape == LandscapeType::Arctic && treetype < TREE_SUB_ARCTIC) {
-					if (GetTileZ(tile) >= LowestTreePlacementSnowLine()) {
+					if (!IsTileZBelow(tile, LowestTreePlacementSnowLine())) {
 						this->msg = STR_ERROR_TREE_WRONG_TERRAIN_FOR_TREE_TYPE;
 						break;
 					}
@@ -782,7 +782,7 @@ struct CmdPlantTreeHelper {
 						treetype = GetRandomTreeType(tile, GB(Random(), 24, 8));
 						if (treetype == TREE_INVALID) {
 							if (_settings_game.construction.trees_around_snow_line_enabled && _settings_game.game_creation.landscape == LandscapeType::Arctic) {
-								if (GetTileZ(tile) < LowestTreePlacementSnowLine()) {
+								if (IsTileZBelow(tile, LowestTreePlacementSnowLine())) {
 									treetype = (TreeType)(GB(Random(), 24, 8) * TREE_COUNT_TEMPERATE / 256 + TREE_TEMPERATE);
 								} else {
 									treetype = (TreeType)(GB(Random(), 24, 8) * TREE_COUNT_SUB_ARCTIC / 256 + TREE_SUB_ARCTIC);
