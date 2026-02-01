@@ -148,7 +148,7 @@ using WidgetLookup = btree::btree_map<WidgetID, class NWidgetBase *>;
  */
 class NWidgetBase {
 public:
-	NWidgetBase(WidgetType tp, WidgetID index = -1) : type(tp), index(index) {}
+	NWidgetBase(WidgetType tp, WidgetID index = INVALID_WIDGET) : type(tp), index(index) {}
 	virtual ~NWidgetBase() = default;
 
 	void ApplyAspectRatio();
@@ -270,7 +270,7 @@ public:
 	}
 
 protected:
-	const WidgetID index = -1; ///< Index of the nested widget (\c -1 means 'not used').
+	const WidgetID index = INVALID_WIDGET; ///< Index of the nested widget (\c INVALID_WIDGET means 'not used').
 
 	inline void StoreSizePosition(SizingType sizing, int x, int y, uint given_width, uint given_height);
 };
@@ -421,16 +421,16 @@ public:
 	void SetHighlighted(TextColour highlight_colour) override;
 	void FillDirtyWidgets(std::vector<NWidgetBase *> &dirty_widgets) override;
 
-	NWidgetDisplayFlags disp_flags; ///< Flags that affect display and interaction with the widget.
-	Colours colour;            ///< Colour of this widget.
+	NWidgetDisplayFlags disp_flags;            ///< Flags that affect display and interaction with the widget.
+	Colours colour;                            ///< Colour of this widget.
 protected:
-	WidgetData widget_data{};          ///< Data of the widget. @see Widget::data
-	StringID tool_tip{};               ///< Tooltip of the widget. @see Widget::tool_tips
-	WidgetID scrollbar_index = -1;     ///< Index of an attached scrollbar.
-	TextColour highlight_colour{};     ///< Colour of highlight.
-	TextColour text_colour{};          ///< Colour of text within widget.
-	FontSize text_size = FS_NORMAL;    ///< Size of text within widget.
-	StringAlignment align = SA_CENTER; ///< Alignment of text/image within widget.
+	WidgetData widget_data{};                  ///< Data of the widget. @see Widget::data
+	StringID tool_tip{};                       ///< Tooltip of the widget. @see Widget::tool_tips
+	WidgetID scrollbar_index = INVALID_WIDGET; ///< Index of an attached scrollbar.
+	TextColour highlight_colour{};             ///< Colour of highlight.
+	TextColour text_colour{};                  ///< Colour of text within widget.
+	FontSize text_size = FS_NORMAL;            ///< Size of text within widget.
+	StringAlignment align = SA_CENTER;         ///< Alignment of text/image within widget.
 
 	/* This function constructs the widgets, so it should be able to write the variables. */
 	friend void ApplyNWidgetPartAttribute(const struct NWidgetPart &nwid, NWidgetBase *dest);
@@ -619,7 +619,7 @@ inline bool NWidgetCore::IsDisabled() const
  */
 class NWidgetContainer : public NWidgetBase {
 public:
-	NWidgetContainer(WidgetType tp, WidgetID index = -1) : NWidgetBase(tp, index) {}
+	NWidgetContainer(WidgetType tp, WidgetID index = INVALID_WIDGET) : NWidgetBase(tp, index) {}
 
 	void AdjustPaddingForZoom() override;
 	void Add(std::unique_ptr<NWidgetBase> &&wid);
@@ -701,7 +701,7 @@ using NWidContainerFlags = EnumBitSet<NWidContainerFlag, uint8_t>;
 /** Container with pre/inter/post child space. */
 class NWidgetPIPContainer : public NWidgetContainer {
 public:
-	NWidgetPIPContainer(WidgetType tp, NWidContainerFlags flags = {}, WidgetID index = -1) : NWidgetContainer(tp, index), flags(flags) {}
+	NWidgetPIPContainer(WidgetType tp, NWidContainerFlags flags = {}, WidgetID index = INVALID_WIDGET) : NWidgetContainer(tp, index), flags(flags) {}
 
 	void AdjustPaddingForZoom() override;
 	void SetPIP(uint8_t pip_pre, uint8_t pip_inter, uint8_t pip_post);
@@ -729,7 +729,7 @@ protected:
  */
 class NWidgetHorizontal : public NWidgetPIPContainer {
 public:
-	NWidgetHorizontal(NWidContainerFlags flags = {}, WidgetID index = -1, WidgetType type = NWID_HORIZONTAL) : NWidgetPIPContainer(type, flags, index) {}
+	NWidgetHorizontal(NWidContainerFlags flags = {}, WidgetID index = INVALID_WIDGET, WidgetType type = NWID_HORIZONTAL) : NWidgetPIPContainer(type, flags, index) {}
 
 	void SetupSmallestSize(Window *w) override;
 	void AssignSizePosition(SizingType sizing, int x, int y, uint given_width, uint given_height, bool rtl) override;
@@ -741,7 +741,7 @@ public:
  */
 class NWidgetHorizontalLTR : public NWidgetHorizontal {
 public:
-	NWidgetHorizontalLTR(NWidContainerFlags flags = {}, WidgetID index = -1) : NWidgetHorizontal(flags, index, NWID_HORIZONTAL_LTR) {}
+	NWidgetHorizontalLTR(NWidContainerFlags flags = {}, WidgetID index = INVALID_WIDGET) : NWidgetHorizontal(flags, index, NWID_HORIZONTAL_LTR) {}
 
 	void AssignSizePosition(SizingType sizing, int x, int y, uint given_width, uint given_height, bool rtl) override;
 };
@@ -752,7 +752,7 @@ public:
  */
 class NWidgetVertical : public NWidgetPIPContainer {
 public:
-	NWidgetVertical(NWidContainerFlags flags = {}, WidgetID index = -1) : NWidgetPIPContainer(NWID_VERTICAL, flags, index) {}
+	NWidgetVertical(NWidContainerFlags flags = {}, WidgetID index = INVALID_WIDGET) : NWidgetPIPContainer(NWID_VERTICAL, flags, index) {}
 
 	void SetupSmallestSize(Window *w) override;
 	void AssignSizePosition(SizingType sizing, int x, int y, uint given_width, uint given_height, bool rtl) override;
@@ -1603,7 +1603,7 @@ constexpr NWidgetPart SetAspect(float ratio, AspectFlags flags = AspectFlag::Res
  *       Child widgets must have a index bigger than the parent index.
  * @ingroup NestedWidgetParts
  */
-constexpr NWidgetPart NWidget(WidgetType tp, Colours col, WidgetID idx = -1)
+constexpr NWidgetPart NWidget(WidgetType tp, Colours col, WidgetID idx = INVALID_WIDGET)
 {
 	return NWidgetPart{tp, NWidgetPartWidget{col, idx}};
 }
@@ -1614,7 +1614,7 @@ constexpr NWidgetPart NWidget(WidgetType tp, Colours col, WidgetID idx = -1)
  * @param cont_flags Flags for the containers (#NWID_HORIZONTAL and #NWID_VERTICAL).
  * @ingroup NestedWidgetParts
  */
-constexpr NWidgetPart NWidget(WidgetType tp, NWidContainerFlags cont_flags = {}, WidgetID idx = -1)
+constexpr NWidgetPart NWidget(WidgetType tp, NWidContainerFlags cont_flags = {}, WidgetID idx = INVALID_WIDGET)
 {
 	return NWidgetPart{tp, NWidgetPartContainer{cont_flags, idx}};
 }

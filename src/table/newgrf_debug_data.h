@@ -1981,7 +1981,7 @@ class NIHTown : public NIHelper {
 		}
 
 		output.Print("  Growth rate: {}, Growth Counter: {}, T to Rebuild: {}, Growing: {}, Custom growth: {}",
-				t->growth_rate, t->grow_counter, t->time_until_rebuild, HasBit(t->flags, TOWN_IS_GROWING) ? 1 : 0,HasBit(t->flags, TOWN_CUSTOM_GROWTH) ? 1 : 0);
+				t->growth_rate, t->grow_counter, t->time_until_rebuild, t->flags.Test(TownFlag::IsGrowing) ? 1 : 0, t->flags.Test(TownFlag::CustomGrowth) ? 1 : 0);
 
 		output.Print("  Road layout: {}", GetStringFmtParam(STR_CONFIG_SETTING_TOWN_LAYOUT_DEFAULT + t->layout));
 

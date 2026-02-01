@@ -3721,7 +3721,7 @@ bool AfterLoadGame()
 		/* Convert towns growth_rate and grow_counter to ticks */
 		for (Town *t : Town::Iterate()) {
 			/* 0x8000 = TOWN_GROWTH_RATE_CUSTOM previously */
-			if (t->growth_rate & 0x8000) SetBit(t->flags, TOWN_CUSTOM_GROWTH);
+			if (t->growth_rate & 0x8000) t->flags.Set(TownFlag::CustomGrowth);
 			if (t->growth_rate != TOWN_GROWTH_RATE_NONE) {
 				t->growth_rate = TownTicksToGameTicks(t->growth_rate & ~0x8000);
 			}
@@ -4238,8 +4238,8 @@ bool AfterLoadGame()
 
 	if (SlXvIsFeatureMissing(XSLFI_TOWN_MULTI_BUILDING)) {
 		for (Town *t : Town::Iterate()) {
-			t->church_count = HasBit(t->flags, 1) ? 1 : 0;
-			t->stadium_count = HasBit(t->flags, 2) ? 1 : 0;
+			t->church_count = HasBit(t->flags.base(), 1) ? 1 : 0;
+			t->stadium_count = HasBit(t->flags.base(), 2) ? 1 : 0;
 		}
 	}
 

@@ -671,7 +671,7 @@ public:
 			tr.top += GetCharacterHeight(FS_NORMAL);
 		}
 
-		if (HasBit(this->town->flags, TOWN_IS_GROWING)) {
+		if (this->town->flags.Test(TownFlag::IsGrowing)) {
 			DrawString(tr, GetString(this->town->fund_buildings_months == 0 ? STR_TOWN_VIEW_TOWN_GROWS_EVERY : STR_TOWN_VIEW_TOWN_GROWS_EVERY_FUNDED, RoundDivSU(this->town->growth_rate + 1, DAY_TICKS)));
 			tr.top += GetCharacterHeight(FS_NORMAL);
 		} else {
@@ -1040,7 +1040,7 @@ private:
 		/* Group: 0 = Growth Disabled, 1 = Not Growing, 2 = Growing */
 		auto GetGrowthGroup = [](const Town *t) -> int {
 			if (t->IsTownGrowthDisabledByOverride()) return 0;
-			return HasBit(t->flags, TOWN_IS_GROWING) ? 2 : 1;
+			return t->flags.Test(TownFlag::IsGrowing) ? 2 : 1;
 		};
 
 		int group_a = GetGrowthGroup(a);
@@ -1056,7 +1056,7 @@ private:
 	static StringID GetTownGrowthStatusString(const Town *t)
 	{
 		if (t->IsTownGrowthDisabledByOverride()) return STR_TOWN_GROWTH_STATUS_GROWTH_DISABLED;
-		return HasBit(t->flags, TOWN_IS_GROWING) ? STR_TOWN_GROWTH_STATUS_GROWING : STR_TOWN_GROWTH_STATUS_NOT_GROWING;
+		return t->flags.Test(TownFlag::IsGrowing) ? STR_TOWN_GROWTH_STATUS_GROWING : STR_TOWN_GROWTH_STATUS_NOT_GROWING;
 	}
 
 	bool IsInvalidSortCritera() const

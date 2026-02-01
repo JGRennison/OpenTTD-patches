@@ -17,6 +17,15 @@ enum BuildDockDepotWidgets : WidgetID {
 	WID_BDD_Y,          ///< Y-direction button.
 };
 
+/** Widgets of the #BuildDocksStationWindow window. */
+enum BuildDocksStationWidgets : WidgetID {
+	WID_BDSW_BACKGROUND, ///< Background panel.
+	WID_BDSW_LT_OFF,     ///< 'Off' button of coverage high light.
+	WID_BDSW_LT_ON,      ///< 'On' button of coverage high light.
+	WID_BDSW_INFO,       ///< 'Coverage highlight' label.
+	WID_BDSW_ACCEPTANCE, ///< Acceptance info.
+};
+
 /** Widgets of the #BuildDocksToolbarWindow class. */
 enum DockToolbarWidgets : WidgetID {
 	WID_DT_CANAL,          ///< Build canal button.
@@ -28,8 +37,6 @@ enum DockToolbarWidgets : WidgetID {
 	WID_DT_RIVER,          ///< Build river button (in scenario editor).
 	WID_DT_BUILD_AQUEDUCT, ///< Build aqueduct button.
 	WID_DT_RIVER_SEL,      ///< Build river button selector.
-
-	WID_DT_INVALID,        ///< Used to initialize a variable.
 };
 
 #endif /* WIDGETS_DOCK_WIDGET_H */

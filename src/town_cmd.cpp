@@ -726,7 +726,7 @@ static void TileLoop_Town(TileIndex tile)
 	Backup<CompanyID> cur_company(_current_company, OWNER_TOWN, FILE_LINE);
 
 	if (hs->building_flags.Any(BUILDING_HAS_1_TILE) &&
-			HasBit(t->flags, TOWN_IS_GROWING) &&
+			t->flags.Test(TownFlag::IsGrowing) &&
 			CanDeleteHouse(tile) &&
 			GetHouseAge(tile) >= hs->minimum_life &&
 			--t->time_until_rebuild == 0) {
@@ -964,7 +964,7 @@ static bool GrowTown(Town *t, TownExpandModes modes);
  */
 static void TownTickHandler(Town *t)
 {
-	if (HasBit(t->flags, TOWN_IS_GROWING)) {
+	if (t->flags.Test(TownFlag::IsGrowing)) {
 		TownExpandModes modes{TownExpandMode::Buildings};
 		if (t->GetAllowBuildRoads()) modes.Set(TownExpandMode::Roads);
 		int i = (int)t->grow_counter - 1;
@@ -2236,7 +2236,7 @@ static void DoCreateTown(Town *t, TileIndex tile, uint32_t townnameparts, TownSi
 	t->cache.num_houses = 0;
 	t->time_until_rebuild = 10;
 	UpdateTownRadius(t);
-	t->flags = 0;
+	t->flags.Reset();
 	t->cache.population = 0;
 	InitializeBuildingCounts(t);
 	/* Spread growth across ticks so even if there are many
@@ -3554,7 +3554,7 @@ CommandCost CmdTownGrowthRate(DoCommandFlags flags, TownID town_id, uint16_t gro
 	if (flags.Test(DoCommandFlag::Execute)) {
 		if (growth_rate == 0) {
 			/* Just clear the flag, UpdateTownGrowth will determine a proper growth rate */
-			ClrBit(t->flags, TOWN_CUSTOM_GROWTH);
+			t->flags.Reset(TownFlag::CustomGrowth);
 		} else {
 			uint old_rate = t->growth_rate;
 			if (t->grow_counter >= old_rate) {
@@ -3565,7 +3565,7 @@ CommandCost CmdTownGrowthRate(DoCommandFlags flags, TownID town_id, uint16_t gro
 				t->grow_counter = t->grow_counter * growth_rate / old_rate;
 			}
 			t->growth_rate = growth_rate;
-			SetBit(t->flags, TOWN_CUSTOM_GROWTH);
+			t->flags.Set(TownFlag::CustomGrowth);
 		}
 		UpdateTownGrowth(t);
 		InvalidateWindowData(WC_TOWN_VIEW, town_id);
@@ -4335,7 +4335,7 @@ static uint GetNormalGrowthRate(Town *t)
 		uint64_t non_cargo_dependant_part = ((uint64_t) inverse_m) * (100 - _settings_game.economy.town_growth_cargo_transported);
 		uint64_t total = (cargo_dependant_part + non_cargo_dependant_part);
 		if (total == 0) {
-			ClrBit(t->flags, TOWN_IS_GROWING);
+			t->flags.Reset(TownFlag::IsGrowing);
 			return UINT16_MAX;
 		}
 		m = ((uint64_t) UINT32_MAX * 100) / total;
@@ -4350,7 +4350,7 @@ static uint GetNormalGrowthRate(Town *t)
  */
 static void UpdateTownGrowthRate(Town *t)
 {
-	if (HasBit(t->flags, TOWN_CUSTOM_GROWTH)) return;
+	if (t->flags.Test(TownFlag::CustomGrowth)) return;
 	if (t->IsTownGrowthDisabledByOverride()) return;
 	uint old_rate = t->growth_rate;
 	t->growth_rate = GetNormalGrowthRate(t);
@@ -4368,11 +4368,11 @@ static void UpdateTownGrowth(Town *t)
 		SetWindowDirty(WC_TOWN_VIEW, t->index);
 	});
 
-	SetBit(t->flags, TOWN_IS_GROWING);
+	t->flags.Set(TownFlag::IsGrowing);
 	UpdateTownGrowthRate(t);
-	if (!HasBit(t->flags, TOWN_IS_GROWING)) return;
+	if (!t->flags.Test(TownFlag::IsGrowing)) return;
 
-	ClrBit(t->flags, TOWN_IS_GROWING);
+	t->flags.Reset(TownFlag::IsGrowing);
 
 	if (t->IsTownGrowthDisabledByOverride()) return;
 
@@ -4395,14 +4395,14 @@ static void UpdateTownGrowth(Town *t)
 		}
 	}
 
-	if (HasBit(t->flags, TOWN_CUSTOM_GROWTH)) {
-		if (t->growth_rate != TOWN_GROWTH_RATE_NONE) SetBit(t->flags, TOWN_IS_GROWING);
+	if (t->flags.Test(TownFlag::CustomGrowth)) {
+		if (t->growth_rate != TOWN_GROWTH_RATE_NONE) t->flags.Set(TownFlag::IsGrowing);
 		return;
 	}
 
 	if (t->fund_buildings_months == 0 && CountActiveStations(t) == 0 && !Chance16(1, 12)) return;
 
-	SetBit(t->flags, TOWN_IS_GROWING);
+	t->flags.Set(TownFlag::IsGrowing);
 }
 
 /**
@@ -4607,8 +4607,8 @@ CommandCost CheckforTownRating(DoCommandFlags flags, Town *t, TownRatingCheckTyp
 	}
 
 	/* minimum rating needed to be allowed to remove stuff */
-	static const int needed_rating[][TOWN_RATING_CHECK_TYPE_COUNT] = {
-		/*                  ROAD_REMOVE,                    TUNNELBRIDGE_REMOVE */
+	static const int needed_rating[][to_underlying(TownRatingCheckType::End)] = {
+		/*                   RoadRemove,                     TunnelBridgeRemove */
 		{    RATING_ROAD_NEEDED_LENIENT,    RATING_TUNNEL_BRIDGE_NEEDED_LENIENT}, // Lenient
 		{    RATING_ROAD_NEEDED_NEUTRAL,    RATING_TUNNEL_BRIDGE_NEEDED_NEUTRAL}, // Neutral
 		{    RATING_ROAD_NEEDED_HOSTILE,    RATING_TUNNEL_BRIDGE_NEEDED_HOSTILE}, // Hostile
@@ -4618,7 +4618,7 @@ CommandCost CheckforTownRating(DoCommandFlags flags, Town *t, TownRatingCheckTyp
 	 * owned by a town no removal if rating is lower than ... depends now on
 	 * difficulty setting. Minimum town rating selected by difficulty level
 	 */
-	int needed = needed_rating[_settings_game.difficulty.town_council_tolerance][type];
+	int needed = needed_rating[_settings_game.difficulty.town_council_tolerance][to_underlying(type)];
 
 	if (GetRating(t) < needed) {
 		return CommandCostWithParam(STR_ERROR_LOCAL_AUTHORITY_REFUSES_TO_ALLOW_THIS, t->index);

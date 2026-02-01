@@ -51,6 +51,16 @@ enum TownCouncilAttitudes {
 typedef Pool<Town, TownID, 64> TownPool;
 extern TownPool _town_pool;
 
+/** Flags controlling various town behaviours. */
+enum class TownFlag : uint8_t {
+	IsGrowing = 0, ///< Conditions for town growth are met. Grow according to Town::growth_rate.
+//	HasChurch = 1, ///< There can be only one church by town. Replaced by church_count.
+//	HasStadium = 2, ///< There can be only one stadium by town. Replaced by stadium_count.
+	CustomGrowth = 3, ///< Growth rate is controlled by GS.
+};
+
+using TownFlags = EnumBitSet<TownFlag, uint8_t>;
+
 /** Data structure with cached data of towns. */
 struct TownCache {
 	uint32_t num_houses = 0;                                          ///< Amount of houses
@@ -86,7 +96,7 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 	TinyString name{};                   ///< Custom town name. If empty, the town was not renamed and uses the generated name.
 	mutable std::string cached_name{};   ///< NOSAVE: Cache of the resolved name of the town, if not using a custom town name
 
-	uint8_t flags = 0;                   ///< See #TownFlags.
+	TownFlags flags{};                   ///< See #TownFlags.
 
 	uint8_t override_flags = 0;          ///< Bitmask of enabled flag overrides. See #TownSettingOverrideFlags.
 	uint8_t override_values = 0;         ///< Bitmask of flag override values. See #TownSettingOverrideFlags.
@@ -273,10 +283,10 @@ void RebuildTownKdtree();
  * Action types that a company must ask permission for to a town authority.
  * @see CheckforTownRating
  */
-enum TownRatingCheckType {
-	ROAD_REMOVE         = 0,      ///< Removal of a road owned by the town.
-	TUNNELBRIDGE_REMOVE = 1,      ///< Removal of a tunnel or bridge owned by the town.
-	TOWN_RATING_CHECK_TYPE_COUNT, ///< Number of town checking action types.
+enum class TownRatingCheckType : uint8_t {
+	RoadRemove, ///< Removal of a road owned by the town.
+	TunnelBridgeRemove, ///< Removal of a tunnel or bridge owned by the town.
+	End,
 };
 
 /** Special values for town list window for the data parameter of #InvalidateWindowData. */
@@ -285,20 +295,6 @@ enum TownDirectoryInvalidateWindowData {
 	TDIWD_POPULATION_CHANGE,
 	TDIWD_FORCE_RESORT,
 	TDIWD_SHOW_GROWTH_CHANGE,
-};
-
-/**
- * This enum is used in conjunction with town->flags.
- * IT simply states what bit is used for.
- * It is pretty unrealistic (IMHO) to only have one church/stadium
- * per town, NO MATTER the population of it.
- * And there are 5 more bits available on flags...
- */
-enum TownFlags {
-	TOWN_IS_GROWING     = 0,   ///< Conditions for town growth are met. Grow according to Town::growth_rate.
-//	TOWN_HAS_CHURCH     = 1,   ///< There can be only one church per town. Replaced by church_count.
-//	TOWN_HAS_STADIUM    = 2,   ///< There can be only one stadium per town. Replaced by stadium_count.
-	TOWN_CUSTOM_GROWTH  = 3,   ///< Growth rate is controlled by GS.
 };
 
 CommandCost CheckforTownRating(DoCommandFlags flags, Town *t, TownRatingCheckType type);
