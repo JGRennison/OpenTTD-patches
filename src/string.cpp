@@ -162,6 +162,7 @@ static bool IsSccEncodedCode(char32_t c)
 		case SCC_ENCODED_INTERNAL:
 		case SCC_ENCODED_NUMERIC:
 		case SCC_ENCODED_STRING:
+		case SCC_ENCODED_RAW_STRING:
 			return true;
 
 		default:
