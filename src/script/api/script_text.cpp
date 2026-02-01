@@ -20,13 +20,11 @@
 #include "../../core/string_consumer.hpp"
 #include "../../table/control_codes.h"
 
-#include "table/strings.h"
-
 #include "../../safeguards.h"
 
 EncodedString RawText::GetEncodedText()
 {
-	return ::GetEncodedString(STR_JUST_RAW_STRING, this->text);
+	return ::GetEncodedRawString(this->text);
 }
 
 ScriptText::ScriptText(HSQUIRRELVM vm)

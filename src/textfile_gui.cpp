@@ -542,7 +542,7 @@ void TextfileWindow::AfterLoadMarkdown()
 	const Hyperlink *link = this->GetHyperlink(pt);
 	if (link == nullptr) return false;
 
-	GuiShowTooltips(this, GetEncodedString(STR_JUST_RAW_STRING, link->destination), close_cond);
+	GuiShowTooltips(this, GetEncodedRawString(link->destination), close_cond);
 
 	return true;
 }

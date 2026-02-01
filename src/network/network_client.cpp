@@ -1087,7 +1087,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_MAP_DONE(Packet
 	if (!load_success) {
 		EncodedString detail;
 		if (!error_detail.empty()) {
-			detail = GetEncodedString(STR_JUST_RAW_STRING, error_detail);
+			detail = GetEncodedRawString(error_detail);
 		}
 		ShowErrorMessage(GetEncodedString(STR_NETWORK_ERROR_SAVEGAMEERROR), std::move(detail), WL_CRITICAL);
 		return NETWORK_RECV_STATUS_SAVEGAME;
