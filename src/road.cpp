@@ -426,6 +426,7 @@ static TileIndex DryRunBuildBridge(const TileIndex start_tile)
 {
 	const DiagDirection direction = ReverseDiagDir(GetInclinedSlopeDirection(GetTileSlope(start_tile)));
 
+	const auto [start_slope, start_z] = GetTileSlopeZ(start_tile);
 	TileIndex tile = start_tile + TileOffsByDiagDir(direction);
 	const bool is_over_water = IsValidTile(tile) && IsTileType(tile, MP_WATER) && IsSea(tile);
 	uint bridge_length = 0;
@@ -433,28 +434,25 @@ static TileIndex DryRunBuildBridge(const TileIndex start_tile)
 
 	TileIndex end_tile = INVALID_TILE;
 
-	// We are not building yet, so we still need to find the end_tile.
-	for (;
-		IsValidTile(tile) &&
-		(bridge_length <= bridge_length_limit) &&
-		(GetTileZ(start_tile) < (GetTileZ(tile) + _settings_game.construction.max_bridge_height)) &&
-		(GetTileZ(tile) <= GetTileZ(start_tile));
-		tile += TileOffsByDiagDir(direction), bridge_length++) {
+	/* We are not building yet, so we still need to find the end_tile. */
+	while (true) {
+		if (!IsValidTile(tile)) break;
+		if (bridge_length < bridge_length_limit) break;
+		const auto [tile_slope, tile_z] = GetTileSlopeZ(tile);
+		if (start_z >= (tile_z + _settings_game.construction.max_bridge_height)) break;
+		if (GetTileZ(tile) > start_z) break;
 
-		auto is_complementary_slope =
-			!IsSteepSlope(GetTileSlope(tile)) &&
-			!IsHalftileSlope(GetTileSlope(tile)) &&
-			GetTileSlope(start_tile) == ComplementSlope(GetTileSlope(tile));
-
-		// No super-short bridges and always ending up on a matching upwards slope.
-		if (!AreTilesAdjacent(start_tile, tile) && is_complementary_slope) {
+		/* No super-short bridges and always ending up on a matching upwards slope. */
+		if (!AreTilesAdjacent(start_tile, tile) && !IsSteepSlope(tile_slope) && !IsHalftileSlope(tile_slope) && start_slope == ComplementSlope(tile_slope)) {
 			end_tile = tile;
 			break;
 		}
+
+		tile += TileOffsByDiagDir(direction);
+		bridge_length++;
 	}
 
 	if (!IsValidTile(end_tile)) return INVALID_TILE;
-	if (GetTileSlope(start_tile) != ComplementSlope(GetTileSlope(end_tile))) return INVALID_TILE;
 	if (!IsTileType(end_tile, MP_CLEAR) && !IsTileType(end_tile, MP_TREES) && !IsCoastTile(end_tile)) return INVALID_TILE;
 
 	return BuildBridge(start_tile, end_tile, false);
@@ -466,28 +464,28 @@ static TileIndex BuildRiverBridge(PathNode *current, const DiagDirection road_di
 	const int start_tile_z = GetTileMaxZ(start_tile);
 
 	if (!build_bridge) {
-		// We are not building yet, so we still need to find the end_tile.
-		// We will only build a bridge if we need to cross a river, so first check for that.
+		/* We are not building yet, so we still need to find the end_tile.
+		 * We will only build a bridge if we need to cross a river, so first check for that. */
 		TileIndex tile = start_tile + TileOffsByDiagDir(road_direction);
 
 		if (!IsWaterTile(tile) || !IsRiver(tile)) return INVALID_TILE;
 
-		// Now let's see if we can bridge it. But don't bridge anything more than 4 river tiles. Cities aren't allowed to, so public roads we are not either.
-		// Only bridges starting at slopes should be longer ones. The others look like crap when built this way. Players can build them but the map generator
-		// should not force that on them. This is just to bridge rivers, not to make long bridges.
-		for (;
-			IsValidTile(tile) &&
-			(GetTunnelBridgeLength(start_tile, tile) <= std::min(_settings_game.construction.max_bridge_length, (uint16_t)3)) &&
-			(start_tile_z < (GetTileZ(tile) + _settings_game.construction.max_bridge_height)) &&
-			(GetTileZ(tile) <= start_tile_z);
-			tile += TileOffsByDiagDir(road_direction)) {
+		/* Now let's see if we can bridge it. But don't bridge anything more than 4 river tiles. Cities aren't allowed to, so public roads we are not either.
+		 * Only bridges starting at slopes should be longer ones. The others look like crap when built this way. Players can build them but the map generator
+		 * should not force that on them. This is just to bridge rivers, not to make long bridges. */
+		while (true) {
+			if (!IsValidTile(tile)) break;
+			if (GetTunnelBridgeLength(start_tile, tile) > std::min<uint16_t>(_settings_game.construction.max_bridge_length, 3)) break;
+			const int tile_z = GetTileZ(tile);
+			if (start_tile_z >= (tile_z + _settings_game.construction.max_bridge_height)) break;
+			if (tile_z > start_tile_z) break;
 
-			if ((IsTileType(tile, MP_CLEAR) || IsTileType(tile, MP_TREES) || IsCoastTile(tile)) &&
-					GetTileZ(tile) <= start_tile_z &&
-					IsSufficientlyFlatSlope(GetTileSlope(tile))) {
+			if ((IsTileType(tile, MP_CLEAR) || IsTileType(tile, MP_TREES) || IsCoastTile(tile)) && IsSufficientlyFlatSlope(GetTileSlope(tile))) {
 				end_tile = tile;
 				break;
 			}
+
+			tile += TileOffsByDiagDir(road_direction);
 		}
 
 		if (!IsValidTile(end_tile)) return INVALID_TILE;
