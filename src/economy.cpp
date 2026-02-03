@@ -1810,7 +1810,7 @@ static void HandleStationRefit(Vehicle *v, Vehicle *v_start, CargoArray &consist
 				 * of 0 for all cargoes. */
 				if (_returned_refit_capacity > 0 && (consist_capleft[cid] < consist_capleft[new_cid] ||
 						(consist_capleft[cid] == consist_capleft[new_cid] &&
-						st->goods[cid].data->cargo.AvailableCount() > st->goods[new_cid].CargoAvailableCount()))) {
+						st->goods[cid].CargoAvailableCount() > st->goods[new_cid].CargoAvailableCount()))) {
 					new_cid = cid;
 				}
 			}
