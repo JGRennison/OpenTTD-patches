@@ -378,7 +378,7 @@ public:
 	inline void PfFollowNode(Node &old_node)
 	{
 		const Train *v = Yapf().GetVehicle();
-		TrackFollower F(v);
+		TrackFollower follower(v);
 		if (old_node.flags_u.flags_s.reverse_pending && old_node.segment->end_segment_reason.Any({EndSegmentReason::SafeTile, EndSegmentReason::Depot, EndSegmentReason::DeadEnd})) {
 			Node *rev_node = &old_node;
 			uint length = 0;
@@ -387,8 +387,8 @@ public:
 				rev_node = rev_node->parent;
 			}
 			if (rev_node && length >= v->gcache.cached_total_length) {
-				if (F.Follow(rev_node->GetLastTile(), ReverseTrackdir(rev_node->GetLastTrackdir()))) {
-					Yapf().AddMultipleNodes(&old_node, F, [&](Node &n) {
+				if (follower.Follow(rev_node->GetLastTile(), ReverseTrackdir(rev_node->GetLastTrackdir()))) {
+					Yapf().AddMultipleNodes(&old_node, follower, [&](Node &n) {
 						n.flags_u.flags_s.reverse_pending = false;
 						n.flags_u.flags_s.teleport = true;
 					});
@@ -398,8 +398,8 @@ public:
 				return;
 			}
 		}
-		if (F.Follow(old_node.GetLastTile(), old_node.GetLastTrackdir())) {
-			Yapf().AddMultipleNodes(&old_node, F);
+		if (follower.Follow(old_node.GetLastTile(), old_node.GetLastTrackdir())) {
+			Yapf().AddMultipleNodes(&old_node, follower);
 		}
 	}
 
@@ -488,9 +488,9 @@ public:
 	 */
 	inline void PfFollowNode(Node &old_node)
 	{
-		TrackFollower F(Yapf().GetVehicle(), Yapf().GetCompatibleRailTypes());
-		if (F.Follow(old_node.GetLastTile(), old_node.GetLastTrackdir()) && F.MaskReservedTracks()) {
-			Yapf().AddMultipleNodes(&old_node, F);
+		TrackFollower follower{Yapf().GetVehicle(), Yapf().GetCompatibleRailTypes()};
+		if (follower.Follow(old_node.GetLastTile(), old_node.GetLastTrackdir()) && follower.MaskReservedTracks()) {
+			Yapf().AddMultipleNodes(&old_node, follower);
 		}
 	}
 
@@ -579,7 +579,7 @@ public:
 	inline void PfFollowNode(Node &old_node)
 	{
 		const Train *v = Yapf().GetVehicle();
-		TrackFollower F(v);
+		TrackFollower follower(v);
 		if (old_node.flags_u.flags_s.reverse_pending && old_node.segment->end_segment_reason.Any({EndSegmentReason::SafeTile, EndSegmentReason::Depot, EndSegmentReason::DeadEnd})) {
 			Node *rev_node = &old_node;
 			uint length = 0;
@@ -588,8 +588,8 @@ public:
 				rev_node = rev_node->parent;
 			}
 			if (rev_node != nullptr && length >= v->gcache.cached_total_length) {
-				if (F.Follow(rev_node->GetLastTile(), ReverseTrackdir(rev_node->GetLastTrackdir()))) {
-					Yapf().AddMultipleNodes(&old_node, F, [&](Node &n) {
+				if (follower.Follow(rev_node->GetLastTile(), ReverseTrackdir(rev_node->GetLastTrackdir()))) {
+					Yapf().AddMultipleNodes(&old_node, follower, [&](Node &n) {
 						n.flags_u.flags_s.reverse_pending = false;
 						n.flags_u.flags_s.teleport = true;
 					});
@@ -599,8 +599,8 @@ public:
 				return;
 			}
 		}
-		if (F.Follow(old_node.GetLastTile(), old_node.GetLastTrackdir())) {
-			Yapf().AddMultipleNodes(&old_node, F);
+		if (follower.Follow(old_node.GetLastTile(), old_node.GetLastTrackdir())) {
+			Yapf().AddMultipleNodes(&old_node, follower);
 		}
 	}
 

@@ -87,7 +87,7 @@ public:
 					if (i == WID_TT_LOADING || i == WIT_TT_TUNNELS) continue; // Do not draw button for invisible loading indicators.
 
 					const Rect wr = this->GetWidget<NWidgetBase>(i)->GetCurrentRect().Shrink(WidgetDimensions::scaled.fullbevel);
-					DrawFrameRect(wr.left, fr.top, wr.right, fr.bottom, COLOUR_PALE_GREEN,
+					DrawFrameRect(wr.WithY(fr), COLOUR_PALE_GREEN,
 							HasBit(_invisibility_opt, i - WID_TT_BEGIN) ? FrameFlag::Lowered : FrameFlags{});
 				}
 				break;
