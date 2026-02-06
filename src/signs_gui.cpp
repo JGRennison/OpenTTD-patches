@@ -408,6 +408,7 @@ struct SignWindow : Window, SignList {
 		this->name_editbox.caption = STR_EDIT_SIGN_CAPTION;
 		this->name_editbox.cancel_button = WID_QES_CANCEL;
 		this->name_editbox.ok_button = WID_QES_OK;
+		this->cur_sign = si->index;
 
 		this->InitNested(WN_QUERY_STRING_SIGN);
 
