@@ -3423,6 +3423,10 @@ static bool CheckForValidOrders(const Vehicle *v)
 			case OT_GOTO_WAYPOINT:
 				return true;
 
+			case OT_GOTO_DEPOT:
+				if ((order->GetDepotActionType() & ODATFB_NEAREST_DEPOT) == 0) return true;
+				break;
+
 			default:
 				break;
 		}
