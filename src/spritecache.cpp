@@ -937,15 +937,17 @@ void *UniquePtrSpriteAllocator::AllocatePtr(size_t size)
  * @param sprite ID of loaded sprite
  * @param requested requested sprite type
  * @param sc the currently known sprite cache for the requested sprite
+ * @param allocator Callback that provides the memory when loading sprites.
+ * @param encoder Sprite encoder to use. Set to nullptr to use the currently active blitter.
  * @return fallback sprite
  * @note this function will do UserError() in the case the fallback sprite isn't available
  */
-static void *HandleInvalidSpriteRequest(SpriteID sprite, SpriteType requested, SpriteCache *sc, SpriteAllocator *allocator)
+static void *HandleInvalidSpriteRequest(SpriteID sprite, SpriteType requested, SpriteCache *sc, SpriteAllocator *allocator, SpriteEncoder *encoder)
 {
 	SpriteType available = sc->GetType();
 	if (requested == SpriteType::Font && available == SpriteType::Normal) {
 		if (sc->GetPtr() == nullptr) sc->SetType(SpriteType::Font);
-		return GetRawSprite(sprite, sc->GetType(), LOW_ZOOM_ALL_BITS, allocator);
+		return GetRawSprite(sprite, sc->GetType(), LOW_ZOOM_ALL_BITS, allocator, encoder);
 	}
 
 	uint8_t warning_level = sc->GetWarned() ? 6 : 0;
@@ -957,10 +959,10 @@ static void *HandleInvalidSpriteRequest(SpriteID sprite, SpriteType requested, S
 			if (sprite == SPR_IMG_QUERY) UserError("Uhm, would you be so kind not to load a NewGRF that makes the 'query' sprite a non-normal sprite?");
 			[[fallthrough]];
 		case SpriteType::Font:
-			return GetRawSprite(SPR_IMG_QUERY, SpriteType::Normal, LOW_ZOOM_ALL_BITS, allocator);
+			return GetRawSprite(SPR_IMG_QUERY, SpriteType::Normal, LOW_ZOOM_ALL_BITS, allocator, encoder);
 		case SpriteType::Recolour:
 			if (sprite == PALETTE_TO_DARK_BLUE) UserError("Uhm, would you be so kind not to load a NewGRF that makes the 'PALETTE_TO_DARK_BLUE' sprite a non-remap sprite?");
-			return GetRawSprite(PALETTE_TO_DARK_BLUE, SpriteType::Recolour, LOW_ZOOM_ALL_BITS, allocator);
+			return GetRawSprite(PALETTE_TO_DARK_BLUE, SpriteType::Recolour, LOW_ZOOM_ALL_BITS, allocator, encoder);
 		case SpriteType::MapGen:
 			/* this shouldn't happen, overriding of SpriteType::MapGen sprites is checked in LoadNextSprite()
 			 * (the only case the check fails is when these sprites weren't even loaded...) */
@@ -992,7 +994,7 @@ void *GetRawSprite(SpriteID sprite, SpriteType type, LowZoomLevels zoom_levels, 
 
 	SpriteCache *sc = GetSpriteCache(sprite);
 
-	if (sc->GetType() != type) return HandleInvalidSpriteRequest(sprite, type, sc, allocator);
+	if (sc->GetType() != type) return HandleInvalidSpriteRequest(sprite, type, sc, allocator, encoder);
 
 	if (allocator == nullptr && encoder == nullptr) {
 		/* Load sprite into/from spritecache */
