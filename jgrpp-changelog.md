@@ -2,6 +2,21 @@
 
 * * *
 
+### v0.70.0 (2026-02-09)
+* Fix crash when attempting to grow towns with bridges which would lead off the map edge.
+* Fix crash which could occur when using hardware acceleration and certain incorrectly implemented NewGRFs.
+* Fix crash when editing a sign and the first created sign has been removed.
+* Fix newly created no-entry signals being in an incorrect state which incorrectly allowed trains to pass in some circumstances.
+* Fix articulated road vehicles not correctly handling immediately sequential u-turns in some cases.
+* Fix display of rail tiles with two different rail types with NewGRFs using oversized overlay sprites.
+* Fix counter condition dropdown text in orders window.
+* Add randomised placement of houses using saved house type collections in the picker window.
+* Show full and empty power/weight and TE/weight ratios in train details.
+* Timetables:
+  * Improve timetable warnings related to auto-separation.
+  * Disallow setting timetable wait times for non-train waypoint orders.
+* Bump trunk base from commit 821784004d5267c154de133b81cea4d45f801bf5 to commit 37f737417cda13011d3a4db5226f83637d22448f.
+
 ### v0.69.2 (2026-01-18)
 * Fix crash which could occur when merging/deleting companies or after a multiplayer desync.
 * Fix incorrect handling of the wallclock mode minutes per year setting.
