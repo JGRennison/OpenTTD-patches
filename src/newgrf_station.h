@@ -131,10 +131,11 @@ DECLARE_INCREMENT_DECREMENT_OPERATORS(StationClassID)
 /** Flags describing behaviour of NewGRF stations. */
 enum class StationSpecFlag : uint8_t {
 	SeparateGround = 0, ///< Use different sprite set for ground sprites.
-	DivByStationSize = 1, ///< Divide cargo amount by station size.
+	DivByStationSize = 1, ///< Divide cargo amount by station size (perimeter).
 	Cb141RandomBits = 2, ///< Callback 141 needs random bits.
 	CustomFoundations = 3, ///< Draw custom foundations.
 	ExtendedFoundations = 4, ///< Extended foundation block instead of simple.
+	DivByStationArea = 5, ///< Divide cargo amount by station area.
 };
 using StationSpecFlags = EnumBitSet<StationSpecFlag, uint8_t>;
 
