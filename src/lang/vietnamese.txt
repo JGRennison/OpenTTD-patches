@@ -923,7 +923,7 @@ STR_NEWS_AIRCRAFT_IS_WAITING                                    :{WHITE}{VEHICLE
 
 # Order review system / warnings
 STR_NEWS_VEHICLE_HAS_TOO_FEW_ORDERS                             :{WHITE}{VEHICLE} có quá ít lệnh trong lộ trình
-STR_NEWS_VEHICLE_HAS_VOID_ORDER                                 :{WHITE}{VEHICLE} chưa có lệnh
+STR_NEWS_VEHICLE_HAS_VOID_ORDER                                 :{WHITE}{VEHICLE} có lệnh không hợp lệ
 STR_NEWS_VEHICLE_HAS_DUPLICATE_ENTRY                            :{WHITE}{VEHICLE} có các lệnh trùng lặp
 STR_NEWS_VEHICLE_HAS_INVALID_ENTRY                              :{WHITE}{VEHICLE} có trạm bất hợp lệ trong lệnh
 STR_NEWS_PLANE_USES_TOO_SHORT_RUNWAY                            :{WHITE}{VEHICLE} có trong lộ trình một sân bay có đường băng quá ngắn
@@ -2858,20 +2858,38 @@ STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Giảm chiều 
 STR_PICKER_PREVIEW_EXPAND                                       :+
 STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Tăng chiều cao của ảnh xem trước. Ctrl+Click để tăng đến mức tối đa
 
+STR_PICKER_DEFAULT_COLLECTION                                   :Nhóm mặc định
+STR_PICKER_SELECT_COLLECTION_TOOLTIP                            :Chọn nhóm
+STR_PICKER_COLLECTION_ADD                                       :Thêm
+STR_PICKER_COLLECTION_ADD_TOOLTIP                               :Tạo nhóm mới
+STR_PICKER_COLLECTION_RENAME                                    :Thay tên
+STR_PICKER_COLLECTION_RENAME_TOOLTIP                            :Thay tên nhóm
+STR_PICKER_COLLECTION_DELETE                                    :Xóa
+STR_PICKER_COLLECTION_DELETE_TOOLTIP                            :Xóa nhóm
 
+STR_PICKER_COLLECTION_RENAME_QUERY                              :Thay tên nhóm này
+STR_PICKER_COLLECTION_DELETE_QUERY                              :Xóa nhóm
+STR_PICKER_COLLECTION_DELETE_QUERY_TEXT                         :{YELLOW}Bạn có chắc chắn muốn xóa nhóm này?
+STR_PICKER_COLLECTION_DELETE_QUERY_DISABLED_TEXT                :{YELLOW}Bạn có chắc chắn muốn xóa nhóm này? Nhóm có chứa các mục từ các NewGRFs bị vô hiệu hóa!
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Chọn loại ga bến cần hiển thị
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Chọn loại ga bến để xây. Ctrl+Click để thêm hoặc bớt vào danh sách lưu
+STR_PICKER_STATION_COLLECTION_TOOLTIP                           :Chọn một nhóm trạm tàu hỏa để hiển thị
 STR_PICKER_WAYPOINT_CLASS_TOOLTIP                               :Chọn loại điểm mốc cần hiển thị
 STR_PICKER_WAYPOINT_TYPE_TOOLTIP                                :Chọn loại điểm mốc để xây. Ctrl+Click để thêm hoặc xóa trong danh sách lưu
+STR_PICKER_WAYPOINT_COLLECTION_TOOLTIP                          :Chọn một nhóm điểm mốc để hiển thị
 STR_PICKER_ROADSTOP_BUS_CLASS_TOOLTIP                           :Chọn loại bến xe để hiển thị
 STR_PICKER_ROADSTOP_BUS_TYPE_TOOLTIP                            :Chọn loại bến xe khách để xây. Ctrl+Click để thêm hoặc bớt vào danh sách lưu
+STR_PICKER_ROADSTOP_BUS_COLLECTION_TOOLTIP                      :Chọn một nhóm trạm xe buýt để hiển thị
 STR_PICKER_ROADSTOP_TRUCK_CLASS_TOOLTIP                         :Chọn loại bến xe tải để hiển thị
 STR_PICKER_ROADSTOP_TRUCK_TYPE_TOOLTIP                          :Chọn loại bến xe tải để xây. Ctrl+Click để thêm hoặc bớt vào danh sách lưu
+STR_PICKER_ROADSTOP_TRUCK_COLLECTION_TOOLTIP                    :Chọn một nhóm xe tải để hiển thị
 STR_PICKER_OBJECT_CLASS_TOOLTIP                                 :Chọn loại đối tượng để hiển thị
 STR_PICKER_OBJECT_TYPE_TOOLTIP                                  :Chọn kiểu đối tượng để xây. Ctrl+Click để thêm hoặc bớt vào danh sách lưu. Ctrl+Click+Drag để chọn khu vực theo đường chéo. Bấm Shift để xem ước tính chi phí
+STR_PICKER_OBJECT_COLLECTION_TOOLTIP                            :Chọn một nhóm vật thể để hiển thị
 STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :Chọn vùng đô thị để xem
 STR_PICKER_HOUSE_TYPE_TOOLTIP                                   :Chọn kiểu nhà để xây. Ctrl+Click để thêm hoặc xóa trong danh sách lưu
+STR_PICKER_HOUSE_COLLECTION_TOOLTIP                             :Chọn một nhóm nhà cửa để hiển thị
 
 STR_HOUSE_PICKER_CAPTION                                        :Chọn Kiểu Nhà
 STR_HOUSE_PICKER_NAME                                           :{BLACK}Tên: {GOLD}{STRING}
@@ -4372,8 +4390,15 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}Bạn �
 
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Thông cáo từ nhà sản xuất phương tiện vận tải
+STR_ENGINE_PREVIEW_CAPTION_COUNT                                :{WHITE}Thông cáo từ nhà sản xuất phương tiện vận tải ({COMMA} của {COMMA})
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Chúng tôi vừa thiết kế một {STRING} mới - bạn có muốn mua nó trước khi chúng tôi hoàn thiện 1 năm, để chúng tôi đánh giá nó trước khi bán rộng rãi?
 
+STR_ENGINE_PREVIEW_PREVIOUS                                     :Trước
+STR_ENGINE_PREVIEW_PREVIOUS_TOOLTIP                             :Nháy chuột để trở lại phương tiện mới trước
+STR_ENGINE_PREVIEW_NEXT                                         :Tiếp
+STR_ENGINE_PREVIEW_NEXT_TOOLTIP                                 :Nháy chuột để đi đến phương tiện mới tiếp theo
+STR_ENGINE_PREVIEW_ENGINE_LIST                                  :{COMMA}: {ENGINE}
+STR_ENGINE_PREVIEW_ENGINE_LIST_TOOLTIP                          :Nháy chuột để xem một phương tiện mới
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :đầu máy tàu hoả
 STR_ENGINE_PREVIEW_ELRAIL_LOCOMOTIVE                            :ngành vận tải đường sắt điện lực
@@ -5080,6 +5105,7 @@ STR_ERROR_ALREADY_AT_SEA_LEVEL                                  :{WHITE}... ở 
 STR_ERROR_TOO_HIGH                                              :{WHITE}... quá cao
 STR_ERROR_ALREADY_LEVELLED                                      :{WHITE}... đã bình địa rồi
 STR_ERROR_BRIDGE_TOO_HIGH_AFTER_LOWER_LAND                      :{WHITE}Cây cầu phía trên nền đất sau khi san lấp sẽ quá cao.
+STR_ERROR_MUST_DEMOLISH_RIVER_FIRST                             :{WHITE}Phải phá dỡ sông trước
 
 # Company related errors
 STR_ERROR_CAN_T_CHANGE_COMPANY_NAME                             :{WHITE}Không thể đổi tên công ty...
