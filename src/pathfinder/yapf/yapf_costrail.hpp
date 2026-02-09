@@ -526,7 +526,7 @@ public:
 	{
 		dbg_assert(!n.flags_u.flags_s.target_seen);
 		dbg_assert(follower->new_tile == n.key.tile);
-		dbg_assert((HasTrackdir(tf->new_td_bits, n.key.td)));
+		dbg_assert((HasTrackdir(follower->new_td_bits, n.key.td)));
 
 		/* Does the node have some parent node? */
 		bool has_parent = (n.parent != nullptr);
@@ -744,7 +744,7 @@ no_entry_cost: // jump here at the beginning if the node has no parent (it is th
 			follower_local.Init(v, Yapf().GetCompatibleRailTypes());
 
 			if (!follower_local.Follow(cur.tile, cur.td)) {
-				dbg_assert(tf_local.err != TrackFollower::EC_NONE);
+				dbg_assert(follower_local.err != TrackFollower::EC_NONE);
 				/* Can't move to the next tile (EOL?). */
 				if (!end_segment_reason.Any({EndSegmentReason::RailType, EndSegmentReason::DeadEnd})) end_segment_reason.Set(EndSegmentReason::DeadEndEol);
 				if (follower_local.err == TrackFollower::EC_RAIL_ROAD_TYPE) {
