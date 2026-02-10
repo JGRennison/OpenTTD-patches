@@ -367,7 +367,7 @@ STR_TOOLTIP_GROUP_ORDER                                         :{BLACK}Elektu g
 STR_TOOLTIP_SORT_ORDER                                          :{BLACK}Elektu vicordo (deira/alira)
 STR_TOOLTIP_SORT_CRITERIA                                       :{BLACK}Elektu ordigaj kondiĉoj
 STR_TOOLTIP_FILTER_CRITERIA                                     :{BLACK}Selektu kriteriojn por filtrado
-STR_BUTTON_SORT_BY                                              :{BLACK}Ordigu laŭ
+STR_BUTTON_SORT_BY                                              :{BLACK}Ordigi laŭ
 STR_BUTTON_CATCHMENT                                            :{BLACK}Servata areo
 STR_TOOLTIP_CATCHMENT                                           :{BLACK}Ŝaltu montradon de servata areo
 
@@ -376,7 +376,7 @@ STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS                              :{BLACK}Fenestra
 STR_TOOLTIP_SHADE                                               :{BLACK}Minimumigi fenestron - montri nur la titolbreton
 STR_TOOLTIP_DEBUG                                               :{BLACK}Montru sencimigajn informojn por NewGRF-oj
 STR_TOOLTIP_DEFSIZE                                             :{BLACK}Aligrandigu la fenestron al la defaŭlta grandeco. Stir+Klaku por konservi la nunan grandecon kiel defaŭltan. Duoble Stir+Klaku por restarigi konservitan defaŭlton
-STR_TOOLTIP_STICKY                                              :{BLACK}Marku ke ne fermiĝu la fenestro per la 'ĉiujn fenestrojn fermu'-klavo. Konservu kiel defaŭlta stato per Ctrl-klavo + alklaki.
+STR_TOOLTIP_STICKY                                              :{BLACK}Marki, ke la fenestro ne fermiĝu per la klavo 'fermi ĉiujn fenestrojn'. Konservi kiel defaŭlta stato per Stir-klavo + alklako.
 STR_TOOLTIP_RESIZE                                              :{BLACK}Klaku kaj tiru por reformi la fenestron
 STR_TOOLTIP_TOGGLE_LARGE_SMALL_WINDOW                           :{BLACK}Ŝaltu inter granda kaj malgranda fenestro
 STR_TOOLTIP_VSCROLL_BAR_SCROLLS_LIST                            :{BLACK}Skrolbreto - skrolas la liston supren/malsupren
@@ -398,7 +398,7 @@ STR_SHOW_HIDDEN_ENGINES_VEHICLE_AIRCRAFT_TOOLTIP                :{BLACK}Post akt
 
 # Query window
 STR_BUTTON_DEFAULT                                              :{BLACK}Normo
-STR_BUTTON_CANCEL                                               :{BLACK}Nuligu
+STR_BUTTON_CANCEL                                               :{BLACK}Nuligi
 STR_BUTTON_OK                                                   :{BLACK}Bone
 STR_BUTTON_MOVE                                                 :{BLACK}Movi
 
@@ -474,7 +474,7 @@ STR_GOTO_ORDER_VIEW_TOOLTIP                                     :{BLACK}Malfermi
 STR_TOOLBAR_TOOLTIP_PAUSE_GAME                                  :{BLACK}Paŭzigu la ludon
 STR_TOOLBAR_TOOLTIP_FORWARD                                     :{BLACK}Rapide pluirigu la ludon
 STR_TOOLBAR_TOOLTIP_OPTIONS                                     :{BLACK}Agordoj
-STR_TOOLBAR_TOOLTIP_SAVE_GAME_ABANDON_GAME                      :{BLACK}Konservu, ŝarĝu, forigu ludon, eliru programon
+STR_TOOLBAR_TOOLTIP_SAVE_GAME_ABANDON_GAME                      :{BLACK}Konservi, ŝarĝi aŭ forigi ludon, eliri programon
 STR_TOOLBAR_TOOLTIP_DISPLAY_MAP                                 :{BLACK}Malfermi mapon, ekstran vidujon, fluon de ŝarĝoj aŭ liston de ŝildoj
 STR_TOOLBAR_TOOLTIP_DISPLAY_TOWN_DIRECTORY                      :{BLACK}Malfermi urboliston, aŭ fondi urbon
 STR_TOOLBAR_TOOLTIP_DISPLAY_SUBSIDIES                           :{BLACK}Malfermu liston de subvencioj
@@ -504,7 +504,7 @@ STR_TOOLBAR_TOOLTIP_LAND_BLOCK_INFORMATION                      :{BLACK}Malfermu
 STR_TOOLBAR_TOOLTIP_SWITCH_TOOLBAR                              :{BLACK}Ŝalti ilobretojn
 
 # Extra tooltips for the scenario editor toolbar
-STR_SCENEDIT_TOOLBAR_SAVE_SCENARIO_LOAD_SCENARIO_TOOLTIP        :{BLACK}Konservu scenaron, ŝarĝu scenaron, foriru el la kreilo, fermu
+STR_SCENEDIT_TOOLBAR_SAVE_SCENARIO_LOAD_SCENARIO_TOOLTIP        :{BLACK}Konservi scenaron, ŝarĝi scenaron, foriri el la kreilo, eliri
 STR_SCENEDIT_TOOLBAR_OPENTTD                                    :{YELLOW}OpenTTD
 STR_SCENEDIT_TOOLBAR_SCENARIO_EDITOR                            :{YELLOW}Scenarkreilon
 STR_SCENEDIT_TOOLBAR_MOVE_THE_STARTING_DATE_BACKWARD_TOOLTIP    :{BLACK}Movu la komencdaton 1 jaron posten
@@ -522,9 +522,9 @@ STR_SCENEDIT_TOOLBAR_PLACE_OBJECT_TOOLTIP                       :{BLACK}Metu obj
 
 # Scenario editor file menu
 ###length 7
-STR_SCENEDIT_FILE_MENU_SAVE_SCENARIO                            :Konservu scenaron
+STR_SCENEDIT_FILE_MENU_SAVE_SCENARIO                            :Konservi scenaron
 STR_SCENEDIT_FILE_MENU_LOAD_SCENARIO                            :Ŝarĝu scenaron
-STR_SCENEDIT_FILE_MENU_SAVE_HEIGHTMAP                           :Konservu altecmapon
+STR_SCENEDIT_FILE_MENU_SAVE_HEIGHTMAP                           :Konservi altecmapon
 STR_SCENEDIT_FILE_MENU_LOAD_HEIGHTMAP                           :Ŝarĝu altecmapon
 STR_SCENEDIT_FILE_MENU_QUIT_EDITOR                              :Forlasi scenarkreilon
 STR_SCENEDIT_FILE_MENU_SEPARATOR                                :
@@ -558,7 +558,7 @@ STR_SETTINGS_MENU_TRANSPARENT_SIGNS                             :Travideblaj ŝi
 
 # File menu
 STR_FILE_MENU_SAVE_GAME                                         :Konservu ludon
-STR_FILE_MENU_LOAD_GAME                                         :Enlegi ludon
+STR_FILE_MENU_LOAD_GAME                                         :Ŝargi ludon
 STR_FILE_MENU_QUIT_GAME                                         :Foriru de la ludo
 STR_FILE_MENU_EXIT                                              :Fermu
 
@@ -2331,7 +2331,7 @@ STR_INTRO_CAPTION                                               :{WHITE}OpenTTD
 STR_INTRO_VERSION                                               :OpenTTD {REV}
 
 STR_INTRO_NEW_GAME                                              :{BLACK}Nova ludo
-STR_INTRO_LOAD_GAME                                             :{BLACK}Ŝarĝu ludon
+STR_INTRO_LOAD_GAME                                             :{BLACK}Ŝarĝi ludon
 STR_INTRO_PLAY_SCENARIO                                         :{BLACK}Ludi scenaron
 STR_INTRO_PLAY_HEIGHTMAP                                        :{BLACK}Ludi altecmapon
 STR_INTRO_SCENARIO_EDITOR                                       :{BLACK}Scenarkreilo
@@ -2344,7 +2344,7 @@ STR_INTRO_ONLINE_CONTENT                                        :{BLACK}Ĉeretaj
 STR_INTRO_QUIT                                                  :{BLACK}Forlasi
 
 STR_INTRO_TOOLTIP_NEW_GAME                                      :{BLACK}Starti novan ludon. Stir-Klak por preterpasi mapan agordon.
-STR_INTRO_TOOLTIP_LOAD_GAME                                     :{BLACK}Ŝarĝu konservitan ludon
+STR_INTRO_TOOLTIP_LOAD_GAME                                     :{BLACK}Ŝarĝi konservitan ludon
 STR_INTRO_TOOLTIP_PLAY_HEIGHTMAP                                :{BLACK}Startu novan ludon, uzante altecmapon por landaspekto
 STR_INTRO_TOOLTIP_PLAY_SCENARIO                                 :{BLACK}Komencu novan ludon per propra scenaro
 STR_INTRO_TOOLTIP_SCENARIO_EDITOR                               :{BLACK}Kreu mem ludmondon/scenaron
@@ -3451,12 +3451,12 @@ STR_FRAMETIME_CAPTION_AI                                        :AI {NUM} {STRIN
 
 
 # Save/load game/scenario
-STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Konservu ludon
-STR_SAVELOAD_LOAD_CAPTION                                       :{WHITE}Ŝarĝu ludon
-STR_SAVELOAD_SAVE_SCENARIO                                      :{WHITE}Konservu scenaron
+STR_SAVELOAD_SAVE_CAPTION                                       :{WHITE}Konservi ludon
+STR_SAVELOAD_LOAD_CAPTION                                       :{WHITE}Ŝarĝi ludon
+STR_SAVELOAD_SAVE_SCENARIO                                      :{WHITE}Konservi scenaron
 STR_SAVELOAD_LOAD_SCENARIO                                      :{WHITE}Ŝarĝu scenaron
 STR_SAVELOAD_LOAD_HEIGHTMAP                                     :{WHITE}Ŝarĝu altecmapon
-STR_SAVELOAD_SAVE_HEIGHTMAP                                     :{WHITE}Konservu altecmapon
+STR_SAVELOAD_SAVE_HEIGHTMAP                                     :{WHITE}Konservi altecmapon
 STR_SAVELOAD_LOAD_TOWN_DATA                                     :{WHITE}Ŝarĝi urbodatumon
 STR_SAVELOAD_HOME_BUTTON_TOOLTIP                                :{BLACK}Klaku ĉi tie por salti al la nuna defaŭlta konserva dosierujo
 STR_SAVELOAD_BYTES_FREE                                         :{BLACK}{BYTES} libera{P "" j}
@@ -3464,8 +3464,8 @@ STR_SAVELOAD_LIST_TOOLTIP                                       :{BLACK}Listo da
 STR_SAVELOAD_EDITBOX_TOOLTIP                                    :{BLACK}Nune elektita nomo por luddosiero
 STR_SAVELOAD_DELETE_BUTTON                                      :{BLACK}Forviŝu
 STR_SAVELOAD_DELETE_TOOLTIP                                     :{BLACK}Forviŝu la nun elektitan luddosieron
-STR_SAVELOAD_SAVE_BUTTON                                        :{BLACK}Konservu
-STR_SAVELOAD_SAVE_TOOLTIP                                       :{BLACK}Konservu la nunan ludon per la elektita nomo
+STR_SAVELOAD_SAVE_BUTTON                                        :{BLACK}Konservi
+STR_SAVELOAD_SAVE_TOOLTIP                                       :{BLACK}Konservi la nunan ludon per la elektita nomo
 STR_SAVELOAD_LOAD_BUTTON                                        :{BLACK}Ŝarĝu
 STR_SAVELOAD_LOAD_TOOLTIP                                       :{BLACK}Ŝarĝu la elektan ludon
 STR_SAVELOAD_LOAD_HEIGHTMAP_TOOLTIP                             :{BLACK}Ŝarĝu la elektitan altecmapon
@@ -3629,8 +3629,8 @@ STR_NEWGRF_SETTINGS_INACTIVE_LIST                               :{WHITE}Malaktiv
 STR_NEWGRF_SETTINGS_SELECT_PRESET                               :{ORANGE}Elektu antaŭaro:
 STR_NEWGRF_FILTER_TITLE                                         :{ORANGE}Filtrilo:
 STR_NEWGRF_SETTINGS_PRESET_LIST_TOOLTIP                         :{BLACK}Ŝarĝu la elektan antaŭaron
-STR_NEWGRF_SETTINGS_PRESET_SAVE                                 :{BLACK}Konservu antaŭaron
-STR_NEWGRF_SETTINGS_PRESET_SAVE_TOOLTIP                         :{BLACK}Konservu la nunan liston kiel antaŭaro
+STR_NEWGRF_SETTINGS_PRESET_SAVE                                 :{BLACK}Konservi antaŭagordon
+STR_NEWGRF_SETTINGS_PRESET_SAVE_TOOLTIP                         :{BLACK}Konservi la nunan liston kiel antaŭagordo
 STR_NEWGRF_SETTINGS_PRESET_DELETE                               :{BLACK}Forviŝu antaŭaron
 STR_NEWGRF_SETTINGS_PRESET_DELETE_TOOLTIP                       :{BLACK}Forviŝu la kurente elektan antaŭaron
 STR_NEWGRF_SETTINGS_ADD                                         :{BLACK}Aldonu
@@ -3675,12 +3675,12 @@ STR_NEWGRF_SETTINGS_DISABLED                                    :{RED}Malaktiva
 STR_NEWGRF_SETTINGS_INCOMPATIBLE                                :{RED}Malkongrua ĉe ĉi tio versio de OpenTTD
 
 # NewGRF save preset window
-STR_SAVE_PRESET_CAPTION                                         :{WHITE}Konservu antaŭagordon
+STR_SAVE_PRESET_CAPTION                                         :{WHITE}Konservi antaŭagordon
 STR_SAVE_PRESET_LIST_TOOLTIP                                    :{BLACK}Listo de haveblaj antaŭagordoj, elektu unu por kopii ĝin al nomo de konservaĵo
 STR_SAVE_PRESET_TITLE                                           :{BLACK}Enigu nomon por la antaŭagordo
 STR_SAVE_PRESET_EDITBOX_TOOLTIP                                 :{BLACK}Nune elektita nomo por konservota antaŭagordo
-STR_SAVE_PRESET_SAVE                                            :{BLACK}Konservu
-STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}Konservu antaŭagordon per nune elektita nomo
+STR_SAVE_PRESET_SAVE                                            :{BLACK}Konservi
+STR_SAVE_PRESET_SAVE_TOOLTIP                                    :{BLACK}Konservi antaŭagordon per nune elektita nomo
 
 # NewGRF parameters window
 STR_BASEGRF_PARAMETERS_CAPTION                                  :{WHITE}Ŝanĝi parametrojn de baza grafikaro
@@ -3903,10 +3903,10 @@ STR_GOALS_CAPTION                                               :{WHITE}Celoj de
 STR_GOALS_SPECTATOR_CAPTION                                     :{WHITE}Tutmondaj celoj
 STR_GOALS_SPECTATOR                                             :Tutmondaj celoj
 STR_GOALS_GLOBAL_BUTTON                                         :{BLACK}Tutmonde
-STR_GOALS_GLOBAL_BUTTON_HELPTEXT                                :{BLACK}Montru tutmondajn celojn
+STR_GOALS_GLOBAL_BUTTON_HELPTEXT                                :{BLACK}Montri tutmondajn celojn
 STR_GOALS_COMPANY_BUTTON                                        :{BLACK}Kompanio
 STR_GOALS_COMPANY_BUTTON.n                                      :{BLACK}Kompanion
-STR_GOALS_COMPANY_BUTTON_HELPTEXT                               :{BLACK}Montru celojn de la kompanio
+STR_GOALS_COMPANY_BUTTON_HELPTEXT                               :{BLACK}Montri celojn de la kompanio
 STR_GOALS_TEXT                                                  :{ORANGE}{STRING}
 STR_GOALS_NONE                                                  :{ORANGE}- Nenia -
 STR_GOALS_PROGRESS                                              :{ORANGE}{STRING}
@@ -3926,19 +3926,19 @@ STR_GOAL_QUESTION_BUTTON_OK                                     :Bone
 STR_GOAL_QUESTION_BUTTON_NO                                     :Ne
 STR_GOAL_QUESTION_BUTTON_YES                                    :Jes
 STR_GOAL_QUESTION_BUTTON_DECLINE                                :Malakcepti
-STR_GOAL_QUESTION_BUTTON_ACCEPT                                 :Akceptu
-STR_GOAL_QUESTION_BUTTON_IGNORE                                 :Ignoru
-STR_GOAL_QUESTION_BUTTON_RETRY                                  :Reprovu
+STR_GOAL_QUESTION_BUTTON_ACCEPT                                 :Akcepti
+STR_GOAL_QUESTION_BUTTON_IGNORE                                 :Ignori
+STR_GOAL_QUESTION_BUTTON_RETRY                                  :Reprovi
 STR_GOAL_QUESTION_BUTTON_PREVIOUS                               :Antaŭa
 STR_GOAL_QUESTION_BUTTON_NEXT                                   :Sekva
 STR_GOAL_QUESTION_BUTTON_STOP                                   :Haltigi
 STR_GOAL_QUESTION_BUTTON_START                                  :Komenci
 STR_GOAL_QUESTION_BUTTON_GO                                     :Ek
-STR_GOAL_QUESTION_BUTTON_CONTINUE                               :Daŭrigu
+STR_GOAL_QUESTION_BUTTON_CONTINUE                               :Daŭrigi
 STR_GOAL_QUESTION_BUTTON_RESTART                                :Restartigu
 STR_GOAL_QUESTION_BUTTON_POSTPONE                               :Prokrasti
 STR_GOAL_QUESTION_BUTTON_SURRENDER                              :Rezigni
-STR_GOAL_QUESTION_BUTTON_CLOSE                                  :Fermu
+STR_GOAL_QUESTION_BUTTON_CLOSE                                  :Fermi
 
 # Subsidies window
 STR_SUBSIDIES_CAPTION                                           :{WHITE}Subvencioj
@@ -4069,7 +4069,7 @@ STR_FINANCES_CAPITAL_EXPENSES_TITLE                             :{WHITE}Kapitala
 
 ###length 13
 STR_FINANCES_SECTION_CONSTRUCTION                               :{GOLD}Konstruado
-STR_FINANCES_SECTION_NEW_VEHICLES                               :{GOLD}Novaj Veturiloj
+STR_FINANCES_SECTION_NEW_VEHICLES                               :{GOLD}Novaj veturiloj
 STR_FINANCES_SECTION_TRAIN_RUNNING_COSTS                        :{GOLD}Vagonaroj
 STR_FINANCES_SECTION_ROAD_VEHICLE_RUNNING_COSTS                 :{GOLD}Stratveturiloj
 STR_FINANCES_SECTION_AIRCRAFT_RUNNING_COSTS                     :{GOLD}Aviadiloj
@@ -4087,7 +4087,7 @@ STR_FINANCES_NEGATIVE_INCOME                                    :-{CURRENCY_LONG
 STR_FINANCES_ZERO_INCOME                                        :{CURRENCY_LONG}
 STR_FINANCES_POSITIVE_INCOME                                    :+{CURRENCY_LONG}
 STR_FINANCES_PROFIT                                             :{WHITE}Profito
-STR_FINANCES_BANK_BALANCE_TITLE                                 :{WHITE}Banka Balanco
+STR_FINANCES_BANK_BALANCE_TITLE                                 :{WHITE}Banka balanco
 STR_FINANCES_OWN_FUNDS_TITLE                                    :{WHITE}Propra kapitalo
 STR_FINANCES_LOAN_TITLE                                         :{WHITE}Prunto
 STR_FINANCES_INTEREST_RATE                                      :{WHITE}Interezo de prunto: {BLACK}{NUM}%
@@ -4430,7 +4430,7 @@ STR_DEPOT_AIRCRAFT_SELL_TOOLTIP                                 :{BLACK}DTiru av
 STR_DEPOT_SELL_ALL_BUTTON_TRAIN_TOOLTIP                         :{BLACK}Vendi ĉiujn vagonarojn en la garaĝo
 STR_DEPOT_SELL_ALL_BUTTON_ROAD_VEHICLE_TOOLTIP                  :{BLACK}Vendi ĉiujn stratveturilojn en la garaĝo
 STR_DEPOT_SELL_ALL_BUTTON_SHIP_TOOLTIP                          :{BLACK}Vendi ĉiujn ŝipojn en la garaĝo
-STR_DEPOT_SELL_ALL_BUTTON_AIRCRAFT_TOOLTIP                      :{BLACK}Vendu ĉiujn aviadilojn en la hangaro
+STR_DEPOT_SELL_ALL_BUTTON_AIRCRAFT_TOOLTIP                      :{BLACK}Vendi ĉiujn aviadilojn en la hangaro
 
 ###length VEHICLE_TYPES
 STR_DEPOT_AUTOREPLACE_TRAIN_TOOLTIP                             :{BLACK}Aŭtomate anstataŭi ĉiujn vagonarojn en la garaĝo
@@ -5335,7 +5335,7 @@ STR_ERROR_CAN_T_BUILD_SHIP_DEPOT                                :{WHITE}Ne povas
 
 STR_ERROR_CAN_T_RENAME_DEPOT                                    :{WHITE}Ne povas alinomi tenejon...
 
-STR_ERROR_TRAIN_MUST_BE_STOPPED_INSIDE_DEPOT                    :{WHITE}... estu haltita en tenejo
+STR_ERROR_TRAIN_MUST_BE_STOPPED_INSIDE_DEPOT                    :{WHITE}... devas esti haltigita en tenejo
 STR_ERROR_ROAD_VEHICLE_MUST_BE_STOPPED_INSIDE_DEPOT             :{WHITE}... devas esti halta en stratveturila garaĝo
 STR_ERROR_SHIP_MUST_BE_STOPPED_INSIDE_DEPOT                     :{WHITE}... devas halti en garaĝo
 STR_ERROR_AIRCRAFT_MUST_BE_STOPPED_INSIDE_HANGAR                :{WHITE}... devas esti haltigata en la hangaro
