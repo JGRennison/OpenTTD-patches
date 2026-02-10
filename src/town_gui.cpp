@@ -2304,8 +2304,13 @@ struct BuildHouseWindow : public PickerWindow {
 		if (house_types.ids.empty()) return;
 
 		if (end_tile == start_tile) {
-			const HouseSpec *spec = HouseSpec::Get(house_types.ids.at(RandomRange(static_cast<uint32_t>(house_types.ids.size()))));
-			this->PlaceSingleHouse(spec, start_tile);
+			HouseID house_type;
+			if (house_types.ids.size() > 1) {
+				house_type = house_types.ids.at(InteractiveRandomRange(static_cast<uint32_t>(house_types.ids.size())));
+			} else {
+				house_type = house_types.ids[0];
+			}
+			this->PlaceSingleHouse(HouseSpec::Get(house_type), start_tile);
 		} else {
 			Command<CMD_PLACE_HOUSE_AREA>::Post(STR_ERROR_CAN_T_BUILD_HOUSE, CommandCallback::PlaySound_CONSTRUCTION_OTHER,
 					end_tile, start_tile, house_types, BuildHouseWindow::house_protected, TownID::Invalid(), BuildHouseWindow::replace, _ctrl_pressed);
