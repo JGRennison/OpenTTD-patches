@@ -61,7 +61,7 @@ uint32_t GetTrackTypesRail(RailType railtype, const GRFFile *grffile)
 			case 0x42: return 0;
 			case 0x43: return CalTime::CurDate().base();
 			case 0x44: return to_underlying(HouseZone::TownEdge);
-			case 0x45: return 0xFFFF | GetTrackTypesRail(GetRailTypeInfoIndex(this->rti), this->ro.grffile);
+			case 0x45: return 0xFFFF | GetTrackTypesRail(this->rti->Index(), this->ro.grffile);
 			case A2VRI_RAILTYPE_SIGNAL_RESTRICTION_INFO: return 0;
 			case A2VRI_RAILTYPE_SIGNAL_CONTEXT: return GetNewSignalsSignalContext(this->signal_context);
 			case A2VRI_RAILTYPE_SIGNAL_SIDE: return GetNewSignalsSideVariable();
@@ -87,7 +87,7 @@ uint32_t GetTrackTypesRail(RailType railtype, const GRFFile *grffile)
 			return to_underlying(t != nullptr ? GetTownRadiusGroup(t, this->tile) : HouseZone::TownEdge);
 		}
 		case 0x45: {
-			uint32_t result = GetTrackTypesRail((this->rti != nullptr) ? GetRailTypeInfoIndex(this->rti) : GetTileRailType(this->tile), this->ro.grffile);
+			uint32_t result = GetTrackTypesRail((this->rti != nullptr) ? this->rti->Index() : GetTileRailType(this->tile), this->ro.grffile);
 			if (extra.mask & 0xFFFF) result |= GetTrackTypesRoad(this->tile, this->ro.grffile);
 			return result;
 		}

@@ -15,7 +15,6 @@
 #include "vehicle_gui_base.h"
 #include "strings_func.h"
 #include "vehicle_func.h"
-#include "spritecache.h"
 #include "zoom_func.h"
 #include "ship.h"
 #include "core/format.hpp"

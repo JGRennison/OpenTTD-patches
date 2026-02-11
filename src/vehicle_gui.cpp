@@ -35,7 +35,6 @@
 #include "dropdown_common_type.h"
 #include "timetable.h"
 #include "articulated_vehicles.h"
-#include "spritecache.h"
 #include "core/geometry_func.hpp"
 #include "core/container_func.hpp"
 #include "company_base.h"
