@@ -1664,6 +1664,8 @@ STR_VEHICLE_DETAILS_TRAIN_ENGINE_BUILT_AND_VALUE_AND_SPEED      :{LTBLUE}{ENGINE
 STR_VEHICLE_DETAILS_TRAIN_WAGON_VALUE_AND_SPEED                 :{LTBLUE}{ENGINE}{BLACK}   가격: {LTBLUE}{CURRENCY_LONG} {BLACK}최고 속도: {LTBLUE}{VELOCITY}
 STR_VEHICLE_DETAILS_TRAIN_TOTAL_WEIGHT                          :{BLACK}총 무게: {LTBLUE}{WEIGHT_SHORT} {BLACK}(빈차) - {LTBLUE}{WEIGHT_SHORT} {BLACK}(가득)
 STR_VEHICLE_DETAILS_TRAIN_MAX_SPEED                             :{BLACK}최대 속력: {LTBLUE}{VELOCITY} {BLACK}(빈차) - {LTBLUE}{VELOCITY} {BLACK}(가득)
+STR_VEHICLE_DETAILS_TRAIN_POWER_WEIGHT_RATIO                    :{BLACK}출력 / 무게: {LTBLUE}{POWER_WEIGHT_RATIO} {BLACK}(빈차) - {LTBLUE}{POWER_WEIGHT_RATIO} {BLACK}(가득)
+STR_VEHICLE_DETAILS_TRAIN_TE_WEIGHT_RATIO                       :{BLACK}최고 견인력 / 무게: {LTBLUE}{FORCE_WEIGHT_RATIO} {BLACK}(빈차) - {LTBLUE}{FORCE_WEIGHT_RATIO} {BLACK}(가득)
 
 STR_VEHICLE_DETAILS_EXTRA_ACTIONS_TOOLTIP                       :{BLACK}추가 차량 동작
 STR_VEHICLE_DETAILS_REMOVE_SPEED_RESTRICTION                    :속력 제한 제거
@@ -1898,6 +1900,7 @@ STR_TIMETABLE_ASSIGN_SCHEDULE_ID                                :일정 {NUM}
 STR_TIMETABLE_AUTOSEP_TIMETABLE_INCOMPLETE                      :{BLACK}시간표가 완성되지 않아 자동 배차 조절이 적용되고 있지 않습니다
 STR_TIMETABLE_AUTOSEP_OK                                        :{BLACK}자동 배차 조절이 적용되고 있습니다
 STR_TIMETABLE_AUTOSEP_SINGLE_VEH                                :{BLACK}이 시간표를 적용받는 차량이 1 대밖에 존재하지 않아 자동 배차 조절이 적용되고 있지 않습니다
+STR_TIMETABLE_AUTOSEP_NO_WAIT_TIME_SET                          :{BLACK}자동 배차 조절 실패: 대기 시간이 작성된 배차 기준 경로가 없습니다
 STR_TIMETABLE_WARNING_AUTOSEP_CONDITIONAL                       :{BLACK}자동 배차 조절 실패: 조건부 경로가 존재합니다
 STR_TIMETABLE_WARNING_AUTOSEP_MISSING_TIMINGS                   :{BLACK}자동 배차 조절 실패: 시간 값이 모두 지정되어 있지 않습니다
 STR_TIMETABLE_WARNING_AUTOSEP_WRONG_STOP_TYPE                   :{BLACK}자동 배차 조절을 사용하려면 모든 경로가 '직행'이어야 합니다
@@ -2386,6 +2389,9 @@ STR_ERROR_PROTECTED                                             :{WHITE}이 회�
 STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR                         :큰 메인 메뉴
 STR_GAME_OPTIONS_GUI_SCALE_MAIN_TOOLBAR_TOOLTIP                 :{BLACK}메인 메뉴의 크기를 키우려면 이 항목에 체크하세요
 
+STR_GAME_OPTIONS_GUI_TRADITIONAL_INTRO_MENU                     :기존 메인 메뉴 창 사용
+STR_GAME_OPTIONS_GUI_TRADITIONAL_INTRO_MENU_TOOLTIP             :{BLACK}기존 메인 메뉴 창을 사용하려면 이 항목에 체크하세요
+
 STR_CONFIG_SETTING_INTERFACE_TOOLTIPS                           :{ORANGE}도움말
 
 STR_CONFIG_SETTING_INSTANT_TILE_TOOLTIP                         :지도 칸에 대한 도움말을 오른쪽 클릭 없이 보기: {STRING}
@@ -2444,6 +2450,8 @@ STR_CONFIG_SETTING_RESTRICT_PATCH                               :원본 OpenTTD�
 
 STR_VIEWPORT_TOWN_COLOUR                                        :{1:COLOUR}{0:TOWN}
 STR_VIEWPORT_TOWN_COLOUR_POP                                    :{WHITE}{TOWN} {COLOUR}({COMMA})
+STR_VIEWPORT_TOWN_COLOUR_CITY_ICON                              :{1:COLOUR}{0:TOWN} {WHITE}{CITY_ICON}
+STR_VIEWPORT_TOWN_COLOUR_CITY_ICON_POP                          :{WHITE}{TOWN} {COLOUR}({COMMA}) {WHITE}{CITY_ICON}
 STR_VIEWPORT_TOWN_COLOUR_CITY                                   :{1:COLOUR}{0:TOWN} (대도시)
 STR_VIEWPORT_TOWN_COLOUR_CITY_POP                               :{WHITE}{TOWN} {COLOUR}(대도시, {COMMA})
 
@@ -2481,6 +2489,10 @@ STR_ORDERLIST_JSON_CONFIRM_OVERRIDE_QUERY_CAPTION               :{WHITE}경로 �
 STR_ORDER_UNKNOWN_ERROR                                         :[오류] 알 수 없는 오류
 STR_ORDER_PARSE_ERROR                                           :[오류] 이 오류는 파싱할 수 없습니다
 
+STR_CONFIG_SETTING_BETTER_TOWN_PLACEMENT                        :더 나은 도시 배치
+STR_CONFIG_SETTING_BETTER_TOWN_PLACEMENT_HELPTEXT               :도시를 배치할 때, 바다, 호수, 강, 계곡 근처 안에 도시를 주로 배치합니다.
+STR_CONFIG_SETTING_BETTER_TOWN_PLACEMENT_RADIUS                 :더 나은 도시 배치를 위한 탐색 반경: {STRING}
+
 STR_INTRO_NEWGRF_SETTINGS                                       :{BLACK}NewGRF 설정
 STR_INTRO_AI_SETTINGS                                           :{BLACK}인공지능 설정
 STR_INTRO_GAMESCRIPT_SETTINGS                                   :{BLACK}게임 스크립트 설정
@@ -2488,3 +2500,11 @@ STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}NewGRF �
 STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}인공지능 설정 창을 엽니다
 STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}게임 스크립트 설정 창을 엽니다
 STR_INTRO_CAPTION_TRADITIONAL                                   :{WHITE}OpenTTD {REV}
+
+STR_PICKER_RANDOM                                               :무작위
+STR_PICKER_STATION_RANDOM_TOOLTIP                               :선택한 모음집에서 무작위 역 배치
+STR_PICKER_WAYPOINT_RANDOM_TOOLTIP                              :선택한 모음집에서 무작위 경유지 배치
+STR_PICKER_ROADSTOP_BUS_RANDOM_TOOLTIP                          :선택한 모음집에서 무작위 버스 정류장 배치
+STR_PICKER_ROADSTOP_TRUCK_RANDOM_TOOLTIP                        :선택한 모음집에서 무작위 트럭 정류장 배치
+STR_PICKER_OBJECT_RANDOM_TOOLTIP                                :선택한 모음집에서 무작위 1x1 오브젝트 배치
+STR_PICKER_HOUSE_RANDOM_TOOLTIP                                 :선택한 모음집에서 무작위 1x1 주택 배치
