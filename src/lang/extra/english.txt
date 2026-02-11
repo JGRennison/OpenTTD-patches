@@ -383,6 +383,9 @@ STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :Enables use of 
 STR_CONFIG_SETTING_SORT_TRACK_TYPES_BY_SPEED                    :Sort rail types by speed: {STRING2}
 STR_CONFIG_SETTING_SORT_TRACK_TYPES_BY_SPEED_HELPTEXT           :Sorts rail types by compatibility and by speed instead of using the default sorting.
 
+STR_CONFIG_SETTING_SHOW_RAIL_ROAD_COST_DROPDOWN                 :Show rail/road type costs in menus: {STRING2}
+STR_CONFIG_SETTING_SHOW_RAIL_ROAD_COST_DROPDOWN_HELPTEXT        :Show per-tile rail and road type costs in construction menus.
+
 STR_CONFIG_SETTING_MAX_SIGNAL_EVALUATIONS                       :Maximum number of programmable pre-signal changes permitted at once: {STRING2}
 STR_CONFIG_SETTING_MAX_SIGNAL_EVALUATIONS_HELPTEXT              :Sets the maximum number of programmable pre-signal changes permitted at once
 

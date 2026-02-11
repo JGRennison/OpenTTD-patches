@@ -938,6 +938,7 @@ SettingsContainer &GetSettingsTree()
 			interface->Add(new SettingEntry("gui.toolbar_pos"));
 			interface->Add(new SettingEntry("gui.statusbar_pos"));
 			interface->Add(new SettingEntry("gui.prefer_teamchat"));
+			interface->Add(new SettingEntry("gui.show_rail_road_cost_dropdown"));
 			interface->Add(new SettingEntry("gui.sort_track_types_by_speed"));
 			interface->Add(new SettingEntry("gui.show_town_growth_status"));
 			interface->Add(new SettingEntry("gui.allow_hiding_waypoint_labels"));

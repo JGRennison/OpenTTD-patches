@@ -18,6 +18,7 @@
 #include "newgrf_badge_gui.h"
 #include "newgrf_badge_type.h"
 #include "settings_gui.h"
+#include "settings_type.h"
 #include "strings_func.h"
 #include "timer/timer_game_calendar.h"
 #include "window_gui.h"
@@ -289,6 +290,7 @@ using DropDownListBadgeIconItem = DropDownBadges<DropDownListConditionallyShowMo
 
 std::unique_ptr<DropDownListItem> MakeDropDownListBadgeItem(const std::shared_ptr<GUIBadgeClasses> &gui_classes, std::span<const BadgeID> badges, GrfSpecFeature feature, std::optional<CalTime::Date> introduction_date, bool show_cost, Money cost, std::string &&str, int value, bool masked, bool shaded)
 {
+	if (!_settings_client.gui.show_rail_road_cost_dropdown) show_cost = false;
 	std::string cost_str;
 	if (show_cost) cost_str = GetString(STR_JUST_CURRENCY_SHORT, cost);
 	return std::make_unique<DropDownListBadgeItem>(gui_classes, badges, feature, introduction_date, show_cost, std::move(cost_str), std::move(str), value, masked, shaded);
@@ -296,6 +298,7 @@ std::unique_ptr<DropDownListItem> MakeDropDownListBadgeItem(const std::shared_pt
 
 std::unique_ptr<DropDownListItem> MakeDropDownListBadgeIconItem(const std::shared_ptr<GUIBadgeClasses> &gui_classes, std::span<const BadgeID> badges, GrfSpecFeature feature, std::optional<CalTime::Date> introduction_date, bool show_cost, Money cost, const Dimension &dim, SpriteID sprite, PaletteID palette, std::string &&str, int value, bool masked, bool shaded)
 {
+	if (!_settings_client.gui.show_rail_road_cost_dropdown) show_cost = false;
 	std::string cost_str;
 	if (show_cost) cost_str = GetString(STR_JUST_CURRENCY_SHORT, cost);
 	return std::make_unique<DropDownListBadgeIconItem>(gui_classes, badges, feature, introduction_date, show_cost, std::move(cost_str), dim, sprite, palette, std::move(str), value, masked, shaded);
