@@ -3253,6 +3253,8 @@ STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Maks. L√
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Berik: {GOLD}{COMMA} flakken
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Fleant√∫ch type: {GOLD}{STRING}
 
+# Vehicle sort details
+
 ###length 3
 
 ###length VEHICLE_TYPES

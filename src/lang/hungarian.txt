@@ -4295,6 +4295,8 @@ STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Hatótá
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Típus: {GOLD}{STRING}
 STR_PURCHASE_INFO_RAILTYPES                                     :{BLACK}Sín típusok: {GOLD}{STRING}
 
+# Vehicle sort details
+
 ###length 3
 STR_CARGO_TYPE_FILTER_ALL                                       :Minden rakománytípus
 STR_CARGO_TYPE_FILTER_FREIGHT                                   :Tehervonat

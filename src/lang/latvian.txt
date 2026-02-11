@@ -4242,6 +4242,8 @@ STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Apgabas:
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Lidaparāta veids: {GOLD}{STRING}
 STR_PURCHASE_INFO_RAILTYPES                                     :{BLACK}Sliežu veidi: {GOLD}{STRING}
 
+# Vehicle sort details
+
 ###length 3
 STR_CARGO_TYPE_FILTER_ALL                                       :Visi kravu veidi
 STR_CARGO_TYPE_FILTER_FREIGHT                                   :Krava

@@ -4175,6 +4175,8 @@ STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Sforzo d
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Autonomia: {GOLD}{COMMA} casell{P a e}
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Tipo di aeromobile: {GOLD}{STRING}
 
+# Vehicle sort details
+
 ###length 3
 STR_CARGO_TYPE_FILTER_ALL                                       :Tutti i tipi di carico
 STR_CARGO_TYPE_FILTER_FREIGHT                                   :Merci

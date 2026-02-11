@@ -3493,6 +3493,8 @@ STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}กำ�
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}พิสัยทำการ: {GOLD}{COMMA} ช่อง
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}ชนิดของเครื่องบิน: {GOLD}{STRING}
 
+# Vehicle sort details
+
 ###length 3
 
 ###length VEHICLE_TYPES

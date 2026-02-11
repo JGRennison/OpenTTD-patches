@@ -4214,6 +4214,8 @@ STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Rayon d'
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Type d'aéronef{NBSP}: {GOLD}{STRING}
 STR_PURCHASE_INFO_RAILTYPES                                     :{BLACK}Types de rail{NBSP}: {GOLD}{STRING}
 
+# Vehicle sort details
+
 ###length 3
 STR_CARGO_TYPE_FILTER_ALL                                       :Tous les types de cargaison
 STR_CARGO_TYPE_FILTER_FREIGHT                                   :Fret

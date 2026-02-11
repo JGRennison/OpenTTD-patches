@@ -3774,6 +3774,8 @@ STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}כוח �
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}טווח: {GOLD}{COMMA} משבצות
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}סוג כלי טיס: {GOLD}{STRING}
 
+# Vehicle sort details
+
 ###length 3
 STR_CARGO_TYPE_FILTER_ALL                                       :כל סוגי המטען
 STR_CARGO_TYPE_FILTER_FREIGHT                                   :רכבת משא

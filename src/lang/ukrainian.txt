@@ -4346,6 +4346,8 @@ STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Даль
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Тип літака: {GOLD}{STRING}
 STR_PURCHASE_INFO_RAILTYPES                                     :{BLACK}Залізничні колії: {GOLD}{STRING}
 
+# Vehicle sort details
+
 ###length 3
 STR_CARGO_TYPE_FILTER_ALL                                       :Всі типи вантажів
 STR_CARGO_TYPE_FILTER_FREIGHT                                   :Вантаж

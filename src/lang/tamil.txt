@@ -3703,6 +3703,8 @@ STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}அத�
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}தூரம்: {GOLD}{COMMA} கட்டங்கள்
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}விமான வகை: {GOLD}{STRING}
 
+# Vehicle sort details
+
 ###length 3
 STR_CARGO_TYPE_FILTER_ALL                                       :அனைத்து சரக்கு வகைகள்
 STR_CARGO_TYPE_FILTER_FREIGHT                                   :சரக்கு

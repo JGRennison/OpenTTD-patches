@@ -3386,6 +3386,8 @@ STR_PURCHASE_INFO_ALL_BUT                                       :الكل الا
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}تأثير الجذب القصى: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}نوع الطائرة:{GOLD}{STRING}
 
+# Vehicle sort details
+
 ###length 3
 STR_CARGO_TYPE_FILTER_NONE                                      :لا شيء
 

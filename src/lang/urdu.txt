@@ -2461,6 +2461,8 @@ STR_PURCHASE_INFO_ALL_BUT                                       :{CARGO_LIST} ک
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}پہنچ: {GOLD}{COMMA} ٹائلیں
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}ہوائی جہاز کی قسم: {GOLD}{STRING}
 
+# Vehicle sort details
+
 ###length 3
 
 ###length VEHICLE_TYPES

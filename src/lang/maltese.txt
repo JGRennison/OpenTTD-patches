@@ -1151,6 +1151,8 @@ STR_FINANCES_POSITIVE_INCOME                                    :{BLACK}+{CURREN
 ###length VEHICLE_TYPES
 
 
+# Vehicle sort details
+
 ###length 3
 
 ###length VEHICLE_TYPES

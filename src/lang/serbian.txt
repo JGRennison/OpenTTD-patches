@@ -4204,6 +4204,8 @@ STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Najveća
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Domet: {GOLD}{COMMA} pločica
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Vrsta aviona: {GOLD}{STRING}
 
+# Vehicle sort details
+
 ###length 3
 STR_CARGO_TYPE_FILTER_ALL                                       :Sve vrste tereta
 STR_CARGO_TYPE_FILTER_FREIGHT                                   :Teret

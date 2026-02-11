@@ -1542,6 +1542,8 @@ STR_PURCHASE_INFO_COST                                          :{BLACK}कि�
 STR_PURCHASE_INFO_WEIGHT_CWEIGHT                                :{BLACK}वजन: {GOLD}{WEIGHT_SHORT} ({WEIGHT_SHORT})
 STR_PURCHASE_INFO_COST_SPEED                                    :{BLACK}किंमत: {GOLD}{CURRENCY_LONG}{BLACK} गती: {GOLD}{VELOCITY}
 
+# Vehicle sort details
+
 ###length 3
 
 ###length VEHICLE_TYPES

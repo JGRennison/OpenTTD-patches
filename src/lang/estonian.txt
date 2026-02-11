@@ -4111,6 +4111,8 @@ STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Suurim v
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Tegevusradius: {GOLD}{COMMA} ruutu
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Õhusõiduki liik: {GOLD}{STRING}
 
+# Vehicle sort details
+
 ###length 3
 STR_CARGO_TYPE_FILTER_ALL                                       :Kõik veoseliigid
 STR_CARGO_TYPE_FILTER_FREIGHT                                   :Kaubad

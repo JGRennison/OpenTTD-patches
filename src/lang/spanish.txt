@@ -4207,6 +4207,8 @@ STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Alcance:
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Tipo de aeronave: {GOLD}{STRING}
 STR_PURCHASE_INFO_RAILTYPES                                     :{BLACK}Tipo de ferrocarril: {GOLD}{STRING}
 
+# Vehicle sort details
+
 ###length 3
 STR_CARGO_TYPE_FILTER_ALL                                       :Todos las cargas
 STR_CARGO_TYPE_FILTER_FREIGHT                                   :Carga

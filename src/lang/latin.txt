@@ -3644,6 +3644,8 @@ STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Vis Trac
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Max. distantia volatus: {GOLD}{COMMA} tegulas
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Typus aeroplani: {GOLD}{STRING}
 
+# Vehicle sort details
+
 ###length 3
 
 ###length VEHICLE_TYPES

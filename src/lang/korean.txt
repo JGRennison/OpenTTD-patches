@@ -4232,6 +4232,8 @@ STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}항속�
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}항공기 종류: {GOLD}{STRING}
 STR_PURCHASE_INFO_RAILTYPES                                     :{BLACK}철도 종류: {GOLD}{STRING}
 
+# Vehicle sort details
+
 ###length 3
 STR_CARGO_TYPE_FILTER_ALL                                       :모든 화물
 STR_CARGO_TYPE_FILTER_FREIGHT                                   :화물

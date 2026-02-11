@@ -3675,6 +3675,8 @@ STR_PURCHASE_INFO_MAX_TE                                        :{BLACK} Najveć
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Domet: {GOLD}{COMMA} polja
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Vrsta zrakoplova: {GOLD}{STRING}
 
+# Vehicle sort details
+
 ###length 3
 
 ###length VEHICLE_TYPES

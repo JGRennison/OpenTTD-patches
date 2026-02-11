@@ -1712,6 +1712,8 @@ STR_BUY_VEHICLE_AIRCRAFT_CAPTION                                :Нов авио
 
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Опсег: {GOLD}{COMMA} плочки
 
+# Vehicle sort details
+
 ###length 3
 
 ###length VEHICLE_TYPES

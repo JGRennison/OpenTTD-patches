@@ -3497,6 +3497,8 @@ STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Maks. Tr
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Afstand: {GOLD}{COMMA} teëls
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Vliegtuig tipe: {GOLD}{STRING}
 
+# Vehicle sort details
+
 ###length 3
 
 ###length VEHICLE_TYPES

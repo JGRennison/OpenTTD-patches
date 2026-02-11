@@ -3663,6 +3663,8 @@ STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Spàirn 
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Astar: {GOLD}{COMMA} {P leac leac leacan leac}
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Seòrsa a' charbaid-adhair: {GOLD}{STRING}
 
+# Vehicle sort details
+
 ###length 3
 
 ###length VEHICLE_TYPES

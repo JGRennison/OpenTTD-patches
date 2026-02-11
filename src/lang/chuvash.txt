@@ -1403,6 +1403,8 @@ STR_INDUSTRY_DIRECTORY_NONE                                     :{ORANGE}- Ҫу�
 ###length VEHICLE_TYPES
 
 
+# Vehicle sort details
+
 ###length 3
 
 ###length VEHICLE_TYPES

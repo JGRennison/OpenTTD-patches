@@ -4176,6 +4176,8 @@ STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Máx. fu
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Alcance: {GOLD}{COMMA} casillas
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Tipo de aeronave: {GOLD}{STRING}
 
+# Vehicle sort details
+
 ###length 3
 STR_CARGO_TYPE_FILTER_ALL                                       :Todos los tipos
 STR_CARGO_TYPE_FILTER_FREIGHT                                   :Carga

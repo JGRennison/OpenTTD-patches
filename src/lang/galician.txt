@@ -4201,6 +4201,8 @@ STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Autonom√
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Tipo de aeronave: {GOLD}{STRING}
 STR_PURCHASE_INFO_RAILTYPES                                     :{BLACK}Tipos de ferrocarril: {GOLD}{STRING}
 
+# Vehicle sort details
+
 ###length 3
 STR_CARGO_TYPE_FILTER_ALL                                       :Todos os tipos de carga
 STR_CARGO_TYPE_FILTER_FREIGHT                                   :Carga

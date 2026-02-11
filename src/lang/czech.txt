@@ -4306,6 +4306,8 @@ STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Dosah: {
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Typ letadla: {GOLD}{STRING}
 STR_PURCHASE_INFO_RAILTYPES                                     :{BLACK}Druhy kolejí: {GOLD}{STRING}
 
+# Vehicle sort details
+
 ###length 3
 STR_CARGO_TYPE_FILTER_ALL                                       :Všechny druhy nákladu
 STR_CARGO_TYPE_FILTER_FREIGHT                                   :Náklad

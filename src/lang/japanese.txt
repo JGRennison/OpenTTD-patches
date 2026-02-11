@@ -3882,6 +3882,8 @@ STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}最大�
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}航続距離: {GOLD}{COMMA} タイル
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}航空機の機種: {GOLD}{STRING}
 
+# Vehicle sort details
+
 ###length 3
 STR_CARGO_TYPE_FILTER_ALL                                       :すべての積荷
 STR_CARGO_TYPE_FILTER_FREIGHT                                   :貨物

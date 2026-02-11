@@ -3041,6 +3041,8 @@ STR_PURCHASE_INFO_ALL_BUT                                       :Alt uttan {CARG
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Maks. Dráttar ómak: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Vídd: {GOLD}{COMMA} puntar
 
+# Vehicle sort details
+
 ###length 3
 
 ###length VEHICLE_TYPES

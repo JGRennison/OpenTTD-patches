@@ -4113,6 +4113,8 @@ STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Max. tra
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Dolet: {GOLD}{COMMA} políčok
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Typ lietadla: {GOLD}{STRING}
 
+# Vehicle sort details
+
 ###length 3
 STR_CARGO_TYPE_FILTER_ALL                                       :Všetky druhy nákladu
 STR_CARGO_TYPE_FILTER_FREIGHT                                   :Nákladné

@@ -3550,6 +3550,8 @@ STR_PURCHASE_INFO_ALL_BUT                                       :Vse, razen {CAR
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Največja vlečna moč: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Domet: {GOLD}{COMMA} polj
 
+# Vehicle sort details
+
 ###length 3
 
 ###length VEHICLE_TYPES

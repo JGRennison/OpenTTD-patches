@@ -4231,6 +4231,8 @@ STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Rækkevi
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Fly type: {GOLD}{STRING}
 STR_PURCHASE_INFO_RAILTYPES                                     :{BLACK}Skinnetyper: {GOLD}{STRING}
 
+# Vehicle sort details
+
 ###length 3
 STR_CARGO_TYPE_FILTER_ALL                                       :Alle fragttyper
 STR_CARGO_TYPE_FILTER_FREIGHT                                   :Fragt

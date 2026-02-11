@@ -4206,6 +4206,8 @@ STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Pellter 
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Math awyren: {GOLD}{STRING}
 STR_PURCHASE_INFO_RAILTYPES                                     :{BLACK}Mathau rheilffordd: {GOLD}{STRING}
 
+# Vehicle sort details
+
 ###length 3
 STR_CARGO_TYPE_FILTER_ALL                                       :Pob math o lwyth
 STR_CARGO_TYPE_FILTER_FREIGHT                                   :Llwythi

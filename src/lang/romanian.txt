@@ -4116,6 +4116,8 @@ STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Efort tr
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Rază acțiune: {GOLD}{COMMA} pătrățele
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Tip de aeronavă: {GOLD}{STRING}
 
+# Vehicle sort details
+
 ###length 3
 STR_CARGO_TYPE_FILTER_ALL                                       :Toate tipurile de marfă
 STR_CARGO_TYPE_FILTER_FREIGHT                                   :Marfă

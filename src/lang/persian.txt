@@ -3361,6 +3361,8 @@ STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}حداک
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}برد: {GOLD}{COMMA} قطعه
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}نوع هواپیما: {GOLD}{STRING}
 
+# Vehicle sort details
+
 ###length 3
 
 ###length VEHICLE_TYPES

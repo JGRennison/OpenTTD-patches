@@ -4214,6 +4214,8 @@ STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Abast: {
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Tipus d'aeronau: {GOLD}{STRING}
 STR_PURCHASE_INFO_RAILTYPES                                     :{BLACK}Tipus de rail: {GOLD}{STRING}
 
+# Vehicle sort details
+
 ###length 3
 STR_CARGO_TYPE_FILTER_ALL                                       :Tots els tipus de càrrega
 STR_CARGO_TYPE_FILTER_FREIGHT                                   :Càrrega

@@ -4231,6 +4231,8 @@ STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}範圍�
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}飛機類型：{GOLD}{STRING}
 STR_PURCHASE_INFO_RAILTYPES                                     :{BLACK}軌道類型：{GOLD}{STRING}
 
+# Vehicle sort details
+
 ###length 3
 STR_CARGO_TYPE_FILTER_ALL                                       :所有貨物種類
 STR_CARGO_TYPE_FILTER_FREIGHT                                   :貨運

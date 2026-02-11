@@ -3100,6 +3100,8 @@ STR_PURCHASE_INFO_ALL_BUT                                       :Semua kecuali {
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Usaha Penarikan Maks.: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Jarak: {GOLD}{COMMA} petak
 
+# Vehicle sort details
+
 ###length 3
 
 ###length VEHICLE_TYPES

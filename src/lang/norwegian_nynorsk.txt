@@ -3332,6 +3332,8 @@ STR_PURCHASE_INFO_ALL_BUT                                       :Alt utanom {CAR
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Maks. trekkraft: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Rekkevidde: {GOLD}{COMMA} ruter
 
+# Vehicle sort details
+
 ###length 3
 
 ###length VEHICLE_TYPES

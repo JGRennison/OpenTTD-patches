@@ -1277,6 +1277,8 @@ STR_GROUP_DEFAULT_AIRCRAFTS                                     :Negrupigita aer
 ###length VEHICLE_TYPES
 
 
+# Vehicle sort details
+
 ###length 3
 
 ###length VEHICLE_TYPES

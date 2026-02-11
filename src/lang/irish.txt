@@ -3741,6 +3741,8 @@ STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Iarracht
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Raon: {GOLD}{COMMA} tíl
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Cineál aerárthaigh: {GOLD}{STRING}
 
+# Vehicle sort details
+
 ###length 3
 
 ###length VEHICLE_TYPES
