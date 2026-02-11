@@ -1457,7 +1457,7 @@ static CallBackFunction ToolbarScenGenIndustry(Window *w)
 
 static CallBackFunction ToolbarScenBuildRoadClick(Window *w)
 {
-	ShowDropDownList(w, GetScenRoadTypeDropDownList(RTTB_ROAD), _last_built_roadtype, WID_TE_ROADS, 140, ToolbarDropdownMode());
+	ShowDropDownList(w, GetScenRoadTypeDropDownList(RTTB_ROAD, true), _last_built_roadtype, WID_TE_ROADS, 140, ToolbarDropdownMode());
 	return CBF_NONE;
 }
 
@@ -1476,7 +1476,7 @@ static CallBackFunction ToolbarScenBuildRoad(int index)
 
 static CallBackFunction ToolbarScenBuildTramClick(Window *w)
 {
-	ShowDropDownList(w, GetScenRoadTypeDropDownList(RTTB_TRAM), _last_built_tramtype, WID_TE_TRAMS, 140, ToolbarDropdownMode());
+	ShowDropDownList(w, GetScenRoadTypeDropDownList(RTTB_TRAM, true), _last_built_tramtype, WID_TE_TRAMS, 140, ToolbarDropdownMode());
 	return CBF_NONE;
 }
 

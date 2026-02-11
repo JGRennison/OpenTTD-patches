@@ -248,17 +248,57 @@ private:
 
 };
 
-using DropDownListBadgeItem = DropDownBadges<DropDownString<DropDownSpacer<DropDownListStringItem, true>, FS_SMALL, true>>;
-using DropDownListBadgeIconItem = DropDownBadges<DropDownString<DropDownSpacer<DropDownListIconItem, true>, FS_SMALL, true>>;
+template <class TBase, class TNoMoney>
+class DropDownConditionallyShowMoney : public TBase {
+	bool show_money;
 
-std::unique_ptr<DropDownListItem> MakeDropDownListBadgeItem(const std::shared_ptr<GUIBadgeClasses> &gui_classes, std::span<const BadgeID> badges, GrfSpecFeature feature, std::optional<CalTime::Date> introduction_date, Money cost, std::string &&str, int value, bool masked, bool shaded)
+public:
+	template <typename... Args>
+	explicit DropDownConditionallyShowMoney(bool show_money, Args&&... args) : TBase(std::forward<Args>(args)...), show_money(show_money) {}
+
+	uint Width() const override
+	{
+		return this->show_money ? this->TBase::Width() : this->TNoMoney::Width();
+	}
+
+	uint Height() const override
+	{
+		return this->show_money ? this->TBase::Height() : this->TNoMoney::Height();
+	}
+
+	int OnClick(const Rect &r, const Point &pt) const override
+	{
+		return this->show_money ? this->TBase::OnClick(r, pt) : this->TNoMoney::OnClick(r, pt);
+	}
+
+	void Draw(const Rect &full, const Rect &r, bool sel, int click_result, Colours bg_colour) const override
+	{
+		if (this->show_money) {
+			this->TBase::Draw(full, r, sel, click_result, bg_colour);
+		} else {
+			this->TNoMoney::Draw(full, r, sel, click_result, bg_colour);
+		}
+	}
+};
+
+template <typename T>
+using DropDownListConditionallyShowMoney = DropDownConditionallyShowMoney<DropDownString<DropDownSpacer<T, true>, FS_SMALL, true>, T>;
+
+using DropDownListBadgeItem = DropDownBadges<DropDownListConditionallyShowMoney<DropDownListStringItem>>;
+using DropDownListBadgeIconItem = DropDownBadges<DropDownListConditionallyShowMoney<DropDownListIconItem>>;
+
+std::unique_ptr<DropDownListItem> MakeDropDownListBadgeItem(const std::shared_ptr<GUIBadgeClasses> &gui_classes, std::span<const BadgeID> badges, GrfSpecFeature feature, std::optional<CalTime::Date> introduction_date, bool show_cost, Money cost, std::string &&str, int value, bool masked, bool shaded)
 {
-	return std::make_unique<DropDownListBadgeItem>(gui_classes, badges, feature, introduction_date, GetString(STR_JUST_CURRENCY_SHORT, cost), std::move(str), value, masked, shaded);
+	std::string cost_str;
+	if (show_cost) cost_str = GetString(STR_JUST_CURRENCY_SHORT, cost);
+	return std::make_unique<DropDownListBadgeItem>(gui_classes, badges, feature, introduction_date, show_cost, std::move(cost_str), std::move(str), value, masked, shaded);
 }
 
-std::unique_ptr<DropDownListItem> MakeDropDownListBadgeIconItem(const std::shared_ptr<GUIBadgeClasses> &gui_classes, std::span<const BadgeID> badges, GrfSpecFeature feature, std::optional<CalTime::Date> introduction_date, Money cost, const Dimension &dim, SpriteID sprite, PaletteID palette, std::string &&str, int value, bool masked, bool shaded)
+std::unique_ptr<DropDownListItem> MakeDropDownListBadgeIconItem(const std::shared_ptr<GUIBadgeClasses> &gui_classes, std::span<const BadgeID> badges, GrfSpecFeature feature, std::optional<CalTime::Date> introduction_date, bool show_cost, Money cost, const Dimension &dim, SpriteID sprite, PaletteID palette, std::string &&str, int value, bool masked, bool shaded)
 {
-	return std::make_unique<DropDownListBadgeIconItem>(gui_classes, badges, feature, introduction_date, GetString(STR_JUST_CURRENCY_SHORT, cost), dim, sprite, palette, std::move(str), value, masked, shaded);
+	std::string cost_str;
+	if (show_cost) cost_str = GetString(STR_JUST_CURRENCY_SHORT, cost);
+	return std::make_unique<DropDownListBadgeIconItem>(gui_classes, badges, feature, introduction_date, show_cost, std::move(cost_str), dim, sprite, palette, std::move(str), value, masked, shaded);
 }
 
 /**
