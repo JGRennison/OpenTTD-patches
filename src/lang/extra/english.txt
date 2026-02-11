@@ -380,8 +380,8 @@ STR_CONFIG_SHOW_VEHICLE_RUNNING_COSTS_CALENDAR_YEAR_HELPTEXT    :When using a ec
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES                     :Enable signals on bridges/tunnels advanced modes: {STRING2}
 STR_CONFIG_SETTING_ADV_SIG_BRIDGE_TUN_MODES_HELPTEXT            :Enables use of advanced modes of signal simulation on bridges and tunnels. When disabled, bridges/tunnels which are not already in an advanced mode cannot be changed to an advanced mode, however other players may choose to enable this setting and use an advanced mode.
 
-STR_CONFIG_SETTING_SORT_TRACK_TYPES_BY_SPEED                    :Sort track types by speed: {STRING2}
-STR_CONFIG_SETTING_SORT_TRACK_TYPES_BY_SPEED_HELPTEXT           :Sorts track types by compatibility and by speed instead of using the default sorting.
+STR_CONFIG_SETTING_SORT_TRACK_TYPES_BY_SPEED                    :Sort rail types by speed: {STRING2}
+STR_CONFIG_SETTING_SORT_TRACK_TYPES_BY_SPEED_HELPTEXT           :Sorts rail types by compatibility and by speed instead of using the default sorting.
 
 STR_CONFIG_SETTING_MAX_SIGNAL_EVALUATIONS                       :Maximum number of programmable pre-signal changes permitted at once: {STRING2}
 STR_CONFIG_SETTING_MAX_SIGNAL_EVALUATIONS_HELPTEXT              :Sets the maximum number of programmable pre-signal changes permitted at once
