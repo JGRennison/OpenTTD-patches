@@ -243,6 +243,9 @@ STR_CONFIG_SETTING_CHUNNEL_HELPTEXT                             :When enabled, t
 STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY                 :Trains from different companies may not crash into each other: {STRING2}
 STR_CONFIG_SETTING_NO_TRAIN_CRASH_OTHER_COMPANY_HELPTEXT        :This setting is primarily to prevent untrusted players deliberately causing crashes involving other companies' trains in multi-player rail infrastructure sharing games.
 
+STR_CONFIG_SETTING_TRAIN_SELF_COLLISION                         :Enable train self-collision: {STRING2}
+STR_CONFIG_SETTING_TRAIN_SELF_COLLISION_HELPTEXT                :When enabled, trains will crash if they collide with their own wagons on a circular track. When disabled, self-collisions are ignored.
+
 STR_CONFIG_SETTING_ROADVEH_ARTICULATED_OVERTAKING               :Articulated road vehicles may overtake: {STRING2}
 STR_CONFIG_SETTING_ROADVEH_ARTICULATED_OVERTAKING_HELPTEXT      :Enable articulated road vehicles to overtake other road vehicles.
 

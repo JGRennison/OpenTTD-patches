@@ -1112,6 +1112,7 @@ SettingsContainer &GetSettingsTree()
 			disasters->Add(new SettingEntry("difficulty.economy"));
 			disasters->Add(new SettingEntry("vehicle.plane_crashes"));
 			disasters->Add(new SettingEntry("vehicle.no_train_crash_other_company"));
+			disasters->Add(new SettingEntry("vehicle.train_self_collision"));
 			disasters->Add(new SettingEntry("difficulty.vehicle_breakdowns"));
 			disasters->Add(new SettingEntry("difficulty.max_reliability_floor"));
 			disasters->Add(new SettingEntry("difficulty.reliability_decay_speed"));
