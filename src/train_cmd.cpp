@@ -5114,11 +5114,9 @@ static uint CheckTrainCollision(Train *v, Train *t)
 		if (v->owner != t->owner) return 0;
 	}
 
-	/* get first vehicle now to make most usual checks faster */
-	Train *coll = v->First();
-
-	/* can't collide with own wagons */
-	if (coll == t) return 0;
+	/* Self-check: a vehicle unit cannot collide with itself.
+	 * This is the most common case and skipping it early avoids further calculations. */
+	if (v == t) return 0;
 
 	int x_diff = v->x_pos - t->x_pos;
 	int y_diff = v->y_pos - t->y_pos;
@@ -5129,6 +5127,12 @@ static uint CheckTrainCollision(Train *v, Train *t)
 	 * Differences are then ORed and then we check for any higher bits */
 	uint hash = (y_diff + 7) | (x_diff + 7);
 	if (hash & ~15) return 0;
+
+	/* Get the first vehicle of the consist. */
+	Train *coll = v->First();
+
+	/* If the vehicle belongs to the same train consist, skip collision if it's an immediate neighbor. */
+	if (coll == t && (v == t->Next() || v == t->Previous())) return 0;
 
 	/* Slower check using multiplication */
 	int min_diff = (v->gcache.cached_veh_length + 1) / 2 + (t->gcache.cached_veh_length + 1) / 2 - 1;
