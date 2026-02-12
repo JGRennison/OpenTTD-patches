@@ -3817,7 +3817,7 @@ static const SaveLoadFormat *GetSavegameFormat(std::string_view full_name, uint8
 		std::string_view name = has_comp_level ? full_name.substr(0, separator) : full_name;
 
 		for (const SaveLoadFormat *slf = &_saveload_formats[0]; slf != endof(_saveload_formats); slf++) {
-			if (slf->init_write != nullptr && name.compare(slf->name) == 0) {
+			if (slf->init_write != nullptr && name == slf->name) {
 				*compression_level = slf->default_compression;
 				if (has_comp_level) {
 					auto complevel = full_name.substr(separator + 1);

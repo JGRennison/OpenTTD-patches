@@ -146,11 +146,12 @@ bool DriverFactoryBase::SelectDriverImpl(const std::string &name, Driver::Type t
 
 				/* Keep old driver in case we need to switch back, or may still need to process an OS callback. */
 				auto oldd = std::move(GetActiveDriver(type));
-				GetActiveDriver(type) = d->CreateInstance();
+				auto newd = d->CreateInstance();
 
-				const char *err = GetActiveDriver(type)->Start({});
+				const char *err = newd->Start({});
 				if (err == nullptr) {
 					Debug(driver, 1, "Successfully probed {} driver '{}'", GetDriverTypeName(type), d->name);
+					GetActiveDriver(type) = std::move(newd);
 					return true;
 				}
 

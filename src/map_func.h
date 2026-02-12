@@ -88,6 +88,12 @@ struct Map {
 		return Map::SizeY() - 1;
 	}
 
+	static inline uint InitialLandCount()
+	{
+		extern uint _map_initial_land_count;
+		return _map_initial_land_count;
+	}
+
 	/**
 	 * Get the number of base-10 digits required for the size of the map along the X
 	 * @return the number of digits required
@@ -144,6 +150,17 @@ struct Map {
 		 * just half of it. */
 		return CeilDiv((n << Map::LogX()) + (n << Map::LogY()), 1 << 9);
 	}
+
+	/**
+	 * Scales the given value by the number of water tiles.
+	 * @param n the value to scale
+	 * @return the scaled size
+	 */
+	static inline uint ScaleByLandProportion(uint n)
+	{
+		/* Use 64-bit arithmetic to avoid overflow. */
+		return static_cast<uint>(static_cast<uint64_t>(n) * Map::InitialLandCount() / Map::Size());
+	}
 };
 
 template <typename T>
@@ -177,6 +194,7 @@ extern MapTilePtr<TileExtended> _me;
 bool ValidateMapSize(uint size_x, uint size_y);
 void AllocateMap(uint size_x, uint size_y);
 void DeallocateMap();
+void CountLandTiles();
 
 /**
  * Returns the TileIndex of a coordinate.

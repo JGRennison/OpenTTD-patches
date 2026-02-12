@@ -65,7 +65,8 @@ enum GenWorldProgress : uint8_t {
 	GWP_RIVER,       ///< Create the rivers
 	GWP_ROUGH_ROCKY, ///< Make rough and rocky areas
 	GWP_TOWN,        ///< Generate towns
-	GWP_INDUSTRY,    ///< Generate industries
+	GWP_LAND_INDUSTRY, ///< Generate industries
+	GWP_WATER_INDUSTRY, ///< Generate industries
 	GWP_OBJECT,      ///< Generate objects (radio tower, light houses)
 	GWP_TREE,        ///< Generate trees
 	GWP_PUBLIC_ROADS,///< Generate public roads

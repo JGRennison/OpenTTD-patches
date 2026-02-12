@@ -623,7 +623,7 @@ FiosType FiosGetHeightmapListCallback(SaveLoadOperation fop, const std::string &
 		for (Searchpath sp : _valid_searchpaths) {
 			std::string buf = FioGetDirectory(sp, HEIGHTMAP_DIR);
 
-			if (buf.compare(0, buf.size(), it->second.tar_filename, 0, buf.size()) == 0) {
+			if (it->second.tar_filename.starts_with(buf)) {
 				match = true;
 				break;
 			}

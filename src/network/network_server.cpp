@@ -1995,7 +1995,7 @@ bool NetworkServerChangeClientName(ClientID client_id, const std::string &new_na
 {
 	/* Check if the name's already in use */
 	for (NetworkClientInfo *ci : NetworkClientInfo::Iterate()) {
-		if (ci->client_name.compare(new_name) == 0) return false;
+		if (ci->client_name == new_name) return false;
 	}
 
 	NetworkClientInfo *ci = NetworkClientInfo::GetByClientID(client_id);

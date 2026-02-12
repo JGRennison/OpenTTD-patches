@@ -58,6 +58,7 @@
 #include "terraform_cmd.h"
 #include "clear_map.h"
 #include "tree_map.h"
+#include "map_func.h"
 #include "scope.h"
 #include "3rdparty/robin_hood/robin_hood.h"
 
@@ -2728,7 +2729,7 @@ bool GenerateTowns(TownLayout layout, std::optional<uint> number)
 	} else if (_settings_game.difficulty.number_towns == static_cast<uint>(CUSTOM_TOWN_NUMBER_DIFFICULTY)) {
 		total = GetDefaultTownsForMapSize();
 	} else {
-		total = GetDefaultTownsForMapSize() + (Random() & 7);
+		total = Map::ScaleByLandProportion(GetDefaultTownsForMapSize() + (Random() & 7));
 	}
 
 	total = std::min<uint>(TownPool::MAX_SIZE, total);

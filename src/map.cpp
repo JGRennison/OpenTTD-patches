@@ -36,6 +36,7 @@ uint _map_size;      ///< The number of tiles on the map
 uint _map_tile_mask; ///< _map_size - 1 (to mask the mapsize)
 uint _map_digits_x;  ///< Number of base-10 digits for _map_size_x
 uint _map_digits_y;  ///< Number of base-10 digits for _map_size_y
+uint _map_initial_land_count; ///< Initial number of land tiles on the map.
 
 MapTilePtr<Tile> _m{nullptr};          ///< Tiles of the map
 MapTilePtr<TileExtended> _me{nullptr}; ///< Extended Tiles of the map
@@ -161,6 +162,21 @@ void DeallocateMap()
 	_me.tile_data = nullptr;
 
 	InitializeWaterRegions();
+}
+
+void CountLandTiles()
+{
+	/* Count number of tiles that are land. */
+	uint land_count = 0;
+	for (TileIndex tile(0); tile < Map::Size(); tile++) {
+		if (!IsWaterTile(tile)) land_count++;
+	}
+
+	/* Compensate for default values being set for (or users are most familiar with) at least
+	 * very low sea level. Dividing by 12 adds roughly 8%. */
+	land_count += land_count / 12;
+	land_count = std::min(land_count, Map::Size());
+	_map_initial_land_count = land_count;
 }
 
 #ifdef _DEBUG

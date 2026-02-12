@@ -19,12 +19,12 @@ using namespace std::literals::string_view_literals;
 
 std::string ValueStr(EndSegmentReasons flags)
 {
-	static const std::initializer_list<std::string_view> end_segment_reason_names = {
-		"DEAD_END"sv, "DEAD_END_EOL"sv, "RAIL_TYPE"sv, "INFINITE_LOOP"sv, "SEGMENT_TOO_LONG"sv, "CHOICE_FOLLOWS"sv,
-		"DEPOT"sv, "WAYPOINT"sv, "STATION"sv, "SAFE_TILE"sv,
-		"PATH_TOO_LONG"sv, "FIRST_TWO_WAY_RED"sv, "LOOK_AHEAD_END"sv, "TARGET_REACHED"sv,
-		"REVERSE"sv
+	static const char * const end_segment_reason_names[] = {
+		"DEAD_END", "DEAD_END_EOL", "RAIL_TYPE", "INFINITE_LOOP", "SEGMENT_TOO_LONG", "CHOICE_FOLLOWS",
+		"DEPOT", "WAYPOINT", "STATION", "SAFE_TILE",
+		"PATH_TOO_LONG", "FIRST_TWO_WAY_RED", "LOOK_AHEAD_END", "TARGET_REACHED",
+		"REVERSE"
 	};
 
-	return fmt::format("0x{:04X} ({})", flags.base(), ComposeNameT(flags, end_segment_reason_names, "UNK"));
+	return fmt::format("0x{:04X} ({})", flags.base(), ComposeName(flags, end_segment_reason_names, "UNK"));
 }
