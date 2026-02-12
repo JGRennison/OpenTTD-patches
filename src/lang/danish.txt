@@ -254,6 +254,7 @@ STR_UNITS_FORCE_SI                                              :{DECIMAL} kN
 STR_UNITS_HEIGHT_IMPERIAL                                       :{DECIMAL} fod
 STR_UNITS_HEIGHT_METRIC                                         :{DECIMAL} m
 STR_UNITS_HEIGHT_SI                                             :{DECIMAL} m
+STR_UNITS_HEIGHT_GAMEUNITS                                      :{DECIMAL}{NBSP}level{P "" s}
 
 # Time units used in string control characters
 STR_UNITS_DAYS                                                  :{COMMA}{NBSP}dag{P "" s}
@@ -2159,10 +2160,11 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_SI                  :SI (kN)
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT                    :Højdeenheder: {STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_HELPTEXT           :Når højde er vist i brugergrænsefladen, så vis dem i de valgte enheder
-###length 3
+###length 4
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :Imperisk (fod)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :Metrisk (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (m)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_GAMEUNITS          :Spillenheder (levels)
 
 STR_CONFIG_SETTING_LOCALISATION                                 :Lokalisering
 STR_CONFIG_SETTING_GRAPHICS                                     :Grafiksæt / Manglende grafik
@@ -3371,6 +3373,8 @@ STR_SAVELOAD_DETAIL_GRFSTATUS                                   :{SILVER}NewGRF:
 STR_SAVELOAD_FILTER_TITLE                                       :{BLACK}Filter udtryk:
 STR_SAVELOAD_OVERWRITE_TITLE                                    :{WHITE}Overskriv fil
 STR_SAVELOAD_OVERWRITE_WARNING                                  :{YELLOW}Er du sikker på du vil overskrive den eksisterende fil?
+STR_SAVELOAD_DELETE_TITLE                                       :{WHITE}Slet fil
+STR_SAVELOAD_DELETE_WARNING                                     :{YELLOW}Er du sikker på, at du vil slette filen?
 STR_SAVELOAD_DIRECTORY                                          :{STRING} (Mappe)
 STR_SAVELOAD_PARENT_DIRECTORY                                   :{STRING} (Overmappe)
 
@@ -3449,8 +3453,11 @@ STR_MAPGEN_SOUTHWEST                                            :{BLACK}Sydvest
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}Fri udformning
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}Vand
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}Tilfældige
-STR_MAPGEN_BORDER_RANDOMIZE                                     :{BLACK}Tilfældige
-STR_MAPGEN_BORDER_MANUAL                                        :{BLACK}Manuel
+
+###length 3
+STR_MAPGEN_BORDER_RANDOMIZE                                     :Tilfældig
+STR_MAPGEN_BORDER_MANUAL                                        :Manuel
+STR_MAPGEN_BORDER_INFINITE_WATER                                :Uendeligt vand
 
 STR_MAPGEN_HEIGHTMAP_ROTATION                                   :{BLACK}Højdekortets rotation:
 STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Højdekortets navn:
@@ -3489,7 +3496,8 @@ STR_GENERATION_LANDSCAPE_GENERATION                             :{BLACK}Landskab
 STR_GENERATION_RIVER_GENERATION                                 :{BLACK}Flod-generering
 STR_GENERATION_CLEARING_TILES                                   :{BLACK}Generer råt og stenet område
 STR_GENERATION_TOWN_GENERATION                                  :{BLACK}By generation
-STR_GENERATION_INDUSTRY_GENERATION                              :{BLACK}Industri generation
+STR_GENERATION_LAND_INDUSTRY_GENERATION                         :{BLACK}Generering af jordindustrien
+STR_GENERATION_WATER_INDUSTRY_GENERATION                        :{BLACK}Generering af vandindustrien
 STR_GENERATION_OBJECT_GENERATION                                :{BLACK}Ikke-flytbar generering
 STR_GENERATION_TREE_GENERATION                                  :{BLACK}Trægenerering
 STR_GENERATION_SETTINGUP_GAME                                   :{BLACK}Klargør spil
@@ -4368,7 +4376,15 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}Du er v
 
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Besked fra køretøjsfabrikken
+STR_ENGINE_PREVIEW_CAPTION_COUNT                                :{WHITE}Besked fra bilproducenten ({COMMA} of {COMMA})
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Vi har lige designet et nyt {STRING} - er du interesseret i et års ekslusiv testkørsel, så vi kan se hvordan det klarer sig inden vi gør det frit tilgængeligt?
+
+STR_ENGINE_PREVIEW_PREVIOUS                                     :Tidligere
+STR_ENGINE_PREVIEW_PREVIOUS_TOOLTIP                             :Klik for at gå tilbage til det forrige nye køretøj
+STR_ENGINE_PREVIEW_NEXT                                         :Næste
+STR_ENGINE_PREVIEW_NEXT_TOOLTIP                                 :Klik for at gå videre til det næste nye køretøj
+STR_ENGINE_PREVIEW_ENGINE_LIST                                  :{COMMA}: {ENGINE}
+STR_ENGINE_PREVIEW_ENGINE_LIST_TOOLTIP                          :Klik for at hoppe til et nyt køretøj
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :jernbanelokomotiv
 STR_ENGINE_PREVIEW_ELRAIL_LOCOMOTIVE                            :elektrisk jernbanelokomotiv

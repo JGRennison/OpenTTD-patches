@@ -255,6 +255,7 @@ STR_UNITS_FORCE_SI                                              :{G=Masculin}{DE
 STR_UNITS_HEIGHT_IMPERIAL                                       :{DECIMAL}{NBSP}ft
 STR_UNITS_HEIGHT_METRIC                                         :{DECIMAL}{NBSP}m
 STR_UNITS_HEIGHT_SI                                             :{G=Masculin}{DECIMAL}{NBSP}m
+STR_UNITS_HEIGHT_GAMEUNITS                                      :{DECIMAL}{NBSP}nivell{P "" s}
 
 # Time units used in string control characters
 STR_UNITS_DAYS                                                  :{COMMA}{NBSP}di{P a es}
@@ -2160,10 +2161,11 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_SI                  :SI (kN)
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT                    :Unitats de longitud: {STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_HELPTEXT           :Quan es mostren longituds a la interfície d'usuari, presenta-les en les unitats seleccionades
-###length 3
+###length 4
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :Imperial (peu)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :Mètric (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (m)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_GAMEUNITS          :Unitats de la partida (nivells)
 
 STR_CONFIG_SETTING_LOCALISATION                                 :Localització
 STR_CONFIG_SETTING_GRAPHICS                                     :Gràfics
@@ -3354,6 +3356,8 @@ STR_SAVELOAD_DETAIL_GRFSTATUS                                   :{SILVER}NewGRF:
 STR_SAVELOAD_FILTER_TITLE                                       :{BLACK}Filtre:
 STR_SAVELOAD_OVERWRITE_TITLE                                    :{WHITE}Sobreescriu fitxer
 STR_SAVELOAD_OVERWRITE_WARNING                                  :{YELLOW}Esteu segur que voleu sobreescriure el fitxer?
+STR_SAVELOAD_DELETE_TITLE                                       :{WHITE}Esborra el fitxer
+STR_SAVELOAD_DELETE_WARNING                                     :{YELLOW}Esteu segur que voleu esborrar aquest fitxer?
 STR_SAVELOAD_DIRECTORY                                          :{STRING} (carpeta)
 STR_SAVELOAD_PARENT_DIRECTORY                                   :{STRING} (carpeta superior)
 
@@ -3432,8 +3436,11 @@ STR_MAPGEN_SOUTHWEST                                            :{BLACK}Sud-oest
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}Forma lliure
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}Aigua
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}Aleatori
-STR_MAPGEN_BORDER_RANDOMIZE                                     :{BLACK}Aleatori
-STR_MAPGEN_BORDER_MANUAL                                        :{BLACK}Manual
+
+###length 3
+STR_MAPGEN_BORDER_RANDOMIZE                                     :Aleatori
+STR_MAPGEN_BORDER_MANUAL                                        :Manual
+STR_MAPGEN_BORDER_INFINITE_WATER                                :Aigua infinita
 
 STR_MAPGEN_HEIGHTMAP_ROTATION                                   :{BLACK}Rotació del mapa d'alçades:
 STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Nom del mapa d'alçades:
@@ -3472,7 +3479,8 @@ STR_GENERATION_LANDSCAPE_GENERATION                             :{BLACK}Generaci
 STR_GENERATION_RIVER_GENERATION                                 :{BLACK}Generació de rius
 STR_GENERATION_CLEARING_TILES                                   :{BLACK}Generació d'una àrea escarpada i rocosa
 STR_GENERATION_TOWN_GENERATION                                  :{BLACK}Generació de poblacions
-STR_GENERATION_INDUSTRY_GENERATION                              :{BLACK}Generació d'indústries
+STR_GENERATION_LAND_INDUSTRY_GENERATION                         :{BLACK}Generació d'indústries terrestres
+STR_GENERATION_WATER_INDUSTRY_GENERATION                        :{BLACK}Generació d'indústries a l'aigua
 STR_GENERATION_OBJECT_GENERATION                                :{BLACK}Generació inamovible
 STR_GENERATION_TREE_GENERATION                                  :{BLACK}Generació d'arbres
 STR_GENERATION_SETTINGUP_GAME                                   :{BLACK}Configurant la partida
@@ -4352,6 +4360,7 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}Estàs 
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Missatge del fabricant de vehicles
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Acabem de dissenyar {G un una} {G nou nova} {STRING}. Esteu interessats en fer ús exclusiu d'aquest vehicle durant un any, per veure com va, abans del seu llançament mundial?
+
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :{G=Femenin}locomotora de tren
 STR_ENGINE_PREVIEW_ELRAIL_LOCOMOTIVE                            :locomotora de ferrocarril electrificat

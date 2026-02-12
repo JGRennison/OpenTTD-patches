@@ -329,6 +329,7 @@ STR_UNITS_FORCE_SI                                              :{DECIMAL}{NBSP}
 STR_UNITS_HEIGHT_IMPERIAL                                       :{DECIMAL}{NBSP}stop{P a y ""}
 STR_UNITS_HEIGHT_METRIC                                         :{DECIMAL}{NBSP}m
 STR_UNITS_HEIGHT_SI                                             :{DECIMAL}{NBSP}m
+STR_UNITS_HEIGHT_GAMEUNITS                                      :{DECIMAL}{NBSP}{P úroveň úrovně úrovní}
 
 # Time units used in string control characters
 STR_UNITS_DAYS                                                  :{COMMA}{NBSP}{P den dny dní}
@@ -2246,10 +2247,11 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_SI                  :SI (kN)
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT                    :Výškové jednotky: {STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_HELPTEXT           :Kdykoliv se v uživatelském rozhraní zobrazí výška, bude ve zvolených jednotkách
-###length 3
+###length 4
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :Imperiální (ft)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :Metrické (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (m)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_GAMEUNITS          :Herní jednotky (úrovně)
 
 STR_CONFIG_SETTING_LOCALISATION                                 :Překlad
 STR_CONFIG_SETTING_GRAPHICS                                     :Grafika
@@ -3446,6 +3448,8 @@ STR_SAVELOAD_DETAIL_GRFSTATUS                                   :{SILVER}Grafiky
 STR_SAVELOAD_FILTER_TITLE                                       :{BLACK}Filtr:
 STR_SAVELOAD_OVERWRITE_TITLE                                    :{WHITE}Přepsat soubor
 STR_SAVELOAD_OVERWRITE_WARNING                                  :{YELLOW}Opravdu chcete přepsat existující soubor?
+STR_SAVELOAD_DELETE_TITLE                                       :{WHITE}Smazat soubor
+STR_SAVELOAD_DELETE_WARNING                                     :{YELLOW}Opravdu chcete tento soubor smazat?
 STR_SAVELOAD_DIRECTORY                                          :{STRING} (Adresář)
 STR_SAVELOAD_PARENT_DIRECTORY                                   :{STRING} (rodičovský adresář)
 
@@ -3524,8 +3528,11 @@ STR_MAPGEN_SOUTHWEST                                            :{BLACK}Jihozáp
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}terén
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}voda
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}náhodně
-STR_MAPGEN_BORDER_RANDOMIZE                                     :{BLACK}náhodně
-STR_MAPGEN_BORDER_MANUAL                                        :{BLACK}vlastní
+
+###length 3
+STR_MAPGEN_BORDER_RANDOMIZE                                     :náhodně
+STR_MAPGEN_BORDER_MANUAL                                        :vlastní
+STR_MAPGEN_BORDER_INFINITE_WATER                                :Nekonečná voda
 
 STR_MAPGEN_HEIGHTMAP_ROTATION                                   :{BLACK}Otočení výškové mapy:
 STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Jméno výškové mapy:
@@ -3564,7 +3571,8 @@ STR_GENERATION_LANDSCAPE_GENERATION                             :{BLACK}Generov�
 STR_GENERATION_RIVER_GENERATION                                 :{BLACK}Generování řek
 STR_GENERATION_CLEARING_TILES                                   :{BLACK}Tvorba členitého a kamenitého území
 STR_GENERATION_TOWN_GENERATION                                  :{BLACK}Generování měst
-STR_GENERATION_INDUSTRY_GENERATION                              :{BLACK}Generování průmyslu
+STR_GENERATION_LAND_INDUSTRY_GENERATION                         :{BLACK}Generování pozemního průmyslu
+STR_GENERATION_WATER_INDUSTRY_GENERATION                        :{BLACK}Generování vodního průmyslu
 STR_GENERATION_OBJECT_GENERATION                                :{BLACK}Výstavba nepřesunutelných objektů
 STR_GENERATION_TREE_GENERATION                                  :{BLACK}Výsadba stromů
 STR_GENERATION_SETTINGUP_GAME                                   :{BLACK}Nastavování hry
@@ -4444,6 +4452,7 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}Chceš 
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Zpráva od výrobce dopravních prostředků
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Právě jsme vyvinuli nov{G ý ou é é é é á} {STRING.acc}. Měl byste zájem o roční výhradní právo na používání tohoto prostředku, aby byl otestován před uvedením na trh?
+
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :{G=f}lokomotiva
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE.acc                      :lokomotivu

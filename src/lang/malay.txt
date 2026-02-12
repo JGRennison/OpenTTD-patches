@@ -1594,7 +1594,7 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_VOLUME_SI                 :Unit SI (m³)
 
 ###length 3
 
-###length 3
+###length 4
 
 STR_CONFIG_SETTING_SOUND                                        :Bunyi
 STR_CONFIG_SETTING_INTERFACE                                    :Antaramuka (Interface)
@@ -2532,6 +2532,8 @@ STR_MAPGEN_SOUTHWEST                                            :{BLACK}Barat da
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}Bebas
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}Air
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}Rambang
+
+###length 3
 STR_MAPGEN_BORDER_RANDOMIZE                                     :{BLACK}Rambang
 STR_MAPGEN_BORDER_MANUAL                                        :{BLACK}Manual
 
@@ -3251,6 +3253,7 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}Anda ak
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Pesanan daripada pengusaha kenderaan
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Kami baru sahaja mereka {STRING} yang baru - adakah anda berminat untuk menggunakan kenderaan ini secara eksklusif, supaya kami dapat menilai tahap kelancarannya sebelum kami menjualnya kepada pihak awam?
+
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :keretapi
 STR_ENGINE_PREVIEW_MONORAIL_LOCOMOTIVE                          :keretapi monorel

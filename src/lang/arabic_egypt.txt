@@ -1717,7 +1717,7 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE                     ::وحدات ج�
 STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_IMPERIAL            :إمبراطوري (lbf)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_METRIC              :متري (كغ - قوة)
 
-###length 3
+###length 4
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :إمبراطوري (قدم)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :متري (م)
 
@@ -2772,6 +2772,8 @@ STR_MAPGEN_SOUTHWEST                                            :{BLACK} الج�
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK} حر
 STR_MAPGEN_BORDER_WATER                                         :{BLACK} ماء
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK} عشوائي
+
+###length 3
 STR_MAPGEN_BORDER_RANDOMIZE                                     :{BLACK} عشوائيا
 STR_MAPGEN_BORDER_MANUAL                                        :{BLACK} يدوي
 
@@ -3540,6 +3542,7 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}أنت 
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}رسالة من المصنعين
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}قد صممنا موديل جديد من {STRING} - هل ترغب في استخدام سنة حصري لهذه المركبة, لنستطيع تقييمها للأستخدام العام
+
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :قاطرة سكة حديد
 STR_ENGINE_PREVIEW_MONORAIL_LOCOMOTIVE                          :قاطرة سكة قطار احادية

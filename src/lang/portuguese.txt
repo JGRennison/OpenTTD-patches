@@ -255,6 +255,7 @@ STR_UNITS_FORCE_SI                                              :{DECIMAL}{NBSP}
 STR_UNITS_HEIGHT_IMPERIAL                                       :{DECIMAL}{NBSP}pé{P "" s}
 STR_UNITS_HEIGHT_METRIC                                         :{DECIMAL}{NBSP}m
 STR_UNITS_HEIGHT_SI                                             :{DECIMAL}{NBSP}m
+STR_UNITS_HEIGHT_GAMEUNITS                                      :{DECIMAL}{NBSP}níve{P l is}
 
 # Time units used in string control characters
 STR_UNITS_DAYS                                                  :{COMMA}{NBSP}dia{P "" s}
@@ -2160,10 +2161,11 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_SI                  :SI (kN)
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT                    :Unidades de altura: {STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_HELPTEXT           :Quando as alturas são mostradas no interface de utilizador, mostrar na unidade selecionada
-###length 3
+###length 4
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :Imperial (pés)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :Métrico (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (m)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_GAMEUNITS          :Unidades do jogo (níveis)
 
 STR_CONFIG_SETTING_LOCALISATION                                 :Localização
 STR_CONFIG_SETTING_GRAPHICS                                     :Gráficos
@@ -2847,20 +2849,38 @@ STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Reduzir a altur
 STR_PICKER_PREVIEW_EXPAND                                       :+
 STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Aumentar a altura das imagens de pré-visualização. Ctrl+Clique para aumentar ao máximo
 
+STR_PICKER_DEFAULT_COLLECTION                                   :Coleção predefinida
+STR_PICKER_SELECT_COLLECTION_TOOLTIP                            :Selecionar uma coleção
+STR_PICKER_COLLECTION_ADD                                       :Adicionar
+STR_PICKER_COLLECTION_ADD_TOOLTIP                               :Criar uma nova coleção
+STR_PICKER_COLLECTION_RENAME                                    :Renomear
+STR_PICKER_COLLECTION_RENAME_TOOLTIP                            :Renomear uma coleção
+STR_PICKER_COLLECTION_DELETE                                    :Apagar
+STR_PICKER_COLLECTION_DELETE_TOOLTIP                            :Apagar uma coleção
 
+STR_PICKER_COLLECTION_RENAME_QUERY                              :Renomear esta coleção
+STR_PICKER_COLLECTION_DELETE_QUERY                              :Apagar coleção
+STR_PICKER_COLLECTION_DELETE_QUERY_TEXT                         :{YELLOW}Tem a certeza que quer apagar esta coleção?
+STR_PICKER_COLLECTION_DELETE_QUERY_DISABLED_TEXT                :{YELLOW}Tem a certeza que quer apagar esta coleção? Contém NewGRFs desativados!
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Selecionar uma classe de estação para mostrar
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Escolher um tipo de estação para construir. Ctrl+Clique para adicionar ou remover nos itens guardados
+STR_PICKER_STATION_COLLECTION_TOOLTIP                           :Selecione uma coleção de estações para mostrar
 STR_PICKER_WAYPOINT_CLASS_TOOLTIP                               :Selecionar uma classe de ponto de controlo para mostrar
 STR_PICKER_WAYPOINT_TYPE_TOOLTIP                                :Escolher um tipo de ponto de controlo para construir. Ctrl+Clique para adicionar ou remover nos itens guardados
+STR_PICKER_WAYPOINT_COLLECTION_TOOLTIP                          :Selecione uma coleção de pontos de controlo para mostrar
 STR_PICKER_ROADSTOP_BUS_CLASS_TOOLTIP                           :Selecionar uma classe de estação rodoviária para mostrar
 STR_PICKER_ROADSTOP_BUS_TYPE_TOOLTIP                            :Escolher um tipo de estação rodoviária para construir. Ctrl+Clique para adicionar ou remover nos itens guardados
+STR_PICKER_ROADSTOP_BUS_COLLECTION_TOOLTIP                      :Selecione uma coleção de paragens de autocarro para mostrar
 STR_PICKER_ROADSTOP_TRUCK_CLASS_TOOLTIP                         :Selecionar uma classe de terminal de carga para camiões para mostrar
 STR_PICKER_ROADSTOP_TRUCK_TYPE_TOOLTIP                          :Escolher um tipo de terminal de carga para camiões para construir. Ctrl+Clique para adicionar ou remover nos itens guardados
+STR_PICKER_ROADSTOP_TRUCK_COLLECTION_TOOLTIP                    :Selecione uma coleção de terminais de carga para camiões para mostrar
 STR_PICKER_OBJECT_CLASS_TOOLTIP                                 :Selecionar uma classe de objeto para mostrar
 STR_PICKER_OBJECT_TYPE_TOOLTIP                                  :Selecione um tipo de objeto para construir. Ctrl+Clique para adicionar ou remover nos itens guardados. Ctrl+Clique+Arrastar para selecionar a área diagonalmente. Pressione também Shift para apenas mostrar o custo estimado
+STR_PICKER_OBJECT_COLLECTION_TOOLTIP                            :Selecione uma coleção de objetos para mostrar
 STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :Selecione uma zona de localidade para mostrar
 STR_PICKER_HOUSE_TYPE_TOOLTIP                                   :Escolher um tipo de casa para construir. Ctrl+Clique para adicionar ou remover nos itens guardados
+STR_PICKER_HOUSE_COLLECTION_TOOLTIP                             :Selecione uma coleção de casas para mostrar
 
 STR_HOUSE_PICKER_CAPTION                                        :Seleção de Casas
 STR_HOUSE_PICKER_NAME                                           :{BLACK}Nome: {ORANGE}{STRING}
@@ -3354,6 +3374,8 @@ STR_SAVELOAD_DETAIL_GRFSTATUS                                   :{SILVER}NewGRF:
 STR_SAVELOAD_FILTER_TITLE                                       :{BLACK}Filtro:
 STR_SAVELOAD_OVERWRITE_TITLE                                    :{WHITE}Substituir Ficheiro
 STR_SAVELOAD_OVERWRITE_WARNING                                  :{YELLOW}Tem a certeza que deseja substituir o ficheiro existente?
+STR_SAVELOAD_DELETE_TITLE                                       :{WHITE}Apagar Ficheiro
+STR_SAVELOAD_DELETE_WARNING                                     :{YELLOW}Tem a certeza que quer apagar este ficheiro?
 STR_SAVELOAD_DIRECTORY                                          :{STRING} (Diretório)
 STR_SAVELOAD_PARENT_DIRECTORY                                   :{STRING} (Diretório pai)
 
@@ -3432,8 +3454,11 @@ STR_MAPGEN_SOUTHWEST                                            :{BLACK}Sudoeste
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}Modo livre
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}Água
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}Aleatório
-STR_MAPGEN_BORDER_RANDOMIZE                                     :{BLACK}Aleatório
-STR_MAPGEN_BORDER_MANUAL                                        :{BLACK}Manual
+
+###length 3
+STR_MAPGEN_BORDER_RANDOMIZE                                     :Aleatório
+STR_MAPGEN_BORDER_MANUAL                                        :Manual
+STR_MAPGEN_BORDER_INFINITE_WATER                                :Água Infinita
 
 STR_MAPGEN_HEIGHTMAP_ROTATION                                   :{BLACK}Rotação mapa de alt.:
 STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Nome mapa de alt.:
@@ -3472,7 +3497,8 @@ STR_GENERATION_LANDSCAPE_GENERATION                             :{BLACK}A gerar 
 STR_GENERATION_RIVER_GENERATION                                 :{BLACK}A gerar rios
 STR_GENERATION_CLEARING_TILES                                   :{BLACK}A gerar zonas rochosas e montanhosas
 STR_GENERATION_TOWN_GENERATION                                  :{BLACK}A gerar localidades
-STR_GENERATION_INDUSTRY_GENERATION                              :{BLACK}A gerar indústrias
+STR_GENERATION_LAND_INDUSTRY_GENERATION                         :{BLACK}A gerar indústrias terrestres
+STR_GENERATION_WATER_INDUSTRY_GENERATION                        :{BLACK}A gerar indústrias fluviais/marítimas
 STR_GENERATION_OBJECT_GENERATION                                :{BLACK}A gerar objetos
 STR_GENERATION_TREE_GENERATION                                  :{BLACK}A gerar árvores
 STR_GENERATION_SETTINGUP_GAME                                   :{BLACK}A configurar jogo
@@ -4132,7 +4158,7 @@ STR_GROUP_LIVERY_TOOLTIP                                        :{BLACK}Alterar 
 STR_GROUP_REPLACE_PROTECTION_TOOLTIP                            :{BLACK}Clique para proteger este grupo da auto-substituição global. Ctrl+Clique para proteger também sub-grupos
 
 STR_QUERY_GROUP_DELETE_CAPTION                                  :{WHITE}Apagar Grupo
-STR_GROUP_DELETE_QUERY_TEXT                                     :{WHITE}Tem a certeza de que quer apagar este grupo e quaisquer descendentes?
+STR_GROUP_DELETE_QUERY_TEXT                                     :{WHITE}Tem a certeza que quer apagar este grupo e os seus descendentes?
 
 STR_GROUP_ADD_SHARED_VEHICLE                                    :Adic. veíc. partilh.
 STR_GROUP_REMOVE_ALL_VEHICLES                                   :Remover todos os veículos
@@ -4351,7 +4377,15 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}Está p
 
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Mensagem de um fabricante de veículos
+STR_ENGINE_PREVIEW_CAPTION_COUNT                                :{WHITE}Mensagem de um fabricante de veículos ({COMMA} de {COMMA})
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Desenvolvemos u{G 0 m m ma ns mas} nov{G 0 "o modelo de" o a os as} {STRING}. - Estaria interessado num ano de utilização exclusiva deste{G 0 "" "" "" s s} veículo{G 0 "" "" "" s s}, para que possamos avaliar o {G 0 "seu " "seu " "seu " "" ""}desempenho antes de o{G 0 "" "" "" s s} lançar globalmente?
+
+STR_ENGINE_PREVIEW_PREVIOUS                                     :Anterior
+STR_ENGINE_PREVIEW_PREVIOUS_TOOLTIP                             :Clique para voltar para o veículo novo anterior
+STR_ENGINE_PREVIEW_NEXT                                         :Seguinte
+STR_ENGINE_PREVIEW_NEXT_TOOLTIP                                 :Clique para avançar para o próximo veículo novo
+STR_ENGINE_PREVIEW_ENGINE_LIST                                  :{COMMA}: {ENGINE}
+STR_ENGINE_PREVIEW_ENGINE_LIST_TOOLTIP                          :Clique para saltar para um novo veículo
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :{G=f}locomotiva ferroviária
 STR_ENGINE_PREVIEW_ELRAIL_LOCOMOTIVE                            :{G=f}locomotiva elétrica ferroviária
@@ -5151,8 +5185,8 @@ STR_ERROR_MUST_DEMOLISH_RAILROAD                                :{WHITE}Precisa 
 STR_ERROR_MUST_DEMOLISH_BUS_STATION_FIRST                       :{WHITE}Precisa de demolir a paragem de autocarros primeiro
 STR_ERROR_MUST_DEMOLISH_TRUCK_STATION_FIRST                     :{WHITE}Precisa de demolir o terminal de carga para camiões primeiro
 STR_ERROR_MUST_DEMOLISH_PASSENGER_TRAM_STATION_FIRST            :{WHITE}Precisa demolir paragem de elétricos de passageiros primeiro
-STR_ERROR_MUST_DEMOLISH_CARGO_TRAM_STATION_FIRST                :{WHITE}Precisa demolir terminal de carga para elétricos primeiro
-STR_ERROR_MUST_DEMOLISH_DOCK_FIRST                              :{WHITE}Deverá demolir a doca primeiro
+STR_ERROR_MUST_DEMOLISH_CARGO_TRAM_STATION_FIRST                :{WHITE}Precisa de demolir o terminal de carga para elétricos primeiro
+STR_ERROR_MUST_DEMOLISH_DOCK_FIRST                              :{WHITE}Precisa de demolir a doca primeiro
 STR_ERROR_MUST_DEMOLISH_AIRPORT_FIRST                           :{WHITE}Precisa de demolir o aeroporto primeiro
 
 # Waypoint related errors
@@ -5262,7 +5296,7 @@ STR_ERROR_CAN_T_PLANT_TREE_HERE                                 :{WHITE}Não é 
 
 # Bridge related errors
 STR_ERROR_CAN_T_BUILD_BRIDGE_HERE                               :{WHITE}Não é possível construir uma ponte aqui...
-STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST                            :{WHITE}Deverá demolir a ponte primeiro
+STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST                            :{WHITE}Precisa de demolir a ponte primeiro
 STR_ERROR_CAN_T_START_AND_END_ON                                :{WHITE}Não é possível iniciar e finalizar no mesmo ponto
 STR_ERROR_BRIDGEHEADS_NOT_SAME_HEIGHT                           :{WHITE}Extremos da ponte não estão ao mesmo nível
 STR_ERROR_BRIDGE_TOO_LOW_FOR_TERRAIN                            :{WHITE}A ponte é demasiado baixa para o terreno.

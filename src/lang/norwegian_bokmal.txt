@@ -256,6 +256,7 @@ STR_UNITS_FORCE_SI                                              :{DECIMAL}{NBSP}
 STR_UNITS_HEIGHT_IMPERIAL                                       :{DECIMAL}{NBSP}fot
 STR_UNITS_HEIGHT_METRIC                                         :{DECIMAL}{NBSP}m
 STR_UNITS_HEIGHT_SI                                             :{DECIMAL}{NBSP}m
+STR_UNITS_HEIGHT_GAMEUNITS                                      :{DECIMAL}{NBSP}nivå{P "" er}
 
 # Time units used in string control characters
 STR_UNITS_DAYS                                                  :{COMMA}{NBSP}dag{P "" er}
@@ -2161,10 +2162,11 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_SI                  :SI (kN)
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT                    :Høydeenheter: {STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_HELPTEXT           :Når en høyde vises i brukergrensesnittet, vis den i de valgte enhetene
-###length 3
+###length 4
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :Imperisk (fot)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :Metrisk (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (m)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_GAMEUNITS          :Spillenheter (nivåer)
 
 STR_CONFIG_SETTING_LOCALISATION                                 :Lokalisering
 STR_CONFIG_SETTING_GRAPHICS                                     :Grafikk
@@ -2848,20 +2850,38 @@ STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Reduser høyden
 STR_PICKER_PREVIEW_EXPAND                                       :+
 STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Øk høyden på forhåndsvisninger. Ctrl+klikk for så stor som mulig
 
+STR_PICKER_DEFAULT_COLLECTION                                   :Standard samling
+STR_PICKER_SELECT_COLLECTION_TOOLTIP                            :Velg en samling
+STR_PICKER_COLLECTION_ADD                                       :Legg til
+STR_PICKER_COLLECTION_ADD_TOOLTIP                               :Lag ny samling
+STR_PICKER_COLLECTION_RENAME                                    :Gi nytt navn
+STR_PICKER_COLLECTION_RENAME_TOOLTIP                            :Gi samling nytt navn
+STR_PICKER_COLLECTION_DELETE                                    :Slett
+STR_PICKER_COLLECTION_DELETE_TOOLTIP                            :Slett en samling
 
+STR_PICKER_COLLECTION_RENAME_QUERY                              :Gi denne samlingen nytt navn
+STR_PICKER_COLLECTION_DELETE_QUERY                              :Slett samling
+STR_PICKER_COLLECTION_DELETE_QUERY_TEXT                         :{YELLOW}Er du sikker på at du vil slette denne samlingen?
+STR_PICKER_COLLECTION_DELETE_QUERY_DISABLED_TEXT                :{YELLOW}Er du sikker på at du vil slette denne samlingen? Det er elementer fra deaktiverte NewGRF i den!
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Velg stasjonsklassen du vil vise
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Velg type stasjon å bygge. Ctrl+klikk for å legge til eller fjerne lagrede elementer
+STR_PICKER_STATION_COLLECTION_TOOLTIP                           :Velg en samling av stasjoner å vise
 STR_PICKER_WAYPOINT_CLASS_TOOLTIP                               :Velg veipunktklassen du vil vise
 STR_PICKER_WAYPOINT_TYPE_TOOLTIP                                :Velg type veipunkt å bygge. Ctrl+klikk for å legge til eller fjerne lagrede elementer
+STR_PICKER_WAYPOINT_COLLECTION_TOOLTIP                          :Velg en samling av veipunkt å vise
 STR_PICKER_ROADSTOP_BUS_CLASS_TOOLTIP                           :Velg type busterminal du vil vise
 STR_PICKER_ROADSTOP_BUS_TYPE_TOOLTIP                            :Velg type bussterminal å bygge. Ctrl+klikk for å legge til eller fjerne lagrede elementer
+STR_PICKER_ROADSTOP_BUS_COLLECTION_TOOLTIP                      :Velg en samling av bussterminaler å vise
 STR_PICKER_ROADSTOP_TRUCK_CLASS_TOOLTIP                         :Velg en type godsterminal du vil vise
 STR_PICKER_ROADSTOP_TRUCK_TYPE_TOOLTIP                          :Velg type godsterminal å bygge. Ctrl+klikk for å legge til eller fjerne lagrede elementer
+STR_PICKER_ROADSTOP_TRUCK_COLLECTION_TOOLTIP                    :Velg en samling av godsterminaler å vise
 STR_PICKER_OBJECT_CLASS_TOOLTIP                                 :Velg objektklassen du vil vise
 STR_PICKER_OBJECT_TYPE_TOOLTIP                                  :Velg type objekt å bygge. Ctrl+klikk for å legge til eller fjerne lagrede elementer. Ctrl+klikk+dra for å velge areal diagonalt. Trykk også Shift for å kun vise kostnadsestimat
+STR_PICKER_OBJECT_COLLECTION_TOOLTIP                            :Velg en samling av objekter å vise
 STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :Velg byområdet du vil vise
 STR_PICKER_HOUSE_TYPE_TOOLTIP                                   :Velg type hus å bygge. Ctrl+klikk for å legge til eller fjerne lagrede elementer
+STR_PICKER_HOUSE_COLLECTION_TOOLTIP                             :Velg en samling av hus å vise
 
 STR_HOUSE_PICKER_CAPTION                                        :Husvalg
 STR_HOUSE_PICKER_NAME                                           :{BLACK}Navn: {ORANGE}{STRING}
@@ -3355,6 +3375,8 @@ STR_SAVELOAD_DETAIL_GRFSTATUS                                   :{SILVER}NewGRF:
 STR_SAVELOAD_FILTER_TITLE                                       :{BLACK}Filtrer:
 STR_SAVELOAD_OVERWRITE_TITLE                                    :{WHITE}Overskriv fil
 STR_SAVELOAD_OVERWRITE_WARNING                                  :{YELLOW}Er du sikker på at du vil overskrive eksisterende fil?
+STR_SAVELOAD_DELETE_TITLE                                       :{WHITE}Slett fil
+STR_SAVELOAD_DELETE_WARNING                                     :{YELLOW}Er du sikker på at du vil slette filen?
 STR_SAVELOAD_DIRECTORY                                          :{STRING} (Liste)
 STR_SAVELOAD_PARENT_DIRECTORY                                   :{STRING} (Foreldrekatalog)
 
@@ -3433,8 +3455,11 @@ STR_MAPGEN_SOUTHWEST                                            :{BLACK}Sørvest
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}Frihånds
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}Sjø
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}Tilfeldig
-STR_MAPGEN_BORDER_RANDOMIZE                                     :{BLACK}Tilfeldige
-STR_MAPGEN_BORDER_MANUAL                                        :{BLACK}Manuelle
+
+###length 3
+STR_MAPGEN_BORDER_RANDOMIZE                                     :Tilfeldige
+STR_MAPGEN_BORDER_MANUAL                                        :Manuelle
+STR_MAPGEN_BORDER_INFINITE_WATER                                :Uendelig vann
 
 STR_MAPGEN_HEIGHTMAP_ROTATION                                   :{BLACK}Høydekartrotering:
 STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Høydekartnavn:
@@ -3473,7 +3498,8 @@ STR_GENERATION_LANDSCAPE_GENERATION                             :{BLACK}Landskap
 STR_GENERATION_RIVER_GENERATION                                 :{BLACK}Elvegenerering
 STR_GENERATION_CLEARING_TILES                                   :{BLACK}Generering av ulendt og steinete område
 STR_GENERATION_TOWN_GENERATION                                  :{BLACK}Bygenerering
-STR_GENERATION_INDUSTRY_GENERATION                              :{BLACK}Industrigenerering
+STR_GENERATION_LAND_INDUSTRY_GENERATION                         :{BLACK}Landindustrigenerering
+STR_GENERATION_WATER_INDUSTRY_GENERATION                        :{BLACK}Vannindustrigenerering
 STR_GENERATION_OBJECT_GENERATION                                :{BLACK}Objektgenerering
 STR_GENERATION_TREE_GENERATION                                  :{BLACK}Tregenerering
 STR_GENERATION_SETTINGUP_GAME                                   :{BLACK}Klargjør spillet
@@ -4352,7 +4378,15 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}Du er n
 
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Melding fra kjøretøysprodusent
+STR_ENGINE_PREVIEW_CAPTION_COUNT                                :{WHITE}Melding fra kjøretøysprodusent ({COMMA} av {COMMA})
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Vi har nettopp designet e{G n i t} ny{G "" "" tt} {STRING} - er du interessert i ett års ekslusivt bruk av de{G 0 n n t}, slik at vi kan se hvordan de{G 0 n n t} virker før de{G 0 n n t} blir allment tilgjengelig?
+
+STR_ENGINE_PREVIEW_PREVIOUS                                     :Forrige
+STR_ENGINE_PREVIEW_PREVIOUS_TOOLTIP                             :Klikk for å gå til forrige nye kjøretøy
+STR_ENGINE_PREVIEW_NEXT                                         :Neste
+STR_ENGINE_PREVIEW_NEXT_TOOLTIP                                 :Klikk for å gå til neste nye kjøretøy
+STR_ENGINE_PREVIEW_ENGINE_LIST                                  :{COMMA}: {ENGINE}
+STR_ENGINE_PREVIEW_ENGINE_LIST_TOOLTIP                          :Klikk for å hoppe til et nytt kjøretøy
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :{G=neuter}lokomotiv
 STR_ENGINE_PREVIEW_ELRAIL_LOCOMOTIVE                            :{G=neuter}elektrisk lokomotiv

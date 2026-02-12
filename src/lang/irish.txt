@@ -1939,7 +1939,7 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_SI                  :SI (kN)
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT                    :Aonaid airde: {STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_HELPTEXT           :Aon áit a thaispeántar airde sa chomhéadan úsáideora, taispeain sna haonaid roghnaithe í
-###length 3
+###length 4
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :Impiriúil (tr)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :Méadrach (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (m)
@@ -3076,6 +3076,8 @@ STR_MAPGEN_SOUTHWEST                                            :{BLACK}Iardheis
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}Saorfhoirme
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}Uisce
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}Randamach
+
+###length 3
 STR_MAPGEN_BORDER_RANDOMIZE                                     :{BLACK}Randamach
 STR_MAPGEN_BORDER_MANUAL                                        :{BLACK}De láimh
 
@@ -3901,6 +3903,7 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}Tá tú
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Teachtaireacht ó dhéantóir feithiclí
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Táimid díreach tar éis {STRING} nua a dhearadh - an mbeadh suim agat úsáid eisiach a bhaint as ar feadh bliana, le go mbeimid in ann a fheiceáil mar a fheidhmíonn sé sula gcuirfimid ar fáil do chách é?
+
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :inneall gluaiste iarnróid
 STR_ENGINE_PREVIEW_ELRAIL_LOCOMOTIVE                            :inneall gluaiste iarnróid leictrithe

@@ -2126,7 +2126,7 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_SI                  :SI (kN)
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT                    :Мерни единици за височина: {STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_HELPTEXT           :Показваните височини ще бъдат изписвани в избраните мерни единици
-###length 3
+###length 4
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :Имперски (фут)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :Метрични (м)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (м)
@@ -3364,6 +3364,8 @@ STR_MAPGEN_SOUTHWEST                                            :{BLACK}Югоз
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}Произволни
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}Вода
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}Случаен
+
+###length 3
 STR_MAPGEN_BORDER_RANDOMIZE                                     :{BLACK}Случаен
 STR_MAPGEN_BORDER_MANUAL                                        :{BLACK}Ръчно нагалсени
 
@@ -3404,7 +3406,6 @@ STR_GENERATION_LANDSCAPE_GENERATION                             :{BLACK}Гене
 STR_GENERATION_RIVER_GENERATION                                 :{BLACK}Генериране на реки
 STR_GENERATION_CLEARING_TILES                                   :{BLACK}Генериране на твърда и скална повърност
 STR_GENERATION_TOWN_GENERATION                                  :{BLACK}Генерация на град
-STR_GENERATION_INDUSTRY_GENERATION                              :{BLACK}Генерация на индустрията
 STR_GENERATION_OBJECT_GENERATION                                :{BLACK}Генериране на обекти
 STR_GENERATION_TREE_GENERATION                                  :{BLACK}Генериране на дървета
 STR_GENERATION_SETTINGUP_GAME                                   :{BLACK}Настройване на играта
@@ -4270,6 +4271,7 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}Иск�
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Съобщение от производител
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Създадохме нов {STRING} - интересувате ли се от ексклузивното право да използвате това ПС за една година, за да видим как то работи, преди да го пуснем на пазара за масова употреба?
+
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :локомотив за двурелсов път
 STR_ENGINE_PREVIEW_ELRAIL_LOCOMOTIVE                            :локомотив за електрифициран релсов път

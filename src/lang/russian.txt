@@ -380,6 +380,7 @@ STR_UNITS_FORCE_SI                                              :{DECIMAL}{NBSP}
 STR_UNITS_HEIGHT_IMPERIAL                                       :{DECIMAL}{NBSP}фут{P "" а ов}
 STR_UNITS_HEIGHT_METRIC                                         :{DECIMAL}{NBSP}м
 STR_UNITS_HEIGHT_SI                                             :{DECIMAL}{NBSP}м
+STR_UNITS_HEIGHT_GAMEUNITS                                      :{DECIMAL}{NBSP}уров{P ень ня ней}
 
 # Time units used in string control characters
 STR_UNITS_DAYS                                                  :{COMMA}{NBSP}д{P ень ня ней}
@@ -2310,10 +2311,11 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_SI                  :СИ (кН)
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT                    :Система единиц для высоты: {STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_HELPTEXT           :Показывать значения высоты в выбранной системе единиц
-###length 3
+###length 4
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :английская (фут)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :метрическая (м)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :СИ (м)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_GAMEUNITS          :Игровые единицы (уровни)
 
 STR_CONFIG_SETTING_LOCALISATION                                 :Локализация
 STR_CONFIG_SETTING_GRAPHICS                                     :Графика
@@ -3546,6 +3548,8 @@ STR_SAVELOAD_DETAIL_GRFSTATUS                                   :{SILVER}NewGRF:
 STR_SAVELOAD_FILTER_TITLE                                       :{BLACK}Фильтр:
 STR_SAVELOAD_OVERWRITE_TITLE                                    :{WHITE}Перезапись файла
 STR_SAVELOAD_OVERWRITE_WARNING                                  :{YELLOW}Перезаписать файл?
+STR_SAVELOAD_DELETE_TITLE                                       :{WHITE}Удаление файла
+STR_SAVELOAD_DELETE_WARNING                                     :{YELLOW}Вы уверены, что хотите удалить файл?
 STR_SAVELOAD_DIRECTORY                                          :{STRING} (Каталог)
 STR_SAVELOAD_PARENT_DIRECTORY                                   :{STRING} (Родительский каталог)
 
@@ -3624,8 +3628,11 @@ STR_MAPGEN_SOUTHWEST                                            :{BLACK}Юго-�
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}Свободный
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}Водный
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}Случайно
-STR_MAPGEN_BORDER_RANDOMIZE                                     :{BLACK}Случайно
-STR_MAPGEN_BORDER_MANUAL                                        :{BLACK}Вручную
+
+###length 3
+STR_MAPGEN_BORDER_RANDOMIZE                                     :Случайно
+STR_MAPGEN_BORDER_MANUAL                                        :Вручную
+STR_MAPGEN_BORDER_INFINITE_WATER                                :Бескрайний океан
 
 STR_MAPGEN_HEIGHTMAP_ROTATION                                   :{BLACK}Поворот карты:
 STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Название карты:
@@ -3664,7 +3671,8 @@ STR_GENERATION_LANDSCAPE_GENERATION                             :{BLACK}Созд
 STR_GENERATION_RIVER_GENERATION                                 :{BLACK}Создание рек
 STR_GENERATION_CLEARING_TILES                                   :{BLACK}Расстановка декораций и камней
 STR_GENERATION_TOWN_GENERATION                                  :{BLACK}Создание городов
-STR_GENERATION_INDUSTRY_GENERATION                              :{BLACK}Создание предприятий
+STR_GENERATION_LAND_INDUSTRY_GENERATION                         :{BLACK}Создание наземных предприятий
+STR_GENERATION_WATER_INDUSTRY_GENERATION                        :{BLACK}Создание водных предприятий
 STR_GENERATION_OBJECT_GENERATION                                :{BLACK}Создание объектов
 STR_GENERATION_TREE_GENERATION                                  :{BLACK}Высадка лесов
 STR_GENERATION_SETTINGUP_GAME                                   :{BLACK}Настройка
@@ -4542,8 +4550,16 @@ STR_DEPOT_DRAG_WHOLE_TRAIN_TO_SELL_TOOLTIP                      :{BLACK}Пере
 STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}Весь транспорт в депо будет продан. Вы уверены?
 
 # Engine preview window
-STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Сообщение от производителя транспорта
+STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Сообщение от производителя транспортных средств
+STR_ENGINE_PREVIEW_CAPTION_COUNT                                :{WHITE}Сообщение от производителя транспортных средств ({COMMA} из {COMMA})
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Мы создали новую модель {STRING.gen}. Заинтересованы ли вы в его годовом эксклюзивном использовании для проверки перед запуском в серийное производство?
+
+STR_ENGINE_PREVIEW_PREVIOUS                                     :Назад
+STR_ENGINE_PREVIEW_PREVIOUS_TOOLTIP                             :К предыдущей модели транспортного средства
+STR_ENGINE_PREVIEW_NEXT                                         :Вперёд
+STR_ENGINE_PREVIEW_NEXT_TOOLTIP                                 :К следующей модели транспортного средства
+STR_ENGINE_PREVIEW_ENGINE_LIST                                  :{COMMA}: {ENGINE}
+STR_ENGINE_PREVIEW_ENGINE_LIST_TOOLTIP                          :Перейти к новой модели транспортного средства
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :ж/д локомотив
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE.gen                      :ж/д локомотива

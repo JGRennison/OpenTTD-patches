@@ -255,6 +255,7 @@ STR_UNITS_FORCE_SI                                              :{DECIMAL}kN
 STR_UNITS_HEIGHT_IMPERIAL                                       :{DECIMAL}피트
 STR_UNITS_HEIGHT_METRIC                                         :{DECIMAL}m
 STR_UNITS_HEIGHT_SI                                             :{DECIMAL}m
+STR_UNITS_HEIGHT_GAMEUNITS                                      :{DECIMAL}층
 
 # Time units used in string control characters
 STR_UNITS_DAYS                                                  :{COMMA}일
@@ -2160,10 +2161,11 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_SI                  :국제표준규
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT                    :높이 단위: {STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_HELPTEXT           :높이를 표시할 때 선택한 단위를 사용하여 나타냅니다
-###length 3
+###length 4
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :야드파운드법 (ft)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :미터법 (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :국제표준규격 (m)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_GAMEUNITS          :게임 단위 (층)
 
 STR_CONFIG_SETTING_LOCALISATION                                 :단위 설정
 STR_CONFIG_SETTING_GRAPHICS                                     :그래픽
@@ -2847,20 +2849,38 @@ STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :미리보기 �
 STR_PICKER_PREVIEW_EXPAND                                       :+
 STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :미리보기 이미지의 높이를 늘입니다. CTRL+클릭하면 최대로 늘입니다
 
+STR_PICKER_DEFAULT_COLLECTION                                   :기본 모음집
+STR_PICKER_SELECT_COLLECTION_TOOLTIP                            :모음집을 선택하세요
+STR_PICKER_COLLECTION_ADD                                       :추가
+STR_PICKER_COLLECTION_ADD_TOOLTIP                               :새 모음집을 생성합니다
+STR_PICKER_COLLECTION_RENAME                                    :이름 변경
+STR_PICKER_COLLECTION_RENAME_TOOLTIP                            :모음집 이름을 변경합니다
+STR_PICKER_COLLECTION_DELETE                                    :삭제
+STR_PICKER_COLLECTION_DELETE_TOOLTIP                            :모음집을 삭제합니다
 
+STR_PICKER_COLLECTION_RENAME_QUERY                              :모음집 이름을 변경합니다
+STR_PICKER_COLLECTION_DELETE_QUERY                              :모음집 삭제
+STR_PICKER_COLLECTION_DELETE_QUERY_TEXT                         :{YELLOW}정말 이 모음집을 삭제하시겠습니까?
+STR_PICKER_COLLECTION_DELETE_QUERY_DISABLED_TEXT                :{YELLOW}정말 이 모음집을 삭제하시겠습니까? (비활성화된 NewGRF에서 온 항목을 포함하고 있습니다)
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :표시할 역 종류를 선택하세요
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :설치하려는 역 종류를 선택하세요. CTRL+클릭하면 즐겨찾기 추가/제거가 가능합니다
+STR_PICKER_STATION_COLLECTION_TOOLTIP                           :표시할 역 모음집을 선택하세요
 STR_PICKER_WAYPOINT_CLASS_TOOLTIP                               :표시할 경유지 종류를 선택하세요
 STR_PICKER_WAYPOINT_TYPE_TOOLTIP                                :설치하려는 경유지를 선택하세요. CTRL+클릭하면 즐겨찾기 추가/제거가 가능합니다
+STR_PICKER_WAYPOINT_COLLECTION_TOOLTIP                          :표시할 경유지 모음집을 선택하세요
 STR_PICKER_ROADSTOP_BUS_CLASS_TOOLTIP                           :표시할 버스 정류장 종류를 선택하세요
 STR_PICKER_ROADSTOP_BUS_TYPE_TOOLTIP                            :설치하려는 버스 정류장 종류를 선택하세요. CTRL+클릭하면 즐겨찾기 추가/제거가 가능합니다
+STR_PICKER_ROADSTOP_BUS_COLLECTION_TOOLTIP                      :표시할 버스 정류장 모음집을 선택하세요
 STR_PICKER_ROADSTOP_TRUCK_CLASS_TOOLTIP                         :표시할 트럭 적하장 종류를 선택하세요
 STR_PICKER_ROADSTOP_TRUCK_TYPE_TOOLTIP                          :설치하려는 트럭 적하장 종류를 선택하세요. CTRL+클릭하면 즐겨찾기 추가/제거가 가능합니다
+STR_PICKER_ROADSTOP_TRUCK_COLLECTION_TOOLTIP                    :표시할 트럭 적하장 모음집을 선택하세요
 STR_PICKER_OBJECT_CLASS_TOOLTIP                                 :표시할 오브젝트 종류를 선택하세요
 STR_PICKER_OBJECT_TYPE_TOOLTIP                                  :설치하려는 오브젝트 종류를 선택합니다. CTRL+클릭+드래그하면 대각선 방향의 영역을 선택할 수 있습니다. SHIFT 키를 누른 채로 사용하면 예상 비용을 볼 수 있습니다
+STR_PICKER_OBJECT_COLLECTION_TOOLTIP                            :표시할 오브젝트 모음집을 선택하세요
 STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :표시할 도시 구역을 선택하세요
 STR_PICKER_HOUSE_TYPE_TOOLTIP                                   :지으려는 건물 종류를 선택하세요. CTRL+클릭하면 즐겨찾기 추가/제거가 가능합니다
+STR_PICKER_HOUSE_COLLECTION_TOOLTIP                             :표시할 건물 모음집을 선택하세요
 
 STR_HOUSE_PICKER_CAPTION                                        :건물 선택
 STR_HOUSE_PICKER_NAME                                           :{BLACK}이름: {ORANGE}{STRING}
@@ -3354,6 +3374,8 @@ STR_SAVELOAD_DETAIL_GRFSTATUS                                   :{SILVER}NewGRF:
 STR_SAVELOAD_FILTER_TITLE                                       :{BLACK}검색:
 STR_SAVELOAD_OVERWRITE_TITLE                                    :{WHITE}파일 덮어쓰기
 STR_SAVELOAD_OVERWRITE_WARNING                                  :{YELLOW}정말 이미 존재하는 파일에 덮어씌우시겠습니까?
+STR_SAVELOAD_DELETE_TITLE                                       :{WHITE}파일 삭제
+STR_SAVELOAD_DELETE_WARNING                                     :{YELLOW}정말 이 파일을 삭제하시겠습니까?
 STR_SAVELOAD_DIRECTORY                                          :{STRING} (폴더)
 STR_SAVELOAD_PARENT_DIRECTORY                                   :{STRING} (상위 폴더)
 
@@ -3432,8 +3454,11 @@ STR_MAPGEN_SOUTHWEST                                            :{BLACK}남서
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}변경 가능
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}물
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}임의
-STR_MAPGEN_BORDER_RANDOMIZE                                     :{BLACK}임의
-STR_MAPGEN_BORDER_MANUAL                                        :{BLACK}사용자 정의
+
+###length 3
+STR_MAPGEN_BORDER_RANDOMIZE                                     :임의
+STR_MAPGEN_BORDER_MANUAL                                        :사용자 정의
+STR_MAPGEN_BORDER_INFINITE_WATER                                :물 (지도 밖까지 모두)
 
 STR_MAPGEN_HEIGHTMAP_ROTATION                                   :{BLACK}높이맵 방향:
 STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}높이맵 이름:
@@ -3472,7 +3497,8 @@ STR_GENERATION_LANDSCAPE_GENERATION                             :{BLACK}지형 �
 STR_GENERATION_RIVER_GENERATION                                 :{BLACK}강 제작
 STR_GENERATION_CLEARING_TILES                                   :{BLACK}거친 암석지대 만드는 중
 STR_GENERATION_TOWN_GENERATION                                  :{BLACK}도시 생성
-STR_GENERATION_INDUSTRY_GENERATION                              :{BLACK}산업시설 생성
+STR_GENERATION_LAND_INDUSTRY_GENERATION                         :{BLACK}지상 산업시설 생성
+STR_GENERATION_WATER_INDUSTRY_GENERATION                        :{BLACK}수상 산업시설 생성
 STR_GENERATION_OBJECT_GENERATION                                :{BLACK}움직일수 없는 객체 만드는 중
 STR_GENERATION_TREE_GENERATION                                  :{BLACK}나무 심는 중
 STR_GENERATION_SETTINGUP_GAME                                   :{BLACK}게임 설정 중
@@ -4228,10 +4254,10 @@ STR_BUY_VEHICLE_SHIP_BUY_REFIT_VEHICLE_TOOLTIP                  :{BLACK}선택�
 STR_BUY_VEHICLE_AIRCRAFT_BUY_REFIT_VEHICLE_TOOLTIP              :{BLACK}선택한 항공기를 구입하고 개조합니다. SHIFT+클릭하면 예상 비용을 볼 수 있습니다
 
 ###length VEHICLE_TYPES
-STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}이름 지정
-STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_BUTTON                      :{BLACK}이름 지정
-STR_BUY_VEHICLE_SHIP_RENAME_BUTTON                              :{BLACK}이름 지정
-STR_BUY_VEHICLE_AIRCRAFT_RENAME_BUTTON                          :{BLACK}이름 지정
+STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON                             :{BLACK}이름 변경
+STR_BUY_VEHICLE_ROAD_VEHICLE_RENAME_BUTTON                      :{BLACK}이름 변경
+STR_BUY_VEHICLE_SHIP_RENAME_BUTTON                              :{BLACK}이름 변경
+STR_BUY_VEHICLE_AIRCRAFT_RENAME_BUTTON                          :{BLACK}이름 변경
 
 ###length VEHICLE_TYPES
 STR_BUY_VEHICLE_TRAIN_RENAME_TOOLTIP                            :{BLACK}열차의 모델명을 변경합니다
@@ -4351,7 +4377,15 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}이 안
 
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}차량 개발자가 보낸 메시지
+STR_ENGINE_PREVIEW_CAPTION_COUNT                                :{WHITE}차량 제조사가 보낸 메시지 ({COMMA}/{COMMA})
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}저희는 이제 막 새로운 {STRING}{G 0 "을" "를"} 개발했습니다. 1년 먼저 이 차량을 사용하셔서 모두에게 공개되기 전에 잘 작동하는지 확인해주시겠습니까?
+
+STR_ENGINE_PREVIEW_PREVIOUS                                     :이전
+STR_ENGINE_PREVIEW_PREVIOUS_TOOLTIP                             :이전 새 차량으로 넘어가려면 클릭하세요
+STR_ENGINE_PREVIEW_NEXT                                         :다음
+STR_ENGINE_PREVIEW_NEXT_TOOLTIP                                 :다음 새 차량으로 넘어가려면 클릭하세요
+STR_ENGINE_PREVIEW_ENGINE_LIST                                  :{COMMA}: {ENGINE}
+STR_ENGINE_PREVIEW_ENGINE_LIST_TOOLTIP                          :새 차량으로 넘어가려면 클릭하세요
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :{G=f}철도 기관차
 STR_ENGINE_PREVIEW_ELRAIL_LOCOMOTIVE                            :{G=f}전기선로 기관차
@@ -4509,10 +4543,10 @@ STR_VEHICLE_COMMAND_STARTED                                     :{GREEN}출발
 STR_VEHICLE_DETAILS_CAPTION                                     :{WHITE}{VEHICLE} (상세정보)
 
 ###length VEHICLE_TYPES
-STR_VEHICLE_DETAILS_TRAIN_RENAME                                :{BLACK}열차 이름 지정
-STR_VEHICLE_DETAILS_ROAD_VEHICLE_RENAME                         :{BLACK}차량 이름 지정
-STR_VEHICLE_DETAILS_SHIP_RENAME                                 :{BLACK}선박 이름 지정
-STR_VEHICLE_DETAILS_AIRCRAFT_RENAME                             :{BLACK}항공기 이름 지정
+STR_VEHICLE_DETAILS_TRAIN_RENAME                                :{BLACK}열차 이름 변경
+STR_VEHICLE_DETAILS_ROAD_VEHICLE_RENAME                         :{BLACK}차량 이름 변경
+STR_VEHICLE_DETAILS_SHIP_RENAME                                 :{BLACK}선박 이름 변경
+STR_VEHICLE_DETAILS_AIRCRAFT_RENAME                             :{BLACK}항공기 이름 변경
 
 STR_VEHICLE_INFO_AGE                                            :{COMMA}년 ({COMMA})
 STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA}년 ({COMMA})
@@ -4558,10 +4592,10 @@ STR_VEHICLE_DETAILS_MINUTES                                     :분
 STR_VEHICLE_DETAILS_PERCENT                                     :신뢰도
 
 ###length VEHICLE_TYPES
-STR_QUERY_RENAME_TRAIN_CAPTION                                  :{WHITE}열차 이름 지정
-STR_QUERY_RENAME_ROAD_VEHICLE_CAPTION                           :{WHITE}차량 이름 지정
-STR_QUERY_RENAME_SHIP_CAPTION                                   :{WHITE}선박 이름 지정
-STR_QUERY_RENAME_AIRCRAFT_CAPTION                               :{WHITE}항공기 이름 지정
+STR_QUERY_RENAME_TRAIN_CAPTION                                  :{WHITE}열차 이름 변경
+STR_QUERY_RENAME_ROAD_VEHICLE_CAPTION                           :{WHITE}차량 이름 변경
+STR_QUERY_RENAME_SHIP_CAPTION                                   :{WHITE}선박 이름 변경
+STR_QUERY_RENAME_AIRCRAFT_CAPTION                               :{WHITE}항공기 이름 변경
 
 # Extra buttons for train details windows
 STR_VEHICLE_DETAILS_TRAIN_ENGINE_BUILT_AND_VALUE                :{LTBLUE}{ENGINE}{BLACK}   생산: {LTBLUE}{NUM}{BLACK} 가격: {LTBLUE}{CURRENCY_LONG}

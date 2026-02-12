@@ -1830,7 +1830,7 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_SI                  :มาตรฐ
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT                    :หน่วยวัดความสูง: {STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_HELPTEXT           :การแสดงหน่วยวัดความสูงเมื่อกดดูรายละเอียดของวัตถุต่างๆ
-###length 3
+###length 4
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :อิมพีเรียล (ฟุต)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :เมตริก (เมตร)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :มาตรฐานสากล (เมตร)
@@ -2867,6 +2867,8 @@ STR_MAPGEN_SOUTHWEST                                            :{BLACK}ตะ�
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}ไม่ยึดติดรูปแบบ
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}น้ำ
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}สุ่ม
+
+###length 3
 STR_MAPGEN_BORDER_RANDOMIZE                                     :{BLACK}สุ่ม
 STR_MAPGEN_BORDER_MANUAL                                        :{BLACK}ปรับแต่งเอง
 
@@ -3646,6 +3648,7 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}คุ�
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}ข้อความจากผู้ผลิตยานพาหนะ
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}เราได้ออกแบบ {STRING} ใหม่ - หากคุณต้องการที่จะนำไปทดลองใช้ เราจะให้คุณนำไปใช้งานก่อนที่จะนำออกไปจำหน่ายในตลาดปกติ{}คุณต้องการนำไปทดลองใช้หรือไม่ ?
+
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :หัวรถจักร
 STR_ENGINE_PREVIEW_ELRAIL_LOCOMOTIVE                            :หัวรถจักรของรถไฟฟ้า

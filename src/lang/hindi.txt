@@ -720,7 +720,7 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_SI               :अंतर्
 
 ###length 3
 
-###length 3
+###length 4
 
 STR_CONFIG_SETTING_INTERFACE_GENERAL                            :सामान्य
 STR_CONFIG_SETTING_COMPANY                                      :कंपनी
@@ -1008,6 +1008,8 @@ STR_MAPGEN_TOWN_NAME_ITALIAN                                    :इटैलि
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}जल
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}यादृच्छिक
 
+###length 3
+
 
 
 # SE Map generation
@@ -1275,6 +1277,7 @@ STR_DEPOT_AUTOREPLACE_SHIP_TOOLTIP                              :{BLACK}डि�
 
 
 # Engine preview window
+
 
 
 

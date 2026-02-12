@@ -1137,7 +1137,7 @@ STR_CONFIG_SETTING_ZOOM_LVL_OUT_8X                              :8x
 
 ###length 3
 
-###length 3
+###length 4
 
 
 
@@ -1465,6 +1465,8 @@ STR_MAPGEN_BY                                                   :{BLACK}*
 
 # Strings for map borders at game generation
 
+###length 3
+
 
 
 # SE Map generation
@@ -1781,6 +1783,7 @@ STR_DEPOT_AIRCRAFT_LOCATION_TOOLTIP                             :{BLACK}Цент
 
 
 # Engine preview window
+
 
 
 

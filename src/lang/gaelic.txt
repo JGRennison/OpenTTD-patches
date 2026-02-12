@@ -2012,7 +2012,7 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_SI                  :SI (kN)
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT                    :Aonadan àirde: {STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_HELPTEXT           :Nuair a thèid àirde a shealltainn san eadar-aghaidh, seall i leis na h-aonadan a thagh thu
-###length 3
+###length 4
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :Impireil (ft)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :Meatrach (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (m)
@@ -3037,6 +3037,8 @@ STR_MAPGEN_SOUTHWEST                                            :{BLACK}Iar-dhea
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}Cruth saor
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}Uisge
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}Air thuaiream
+
+###length 3
 STR_MAPGEN_BORDER_RANDOMIZE                                     :{BLACK}Air thuaiream
 STR_MAPGEN_BORDER_MANUAL                                        :{BLACK}A làimh
 
@@ -3814,6 +3816,7 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}Tha thu
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Brath bho dhèanadair a' charbaid
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Tha sinn air {STRING} ùr a dhealbhadh - a bheil ùidh agaibh ann ’s nach cleachd ach sibh fhèin e fad bliadhna ach am faic sinn dè cho math ’s a dh’obraicheas e mus reic sinn don a h-uile duine e?
+
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :einnsean-rèile
 STR_ENGINE_PREVIEW_MONORAIL_LOCOMOTIVE                          :einnsean aona-rèile

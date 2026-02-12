@@ -317,6 +317,7 @@ STR_UNITS_FORCE_SI                                              :{DECIMAL}{NBSP}
 STR_UNITS_HEIGHT_IMPERIAL                                       :{DECIMAL}{NBSP}láb
 STR_UNITS_HEIGHT_METRIC                                         :{DECIMAL}{NBSP}m
 STR_UNITS_HEIGHT_SI                                             :{DECIMAL}{NBSP}m
+STR_UNITS_HEIGHT_GAMEUNITS                                      :{DECIMAL}{NBSP}szint
 
 # Time units used in string control characters
 STR_UNITS_DAYS                                                  :{COMMA}{NBSP}nap
@@ -2223,10 +2224,11 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_SI                  :SI (kN)
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT                    :Hosszúság mértékegysége: {STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_HELPTEXT           :A magassági értékek a kiválasztott mértékegységben fognak megjelenni a felhasználói felületen
-###length 3
+###length 4
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :Angolszász (láb)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :Metrikus (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (m)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_GAMEUNITS          :Játékbeli mértékegység (szint)
 
 STR_CONFIG_SETTING_LOCALISATION                                 :Honosítás
 STR_CONFIG_SETTING_GRAPHICS                                     :Megjelenés
@@ -3435,6 +3437,8 @@ STR_SAVELOAD_DETAIL_GRFSTATUS                                   :{SILVER}NewGRF:
 STR_SAVELOAD_FILTER_TITLE                                       :{BLACK}Szűrő:
 STR_SAVELOAD_OVERWRITE_TITLE                                    :{WHITE}Fájl felülírása
 STR_SAVELOAD_OVERWRITE_WARNING                                  :{YELLOW}Biztos vagy benne, hogy felülírod a létező fájlt?
+STR_SAVELOAD_DELETE_TITLE                                       :{WHITE}Fájl törlése
+STR_SAVELOAD_DELETE_WARNING                                     :{YELLOW}Biztosan törölni akarod ezt a fájlt?
 STR_SAVELOAD_DIRECTORY                                          :{STRING} (Könyvtár)
 STR_SAVELOAD_PARENT_DIRECTORY                                   :{STRING} (Szülőkönyvtár)
 
@@ -3513,8 +3517,11 @@ STR_MAPGEN_SOUTHWEST                                            :{BLACK}Délnyug
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}Szárazföld
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}Víz
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}Véletlen
-STR_MAPGEN_BORDER_RANDOMIZE                                     :{BLACK}Véletlen
-STR_MAPGEN_BORDER_MANUAL                                        :{BLACK}Kézi
+
+###length 3
+STR_MAPGEN_BORDER_RANDOMIZE                                     :Véletlen
+STR_MAPGEN_BORDER_MANUAL                                        :Kézi
+STR_MAPGEN_BORDER_INFINITE_WATER                                :Végtelen víz
 
 STR_MAPGEN_HEIGHTMAP_ROTATION                                   :{BLACK}Magasságtérkép elforgatása:
 STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Magasságtérkép neve:
@@ -3553,7 +3560,8 @@ STR_GENERATION_LANDSCAPE_GENERATION                             :{BLACK}Tájkép
 STR_GENERATION_RIVER_GENERATION                                 :{BLACK}Folyó generálás
 STR_GENERATION_CLEARING_TILES                                   :{BLACK}Durva és köves területek generálása
 STR_GENERATION_TOWN_GENERATION                                  :{BLACK}Város generálás
-STR_GENERATION_INDUSTRY_GENERATION                              :{BLACK}Ipar generálás
+STR_GENERATION_LAND_INDUSTRY_GENERATION                         :{BLACK}Szárazföldi ipar generálás
+STR_GENERATION_WATER_INDUSTRY_GENERATION                        :{BLACK}Vízi ipar generálás
 STR_GENERATION_OBJECT_GENERATION                                :{BLACK}Mozgathatatlan létesítmények létrehozása
 STR_GENERATION_TREE_GENERATION                                  :{BLACK}Fák generálása
 STR_GENERATION_SETTINGUP_GAME                                   :{BLACK}Játék beállítása
@@ -4432,7 +4440,15 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}Biztosa
 
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Üzenet egy járműgyártótól
+STR_ENGINE_PREVIEW_CAPTION_COUNT                                :{WHITE}Üzenet egy járműgyártótól ({COMMA}/{COMMA})
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Most készültek el egy új {STRING} tervei - érdekelne a jármű egy éves kizárólagos használata, hogy megnézhessük a képességeit, mielőtt mindenki számára elérhetővé tesszük?
+
+STR_ENGINE_PREVIEW_PREVIOUS                                     :Előző
+STR_ENGINE_PREVIEW_PREVIOUS_TOOLTIP                             :Kattints az előző járműhöz
+STR_ENGINE_PREVIEW_NEXT                                         :Következő
+STR_ENGINE_PREVIEW_NEXT_TOOLTIP                                 :Kattints a következő járműhöz
+STR_ENGINE_PREVIEW_ENGINE_LIST                                  :{COMMA}: {ENGINE}
+STR_ENGINE_PREVIEW_ENGINE_LIST_TOOLTIP                          :Kattints egy új járműhöz ugráshoz
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :vasúti mozdony
 STR_ENGINE_PREVIEW_ELRAIL_LOCOMOTIVE                            :villamos vasúti mozdony

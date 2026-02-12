@@ -2415,7 +2415,7 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_SI                  :СІ (кН)
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT                    :Сыстэма адзінак для вышыні: {STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_HELPTEXT           :Паказваць значэньні вышыні ў абранай сыстэме адзінак
-###length 3
+###length 4
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :ангельская (фут)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :мэтрычная (м)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :СІ (м)
@@ -3637,6 +3637,8 @@ STR_MAPGEN_SOUTHWEST                                            :{BLACK}Паўд
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}Зямля
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}Вада
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}Выпадковы
+
+###length 3
 STR_MAPGEN_BORDER_RANDOMIZE                                     :{BLACK}Выпадковыя
 STR_MAPGEN_BORDER_MANUAL                                        :{BLACK}Уручную
 
@@ -4528,6 +4530,7 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}Уве�
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Паведамленьне ад вытворцы транспарту
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Мы стварылі новую мадэль {STRING.gen}. Цi зацікаўлены Вы ў яе гадавым эксклюзіўным выкарыстаньні для праверкі перад запускам у масавую вытворчасьць?
+
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :{G=m}чыгуначны лякаматыў
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE.gen                      :чыгуначнага лакаматыва

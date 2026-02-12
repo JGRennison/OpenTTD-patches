@@ -339,6 +339,7 @@ STR_UNITS_FORCE_SI                                              :{DECIMAL}{NBSP}
 STR_UNITS_HEIGHT_IMPERIAL                                       :{DECIMAL}{NBSP}ft
 STR_UNITS_HEIGHT_METRIC                                         :{DECIMAL}{NBSP}m
 STR_UNITS_HEIGHT_SI                                             :{DECIMAL}{NBSP}m
+STR_UNITS_HEIGHT_GAMEUNITS                                      :{DECIMAL}{NBSP}nivelo{P "" j}
 
 # Time units used in string control characters
 STR_UNITS_DAYS                                                  :{COMMA}{NBSP}tago{P "" j}
@@ -1032,7 +1033,7 @@ STR_NEWS_NEW_VEHICLE_NOW_AVAILABLE_WITH_TYPE                    :{BLACK}Nova {ST
 
 STR_NEWS_SHOW_VEHICLE_GROUP_TOOLTIP                             :{BLACK}Malfermu la grupo-fenestron, fokuse en la grupo de la veturilo
 
-STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO_LIST                   :{WHITE}{STATION} plu ne akceptas: {CARGO_LIST}
+STR_NEWS_STATION_NO_LONGER_ACCEPTS_CARGO_LIST                   :{WHITE}{STATION} plu ne akceptas: {CARGO_LIST.n}
 STR_NEWS_STATION_NOW_ACCEPTS_CARGO_LIST                         :{WHITE}{STATION} nun akceptas: {CARGO_LIST.n}
 
 STR_NEWS_OFFER_OF_SUBSIDY_EXPIRED                               :{BIG_FONT}{BLACK}Subvencia oferto ne plu validas:{}{}Transportado de {STRING} de {STRING} al {STRING} ne estos subvenciata.
@@ -2250,10 +2251,11 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_SI                  :SI-unuoj (kN)
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT                    :Altecunuoj: {STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_HELPTEXT           :Kiam ajn montriĝas alteco en la uzantinterfaco, montru ĝin en la indikitaj unuoj
-###length 3
+###length 4
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :Angla-usona sistemo (futoj)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :Metra (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI-unuoj (m)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_GAMEUNITS          :Enludaj unuoj (niveloj)
 
 STR_CONFIG_SETTING_LOCALISATION                                 :Loka adaptado
 STR_CONFIG_SETTING_GRAPHICS                                     :Grafiko
@@ -3454,6 +3456,8 @@ STR_SAVELOAD_DETAIL_GRFSTATUS                                   :{SILVER}NewGRF:
 STR_SAVELOAD_FILTER_TITLE                                       :{BLACK}Filtrilo:
 STR_SAVELOAD_OVERWRITE_TITLE                                    :{WHITE}Anstataŭigi dosieron
 STR_SAVELOAD_OVERWRITE_WARNING                                  :{YELLOW}Ĉu vi certas ke vi volas anstataŭigi la ekzistantan dosieron?
+STR_SAVELOAD_DELETE_TITLE                                       :{WHITE}Forigi dosieron
+STR_SAVELOAD_DELETE_WARNING                                     :{YELLOW}Ĉu vi certas, ke vi volas forigi ĉi tiun dosieron?
 STR_SAVELOAD_DIRECTORY                                          :{STRING} (Dosierujo)
 STR_SAVELOAD_PARENT_DIRECTORY                                   :{STRING} (Supra dosierujo)
 
@@ -3532,8 +3536,11 @@ STR_MAPGEN_SOUTHWEST                                            :{BLACK}Sudokcid
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}Libermana
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}Akvo
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}Hazarde
-STR_MAPGEN_BORDER_RANDOMIZE                                     :{BLACK}Hazarde
-STR_MAPGEN_BORDER_MANUAL                                        :{BLACK}Permane
+
+###length 3
+STR_MAPGEN_BORDER_RANDOMIZE                                     :Hazarde
+STR_MAPGEN_BORDER_MANUAL                                        :Permane
+STR_MAPGEN_BORDER_INFINITE_WATER                                :Senfina akvo
 
 STR_MAPGEN_HEIGHTMAP_ROTATION                                   :{BLACK}Mapa turniĝo:
 STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Mapa nomo:
@@ -3572,6 +3579,8 @@ STR_GENERATION_LANDSCAPE_GENERATION                             :{BLACK}Generado
 STR_GENERATION_RIVER_GENERATION                                 :{BLACK}Rivergenerado
 STR_GENERATION_CLEARING_TILES                                   :{BLACK}Generado de malglataj kaj rokaj regionoj
 STR_GENERATION_TOWN_GENERATION                                  :{BLACK}Generado de urboj
+STR_GENERATION_LAND_INDUSTRY_GENERATION                         :{BLACK}Generado de akvaj entreprenoj
+STR_GENERATION_WATER_INDUSTRY_GENERATION                        :{BLACK}Generado de akvaj entreprenoj
 STR_GENERATION_OBJECT_GENERATION                                :{BLACK}Nemoveblaĵa generado
 STR_GENERATION_TREE_GENERATION                                  :{BLACK}Arba generado
 STR_GENERATION_SETTINGUP_GAME                                   :{BLACK}Agordado de ludo
@@ -4453,7 +4462,15 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}Vi vend
 
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Mesaĝo de veturil-produktanto
+STR_ENGINE_PREVIEW_CAPTION_COUNT                                :{WHITE}Mesaĝo de veturil-produktanto ({COMMA} de {COMMA})
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Nova {STRING} estas inventita - ĉu vi ŝatus jaron ekskluzive uzi la veturilon, por ke ni povu vidi ĝian funkciadon antaŭ ol ĝi estos plene havebla?
+
+STR_ENGINE_PREVIEW_PREVIOUS                                     :Malsekva
+STR_ENGINE_PREVIEW_PREVIOUS_TOOLTIP                             :Klaku por iri al malsekva nova veturilo
+STR_ENGINE_PREVIEW_NEXT                                         :Sekva
+STR_ENGINE_PREVIEW_NEXT_TOOLTIP                                 :Klaku por iri al sekva nova veturilo
+STR_ENGINE_PREVIEW_ENGINE_LIST                                  :{COMMA}: {ENGINE}
+STR_ENGINE_PREVIEW_ENGINE_LIST_TOOLTIP                          :Klaku por salti al nova veturilo
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :fervoja lokomotivo
 STR_ENGINE_PREVIEW_ELRAIL_LOCOMOTIVE                            :elektrofervoja lokomotivo
@@ -5299,7 +5316,7 @@ STR_ERROR_INCOMPATIBLE_RAIL_TYPES                               :Neinterŝanĝeb
 
 STR_ERROR_CAN_T_MOVE_VEHICLE                                    :{WHITE}Ne povas movi veturilon
 STR_ERROR_REAR_ENGINE_FOLLOW_FRONT                              :{WHITE}La malantaŭa maŝino ĉiam sekvos la antaŭan
-STR_ERROR_UNABLE_TO_FIND_ROUTE_TO                               :{WHITE}Ne povas trovi straton al loka garaĝo
+STR_ERROR_UNABLE_TO_FIND_ROUTE_TO                               :{WHITE}Ne povas trovi vojon al loka tenejo
 STR_ERROR_UNABLE_TO_FIND_LOCAL_DEPOT                            :{WHITE}Ne povas trovi lokan garaĝon
 
 STR_ERROR_DEPOT_WRONG_DEPOT_TYPE                                :Malĝusta garaĝtipo

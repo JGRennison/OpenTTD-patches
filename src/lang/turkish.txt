@@ -255,6 +255,7 @@ STR_UNITS_FORCE_SI                                              :{DECIMAL}{NBSP}
 STR_UNITS_HEIGHT_IMPERIAL                                       :{DECIMAL}{NBSP}ft
 STR_UNITS_HEIGHT_METRIC                                         :{DECIMAL}{NBSP}m
 STR_UNITS_HEIGHT_SI                                             :{DECIMAL}{NBSP}m
+STR_UNITS_HEIGHT_GAMEUNITS                                      :{DECIMAL}{NBSP}seviye
 
 # Time units used in string control characters
 STR_UNITS_DAYS                                                  :{COMMA}{NBSP}gün
@@ -2160,10 +2161,11 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_SI                  :SI (Uluslararas
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT                    :Yükseklik ölçü birimi: {STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_HELPTEXT           :Kullanıcı arayüzünde yükseklikler görüntülendiğinde, bunları seçili ölçü biriminde göster
-###length 3
+###length 4
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :Imperial (Ingiliz ölçü birimleri) (ft)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :Metrik (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (Uluslararası Ölçüm Sistemi) (m)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_GAMEUNITS          :Oyun birimleri (seviyeler)
 
 STR_CONFIG_SETTING_LOCALISATION                                 :Yerelleştirme
 STR_CONFIG_SETTING_GRAPHICS                                     :Grafikler
@@ -3353,6 +3355,8 @@ STR_SAVELOAD_DETAIL_GRFSTATUS                                   :{SILVER}NewGRF:
 STR_SAVELOAD_FILTER_TITLE                                       :{BLACK}Filtre:
 STR_SAVELOAD_OVERWRITE_TITLE                                    :{WHITE}Dosya Üzerine Yaz
 STR_SAVELOAD_OVERWRITE_WARNING                                  :{YELLOW}Mevcut dosyanın üzerine yazmak istediğinizden emin misiniz?
+STR_SAVELOAD_DELETE_TITLE                                       :{WHITE}Dosyayı Sil
+STR_SAVELOAD_DELETE_WARNING                                     :{YELLOW}Dosyayı silmek istediğinizden emin misiniz?
 STR_SAVELOAD_DIRECTORY                                          :{STRING} (Dizin)
 STR_SAVELOAD_PARENT_DIRECTORY                                   :{STRING} (Ana dizin)
 
@@ -3431,8 +3435,11 @@ STR_MAPGEN_SOUTHWEST                                            :{BLACK}Güneyba
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}Serbest
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}Su
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}Rastgele
-STR_MAPGEN_BORDER_RANDOMIZE                                     :{BLACK}Rastgele
-STR_MAPGEN_BORDER_MANUAL                                        :{BLACK}El ile
+
+###length 3
+STR_MAPGEN_BORDER_RANDOMIZE                                     :Rastgele
+STR_MAPGEN_BORDER_MANUAL                                        :El ile
+STR_MAPGEN_BORDER_INFINITE_WATER                                :Sınırsız Su
 
 STR_MAPGEN_HEIGHTMAP_ROTATION                                   :{BLACK}Yükseklik haritası döndür:
 STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Yükseklik haritası adı:
@@ -3471,7 +3478,8 @@ STR_GENERATION_LANDSCAPE_GENERATION                             :{BLACK}Peyzaj o
 STR_GENERATION_RIVER_GENERATION                                 :{BLACK}Nehir oluşturma
 STR_GENERATION_CLEARING_TILES                                   :{BLACK}Engebeli ve kayalık alan oluştur
 STR_GENERATION_TOWN_GENERATION                                  :{BLACK}Kasaba Oluşumu
-STR_GENERATION_INDUSTRY_GENERATION                              :{BLACK}Endüstri Oluşumu
+STR_GENERATION_LAND_INDUSTRY_GENERATION                         :{BLACK}Kara endüstrisi oluşturma
+STR_GENERATION_WATER_INDUSTRY_GENERATION                        :{BLACK}Su endüstrisi oluşturma
 STR_GENERATION_OBJECT_GENERATION                                :{BLACK}Nesne oluşturma
 STR_GENERATION_TREE_GENERATION                                  :{BLACK}Ağaç üretimi
 STR_GENERATION_SETTINGUP_GAME                                   :{BLACK}Oyun ayarlanıyor
@@ -4351,6 +4359,7 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}Garajda
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Araç üreticisinden mesaj
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Yeni bir {STRING} tasarladık - bizim için bunu bir yıl denemeyi kabul ediyor musunuz?
+
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :lokomotif
 STR_ENGINE_PREVIEW_ELRAIL_LOCOMOTIVE                            :Elektrikli demiryolu lokomotifi

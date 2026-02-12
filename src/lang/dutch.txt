@@ -254,6 +254,7 @@ STR_UNITS_FORCE_SI                                              :{DECIMAL}{NBSP}
 STR_UNITS_HEIGHT_IMPERIAL                                       :{DECIMAL}{NBSP}ft
 STR_UNITS_HEIGHT_METRIC                                         :{DECIMAL}{NBSP}m
 STR_UNITS_HEIGHT_SI                                             :{DECIMAL}{NBSP}m
+STR_UNITS_HEIGHT_GAMEUNITS                                      :{DECIMAL}{NBSP}niveau{P "" s}
 
 # Time units used in string control characters
 STR_UNITS_DAYS                                                  :{COMMA}{NBSP}dag{P "" en}
@@ -2159,10 +2160,11 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_SI                  :SI (kN)
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT                    :Hoogte-eenheden: {STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_HELPTEXT           :Wanneer hoogtes worden weergegeven in het gebruikersscherm, gebruik dan de geselecteerde eenheden
-###length 3
+###length 4
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :Angelsaksisch (ft)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :Metrisch (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (m)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_GAMEUNITS          :Speleenheden (niveaus)
 
 STR_CONFIG_SETTING_LOCALISATION                                 :Lokalisatie
 STR_CONFIG_SETTING_GRAPHICS                                     :Grafische elementen
@@ -3353,6 +3355,8 @@ STR_SAVELOAD_DETAIL_GRFSTATUS                                   :{SILVER}NewGRF:
 STR_SAVELOAD_FILTER_TITLE                                       :{BLACK}Filter:
 STR_SAVELOAD_OVERWRITE_TITLE                                    :{WHITE}Bestand overschrijven
 STR_SAVELOAD_OVERWRITE_WARNING                                  :{YELLOW}Weet je zeker dat je het bestaande bestand wilt overschrijven?
+STR_SAVELOAD_DELETE_TITLE                                       :{WHITE}Bestand verwijderen
+STR_SAVELOAD_DELETE_WARNING                                     :{YELLOW}Weet je zeker dat je dit bestand wilt verwijderen?
 STR_SAVELOAD_DIRECTORY                                          :{STRING} (Map)
 STR_SAVELOAD_PARENT_DIRECTORY                                   :{STRING} (Bovenliggende map)
 
@@ -3431,8 +3435,11 @@ STR_MAPGEN_SOUTHWEST                                            :{BLACK}Zuidwest
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}Vrije vorm
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}Water
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}Willekeurig
-STR_MAPGEN_BORDER_RANDOMIZE                                     :{BLACK}Willekeurig
-STR_MAPGEN_BORDER_MANUAL                                        :{BLACK}Handmatig
+
+###length 3
+STR_MAPGEN_BORDER_RANDOMIZE                                     :Willekeurig
+STR_MAPGEN_BORDER_MANUAL                                        :Handmatig
+STR_MAPGEN_BORDER_INFINITE_WATER                                :Onbeperkt water
 
 STR_MAPGEN_HEIGHTMAP_ROTATION                                   :{BLACK}Rotatie van hoogtekaart:
 STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Naam van hoogtekaart:
@@ -3471,7 +3478,8 @@ STR_GENERATION_LANDSCAPE_GENERATION                             :{BLACK}Landscha
 STR_GENERATION_RIVER_GENERATION                                 :{BLACK}Rivierplaatsing
 STR_GENERATION_CLEARING_TILES                                   :{BLACK}Ontwikkeling van ruig en rotsachtig gebied
 STR_GENERATION_TOWN_GENERATION                                  :{BLACK}Steden genereren
-STR_GENERATION_INDUSTRY_GENERATION                              :{BLACK}Industrieën genereren
+STR_GENERATION_LAND_INDUSTRY_GENERATION                         :{BLACK}Landindustrieontwikkeling
+STR_GENERATION_WATER_INDUSTRY_GENERATION                        :{BLACK}Waterindustrieontwikkeling
 STR_GENERATION_OBJECT_GENERATION                                :{BLACK}Ontwikkeling van onverplaatsbare objecten
 STR_GENERATION_TREE_GENERATION                                  :{BLACK}Bosplaatsing
 STR_GENERATION_SETTINGUP_GAME                                   :{BLACK}Spel wordt geconfigureerd
@@ -4351,6 +4359,7 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}Je staa
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Bericht van voertuigenfabrikant
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}We hebben zojuist een nieuwe {STRING} ontworpen - ben je geïnteresseerd in een jaar lang exclusief gebruik van dit voertuig, zodat we kunnen zien of het goed werkt voordat we het wereldwijd beschikbaar maken?
+
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :spoorlocomotief
 STR_ENGINE_PREVIEW_ELRAIL_LOCOMOTIVE                            :elektrische locomotief

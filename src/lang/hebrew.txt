@@ -1971,7 +1971,7 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_SI                  :בינלאומ�
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT                    :יחידות גובה: {STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_HELPTEXT           :כאשר מוצגים גבהים השתמש ביחידות שנבחרו
-###length 3
+###length 4
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :בריטית (רגל)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :מטרי (מטר)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (מטר)
@@ -3100,8 +3100,11 @@ STR_MAPGEN_SOUTHWEST                                            :{BLACK}דרום
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}יד חופשית
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}מים
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}אקראי
-STR_MAPGEN_BORDER_RANDOMIZE                                     :{BLACK}אקראי
-STR_MAPGEN_BORDER_MANUAL                                        :{BLACK}ידני
+
+###length 3
+STR_MAPGEN_BORDER_RANDOMIZE                                     :אקראי
+STR_MAPGEN_BORDER_MANUAL                                        :ידני
+STR_MAPGEN_BORDER_INFINITE_WATER                                :מים אינסופיים
 
 STR_MAPGEN_HEIGHTMAP_ROTATION                                   :{BLACK} :סיבוב מפת הגבהים
 STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK} :שם מפת הגבהים
@@ -3135,7 +3138,6 @@ STR_GENERATION_LANDSCAPE_GENERATION                             :{BLACK}יציר
 STR_GENERATION_RIVER_GENERATION                                 :{BLACK}יצירת נהרות
 STR_GENERATION_CLEARING_TILES                                   :{BLACK}יצירת איזורים סלעיים
 STR_GENERATION_TOWN_GENERATION                                  :{BLACK}יצירת עיירה
-STR_GENERATION_INDUSTRY_GENERATION                              :{BLACK}יצירת תעשייה
 STR_GENERATION_OBJECT_GENERATION                                :{BLACK}יצירת מבנים בלתי ניידים
 STR_GENERATION_TREE_GENERATION                                  :{BLACK}יצירת עצים
 STR_GENERATION_SETTINGUP_GAME                                   :{BLACK}קביעת הגדרות המשחק
@@ -3932,6 +3934,7 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}?אתה
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}הודעה מיצרן הרכב
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}?חדש/ה! האם אתה מעוניין לבחון כלי זה באופן בלעדי לפני הוצאתו לשוק {STRING} זה עתה סיימנו את תכנונו של
+
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :קטר רכבת
 STR_ENGINE_PREVIEW_ELRAIL_LOCOMOTIVE                            :קטר רכבת חשמלי

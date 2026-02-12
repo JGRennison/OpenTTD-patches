@@ -379,6 +379,7 @@ STR_UNITS_FORCE_SI                                              :{DECIMAL}{NBSP}
 STR_UNITS_HEIGHT_IMPERIAL                                       :{DECIMAL}{NBSP}фт
 STR_UNITS_HEIGHT_METRIC                                         :{DECIMAL}{NBSP}м
 STR_UNITS_HEIGHT_SI                                             :{DECIMAL}{NBSP}м
+STR_UNITS_HEIGHT_GAMEUNITS                                      :{DECIMAL}{NBSP}рів{P ень ні нів}
 
 # Time units used in string control characters
 STR_UNITS_DAYS                                                  :{COMMA}{NBSP}день
@@ -2296,10 +2297,11 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_SI                  :СІ (кН)
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT                    :Одиниці висоти: {STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_HELPTEXT           :Якщо висоти відображаються на інтерфейсі: показувати в обраній одиниці виміру
-###length 3
+###length 4
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :Імперські (фути)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :Метричні (м)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :СІ (м)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_GAMEUNITS          :Ігрових одиниць (рівні)
 
 STR_CONFIG_SETTING_LOCALISATION                                 :Локалізація
 STR_CONFIG_SETTING_GRAPHICS                                     :Графіки
@@ -3493,6 +3495,8 @@ STR_SAVELOAD_DETAIL_GRFSTATUS                                   :{SILVER}NewGRF:
 STR_SAVELOAD_FILTER_TITLE                                       :{BLACK}Фільтр:
 STR_SAVELOAD_OVERWRITE_TITLE                                    :{WHITE}Перезаписати файл
 STR_SAVELOAD_OVERWRITE_WARNING                                  :{YELLOW} Ви справді хочете перезаписати існуючий файл?
+STR_SAVELOAD_DELETE_TITLE                                       :{WHITE}Видалити файл
+STR_SAVELOAD_DELETE_WARNING                                     :{YELLOW}Дійсно бажаєш видалити файл?
 STR_SAVELOAD_DIRECTORY                                          :{STRING} (Тека)
 STR_SAVELOAD_PARENT_DIRECTORY                                   :{STRING} (Головна тека)
 
@@ -3571,8 +3575,11 @@ STR_MAPGEN_SOUTHWEST                                            :{BLACK}півд
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}вільний формат
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}вода
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}довільно
-STR_MAPGEN_BORDER_RANDOMIZE                                     :{BLACK}довільно
-STR_MAPGEN_BORDER_MANUAL                                        :{BLACK}вручну
+
+###length 3
+STR_MAPGEN_BORDER_RANDOMIZE                                     :Випадково
+STR_MAPGEN_BORDER_MANUAL                                        :вручну
+STR_MAPGEN_BORDER_INFINITE_WATER                                :Вода без меж
 
 STR_MAPGEN_HEIGHTMAP_ROTATION                                   :{BLACK}Поворот рельєфу
 STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Назва мапи висот:
@@ -3611,7 +3618,8 @@ STR_GENERATION_LANDSCAPE_GENERATION                             :{BLACK}Гене
 STR_GENERATION_RIVER_GENERATION                                 :{BLACK}Генерація річок
 STR_GENERATION_CLEARING_TILES                                   :{BLACK}Розкидати каміння
 STR_GENERATION_TOWN_GENERATION                                  :{BLACK}Генерація міст
-STR_GENERATION_INDUSTRY_GENERATION                              :{BLACK}Генерація промисловості
+STR_GENERATION_LAND_INDUSTRY_GENERATION                         :{BLACK}Створення наземної промисловості
+STR_GENERATION_WATER_INDUSTRY_GENERATION                        :{BLACK}Створення водної промисловості
 STR_GENERATION_OBJECT_GENERATION                                :{BLACK}Генерація нерухомості
 STR_GENERATION_TREE_GENERATION                                  :{BLACK}Насадження дерев
 STR_GENERATION_SETTINGUP_GAME                                   :{BLACK}Налаштування гри
@@ -4491,6 +4499,7 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}Ви в
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Повідомлення від виробника транспорту
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Ми розробили новий {STRING} - чи бажаєте ексклюзивно користуватись ним протягом року, так ми побачимо, як він зарекомендує себе, перед тим як буде доступним для всіх?
+
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :локомотив
 STR_ENGINE_PREVIEW_ELRAIL_LOCOMOTIVE                            :електрифікований залізничний локомотив

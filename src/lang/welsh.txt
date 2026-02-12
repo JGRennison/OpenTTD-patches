@@ -254,6 +254,7 @@ STR_UNITS_FORCE_SI                                              :{DECIMAL}{NBSP}
 STR_UNITS_HEIGHT_IMPERIAL                                       :{DECIMAL}{NBSP}tr
 STR_UNITS_HEIGHT_METRIC                                         :{DECIMAL}{NBSP}m
 STR_UNITS_HEIGHT_SI                                             :{DECIMAL}{NBSP}m
+STR_UNITS_HEIGHT_GAMEUNITS                                      :{DECIMAL}{NBSP}lefel
 
 # Time units used in string control characters
 STR_UNITS_DAYS                                                  :{COMMA}{NBSP}diwrnod{P "" ""}
@@ -2159,10 +2160,11 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_SI                  :SI (kN)
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT                    :Unedau uchder: {STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_HELPTEXT           :Pan y dangosir uchder yn y rhyngwyneb defnyddiwr, ei ddangos yn yr unedau a ddewiswyd
-###length 3
+###length 4
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :Imperial (ft)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :Metrig (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (m)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_GAMEUNITS          :Unedau gêm (lefelau)
 
 STR_CONFIG_SETTING_LOCALISATION                                 :Unedau Lleol
 STR_CONFIG_SETTING_GRAPHICS                                     :Graffeg
@@ -3353,6 +3355,8 @@ STR_SAVELOAD_DETAIL_GRFSTATUS                                   :{SILVER}NewGRF:
 STR_SAVELOAD_FILTER_TITLE                                       :{BLACK}Hidlydd:
 STR_SAVELOAD_OVERWRITE_TITLE                                    :{WHITE}Trosysgrifennu Ffeil
 STR_SAVELOAD_OVERWRITE_WARNING                                  :{YELLOW}Ydych chi'n siwr eich bod chi eisiau trosysgrifennu'r ffeil bresennol?
+STR_SAVELOAD_DELETE_TITLE                                       :{WHITE}Dileu Ffeil
+STR_SAVELOAD_DELETE_WARNING                                     :{YELLOW}Ydych chi'n siŵr eich bod am ddileu'r ffeil?
 STR_SAVELOAD_DIRECTORY                                          :{STRING} (Cyfeiriadur)
 STR_SAVELOAD_PARENT_DIRECTORY                                   :{STRING} (Plygell rhiant)
 
@@ -3431,8 +3435,11 @@ STR_MAPGEN_SOUTHWEST                                            :{BLACK}De Orlle
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}Ffurfrydd
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}Dŵr
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}Ar hap
-STR_MAPGEN_BORDER_RANDOMIZE                                     :{BLACK}Ar hap
-STR_MAPGEN_BORDER_MANUAL                                        :{BLACK}Â Llaw
+
+###length 3
+STR_MAPGEN_BORDER_RANDOMIZE                                     :Ar hap
+STR_MAPGEN_BORDER_MANUAL                                        :Â Llaw
+STR_MAPGEN_BORDER_INFINITE_WATER                                :Dŵr Anfeidrol
 
 STR_MAPGEN_HEIGHTMAP_ROTATION                                   :{BLACK}Cylchdro Map Uchder:
 STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Enw'r Map Uchder
@@ -3471,7 +3478,8 @@ STR_GENERATION_LANDSCAPE_GENERATION                             :{BLACK}Creu tir
 STR_GENERATION_RIVER_GENERATION                                 :{BLACK}Cynhyrchu afonydd
 STR_GENERATION_CLEARING_TILES                                   :{BLACK}Cynhyrchu ardaloedd creigiog a chnapiog
 STR_GENERATION_TOWN_GENERATION                                  :{BLACK}Creu trefi
-STR_GENERATION_INDUSTRY_GENERATION                              :{BLACK}Creu diwydiant
+STR_GENERATION_LAND_INDUSTRY_GENERATION                         :{BLACK}Cynhyrchiant diwydiant tir
+STR_GENERATION_WATER_INDUSTRY_GENERATION                        :{BLACK}Cynhyrchiant diwydiant dŵr
 STR_GENERATION_OBJECT_GENERATION                                :{BLACK}Cynhyrchu gwrthrych
 STR_GENERATION_TREE_GENERATION                                  :{BLACK}Cynhyrchu coed
 STR_GENERATION_SETTINGUP_GAME                                   :{BLACK}Gosod gêm yn ei le
@@ -4351,6 +4359,7 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}Rydych 
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Neges gan wneuthurwr cerbydau
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Rydyn ni newydd gynllunio {STRING} newydd - a fyddai gennych chi ddiddordeb mewn cael defnydd cyfyngol o'r cerbyd hwn am flwyddyn er mwyn i ni gael profi ei berfformiad cyn y bydd ar gael i bawb?
+
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :trên
 STR_ENGINE_PREVIEW_ELRAIL_LOCOMOTIVE                            :locomotif rheilffordd drydan

@@ -2173,7 +2173,7 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_SI                  :SI (kN)
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT                    :Unità di altezza: {STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_HELPTEXT           :Seleziona le unità di misura da utilizzare per mostrare le altezze nell'interfaccia utente
-###length 3
+###length 4
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :Imperiali (piedi)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :Metriche (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (m)
@@ -3433,6 +3433,8 @@ STR_MAPGEN_SOUTHWEST                                            :{BLACK}Sud-oves
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}Variabile
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}Acqua
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}Casuale
+
+###length 3
 STR_MAPGEN_BORDER_RANDOMIZE                                     :{BLACK}Casuale
 STR_MAPGEN_BORDER_MANUAL                                        :{BLACK}Manuale
 
@@ -3472,7 +3474,6 @@ STR_GENERATION_WORLD_GENERATION                                 :{BLACK}Generazi
 STR_GENERATION_LANDSCAPE_GENERATION                             :{BLACK}Generazione paesaggio
 STR_GENERATION_RIVER_GENERATION                                 :{BLACK}Generazione fiumi
 STR_GENERATION_CLEARING_TILES                                   :{BLACK}Generazione aree brulle e rocciose
-STR_GENERATION_INDUSTRY_GENERATION                              :{BLACK}Generazione industrie
 STR_GENERATION_OBJECT_GENERATION                                :{BLACK}Generazione oggetti inamovibili
 STR_GENERATION_TREE_GENERATION                                  :{BLACK}Generazione alberi
 STR_GENERATION_SETTINGUP_GAME                                   :{BLACK}Impostazione partita
@@ -4339,6 +4340,7 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}Si stan
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Messaggio da un costruttore di veicoli
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Abbiamo appena progettato un{G "" "" a} nuov{G o o a} {STRING} - È interessato ad un anno di uso esclusivo di questo veicolo, in modo da permetterci di valutarne le prestazioni prima di renderlo disponibile sul mercato?
+
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :{G=f}locomotiva
 STR_ENGINE_PREVIEW_ELRAIL_LOCOMOTIVE                            :{G=f}locomotiva elettrica

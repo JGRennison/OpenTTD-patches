@@ -254,6 +254,7 @@ STR_UNITS_FORCE_SI                                              :{DECIMAL}{NBSP}
 STR_UNITS_HEIGHT_IMPERIAL                                       :{DECIMAL}{NBSP}ft
 STR_UNITS_HEIGHT_METRIC                                         :{DECIMAL}{NBSP}m
 STR_UNITS_HEIGHT_SI                                             :{DECIMAL}{NBSP}m
+STR_UNITS_HEIGHT_GAMEUNITS                                      :{DECIMAL}{NBSP}Niveau{P "" en}
 
 # Time units used in string control characters
 STR_UNITS_DAYS                                                  :{COMMA}{NBSP}D{P ag eeg}
@@ -2159,10 +2160,11 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_SI                  :SI (kN)
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT                    :Héichteneenheeten: {STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_HELPTEXT           :Emmer wann Héichten am Userinterface ugewisen ginn, weis se an den ausgewielten Eenheeten un
-###length 3
+###length 4
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :Britesch (ft)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :Metresch (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (m)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_GAMEUNITS          :Spilleenheeten (Niveau)
 
 STR_CONFIG_SETTING_LOCALISATION                                 :Lokaliséirung
 STR_CONFIG_SETTING_GRAPHICS                                     :Grafik
@@ -3353,6 +3355,8 @@ STR_SAVELOAD_DETAIL_GRFSTATUS                                   :{SILVER}NewGRF:
 STR_SAVELOAD_FILTER_TITLE                                       :{BLACK}Filter:
 STR_SAVELOAD_OVERWRITE_TITLE                                    :{WHITE}Datei iwwerschreiwen
 STR_SAVELOAD_OVERWRITE_WARNING                                  :{YELLOW}Bass du sécher, dass du d'existéirend Datei iwwerschreiwe wëlls?
+STR_SAVELOAD_DELETE_TITLE                                       :{WHITE}Datei läschen
+STR_SAVELOAD_DELETE_WARNING                                     :{YELLOW}}Bass du sécher, dass du des Datei läsche wëlls?
 STR_SAVELOAD_DIRECTORY                                          :{STRING} (Verzeechnis)
 STR_SAVELOAD_PARENT_DIRECTORY                                   :{STRING} (Een dossier zréck)
 
@@ -3431,8 +3435,11 @@ STR_MAPGEN_SOUTHWEST                                            :{BLACK}Südwest
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}Fräiform
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}Waasser
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}Zoufälleg
-STR_MAPGEN_BORDER_RANDOMIZE                                     :{BLACK}Zoufall
-STR_MAPGEN_BORDER_MANUAL                                        :{BLACK}Manuell
+
+###length 3
+STR_MAPGEN_BORDER_RANDOMIZE                                     :Zoufall
+STR_MAPGEN_BORDER_MANUAL                                        :Manuell
+STR_MAPGEN_BORDER_INFINITE_WATER                                :Endlos Waasser
 
 STR_MAPGEN_HEIGHTMAP_ROTATION                                   :{BLACK}Héichtekaart-Rotatioun:
 STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Héichtekaart-Numm:
@@ -3471,7 +3478,8 @@ STR_GENERATION_LANDSCAPE_GENERATION                             :{BLACK}Landscha
 STR_GENERATION_RIVER_GENERATION                                 :{BLACK}Generéiren vu Flëss
 STR_GENERATION_CLEARING_TILES                                   :{BLACK}Generatioun vu knubbelegem a stengege Land
 STR_GENERATION_TOWN_GENERATION                                  :{BLACK}Stiedgeneratioun
-STR_GENERATION_INDUSTRY_GENERATION                              :{BLACK}Industriegeneratioun
+STR_GENERATION_LAND_INDUSTRY_GENERATION                         :{BLACK}Landindustriegeneratioun
+STR_GENERATION_WATER_INDUSTRY_GENERATION                        :{BLACK}Waasserindustriegeneratioun
 STR_GENERATION_OBJECT_GENERATION                                :{BLACK}Objets-Generatioun
 STR_GENERATION_TREE_GENERATION                                  :{BLACK}Baam Generatioun
 STR_GENERATION_SETTINGUP_GAME                                   :{BLACK}Spill gëtt opgestallt
@@ -4351,6 +4359,7 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}Du verk
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Meldung vum Gefierkonstrukteur
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Mir hunn elo en neien {STRING} gebaut - bass du dorun interesséiert dëst Gefier 1 Joer exklusiv ze notzen, fir ze testen op et komplett maarträif ass?
+
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :Lokomotiv
 STR_ENGINE_PREVIEW_ELRAIL_LOCOMOTIVE                            :Elektresch Lokomotiv

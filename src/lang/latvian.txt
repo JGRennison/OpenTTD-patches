@@ -256,6 +256,7 @@ STR_UNITS_FORCE_SI                                              :{DECIMAL}{NBSP}
 STR_UNITS_HEIGHT_IMPERIAL                                       :{DECIMAL}{NBSP}pēdas
 STR_UNITS_HEIGHT_METRIC                                         :{DECIMAL}{NBSP}m
 STR_UNITS_HEIGHT_SI                                             :{DECIMAL}{NBSP}m
+STR_UNITS_HEIGHT_GAMEUNITS                                      :{DECIMAL}{NBSP}līme{P nis ņa ņi}
 
 # Time units used in string control characters
 STR_UNITS_DAYS                                                  :{COMMA}{NBSP}dien{P a as ""}
@@ -1088,7 +1089,7 @@ STR_GAME_OPTIONS_GUI_SCALE_AUTO_TOOLTIP                         :Atzīmējiet š
 STR_GAME_OPTIONS_GUI_SCALE_BEVELS                               :Mēroga slīpumi
 STR_GAME_OPTIONS_GUI_SCALE_BEVELS_TOOLTIP                       :Atzīmējiet šo izvēlni, lai mērogotu slīpumu pēc saskarnes lieluma
 
-STR_GAME_OPTIONS_GUI_FONT_SPRITE                                :Izmantot tradicionālo sprite fontu
+STR_GAME_OPTIONS_GUI_FONT_SPRITE                                :Izmantot tradicionālo bitkartes fontu
 STR_GAME_OPTIONS_GUI_FONT_SPRITE_TOOLTIP                        :Atzīmējiet šo izvēli, ja vēlaties izmantot tradicionālo fiksētā izmēra sprite fontu.
 STR_GAME_OPTIONS_GUI_FONT_AA                                    :Anti-alias fonti
 STR_GAME_OPTIONS_GUI_FONT_AA_TOOLTIP                            :Atzīmējiet šo izvēli, ja vēlaties mainīt fontus ar anti-alias izmēru.
@@ -1111,7 +1112,7 @@ STR_GAME_OPTIONS_REFRESH_RATE_ITEM                              :{NUM}Hz
 STR_GAME_OPTIONS_REFRESH_RATE_WARNING                           :{WHITE}Atsvaidzes intensitāte, kas lielāka par 60 Hz, var ietekmēt veiktspēju.
 
 STR_GAME_OPTIONS_BASE_GRF                                       :Pamata grafikas kopa
-STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :Atlasiet izmantojamo pamata grafiku (to nevar mainīt spēlē, tikai no galvenās izvēlnes)
+STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :Izvēlēties pamata grafiku (to nevar mainīt spēlē, tikai no galvenās izvēlnes)
 STR_GAME_OPTIONS_BASE_GRF_DESCRIPTION_TOOLTIP                   :Papildinformācija par pamata grafikas kopu
 
 STR_GAME_OPTIONS_BASE_SFX                                       :Pamata skaņas kopa
@@ -1119,7 +1120,7 @@ STR_GAME_OPTIONS_BASE_SFX_TOOLTIP                               :Atlasiet izmant
 STR_GAME_OPTIONS_BASE_SFX_DESCRIPTION_TOOLTIP                   :Papildinformācija par pamata skaņas kopu
 
 STR_GAME_OPTIONS_BASE_MUSIC                                     :Pamata mūzikas kopa
-STR_GAME_OPTIONS_BASE_MUSIC_TOOLTIP                             :Atlasīt lietošanai pamata mūzikas kopu
+STR_GAME_OPTIONS_BASE_MUSIC_TOOLTIP                             :Izvēlēties lietošanai pamata mūzikas kopu
 STR_GAME_OPTIONS_BASE_MUSIC_DESCRIPTION_TOOLTIP                 :Papildinformācija par pamata mūzikas kopu
 
 STR_GAME_OPTIONS_ONLINE_CONTENT                                 :Iegūt saturu
@@ -2127,8 +2128,8 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_HELPTEXT         :Vai lietotāja 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_IMPERIAL         :impērijas, britu (jūdzes stundā)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_METRIC           :metriskās (km/h)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_SI               :SI, starptautiskās (m/s)
-STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_GAMEUNITS_DAYS   :Spēles vienības (rūtiņas/dienā)
-STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_GAMEUNITS_SECS   :Spēles vienības (rūtiņas/sek.)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_GAMEUNITS_DAYS   :Spēles vienības (lauciņi/dienā)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_GAMEUNITS_SECS   :Spēles vienības (lauciņi/sek.)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_VELOCITY_KNOTS            :Mezgli
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_POWER                     :Transportlīdzekļu jaudas mērvienības: {STRING}
@@ -2163,10 +2164,11 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_SI                  :SI, starptautis
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT                    :Augstuma mērvienības: {STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_HELPTEXT           :Kad lietotāja saskarnē rāda augstumu, uzrādīt to norādītajās mērvienībās
-###length 3
+###length 4
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :impērijas, britu (pēda)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :metriskās (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI, starptautiskās (m)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_GAMEUNITS          :Spēles vienības (līmeņi)
 
 STR_CONFIG_SETTING_LOCALISATION                                 :Lokalizēšana
 STR_CONFIG_SETTING_GRAPHICS                                     :Grafika
@@ -2850,20 +2852,38 @@ STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Samaziniet prie
 STR_PICKER_PREVIEW_EXPAND                                       :+
 STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Palieliniet priekšskatījuma attēlu augstumu. Ctrl+klikšķis, lai palielinātu līdz maksimālajam.
 
+STR_PICKER_DEFAULT_COLLECTION                                   :Noklusējuma izlase
+STR_PICKER_SELECT_COLLECTION_TOOLTIP                            :Izvēlieties izlasi
+STR_PICKER_COLLECTION_ADD                                       :Pievienot
+STR_PICKER_COLLECTION_ADD_TOOLTIP                               :Izveidot jaunu izlasi
+STR_PICKER_COLLECTION_RENAME                                    :Pārdēvēt
+STR_PICKER_COLLECTION_RENAME_TOOLTIP                            :Pārdēvēt izlasi
+STR_PICKER_COLLECTION_DELETE                                    :Dzēst
+STR_PICKER_COLLECTION_DELETE_TOOLTIP                            :Dzēst izlasi
 
+STR_PICKER_COLLECTION_RENAME_QUERY                              :Pārdēvēt šo izlasi
+STR_PICKER_COLLECTION_DELETE_QUERY                              :Dzēst izlasi
+STR_PICKER_COLLECTION_DELETE_QUERY_TEXT                         :{YELLOW}Vai tiešām vēlaties dzēst šo izlasi?
+STR_PICKER_COLLECTION_DELETE_QUERY_DISABLED_TEXT                :{YELLOW}Vai tiešām vēlaties dzēst šo izlasi? Tajā ir vienumi no atspējotiem NewGRF!
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Izvēlieties rādāmo staciju klasi
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Izvēlieties izveidojamās stacijas veidu. Ctrl+klikšķis, lai pievienotu vai noņemtu saglabātos vienumus
+STR_PICKER_STATION_COLLECTION_TOOLTIP                           :Atlasiet staciju izlasi, ko parādīt
 STR_PICKER_WAYPOINT_CLASS_TOOLTIP                               :Izvēlieties rādāmo pieturas punkta klasi
 STR_PICKER_WAYPOINT_TYPE_TOOLTIP                                :Izvēlieties ceļa punktu, ko veidot. Ctrl+klikšķis, lai pievienotu vai noņemtu saglabātos vienumus
+STR_PICKER_WAYPOINT_COLLECTION_TOOLTIP                          :Atlasiet attēlojamo ceļa punktu izlasi
 STR_PICKER_ROADSTOP_BUS_CLASS_TOOLTIP                           :Izvēlieties parādāmās autoostas klasi
 STR_PICKER_ROADSTOP_BUS_TYPE_TOOLTIP                            :Izvēlieties būvējamās autoostas veidu. Ctrl+klikšķis, lai pievienotu vai noņemtu saglabātos vienumus
+STR_PICKER_ROADSTOP_BUS_COLLECTION_TOOLTIP                      :Atlasiet autobusu staciju izlasi, ko parādīt
 STR_PICKER_ROADSTOP_TRUCK_CLASS_TOOLTIP                         :Izvēlieties parādāmās kravas automašīnas stacijas klasi
 STR_PICKER_ROADSTOP_TRUCK_TYPE_TOOLTIP                          :Izvēlieties būvējamās kravas stacijas veidu. Ctrl+klikšķis, lai pievienotu vai noņemtu saglabātos vienumus
+STR_PICKER_ROADSTOP_TRUCK_COLLECTION_TOOLTIP                    :Atlasiet kravas automašīnu staciju izlasi, ko parādīt
 STR_PICKER_OBJECT_CLASS_TOOLTIP                                 :Atlasiet rādāmo objekta klasi
 STR_PICKER_OBJECT_TYPE_TOOLTIP                                  :Atlasiet veidojamā objekta veidu. Ctrl+klikšķis, lai pievienotu vai noņemtu saglabātos vienumus. Vilkt Ctrl+klikšķis, lai atlasītu apgabalu pa diagonāli. Nospiediet arī taustiņu Shift, lai rādītu tikai izmaksu tāmi, neveicot iegādi
+STR_PICKER_OBJECT_COLLECTION_TOOLTIP                            :Atlasiet parādāmo objektu izlasi
 STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :Atlasiet pilsētas zonu, ko parādīt
 STR_PICKER_HOUSE_TYPE_TOOLTIP                                   :Izvēlieties būvējamās mājas veidu. Ctrl+klikšķis, lai pievienotu vai noņemtu saglabātos vienumus
+STR_PICKER_HOUSE_COLLECTION_TOOLTIP                             :Atlasiet māju izlasi, ko parādīt
 
 STR_HOUSE_PICKER_CAPTION                                        :Māju izvēle
 STR_HOUSE_PICKER_NAME                                           :{BLACK}Nosaukums: {ORANGE}{STRING}
@@ -2882,9 +2902,11 @@ STR_HOUSE_PICKER_CLASS_ZONE3                                    :Ārējās priek
 STR_HOUSE_PICKER_CLASS_ZONE4                                    :Iekšējās priekšpilsētas
 STR_HOUSE_PICKER_CLASS_ZONE5                                    :Pilsētas centrs
 
-STR_HOUSE_PICKER_PROTECT                                        :Novērst uzlabojumus
+STR_HOUSE_PICKER_PROTECT                                        :Novērst jauninājumus
 STR_HOUSE_PICKER_PROTECT_TOOLTIP                                :Izvēlieties, vai šī māja tiks aizsargāta pret nomaiņu, pilsētai augot
 
+STR_HOUSE_PICKER_REPLACE                                        :Aizstāt esošo
+STR_HOUSE_PICKER_REPLACE_TOOLTIP                                :Izvēlieties, vai automātiski noņemt esošo māju no flīzes, kur atrodas šī māja.
 
 STR_STATION_CLASS_DFLT                                          :Noklusējuma
 STR_STATION_CLASS_DFLT_STATION                                  :Noklusējuma stacija
@@ -3356,6 +3378,8 @@ STR_SAVELOAD_DETAIL_GRFSTATUS                                   :{SILVER}NewGRF:
 STR_SAVELOAD_FILTER_TITLE                                       :{BLACK}Filtrs:
 STR_SAVELOAD_OVERWRITE_TITLE                                    :{WHITE}Pārrakstīt datni
 STR_SAVELOAD_OVERWRITE_WARNING                                  :{YELLOW}Vai tiešām vēlaties pārrakstīt esošās datnes?
+STR_SAVELOAD_DELETE_TITLE                                       :{WHITE}Dzēst Failu
+STR_SAVELOAD_DELETE_WARNING                                     :{YELLOW}Vai tiešām vēlaties dzēst failu?
 STR_SAVELOAD_DIRECTORY                                          :{STRING} (Vietne)
 STR_SAVELOAD_PARENT_DIRECTORY                                   :{STRING} (Īpašnieka katalogs)
 
@@ -3434,8 +3458,11 @@ STR_MAPGEN_SOUTHWEST                                            :{BLACK}Dienvidr
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}Brīvā forma
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}Ūdens
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}Nejauša
-STR_MAPGEN_BORDER_RANDOMIZE                                     :{BLACK}Nejaušas
-STR_MAPGEN_BORDER_MANUAL                                        :{BLACK}Manuāli
+
+###length 3
+STR_MAPGEN_BORDER_RANDOMIZE                                     :Nejaušas
+STR_MAPGEN_BORDER_MANUAL                                        :Manuāli
+STR_MAPGEN_BORDER_INFINITE_WATER                                :Bezgalīgs Ūdens
 
 STR_MAPGEN_HEIGHTMAP_ROTATION                                   :{BLACK}Augstumu kartes pagriešana:
 STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Augstumu kartes nosaukums:
@@ -3474,7 +3501,8 @@ STR_GENERATION_LANDSCAPE_GENERATION                             :{BLACK}Ainavu v
 STR_GENERATION_RIVER_GENERATION                                 :{BLACK}Upes radīšana
 STR_GENERATION_CLEARING_TILES                                   :{BLACK}Nelīdzena un akmeņaina apvidus radīšana
 STR_GENERATION_TOWN_GENERATION                                  :{BLACK}Pilsētas veidošana
-STR_GENERATION_INDUSTRY_GENERATION                              :{BLACK}Nozares veidošana
+STR_GENERATION_LAND_INDUSTRY_GENERATION                         :{BLACK}Zemes rūpniecības izveide
+STR_GENERATION_WATER_INDUSTRY_GENERATION                        :{BLACK}Ūdens nozares izveide
 STR_GENERATION_OBJECT_GENERATION                                :{BLACK}Objekta radīšana
 STR_GENERATION_TREE_GENERATION                                  :{BLACK}Koka radīšana
 STR_GENERATION_SETTINGUP_GAME                                   :{BLACK}Iestatīt spēli
@@ -3689,6 +3717,7 @@ STR_EDIT_SIGN_CAPTION                                           :{WHITE}Labot z�
 STR_EDIT_SIGN_LOCATION_TOOLTIP                                  :{BLACK}Centrējiet norādes atrašanās vietas galveno skatu. Ctrl+klikšķis atver jaunu skata zīmi uz zīmes atrašanās vietas
 STR_EDIT_SIGN_NEXT_SIGN_TOOLTIP                                 :{BLACK}Doties uz nākamo zīmi
 STR_EDIT_SIGN_PREVIOUS_SIGN_TOOLTIP                             :{BLACK}Doties uz iepriekšējo zīmi
+STR_EDIT_SIGN_TEXT_COLOUR_TOOLTIP                               :{BLACK}Zīmes teksta krāsa
 
 STR_EDIT_SIGN_SIGN_OSKTITLE                                     :{BLACK}Ievadīt zīmes nosaukumu
 
@@ -4358,7 +4387,15 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}Jūs gr
 
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Ziņojums no transportlīdzekļu ražotāja
+STR_ENGINE_PREVIEW_CAPTION_COUNT                                :{WHITE}Ziņojums no transportlīdzekļa ražotāja ({COMMA} no {COMMA})
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Mēs tikko esam izstrādājuši jaunu transportlīdzekli - {STRING}. Vai esat ieinteresēts iegūt izņēmuma tiesības izmantot šo transportlīdzekli uz vienu gadu, lai mēs redzētu tā iespējas pirms padaram pieejamu visiem?
+
+STR_ENGINE_PREVIEW_PREVIOUS                                     :Iepriekšējais
+STR_ENGINE_PREVIEW_PREVIOUS_TOOLTIP                             :Klikšķināt, lai pārietu uz iepriekšējo jauno transportlīdzekli
+STR_ENGINE_PREVIEW_NEXT                                         :Nākamais
+STR_ENGINE_PREVIEW_NEXT_TOOLTIP                                 :Klikšķināt, lai pārietu uz nākamo jauno transportlīdzekli
+STR_ENGINE_PREVIEW_ENGINE_LIST                                  :{COMMA}: {ENGINE}
+STR_ENGINE_PREVIEW_ENGINE_LIST_TOOLTIP                          :Klikšķināt, lai pārietu uz jaunu transportlīdzekli
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :dzelzceļa lokomotīve
 STR_ENGINE_PREVIEW_ELRAIL_LOCOMOTIVE                            :elektrificēta dzelzceļa lokomotīve
@@ -5278,6 +5315,13 @@ STR_ERROR_START_AND_END_MUST_BE_IN                              :{WHITE}Sākumam
 STR_ERROR_ENDS_OF_BRIDGE_MUST_BOTH                              :{WHITE}... abiem tilta galiem jābūt uz zemes
 STR_ERROR_BRIDGE_TOO_LONG                                       :{WHITE}... tilts ir pārāk garš
 STR_ERROR_BRIDGE_THROUGH_MAP_BORDER                             :{WHITE}Tilts beigtos ārpus kartes
+STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}tilts ir {HEIGHT} pārāk zems stacijai
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROADSTOP                           :{WHITE}Tilta augstums {HEIGHT} ir pārāk zems ceļa pieturai
+STR_ERROR_BRIDGE_TOO_LOW_FOR_DOCK                               :{WHITE}Tilta augstums {HEIGHT} ir pārāk zems piestātnei
+STR_ERROR_BRIDGE_TOO_LOW_FOR_BUOY                               :{WHITE}Tilta augstums {HEIGHT} ir pārāk zems bojai
+STR_ERROR_BRIDGE_TOO_LOW_FOR_RAIL_WAYPOINT                      :{WHITE}Tilta augstums {HEIGHT} ir pārāk zems dzelzceļa pieturas punktam
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROAD_WAYPOINT                      :{WHITE}Tilts ir {HEIGHT} pārāk zems ceļa punktam
+STR_ERROR_BRIDGE_TOO_LOW_FOR_LOCK                               :{WHITE}Tilta augstums {HEIGHT} ir pārāk zems slūžām
 
 # Tunnel related errors
 STR_ERROR_CAN_T_BUILD_TUNNEL_HERE                               :{WHITE}Šeit nevar būvēt tuneli...

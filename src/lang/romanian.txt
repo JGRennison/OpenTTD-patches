@@ -2128,7 +2128,7 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_SI                  :SI (kN)
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT                    :Unitate înălțime: {STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_HELPTEXT           :Afișează înălțimile în interfață folosind unitățile selectate
-###length 3
+###length 4
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :Imperial (ft)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :Metric (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (m)
@@ -3380,6 +3380,8 @@ STR_MAPGEN_SOUTHWEST                                            :{BLACK}Sud-vest
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}Pământ
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}Apă
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}Aleator
+
+###length 3
 STR_MAPGEN_BORDER_RANDOMIZE                                     :{BLACK}Aleator
 STR_MAPGEN_BORDER_MANUAL                                        :{BLACK}Manual
 
@@ -3420,7 +3422,6 @@ STR_GENERATION_LANDSCAPE_GENERATION                             :{BLACK}Generare
 STR_GENERATION_RIVER_GENERATION                                 :{BLACK}Generarea râurilor
 STR_GENERATION_CLEARING_TILES                                   :{BLACK}Generare zonă dură și pietroasă
 STR_GENERATION_TOWN_GENERATION                                  :{BLACK}Generare oraș
-STR_GENERATION_INDUSTRY_GENERATION                              :{BLACK}Generare industrie
 STR_GENERATION_OBJECT_GENERATION                                :{BLACK}Generare fixă
 STR_GENERATION_TREE_GENERATION                                  :{BLACK}Generare arbori
 STR_GENERATION_SETTINGUP_GAME                                   :{BLACK}Se configurează jocul
@@ -4282,6 +4283,7 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}Ești p
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Mesaj de la producătorul de vehicule
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Am creat un nou tip de {STRING}. Ați fi interesați de folosirea exclusivă pentru un an a acestui vehicul, astfel ca noi să-i putem observa performanțele înaintea lansării oficiale?
+
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :locomotivă
 STR_ENGINE_PREVIEW_ELRAIL_LOCOMOTIVE                            :locomotivă electrificată

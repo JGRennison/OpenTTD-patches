@@ -255,6 +255,7 @@ STR_UNITS_FORCE_SI                                              :{DECIMAL}{NBSP}
 STR_UNITS_HEIGHT_IMPERIAL                                       :{DECIMAL}{NBSP}ft
 STR_UNITS_HEIGHT_METRIC                                         :{DECIMAL}{NBSP}m
 STR_UNITS_HEIGHT_SI                                             :{DECIMAL}{NBSP}m
+STR_UNITS_HEIGHT_GAMEUNITS                                      :{DECIMAL}{NBSP}niveau{P "" x}
 
 # Time units used in string control characters
 STR_UNITS_DAYS                                                  :{G=m}{COMMA}{NBSP}jour{P "" s}
@@ -2160,10 +2161,11 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_SI                  :SI (kN)
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT                    :Unité de hauteur{NBSP}: {STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_HELPTEXT           :Quand une hauteur est affichée dans l'interface utilisateur, utiliser l'unité sélectionnée
-###length 3
+###length 4
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :Impérial (ft)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :Métrique (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (m)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_GAMEUNITS          :Unités de jeu (niveaux)
 
 STR_CONFIG_SETTING_LOCALISATION                                 :Localisation
 STR_CONFIG_SETTING_GRAPHICS                                     :Graphiques
@@ -3354,6 +3356,8 @@ STR_SAVELOAD_DETAIL_GRFSTATUS                                   :{SILVER}NewGRF{
 STR_SAVELOAD_FILTER_TITLE                                       :{BLACK}Filtre{NBSP}:
 STR_SAVELOAD_OVERWRITE_TITLE                                    :{WHITE}Écraser le fichier
 STR_SAVELOAD_OVERWRITE_WARNING                                  :{YELLOW}Êtes-vous sûr de vouloir écraser le fichier existant{NBSP}?
+STR_SAVELOAD_DELETE_TITLE                                       :{WHITE}Supprimer le fichier
+STR_SAVELOAD_DELETE_WARNING                                     :{YELLOW}Êtes-vous sûr de vouloir supprimer ce fichier ?
 STR_SAVELOAD_DIRECTORY                                          :{STRING} (Répertoire)
 STR_SAVELOAD_PARENT_DIRECTORY                                   :{STRING} (Répertoire parent)
 
@@ -3432,8 +3436,11 @@ STR_MAPGEN_SOUTHWEST                                            :{BLACK}Sud-Oues
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}Forme libre
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}Eau
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}Aléatoire
-STR_MAPGEN_BORDER_RANDOMIZE                                     :{BLACK}Aléatoire
-STR_MAPGEN_BORDER_MANUAL                                        :{BLACK}Manuel
+
+###length 3
+STR_MAPGEN_BORDER_RANDOMIZE                                     :Aléatoire
+STR_MAPGEN_BORDER_MANUAL                                        :Manuel
+STR_MAPGEN_BORDER_INFINITE_WATER                                :Eau à l'infini
 
 STR_MAPGEN_HEIGHTMAP_ROTATION                                   :{BLACK}Rotation de la carte d'altitude{NBSP}:
 STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Nom de la carte d'altitude{NBSP}:
@@ -3472,7 +3479,8 @@ STR_GENERATION_LANDSCAPE_GENERATION                             :{BLACK}Généra
 STR_GENERATION_RIVER_GENERATION                                 :{BLACK}Création des rivières
 STR_GENERATION_CLEARING_TILES                                   :{BLACK}Création des zones rugueuses et rocheuses
 STR_GENERATION_TOWN_GENERATION                                  :{BLACK}Génération des villes
-STR_GENERATION_INDUSTRY_GENERATION                              :{BLACK}Génération des industries
+STR_GENERATION_LAND_INDUSTRY_GENERATION                         :{BLACK}Génération des industries terrestres
+STR_GENERATION_WATER_INDUSTRY_GENERATION                        :{BLACK}Génération des industries maritimes
 STR_GENERATION_OBJECT_GENERATION                                :{BLACK}Création des objets inamovibles
 STR_GENERATION_TREE_GENERATION                                  :{BLACK}Création des arbres
 STR_GENERATION_SETTINGUP_GAME                                   :{BLACK}Configuration du jeu
@@ -4352,6 +4360,7 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}Vous ê
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Communiqué du fabriquant de véhicules
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Nous venons juste d'inventer{NBSP}: {STRING} - Voulez-vous l'exclusivité de ce véhicule pendant un an, afin que nous puissions le tester avant sa mise sur le marché{NBSP}?
+
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :{G=f}locomotive
 STR_ENGINE_PREVIEW_ELRAIL_LOCOMOTIVE                            :{G=f}locomotive électrique

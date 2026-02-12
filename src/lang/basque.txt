@@ -1732,7 +1732,7 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_METRIC              :Metrikoa (kgf)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_SI                  :SI (kN)
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT                    :Garaiera unitateak: {STRING}
-###length 3
+###length 4
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :Inperiala (oin)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :Metrikoa (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (m)
@@ -2692,6 +2692,8 @@ STR_MAPGEN_SOUTHWEST                                            :{BLACK}Hegomend
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}Modu askea
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}Ura
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}Ausazkoa
+
+###length 3
 STR_MAPGEN_BORDER_RANDOMIZE                                     :{BLACK}Ausazkoa
 STR_MAPGEN_BORDER_MANUAL                                        :{BLACK}Eskuz egin
 
@@ -3442,6 +3444,7 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}Gordail
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Ibilgailu frabrikaren mezua
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}{STRING} berria diesinatu dugu - Nahiko zenuke ibilgailu honen urte baterako erabilera esklusiboa izatea? Bere funtzionamendua ikusi ahalko genuke publiko egin aurretik.
+
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :Lokomotora
 STR_ENGINE_PREVIEW_MONORAIL_LOCOMOTIVE                          :Monorail lokomotora

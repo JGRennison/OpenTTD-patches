@@ -1963,7 +1963,7 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_SI                  :SI (kN)
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT                    :Višinske enote: {STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_HELPTEXT           :Ko je omogočen prikaz višin na vmesniku, bodo prikazane v izbranih enotah.
-###length 3
+###length 4
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :Imperične (ft)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :Metrične (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (m)
@@ -2935,6 +2935,8 @@ STR_MAPGEN_SOUTHWEST                                            :{BLACK}Jugozaho
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}Poljubno
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}Voda
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}Naključno
+
+###length 3
 STR_MAPGEN_BORDER_RANDOMIZE                                     :{BLACK}Naključno
 STR_MAPGEN_BORDER_MANUAL                                        :{BLACK}Ročno
 
@@ -3702,6 +3704,7 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}Priprav
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Sporočilo od proizvajalca vozila
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Na novo smo izdelali {STRING} - ali te zanima enoletna izključna pravica do{}uporabe tega vozila, preden ga ponudimo{}na trgu?
+
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :železniška lokomotiva
 STR_ENGINE_PREVIEW_MONORAIL_LOCOMOTIVE                          :enotirna lokomotiva

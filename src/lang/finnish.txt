@@ -254,6 +254,7 @@ STR_UNITS_FORCE_SI                                              :{DECIMAL}{NBSP}
 STR_UNITS_HEIGHT_IMPERIAL                                       :{DECIMAL}{NBSP}ft
 STR_UNITS_HEIGHT_METRIC                                         :{DECIMAL}{NBSP}m
 STR_UNITS_HEIGHT_SI                                             :{DECIMAL}{NBSP}m
+STR_UNITS_HEIGHT_GAMEUNITS                                      :{DECIMAL}{NBSP}taso{P "" a}
 
 # Time units used in string control characters
 STR_UNITS_DAYS                                                  :{COMMA}{NBSP}vrk
@@ -2159,10 +2160,11 @@ STR_CONFIG_SETTING_LOCALISATION_UNITS_FORCE_SI                  :SI (kN)
 
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT                    :Korkeuden yksikkö: {STRING}
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_HELPTEXT           :Kun käyttöliittymässä näytetään korkeus, näytä se valittua yksikköä käyttäen
-###length 3
+###length 4
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_IMPERIAL           :Brittiläinen (ft)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_METRIC             :Metrinen (m)
 STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_SI                 :SI (m)
+STR_CONFIG_SETTING_LOCALISATION_UNITS_HEIGHT_GAMEUNITS          :Pelin yksiköt (tasoja)
 
 STR_CONFIG_SETTING_LOCALISATION                                 :Mittayksiköt ja päivämäärät
 STR_CONFIG_SETTING_GRAPHICS                                     :Grafiikka
@@ -3371,6 +3373,8 @@ STR_SAVELOAD_DETAIL_GRFSTATUS                                   :{SILVER}NewGRF:
 STR_SAVELOAD_FILTER_TITLE                                       :{BLACK}Suodatin:
 STR_SAVELOAD_OVERWRITE_TITLE                                    :{WHITE}Tiedosto on jo olemassa
 STR_SAVELOAD_OVERWRITE_WARNING                                  :{YELLOW}Haluatko varmasti korvata olemassaolevan tiedoston?
+STR_SAVELOAD_DELETE_TITLE                                       :{WHITE}Poista tiedosto
+STR_SAVELOAD_DELETE_WARNING                                     :{YELLOW}Haluatko varmasti poistaa tiedoston?
 STR_SAVELOAD_DIRECTORY                                          :{STRING} (hakemisto)
 STR_SAVELOAD_PARENT_DIRECTORY                                   :{STRING} (ylähakemisto)
 
@@ -3449,8 +3453,11 @@ STR_MAPGEN_SOUTHWEST                                            :{BLACK}Lounas
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}Vapaa
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}Vesi
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}Sattumanvarainen
-STR_MAPGEN_BORDER_RANDOMIZE                                     :{BLACK}Sattumanvarainen
-STR_MAPGEN_BORDER_MANUAL                                        :{BLACK}Manuaalinen
+
+###length 3
+STR_MAPGEN_BORDER_RANDOMIZE                                     :Satunnaiset
+STR_MAPGEN_BORDER_MANUAL                                        :Aseta käsin
+STR_MAPGEN_BORDER_INFINITE_WATER                                :Ääretön vesi
 
 STR_MAPGEN_HEIGHTMAP_ROTATION                                   :{BLACK}Korkeuskartan kierto:
 STR_MAPGEN_HEIGHTMAP_NAME                                       :{BLACK}Korkeuskartan nimi:
@@ -3489,7 +3496,8 @@ STR_GENERATION_LANDSCAPE_GENERATION                             :{BLACK}Maaston 
 STR_GENERATION_RIVER_GENERATION                                 :{BLACK}Jokien luominen
 STR_GENERATION_CLEARING_TILES                                   :{BLACK}Karun ja kivisen alueen luominen
 STR_GENERATION_TOWN_GENERATION                                  :{BLACK}Kuntien luominen
-STR_GENERATION_INDUSTRY_GENERATION                              :{BLACK}Tuotantolaitosten luominen
+STR_GENERATION_LAND_INDUSTRY_GENERATION                         :{BLACK}Teollisuuden luominen maalla
+STR_GENERATION_WATER_INDUSTRY_GENERATION                        :{BLACK}Teollisuuden luominen vedessä
 STR_GENERATION_OBJECT_GENERATION                                :{BLACK}Siirtämättömän luominen
 STR_GENERATION_TREE_GENERATION                                  :{BLACK}Puiden luominen
 STR_GENERATION_SETTINGUP_GAME                                   :{BLACK}Valmistellaan peliä
@@ -4368,7 +4376,15 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}Olet my
 
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Viesti kulkuneuvovalmistajalta
+STR_ENGINE_PREVIEW_CAPTION_COUNT                                :{WHITE}Viesti kulkuneuvovalmistajalta ({COMMA}/{COMMA})
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Olemme juuri suunnitelleet uuden {STRING} – oletteko kiinnostunut vuoden yksinoikeutetusta kokeilusta, jotta näemme miten tuote suoriutuu ennen kuin julkistamme sen yleiseen käyttöön?
+
+STR_ENGINE_PREVIEW_PREVIOUS                                     :Edellinen
+STR_ENGINE_PREVIEW_PREVIOUS_TOOLTIP                             :Napsauta siirtyäksesi edelliseen uuteen kulkuneuvoon
+STR_ENGINE_PREVIEW_NEXT                                         :Seuraava
+STR_ENGINE_PREVIEW_NEXT_TOOLTIP                                 :Napsauta siirtyäksesi seuraavaan uuteen kulkuneuvoon
+STR_ENGINE_PREVIEW_ENGINE_LIST                                  :{COMMA}: {ENGINE}
+STR_ENGINE_PREVIEW_ENGINE_LIST_TOOLTIP                          :Napsauta hypätäksesi uuteen kulkuneuvoon
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :veturi
 STR_ENGINE_PREVIEW_ELRAIL_LOCOMOTIVE                            :sähköradan veturi
@@ -5046,7 +5062,7 @@ STR_ERROR_NOT_ENOUGH_CASH_REQUIRES_CURRENCY                     :{WHITE}Käteine
 STR_ERROR_FLAT_LAND_REQUIRED                                    :{WHITE}Tarvitaan tasaista maata.
 STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION                        :{WHITE}Maa viettää väärään suuntaan.
 STR_ERROR_CAN_T_DO_THIS                                         :{WHITE}Ei onnistu...
-STR_ERROR_BUILDING_MUST_BE_DEMOLISHED                           :{WHITE}Rakennus täytyy purkaa ensin.
+STR_ERROR_BUILDING_MUST_BE_DEMOLISHED                           :{WHITE}Rakennus täytyy purkaa ensin
 STR_ERROR_BUILDING_IS_PROTECTED                                 :{WHITE}… rakennus on suojattu
 STR_ERROR_CAN_T_CLEAR_THIS_AREA                                 :{WHITE}Aluetta ei voi tyhjentää...
 STR_ERROR_SITE_UNSUITABLE                                       :{WHITE}... maasto on sopimaton
@@ -5164,13 +5180,13 @@ STR_ERROR_CAN_T_REMOVE_CARGO_TRAM_STATION                       :{WHITE}Ei voi p
 STR_ERROR_MUST_REMOVE_ROAD_STOP_FIRST                           :{WHITE}Pysäkki täytyy poistaa ensin
 STR_ERROR_THERE_IS_NO_STATION                                   :{WHITE}... tässä ei ole asemaa
 
-STR_ERROR_MUST_DEMOLISH_RAILROAD                                :{WHITE}Rautatieasema pitää tuhota ensin.
-STR_ERROR_MUST_DEMOLISH_BUS_STATION_FIRST                       :{WHITE}Linja-autoasema pitää purkaa ensin.
-STR_ERROR_MUST_DEMOLISH_TRUCK_STATION_FIRST                     :{WHITE}Lastauslaituri pitää purkaa ensin.
+STR_ERROR_MUST_DEMOLISH_RAILROAD                                :{WHITE}Rautatieasema täytyy purkaa ensin
+STR_ERROR_MUST_DEMOLISH_BUS_STATION_FIRST                       :{WHITE}Linja-autoasema täytyy purkaa ensin
+STR_ERROR_MUST_DEMOLISH_TRUCK_STATION_FIRST                     :{WHITE}Lastauslaituri täytyy purkaa ensin
 STR_ERROR_MUST_DEMOLISH_PASSENGER_TRAM_STATION_FIRST            :{WHITE}Asema täytyy purkaa ensin
 STR_ERROR_MUST_DEMOLISH_CARGO_TRAM_STATION_FIRST                :{WHITE}Rahtiasema täytyy purkaa ensin
-STR_ERROR_MUST_DEMOLISH_DOCK_FIRST                              :{WHITE}Satama pitää tuhota ensin.
-STR_ERROR_MUST_DEMOLISH_AIRPORT_FIRST                           :{WHITE}Lentokenttä pitää tuhota ensin.
+STR_ERROR_MUST_DEMOLISH_DOCK_FIRST                              :{WHITE}Satama täytyy purkaa ensin
+STR_ERROR_MUST_DEMOLISH_AIRPORT_FIRST                           :{WHITE}Lentokenttä täytyy purkaa ensin
 
 # Waypoint related errors
 STR_ERROR_WAYPOINT_ADJOINS_MORE_THAN_ONE_EXISTING               :{WHITE}Vieressä on useampi kuin yksi olemassaoleva reittipiste.
@@ -5279,7 +5295,7 @@ STR_ERROR_CAN_T_PLANT_TREE_HERE                                 :{WHITE}Puuta ei
 
 # Bridge related errors
 STR_ERROR_CAN_T_BUILD_BRIDGE_HERE                               :{WHITE}Siltaa ei voi rakentaa...
-STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST                            :{WHITE}Silta pitää tuhota ensin.
+STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST                            :{WHITE}Silta täytyy purkaa ensin
 STR_ERROR_CAN_T_START_AND_END_ON                                :{WHITE}Ei voi aloittaa ja lopettaa samasta paikkasta.
 STR_ERROR_BRIDGEHEADS_NOT_SAME_HEIGHT                           :{WHITE}Sillan päät eivät ole samalla korkeudella
 STR_ERROR_BRIDGE_TOO_LOW_FOR_TERRAIN                            :{WHITE}Silta on liian matalalla maastoa varten
