@@ -1015,13 +1015,8 @@ RoadType GetTownRoadType()
 	const RoadTypeInfo *best = nullptr;
 	const uint16_t assume_max_speed = 50;
 
-	for (RoadType rt = ROADTYPE_BEGIN; rt != ROADTYPE_END; rt++) {
-		if (RoadTypeIsTram(rt)) continue;
-
+	for (RoadType rt : GetMaskForRoadTramType(RTT_ROAD).IterateSetBits()) {
 		const RoadTypeInfo *rti = GetRoadTypeInfo(rt);
-
-		/* Unused road type. */
-		if (rti->label == 0) continue;
 
 		/* Can town build this road. */
 		if (!rti->flags.Test(RoadTypeFlag::TownBuild)) continue;
@@ -1059,10 +1054,9 @@ bool MayTownModifyRoad(TileIndex tile)
 static CalTime::Date GetTownRoadTypeFirstIntroductionDate()
 {
 	const RoadTypeInfo *best = nullptr;
-	for (RoadType rt = ROADTYPE_BEGIN; rt != ROADTYPE_END; rt++) {
-		if (RoadTypeIsTram(rt)) continue;
+	for (RoadType rt : GetMaskForRoadTramType(RTT_ROAD).IterateSetBits()) {
 		const RoadTypeInfo *rti = GetRoadTypeInfo(rt);
-		if (rti->label == 0) continue; // Unused road type.
+
 		if (!rti->flags.Test(RoadTypeFlag::TownBuild)) continue; // Town can't build this road type.
 
 		if (best != nullptr && rti->introduction_date >= best->introduction_date) continue;

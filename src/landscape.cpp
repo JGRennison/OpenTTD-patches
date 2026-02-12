@@ -1375,9 +1375,8 @@ static bool FlowRiver(TileIndex spring, TileIndex begin, uint min_river_length)
 	} else if (count > 32 && _settings_game.game_creation.lake_size != 0) {
 		/* Maybe we can make a lake. Find the Nth of the considered tiles. */
 		TileIndex lake_centre(0);
-		int i = RandomRange(count - 1) + 1;
 		btree::btree_set<TileIndex>::const_iterator cit = marks.begin();
-		while (--i) cit++;
+		cit.increment_by(RandomRange(static_cast<uint32_t>(marks.size())));
 		lake_centre = *cit;
 
 		if (IsValidTile(lake_centre) &&

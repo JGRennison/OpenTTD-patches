@@ -2316,7 +2316,6 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 
 				/* We need to refresh if a filter is removed. */
 				this->eng_list.ForceRebuild();
-				this->SetDirty();
 				break;
 			}
 
@@ -2328,7 +2327,6 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 						SetBadgeFilter(this->badge_filter_choices, BadgeID(index));
 					}
 					this->eng_list.ForceRebuild();
-					this->SetDirty();
 				}
 				break;
 		}

@@ -19,7 +19,6 @@
 #include "../../thread.h"
 #include "../../scope.h"
 
-
 #include <dirent.h>
 #include <unistd.h>
 #include <sys/stat.h>
@@ -31,6 +30,11 @@
 #ifdef WITH_SDL2
 #include <SDL.h>
 #endif
+
+#ifdef WITH_ICONV
+#include <iconv.h>
+#include <errno.h>
+#endif /* WITH_ICONV */
 
 #ifdef __EMSCRIPTEN__
 #	include <emscripten.h>
@@ -141,11 +145,6 @@ bool FioCopyFile(const char *old_name, const char *new_name)
 }
 
 #ifdef WITH_ICONV
-
-#include <iconv.h>
-#include <errno.h>
-#include "../../debug.h"
-#include "../../string_func.h"
 
 const char *GetCurrentLocale(const char *param);
 

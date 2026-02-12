@@ -52,7 +52,7 @@ const char *ScreenshotAuxiliaryText::value = nullptr;
  * If the selected provider is not found, then the first provider will be used instead.
  * @returns ScreenshotProvider, or null if none exist.
  */
-static ScreenshotProvider *GetScreenshotProvider()
+static const ScreenshotProvider *GetScreenshotProvider()
 {
 	const auto &providers = ProviderManager<ScreenshotProvider>::GetProviders();
 	if (providers.empty()) return nullptr;

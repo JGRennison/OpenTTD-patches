@@ -36,7 +36,7 @@ public:
 		ProviderManager<ScreenshotProvider>::Unregister(*this);
 	}
 
-	virtual bool MakeImage(const char *name, ScreenshotCallback *callb, void *userdata, uint w, uint h, int pixelformat, const Colour *palette) = 0;
+	virtual bool MakeImage(const char *name, ScreenshotCallback *callb, void *userdata, uint w, uint h, int pixelformat, const Colour *palette) const = 0;
 };
 
 struct ScreenshotAuxiliaryText {

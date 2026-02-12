@@ -28,7 +28,7 @@ public:
 
 	ProviderManager &operator=(ProviderManager const &) = delete;
 
-	static void Register(TProviderType &instance)
+	static void Register(const TProviderType &instance)
 	{
 		/* Insert according to comparator. */
 		auto &providers = GetProviders();
@@ -36,7 +36,7 @@ public:
 		providers.insert(it, &instance);
 	}
 
-	static void Unregister(TProviderType &instance)
+	static void Unregister(const TProviderType &instance)
 	{
 		auto &providers = GetProviders();
 		providers.erase(std::find(std::begin(providers), std::end(providers), &instance));
@@ -46,9 +46,9 @@ public:
 	 * Get the currently known providers.
 	 * @return The known providers.
 	 */
-	static std::vector<TProviderType *> &GetProviders()
+	static std::vector<const TProviderType *> &GetProviders()
 	{
-		static std::vector<TProviderType *> providers{};
+		static std::vector<const TProviderType *> providers{};
 		return providers;
 	}
 };

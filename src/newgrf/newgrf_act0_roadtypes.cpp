@@ -206,7 +206,7 @@ static ChangeInfoResult RoadTypeReserveInfo(uint first, uint last, int prop, con
 				if (type_map[id] != INVALID_ROADTYPE) {
 					int n = buf.ReadByte();
 					for (int j = 0; j != n; j++) {
-						_roadtypes[type_map[id]].alternate_labels.push_back(std::byteswap(buf.ReadDWord()));
+						_roadtypes[type_map[id]].alternate_labels.insert(std::byteswap(buf.ReadDWord()));
 					}
 					break;
 				}

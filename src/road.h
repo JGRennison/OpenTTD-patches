@@ -13,6 +13,7 @@
 #include "road_type.h"
 #include "gfx_type.h"
 #include "core/bitmath_func.hpp"
+#include "core/flatset_type.hpp"
 #include "strings_type.h"
 #include "date_type.h"
 #include "core/enum_type.hpp"
@@ -22,19 +23,6 @@
 
 #include <array>
 #include <vector>
-
-enum RoadTramType : bool {
-	RTT_ROAD,
-	RTT_TRAM,
-};
-
-enum RoadTramTypes : uint8_t {
-	RTTB_ROAD = 1 << RTT_ROAD,
-	RTTB_TRAM = 1 << RTT_TRAM,
-};
-DECLARE_ENUM_AS_BIT_SET(RoadTramTypes)
-
-static const RoadTramType _roadtramtypes[] = { RTT_ROAD, RTT_TRAM };
 
 /** Roadtype flag bit numbers. */
 enum class RoadTypeFlag : uint8_t {
@@ -166,7 +154,7 @@ public:
 	/**
 	 * Road type labels this type provides in addition to the main label.
 	 */
-	std::vector<RoadTypeLabel> alternate_labels;
+	FlatSet<RoadTypeLabel> alternate_labels;
 
 	/**
 	 * Colour on mini-map

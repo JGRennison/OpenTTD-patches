@@ -77,6 +77,18 @@
 #include <mutex>
 #include <condition_variable>
 
+#ifdef WITH_LZO
+#include <lzo/lzo1x.h>
+#endif
+
+#if defined(WITH_ZLIB)
+#include <zlib.h>
+#endif /* WITH_ZLIB */
+
+#if defined(WITH_LIBLZMA)
+#include <lzma.h>
+#endif /* WITH_LIBLZMA */
+
 #include "../safeguards.h"
 
 static constexpr SaveLoadVersion SAVEGAME_VERSION_EXT = (SaveLoadVersion)(0x8000); ///< Savegame extension indicator mask
@@ -3241,7 +3253,6 @@ private:
  *******************************************/
 
 #ifdef WITH_LZO
-#include <lzo/lzo1x.h>
 
 /** Buffer size for the LZO compressor */
 static const uint LZO_BUFFER_SIZE = 8192;
@@ -3372,7 +3383,6 @@ struct NoCompSaveFilter : SaveFilter {
  ********************************************/
 
 #if defined(WITH_ZLIB)
-#include <zlib.h>
 
 /** Filter using Zlib compression. */
 struct ZlibLoadFilter : LoadFilter {
@@ -3493,7 +3503,6 @@ struct ZlibSaveFilter : SaveFilter {
  ********************************************/
 
 #if defined(WITH_LIBLZMA)
-#include <lzma.h>
 
 /**
  * Have a copy of an initialised LZMA stream. We need this as it's

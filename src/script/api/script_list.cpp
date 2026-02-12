@@ -377,7 +377,7 @@ public:
 			/* Use 'end' as marker for 'beyond begin' */
 			this->item_iter = this->list->items.end();
 		} else {
-			this->item_iter--;
+			--this->item_iter;
 		}
 		if (this->item_iter != this->list->items.end()) this->item_next = this->item_iter->first;
 	}
@@ -404,9 +404,9 @@ bool ScriptList::SaveObject(HSQUIRRELVM vm)
 	sq_pushbool(vm, this->sort_ascending ? SQTrue : SQFalse);
 	sq_arrayappend(vm, -2);
 	sq_newtable(vm);
-	for (ScriptListMap::iterator iter = this->items.begin(); iter != this->items.end(); iter++) {
-		sq_pushinteger(vm, iter->first);
-		sq_pushinteger(vm, iter->second);
+	for (const auto &item : this->items) {
+		sq_pushinteger(vm, item.first);
+		sq_pushinteger(vm, item.second);
 		sq_rawset(vm, -3);
 	}
 	sq_arrayappend(vm, -2);
@@ -724,8 +724,7 @@ void ScriptList::AddList(ScriptList *list)
 		this->modifications++;
 		Squirrel::IncreaseAllocatedSize(SCRIPT_LIST_BYTES_PER_ITEM * this->items.size());
 	} else {
-		ScriptListMap *list_items = &list->items;
-		for (auto &it : *list_items) {
+		for (const auto &it : list->items) {
 			this->AddOrSetItem(it.first, it.second);
 		}
 	}
