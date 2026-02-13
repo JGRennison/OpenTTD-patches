@@ -1071,6 +1071,7 @@ CommandCost &CommandCost::operator=(const CommandCost &other)
 	this->cost = other.cost;
 	this->expense_type = other.expense_type;
 	this->flags = other.flags;
+	this->owner = other.owner;
 	this->message = other.message;
 	if (other.GetInlineType() == CommandCostInlineType::AuxiliaryData) {
 		this->inl.aux_data = new CommandCostAuxiliaryData(*other.inl.aux_data);

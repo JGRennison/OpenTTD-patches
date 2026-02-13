@@ -166,6 +166,7 @@ public:
 		this->cost = other.cost;
 		this->expense_type = other.expense_type;
 		this->flags = other.flags;
+		this->owner = other.owner;
 		this->message = other.message;
 		this->inl = other.inl;
 		other.flags = CCIF_NONE; // Clear any ownership of other.inl.aux_data
