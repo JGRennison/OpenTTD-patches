@@ -918,14 +918,6 @@ enum CommandType : uint8_t {
 	CMDT_END,                    ///< Magic end marker.
 };
 
-/** Different command pause levels. */
-enum CommandPauseLevel : uint8_t {
-	CMDPL_NO_ACTIONS,      ///< No user actions may be executed.
-	CMDPL_NO_CONSTRUCTION, ///< No construction actions may be executed.
-	CMDPL_NO_LANDSCAPING,  ///< No landscaping actions may be executed.
-	CMDPL_ALL_ACTIONS,     ///< All actions may be executed.
-};
-
 /**
  * Abstract base type for command payloads.
  *

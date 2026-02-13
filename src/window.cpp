@@ -3417,7 +3417,7 @@ void UpdateWindows()
 		_window_highlight_colour = !_window_highlight_colour;
 	}
 
-	if (_pause_mode.None() || _game_mode == GM_EDITOR || _settings_game.construction.command_pause_level > CMDPL_NO_CONSTRUCTION) MoveAllTextEffects(delta_ms);
+	if (_pause_mode.None() || _game_mode == GM_EDITOR || _settings_game.construction.command_pause_level > CommandPauseLevel::NoConstruction) MoveAllTextEffects(delta_ms);
 
 	/* Skip the actual drawing on dedicated servers without screen.
 	 * But still empty the invalidation queues above. */

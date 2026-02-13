@@ -10,6 +10,7 @@
 #ifndef SETTINGS_TYPE_H
 #define SETTINGS_TYPE_H
 
+#include "command_settings_type.h"
 #include "date_type.h"
 #include "economy_type.h"
 #include "town_type.h"
@@ -618,7 +619,7 @@ struct ConstructionSettings {
 	uint8_t  trees_around_snow_line_range;   ///< range around snowline for mixed and arctic forest.
 	bool     trees_around_snow_line_enabled; ///< enable mixed and arctic forest around snowline, and no trees above snowline
 	uint8_t  trees_around_snow_line_dynamic_range; ///< how much of the snow line dynamic range to use as the snowline for arctic tree placement
-	uint8_t  command_pause_level;            ///< level/amount of commands that can't be executed while paused
+	CommandPauseLevel command_pause_level;   ///< level/amount of commands that can't be executed while paused
 	uint16_t maximum_signal_evaluations;     ///< maximum number of programmable pre-signals which may be evaluated in one pass
 	bool     enable_build_river;             ///< enable building rivers in-game
 	bool     enable_remove_water;            ///< enable removing sea and rivers in-game
