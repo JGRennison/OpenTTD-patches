@@ -709,24 +709,23 @@ static DropDownList GetGroupDropDownList(Owner owner, GroupID group_id, int &sel
 
 	{
 		/* Sort the groups by their parent group, then their name */
-		const Group *last_group[2] = { nullptr, nullptr };
-		format_buffer last_name[2] = { {}, {} };
+		std::array<std::pair<const Group *, format_buffer_sized<128>>, 2> last_group{};
 		std::sort(list.begin(), list.end(), [&](const Group *a, const Group *b) {
 			if (a->parent != b->parent) return a->parent < b->parent;
 
-			if (a != last_group[0]) {
-				last_group[0] = a;
-				last_name[0].clear();
-				AppendStringInPlace(last_name[0], STR_GROUP_NAME, a->index);
-			}
+			auto process_group = [&](size_t index, const Group *group) -> std::string_view {
+				if (!group->name.empty()) {
+					return group->name;
+				}
+				if (group != last_group[index].first) {
+					last_group[index].first = group;
+					last_group[index].second.clear();
+					AppendStringInPlace(last_group[index].second, STR_GROUP_NAME, group->index);
+				}
+				return last_group[index].second;
+			};
 
-			if (b != last_group[1]) {
-				last_group[1] = b;
-				last_name[1].clear();
-				AppendStringInPlace(last_name[1], STR_GROUP_NAME, b->index);
-			}
-
-			int r = StrNaturalCompare(last_name[0], last_name[1]); // Sort by name (natural sorting).
+			int r = StrNaturalCompare(process_group(0, a), process_group(1, b)); // Sort by name (natural sorting).
 			if (r == 0) return a->index < b->index;
 			return r < 0;
 		});
