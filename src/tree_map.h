@@ -196,7 +196,7 @@ inline void AddTreeGrowth(TileIndex t, int a)
 inline void SetTreeGrowth(TileIndex t, TreeGrowthStage g)
 {
 	dbg_assert_tile(IsTileType(t, MP_TREES), t); // XXX incomplete
-	SB(_m[t].m5, 0, 3, static_cast<uint>(g));
+	SB(_m[t].m5, 0, 3, to_underlying(g));
 }
 
 /**
@@ -231,7 +231,7 @@ inline void MakeTree(TileIndex t, TreeType type, uint count, TreeGrowthStage gro
 	_m[t].m2 = ground << 6 | density << 4 | 0;
 	_m[t].m3 = type;
 	_m[t].m4 = 0 << 5 | 0 << 2;
-	_m[t].m5 = count << 6 | static_cast<uint>(growth);
+	_m[t].m5 = count << 6 | to_underlying(growth);
 	_me[t].m6 = 0;
 	_me[t].m7 = 0;
 	_me[t].m8 = 0;
