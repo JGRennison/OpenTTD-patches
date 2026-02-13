@@ -103,7 +103,7 @@ private:
 	uint height_extra = 0;          ///< Height of the #extra_msg string in pixels in the #WID_EM_MESSAGE widget.
 
 public:
-	ErrmsgWindow(const ErrorMessageData &data) : Window(data.HasFace() ? _errmsg_face_desc : _errmsg_desc), ErrorMessageData(data)
+	ErrmsgWindow(ErrorMessageData &&data) : Window(data.HasFace() ? _errmsg_face_desc : _errmsg_desc), ErrorMessageData(std::move(data))
 	{
 		this->invalidation_policy = WindowInvalidationPolicy::NoQueue;
 		this->InitNested();
@@ -256,7 +256,7 @@ void ShowFirstError()
 {
 	_window_system_initialized = true;
 	if (!_error_list.empty()) {
-		new ErrmsgWindow(_error_list.front());
+		new ErrmsgWindow(std::move(_error_list.front()));
 		_error_list.pop_front();
 	}
 }
@@ -344,7 +344,7 @@ void ShowErrorMessage(EncodedString &&summary_msg, EncodedString &&detailed_msg,
 		/* A non-critical error was shown. */
 		w->Close();
 	}
-	new ErrmsgWindow(data);
+	new ErrmsgWindow(std::move(data));
 }
 
 
