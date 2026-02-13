@@ -282,10 +282,12 @@ inline void MakeIndustry(TileIndex t, IndustryID index, IndustryGfx gfx, uint8_t
 	_m[t].m2 = index.base();
 	SetIndustryRandomBits(t, random); // m3
 	_m[t].m4 = 0;
+	_me[t].m6 = 0;
 	SetIndustryGfx(t, gfx); // m5, part of m6
 	SetIndustryRandomTriggers(t, {}); // rest of m6
 	SetWaterClass(t, wc);
 	_me[t].m7 = 0;
+	_me[t].m8 = 0;
 }
 
 #endif /* INDUSTRY_MAP_H */

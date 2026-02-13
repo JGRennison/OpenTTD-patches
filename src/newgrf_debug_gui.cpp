@@ -1229,7 +1229,7 @@ struct NewGRFInspectWindow final : Window {
 	}
 };
 
-static constexpr NWidgetPart _nested_newgrf_inspect_chain_widgets[] = {
+static constexpr std::initializer_list<NWidgetPart> _nested_newgrf_inspect_chain_widgets = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_NGRFI_CAPTION), SetStringTip(STR_NEWGRF_INSPECT_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
@@ -1266,7 +1266,7 @@ static constexpr NWidgetPart _nested_newgrf_inspect_chain_widgets[] = {
 	EndContainer(),
 };
 
-static constexpr NWidgetPart _nested_newgrf_inspect_widgets[] = {
+static constexpr std::initializer_list<NWidgetPart> _nested_newgrf_inspect_widgets = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_NGRFI_CAPTION), SetStringTip(STR_NEWGRF_INSPECT_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
@@ -1809,7 +1809,7 @@ private:
 bool SpriteAlignerWindow::centre = true;
 bool SpriteAlignerWindow::crosshair = true;
 
-static constexpr NWidgetPart _nested_sprite_aligner_widgets[] = {
+static constexpr std::initializer_list<NWidgetPart> _nested_sprite_aligner_widgets = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_SA_CAPTION),

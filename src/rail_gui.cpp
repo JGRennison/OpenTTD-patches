@@ -922,6 +922,11 @@ struct BuildRailToolbarWindow : Window {
 		VpSelectTilesWithMethod(pt.x, pt.y, select_method);
 	}
 
+	Point OnInitialPosition(int16_t sm_width, [[maybe_unused]] int16_t sm_height, [[maybe_unused]] int window_number) override
+	{
+		return AlignInitialConstructionToolbar(sm_width);
+	}
+
 	void OnPlaceMouseUp([[maybe_unused]] ViewportPlaceMethod select_method, ViewportDragDropSelectionProcess select_proc, [[maybe_unused]] Point pt, TileIndex start_tile, TileIndex end_tile) override
 	{
 		if (pt.x != -1) {
@@ -1067,7 +1072,7 @@ static Hotkey railtoolbar_hotkeys[] = {
 };
 HotkeyList BuildRailToolbarWindow::hotkeys("railtoolbar", railtoolbar_hotkeys, RailToolbarGlobalHotkeys);
 
-static constexpr NWidgetPart _nested_build_rail_widgets[] = {
+static constexpr std::initializer_list<NWidgetPart> _nested_build_rail_widgets = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_DARK_GREEN),
 		NWidget(WWT_CAPTION, COLOUR_DARK_GREEN, WID_RAT_CAPTION), SetTextStyle(TC_WHITE),
@@ -1113,7 +1118,7 @@ static constexpr NWidgetPart _nested_build_rail_widgets[] = {
 };
 
 static WindowDesc _build_rail_desc(__FILE__, __LINE__,
-	WDP_ALIGN_TOOLBAR, "toolbar_rail", 0, 0,
+	WDP_MANUAL, "toolbar_rail", 0, 0,
 	WC_BUILD_TOOLBAR, WC_NONE,
 	WindowDefaultFlag::Construction,
 	_nested_build_rail_widgets,
@@ -1602,7 +1607,7 @@ public:
 	}, BuildRailStationGlobalHotkeys};
 };
 
-static constexpr NWidgetPart _nested_station_builder_widgets[] = {
+static constexpr std::initializer_list<NWidgetPart> _nested_station_builder_widgets = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_DARK_GREEN),
 		NWidget(WWT_CAPTION, COLOUR_DARK_GREEN), SetStringTip(STR_STATION_BUILD_RAIL_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
@@ -2071,7 +2076,7 @@ static Hotkey signaltoolbar_hotkeys[] = {
 HotkeyList BuildSignalWindow::hotkeys("signaltoolbar", signaltoolbar_hotkeys);
 
 /** Nested widget definition of the build signal window */
-static constexpr NWidgetPart _nested_signal_builder_widgets[] = {
+static constexpr std::initializer_list<NWidgetPart> _nested_signal_builder_widgets = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_DARK_GREEN),
 		NWidget(WWT_CAPTION, COLOUR_DARK_GREEN, WID_BS_CAPTION), SetStringTip(STR_BUILD_SIGNAL_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
@@ -2210,7 +2215,7 @@ struct BuildRailDepotWindow : public PickerWindowBase {
 };
 
 /** Nested widget definition of the build rail depot window */
-static constexpr NWidgetPart _nested_build_depot_widgets[] = {
+static constexpr std::initializer_list<NWidgetPart> _nested_build_depot_widgets = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_DARK_GREEN),
 		NWidget(WWT_CAPTION, COLOUR_DARK_GREEN), SetStringTip(STR_BUILD_DEPOT_TRAIN_ORIENTATION_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
@@ -2339,7 +2344,7 @@ struct BuildRailWaypointWindow : public PickerWindow {
 };
 
 /** Nested widget definition for the build NewGRF rail waypoint window */
-static constexpr NWidgetPart _nested_build_waypoint_widgets[] = {
+static constexpr std::initializer_list<NWidgetPart> _nested_build_waypoint_widgets = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_DARK_GREEN),
 		NWidget(WWT_CAPTION, COLOUR_DARK_GREEN), SetStringTip(STR_WAYPOINT_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),

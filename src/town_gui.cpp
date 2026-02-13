@@ -61,7 +61,7 @@ TownKdtree _town_local_authority_kdtree{};
 
 typedef GUIList<const Town*, const bool &> GUITownList;
 
-static constexpr NWidgetPart _nested_town_authority_widgets[] = {
+static constexpr std::initializer_list<NWidgetPart> _nested_town_authority_widgets = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
 		NWidget(WWT_CAPTION, COLOUR_BROWN, WID_TA_CAPTION),
@@ -839,7 +839,7 @@ public:
 	}
 };
 
-static constexpr NWidgetPart _nested_town_game_view_widgets[] = {
+static constexpr std::initializer_list<NWidgetPart> _nested_town_game_view_widgets = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
 		NWidget(WWT_PUSHIMGBTN, COLOUR_BROWN, WID_TV_CHANGE_NAME), SetAspect(WidgetDimensions::ASPECT_RENAME), SetSpriteTip(SPR_RENAME, STR_TOWN_VIEW_RENAME_TOOLTIP),
@@ -871,7 +871,7 @@ static WindowDesc _town_game_view_desc(__FILE__, __LINE__,
 	_nested_town_game_view_widgets
 );
 
-static constexpr NWidgetPart _nested_town_editor_view_widgets[] = {
+static constexpr std::initializer_list<NWidgetPart> _nested_town_editor_view_widgets = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
 		NWidget(WWT_PUSHIMGBTN, COLOUR_BROWN, WID_TV_CHANGE_NAME), SetAspect(WidgetDimensions::ASPECT_RENAME), SetSpriteTip(SPR_RENAME, STR_TOWN_VIEW_RENAME_TOOLTIP),
@@ -916,7 +916,7 @@ void ShowTownViewWindow(TownID town)
 	}
 }
 
-static constexpr NWidgetPart _nested_town_directory_widgets[] = {
+static constexpr std::initializer_list<NWidgetPart> _nested_town_directory_widgets = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_BROWN),
 		NWidget(WWT_CAPTION, COLOUR_BROWN, WID_TD_CAPTION),
@@ -1374,7 +1374,7 @@ void CcFoundRandomTown(const CommandCost &result)
 	if (town_id.has_value()) ScrollMainWindowToTile(Town::Get(*town_id)->xy);
 }
 
-static constexpr NWidgetPart _nested_found_town_widgets[] = {
+static constexpr std::initializer_list<NWidgetPart> _nested_found_town_widgets = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_DARK_GREEN),
 		NWidget(WWT_CAPTION, COLOUR_DARK_GREEN), SetStringTip(STR_FOUND_TOWN_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
@@ -2330,7 +2330,7 @@ struct BuildHouseWindow : public PickerWindow {
 };
 
 /** Nested widget definition for the build NewGRF rail waypoint window */
-static constexpr NWidgetPart _nested_build_house_widgets[] = {
+static constexpr std::initializer_list<NWidgetPart> _nested_build_house_widgets = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_DARK_GREEN),
 		NWidget(WWT_CAPTION, COLOUR_DARK_GREEN), SetStringTip(STR_HOUSE_PICKER_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),

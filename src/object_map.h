@@ -197,8 +197,9 @@ inline void MakeObject(TileIndex t, Owner o, ObjectID index, WaterClass wc, uint
 	_m[t].m3 = random;
 	_m[t].m4 = 0;
 	_m[t].m5 = index.base() >> 16;
-	SB(_me[t].m6, 2, 4, 0);
+	_me[t].m6 = 0;
 	_me[t].m7 = 0;
+	_me[t].m8 = 0;
 }
 
 #endif /* OBJECT_MAP_H */

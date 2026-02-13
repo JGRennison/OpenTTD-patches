@@ -65,7 +65,7 @@ uint GetEngineListHeight(VehicleType type)
 }
 
 /* Normal layout for roadvehicles, ships and airplanes. */
-static constexpr NWidgetPart _nested_build_vehicle_widgets[] = {
+static constexpr std::initializer_list<NWidgetPart> _nested_build_vehicle_widgets = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_BV_CAPTION), SetTextStyle(TC_WHITE),

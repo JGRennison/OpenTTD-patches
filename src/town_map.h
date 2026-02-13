@@ -379,6 +379,7 @@ inline void MakeHouseTile(TileIndex t, TownID tid, uint8_t counter, uint8_t stag
 	_m[t].m1 = random_bits;
 	_m[t].m2 = tid.base();
 	_m[t].m3 = 0;
+	_me[t].m8 = 0;
 	SetHouseType(t, type);
 	SetHouseCompleted(t, stage == TOWN_HOUSE_COMPLETED);
 	_m[t].m5 = IsHouseCompleted(t) ? 0 : (stage << 3 | counter);

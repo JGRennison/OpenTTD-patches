@@ -358,13 +358,13 @@ static void PropagateChildLivery(const GroupID top_gid, const Owner owner, const
 			}
 			if (pg->parent == GroupID::Invalid()) break;
 			pg = Group::Get(pg->parent);
-			if (!HasBit(livery.in_use, 0)) livery.colour1 = pg->livery.colour1;
-			if (!HasBit(livery.in_use, 1)) livery.colour2 = pg->livery.colour2;
+			if (!livery.in_use.Test(Livery::Flag::Primary)) livery.colour1 = pg->livery.colour1;
+			if (!livery.in_use.Test(Livery::Flag::Secondary)) livery.colour2 = pg->livery.colour2;
 			livery.in_use |= pg->livery.in_use;
 		}
 		if (is_descendant) {
-			if (!HasBit(livery.in_use, 0)) livery.colour1 = top_livery.colour1;
-			if (!HasBit(livery.in_use, 1)) livery.colour2 = top_livery.colour2;
+			if (!livery.in_use.Test(Livery::Flag::Primary)) livery.colour1 = top_livery.colour1;
+			if (!livery.in_use.Test(Livery::Flag::Secondary)) livery.colour2 = top_livery.colour2;
 			g->livery.colour1 = livery.colour1;
 			g->livery.colour2 = livery.colour2;
 		}
@@ -546,11 +546,11 @@ CommandCost CmdAlterGroup(DoCommandFlags flags, AlterGroupMode mode, GroupID gro
 			GroupStatistics::UpdateAutoreplace(g->owner);
 			if (g->vehicle_type == VEH_TRAIN) ReindexTemplateReplacementsForGroup(g->index);
 
-			if (!HasBit(g->livery.in_use, 0) || !HasBit(g->livery.in_use, 1)) {
+			if (!g->livery.in_use.All({Livery::Flag::Primary, Livery::Flag::Secondary})) {
 				/* Update livery with new parent's colours if either colour is default. */
 				const Livery *livery = GetParentLivery(g);
-				if (!HasBit(g->livery.in_use, 0)) g->livery.colour1 = livery->colour1;
-				if (!HasBit(g->livery.in_use, 1)) g->livery.colour2 = livery->colour2;
+				if (!g->livery.in_use.Test(Livery::Flag::Primary)) g->livery.colour1 = livery->colour1;
+				if (!g->livery.in_use.Test(Livery::Flag::Secondary)) g->livery.colour2 = livery->colour2;
 
 				PropagateChildLivery(g, true);
 				MarkWholeScreenDirty();
@@ -840,11 +840,11 @@ CommandCost CmdSetGroupLivery(DoCommandFlags flags, GroupID group_id, bool prima
 
 	if (flags.Test(DoCommandFlag::Execute)) {
 		if (primary) {
-			AssignBit(g->livery.in_use, 0, colour != INVALID_COLOUR);
+			g->livery.in_use.Set(Livery::Flag::Primary, colour != INVALID_COLOUR);
 			if (colour == INVALID_COLOUR) colour = GetParentLivery(g)->colour1;
 			g->livery.colour1 = colour;
 		} else {
-			AssignBit(g->livery.in_use, 1, colour != INVALID_COLOUR);
+			g->livery.in_use.Set(Livery::Flag::Secondary, colour != INVALID_COLOUR);
 			if (colour == INVALID_COLOUR) colour = GetParentLivery(g)->colour2;
 			g->livery.colour2 = colour;
 		}

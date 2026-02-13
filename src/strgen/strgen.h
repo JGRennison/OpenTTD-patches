@@ -160,6 +160,8 @@ struct CmdStruct;
 struct CmdPair {
 	const CmdStruct *cmd;
 	std::string param;
+
+	auto operator<=>(const CmdPair &other) const = default;
 };
 
 struct ParsedCommandStruct {

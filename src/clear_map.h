@@ -274,7 +274,7 @@ inline void MakeField(TileIndex t, uint field_type, IndustryID industry)
 	_m[t].m3 = field_type;
 	_m[t].m4 = 0 << 5 | 0 << 2;
 	SetClearGroundDensity(t, CLEAR_FIELDS, 3);
-	SB(_me[t].m6, 2, 4, 0);
+	_me[t].m6 = 0;
 	_me[t].m7 = 0;
 	_me[t].m8 = 0;
 }

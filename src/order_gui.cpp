@@ -4236,7 +4236,7 @@ static Hotkey order_hotkeys[] = {
 HotkeyList OrdersWindow::hotkeys("order", order_hotkeys);
 
 /** Nested widget definition for "your" train orders. */
-static constexpr NWidgetPart _nested_orders_train_widgets[] = {
+static constexpr std::initializer_list<NWidgetPart> _nested_orders_train_widgets = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_O_CAPTION),
@@ -4393,7 +4393,7 @@ static WindowDesc _orders_train_desc(__FILE__, __LINE__,
 );
 
 /** Nested widget definition for "your" orders (non-train). */
-static constexpr NWidgetPart _nested_orders_widgets[] = {
+static constexpr std::initializer_list<NWidgetPart> _nested_orders_widgets = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_O_CAPTION),
@@ -4554,7 +4554,7 @@ static WindowDesc _orders_desc(__FILE__, __LINE__,
 );
 
 /** Nested widget definition for competitor orders. */
-static constexpr NWidgetPart _nested_other_orders_widgets[] = {
+static constexpr std::initializer_list<NWidgetPart> _nested_other_orders_widgets = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY, WID_O_CAPTION),

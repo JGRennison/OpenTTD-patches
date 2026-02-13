@@ -265,11 +265,11 @@ static void LoadLiveries(CompanyProperties *c, uint num_liveries, const SaveLoad
 	for (uint i = 0; i < num_liveries; i++) {
 		SlObjectLoadFiltered(&c->livery[i], slt);
 		if (update_in_use && i != LS_DEFAULT) {
-			if (c->livery[i].in_use == 0) {
+			if (c->livery[i].in_use.base() == 0) {
 				c->livery[i].colour1 = c->livery[LS_DEFAULT].colour1;
 				c->livery[i].colour2 = c->livery[LS_DEFAULT].colour2;
 			} else {
-				c->livery[i].in_use = 3;
+				c->livery[i].in_use = {Livery::Flag::Primary, Livery::Flag::Secondary};
 			}
 		}
 	}

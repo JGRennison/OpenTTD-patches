@@ -77,7 +77,7 @@ std::unique_ptr<DropDownListItem> MakeDropDownListIndentStringItem(uint indent, 
 	return std::make_unique<DropDownListIndentStringItem>(indent, std::move(str), value, masked, shaded);
 }
 
-static constexpr NWidgetPart _nested_dropdown_menu_widgets[] = {
+static constexpr std::initializer_list<NWidgetPart> _nested_dropdown_menu_widgets = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_PANEL, COLOUR_END, WID_DM_ITEMS), SetScrollbar(WID_DM_SCROLL), EndContainer(),
 		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_DM_SHOW_SCROLL),

@@ -254,7 +254,7 @@ struct ScriptListWindow : public Window {
 };
 
 /** Widgets for the AI list window. */
-static constexpr NWidgetPart _nested_script_list_widgets[] = {
+static constexpr std::initializer_list<NWidgetPart> _nested_script_list_widgets = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_MAUVE),
 		NWidget(WWT_CAPTION, COLOUR_MAUVE, WID_SCRL_CAPTION),
@@ -574,7 +574,7 @@ private:
 };
 
 /** Widgets for the Script settings window. */
-static constexpr NWidgetPart _nested_script_settings_widgets[] = {
+static constexpr std::initializer_list<NWidgetPart> _nested_script_settings_widgets = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_MAUVE),
 		NWidget(WWT_CAPTION, COLOUR_MAUVE, WID_SCRS_CAPTION),
@@ -1229,7 +1229,7 @@ static Hotkey scriptdebug_hotkeys[] = {
 HotkeyList ScriptDebugWindow::hotkeys("aidebug", scriptdebug_hotkeys, ScriptDebugGlobalHotkeys);
 
 /** Widgets for the Script debug window. */
-static constexpr NWidgetPart _nested_script_debug_widgets[] = {
+static constexpr std::initializer_list<NWidgetPart> _nested_script_debug_widgets = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
 		NWidget(WWT_CAPTION, COLOUR_GREY), SetStringTip(STR_AI_DEBUG, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
