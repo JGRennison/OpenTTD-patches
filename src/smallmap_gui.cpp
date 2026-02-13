@@ -1007,7 +1007,8 @@ void SmallMapWindow::DrawSmallMap(DrawPixelInfo *dpi, bool draw_indicators) cons
 	AutoRestoreBackup dpi_backup(_cur_dpi, dpi);
 
 	/* Clear it */
-	GfxFillRect(dpi->left, dpi->top, dpi->left + dpi->width - 1, dpi->top + dpi->height - 1, PC_BLACK);
+	const PixelColour map_clear_color = (_settings_game.construction.map_edge_mode == 2) ? PC_WATER : PC_BLACK;
+	GfxFillRect(dpi->left, dpi->top, dpi->left + dpi->width - 1, dpi->top + dpi->height - 1, map_clear_color);
 
 	/* Which tile is displayed at (dpi->left, dpi->top)? */
 	Point tile = this->PixelToTile(dpi->left, dpi->top);

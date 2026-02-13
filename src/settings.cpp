@@ -2045,6 +2045,7 @@ static bool CheckMapEdgeMode(int32_t &new_value)
 static void MapEdgeModeChanged(int32_t new_value)
 {
 	MarkAllViewportsDirty(new_value);
+	SetWindowClassesDirty(WC_SMALLMAP);
 
 	if (_game_mode == GM_MENU || !_settings_game.construction.freeform_edges || new_value == 0) return;
 
