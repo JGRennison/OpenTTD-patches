@@ -33,19 +33,19 @@ struct InsertOrderCmdData final : public CommandPayloadSerialisable<InsertOrderC
 	void FormatDebugSummary(struct format_target &) const override;
 };
 
-DEF_CMD_TUPLE_LT (CMD_MODIFY_ORDER,             CmdModifyOrder,                     {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, VehicleOrderID, ModifyOrderFlags, uint16_t, CargoType, std::string>)
-DEF_CMD_TUPLE_LT (CMD_SKIP_TO_ORDER,            CmdSkipToOrder,                     {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, VehicleOrderID>)
-DEF_CMD_TUPLE_LT (CMD_DELETE_ORDER,             CmdDeleteOrder,                     {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, VehicleOrderID>)
-DEF_CMD_DIRECT_LT(CMD_INSERT_ORDER,             CmdInsertOrder,                     {}, CMDT_ROUTE_MANAGEMENT, InsertOrderCmdData)
-DEF_CMD_TUPLE_LT (CMD_ORDER_REFIT,              CmdOrderRefit,                      {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, VehicleOrderID, CargoType>)
-DEF_CMD_TUPLE_LT (CMD_CLONE_ORDER,              CmdCloneOrder,                      {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<CloneOptions, VehicleID, VehicleID>)
-DEF_CMD_TUPLE_LT (CMD_INSERT_ORDERS_FROM_VEH,   CmdInsertOrdersFromVehicle,         {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, VehicleID, VehicleOrderID>)
-DEF_CMD_TUPLE_LT (CMD_MOVE_ORDER,               CmdMoveOrder,                       {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, VehicleOrderID, VehicleOrderID, uint16_t>)
-DEF_CMD_TUPLE_LT (CMD_REVERSE_ORDER_LIST,       CmdReverseOrderList,                {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, ReverseOrderOperation>)
-DEF_CMD_TUPLE_LT (CMD_DUPLICATE_ORDER,          CmdDuplicateOrder,                  {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, VehicleOrderID>)
-DEF_CMD_TUPLE_LT (CMD_SET_ROUTE_OVERLAY_COLOUR, CmdSetRouteOverlayColour,           {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<VehicleID, Colours>)
-DEF_CMD_TUPLE_NT (CMD_MASS_CHANGE_ORDER,        CmdMassChangeOrder,                 {}, CMDT_ROUTE_MANAGEMENT, CmdDataT<DestinationID, VehicleType, OrderType, CargoType, DestinationID>)
-DEF_CMD_TUPLE    (CMD_CLEAR_ORDER_BACKUP,       CmdClearOrderBackup,     CMD_CLIENT_ID, CMDT_SERVER_SETTING,   CmdDataT<ClientID>)
+DEF_CMD_TUPLE_LT (CMD_MODIFY_ORDER,             CmdModifyOrder,                     {}, CommandType::RouteManagement, CmdDataT<VehicleID, VehicleOrderID, ModifyOrderFlags, uint16_t, CargoType, std::string>)
+DEF_CMD_TUPLE_LT (CMD_SKIP_TO_ORDER,            CmdSkipToOrder,                     {}, CommandType::RouteManagement, CmdDataT<VehicleID, VehicleOrderID>)
+DEF_CMD_TUPLE_LT (CMD_DELETE_ORDER,             CmdDeleteOrder,                     {}, CommandType::RouteManagement, CmdDataT<VehicleID, VehicleOrderID>)
+DEF_CMD_DIRECT_LT(CMD_INSERT_ORDER,             CmdInsertOrder,                     {}, CommandType::RouteManagement, InsertOrderCmdData)
+DEF_CMD_TUPLE_LT (CMD_ORDER_REFIT,              CmdOrderRefit,                      {}, CommandType::RouteManagement, CmdDataT<VehicleID, VehicleOrderID, CargoType>)
+DEF_CMD_TUPLE_LT (CMD_CLONE_ORDER,              CmdCloneOrder,                      {}, CommandType::RouteManagement, CmdDataT<CloneOptions, VehicleID, VehicleID>)
+DEF_CMD_TUPLE_LT (CMD_INSERT_ORDERS_FROM_VEH,   CmdInsertOrdersFromVehicle,         {}, CommandType::RouteManagement, CmdDataT<VehicleID, VehicleID, VehicleOrderID>)
+DEF_CMD_TUPLE_LT (CMD_MOVE_ORDER,               CmdMoveOrder,                       {}, CommandType::RouteManagement, CmdDataT<VehicleID, VehicleOrderID, VehicleOrderID, uint16_t>)
+DEF_CMD_TUPLE_LT (CMD_REVERSE_ORDER_LIST,       CmdReverseOrderList,                {}, CommandType::RouteManagement, CmdDataT<VehicleID, ReverseOrderOperation>)
+DEF_CMD_TUPLE_LT (CMD_DUPLICATE_ORDER,          CmdDuplicateOrder,                  {}, CommandType::RouteManagement, CmdDataT<VehicleID, VehicleOrderID>)
+DEF_CMD_TUPLE_LT (CMD_SET_ROUTE_OVERLAY_COLOUR, CmdSetRouteOverlayColour,           {}, CommandType::RouteManagement, CmdDataT<VehicleID, Colours>)
+DEF_CMD_TUPLE_NT (CMD_MASS_CHANGE_ORDER,        CmdMassChangeOrder,                 {}, CommandType::RouteManagement, CmdDataT<DestinationID, VehicleType, OrderType, CargoType, DestinationID>)
+DEF_CMD_TUPLE    (CMD_CLEAR_ORDER_BACKUP,       CmdClearOrderBackup,     CMD_CLIENT_ID, CommandType::ServerSetting,   CmdDataT<ClientID>)
 
 struct BulkOrderCmdData final : public CommandPayloadSerialisable<BulkOrderCmdData> {
 	VehicleID veh;
@@ -56,6 +56,6 @@ struct BulkOrderCmdData final : public CommandPayloadSerialisable<BulkOrderCmdDa
 	void FormatDebugSummary(format_target &output) const override;
 };
 
-DEF_CMD_DIRECT_NT(CMD_BULK_ORDER,         CmdBulkOrder,              CMD_NO_TEST, CMDT_ROUTE_MANAGEMENT, BulkOrderCmdData)
+DEF_CMD_DIRECT_NT(CMD_BULK_ORDER,         CmdBulkOrder,              CMD_NO_TEST, CommandType::RouteManagement, BulkOrderCmdData)
 
 #endif /* ORDER_CMD_H */

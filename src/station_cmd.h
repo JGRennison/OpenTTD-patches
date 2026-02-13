@@ -20,15 +20,15 @@ enum RoadStopClassID : uint16_t;
 enum RailType : uint8_t;
 enum RoadType : uint8_t;
 
-DEF_CMD_TUPLE   (CMD_BUILD_AIRPORT,                    CmdBuildAirport,     CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION, CmdDataT<uint8_t, uint8_t, StationID, bool>)
-DEF_CMD_TUPLE   (CMD_BUILD_DOCK,                       CmdBuildDock,                       CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION, CmdDataT<StationID, bool>)
-DEF_CMD_TUPLE   (CMD_BUILD_RAIL_STATION,               CmdBuildRailStation, CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION, CmdDataT<RailType, Axis, uint8_t, uint8_t, StationClassID, uint16_t, StationID, bool>)
-DEF_CMD_TUPLE   (CMD_REMOVE_FROM_RAIL_STATION,         CmdRemoveFromRailStation,                 {}, CMDT_LANDSCAPE_CONSTRUCTION, CmdDataT<TileIndex, bool>)
-DEF_CMD_TUPLE   (CMD_BUILD_ROAD_STOP,                  CmdBuildRoadStop,    CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION, CmdDataT<uint8_t, uint8_t, RoadStopType, bool, DiagDirection, RoadType, RoadStopClassID, uint16_t, StationID, bool>)
-DEF_CMD_TUPLE   (CMD_REMOVE_ROAD_STOP,                 CmdRemoveRoadStop,                        {}, CMDT_LANDSCAPE_CONSTRUCTION, CmdDataT<uint8_t, uint8_t, RoadStopType, bool>)
-DEF_CMD_TUPLE_NT(CMD_RENAME_STATION,                   CmdRenameStation,                         {}, CMDT_OTHER_MANAGEMENT,       CmdDataT<StationID, bool, std::string>)
-DEF_CMD_TUPLE_NT(CMD_OPEN_CLOSE_AIRPORT,               CmdOpenCloseAirport,                      {}, CMDT_ROUTE_MANAGEMENT,       CmdDataT<StationID>)
-DEF_CMD_TUPLE_NT(CMD_EXCHANGE_STATION_NAMES,           CmdExchangeStationNames,                  {}, CMDT_OTHER_MANAGEMENT,       CmdDataT<StationID, StationID>)
-DEF_CMD_TUPLE_NT(CMD_SET_STATION_CARGO_ALLOWED_SUPPLY, CmdSetStationCargoAllowedSupply,          {}, CMDT_OTHER_MANAGEMENT,       CmdDataT<StationID, CargoType, bool>)
+DEF_CMD_TUPLE   (CMD_BUILD_AIRPORT,                    CmdBuildAirport,     CMD_NO_WATER | CMD_AUTO, CommandType::LandscapeConstruction, CmdDataT<uint8_t, uint8_t, StationID, bool>)
+DEF_CMD_TUPLE   (CMD_BUILD_DOCK,                       CmdBuildDock,                       CMD_AUTO, CommandType::LandscapeConstruction, CmdDataT<StationID, bool>)
+DEF_CMD_TUPLE   (CMD_BUILD_RAIL_STATION,               CmdBuildRailStation, CMD_NO_WATER | CMD_AUTO, CommandType::LandscapeConstruction, CmdDataT<RailType, Axis, uint8_t, uint8_t, StationClassID, uint16_t, StationID, bool>)
+DEF_CMD_TUPLE   (CMD_REMOVE_FROM_RAIL_STATION,         CmdRemoveFromRailStation,                 {}, CommandType::LandscapeConstruction, CmdDataT<TileIndex, bool>)
+DEF_CMD_TUPLE   (CMD_BUILD_ROAD_STOP,                  CmdBuildRoadStop,    CMD_NO_WATER | CMD_AUTO, CommandType::LandscapeConstruction, CmdDataT<uint8_t, uint8_t, RoadStopType, bool, DiagDirection, RoadType, RoadStopClassID, uint16_t, StationID, bool>)
+DEF_CMD_TUPLE   (CMD_REMOVE_ROAD_STOP,                 CmdRemoveRoadStop,                        {}, CommandType::LandscapeConstruction, CmdDataT<uint8_t, uint8_t, RoadStopType, bool>)
+DEF_CMD_TUPLE_NT(CMD_RENAME_STATION,                   CmdRenameStation,                         {}, CommandType::OtherManagement,       CmdDataT<StationID, bool, std::string>)
+DEF_CMD_TUPLE_NT(CMD_OPEN_CLOSE_AIRPORT,               CmdOpenCloseAirport,                      {}, CommandType::RouteManagement,       CmdDataT<StationID>)
+DEF_CMD_TUPLE_NT(CMD_EXCHANGE_STATION_NAMES,           CmdExchangeStationNames,                  {}, CommandType::OtherManagement,       CmdDataT<StationID, StationID>)
+DEF_CMD_TUPLE_NT(CMD_SET_STATION_CARGO_ALLOWED_SUPPLY, CmdSetStationCargoAllowedSupply,          {}, CommandType::OtherManagement,       CmdDataT<StationID, CargoType, bool>)
 
 #endif /* STATION_CMD_H */

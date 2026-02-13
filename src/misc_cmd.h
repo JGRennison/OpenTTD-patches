@@ -20,13 +20,13 @@ enum class LoanCommand : uint8_t {
 	Amount,
 };
 
-DEF_CMD_TUPLE_NT (CMD_MONEY_CHEAT,          CmdMoneyCheat,        CMD_NO_EST,                 CMDT_CHEAT,            CmdDataT<Money>)
-DEF_CMD_TUPLE_NT (CMD_MONEY_CHEAT_ADMIN,    CmdMoneyCheatAdmin,   CMD_SERVER_NS | CMD_NO_EST, CMDT_CHEAT,            CmdDataT<Money>)
-DEF_CMD_TUPLE    (CMD_CHANGE_BANK_BALANCE,  CmdChangeBankBalance, CMD_DEITY,                  CMDT_MONEY_MANAGEMENT, CmdDataT<Money, CompanyID, ExpensesType>)
-DEF_CMD_TUPLE_NT (CMD_INCREASE_LOAN,        CmdIncreaseLoan,      {},                         CMDT_MONEY_MANAGEMENT, CmdDataT<LoanCommand, Money>)
-DEF_CMD_TUPLE_NT (CMD_DECREASE_LOAN,        CmdDecreaseLoan,      {},                         CMDT_MONEY_MANAGEMENT, CmdDataT<LoanCommand, Money>)
-DEF_CMD_TUPLE_NT (CMD_SET_COMPANY_MAX_LOAN, CmdSetCompanyMaxLoan, CMD_DEITY,                  CMDT_MONEY_MANAGEMENT, CmdDataT<CompanyID, Money>)
-DEF_CMD_TUPLE_NT (CMD_PAUSE,                CmdPause,             CMD_SERVER | CMD_NO_EST,    CMDT_SERVER_SETTING,   CmdDataT<PauseMode, bool>)
-DEF_CMD_TUPLE_NT (CMD_DESYNC_CHECK,         CmdDesyncCheck,       CMD_SERVER,                 CMDT_SERVER_SETTING,   EmptyCmdData)
+DEF_CMD_TUPLE_NT (CMD_MONEY_CHEAT,          CmdMoneyCheat,        CMD_NO_EST,                 CommandType::Cheat,           CmdDataT<Money>)
+DEF_CMD_TUPLE_NT (CMD_MONEY_CHEAT_ADMIN,    CmdMoneyCheatAdmin,   CMD_SERVER_NS | CMD_NO_EST, CommandType::Cheat,           CmdDataT<Money>)
+DEF_CMD_TUPLE    (CMD_CHANGE_BANK_BALANCE,  CmdChangeBankBalance, CMD_DEITY,                  CommandType::MoneyManagement, CmdDataT<Money, CompanyID, ExpensesType>)
+DEF_CMD_TUPLE_NT (CMD_INCREASE_LOAN,        CmdIncreaseLoan,      {},                         CommandType::MoneyManagement, CmdDataT<LoanCommand, Money>)
+DEF_CMD_TUPLE_NT (CMD_DECREASE_LOAN,        CmdDecreaseLoan,      {},                         CommandType::MoneyManagement, CmdDataT<LoanCommand, Money>)
+DEF_CMD_TUPLE_NT (CMD_SET_COMPANY_MAX_LOAN, CmdSetCompanyMaxLoan, CMD_DEITY,                  CommandType::MoneyManagement, CmdDataT<CompanyID, Money>)
+DEF_CMD_TUPLE_NT (CMD_PAUSE,                CmdPause,             CMD_SERVER | CMD_NO_EST,    CommandType::ServerSetting,   CmdDataT<PauseMode, bool>)
+DEF_CMD_TUPLE_NT (CMD_DESYNC_CHECK,         CmdDesyncCheck,       CMD_SERVER,                 CommandType::ServerSetting,   EmptyCmdData)
 
 #endif /* MISC_CMD_H */

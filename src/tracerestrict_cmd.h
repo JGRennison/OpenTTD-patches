@@ -126,18 +126,18 @@ struct TraceRestrictManageSignalData final : public TupleRefCmdData<TraceRestric
 
 BaseCommandContainer<CMD_PROGRAM_TRACERESTRICT_SIGNAL> GetTraceRestrictCommandContainer(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value);
 
-DEF_CMD_TUPLE    (CMD_PROGRAM_TRACERESTRICT_SIGNAL,      CmdProgramSignalTraceRestrict,     {}, CMDT_OTHER_MANAGEMENT, TraceRestrictProgramSignalData)
-DEF_CMD_TUPLE    (CMD_MANAGE_TRACERESTRICT_SIGNAL,       CmdProgramSignalTraceRestrictMgmt, {}, CMDT_OTHER_MANAGEMENT, TraceRestrictManageSignalData)
-DEF_CMD_DIRECT_NT(CMD_CREATE_TRACERESTRICT_SLOT,         CmdCreateTraceRestrictSlot,        {}, CMDT_OTHER_MANAGEMENT, TraceRestrictCreateSlotCmdData)
-DEF_CMD_TUPLE_NT (CMD_ALTER_TRACERESTRICT_SLOT,          CmdAlterTraceRestrictSlot,         {}, CMDT_OTHER_MANAGEMENT, CmdDataT<TraceRestrictSlotID, TraceRestrictAlterSlotOperation, uint32_t, std::string>)
-DEF_CMD_TUPLE_NT (CMD_DELETE_TRACERESTRICT_SLOT,         CmdDeleteTraceRestrictSlot,        {}, CMDT_OTHER_MANAGEMENT, CmdDataT<TraceRestrictSlotID>)
-DEF_CMD_TUPLE_NT (CMD_ADD_VEHICLE_TRACERESTRICT_SLOT,    CmdAddVehicleTraceRestrictSlot,    {}, CMDT_OTHER_MANAGEMENT, CmdDataT<TraceRestrictSlotID, VehicleID>)
-DEF_CMD_TUPLE_NT (CMD_REMOVE_VEHICLE_TRACERESTRICT_SLOT, CmdRemoveVehicleTraceRestrictSlot, {}, CMDT_OTHER_MANAGEMENT, CmdDataT<TraceRestrictSlotID, VehicleID>)
-DEF_CMD_TUPLE_NT (CMD_CREATE_TRACERESTRICT_SLOT_GROUP,   CmdCreateTraceRestrictSlotGroup,   {}, CMDT_OTHER_MANAGEMENT, CmdDataT<VehicleType, TraceRestrictSlotGroupID, std::string>)
-DEF_CMD_TUPLE_NT (CMD_ALTER_TRACERESTRICT_SLOT_GROUP,    CmdAlterTraceRestrictSlotGroup,    {}, CMDT_OTHER_MANAGEMENT, CmdDataT<TraceRestrictSlotGroupID, TraceRestrictAlterSlotGroupOperation, TraceRestrictSlotGroupID, std::string>)
-DEF_CMD_TUPLE_NT (CMD_DELETE_TRACERESTRICT_SLOT_GROUP,   CmdDeleteTraceRestrictSlotGroup,   {}, CMDT_OTHER_MANAGEMENT, CmdDataT<TraceRestrictSlotGroupID>)
-DEF_CMD_DIRECT_NT(CMD_CREATE_TRACERESTRICT_COUNTER,      CmdCreateTraceRestrictCounter,     {}, CMDT_OTHER_MANAGEMENT, TraceRestrictCreateCounterCmdData)
-DEF_CMD_TUPLE_NT (CMD_ALTER_TRACERESTRICT_COUNTER,       CmdAlterTraceRestrictCounter,      {}, CMDT_OTHER_MANAGEMENT, CmdDataT<TraceRestrictCounterID, TraceRestrictAlterCounterOperation, uint32_t, std::string>)
-DEF_CMD_TUPLE_NT (CMD_DELETE_TRACERESTRICT_COUNTER,      CmdDeleteTraceRestrictCounter,     {}, CMDT_OTHER_MANAGEMENT, CmdDataT<TraceRestrictCounterID>)
+DEF_CMD_TUPLE    (CMD_PROGRAM_TRACERESTRICT_SIGNAL,      CmdProgramSignalTraceRestrict,     {}, CommandType::OtherManagement, TraceRestrictProgramSignalData)
+DEF_CMD_TUPLE    (CMD_MANAGE_TRACERESTRICT_SIGNAL,       CmdProgramSignalTraceRestrictMgmt, {}, CommandType::OtherManagement, TraceRestrictManageSignalData)
+DEF_CMD_DIRECT_NT(CMD_CREATE_TRACERESTRICT_SLOT,         CmdCreateTraceRestrictSlot,        {}, CommandType::OtherManagement, TraceRestrictCreateSlotCmdData)
+DEF_CMD_TUPLE_NT (CMD_ALTER_TRACERESTRICT_SLOT,          CmdAlterTraceRestrictSlot,         {}, CommandType::OtherManagement, CmdDataT<TraceRestrictSlotID, TraceRestrictAlterSlotOperation, uint32_t, std::string>)
+DEF_CMD_TUPLE_NT (CMD_DELETE_TRACERESTRICT_SLOT,         CmdDeleteTraceRestrictSlot,        {}, CommandType::OtherManagement, CmdDataT<TraceRestrictSlotID>)
+DEF_CMD_TUPLE_NT (CMD_ADD_VEHICLE_TRACERESTRICT_SLOT,    CmdAddVehicleTraceRestrictSlot,    {}, CommandType::OtherManagement, CmdDataT<TraceRestrictSlotID, VehicleID>)
+DEF_CMD_TUPLE_NT (CMD_REMOVE_VEHICLE_TRACERESTRICT_SLOT, CmdRemoveVehicleTraceRestrictSlot, {}, CommandType::OtherManagement, CmdDataT<TraceRestrictSlotID, VehicleID>)
+DEF_CMD_TUPLE_NT (CMD_CREATE_TRACERESTRICT_SLOT_GROUP,   CmdCreateTraceRestrictSlotGroup,   {}, CommandType::OtherManagement, CmdDataT<VehicleType, TraceRestrictSlotGroupID, std::string>)
+DEF_CMD_TUPLE_NT (CMD_ALTER_TRACERESTRICT_SLOT_GROUP,    CmdAlterTraceRestrictSlotGroup,    {}, CommandType::OtherManagement, CmdDataT<TraceRestrictSlotGroupID, TraceRestrictAlterSlotGroupOperation, TraceRestrictSlotGroupID, std::string>)
+DEF_CMD_TUPLE_NT (CMD_DELETE_TRACERESTRICT_SLOT_GROUP,   CmdDeleteTraceRestrictSlotGroup,   {}, CommandType::OtherManagement, CmdDataT<TraceRestrictSlotGroupID>)
+DEF_CMD_DIRECT_NT(CMD_CREATE_TRACERESTRICT_COUNTER,      CmdCreateTraceRestrictCounter,     {}, CommandType::OtherManagement, TraceRestrictCreateCounterCmdData)
+DEF_CMD_TUPLE_NT (CMD_ALTER_TRACERESTRICT_COUNTER,       CmdAlterTraceRestrictCounter,      {}, CommandType::OtherManagement, CmdDataT<TraceRestrictCounterID, TraceRestrictAlterCounterOperation, uint32_t, std::string>)
+DEF_CMD_TUPLE_NT (CMD_DELETE_TRACERESTRICT_COUNTER,      CmdDeleteTraceRestrictCounter,     {}, CommandType::OtherManagement, CmdDataT<TraceRestrictCounterID>)
 
 #endif /* TRACERESTRICT_CMD_H */

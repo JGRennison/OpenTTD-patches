@@ -22,19 +22,19 @@ enum class SellVehicleFlags : uint8_t {
 };
 DECLARE_ENUM_AS_BIT_SET(SellVehicleFlags)
 
-DEF_CMD_TUPLE    (CMD_BUILD_VEHICLE,              CmdBuildVehicle,              CMD_CLIENT_ID, CMDT_VEHICLE_CONSTRUCTION, CmdDataT<EngineID, bool, CargoType, ClientID>)
-DEF_CMD_TUPLE_LT (CMD_SELL_VEHICLE,               CmdSellVehicle,               CMD_CLIENT_ID, CMDT_VEHICLE_CONSTRUCTION, CmdDataT<VehicleID, SellVehicleFlags, ClientID>)
-DEF_CMD_TUPLE_LT (CMD_REFIT_VEHICLE,              CmdRefitVehicle,                         {}, CMDT_VEHICLE_CONSTRUCTION, CmdDataT<VehicleID, CargoType, uint8_t, bool, bool, uint8_t>)
-DEF_CMD_TUPLE_NT (CMD_SEND_VEHICLE_TO_DEPOT,      CmdSendVehicleToDepot,                   {}, CMDT_VEHICLE_MANAGEMENT,   CmdDataT<VehicleID, DepotCommandFlags, TileIndex>)
-DEF_CMD_TUPLE_NT (CMD_MASS_SEND_VEHICLE_TO_DEPOT, CmdMassSendVehicleToDepot,               {}, CMDT_VEHICLE_MANAGEMENT,   CmdDataT<DepotCommandFlags, VehicleListIdentifier, CargoType>)
-DEF_CMD_TUPLE_NT (CMD_CHANGE_SERVICE_INT,         CmdChangeServiceInt,                     {}, CMDT_VEHICLE_MANAGEMENT,   CmdDataT<VehicleID, uint16_t, bool, bool>)
-DEF_CMD_TUPLE_NT (CMD_RENAME_VEHICLE,             CmdRenameVehicle,                        {}, CMDT_OTHER_MANAGEMENT,     CmdDataT<VehicleID, std::string>)
-DEF_CMD_TUPLE    (CMD_CLONE_VEHICLE,              CmdCloneVehicle,                CMD_NO_TEST, CMDT_VEHICLE_CONSTRUCTION, CmdDataT<VehicleID, bool>) // NewGRF callbacks influence building and refitting making it impossible to correctly estimate the cost
-DEF_CMD_TUPLE_LT (CMD_START_STOP_VEHICLE,         CmdStartStopVehicle,                     {}, CMDT_VEHICLE_MANAGEMENT,   CmdDataT<VehicleID, bool>)
-DEF_CMD_TUPLE    (CMD_MASS_START_STOP,            CmdMassStartStopVehicle,                 {}, CMDT_VEHICLE_MANAGEMENT,   CmdDataT<bool, bool, VehicleListIdentifier, CargoType>)
-DEF_CMD_TUPLE    (CMD_DEPOT_SELL_ALL_VEHICLES,    CmdDepotSellAllVehicles,                 {}, CMDT_VEHICLE_MANAGEMENT,   CmdDataT<VehicleType>)
-DEF_CMD_TUPLE    (CMD_DEPOT_MASS_AUTOREPLACE,     CmdDepotMassAutoReplace,        CMD_NO_TEST, CMDT_VEHICLE_CONSTRUCTION, CmdDataT<VehicleType>)
+DEF_CMD_TUPLE    (CMD_BUILD_VEHICLE,              CmdBuildVehicle,              CMD_CLIENT_ID, CommandType::VehicleConstruction, CmdDataT<EngineID, bool, CargoType, ClientID>)
+DEF_CMD_TUPLE_LT (CMD_SELL_VEHICLE,               CmdSellVehicle,               CMD_CLIENT_ID, CommandType::VehicleConstruction, CmdDataT<VehicleID, SellVehicleFlags, ClientID>)
+DEF_CMD_TUPLE_LT (CMD_REFIT_VEHICLE,              CmdRefitVehicle,                         {}, CommandType::VehicleConstruction, CmdDataT<VehicleID, CargoType, uint8_t, bool, bool, uint8_t>)
+DEF_CMD_TUPLE_NT (CMD_SEND_VEHICLE_TO_DEPOT,      CmdSendVehicleToDepot,                   {}, CommandType::VehicleManagement,   CmdDataT<VehicleID, DepotCommandFlags, TileIndex>)
+DEF_CMD_TUPLE_NT (CMD_MASS_SEND_VEHICLE_TO_DEPOT, CmdMassSendVehicleToDepot,               {}, CommandType::VehicleManagement,   CmdDataT<DepotCommandFlags, VehicleListIdentifier, CargoType>)
+DEF_CMD_TUPLE_NT (CMD_CHANGE_SERVICE_INT,         CmdChangeServiceInt,                     {}, CommandType::VehicleManagement,   CmdDataT<VehicleID, uint16_t, bool, bool>)
+DEF_CMD_TUPLE_NT (CMD_RENAME_VEHICLE,             CmdRenameVehicle,                        {}, CommandType::OtherManagement,     CmdDataT<VehicleID, std::string>)
+DEF_CMD_TUPLE    (CMD_CLONE_VEHICLE,              CmdCloneVehicle,                CMD_NO_TEST, CommandType::VehicleConstruction, CmdDataT<VehicleID, bool>) // NewGRF callbacks influence building and refitting making it impossible to correctly estimate the cost
+DEF_CMD_TUPLE_LT (CMD_START_STOP_VEHICLE,         CmdStartStopVehicle,                     {}, CommandType::VehicleManagement,   CmdDataT<VehicleID, bool>)
+DEF_CMD_TUPLE    (CMD_MASS_START_STOP,            CmdMassStartStopVehicle,                 {}, CommandType::VehicleManagement,   CmdDataT<bool, bool, VehicleListIdentifier, CargoType>)
+DEF_CMD_TUPLE    (CMD_DEPOT_SELL_ALL_VEHICLES,    CmdDepotSellAllVehicles,                 {}, CommandType::VehicleManagement,   CmdDataT<VehicleType>)
+DEF_CMD_TUPLE    (CMD_DEPOT_MASS_AUTOREPLACE,     CmdDepotMassAutoReplace,        CMD_NO_TEST, CommandType::VehicleConstruction, CmdDataT<VehicleType>)
 
-DEF_CMD_TUPLE_LT (CMD_TURN_ROADVEH,               CmdTurnRoadVeh,                          {}, CMDT_VEHICLE_MANAGEMENT,   CmdDataT<VehicleID>)
+DEF_CMD_TUPLE_LT (CMD_TURN_ROADVEH,               CmdTurnRoadVeh,                          {}, CommandType::VehicleManagement,   CmdDataT<VehicleID>)
 
 #endif /* VEHICLE_CMD_H */

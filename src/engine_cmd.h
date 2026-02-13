@@ -14,9 +14,9 @@
 #include "company_type.h"
 #include "engine_type.h"
 
-DEF_CMD_TUPLE_NT(CMD_WANT_ENGINE_PREVIEW,    CmdWantEnginePreview,            {}, CMDT_VEHICLE_MANAGEMENT, CmdDataT<EngineID>)
-DEF_CMD_TUPLE_NT(CMD_ENGINE_CTRL,            CmdEngineCtrl,            CMD_DEITY, CMDT_VEHICLE_MANAGEMENT, CmdDataT<EngineID, CompanyID, bool>)
-DEF_CMD_TUPLE_NT(CMD_RENAME_ENGINE,          CmdRenameEngine,         CMD_SERVER, CMDT_OTHER_MANAGEMENT,   CmdDataT<EngineID, std::string>)
-DEF_CMD_TUPLE_NT(CMD_SET_VEHICLE_VISIBILITY, CmdSetVehicleVisibility,         {}, CMDT_COMPANY_SETTING,    CmdDataT<EngineID, bool>)
+DEF_CMD_TUPLE_NT(CMD_WANT_ENGINE_PREVIEW,    CmdWantEnginePreview,            {}, CommandType::VehicleManagement, CmdDataT<EngineID>)
+DEF_CMD_TUPLE_NT(CMD_ENGINE_CTRL,            CmdEngineCtrl,            CMD_DEITY, CommandType::VehicleManagement, CmdDataT<EngineID, CompanyID, bool>)
+DEF_CMD_TUPLE_NT(CMD_RENAME_ENGINE,          CmdRenameEngine,         CMD_SERVER, CommandType::OtherManagement,   CmdDataT<EngineID, std::string>)
+DEF_CMD_TUPLE_NT(CMD_SET_VEHICLE_VISIBILITY, CmdSetVehicleVisibility,         {}, CommandType::CompanySetting,    CmdDataT<EngineID, bool>)
 
 #endif /* ENGINE_CMD_H */

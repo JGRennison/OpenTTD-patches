@@ -904,18 +904,18 @@ static constexpr CommandFlags CMD_SERVER_NS{CommandFlag::ServerNS};
 static constexpr CommandFlags CMD_LOG_AUX{CommandFlag::LogAux};
 
 /** Types of commands we have. */
-enum CommandType : uint8_t {
-	CMDT_LANDSCAPE_CONSTRUCTION, ///< Construction and destruction of objects on the map.
-	CMDT_VEHICLE_CONSTRUCTION,   ///< Construction, modification (incl. refit) and destruction of vehicles.
-	CMDT_MONEY_MANAGEMENT,       ///< Management of money, i.e. loans and shares.
-	CMDT_VEHICLE_MANAGEMENT,     ///< Stopping, starting, sending to depot, turning around, replace orders etc.
-	CMDT_ROUTE_MANAGEMENT,       ///< Modifications to route management (orders, groups, etc).
-	CMDT_OTHER_MANAGEMENT,       ///< Renaming stuff, changing company colours, placing signs, etc.
-	CMDT_COMPANY_SETTING,        ///< Changing settings related to a company.
-	CMDT_SERVER_SETTING,         ///< Pausing/removing companies/server settings.
-	CMDT_CHEAT,                  ///< A cheat of some sorts.
+enum class CommandType : uint8_t {
+	LandscapeConstruction, ///< Construction and destruction of objects on the map.
+	VehicleConstruction,   ///< Construction, modification (incl. refit) and destruction of vehicles.
+	MoneyManagement,       ///< Management of money, i.e. loans.
+	VehicleManagement,     ///< Stopping, starting, sending to depot, turning around, replace orders etc.
+	RouteManagement,       ///< Modifications to route management (orders, groups, etc).
+	OtherManagement,       ///< Renaming stuff, changing company colours, placing signs, etc.
+	CompanySetting,        ///< Changing settings related to a company.
+	ServerSetting,         ///< Pausing/removing companies/server settings.
+	Cheat,                 ///< A cheat of some sorts.
 
-	CMDT_END,                    ///< Magic end marker.
+	End,                   ///< End marker.
 };
 
 /**

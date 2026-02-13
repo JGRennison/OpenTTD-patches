@@ -537,7 +537,7 @@ bool IsCommandAllowedWhilePaused(Commands cmd)
 		CommandPauseLevel::NoActions, // CommandType::ServerSetting
 		CommandPauseLevel::NoActions, // CommandType::Cheat
 	};
-	static_assert(lengthof(command_type_lookup) == CMDT_END);
+	static_assert(std::size(command_type_lookup) == to_underlying(CommandType::End));
 
 	assert(IsValidCommand(cmd));
 	return _game_mode == GM_EDITOR || command_type_lookup[to_underlying(_command_proc_table[cmd].type)] <= _settings_game.construction.command_pause_level;
@@ -1055,7 +1055,7 @@ CommandCost DoCommandPInternal(Commands cmd, TileIndex tile, const CommandPayloa
 	if (_extra_aspects > 0) FlushDeferredAspectUpdates();
 
 	/* Record if there was a command issues during pause; ignore pause/other setting related changes. */
-	if (_pause_mode.Any() && command.type != CMDT_SERVER_SETTING) _pause_mode.Set(PauseMode::CommandDuringPause);
+	if (_pause_mode.Any() && command.type != CommandType::ServerSetting) _pause_mode.Set(PauseMode::CommandDuringPause);
 
 	return res2;
 }

@@ -13,7 +13,7 @@
 #include "command_type.h"
 #include "viewport_type.h"
 
-DEF_CMD_TUPLE(CMD_SCROLL_VIEWPORT, CmdScrollViewport, CMD_DEITY | CMD_LOG_AUX, CMDT_OTHER_MANAGEMENT, CmdDataT<ViewportScrollTarget, uint32_t>)
+DEF_CMD_TUPLE(CMD_SCROLL_VIEWPORT, CmdScrollViewport, CMD_DEITY | CMD_LOG_AUX, CommandType::OtherManagement, CmdDataT<ViewportScrollTarget, uint32_t>)
 
 #endif /* VIEWPORT_CMD_H */
 

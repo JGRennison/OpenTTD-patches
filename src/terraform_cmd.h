@@ -14,7 +14,7 @@
 #include "map_type.h"
 #include "slope_type.h"
 
-DEF_CMD_TUPLE(CMD_TERRAFORM_LAND, CmdTerraformLand,               CMD_ALL_TILES | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION, CmdDataT<Slope, bool>)
-DEF_CMD_TUPLE(CMD_LEVEL_LAND,     CmdLevelLand,     CMD_ALL_TILES | CMD_NO_TEST | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION, CmdDataT<TileIndex, bool, LevelMode>) // test run might clear tiles multiple times, in execution that only happens once
+DEF_CMD_TUPLE(CMD_TERRAFORM_LAND, CmdTerraformLand,               CMD_ALL_TILES | CMD_AUTO, CommandType::LandscapeConstruction, CmdDataT<Slope, bool>)
+DEF_CMD_TUPLE(CMD_LEVEL_LAND,     CmdLevelLand,     CMD_ALL_TILES | CMD_NO_TEST | CMD_AUTO, CommandType::LandscapeConstruction, CmdDataT<TileIndex, bool, LevelMode>) // test run might clear tiles multiple times, in execution that only happens once
 
 #endif /* TERRAFORM_CMD_H */

@@ -14,6 +14,6 @@
 #include "depot_type.h"
 #include "vehicle_type.h"
 
-DEF_CMD_TUPLE_NT(CMD_RENAME_DEPOT, CmdRenameDepot, {}, CMDT_OTHER_MANAGEMENT, CmdDataT<DepotID, std::string>)
+DEF_CMD_TUPLE_NT(CMD_RENAME_DEPOT, CmdRenameDepot, {}, CommandType::OtherManagement, CmdDataT<DepotID, std::string>)
 
 #endif /* DEPOT_CMD_H */

@@ -17,10 +17,10 @@ struct LeagueTableElementCmdData final : public AutoFmtTupleCmdData<LeagueTableE
 	static inline constexpr const char fmt_str[] = "t: {}, r: {}, c: {}, type: {}, targ: {}";
 };
 
-DEF_CMD_TUPLE_NT(CMD_CREATE_LEAGUE_TABLE,               CmdCreateLeagueTable,             CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT, CmdDataT<EncodedString, EncodedString, EncodedString>)
-DEF_CMD_TUPLE_NT(CMD_CREATE_LEAGUE_TABLE_ELEMENT,       CmdCreateLeagueTableElement,      CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT, LeagueTableElementCmdData)
-DEF_CMD_TUPLE_NT(CMD_UPDATE_LEAGUE_TABLE_ELEMENT_DATA,  CmdUpdateLeagueTableElementData,  CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT, CmdDataT<LeagueTableElementID, CompanyID, EncodedString, LinkType, LinkTargetID>)
-DEF_CMD_TUPLE_NT(CMD_UPDATE_LEAGUE_TABLE_ELEMENT_SCORE, CmdUpdateLeagueTableElementScore, CMD_STR_CTRL | CMD_DEITY, CMDT_OTHER_MANAGEMENT, CmdDataT<LeagueTableElementID, int64_t, EncodedString>)
-DEF_CMD_TUPLE_NT(CMD_REMOVE_LEAGUE_TABLE_ELEMENT,       CmdRemoveLeagueTableElement,                     CMD_DEITY, CMDT_OTHER_MANAGEMENT, CmdDataT<LeagueTableElementID>)
+DEF_CMD_TUPLE_NT(CMD_CREATE_LEAGUE_TABLE,               CmdCreateLeagueTable,             CMD_STR_CTRL | CMD_DEITY, CommandType::OtherManagement, CmdDataT<EncodedString, EncodedString, EncodedString>)
+DEF_CMD_TUPLE_NT(CMD_CREATE_LEAGUE_TABLE_ELEMENT,       CmdCreateLeagueTableElement,      CMD_STR_CTRL | CMD_DEITY, CommandType::OtherManagement, LeagueTableElementCmdData)
+DEF_CMD_TUPLE_NT(CMD_UPDATE_LEAGUE_TABLE_ELEMENT_DATA,  CmdUpdateLeagueTableElementData,  CMD_STR_CTRL | CMD_DEITY, CommandType::OtherManagement, CmdDataT<LeagueTableElementID, CompanyID, EncodedString, LinkType, LinkTargetID>)
+DEF_CMD_TUPLE_NT(CMD_UPDATE_LEAGUE_TABLE_ELEMENT_SCORE, CmdUpdateLeagueTableElementScore, CMD_STR_CTRL | CMD_DEITY, CommandType::OtherManagement, CmdDataT<LeagueTableElementID, int64_t, EncodedString>)
+DEF_CMD_TUPLE_NT(CMD_REMOVE_LEAGUE_TABLE_ELEMENT,       CmdRemoveLeagueTableElement,                     CMD_DEITY, CommandType::OtherManagement, CmdDataT<LeagueTableElementID>)
 
 #endif /* LEAGUE_CMD_H */

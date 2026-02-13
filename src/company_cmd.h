@@ -30,16 +30,16 @@ struct CmdCompanyCtrlData final : public TupleRefCmdData<CmdCompanyCtrlData, Cmd
 	void FormatDebugSummary(struct format_target &) const override;
 };
 
-DEF_CMD_TUPLE_NT (CMD_COMPANY_CTRL,             CmdCompanyCtrl,           CMD_SPECTATOR | CMD_CLIENT_ID | CMD_NO_EST, CMDT_SERVER_SETTING,   CmdCompanyCtrlData)
-DEF_CMD_TUPLE_NT (CMD_COMPANY_ALLOW_LIST_CTRL,  CmdCompanyAllowListCtrl,  CMD_NO_EST,                                 CMDT_OTHER_MANAGEMENT, CmdDataT<CompanyAllowListCtrlAction, std::string>)
-DEF_CMD_TUPLE_NT (CMD_GIVE_MONEY,               CmdGiveMoney,             {},                                         CMDT_MONEY_MANAGEMENT, CmdDataT<Money, CompanyID>)
-DEF_CMD_TUPLE_NT (CMD_RENAME_COMPANY,           CmdRenameCompany,         {},                                         CMDT_COMPANY_SETTING,  CmdDataT<std::string>)
-DEF_CMD_TUPLE_NT (CMD_RENAME_PRESIDENT,         CmdRenamePresident,       {},                                         CMDT_COMPANY_SETTING,  CmdDataT<std::string>)
-DEF_CMD_TUPLE_NT (CMD_SET_COMPANY_MANAGER_FACE, CmdSetCompanyManagerFace, {},                                         CMDT_COMPANY_SETTING,  CmdDataT<uint, uint32_t>)
-DEF_CMD_TUPLE_NT (CMD_SET_COMPANY_COLOUR,       CmdSetCompanyColour,      {},                                         CMDT_COMPANY_SETTING,  CmdDataT<LiveryScheme, bool, Colours>)
-DEF_CMD_TUPLE_NT (CMD_BUY_SHARE_IN_COMPANY,     CmdBuyShareInCompany,     {},                                         CMDT_MONEY_MANAGEMENT, CmdDataT<CompanyID>)
-DEF_CMD_TUPLE_NT (CMD_SELL_SHARE_IN_COMPANY,    CmdSellShareInCompany,    {},                                         CMDT_MONEY_MANAGEMENT, CmdDataT<CompanyID>)
-DEF_CMD_TUPLE_NT (CMD_BUY_COMPANY,              CmdBuyCompany,            {},                                         CMDT_MONEY_MANAGEMENT, CmdDataT<CompanyID, bool>)
-DEF_CMD_TUPLE_NT (CMD_DECLINE_BUY_COMPANY,      CmdDeclineBuyCompany,     CMD_NO_EST,                                 CMDT_SERVER_SETTING,   CmdDataT<CompanyID>)
+DEF_CMD_TUPLE_NT (CMD_COMPANY_CTRL,             CmdCompanyCtrl,           CMD_SPECTATOR | CMD_CLIENT_ID | CMD_NO_EST, CommandType::ServerSetting,   CmdCompanyCtrlData)
+DEF_CMD_TUPLE_NT (CMD_COMPANY_ALLOW_LIST_CTRL,  CmdCompanyAllowListCtrl,  CMD_NO_EST,                                 CommandType::OtherManagement, CmdDataT<CompanyAllowListCtrlAction, std::string>)
+DEF_CMD_TUPLE_NT (CMD_GIVE_MONEY,               CmdGiveMoney,             {},                                         CommandType::MoneyManagement, CmdDataT<Money, CompanyID>)
+DEF_CMD_TUPLE_NT (CMD_RENAME_COMPANY,           CmdRenameCompany,         {},                                         CommandType::CompanySetting,  CmdDataT<std::string>)
+DEF_CMD_TUPLE_NT (CMD_RENAME_PRESIDENT,         CmdRenamePresident,       {},                                         CommandType::CompanySetting,  CmdDataT<std::string>)
+DEF_CMD_TUPLE_NT (CMD_SET_COMPANY_MANAGER_FACE, CmdSetCompanyManagerFace, {},                                         CommandType::CompanySetting,  CmdDataT<uint, uint32_t>)
+DEF_CMD_TUPLE_NT (CMD_SET_COMPANY_COLOUR,       CmdSetCompanyColour,      {},                                         CommandType::CompanySetting,  CmdDataT<LiveryScheme, bool, Colours>)
+DEF_CMD_TUPLE_NT (CMD_BUY_SHARE_IN_COMPANY,     CmdBuyShareInCompany,     {},                                         CommandType::MoneyManagement, CmdDataT<CompanyID>)
+DEF_CMD_TUPLE_NT (CMD_SELL_SHARE_IN_COMPANY,    CmdSellShareInCompany,    {},                                         CommandType::MoneyManagement, CmdDataT<CompanyID>)
+DEF_CMD_TUPLE_NT (CMD_BUY_COMPANY,              CmdBuyCompany,            {},                                         CommandType::MoneyManagement, CmdDataT<CompanyID, bool>)
+DEF_CMD_TUPLE_NT (CMD_DECLINE_BUY_COMPANY,      CmdDeclineBuyCompany,     CMD_NO_EST,                                 CommandType::ServerSetting,   CmdDataT<CompanyID>)
 
 #endif /* COMPANY_CMD_H */

@@ -26,7 +26,7 @@ struct BulkTreeCmdData final : public CommandPayloadSerialisable<BulkTreeCmdData
 	void FormatDebugSummary(format_target &output) const override;
 };
 
-DEF_CMD_TUPLE(CMD_PLANT_TREE, CmdPlantTree, CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION, CmdDataT<TileIndex, TreeTypes, uint8_t, bool>)
-DEF_CMD_DIRECT_LT(CMD_BULK_TREE, CmdBulkTree, CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION, BulkTreeCmdData)
+DEF_CMD_TUPLE(CMD_PLANT_TREE, CmdPlantTree, CMD_AUTO, CommandType::LandscapeConstruction, CmdDataT<TileIndex, TreeTypes, uint8_t, bool>)
+DEF_CMD_DIRECT_LT(CMD_BULK_TREE, CmdBulkTree, CMD_AUTO, CommandType::LandscapeConstruction, BulkTreeCmdData)
 
 #endif /* TREE_CMD_H */

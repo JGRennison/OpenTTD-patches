@@ -13,8 +13,8 @@
 #include "command_type.h"
 #include "object_type.h"
 
-DEF_CMD_TUPLE(CMD_BUILD_OBJECT,       CmdBuildObject,        CMD_DEITY | CMD_NO_WATER | CMD_AUTO, CMDT_LANDSCAPE_CONSTRUCTION, CmdDataT<ObjectType, uint8_t>)
-DEF_CMD_TUPLE(CMD_BUILD_OBJECT_AREA,  CmdBuildObjectArea,  CMD_NO_WATER | CMD_AUTO | CMD_NO_TEST, CMDT_LANDSCAPE_CONSTRUCTION, CmdDataT<TileIndex, ObjectType, uint8_t, bool>)
-DEF_CMD_TUPLE(CMD_PURCHASE_LAND_AREA, CmdPurchaseLandArea, CMD_NO_WATER | CMD_AUTO | CMD_NO_TEST, CMDT_LANDSCAPE_CONSTRUCTION, CmdDataT<TileIndex, bool>)
+DEF_CMD_TUPLE(CMD_BUILD_OBJECT,       CmdBuildObject,        CMD_DEITY | CMD_NO_WATER | CMD_AUTO, CommandType::LandscapeConstruction, CmdDataT<ObjectType, uint8_t>)
+DEF_CMD_TUPLE(CMD_BUILD_OBJECT_AREA,  CmdBuildObjectArea,  CMD_NO_WATER | CMD_AUTO | CMD_NO_TEST, CommandType::LandscapeConstruction, CmdDataT<TileIndex, ObjectType, uint8_t, bool>)
+DEF_CMD_TUPLE(CMD_PURCHASE_LAND_AREA, CmdPurchaseLandArea, CMD_NO_WATER | CMD_AUTO | CMD_NO_TEST, CommandType::LandscapeConstruction, CmdDataT<TileIndex, bool>)
 
 #endif /* OBJECT_CMD_H */
