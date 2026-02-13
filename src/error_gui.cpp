@@ -177,8 +177,8 @@ public:
 	{
 		switch (widget) {
 			case WID_EM_FACE: {
-				const Company *c = Company::Get(this->company);
-				DrawCompanyManagerFace(c->face, c->colour, r);
+				const Company *c = Company::GetIfValid(this->company);
+				if (c != nullptr) DrawCompanyManagerFace(c->face, c->colour, r);
 				break;
 			}
 
@@ -325,6 +325,8 @@ void ShowErrorMessage(EncodedString &&summary_msg, EncodedString &&detailed_msg,
 
 	if (_game_mode == GM_BOOTSTRAP) return;
 	if (_settings_client.gui.errmsg_duration == 0 && !no_timeout) return;
+
+	if (company != CompanyID::Invalid() && !Company::IsValidID(company)) company = CompanyID::Invalid();
 
 	ErrorMessageData data(std::move(summary_msg), std::move(detailed_msg), no_timeout ? 0 : _settings_client.gui.errmsg_duration, x, y, std::move(extra_msg), company);
 
