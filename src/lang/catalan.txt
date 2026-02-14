@@ -2849,7 +2849,18 @@ STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Redueix l'alç�
 STR_PICKER_PREVIEW_EXPAND                                       :+
 STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Augmenta l'alçària de les vistes prèvies. Amb Ctrl+clic, s'augmenta fins al màxim.
 
+STR_PICKER_DEFAULT_COLLECTION                                   :Col·lecció per defecte
+STR_PICKER_SELECT_COLLECTION_TOOLTIP                            :Seleccioneu una col·lecció.
+STR_PICKER_COLLECTION_ADD                                       :Afegeix
+STR_PICKER_COLLECTION_ADD_TOOLTIP                               :Crea una col·lecció nova
+STR_PICKER_COLLECTION_RENAME                                    :Reanomena
+STR_PICKER_COLLECTION_RENAME_TOOLTIP                            :Canvia el nom d'una col·lecció.
+STR_PICKER_COLLECTION_DELETE                                    :Esborra
+STR_PICKER_COLLECTION_DELETE_TOOLTIP                            :Esborra la col·lecció.
 
+STR_PICKER_COLLECTION_RENAME_QUERY                              :Reanomena aquesta col·lecció
+STR_PICKER_COLLECTION_DELETE_QUERY                              :Esborra la col·lecció
+STR_PICKER_COLLECTION_DELETE_QUERY_TEXT                         :{YELLOW}Esteu segur que voleu esborrar aquesta col·lecció?
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Trieu quina classe d'estació voleu veure.
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Trieu quin tipus d'estació voleu construir. Amb Ctrl+clic, s'afegeix o es trau l'element de la llista de desats.
@@ -3433,6 +3444,10 @@ STR_MAPGEN_NORTHWEST                                            :{BLACK}Nord-oes
 STR_MAPGEN_NORTHEAST                                            :{BLACK}Nord-est
 STR_MAPGEN_SOUTHEAST                                            :{BLACK}Sud-est
 STR_MAPGEN_SOUTHWEST                                            :{BLACK}Sud-oest
+STR_MAPGEN_NORTHWEST_TOOLTIP                                    :Commuta entre vora amb aigua o amb forma lliure a la vora nord-oest del mapa.
+STR_MAPGEN_NORTHEAST_TOOLTIP                                    :Commuta entre vora amb aigua o amb forma lliure a la vora nord-est del mapa.
+STR_MAPGEN_SOUTHEAST_TOOLTIP                                    :Commuta entre vora amb aigua o amb forma lliure a la vora sud-est del mapa.
+STR_MAPGEN_SOUTHWEST_TOOLTIP                                    :Commuta entre vora amb aigua o amb forma lliure a la vora sud-oest del mapa.
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}Forma lliure
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}Aigua
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}Aleatori
@@ -4361,6 +4376,10 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}Estàs 
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Missatge del fabricant de vehicles
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Acabem de dissenyar {G un una} {G nou nova} {STRING}. Esteu interessats en fer ús exclusiu d'aquest vehicle durant un any, per veure com va, abans del seu llançament mundial?
 
+STR_ENGINE_PREVIEW_PREVIOUS                                     :Anterior
+STR_ENGINE_PREVIEW_NEXT                                         :Següent
+STR_ENGINE_PREVIEW_ENGINE_LIST                                  :{COMMA}: {ENGINE}
+STR_ENGINE_PREVIEW_ENGINE_LIST_TOOLTIP                          :Feu-hi clic per a saltar a un vehicle nou.
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :{G=Femenin}locomotora de tren
 STR_ENGINE_PREVIEW_ELRAIL_LOCOMOTIVE                            :locomotora de ferrocarril electrificat

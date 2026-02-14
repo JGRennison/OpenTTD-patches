@@ -3432,6 +3432,10 @@ STR_MAPGEN_NORTHWEST                                            :{BLACK}Nordwest
 STR_MAPGEN_NORTHEAST                                            :{BLACK}Nordost
 STR_MAPGEN_SOUTHEAST                                            :{BLACK}Südost
 STR_MAPGEN_SOUTHWEST                                            :{BLACK}Südwest
+STR_MAPGEN_NORTHWEST_TOOLTIP                                    :Wiesselen tëschend Waasser oder Fräiformeck am Nordwesten vun dem Kaartenenn
+STR_MAPGEN_NORTHEAST_TOOLTIP                                    :Wiesselen tëschend Waasser oder Fräiformeck am Nordosten vun dem Kaartenenn
+STR_MAPGEN_SOUTHEAST_TOOLTIP                                    :Wiesselen tëschend Waasser oder Fräiformeck am Südosten vun dem Kaartenenn
+STR_MAPGEN_SOUTHWEST_TOOLTIP                                    :Wiesselen tëschend Waasser oder Fräiformeck am Südwesten vun dem Kaartenenn
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}Fräiform
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}Waasser
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}Zoufälleg

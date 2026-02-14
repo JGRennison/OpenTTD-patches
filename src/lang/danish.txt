@@ -3450,6 +3450,10 @@ STR_MAPGEN_NORTHWEST                                            :{BLACK}Nordvest
 STR_MAPGEN_NORTHEAST                                            :{BLACK}Nordøst
 STR_MAPGEN_SOUTHEAST                                            :{BLACK}Sydøst
 STR_MAPGEN_SOUTHWEST                                            :{BLACK}Sydvest
+STR_MAPGEN_NORTHWEST_TOOLTIP                                    :Skift mellem vand- eller friformskant på den nordvestlige kortkant
+STR_MAPGEN_NORTHEAST_TOOLTIP                                    :Skift mellem vand- eller friformskant på den nordøstlige kortkant
+STR_MAPGEN_SOUTHEAST_TOOLTIP                                    :Skift mellem vand- eller friformskant på den sydøstlige kortkant
+STR_MAPGEN_SOUTHWEST_TOOLTIP                                    :Skift mellem vand- eller friformskant på den sydvestlige kortkant
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}Fri udformning
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}Vand
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}Tilfældige

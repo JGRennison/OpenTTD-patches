@@ -3449,6 +3449,10 @@ STR_MAPGEN_NORTHWEST                                            :{BLACK}Rakimāu
 STR_MAPGEN_NORTHEAST                                            :{BLACK}Rakimārāwhiti
 STR_MAPGEN_SOUTHEAST                                            :{BLACK}Tongamārāwhiti
 STR_MAPGEN_SOUTHWEST                                            :{BLACK}Tongamāuru
+STR_MAPGEN_NORTHWEST_TOOLTIP                                    :Hohokona te wai, te tapa noa rānei i te tapa rakimāuru o te mahere
+STR_MAPGEN_NORTHEAST_TOOLTIP                                    :Hohokona te wai, te tapa noa rānei i te tapa rakimārāwhiti o te mahere
+STR_MAPGEN_SOUTHEAST_TOOLTIP                                    :Hohokona te wai, te tapa noa rānei i te tapa tongamārāwhiti o te mahere
+STR_MAPGEN_SOUTHWEST_TOOLTIP                                    :Hohokona te wai, te tapa noa rānei i te tapa tongamāuru o te mahere
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}Hanga noa
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}Wai
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}Matapōkere

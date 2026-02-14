@@ -3450,6 +3450,10 @@ STR_MAPGEN_NORTHWEST                                            :{BLACK}西北�
 STR_MAPGEN_NORTHEAST                                            :{BLACK}東北方
 STR_MAPGEN_SOUTHEAST                                            :{BLACK}東南方
 STR_MAPGEN_SOUTHWEST                                            :{BLACK}西南方
+STR_MAPGEN_NORTHWEST_TOOLTIP                                    :切換地圖西北邊界方向為水域或自由邊界
+STR_MAPGEN_NORTHEAST_TOOLTIP                                    :切換地圖東北邊界方向為水域或自由邊界
+STR_MAPGEN_SOUTHEAST_TOOLTIP                                    :切換地圖東南邊界方向為水域或自由邊界
+STR_MAPGEN_SOUTHWEST_TOOLTIP                                    :切換地圖西南邊界方向為水域或自由邊界
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}自由地形
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}水域
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}隨機

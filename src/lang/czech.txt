@@ -3525,6 +3525,10 @@ STR_MAPGEN_NORTHWEST                                            :{BLACK}Severoz�
 STR_MAPGEN_NORTHEAST                                            :{BLACK}Severovýchod
 STR_MAPGEN_SOUTHEAST                                            :{BLACK}Jihovýchod
 STR_MAPGEN_SOUTHWEST                                            :{BLACK}Jihozápad
+STR_MAPGEN_NORTHWEST_TOOLTIP                                    :Voda nebo volná hrana na severozápadní hraně mapy
+STR_MAPGEN_NORTHEAST_TOOLTIP                                    :Voda nebo volná hrana na severovýchodní hraně mapy
+STR_MAPGEN_SOUTHEAST_TOOLTIP                                    :Voda nebo volná hrana na jihovýchodní hraně mapy
+STR_MAPGEN_SOUTHWEST_TOOLTIP                                    :Voda nebo volná hrana na jihozápadní hraně mapy
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}terén
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}voda
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}náhodně

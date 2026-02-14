@@ -3572,6 +3572,10 @@ STR_MAPGEN_NORTHWEST                                            :{BLACK}півн
 STR_MAPGEN_NORTHEAST                                            :{BLACK}північно-східний
 STR_MAPGEN_SOUTHEAST                                            :{BLACK}південно-східний
 STR_MAPGEN_SOUTHWEST                                            :{BLACK}південно-західний
+STR_MAPGEN_NORTHWEST_TOOLTIP                                    :Перемкнути водний або довільний край північного заходу мапи
+STR_MAPGEN_NORTHEAST_TOOLTIP                                    :Перемкнути водний або довільний край північного сходу мапи
+STR_MAPGEN_SOUTHEAST_TOOLTIP                                    :Перемкнути водний або довільний край південного сходу мапи
+STR_MAPGEN_SOUTHWEST_TOOLTIP                                    :Перемкнути водний або довільний край південного заходу мапи
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}вільний формат
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}вода
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}довільно

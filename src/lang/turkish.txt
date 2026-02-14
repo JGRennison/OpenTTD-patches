@@ -3432,6 +3432,10 @@ STR_MAPGEN_NORTHWEST                                            :{BLACK}Kuzeybat
 STR_MAPGEN_NORTHEAST                                            :{BLACK}Kuzeydoğu
 STR_MAPGEN_SOUTHEAST                                            :{BLACK}Güneydoğu
 STR_MAPGEN_SOUTHWEST                                            :{BLACK}Güneybatı
+STR_MAPGEN_NORTHWEST_TOOLTIP                                    :Haritanın kuzeybatı köşesinde su veya serbest biçimi aç
+STR_MAPGEN_NORTHEAST_TOOLTIP                                    :Haritanın kuzeydoğu köşesinde su veya serbest biçimi aç
+STR_MAPGEN_SOUTHEAST_TOOLTIP                                    :Haritanın güneydoğu köşesinde su veya serbest biçimi aç
+STR_MAPGEN_SOUTHWEST_TOOLTIP                                    :Haritanın güneybatı köşesinde su veya serbest biçimi aç
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}Serbest
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}Su
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}Rastgele

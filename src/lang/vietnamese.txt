@@ -3450,6 +3450,10 @@ STR_MAPGEN_NORTHWEST                                            :{BLACK}Tây B�
 STR_MAPGEN_NORTHEAST                                            :{BLACK}Đông Bắc
 STR_MAPGEN_SOUTHEAST                                            :{BLACK}Đông Nam
 STR_MAPGEN_SOUTHWEST                                            :{BLACK}Tây Nam
+STR_MAPGEN_NORTHWEST_TOOLTIP                                    :Bật/tắt mép nước hoặc mép tự do ở cạnh tây bắc bản đồ
+STR_MAPGEN_NORTHEAST_TOOLTIP                                    :Bật/tắt mép nước hoặc mép tự do ở cạnh đông bắc bản đồ
+STR_MAPGEN_SOUTHEAST_TOOLTIP                                    :Bật/tắt mép nước hoặc mép tự do ở cạnh đông nam bản đồ
+STR_MAPGEN_SOUTHWEST_TOOLTIP                                    :Bật/tắt mép nước hoặc mép tự do ở cạnh tây nam bản đồ
 STR_MAPGEN_BORDER_FREEFORM                                      :{BLACK}Dạng Tự Do
 STR_MAPGEN_BORDER_WATER                                         :{BLACK}Nước
 STR_MAPGEN_BORDER_RANDOM                                        :{BLACK}Ngẫu Nhiên
