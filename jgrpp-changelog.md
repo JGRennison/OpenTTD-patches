@@ -2,6 +2,14 @@
 
 * * *
 
+### v0.70.1 (2026-02-14)
+* Fix multiplayer desync when placing single houses.
+* Fix company faces not being shown in ownership error messages.
+* Add setting for whether to show costs in rail/road type menu dropdowns.
+* Add setting to enable trains to collide with other parts of themselves.
+* Show background as water in smallmap window when map infinite water is enabled.
+* Bump trunk base from commit 37f737417cda13011d3a4db5226f83637d22448f to commit e8ba7d0a08c1f8c7536a828bd0e906c9357bbb7b.
+
 ### v0.70.0 (2026-02-09)
 * Fix crash when attempting to grow towns with bridges which would lead off the map edge.
 * Fix crash which could occur when using hardware acceleration and certain incorrectly implemented NewGRFs.
