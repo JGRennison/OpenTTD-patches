@@ -68,7 +68,7 @@ static void FixTTDMapArray()
 
 			case MP_RAILWAY:
 				/* We save presignals different from TTDPatch, convert them */
-				if (GB(_m[t].m5, 6, 2) == 1) { // RAIL_TILE_SIGNALS
+				if (GB(_m[t].m5, 6, 2) == 1) { // RailTileType::Signals
 					/* This byte is always zero in TTD for this type of tile */
 					if (_m[t].m4) { // Convert the presignals to our own format
 						_m[t].m4 = (_m[t].m4 >> 1) & 7;
@@ -85,7 +85,7 @@ static void FixTTDMapArray()
 					SetTileType(t, MP_WATER);
 					SetTileOwner(t, OWNER_WATER);
 					_m[t].m2 = 0;
-					_m[t].m3 = 2; // WATER_CLASS_RIVER
+					_m[t].m3 = 2; // WaterClass::River
 					_m[t].m4 = Random();
 					_m[t].m5 = 0;
 				}
@@ -216,7 +216,7 @@ static bool FixTTOMapArray()
 			 * Instead of using bits in m3 it uses a different tile type. */
 			_m[t].m3 = 1; // rail type = monorail (in TTD)
 			SetTileType(t, MP_RAILWAY);
-			_m[t].m2 = 1; // set monorail ground to RAIL_GROUND_GRASS
+			_m[t].m2 = 1; // set monorail ground to RailGroundType::Grass
 			tt = MP_RAILWAY;
 		}
 
@@ -226,16 +226,16 @@ static bool FixTTOMapArray()
 
 			case MP_RAILWAY:
 				switch (GB(_m[t].m5, 6, 2)) {
-					case 0: // RAIL_TILE_NORMAL
+					case 0: // RailTileType::Signals
 						break;
-					case 1: // RAIL_TILE_SIGNALS
+					case 1: // RailTileType::Signals
 						_m[t].m4 = (~_m[t].m5 & 1) << 2;        // signal variant (present only in OTTD)
 						SB(_m[t].m2, 6, 2, GB(_m[t].m5, 3, 2)); // signal status
 						_m[t].m3 |= 0xC0;                       // both signals are present
 						_m[t].m5 = HasBit(_m[t].m5, 5) ? 2 : 1; // track direction (only X or Y)
-						_m[t].m5 |= 0x40;                       // RAIL_TILE_SIGNALS
+						_m[t].m5 |= 0x40;                       // RailTileType::Signals
 						break;
-					case 3: // RAIL_TILE_DEPOT
+					case 3: //  RailTileType::Depot
 						_m[t].m2 = 0;
 						break;
 					default:
@@ -245,13 +245,13 @@ static bool FixTTOMapArray()
 
 			case MP_ROAD: // road (depot) or level crossing
 				switch (GB(_m[t].m5, 4, 4)) {
-					case 0: // ROAD_TILE_NORMAL
-						if (_m[t].m2 == 4) _m[t].m2 = 5; // 'small trees' -> ROADSIDE_TREES
+					case 0: // RoadTileType::Normal
+						if (_m[t].m2 == 4) _m[t].m2 = 5; // 'small trees' -> Roadside::Trees
 						break;
-					case 1: // ROAD_TILE_CROSSING (there aren't monorail crossings in TTO)
+					case 1: // RoadTileType::Crossing (there aren't monorail crossings in TTO)
 						_m[t].m3 = _m[t].m1; // set owner of road = owner of rail
 						break;
-					case 2: // ROAD_TILE_DEPOT
+					case 2: // RoadTileType::Depot
 						break;
 					default:
 						return false;

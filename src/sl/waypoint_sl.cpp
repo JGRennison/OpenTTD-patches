@@ -98,10 +98,10 @@ void MoveWaypointsToBaseStations()
 		TileIndex t = wp.xy;
 		/* Sometimes waypoint (sign) locations became disconnected from their actual location in
 		 * the map array. If this is the case, try to locate the actual location in the map array */
-		if (!IsTileType(t, MP_RAILWAY) || GetRailTileType(t) != 2 /* RAIL_TILE_WAYPOINT */ || _m[t].m2 != wp.index) {
+		if (!IsTileType(t, MP_RAILWAY) || GetRailTileType(t) != RailTileType{2} /* RAIL_TILE_WAYPOINT */ || _m[t].m2 != wp.index) {
 			Debug(sl, 0, "Found waypoint tile {:#X} with invalid position", t);
 			for (t = TileIndex{0}; t < Map::Size(); t++) {
-				if (IsTileType(t, MP_RAILWAY) && GetRailTileType(t) == 2 /* RAIL_TILE_WAYPOINT */ && _m[t].m2 == wp.index) {
+				if (IsTileType(t, MP_RAILWAY) && GetRailTileType(t) == RailTileType{2} /* RAIL_TILE_WAYPOINT */ && _m[t].m2 == wp.index) {
 					Debug(sl, 0, "Found actual waypoint position at {:#X}", t);
 					break;
 				}

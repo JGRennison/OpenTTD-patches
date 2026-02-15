@@ -31,8 +31,6 @@ RoadStop::~RoadStop()
 	if (this->status.Test(RoadStopStatusFlag::BaseEntry)) {
 		delete this->entries;
 	}
-
-	if (CleaningPool()) return;
 }
 
 /**

@@ -96,7 +96,7 @@ static DualTrackBits GetRailTrackBitsUniversal(TileIndex t, DiagDirections *over
 	switch (GetTileType(t)) {
 		case MP_RAILWAY: {
 			switch (GetRailTileType(t)) {
-				case RAIL_TILE_NORMAL: case RAIL_TILE_SIGNALS: {
+				case RailTileType::Normal: case RailTileType::Signals: {
 					RailType secondary = GetTileSecondaryRailTypeIfValid(t);
 					TrackBits present_bits = GetTrackBits(t);
 					if (secondary != INVALID_RAILTYPE) {

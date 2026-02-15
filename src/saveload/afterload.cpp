@@ -99,7 +99,7 @@ extern bool IndividualRoadVehicleController(RoadVehicle *v, const RoadVehicle *p
  * This as for example docks and shipdepots do not store
  * whether the tile used to be canal or 'normal' water.
  * @param t the tile to change.
- * @param include_invalid_water_class Also consider WATER_CLASS_INVALID, i.e. industry tiles on land
+ * @param include_invalid_water_class Also consider WaterClass::Invalid, i.e. industry tiles on land
  */
 void SetWaterClassDependingOnSurroundings(TileIndex t, bool include_invalid_water_class)
 {
@@ -107,7 +107,7 @@ void SetWaterClassDependingOnSurroundings(TileIndex t, bool include_invalid_wate
 	 * Note: Wrt. autosloping under industry tiles this is the most fool-proof behaviour. */
 	if (!IsTileFlat(t)) {
 		if (include_invalid_water_class) {
-			SetWaterClass(t, WATER_CLASS_INVALID);
+			SetWaterClass(t, WaterClass::Invalid);
 			return;
 		} else {
 			SlErrorCorrupt("Invalid water class for dry tile");
@@ -118,8 +118,8 @@ void SetWaterClassDependingOnSurroundings(TileIndex t, bool include_invalid_wate
 	MarkTileDirtyByTile(t);
 
 	if (TileX(t) == 0 || TileY(t) == 0 || TileX(t) == Map::MaxX() - 1 || TileY(t) == Map::MaxY() - 1) {
-		/* tiles at map borders are always WATER_CLASS_SEA */
-		SetWaterClass(t, WATER_CLASS_SEA);
+		/* tiles at map borders are always WaterClass::Sea */
+		SetWaterClass(t, WaterClass::Sea);
 		return;
 	}
 
@@ -136,9 +136,9 @@ void SetWaterClassDependingOnSurroundings(TileIndex t, bool include_invalid_wate
 					has_water = true;
 				} else if (!IsLock(neighbour)) {
 					switch (GetWaterClass(neighbour)) {
-						case WATER_CLASS_SEA:   has_water = true; break;
-						case WATER_CLASS_CANAL: has_canal = true; break;
-						case WATER_CLASS_RIVER: has_river = true; break;
+						case WaterClass::Sea:   has_water = true; break;
+						case WaterClass::Canal: has_canal = true; break;
+						case WaterClass::River: has_river = true; break;
 						default: SlErrorCorrupt("Invalid water class for tile");
 					}
 				}
@@ -146,7 +146,7 @@ void SetWaterClassDependingOnSurroundings(TileIndex t, bool include_invalid_wate
 
 			case MP_RAILWAY:
 				/* Shore or flooded halftile */
-				has_water |= (GetRailGroundType(neighbour) == RAIL_GROUND_WATER);
+				has_water |= (GetRailGroundType(neighbour) == RailGroundType::HalfTileWater);
 				break;
 
 			case MP_TREES:
@@ -159,16 +159,16 @@ void SetWaterClassDependingOnSurroundings(TileIndex t, bool include_invalid_wate
 	}
 
 	if (!has_water && !has_canal && !has_river && include_invalid_water_class) {
-		SetWaterClass(t, WATER_CLASS_INVALID);
+		SetWaterClass(t, WaterClass::Invalid);
 		return;
 	}
 
 	if (has_river && !has_canal) {
-		SetWaterClass(t, WATER_CLASS_RIVER);
+		SetWaterClass(t, WaterClass::River);
 	} else if (has_canal || !has_water) {
-		SetWaterClass(t, WATER_CLASS_CANAL);
+		SetWaterClass(t, WaterClass::Canal);
 	} else {
-		SetWaterClass(t, WATER_CLASS_SEA);
+		SetWaterClass(t, WaterClass::Sea);
 	}
 }
 
@@ -177,7 +177,7 @@ static void ConvertTownOwner()
 	for (TileIndex tile(0); tile != Map::Size(); ++tile) {
 		switch (GetTileType(tile)) {
 			case MP_ROAD:
-				if (GB(_m[tile].m5, 4, 2) == ROAD_TILE_CROSSING && HasBit(_m[tile].m3, 7)) {
+				if (GB(_m[tile].m5, 4, 2) == to_underlying(RoadTileType::Crossing) && HasBit(_m[tile].m3, 7)) {
 					_m[tile].m3 = OWNER_TOWN.base();
 				}
 				[[fallthrough]];
@@ -530,7 +530,7 @@ static void FixOwnerOfRailTrack(TileIndex t)
 		SetTileType(t, MP_ROAD);
 		SetTileOwner(t, road);
 		_m[t].m3 = (hasroad ? bits : 0);
-		_m[t].m5 = (hastram ? bits : 0) | ROAD_TILE_NORMAL << 6;
+		_m[t].m5 = (hastram ? bits : 0) | to_underlying(RoadTileType::Normal) << 6;
 		SB(_me[t].m6, 2, 4, 0);
 		SetRoadOwner(t, RTT_TRAM, tram);
 		return;
@@ -1086,12 +1086,12 @@ bool AfterLoadGame()
 
 			switch (GB(_m[t].m5, 4, 4)) {
 				case 0x0: /* Previously WBL_TYPE_NORMAL, Clear water or coast. */
-					SetWaterTileType(t, HasBit(_m[t].m5, WBL_COAST_FLAG) ? WATER_TILE_COAST : WATER_TILE_CLEAR);
+					SetWaterTileType(t, HasBit(_m[t].m5, WBL_COAST_FLAG) ? WaterTileType::Coast : WaterTileType::Clear);
 					break;
 
-				case 0x1: SetWaterTileType(t, WATER_TILE_LOCK); break; /* Previously WBL_TYPE_LOCK */
-				case 0x8: SetWaterTileType(t, WATER_TILE_DEPOT); break; /* Previously WBL_TYPE_DEPOT */
-				default: SetWaterTileType(t, WATER_TILE_CLEAR); break; /* Shouldn't happen... */
+				case 0x1: SetWaterTileType(t, WaterTileType::Lock); break; /* Previously WBL_TYPE_LOCK */
+				case 0x8: SetWaterTileType(t, WaterTileType::Depot); break; /* Previously WBL_TYPE_DEPOT */
+				default: SetWaterTileType(t, WaterTileType::Clear); break; /* Shouldn't happen... */
 			}
 		}
 	}
@@ -1103,7 +1103,7 @@ bool AfterLoadGame()
 				default: break;
 
 				case MP_WATER:
-					if (GetWaterTileType(t) == WATER_TILE_LOCK && GetTileOwner(t) == OWNER_WATER) SetTileOwner(t, OWNER_NONE);
+					if (GetWaterTileType(t) == WaterTileType::Lock && GetTileOwner(t) == OWNER_WATER) SetTileOwner(t, OWNER_NONE);
 					break;
 
 				case MP_STATION: {
@@ -1240,8 +1240,8 @@ bool AfterLoadGame()
 
 				case MP_ROAD:
 					_m[t].m4 |= (_m[t].m2 << 4);
-					if (GB(_m[t].m5, 4, 2) == ROAD_TILE_DEPOT) break;
-					if ((GB(_m[t].m5, 4, 2) == ROAD_TILE_CROSSING ? (Owner)_m[t].m3 : GetTileOwner(t)) == OWNER_TOWN) {
+					if (GB(_m[t].m5, 4, 2) == to_underlying(RoadTileType::Depot)) break;
+					if ((GB(_m[t].m5, 4, 2) == to_underlying(RoadTileType::Crossing) ? (Owner)_m[t].m3 : GetTileOwner(t)) == OWNER_TOWN) {
 						SetTownIndex(t, CalcClosestTownFromTile(t)->index);
 					} else {
 						SetTownIndex(t, TownID::Begin());
@@ -1326,15 +1326,15 @@ bool AfterLoadGame()
 					SB(_m[t].m5, 6, 2, GB(_m[t].m5, 4, 2));
 					switch (GetRoadTileType(t)) {
 						default: SlErrorCorrupt("Invalid road tile type");
-						case ROAD_TILE_NORMAL:
+						case RoadTileType::Normal:
 							SB(_m[t].m4, 0, 4, GB(_m[t].m5, 0, 4));
 							SB(_m[t].m4, 4, 4, 0);
 							SB(_me[t].m6, 2, 4, 0);
 							break;
-						case ROAD_TILE_CROSSING:
+						case RoadTileType::Crossing:
 							SB(_m[t].m4, 5, 2, GB(_m[t].m5, 2, 2));
 							break;
-						case ROAD_TILE_DEPOT:    break;
+						case RoadTileType::Depot:    break;
 					}
 					SB(_me[t].m7, 6, 2, 1); // Set pre-NRT road type bits for conversion later.
 					break;
@@ -1367,7 +1367,7 @@ bool AfterLoadGame()
 					SB(_me[t].m7, 5, 1, GB(_m[t].m3, 7, 1)); // snow/desert
 					switch (GetRoadTileType(t)) {
 						default: SlErrorCorrupt("Invalid road tile type");
-						case ROAD_TILE_NORMAL:
+						case RoadTileType::Normal:
 							SB(_me[t].m7, 0, 4, GB(_m[t].m3, 0, 4));  // road works
 							SB(_me[t].m6, 3, 3, GB(_m[t].m3, 4, 3));  // ground
 							SB(_m[t].m3, 0, 4, GB(_m[t].m4, 4, 4));   // tram bits
@@ -1375,7 +1375,7 @@ bool AfterLoadGame()
 							SB(_m[t].m5, 0, 4, GB(_m[t].m4, 0, 4));   // road bits
 							break;
 
-						case ROAD_TILE_CROSSING:
+						case RoadTileType::Crossing:
 							SB(_me[t].m7, 0, 5, GB(_m[t].m4, 0, 5));  // road owner
 							SB(_me[t].m6, 3, 3, GB(_m[t].m3, 4, 3));  // ground
 							SB(_m[t].m3, 4, 4, GB(_m[t].m5, 0, 4));   // tram owner
@@ -1383,7 +1383,7 @@ bool AfterLoadGame()
 							SB(_m[t].m5, 5, 1, GB(_m[t].m4, 5, 1));   // crossing state
 							break;
 
-						case ROAD_TILE_DEPOT:
+						case RoadTileType::Depot:
 							break;
 					}
 					if (!IsRoadDepot(t) && !HasTownOwnedRoad(t)) {
@@ -1483,7 +1483,7 @@ bool AfterLoadGame()
 							SetTileType(t, MP_ROAD);
 							_m[t].m2 = town.base();
 							_m[t].m3 = 0;
-							_m[t].m5 = (axis == AXIS_X ? ROAD_Y : ROAD_X) | ROAD_TILE_NORMAL << 6;
+							_m[t].m5 = (axis == AXIS_X ? ROAD_Y : ROAD_X) | to_underlying(RoadTileType::Normal) << 6;
 							SB(_me[t].m6, 2, 4, 0);
 							_me[t].m7 = 1 << 6;
 							SetRoadOwner(t, RTT_TRAM, OWNER_NONE);
@@ -2149,7 +2149,7 @@ bool AfterLoadGame()
 	if (IsSavegameVersionBefore(SLV_82)) {
 		for (TileIndex t(0); t < map_size; t++) {
 			if (IsTileType(t, MP_WATER) &&
-					GetWaterTileType(t) == WATER_TILE_CLEAR &&
+					GetWaterTileType(t) == WaterTileType::Clear &&
 					GetTileOwner(t) == OWNER_WATER &&
 					TileHeight(t) != 0) {
 				SetTileOwner(t, OWNER_NONE);
@@ -2311,7 +2311,7 @@ bool AfterLoadGame()
 							break;
 
 						default:
-							SetWaterClass(t, WATER_CLASS_INVALID);
+							SetWaterClass(t, WaterClass::Invalid);
 							break;
 					}
 					break;
@@ -2322,7 +2322,7 @@ bool AfterLoadGame()
 					break;
 
 				case MP_OBJECT:
-					SetWaterClass(t, WATER_CLASS_INVALID);
+					SetWaterClass(t, WaterClass::Invalid);
 					break;
 
 				default:
@@ -2336,7 +2336,7 @@ bool AfterLoadGame()
 		for (TileIndex t(0); t < map_size; t++) {
 			/* Move river flag and update canals to use water class */
 			if (IsTileType(t, MP_WATER)) {
-				if (GetWaterClass(t) != WATER_CLASS_RIVER) {
+				if (GetWaterClass(t) != WaterClass::River) {
 					if (IsWater(t)) {
 						Owner o = GetTileOwner(t);
 						if (o == OWNER_WATER) {
@@ -2346,7 +2346,7 @@ bool AfterLoadGame()
 						}
 					} else if (IsShipDepot(t)) {
 						Owner o = (Owner)_m[t].m4; // Original water owner
-						SetWaterClass(t, o == OWNER_WATER ? WATER_CLASS_SEA : WATER_CLASS_CANAL);
+						SetWaterClass(t, o == OWNER_WATER ? WaterClass::Sea : WaterClass::Canal);
 					}
 				}
 			}
@@ -2370,7 +2370,7 @@ bool AfterLoadGame()
 					(TileX(t) == 0 || TileY(t) == 0 || TileX(t) == Map::MaxX() - 1 || TileY(t) == Map::MaxY() - 1)) {
 				/* Some version 86 savegames have wrong water class at map borders (under buoy, or after removing buoy).
 				 * This conversion has to be done before buoys with invalid owner are removed. */
-				SetWaterClass(t, WATER_CLASS_SEA);
+				SetWaterClass(t, WaterClass::Sea);
 			}
 
 			if (IsBuoyTile(t) || IsDriveThroughStopTile(t) || IsTileType(t, MP_WATER)) {
@@ -2442,7 +2442,7 @@ bool AfterLoadGame()
 				if (GetIndustrySpec(GetIndustryType(t))->behaviour.Test(IndustryBehaviour::BuiltOnWater)) {
 					SetWaterClassDependingOnSurroundings(t, true);
 				} else {
-					SetWaterClass(t, WATER_CLASS_INVALID);
+					SetWaterClass(t, WaterClass::Invalid);
 				}
 			}
 
@@ -3053,7 +3053,7 @@ bool AfterLoadGame()
 		for (TileIndex t(0); t < map_size; t++) {
 			if (!IsTileType(t, MP_STATION)) continue;
 			if (!IsBuoy(t) && !IsOilRig(t) && !(IsDock(t) && IsTileFlat(t))) {
-				SetWaterClass(t, WATER_CLASS_INVALID);
+				SetWaterClass(t, WaterClass::Invalid);
 			}
 		}
 
@@ -3833,7 +3833,7 @@ bool AfterLoadGame()
 	if (SlXvIsFeaturePresent(XSLFI_TRAFFIC_LIGHTS)) {
 		/* remove traffic lights */
 		for (TileIndex t(0); t < map_size; t++) {
-			if (IsTileType(t, MP_ROAD) && (GetRoadTileType(t) == ROAD_TILE_NORMAL)) {
+			if (IsTileType(t, MP_ROAD) && (GetRoadTileType(t) == RoadTileType::Normal)) {
 				DeleteAnimatedTile(t);
 				ClrBit(_me[t].m7, 4);
 			}
@@ -3946,7 +3946,7 @@ bool AfterLoadGame()
 		/* Move ships from lock slope to upper or lower position. */
 		for (Ship *s : Ship::Iterate()) {
 			/* Suitable tile? */
-			if (!IsTileType(s->tile, MP_WATER) || !IsLock(s->tile) || GetLockPart(s->tile) != LOCK_PART_MIDDLE) continue;
+			if (!IsTileType(s->tile, MP_WATER) || !IsLock(s->tile) || GetLockPart(s->tile) != LockPart::Middle) continue;
 
 			/* We don't need to adjust position when at the tile centre */
 			int x = s->x_pos & 0xF;
@@ -4002,7 +4002,7 @@ bool AfterLoadGame()
 	if (IsSavegameVersionBefore(SLV_TREES_WATER_CLASS) && !SlXvIsFeaturePresent(XSLFI_CHUNNEL, 2)) {
 		/* Update water class for trees. */
 		for (TileIndex t(0); t < map_size; t++) {
-			if (IsTileType(t, MP_TREES)) SetWaterClass(t, GetTreeGround(t) == TREE_GROUND_SHORE ? WATER_CLASS_SEA : WATER_CLASS_INVALID);
+			if (IsTileType(t, MP_TREES)) SetWaterClass(t, GetTreeGround(t) == TREE_GROUND_SHORE ? WaterClass::Sea : WaterClass::Invalid);
 		}
 	}
 

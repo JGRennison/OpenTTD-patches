@@ -2366,7 +2366,7 @@ static CommandCost TownCanBePlacedHere(TileIndex tile, bool city, bool check_sur
 	uint min_land_area = city ? _settings_game.economy.min_city_land_area : _settings_game.economy.min_town_land_area;
 	if (min_land_area > 0) {
 		if (!EnoughContiguousTilesMatchingCondition(tile, min_land_area, [](TileIndex t, void *data) -> bool {
-			if (!HasTileWaterClass(t) || GetWaterClass(t) == WATER_CLASS_INVALID) return true;
+			if (!HasTileWaterClass(t) || GetWaterClass(t) == WaterClass::Invalid) return true;
 			if (IsCoastTile(t) && !IsSlopeWithOneCornerRaised(GetTileSlope(t))) return true;
 			return false;
 		}, nullptr)) {

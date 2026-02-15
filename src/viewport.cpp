@@ -3353,7 +3353,7 @@ static inline uint32_t ViewportMapGetColourVegetation(const TileIndex tile, Tile
 		case MP_WATER:
 			if (is_32bpp) {
 				uint8_t slope_index = 0;
-				if (show_slope && IsTileType(tile, MP_WATER) && GetWaterTileType(tile) != WATER_TILE_COAST) slope_index = GetSlopeIndex(tile);
+				if (show_slope && IsTileType(tile, MP_WATER) && GetWaterTileType(tile) != WaterTileType::Coast) slope_index = GetSlopeIndex(tile);
 				return _vp_map_water_colour[slope_index];
 			}
 			set_default_colour(t);
@@ -3423,7 +3423,7 @@ static inline uint32_t ViewportMapGetColourIndustries(const TileIndex tile, cons
 
 	if (is_32bpp && t2 == MP_WATER) {
 		uint8_t slope_index = 0;
-		if (show_slope && t != MP_INDUSTRY && IsTileType(tile, MP_WATER) && GetWaterTileType(tile) != WATER_TILE_COAST) slope_index = GetSlopeIndex(tile); ///< Ignore industry on water not shown on map.
+		if (show_slope && t != MP_INDUSTRY && IsTileType(tile, MP_WATER) && GetWaterTileType(tile) != WaterTileType::Coast) slope_index = GetSlopeIndex(tile); ///< Ignore industry on water not shown on map.
 		return _vp_map_water_colour[slope_index];
 	}
 
@@ -3456,7 +3456,7 @@ static inline uint32_t ViewportMapGetColourOwner(const TileIndex tile, TileType 
 		if (t == MP_WATER) {
 			if (is_32bpp) {
 				uint8_t slope_index = 0;
-				if (show_slope && IsTileType(tile, MP_WATER) && GetWaterTileType(tile) != WATER_TILE_COAST) slope_index = GetSlopeIndex(tile);
+				if (show_slope && IsTileType(tile, MP_WATER) && GetWaterTileType(tile) != WaterTileType::Coast) slope_index = GetSlopeIndex(tile);
 				return _vp_map_water_colour[slope_index];
 			} else {
 				return PC_WATER.p;
@@ -3493,7 +3493,7 @@ static inline uint32_t ViewportMapGetColourRoutes(const TileIndex tile, TileType
 		case MP_WATER:
 			if (is_32bpp) {
 				uint8_t slope_index = 0;
-				if (show_slope && IsTileType(tile, MP_WATER) && GetWaterTileType(tile) != WATER_TILE_COAST) slope_index = GetSlopeIndex(tile);
+				if (show_slope && IsTileType(tile, MP_WATER) && GetWaterTileType(tile) != WaterTileType::Coast) slope_index = GetSlopeIndex(tile);
 				return _vp_map_water_colour[slope_index];
 			} else {
 				return PC_WATER.p;

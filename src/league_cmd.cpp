@@ -81,7 +81,7 @@ CommandCost CmdCreateLeagueTable(DoCommandFlags flags, const EncodedString &titl
  * @param flags type of operation
  * @param table Id of the league table this element belongs to
  * @param rating Value that elements are ordered by
- * @param company Company to show the color blob for or CompanyID::Invalid()
+ * @param company Company to show the colour blob for or CompanyID::Invalid()
  * @param text Text of the element
  * @param score String representation of the score associated with the element
  * @param link_type Type of the referenced object
@@ -115,7 +115,7 @@ CommandCost CmdCreateLeagueTableElement(DoCommandFlags flags, LeagueTableID tabl
  * Update the attributes of a league table element.
  * @param flags type of operation
  * @param element Id of the element to update
- * @param company Company to show the color blob for or CompanyID::Invalid()
+ * @param company Company to show the colour blob for or CompanyID::Invalid()
  * @param text Text of the element
  * @param link_type Type of the referenced object
  * @param link_target Id of the referenced object

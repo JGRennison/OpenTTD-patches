@@ -116,7 +116,7 @@ inline void SetTreeGroundDensity(TileIndex t, TreeGround g, uint d)
 	dbg_assert_tile(IsTileType(t, MP_TREES), t); // XXX incomplete
 	SB(_m[t].m2, 4, 2, d);
 	SB(_m[t].m2, 6, 3, g);
-	SetWaterClass(t, g == TREE_GROUND_SHORE ? WATER_CLASS_SEA : WATER_CLASS_INVALID);
+	SetWaterClass(t, g == TREE_GROUND_SHORE ? WaterClass::Sea : WaterClass::Invalid);
 }
 
 /**
@@ -227,7 +227,7 @@ inline void MakeTree(TileIndex t, TreeType type, uint count, TreeGrowthStage gro
 {
 	SetTileType(t, MP_TREES);
 	SetTileOwner(t, OWNER_NONE);
-	SetWaterClass(t, ground == TREE_GROUND_SHORE ? WATER_CLASS_SEA : WATER_CLASS_INVALID);
+	SetWaterClass(t, ground == TREE_GROUND_SHORE ? WaterClass::Sea : WaterClass::Invalid);
 	_m[t].m2 = ground << 6 | density << 4 | 0;
 	_m[t].m3 = type;
 	_m[t].m4 = 0 << 5 | 0 << 2;

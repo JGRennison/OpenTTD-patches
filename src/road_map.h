@@ -18,10 +18,10 @@
 
 
 /** The different types of road tiles. */
-enum RoadTileType : uint8_t {
-	ROAD_TILE_NORMAL,   ///< Normal road
-	ROAD_TILE_CROSSING, ///< Level crossing
-	ROAD_TILE_DEPOT,    ///< Depot (one entrance)
+enum class RoadTileType : uint8_t {
+	Normal   = 0, ///< Normal road
+	Crossing = 1, ///< Level crossing
+	Depot    = 2, ///< Depot (one entrance)
 };
 
 /**
@@ -74,7 +74,7 @@ inline bool MayTileTypeHaveRoad(TileType type)
 debug_inline static RoadTileType GetRoadTileType(TileIndex t)
 {
 	dbg_assert_tile(IsTileType(t, MP_ROAD), t);
-	return (RoadTileType)GB(_m[t].m5, 6, 2);
+	return static_cast<RoadTileType>(GB(_m[t].m5, 6, 2));
 }
 
 /**
@@ -85,7 +85,7 @@ debug_inline static RoadTileType GetRoadTileType(TileIndex t)
  */
 debug_inline static bool IsNormalRoad(TileIndex t)
 {
-	return GetRoadTileType(t) == ROAD_TILE_NORMAL;
+	return GetRoadTileType(t) == RoadTileType::Normal;
 }
 
 /**
@@ -106,7 +106,7 @@ debug_inline static bool IsNormalRoadTile(TileIndex t)
  */
 inline bool IsLevelCrossing(TileIndex t)
 {
-	return GetRoadTileType(t) == ROAD_TILE_CROSSING;
+	return GetRoadTileType(t) == RoadTileType::Crossing;
 }
 
 /**
@@ -127,7 +127,7 @@ inline bool IsLevelCrossingTile(TileIndex t)
  */
 debug_inline static bool IsRoadDepot(TileIndex t)
 {
-	return GetRoadTileType(t) == ROAD_TILE_DEPOT;
+	return GetRoadTileType(t) == RoadTileType::Depot;
 }
 
 /**
@@ -546,15 +546,15 @@ inline void ToggleSnowOrDesert(TileIndex t)
 
 
 /** The possible road side decorations. */
-enum Roadside {
-	ROADSIDE_BARREN           = 0, ///< Road on barren land
-	ROADSIDE_GRASS            = 1, ///< Road on grass
-	ROADSIDE_PAVED            = 2, ///< Road with paved sidewalks
-	ROADSIDE_STREET_LIGHTS    = 3, ///< Road with street lights on paved sidewalks
+enum class Roadside : uint8_t {
+	Barren         = 0, ///< Road on barren land
+	Grass          = 1, ///< Road on grass
+	Paved          = 2, ///< Road with paved sidewalks
+	StreetLights   = 3, ///< Road with street lights on paved sidewalks
 	/* 4 is unused for historical reasons */
-	ROADSIDE_TREES            = 5, ///< Road with trees on paved sidewalks
-	ROADSIDE_GRASS_ROAD_WORKS = 6, ///< Road on grass with road works
-	ROADSIDE_PAVED_ROAD_WORKS = 7, ///< Road with sidewalks and road works
+	Trees          = 5, ///< Road with trees on paved sidewalks
+	GrassRoadWorks = 6, ///< Road on grass with road works
+	PavedRoadWorks = 7, ///< Road with sidewalks and road works
 };
 
 /**
@@ -564,7 +564,7 @@ enum Roadside {
  */
 inline Roadside GetRoadside(TileIndex tile)
 {
-	return (Roadside)GB(_me[tile].m6, 3, 3);
+	return static_cast<Roadside>(GB(_me[tile].m6, 3, 3));
 }
 
 /**
@@ -574,7 +574,7 @@ inline Roadside GetRoadside(TileIndex tile)
  */
 inline void SetRoadside(TileIndex tile, Roadside s)
 {
-	SB(_me[tile].m6, 3, 3, s);
+	SB(_me[tile].m6, 3, 3, to_underlying(s));
 }
 
 /**
@@ -584,7 +584,7 @@ inline void SetRoadside(TileIndex tile, Roadside s)
  */
 inline bool HasRoadWorks(TileIndex t)
 {
-	return GetRoadside(t) >= ROADSIDE_GRASS_ROAD_WORKS;
+	return GetRoadside(t) >= Roadside::GrassRoadWorks;
 }
 
 /**
@@ -609,9 +609,14 @@ inline void StartRoadWorks(TileIndex t)
 	assert_tile(!HasRoadWorks(t), t);
 	/* Remove any trees or lamps in case or roadwork */
 	switch (GetRoadside(t)) {
-		case ROADSIDE_BARREN:
-		case ROADSIDE_GRASS:  SetRoadside(t, ROADSIDE_GRASS_ROAD_WORKS); break;
-		default:              SetRoadside(t, ROADSIDE_PAVED_ROAD_WORKS); break;
+		case Roadside::Barren:
+		case Roadside::Grass:
+			SetRoadside(t, Roadside::GrassRoadWorks);
+			break;
+
+		default:
+			SetRoadside(t, Roadside::PavedRoadWorks);
+			break;
 	}
 }
 
@@ -623,7 +628,7 @@ inline void StartRoadWorks(TileIndex t)
 inline void TerminateRoadWorks(TileIndex t)
 {
 	assert_tile(HasRoadWorks(t), t);
-	SetRoadside(t, (Roadside)(GetRoadside(t) - ROADSIDE_GRASS_ROAD_WORKS + ROADSIDE_GRASS));
+	SetRoadside(t, GetRoadside(t) == Roadside::GrassRoadWorks ? Roadside::Grass : Roadside::Paved);
 	/* Stop the counter */
 	SB(_me[t].m7, 0, 4, 0);
 }
@@ -710,7 +715,7 @@ inline void MakeRoadNormal(TileIndex t, RoadBits bits, RoadType road_rt, RoadTyp
 	SetTileOwner(t, road);
 	_m[t].m2 = town.base();
 	_m[t].m3 = (tram_rt != INVALID_ROADTYPE ? bits : 0);
-	_m[t].m5 = (road_rt != INVALID_ROADTYPE ? bits : 0) | ROAD_TILE_NORMAL << 6;
+	_m[t].m5 = (road_rt != INVALID_ROADTYPE ? bits : 0) | to_underlying(RoadTileType::Normal) << 6;
 	_me[t].m6 = 0;
 	_me[t].m7 = 0;
 	_me[t].m8 = 0;
@@ -737,7 +742,7 @@ inline void MakeRoadCrossing(TileIndex t, Owner road, Owner tram, Owner rail, Ax
 	_m[t].m2 = town.base();
 	_m[t].m3 = 0;
 	_m[t].m4 = INVALID_ROADTYPE;
-	_m[t].m5 = ROAD_TILE_CROSSING << 6 | roaddir;
+	_m[t].m5 = to_underlying(RoadTileType::Crossing) << 6 | roaddir;
 	_me[t].m6 = 0;
 	_me[t].m7 = road.base();
 	_me[t].m8 = INVALID_ROADTYPE << 6 | rat;
@@ -760,7 +765,7 @@ inline void MakeRoadDepot(TileIndex t, Owner owner, DepotID did, DiagDirection d
 	_m[t].m2 = did.base();
 	_m[t].m3 = 0;
 	_m[t].m4 = INVALID_ROADTYPE;
-	_m[t].m5 = ROAD_TILE_DEPOT << 6 | dir;
+	_m[t].m5 = to_underlying(RoadTileType::Depot) << 6 | dir;
 	_me[t].m6 = 0;
 	_me[t].m7 = owner.base();
 	_me[t].m8 = INVALID_ROADTYPE << 6;

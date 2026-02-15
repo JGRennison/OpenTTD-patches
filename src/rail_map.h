@@ -21,10 +21,10 @@
 
 
 /** Different types of Rail-related tiles */
-enum RailTileType : uint8_t {
-	RAIL_TILE_NORMAL   = 0, ///< Normal rail tile without signals
-	RAIL_TILE_SIGNALS  = 1, ///< Normal rail tile with signals
-	RAIL_TILE_DEPOT    = 3, ///< Depot (one entrance)
+enum class RailTileType : uint8_t {
+	Normal  = 0, ///< Normal rail tile without signals
+	Signals = 1, ///< Normal rail tile with signals
+	Depot   = 3, ///< Depot (one entrance)
 };
 
 /**
@@ -37,12 +37,12 @@ enum RailTileType : uint8_t {
 debug_inline static RailTileType GetRailTileType(TileIndex t)
 {
 	dbg_assert_tile(IsTileType(t, MP_RAILWAY), t);
-	return (RailTileType)GB(_m[t].m5, 6, 2);
+	return static_cast<RailTileType>(GB(_m[t].m5, 6, 2));
 }
 
 /**
  * Returns whether this is plain rails, with or without signals. Iow, if this
- * tiles RailTileType is RAIL_TILE_NORMAL or RAIL_TILE_SIGNALS.
+ * tiles RailTileType is RailTileType::Normal or RailTileType::Signals.
  * @param t the tile to get the information from
  * @pre IsTileType(t, MP_RAILWAY)
  * @return true if and only if the tile is normal rail (with or without signals)
@@ -50,7 +50,7 @@ debug_inline static RailTileType GetRailTileType(TileIndex t)
 debug_inline static bool IsPlainRail(TileIndex t)
 {
 	RailTileType rtt = GetRailTileType(t);
-	return rtt == RAIL_TILE_NORMAL || rtt == RAIL_TILE_SIGNALS;
+	return rtt == RailTileType::Normal || rtt == RailTileType::Signals;
 }
 
 /**
@@ -72,7 +72,7 @@ debug_inline static bool IsPlainRailTile(TileIndex t)
  */
 inline bool HasSignals(TileIndex t)
 {
-	return GetRailTileType(t) == RAIL_TILE_SIGNALS;
+	return GetRailTileType(t) == RailTileType::Signals;
 }
 
 /**
@@ -95,7 +95,7 @@ inline void SetHasSignals(TileIndex tile, bool signals)
  */
 debug_inline static bool IsRailDepot(TileIndex t)
 {
-	return GetRailTileType(t) == RAIL_TILE_DEPOT;
+	return GetRailTileType(t) == RailTileType::Depot;
 }
 
 /**
@@ -315,14 +315,14 @@ inline TrackBits GetDepotReservationTrackBits(TileIndex t)
 
 inline SignalType GetSignalType(TileIndex t, Track track)
 {
-	dbg_assert_tile(GetRailTileType(t) == RAIL_TILE_SIGNALS, t);
+	dbg_assert_tile(GetRailTileType(t) == RailTileType::Signals, t);
 	uint8_t pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 4 : 0;
 	return (SignalType)GB(_m[t].m2, pos, 3);
 }
 
 inline void SetSignalType(TileIndex t, Track track, SignalType s)
 {
-	dbg_assert_tile(GetRailTileType(t) == RAIL_TILE_SIGNALS, t);
+	dbg_assert_tile(GetRailTileType(t) == RailTileType::Signals, t);
 	uint8_t pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 4 : 0;
 	SB(_m[t].m2, pos, 3, s);
 	if (track == INVALID_TRACK) SB(_m[t].m2, 4, 3, s);
@@ -384,14 +384,14 @@ inline void SetSignalVariant(TileIndex t, Track track, SignalVariant v)
 
 inline uint8_t GetSignalAspect(TileIndex t, Track track)
 {
-	dbg_assert_tile(GetRailTileType(t) == RAIL_TILE_SIGNALS, t);
+	dbg_assert_tile(GetRailTileType(t) == RailTileType::Signals, t);
 	uint8_t pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 3 : 0;
 	return GB(_me[t].m7, pos, 3);
 }
 
 inline void SetSignalAspect(TileIndex t, Track track, uint8_t aspect)
 {
-	dbg_assert_tile(GetRailTileType(t) == RAIL_TILE_SIGNALS, t);
+	dbg_assert_tile(GetRailTileType(t) == RailTileType::Signals, t);
 	uint8_t pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 3 : 0;
 	SB(_me[t].m7, pos, 3, aspect);
 }
@@ -403,7 +403,7 @@ inline bool NonZeroSignalStylePossiblyOnTile(TileIndex t)
 
 inline uint8_t GetSignalStyle(TileIndex t, Track track)
 {
-	dbg_assert_tile(GetRailTileType(t) == RAIL_TILE_SIGNALS, t);
+	dbg_assert_tile(GetRailTileType(t) == RailTileType::Signals, t);
 	uint8_t pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 4 : 0;
 	return GB(_me[t].m6, pos, 4);
 }
@@ -422,35 +422,35 @@ inline uint8_t GetSignalStyleGeneric(TileIndex t, Track track)
 
 inline void SetSignalStyle(TileIndex t, Track track, uint8_t style)
 {
-	dbg_assert_tile(GetRailTileType(t) == RAIL_TILE_SIGNALS, t);
+	dbg_assert_tile(GetRailTileType(t) == RailTileType::Signals, t);
 	uint8_t pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 4 : 0;
 	SB(_me[t].m6, pos, 4, style);
 }
 
 inline bool GetSignalAlwaysReserveThrough(TileIndex t, Track track)
 {
-	dbg_assert_tile(GetRailTileType(t) == RAIL_TILE_SIGNALS, t);
+	dbg_assert_tile(GetRailTileType(t) == RailTileType::Signals, t);
 	uint8_t pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 7 : 6;
 	return HasBit(_me[t].m7, pos);
 }
 
 inline void SetSignalAlwaysReserveThrough(TileIndex t, Track track, bool reserve_through)
 {
-	dbg_assert_tile(GetRailTileType(t) == RAIL_TILE_SIGNALS, t);
+	dbg_assert_tile(GetRailTileType(t) == RailTileType::Signals, t);
 	uint8_t pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 7 : 6;
 	AssignBit(_me[t].m7, pos, reserve_through);
 }
 
 inline bool GetSignalSpecialPropagationFlag(TileIndex t, Track track)
 {
-	dbg_assert_tile(GetRailTileType(t) == RAIL_TILE_SIGNALS, t);
+	dbg_assert_tile(GetRailTileType(t) == RailTileType::Signals, t);
 	uint8_t pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 6 : 5;
 	return HasBit(_m[t].m1, pos);
 }
 
 inline void SetSignalSpecialPropagationFlag(TileIndex t, Track track, bool special)
 {
-	dbg_assert_tile(GetRailTileType(t) == RAIL_TILE_SIGNALS, t);
+	dbg_assert_tile(GetRailTileType(t) == RailTileType::Signals, t);
 	uint8_t pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 6 : 5;
 	AssignBit(_m[t].m1, pos, special);
 }
@@ -524,7 +524,7 @@ inline bool IsSignalPresent(TileIndex t, uint8_t signalbit)
 inline bool HasSignalOnTrack(TileIndex tile, Track track)
 {
 	dbg_assert(IsValidTrack(track));
-	return GetRailTileType(tile) == RAIL_TILE_SIGNALS && (GetPresentSignals(tile) & SignalOnTrack(track)) != 0;
+	return GetRailTileType(tile) == RailTileType::Signals && (GetPresentSignals(tile) & SignalOnTrack(track)) != 0;
 }
 
 /**
@@ -537,7 +537,7 @@ inline bool HasSignalOnTrack(TileIndex tile, Track track)
 inline bool HasSignalOnTrackdir(TileIndex tile, Trackdir trackdir)
 {
 	dbg_assert (IsValidTrackdir(trackdir));
-	return GetRailTileType(tile) == RAIL_TILE_SIGNALS && GetPresentSignals(tile) & SignalAlongTrackdir(trackdir);
+	return GetRailTileType(tile) == RailTileType::Signals && GetPresentSignals(tile) & SignalAlongTrackdir(trackdir);
 }
 
 /**
@@ -606,7 +606,7 @@ inline bool HasOnewaySignalBlockingTrackdir(TileIndex tile, Trackdir td)
  */
 inline bool IsRestrictedSignal(TileIndex tile)
 {
-	dbg_assert_tile(GetRailTileType(tile) == RAIL_TILE_SIGNALS, tile);
+	dbg_assert_tile(GetRailTileType(tile) == RailTileType::Signals, tile);
 	return (bool) GB(_m[tile].m2, 12, 1);
 }
 
@@ -616,7 +616,7 @@ inline bool IsRestrictedSignal(TileIndex tile)
  */
 inline void SetRestrictedSignal(TileIndex tile, bool is_restricted)
 {
-	dbg_assert_tile(GetRailTileType(tile) == RAIL_TILE_SIGNALS, tile);
+	dbg_assert_tile(GetRailTileType(tile) == RailTileType::Signals, tile);
 	AssignBit(_m[tile].m2, 12, is_restricted);
 }
 
@@ -636,37 +636,37 @@ inline RailType GetRailTypeByTrackBit(TileIndex t, TrackBits track) { return Gen
 inline RailType GetRailTypeByEntryDir(TileIndex t, DiagDirection enterdir) { return GenericGetRailTypeByEntryDir(t, enterdir, false); }
 
 /** The ground 'under' the rail */
-enum RailGroundType : uint8_t {
-	RAIL_GROUND_BARREN       =  0, ///< Nothing (dirt)
-	RAIL_GROUND_GRASS        =  1, ///< Grassy
-	RAIL_GROUND_FENCE_NW     =  2, ///< Grass with a fence at the NW edge
-	RAIL_GROUND_FENCE_SE     =  3, ///< Grass with a fence at the SE edge
-	RAIL_GROUND_FENCE_SENW   =  4, ///< Grass with a fence at the NW and SE edges
-	RAIL_GROUND_FENCE_NE     =  5, ///< Grass with a fence at the NE edge
-	RAIL_GROUND_FENCE_SW     =  6, ///< Grass with a fence at the SW edge
-	RAIL_GROUND_FENCE_NESW   =  7, ///< Grass with a fence at the NE and SW edges
-	RAIL_GROUND_FENCE_VERT1  =  8, ///< Grass with a fence at the eastern side
-	RAIL_GROUND_FENCE_VERT2  =  9, ///< Grass with a fence at the western side
-	RAIL_GROUND_FENCE_HORIZ1 = 10, ///< Grass with a fence at the southern side
-	RAIL_GROUND_FENCE_HORIZ2 = 11, ///< Grass with a fence at the northern side
-	RAIL_GROUND_ICE_DESERT   = 12, ///< Icy or sandy
-	RAIL_GROUND_WATER        = 13, ///< Grass with a fence and shore or water on the free halftile
-	RAIL_GROUND_HALF_SNOW    = 14, ///< Snow only on higher part of slope (steep or one corner raised)
+enum class RailGroundType : uint8_t {
+	Barren        = 0, ///< Nothing (dirt)
+	Grass         = 1, ///< Grassy
+	FenceNW       = 2, ///< Grass with a fence at the NW edge
+	FenceSE       = 3, ///< Grass with a fence at the SE edge
+	FenceSENW     = 4, ///< Grass with a fence at the NW and SE edges
+	FenceNE       = 5, ///< Grass with a fence at the NE edge
+	FenceSW       = 6, ///< Grass with a fence at the SW edge
+	FenceNESW     = 7,  ///< Grass with a fence at the NE and SW edges
+	FenceVert1    = 8,  ///< Grass with a fence at the eastern side
+	FenceVert2    = 9,  ///< Grass with a fence at the western side
+	FenceHoriz1   = 10, ///< Grass with a fence at the southern side
+	FenceHoriz2   = 11, ///< Grass with a fence at the northern side
+	SnowOrDesert  = 12, ///< Icy or sandy
+	HalfTileWater = 13, ///< Grass with a fence and shore or water on the free halftile
+	HalfTileSnow  = 14, ///< Snow only on higher part of slope (steep or one corner raised)
 };
 
 inline void SetRailGroundType(TileIndex t, RailGroundType rgt)
 {
-	SB(_m[t].m4, 0, 4, rgt);
+	SB(_m[t].m4, 0, 4, to_underlying(rgt));
 }
 
 inline RailGroundType GetRailGroundType(TileIndex t)
 {
-	return (RailGroundType)GB(_m[t].m4, 0, 4);
+	return static_cast<RailGroundType>(GB(_m[t].m4, 0, 4));
 }
 
 inline bool IsSnowRailGround(TileIndex t)
 {
-	return GetRailGroundType(t) == RAIL_GROUND_ICE_DESERT;
+	return GetRailGroundType(t) == RailGroundType::SnowOrDesert;
 }
 
 RailGroundType GetTunnelBridgeGroundType(TileIndex tile);
@@ -679,7 +679,7 @@ inline void MakeRailNormal(TileIndex t, Owner o, TrackBits b, RailType r)
 	_m[t].m2 = 0;
 	_m[t].m3 = 0;
 	_m[t].m4 = 0;
-	_m[t].m5 = RAIL_TILE_NORMAL << 6 | b;
+	_m[t].m5 = to_underlying(RailTileType::Normal) << 6 | b;
 	_me[t].m6 = 0;
 	_me[t].m7 = 0;
 	_me[t].m8 = r;
@@ -694,7 +694,7 @@ inline void MakeRailDepot(TileIndex t, Owner o, DepotID did, DiagDirection d, Ra
 	_m[t].m2 = did.base();
 	_m[t].m3 = 0;
 	_m[t].m4 = 0;
-	_m[t].m5 = RAIL_TILE_DEPOT << 6 | d;
+	_m[t].m5 = to_underlying(RailTileType::Depot) << 6 | d;
 	_me[t].m6 = 0;
 	_me[t].m7 = 0;
 	_me[t].m8 = r;

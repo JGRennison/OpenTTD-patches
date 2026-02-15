@@ -1188,7 +1188,7 @@ static void UsePickerTool(TileIndex tile)
 			} else if (IsRiver(tile) && (_settings_game.construction.enable_build_river || _game_mode == GM_EDITOR)) {
 				ShowBuildDocksToolbarFromTile(tile);
 			/* Depots for now only opens waterways toolbar like other depots */
-			} else if (GetWaterTileType(tile) == WATER_TILE_DEPOT) {
+			} else if (GetWaterTileType(tile) == WaterTileType::Depot) {
 				ShowBuildDocksToolbarFromTile(tile);
 			}
 			/* Sea & coast tiles are ignored*/

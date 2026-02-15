@@ -1461,7 +1461,7 @@ static bool CheckTrainBrakingModelChange(int32_t &new_value)
 {
 	if (new_value == TBM_REALISTIC && (_game_mode == GM_NORMAL || _game_mode == GM_EDITOR)) {
 		for (TileIndex t(0); t < Map::Size(); t++) {
-			if (IsTileType(t, MP_RAILWAY) && GetRailTileType(t) == RAIL_TILE_SIGNALS) {
+			if (IsTileType(t, MP_RAILWAY) && GetRailTileType(t) == RailTileType::Signals) {
 				uint signals = GetPresentSignals(t);
 				if ((signals & 0x3) & ((signals & 0x3) - 1) || (signals & 0xC) & ((signals & 0xC) - 1)) {
 					/* Signals in both directions */
@@ -1497,7 +1497,7 @@ static void TrainBrakingModelChanged(int32_t new_value)
 	}
 	if (new_value == TBM_REALISTIC && (_game_mode == GM_NORMAL || _game_mode == GM_EDITOR)) {
 		for (TileIndex t(0); t < Map::Size(); t++) {
-			if (IsTileType(t, MP_RAILWAY) && GetRailTileType(t) == RAIL_TILE_SIGNALS) {
+			if (IsTileType(t, MP_RAILWAY) && GetRailTileType(t) == RailTileType::Signals) {
 				TrackBits bits = GetTrackBits(t);
 				do {
 					Track track = RemoveFirstTrack(&bits);

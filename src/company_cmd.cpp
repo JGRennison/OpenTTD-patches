@@ -658,8 +658,8 @@ Company *DoStartupNewCompany(DoStartupNewCompanyFlag flags, CompanyID company)
 	c->inaugurated_year = CalTime::CurYear();
 	c->display_inaugurated_period = EconTime::Detail::WallClockYearToDisplay(EconTime::CurYear());
 
-	/* If starting a player company in singleplayer and a favorite company manager face is selected, choose it. Otherwise, use a random face.
-	 * In a network game, we'll choose the favorite face later in CmdCompanyCtrl to sync it to all clients. */
+	/* If starting a player company in singleplayer and a favourite company manager face is selected, choose it. Otherwise, use a random face.
+	 * In a network game, we'll choose the favourite face later in CmdCompanyCtrl to sync it to all clients. */
 	bool randomise_face = true;
 	if (!_company_manager_face.empty() && !is_ai && !_networking) {
 		auto cmf = ParseCompanyManagerFaceCode(_company_manager_face);
@@ -1001,7 +1001,7 @@ CommandCost CmdCompanyCtrl(DoCommandFlags flags, CompanyCtrlAction cca, CompanyI
 				}
 
 				/*
-				 * If a favorite company manager face is selected, choose it. Otherwise, use a random face.
+				 * If a favourite company manager face is selected, choose it. Otherwise, use a random face.
 				 * Because this needs to be synchronised over the network, only the client knows
 				 * its configuration and we are currently in the execution of a command, we have
 				 * to circumvent the normal ::Post logic for commands and just send the command.

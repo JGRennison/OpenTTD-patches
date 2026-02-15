@@ -309,7 +309,7 @@ inline void SetDriveThroughStopDisallowedRoadDirections(TileIndex t, DisallowedR
 inline Roadside GetRoadWaypointRoadside(TileIndex tile)
 {
 	dbg_assert_tile(IsRoadWaypointTile(tile), tile);
-	return (Roadside)GB(_m[tile].m3, 2, 2);
+	return static_cast<Roadside>(GB(_m[tile].m3, 2, 2));
 }
 
 /**
@@ -320,7 +320,7 @@ inline Roadside GetRoadWaypointRoadside(TileIndex tile)
 inline void SetRoadWaypointRoadside(TileIndex tile, Roadside s)
 {
 	dbg_assert_tile(IsRoadWaypointTile(tile), tile);
-	SB(_m[tile].m3, 2, 2, s);
+	SB(_m[tile].m3, 2, 2, to_underlying(s));
 }
 
 /**
@@ -737,7 +737,7 @@ inline uint8_t GetStationTileRandomBits(TileIndex t)
  * @param section the StationGfx to be used for this tile
  * @param wc The water class of the station
  */
-inline void MakeStation(TileIndex t, Owner o, StationID sid, StationType st, uint8_t section, WaterClass wc = WATER_CLASS_INVALID)
+inline void MakeStation(TileIndex t, Owner o, StationID sid, StationType st, uint8_t section, WaterClass wc = WaterClass::Invalid)
 {
 	SetTileType(t, MP_STATION);
 	SetTileOwner(t, o);
