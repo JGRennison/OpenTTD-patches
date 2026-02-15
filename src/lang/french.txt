@@ -313,6 +313,7 @@ STR_SHOW_HIDDEN_ENGINES_VEHICLE_AIRCRAFT_TOOLTIP                :{BLACK}En activ
 STR_BUTTON_DEFAULT                                              :{BLACK}Défaut
 STR_BUTTON_CANCEL                                               :{BLACK}Annuler
 STR_BUTTON_OK                                                   :{BLACK}OK
+STR_BUTTON_MOVE                                                 :{BLACK}Déplacer
 
 # On screen keyboard window
 STR_OSK_KEYBOARD_LAYOUT                                         :²&é"'(-è_çà)= azertyuiop^$qsdfghjklmù*<wxcvbn,;:!
@@ -2865,15 +2866,15 @@ STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :Séléctionner 
 STR_PICKER_HOUSE_TYPE_TOOLTIP                                   :Séléctionner un type de maison à construire. Ctrl+Clic pour ajouter ou retirer des éléments sauvegardés.
 
 STR_HOUSE_PICKER_CAPTION                                        :Séléction de maison
-STR_HOUSE_PICKER_NAME                                           :{BLACK}Nom{NBSP}: {ORANGE}{STRING}
-STR_HOUSE_PICKER_POPULATION                                     :{BLACK}Population{NBSP}: {ORANGE}{NUM}
-STR_HOUSE_PICKER_YEARS                                          :{BLACK}Années{NBSP}: {ORANGE}{NUM}-{NUM}
-STR_HOUSE_PICKER_YEARS_ANY                                      :{BLACK}Années{NBSP}: {ORANGE}Toutes
-STR_HOUSE_PICKER_YEARS_FROM                                     :{BLACK}Années{NBSP}: {ORANGE}À partir de {NUM}
-STR_HOUSE_PICKER_YEARS_UNTIL                                    :{BLACK}Années{NBSP}: {ORANGE}Jusqu'à {NUM}
-STR_HOUSE_PICKER_SIZE                                           :{BLACK}Taille{NBSP}: {ORANGE}{NUM}{NBSP}x{NBSP}{NUM} cases
+STR_HOUSE_PICKER_NAME                                           :{BLACK}Nom{NBSP}: {GOLD}{STRING}
+STR_HOUSE_PICKER_POPULATION                                     :{BLACK}Population{NBSP}: {GOLD}{NUM}
+STR_HOUSE_PICKER_YEARS                                          :{BLACK}Années{NBSP}: {GOLD}{NUM}-{NUM}
+STR_HOUSE_PICKER_YEARS_ANY                                      :{BLACK}Années{NBSP}: {GOLD}Toutes
+STR_HOUSE_PICKER_YEARS_FROM                                     :{BLACK}Années{NBSP}: {GOLD}À partir de {NUM}
+STR_HOUSE_PICKER_YEARS_UNTIL                                    :{BLACK}Années{NBSP}: {GOLD}Jusqu'à {NUM}
+STR_HOUSE_PICKER_SIZE                                           :{BLACK}Taille{NBSP}: {GOLD}{NUM}{NBSP}x{NBSP}{NUM} cases
 STR_HOUSE_PICKER_CARGO_ACCEPTED                                 :{BLACK}Cargaison acceptée{NBSP}: {ORANGE}
-STR_HOUSE_PICKER_CARGO_PRODUCED                                 :{BLACK}Marchandises produites : {ORANGE}{CARGO_LIST}
+STR_HOUSE_PICKER_CARGO_PRODUCED                                 :{BLACK}Marchandises produites : {GOLD}{CARGO_LIST}
 
 STR_HOUSE_PICKER_CLASS_ZONE1                                    :Bord
 STR_HOUSE_PICKER_CLASS_ZONE2                                    :Périphérie
@@ -3693,7 +3694,7 @@ STR_SIGN_LIST_MATCH_CASE                                        :{BLACK}Respecte
 STR_SIGN_LIST_MATCH_CASE_TOOLTIP                                :{BLACK}Activer ou non le respect de la casse pour la comparaison entre le texte des panneaux et l'entrée dans le filtre
 
 # Sign window
-STR_EDIT_SIGN_CAPTION                                           :{WHITE}Éditer le texte du panneau
+STR_EDIT_SIGN_CAPTION                                           :{WHITE}Éditer le panneau
 STR_EDIT_SIGN_LOCATION_TOOLTIP                                  :{BLACK}Centrer la vue sur le panneau. Ctrl-clic pour ouvrir une nouvelle vue sur le panneau
 STR_EDIT_SIGN_NEXT_SIGN_TOOLTIP                                 :{BLACK}Aller au panneau suivant
 STR_EDIT_SIGN_PREVIOUS_SIGN_TOOLTIP                             :{BLACK}Aller au panneau précédent
@@ -3911,14 +3912,14 @@ STR_CARGO_RATING_EXCELLENT                                      :Excellent
 STR_CARGO_RATING_OUTSTANDING                                    :Exceptionnel
 
 STR_STATION_VIEW_CENTER_TOOLTIP                                 :{BLACK}Centrer la vue sur la station. Ctrl-clic pour ouvrir une nouvelle vue sur la station.
-STR_STATION_VIEW_RENAME_TOOLTIP                                 :{BLACK}Renommer la station
+STR_STATION_VIEW_EDIT_TOOLTIP                                   :{BLACK}Renommer la station ou déplacer le panneau
 
 STR_STATION_VIEW_SCHEDULED_TRAINS_TOOLTIP                       :{BLACK}Afficher les trains ayant cette station dans leurs ordres
 STR_STATION_VIEW_SCHEDULED_ROAD_VEHICLES_TOOLTIP                :{BLACK}Afficher les véhicules routiers ayant cette station dans leurs ordres
 STR_STATION_VIEW_SCHEDULED_AIRCRAFT_TOOLTIP                     :{BLACK}Afficher les aéronefs ayant cette station dans leurs ordres
 STR_STATION_VIEW_SCHEDULED_SHIPS_TOOLTIP                        :{BLACK}Afficher les navires ayant cette station dans leurs ordres
 
-STR_STATION_VIEW_RENAME_STATION_CAPTION                         :Renommer la gare
+STR_STATION_VIEW_EDIT_STATION_SIGN                              :{WHITE}Éditer le panneau
 
 STR_STATION_VIEW_CLOSE_AIRPORT                                  :{BLACK}Fermer l'aéroport
 STR_STATION_VIEW_CLOSE_AIRPORT_TOOLTIP                          :{BLACK}Empêcher l'aéronef de se poser sur cet aéroport
@@ -3926,11 +3927,11 @@ STR_STATION_VIEW_CLOSE_AIRPORT_TOOLTIP                          :{BLACK}Empêche
 # Waypoint/buoy view window
 STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOINT}
 STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}Centrer la vue sur le point de contrôle. Ctrl-clic pour ouvrir une nouvelle vue sur le point de contrôle
-STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}Renommer le point de contrôle
+STR_WAYPOINT_VIEW_EDIT_TOOLTIP                                  :{BLACK}Renommer le point de contrôle ou déplacer le panneau
 STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}Centrer la vue sur la bouée. Ctrl-clic pour ouvrir une nouvelle vue sur la bouée
 STR_BUOY_VIEW_RENAME_TOOLTIP                                    :{BLACK}Renommer la bouée
 
-STR_EDIT_WAYPOINT_NAME                                          :{WHITE}Modifier le nom du point de contrôle
+STR_WAYPOINT_VIEW_EDIT_WAYPOINT_SIGN                            :{WHITE}Éditer le panneau
 
 # Finances window
 STR_FINANCES_CAPTION                                            :{WHITE}Finances de {COMPANY} {BLACK}{COMPANY_NUM}
@@ -5145,6 +5146,7 @@ STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Trop d'a
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Trop près d'un autre port
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Trop près d'un autre aéroport
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Impossible de renommer la gare...
+STR_ERROR_CAN_T_MOVE_STATION_NAME                               :{WHITE}Impossible de déplacer le panneau de la station...
 STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :{WHITE}... route appartenant à une ville
 STR_ERROR_DRIVE_THROUGH_DIRECTION                               :{WHITE}... mauvaise orientation de la route
 STR_ERROR_DRIVE_THROUGH_CORNER                                  :{WHITE}... les arrêts ne peuvent pas avoir de virages
@@ -5176,6 +5178,7 @@ STR_ERROR_CAN_T_BUILD_RAIL_WAYPOINT                             :{WHITE}Impossib
 STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT                             :{WHITE}Impossible de construire un point de contrôle de route ici...
 STR_ERROR_CAN_T_POSITION_BUOY_HERE                              :{WHITE}Impossible de placer une bouée ici...
 STR_ERROR_CAN_T_CHANGE_WAYPOINT_NAME                            :{WHITE}Impossible de renommer le point de contrôle...
+STR_ERROR_CAN_T_MOVE_WAYPOINT_NAME                              :{WHITE}Impossible de déplacer le panneau du point de contrôle...
 
 STR_ERROR_CAN_T_REMOVE_RAIL_WAYPOINT                            :{WHITE}Impossible de retirer le point de contrôle d'ici...
 STR_ERROR_CAN_T_REMOVE_ROAD_WAYPOINT                            :{WHITE}Impossible de retirer ce point de contrôle de route...

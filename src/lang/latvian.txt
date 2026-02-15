@@ -314,6 +314,7 @@ STR_SHOW_HIDDEN_ENGINES_VEHICLE_AIRCRAFT_TOOLTIP                :{BLACK}Ieslēdz
 STR_BUTTON_DEFAULT                                              :{BLACK}Noklusējuma
 STR_BUTTON_CANCEL                                               :{BLACK}Atcelt
 STR_BUTTON_OK                                                   :{BLACK}Labi
+STR_BUTTON_MOVE                                                 :{BLACK}Pārvietot
 
 # On screen keyboard window
 STR_OSK_KEYBOARD_LAYOUT                                         :`1234567890-= qwertyuiop[]asdfghjkl;'#\zxcvbnm,./ .
@@ -2886,15 +2887,15 @@ STR_PICKER_HOUSE_TYPE_TOOLTIP                                   :Izvēlieties b�
 STR_PICKER_HOUSE_COLLECTION_TOOLTIP                             :Atlasiet māju izlasi, ko parādīt
 
 STR_HOUSE_PICKER_CAPTION                                        :Māju izvēle
-STR_HOUSE_PICKER_NAME                                           :{BLACK}Nosaukums: {ORANGE}{STRING}
-STR_HOUSE_PICKER_POPULATION                                     :{BLACK}Iedzīvotāji: {ORANGE}{NUM}
-STR_HOUSE_PICKER_YEARS                                          :{BLACK}Gadi: {ORANGE}{NUM}-{NUM}
-STR_HOUSE_PICKER_YEARS_ANY                                      :{BLACK}Gadi: {ORANGE}Any
-STR_HOUSE_PICKER_YEARS_FROM                                     :{BLACK}Gadi: {ORANGE}No {NUM}
-STR_HOUSE_PICKER_YEARS_UNTIL                                    :{BLACK}Gadi: {ORANGE}Līdz {NUM}
-STR_HOUSE_PICKER_SIZE                                           :{BLACK}Izmērs: {ORANGE}{NUM}x{NUM} lauciņi
+STR_HOUSE_PICKER_NAME                                           :{BLACK}Nosaukums: {GOLD}{STRING}
+STR_HOUSE_PICKER_POPULATION                                     :{BLACK}Iedzīvotāji: {GOLD}{NUM}
+STR_HOUSE_PICKER_YEARS                                          :{BLACK}Gadi: {GOLD}{NUM}-{NUM}
+STR_HOUSE_PICKER_YEARS_ANY                                      :{BLACK}Gadi: {GOLD}jebkuri
+STR_HOUSE_PICKER_YEARS_FROM                                     :{BLACK}Gadi: {GOLD}No {NUM}
+STR_HOUSE_PICKER_YEARS_UNTIL                                    :{BLACK}Gadi: {GOLD}No {NUM}
+STR_HOUSE_PICKER_SIZE                                           :{BLACK}Izmērs: {GOLD}{NUM}x{NUM} lauciņi
 STR_HOUSE_PICKER_CARGO_ACCEPTED                                 :{BLACK}Pieņemamā krava: {ORANGE}
-STR_HOUSE_PICKER_CARGO_PRODUCED                                 :{BLACK}Saražotā krava: {ORANGE}{CARGO_LIST}
+STR_HOUSE_PICKER_CARGO_PRODUCED                                 :{BLACK}Saražotā krava: {GOLD}{CARGO_LIST}
 
 STR_HOUSE_PICKER_CLASS_ZONE1                                    :Mala
 STR_HOUSE_PICKER_CLASS_ZONE2                                    :Nomale
@@ -3938,14 +3939,14 @@ STR_CARGO_RATING_EXCELLENT                                      :lielisks
 STR_CARGO_RATING_OUTSTANDING                                    :izcils
 
 STR_STATION_VIEW_CENTER_TOOLTIP                                 :{BLACK}Centrēt galveno skatu uz staciju. Ctrl+klikšķis atvērs skatu uz staciju jaunā skatlaukā
-STR_STATION_VIEW_RENAME_TOOLTIP                                 :{BLACK}Pārdēvēt staciju
+STR_STATION_VIEW_EDIT_TOOLTIP                                   :{BLACK}Pārdēvēt staciju vai pārvietot zīmi
 
 STR_STATION_VIEW_SCHEDULED_TRAINS_TOOLTIP                       :{BLACK}Rādīt vilcienus, kuru rīkojumu sarakstos ir šī stacija
 STR_STATION_VIEW_SCHEDULED_ROAD_VEHICLES_TOOLTIP                :{BLACK}Rādīt autotransporta līdzekļus, kuru rīkojumu sarakstos ir šī stacija
 STR_STATION_VIEW_SCHEDULED_AIRCRAFT_TOOLTIP                     :{BLACK}Rādīt lidaparātus, kuru rīkojumu sarakstos ir šī stacija
 STR_STATION_VIEW_SCHEDULED_SHIPS_TOOLTIP                        :{BLACK}Rādīt kuģus, kuru rīkojumu sarakstos ir šī stacija
 
-STR_STATION_VIEW_RENAME_STATION_CAPTION                         :Pārdēvēt staciju/iekraušanas zonu
+STR_STATION_VIEW_EDIT_STATION_SIGN                              :{WHITE}Rediģēt stacijas zīmi
 
 STR_STATION_VIEW_CLOSE_AIRPORT                                  :{BLACK}Slēgt lidostu
 STR_STATION_VIEW_CLOSE_AIRPORT_TOOLTIP                          :{BLACK}Novērst lidaparātu nolaišanos šajā lidostā
@@ -3953,11 +3954,11 @@ STR_STATION_VIEW_CLOSE_AIRPORT_TOOLTIP                          :{BLACK}Novērst
 # Waypoint/buoy view window
 STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOINT}
 STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}Centrēt galveno skatu uz pieturas punktu. Ctrl+klikšķis atvērs skatu uz pieturas punktu jaunā skatlaukā
-STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}Mainīt pieturas punkta nosaukumu
+STR_WAYPOINT_VIEW_EDIT_TOOLTIP                                  :{BLACK}Pārdēvēt ceļa punktu vai pārvietot zīmi
 STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}Centrēt galveno skatu uz boju. Ctrl+klikšķis atvērs skatu uz boju jaunā skatlaukā
 STR_BUOY_VIEW_RENAME_TOOLTIP                                    :{BLACK}Mainīt bojas nosaukumu
 
-STR_EDIT_WAYPOINT_NAME                                          :{WHITE}Labot pieturas punkta nosaukumu
+STR_WAYPOINT_VIEW_EDIT_WAYPOINT_SIGN                            :{WHITE}Labot ceļa punkta zīmi
 
 # Finances window
 STR_FINANCES_CAPTION                                            :{WHITE}{COMPANY} finanses {BLACK}{COMPANY_NUM}
@@ -5180,6 +5181,7 @@ STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Pārāk 
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Pārāk tuvu citai piestātnei
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Pārāk tuvu citai lidostai
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Nevar pārdēvēt staciju...
+STR_ERROR_CAN_T_MOVE_STATION_NAME                               :{WHITE}Stacijas zīmi nevar pārvietot...
 STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :{WHITE}... ceļš pieder pilsētai
 STR_ERROR_DRIVE_THROUGH_DIRECTION                               :{WHITE}... ceļš novietots nepareizā virzienā
 STR_ERROR_DRIVE_THROUGH_CORNER                                  :{WHITE}... caurbraucamās stacijās nevar būt stūru
@@ -5211,6 +5213,7 @@ STR_ERROR_CAN_T_BUILD_RAIL_WAYPOINT                             :{WHITE}Šeit ne
 STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT                             :{WHITE}Šeit nevar izveidot ceļa pieturas punktu...
 STR_ERROR_CAN_T_POSITION_BUOY_HERE                              :{WHITE}Šeit nevar novietot boju...
 STR_ERROR_CAN_T_CHANGE_WAYPOINT_NAME                            :{WHITE}Nevar pārdēvēt pieturas punktu...
+STR_ERROR_CAN_T_MOVE_WAYPOINT_NAME                              :{WHITE}Nevar pārvietot ceļa punkta zīmi...
 
 STR_ERROR_CAN_T_REMOVE_RAIL_WAYPOINT                            :{WHITE}Seit nevar noņemt vilcienu pieturas punktu...
 STR_ERROR_CAN_T_REMOVE_ROAD_WAYPOINT                            :{WHITE}Šeit nevar noņemt ceļa pieturas punktu...

@@ -2934,6 +2934,9 @@ STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Uvećava visinu
 
 
 STR_HOUSE_PICKER_CAPTION                                        :Odabir kuće
+STR_HOUSE_PICKER_NAME                                           :{BLACK}Naziv: {GOLD}{STRING}
+STR_HOUSE_PICKER_YEARS                                          :{BLACK}Godina: {GOLD}{NUM}-{NUM}
+STR_HOUSE_PICKER_CARGO_PRODUCED                                 :{BLACK}Proizveden teret: {GOLD}{CARGO_LIST}
 
 STR_HOUSE_PICKER_CLASS_ZONE1                                    :Ivica
 STR_HOUSE_PICKER_CLASS_ZONE2                                    :Predgrađe
@@ -3711,7 +3714,7 @@ STR_SIGN_LIST_MATCH_CASE                                        :{BLACK}Podudara
 STR_SIGN_LIST_MATCH_CASE_TOOLTIP                                :{BLACK}Uključuje/isključuje podudaranje malih i velikih slova tokom poređenja naziva znakova sa filter niskom
 
 # Sign window
-STR_EDIT_SIGN_CAPTION                                           :{WHITE}Unos teksta znaka
+STR_EDIT_SIGN_CAPTION                                           :{WHITE}Promena znaka
 STR_EDIT_SIGN_LOCATION_TOOLTIP                                  :{BLACK}Prebacuje glavni pogled na lokaciju znaka. Ctrl+klik otvara novi pogled na znak
 STR_EDIT_SIGN_NEXT_SIGN_TOOLTIP                                 :{BLACK}Položaj sledećeg znaka
 STR_EDIT_SIGN_PREVIOUS_SIGN_TOOLTIP                             :{BLACK}Položaj prethodnog znaka
@@ -3917,14 +3920,13 @@ STR_CARGO_RATING_EXCELLENT                                      :odlično
 STR_CARGO_RATING_OUTSTANDING                                    :izvanredno
 
 STR_STATION_VIEW_CENTER_TOOLTIP                                 :{BLACK}Prebacuje glavni pogled na lokaciju stanice. Ctrl+klik otvara novi pogled na lokaciju stanice
-STR_STATION_VIEW_RENAME_TOOLTIP                                 :{BLACK}Preimenuj stanicu
 
 STR_STATION_VIEW_SCHEDULED_TRAINS_TOOLTIP                       :{BLACK}Prikazuje sve vozove koji imaju ovu stanicu u svom voznom redu
 STR_STATION_VIEW_SCHEDULED_ROAD_VEHICLES_TOOLTIP                :{BLACK}Prikazuje sva drumska vozila koja imaju ovu stanicu u svom voznom redu
 STR_STATION_VIEW_SCHEDULED_AIRCRAFT_TOOLTIP                     :{BLACK}Prikazuje sve letelice koje imaju ovu stanicu u svom voznom redu
 STR_STATION_VIEW_SCHEDULED_SHIPS_TOOLTIP                        :{BLACK}Prikazuje sve brodove koji imaju ovu stanicu u svom voznom redu
 
-STR_STATION_VIEW_RENAME_STATION_CAPTION                         :Preimenuj stanicu
+STR_STATION_VIEW_EDIT_STATION_SIGN                              :{WHITE}Promena staničnog znaka
 
 STR_STATION_VIEW_CLOSE_AIRPORT                                  :{BLACK}Zatvori aerodrom
 STR_STATION_VIEW_CLOSE_AIRPORT_TOOLTIP                          :{BLACK}Spreči letelicu da sleti na ovaj aerodrom
@@ -3932,11 +3934,9 @@ STR_STATION_VIEW_CLOSE_AIRPORT_TOOLTIP                          :{BLACK}Spreči 
 # Waypoint/buoy view window
 STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOINT}
 STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}Prebacuje glavni pogled na lokaciju čvorišta. Ctrl+klik otvara novi pogled na čvorište
-STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}Promena naziva putanje
 STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}Prebacuje glavni pogled na lokaciju bove. Ctrl+klik otvara novi pogled na bovu
 STR_BUOY_VIEW_RENAME_TOOLTIP                                    :{BLACK}Promeni naziv bove
 
-STR_EDIT_WAYPOINT_NAME                                          :{WHITE}Promena naziva putanje
 
 # Finances window
 STR_FINANCES_CAPTION                                            :{WHITE}{COMPANY} Finansije {BLACK}{COMPANY_NUM}
@@ -5130,6 +5130,7 @@ STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Previše
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Previše je blizu drugog pristaništa
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Previše je blizu drugog aerodroma
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Ova stanica ne može biti preimenovana...
+STR_ERROR_CAN_T_MOVE_STATION_NAME                               :{WHITE}Nije moguće pomeriti stanični znak...
 STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :{WHITE}... ova ulica je u vlasništvu naselja
 STR_ERROR_DRIVE_THROUGH_DIRECTION                               :{WHITE}... ulica je okrenuta u drugom pravcu
 STR_ERROR_DRIVE_THROUGH_CORNER                                  :{WHITE}... stajalište ne može biti na krivini

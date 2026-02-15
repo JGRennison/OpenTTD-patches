@@ -312,6 +312,7 @@ STR_SHOW_HIDDEN_ENGINES_VEHICLE_AIRCRAFT_TOOLTIP                :{BLACK}Wanneer 
 STR_BUTTON_DEFAULT                                              :{BLACK}Standaard
 STR_BUTTON_CANCEL                                               :{BLACK}Annuleren
 STR_BUTTON_OK                                                   :{BLACK}OK
+STR_BUTTON_MOVE                                                 :{BLACK}Verplaatsen
 
 # On screen keyboard window
 STR_OSK_KEYBOARD_LAYOUT                                         :`1234567890-= qwertyuiop[]asdfghjkl;'#\zxcvbnm,./ .
@@ -2864,15 +2865,15 @@ STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :Selecteer een s
 STR_PICKER_HOUSE_TYPE_TOOLTIP                                   :Selecteer een type huizen om te bouwen. Ctrl+klik om toe te voegen aan of te verwijderen uit opgeslagen onderdelen
 
 STR_HOUSE_PICKER_CAPTION                                        :Huizen selecteren
-STR_HOUSE_PICKER_NAME                                           :{BLACK}Naam: {ORANGE}{STRING}
-STR_HOUSE_PICKER_POPULATION                                     :{BLACK}Bevolking: {ORANGE}{NUM}
-STR_HOUSE_PICKER_YEARS                                          :{BLACK}Jaar: {ORANGE}{NUM}-{NUM}
-STR_HOUSE_PICKER_YEARS_ANY                                      :{BLACK}Jaar: {ORANGE}Willekeurig
-STR_HOUSE_PICKER_YEARS_FROM                                     :{BLACK}Jaar: {ORANGE}Vanaf {NUM}
-STR_HOUSE_PICKER_YEARS_UNTIL                                    :{BLACK}Jaar: {ORANGE}Tot en met {NUM}
-STR_HOUSE_PICKER_SIZE                                           :{BLACK}Grootte: {ORANGE}{NUM}x{NUM} tegels
+STR_HOUSE_PICKER_NAME                                           :{BLACK}Naam: {GOLD}{STRING}
+STR_HOUSE_PICKER_POPULATION                                     :{BLACK}Bevolking: {GOLD}{NUM}
+STR_HOUSE_PICKER_YEARS                                          :{BLACK}Jaar: {GOLD}{NUM}-{NUM}
+STR_HOUSE_PICKER_YEARS_ANY                                      :{BLACK}Jaar: {GOLD}Willekeurig
+STR_HOUSE_PICKER_YEARS_FROM                                     :{BLACK}Jaar: {GOLD}Vanaf {NUM}
+STR_HOUSE_PICKER_YEARS_UNTIL                                    :{BLACK}Jaar: {GOLD}Tot en met {NUM}
+STR_HOUSE_PICKER_SIZE                                           :{BLACK}Grootte: {GOLD}{NUM}x{NUM} tegels
 STR_HOUSE_PICKER_CARGO_ACCEPTED                                 :{BLACK}Geaccepteerde vracht: {ORANGE}
-STR_HOUSE_PICKER_CARGO_PRODUCED                                 :{BLACK}Geproduceerde vracht: {ORANGE}{CARGO_LIST}
+STR_HOUSE_PICKER_CARGO_PRODUCED                                 :{BLACK}Geproduceerde vracht: {GOLD}{CARGO_LIST}
 
 STR_HOUSE_PICKER_CLASS_ZONE1                                    :Rand
 STR_HOUSE_PICKER_CLASS_ZONE2                                    :Buitenwijken
@@ -3692,7 +3693,7 @@ STR_SIGN_LIST_MATCH_CASE                                        :{BLACK}Hoofdlet
 STR_SIGN_LIST_MATCH_CASE_TOOLTIP                                :{BLACK}Schakel hoofdlettergevoeligheid in bij het vergelijken van bordnamen met de filtertekst
 
 # Sign window
-STR_EDIT_SIGN_CAPTION                                           :{WHITE}Wijzig tekst van bord
+STR_EDIT_SIGN_CAPTION                                           :{WHITE}Bord bewerken
 STR_EDIT_SIGN_LOCATION_TOOLTIP                                  :{BLACK}Centreer het hoofdscherm op de locatie van het sein. Ctrl+klik opent een nieuw venster op de locatie van het sein.
 STR_EDIT_SIGN_NEXT_SIGN_TOOLTIP                                 :{BLACK}Ga naar volgende bord
 STR_EDIT_SIGN_PREVIOUS_SIGN_TOOLTIP                             :{BLACK}Ga naar vorige bord
@@ -3910,14 +3911,14 @@ STR_CARGO_RATING_EXCELLENT                                      :Uitstekend
 STR_CARGO_RATING_OUTSTANDING                                    :Voortreffelijk
 
 STR_STATION_VIEW_CENTER_TOOLTIP                                 :{BLACK}Centreer het hoofdscherm op de locatie van het station. Ctrl+klik opent een nieuw venster op de locatie van het station
-STR_STATION_VIEW_RENAME_TOOLTIP                                 :{BLACK}Station hernoemen
+STR_STATION_VIEW_EDIT_TOOLTIP                                   :{BLACK}Station hernoemen of bord verplaatsen
 
 STR_STATION_VIEW_SCHEDULED_TRAINS_TOOLTIP                       :{BLACK}Geef alle treinen weer die dit station in hun opdrachtenlijst hebben
 STR_STATION_VIEW_SCHEDULED_ROAD_VEHICLES_TOOLTIP                :{BLACK}Geef alle wegvoertuigen weer die dit station in hun opdrachtenlijst hebben
 STR_STATION_VIEW_SCHEDULED_AIRCRAFT_TOOLTIP                     :{BLACK}Geef alle vliegtuigen weer die dit station in hun opdrachtenlijst hebben
 STR_STATION_VIEW_SCHEDULED_SHIPS_TOOLTIP                        :{BLACK}Geef alle schepen weer die dit station in hun opdrachtenlijst hebben
 
-STR_STATION_VIEW_RENAME_STATION_CAPTION                         :Station/laadgebied hernoemen
+STR_STATION_VIEW_EDIT_STATION_SIGN                              :{WHITE}Stationsbord bewerken
 
 STR_STATION_VIEW_CLOSE_AIRPORT                                  :{BLACK}Luchthaven sluiten
 STR_STATION_VIEW_CLOSE_AIRPORT_TOOLTIP                          :{BLACK}Voorkom landen van vliegtuig op deze luchthaven
@@ -3925,11 +3926,11 @@ STR_STATION_VIEW_CLOSE_AIRPORT_TOOLTIP                          :{BLACK}Voorkom 
 # Waypoint/buoy view window
 STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOINT}
 STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}Centreer het hoofdscherm op het routepunt. Ctrl+klik opent nieuw venster op locatie van routepunt.
-STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}Naam routepunt aanpassen
+STR_WAYPOINT_VIEW_EDIT_TOOLTIP                                  :{BLACK}Routepunt hernoemen of bord verplaatsen
 STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}Centreer het hoofdscherm op de locatie van de boei. Ctrl+klik opent een nieuw venster op de locatie van de boei.
 STR_BUOY_VIEW_RENAME_TOOLTIP                                    :{BLACK}Naam van boei aanpassen
 
-STR_EDIT_WAYPOINT_NAME                                          :{WHITE}Naam routepunt aanpassen
+STR_WAYPOINT_VIEW_EDIT_WAYPOINT_SIGN                            :{WHITE}Routepuntbord bewerken
 
 # Finances window
 STR_FINANCES_CAPTION                                            :{WHITE}{COMPANY} Financiën {BLACK}{COMPANY_NUM}
@@ -5144,6 +5145,7 @@ STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Te veel 
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Te dicht bij een andere haven
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Te dicht bij een ander vliegveld
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Kan stationsnaam niet veranderen...
+STR_ERROR_CAN_T_MOVE_STATION_NAME                               :{WHITE}Kan stationsbord niet verplaatsen...
 STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :{WHITE}... weg in eigendom van een stad
 STR_ERROR_DRIVE_THROUGH_DIRECTION                               :{WHITE}... weg is in de verkeerde richting
 STR_ERROR_DRIVE_THROUGH_CORNER                                  :{WHITE}... doorrij haltes kunnen geen bochten hebben
@@ -5175,6 +5177,7 @@ STR_ERROR_CAN_T_BUILD_RAIL_WAYPOINT                             :{WHITE}Kan hier
 STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT                             :{WHITE}Kan hier geen weg-routepunt bouwen...
 STR_ERROR_CAN_T_POSITION_BUOY_HERE                              :{WHITE}Kan boei hier niet plaatsen...
 STR_ERROR_CAN_T_CHANGE_WAYPOINT_NAME                            :{WHITE}Kan naam routepunt niet aanpassen...
+STR_ERROR_CAN_T_MOVE_WAYPOINT_NAME                              :{WHITE}Kan routepuntbord niet verplaatsen...
 
 STR_ERROR_CAN_T_REMOVE_RAIL_WAYPOINT                            :{WHITE}Kan hier geen routepunt verwijderen...
 STR_ERROR_CAN_T_REMOVE_ROAD_WAYPOINT                            :{WHITE}Kan hier geen weg-routepunt verwijderen...

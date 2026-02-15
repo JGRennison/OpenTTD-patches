@@ -400,6 +400,7 @@ STR_SHOW_HIDDEN_ENGINES_VEHICLE_AIRCRAFT_TOOLTIP                :{BLACK}Post akt
 STR_BUTTON_DEFAULT                                              :{BLACK}Normo
 STR_BUTTON_CANCEL                                               :{BLACK}Nuligi
 STR_BUTTON_OK                                                   :{BLACK}Bone
+STR_BUTTON_MOVE                                                 :{BLACK}Movi
 
 # On screen keyboard window
 STR_OSK_KEYBOARD_LAYOUT                                         :`1234567890-= qwertyuiop[]asdfghjkl;'#\zxcvbnm,./ .
@@ -2973,6 +2974,14 @@ STR_PICKER_HOUSE_TYPE_TOOLTIP                                   :Elektu tipon de
 STR_PICKER_HOUSE_COLLECTION_TOOLTIP                             :Elekti kolekton de domoj por montrado
 
 STR_HOUSE_PICKER_CAPTION                                        :Elekto de domo
+STR_HOUSE_PICKER_NAME                                           :{BLACK}Nomo: {GOLD}{STRING}
+STR_HOUSE_PICKER_POPULATION                                     :{BLACK}Loĝantaro: {GOLD}{NUM}
+STR_HOUSE_PICKER_YEARS                                          :{BLACK}Jaroj: {GOLD}{NUM}-{NUM}
+STR_HOUSE_PICKER_YEARS_ANY                                      :{BLACK}Jaroj: {GOLD}Ĉiuj
+STR_HOUSE_PICKER_YEARS_FROM                                     :{BLACK}Jaroj: {GOLD}Ekde {NUM}
+STR_HOUSE_PICKER_YEARS_UNTIL                                    :{BLACK}Jaroj: {GOLD}Ĝis {NUM}
+STR_HOUSE_PICKER_SIZE                                           :{BLACK}Grandeco: {GOLD}{NUM} x {NUM} kaheloj
+STR_HOUSE_PICKER_CARGO_PRODUCED                                 :{BLACK}Produktata ŝarĝo: {GOLD}{CARGO_LIST}
 
 STR_HOUSE_PICKER_CLASS_ZONE1                                    :Rando
 STR_HOUSE_PICKER_CLASS_ZONE2                                    :Periferioj
@@ -3790,7 +3799,7 @@ STR_SIGN_LIST_MATCH_CASE                                        :{BLACK}Parigu k
 STR_SIGN_LIST_MATCH_CASE_TOOLTIP                                :{BLACK}Aktivu/Malaktivu parigan kazon dum komparanta signajn nomojn kontraŭ la filtra teksto
 
 # Sign window
-STR_EDIT_SIGN_CAPTION                                           :{WHITE}Ŝanĝu tekston de la ŝildo
+STR_EDIT_SIGN_CAPTION                                           :{WHITE}Ŝanĝu ŝildon
 STR_EDIT_SIGN_LOCATION_TOOLTIP                                  :{BLACK}Centrigu ĉefvidon je la loko de la ŝildo. Stir+Klaku por malfermi novan vidujon ĉe la loko de la ŝildo
 STR_EDIT_SIGN_NEXT_SIGN_TOOLTIP                                 :{BLACK}Iri al la sekva ŝildo
 STR_EDIT_SIGN_PREVIOUS_SIGN_TOOLTIP                             :{BLACK}Iri al la antaŭa ŝildo
@@ -4009,14 +4018,14 @@ STR_CARGO_RATING_EXCELLENT                                      :Bonege
 STR_CARGO_RATING_OUTSTANDING                                    :Elstare bonege
 
 STR_STATION_VIEW_CENTER_TOOLTIP                                 :{BLACK}Centri ĉefvidon ĉe la stacio. Stir+Klaku por malfermi novan vidujon ĉe la stacioloko
-STR_STATION_VIEW_RENAME_TOOLTIP                                 :{BLACK}Ŝanĝu nomon de stacio
+STR_STATION_VIEW_EDIT_TOOLTIP                                   :{BLACK}Alinomi stacion aŭ movi ŝildon
 
 STR_STATION_VIEW_SCHEDULED_TRAINS_TOOLTIP                       :{BLACK}Montru ĉiujn vagonarojn kun ĉi tiu stacio en la plano
 STR_STATION_VIEW_SCHEDULED_ROAD_VEHICLES_TOOLTIP                :{BLACK}Montru ĉiujn stratveturilojn kun ĉi tiu stacio en la plano
 STR_STATION_VIEW_SCHEDULED_AIRCRAFT_TOOLTIP                     :{BLACK}Montru ĉiujn aviadilojn kun ĉi tiu stacio en la plano
 STR_STATION_VIEW_SCHEDULED_SHIPS_TOOLTIP                        :{BLACK}Montru ĉiujn ŝipojn kun ĉi tiu stacio en la plano
 
-STR_STATION_VIEW_RENAME_STATION_CAPTION                         :Alinomi stacion/ŝarĝejon
+STR_STATION_VIEW_EDIT_STATION_SIGN                              :{WHITE}Redakti ŝildon de stacio
 
 STR_STATION_VIEW_CLOSE_AIRPORT                                  :{BLACK}Fermu la flughavenon
 STR_STATION_VIEW_CLOSE_AIRPORT_TOOLTIP                          :{BLACK}Malpermesu al aviadiloj surteriĝi ĉe tiu ĉi flughaveno
@@ -4024,11 +4033,11 @@ STR_STATION_VIEW_CLOSE_AIRPORT_TOOLTIP                          :{BLACK}Malperme
 # Waypoint/buoy view window
 STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOINT}
 STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}Centri ĉefvidon ĉe la vojpunkto. Stir+Klak por malfermi novan vidujon ĉe la loko.
-STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}Ŝanĝi nomon de vojpunkto.
+STR_WAYPOINT_VIEW_EDIT_TOOLTIP                                  :{BLACK}Alinomi vojpunkton aŭ movi ŝildon
 STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}Centri ĉefvidon ĉe la buo. Ctrl+Klak por malfermi novan vidujon ĉe la bua loko.
 STR_BUOY_VIEW_RENAME_TOOLTIP                                    :{BLACK}Ŝanĝi nomon de la buo.
 
-STR_EDIT_WAYPOINT_NAME                                          :{WHITE}Ŝanĝu vojpunktonomon
+STR_WAYPOINT_VIEW_EDIT_WAYPOINT_SIGN                            :{WHITE}Ŝanĝi nomon de vojpunkto
 
 # Finances window
 STR_FINANCES_CAPTION                                            :{WHITE}Financoj de {COMPANY} {BLACK}{COMPANY_NUM}
@@ -5260,6 +5269,7 @@ STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Tro da �
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Tro proksime al alia haveno
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Tro proksime al alia flughaveno
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Ne povas alinomi stacion...
+STR_ERROR_CAN_T_MOVE_STATION_NAME                               :{WHITE}Ne povas movi ŝildon de stacio...
 STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :{WHITE}... ĉi tiun straton posedas la urbo
 STR_ERROR_DRIVE_THROUGH_DIRECTION                               :{WHITE}... malĝusta stratdirekto
 STR_ERROR_DRIVE_THROUGH_CORNER                                  :{WHITE}... traveturaj haltejoj ne povas havi angulojn
@@ -5291,6 +5301,7 @@ STR_ERROR_CAN_T_BUILD_RAIL_WAYPOINT                             :{WHITE}Ne povas
 STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT                             :{WHITE}Ne povas konstrui stratan vojpunkton ĉi tie...
 STR_ERROR_CAN_T_POSITION_BUOY_HERE                              :{WHITE}Ne povas meti buon ĉi tie...
 STR_ERROR_CAN_T_CHANGE_WAYPOINT_NAME                            :{WHITE}Ne povas ŝanĝi vojpunktan nomon...
+STR_ERROR_CAN_T_MOVE_WAYPOINT_NAME                              :{WHITE}Ne povas movi ŝildon de vojpunkto...
 
 STR_ERROR_CAN_T_REMOVE_RAIL_WAYPOINT                            :{WHITE}Ne povas forigi vagonaran vojpunkton ĉi tie...
 STR_ERROR_CAN_T_REMOVE_ROAD_WAYPOINT                            :{WHITE}Ne povas forigi stratan vojpunkton ĉi tie...

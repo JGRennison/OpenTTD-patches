@@ -312,6 +312,7 @@ STR_SHOW_HIDDEN_ENGINES_VEHICLE_AIRCRAFT_TOOLTIP                :{BLACK}Drwy all
 STR_BUTTON_DEFAULT                                              :{BLACK}Rhagosodiad
 STR_BUTTON_CANCEL                                               :{BLACK}Diddymu
 STR_BUTTON_OK                                                   :{BLACK}Iawn
+STR_BUTTON_MOVE                                                 :{BLACK}Symud
 
 # On screen keyboard window
 STR_OSK_KEYBOARD_LAYOUT                                         :`1234567890-= qwertyuiop[]asdfghjkl;'#\zxcvbnm,./ .
@@ -2864,15 +2865,15 @@ STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :Dewiswch parth 
 STR_PICKER_HOUSE_TYPE_TOOLTIP                                   :Dewiswch math tŷ i'w ddangos. Mae Ctrl+Clic yn adio neu tynnu o'r eitemau a gedwir
 
 STR_HOUSE_PICKER_CAPTION                                        :Dewis Tai
-STR_HOUSE_PICKER_NAME                                           :{BLACK}Enw: {ORANGE}{STRING}
-STR_HOUSE_PICKER_POPULATION                                     :{BLACK}Poblogaeth: {ORANGE}{NUM}
-STR_HOUSE_PICKER_YEARS                                          :{BLACK}Blynyddoedd: {ORANGE}{NUM}-{NUM}
-STR_HOUSE_PICKER_YEARS_ANY                                      :{BLACK}Blynyddoedd: {ORANGE}Unrhyw
-STR_HOUSE_PICKER_YEARS_FROM                                     :{BLACK}Blynyddoedd: {ORANGE}O {NUM}
-STR_HOUSE_PICKER_YEARS_UNTIL                                    :{BLACK}Blynyddoedd: {ORANGE}Hyd {NUM}
-STR_HOUSE_PICKER_SIZE                                           :{BLACK}Maint: {ORANGE}{NUM}x{NUM} teil
+STR_HOUSE_PICKER_NAME                                           :{BLACK}Enw: {GOLD}{STRING}
+STR_HOUSE_PICKER_POPULATION                                     :{BLACK}Poblogaeth: {GOLD}{NUM}
+STR_HOUSE_PICKER_YEARS                                          :{BLACK}Blynyddoedd: {GOLD}{NUM}-{NUM}
+STR_HOUSE_PICKER_YEARS_ANY                                      :{BLACK}Blynyddoedd: {GOLD}Unrhyw
+STR_HOUSE_PICKER_YEARS_FROM                                     :{BLACK}Blynyddoedd: {GOLD}O {NUM}
+STR_HOUSE_PICKER_YEARS_UNTIL                                    :{BLACK}Blynyddoedd: {GOLD}Hyd {NUM}
+STR_HOUSE_PICKER_SIZE                                           :{BLACK}Maint: {GOLD}{NUM}x{NUM} teil
 STR_HOUSE_PICKER_CARGO_ACCEPTED                                 :{BLACK}Llwythi a dderbynir: {ORANGE}
-STR_HOUSE_PICKER_CARGO_PRODUCED                                 :{BLACK}Llwythi a gynhyrchir: {ORANGE}{CARGO_LIST}
+STR_HOUSE_PICKER_CARGO_PRODUCED                                 :{BLACK}Llwythi a gynhyrchir: {GOLD}{CARGO_LIST}
 
 STR_HOUSE_PICKER_CLASS_ZONE1                                    :Ffiniau
 STR_HOUSE_PICKER_CLASS_ZONE2                                    :Cyrion
@@ -3692,7 +3693,7 @@ STR_SIGN_LIST_MATCH_CASE                                        :{BLACK}Cydweddu
 STR_SIGN_LIST_MATCH_CASE_TOOLTIP                                :{BLACK}Toglo cydweddu prif lythrennau pan yn cymharu enwau arwyddion yn erbyn y llinyn hidlo
 
 # Sign window
-STR_EDIT_SIGN_CAPTION                                           :{WHITE}Golygu testun arwydd
+STR_EDIT_SIGN_CAPTION                                           :{WHITE}Golygu arwydd
 STR_EDIT_SIGN_LOCATION_TOOLTIP                                  :{BLACK}Canoli'r brif olygfa ar leoliad yr arwydd. Mae Ctrl+Clic yn agor ffenestr olygfa newydd ar leoliad yr arwydd
 STR_EDIT_SIGN_NEXT_SIGN_TOOLTIP                                 :{BLACK}Mynd i'r arwydd nesaf
 STR_EDIT_SIGN_PREVIOUS_SIGN_TOOLTIP                             :{BLACK}Mynd i'r arwydd blaenorol
@@ -3910,14 +3911,14 @@ STR_CARGO_RATING_EXCELLENT                                      :Gwych
 STR_CARGO_RATING_OUTSTANDING                                    :Rhagorol
 
 STR_STATION_VIEW_CENTER_TOOLTIP                                 :{BLACK}Canoli'r brif olygfa ar leoliad yr orsaf. Ctrl+Clic i agor ffenest golwg newydd ar leoliad yr orsaf
-STR_STATION_VIEW_RENAME_TOOLTIP                                 :{BLACK}Newid enw'r orsaf
+STR_STATION_VIEW_EDIT_TOOLTIP                                   :{BLACK}Ailenwi gorsaf neu symud arwydd
 
 STR_STATION_VIEW_SCHEDULED_TRAINS_TOOLTIP                       :{BLACK}Dangos pob trên sydd â'r orsaf hon yn eu hamserlen
 STR_STATION_VIEW_SCHEDULED_ROAD_VEHICLES_TOOLTIP                :{BLACK}Dangos pob cerbyd ffordd sydd â'r orsaf hon yn eu hamserlen
 STR_STATION_VIEW_SCHEDULED_AIRCRAFT_TOOLTIP                     :{BLACK}Dangos pob awyren sydd â'r orsaf hon yn eu hamserlen
 STR_STATION_VIEW_SCHEDULED_SHIPS_TOOLTIP                        :{BLACK}Dangos pob llong sydd â'r orsaf hon yn eu hamserlen
 
-STR_STATION_VIEW_RENAME_STATION_CAPTION                         :Ailenwi gorsaf/ardal lwytho
+STR_STATION_VIEW_EDIT_STATION_SIGN                              :{WHITE}Golygu arwydd gorsaf
 
 STR_STATION_VIEW_CLOSE_AIRPORT                                  :{BLACK}Cau'r maes awyr
 STR_STATION_VIEW_CLOSE_AIRPORT_TOOLTIP                          :{BLACK}Rhwystro awyrennau rhag glanio ar y maes awyr yma
@@ -3925,11 +3926,11 @@ STR_STATION_VIEW_CLOSE_AIRPORT_TOOLTIP                          :{BLACK}Rhwystro
 # Waypoint/buoy view window
 STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOINT}
 STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}Canoli'r brif olygfa ar leoliad y pwynt llwybro. Ctrl+Clic i agor ffenest olygfa newydd ar leoliad y pwynt llwybro
-STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}Newid enw pwynt llwybro
+STR_WAYPOINT_VIEW_EDIT_TOOLTIP                                  :{BLACK}Ailenwi pwynt llwybro neu ddileu arwydd
 STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}Canoli'r brif olygfa ar leoliad y bwï. Ctrl+Clic i agor ffenestr olygfa newydd ar leoliad y bwï
 STR_BUOY_VIEW_RENAME_TOOLTIP                                    :{BLACK}Newid enw bwï
 
-STR_EDIT_WAYPOINT_NAME                                          :{WHITE}Golygu enw pwynt llwybro
+STR_WAYPOINT_VIEW_EDIT_WAYPOINT_SIGN                            :{WHITE}Golygu arwydd pwynt llwybro
 
 # Finances window
 STR_FINANCES_CAPTION                                            :{WHITE}Cyllid {COMPANY}{BLACK}{COMPANY_NUM}
@@ -5144,6 +5145,7 @@ STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Gormod o
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Rhy agos i ddoc arall
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Rhy agos i faes awyr arall
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Methu ailenwi gorsaf...
+STR_ERROR_CAN_T_MOVE_STATION_NAME                               :{WHITE}Methu symud arwydd gorsaf...
 STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :{WHITE}... mae'r ffordd hon yn eiddo i dref
 STR_ERROR_DRIVE_THROUGH_DIRECTION                               :{WHITE}... mae'r ffordd yn gorwedd yn y cyfeiriad anghywir
 STR_ERROR_DRIVE_THROUGH_CORNER                                  :{WHITE}... ni all arosfannau gyrru-trwodd fod â chorneli
@@ -5175,6 +5177,7 @@ STR_ERROR_CAN_T_BUILD_RAIL_WAYPOINT                             :{WHITE}Does dim
 STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT                             :{WHITE}Methu adeiladu pwynt llwybro ffordd yma...
 STR_ERROR_CAN_T_POSITION_BUOY_HERE                              :{WHITE}Methu gosod bwï yma...
 STR_ERROR_CAN_T_CHANGE_WAYPOINT_NAME                            :{WHITE}Does dim modd newid enw pwynt llwybro...
+STR_ERROR_CAN_T_MOVE_WAYPOINT_NAME                              :{WHITE}Methu symud arwydd pwynt llwybro...
 
 STR_ERROR_CAN_T_REMOVE_RAIL_WAYPOINT                            :{WHITE}Does dim modd tynnu'r pwynt llwybro trên yma...
 STR_ERROR_CAN_T_REMOVE_ROAD_WAYPOINT                            :{WHITE}Methu tynnu'r pwynt llwybro ffordd yma...

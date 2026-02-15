@@ -313,6 +313,7 @@ STR_SHOW_HIDDEN_ENGINES_VEHICLE_AIRCRAFT_TOOLTIP                :{BLACK}Zeigt au
 STR_BUTTON_DEFAULT                                              :{BLACK}Standard
 STR_BUTTON_CANCEL                                               :{BLACK}Abbrechen
 STR_BUTTON_OK                                                   :{BLACK}OK
+STR_BUTTON_MOVE                                                 :{BLACK}Verschieben
 
 # On screen keyboard window
 STR_OSK_KEYBOARD_LAYOUT                                         :^1234567890ß'€qwertzuiopü+asdfghjklöä#<yxcvbnm,.- .
@@ -2865,15 +2866,15 @@ STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :Wählen Sie ein
 STR_PICKER_HOUSE_TYPE_TOOLTIP                                   :Wählen Sie einen Haustyp zum Bauen. Strg+Klick, um in gespeicherten Einträgen hinzuzufügen oder zu entfernen
 
 STR_HOUSE_PICKER_CAPTION                                        :Hausauswahl
-STR_HOUSE_PICKER_NAME                                           :{BLACK}Name: {ORANGE}{STRING}
-STR_HOUSE_PICKER_POPULATION                                     :{BLACK}Bewohner: {ORANGE}{NUM}
-STR_HOUSE_PICKER_YEARS                                          :{BLACK}Jahre: {ORANGE}{NUM}-{NUM}
-STR_HOUSE_PICKER_YEARS_ANY                                      :{BLACK}Jahre: {ORANGE}Beliebig
-STR_HOUSE_PICKER_YEARS_FROM                                     :{BLACK}Jahre: {ORANGE}Ab {NUM}
-STR_HOUSE_PICKER_YEARS_UNTIL                                    :{BLACK}Jahre: {ORANGE}Bis {NUM}
-STR_HOUSE_PICKER_SIZE                                           :{BLACK}Größe: {ORANGE}{NUM}×{NUM} Kacheln
+STR_HOUSE_PICKER_NAME                                           :{BLACK}Name: {GOLD}{STRING}
+STR_HOUSE_PICKER_POPULATION                                     :{BLACK}Bewohner: {GOLD}{NUM}
+STR_HOUSE_PICKER_YEARS                                          :{BLACK}Jahre: {GOLD}{NUM}-{NUM}
+STR_HOUSE_PICKER_YEARS_ANY                                      :{BLACK}Jahre: {GOLD}Beliebig
+STR_HOUSE_PICKER_YEARS_FROM                                     :{BLACK}Jahre: {GOLD}Ab {NUM}
+STR_HOUSE_PICKER_YEARS_UNTIL                                    :{BLACK}Jahre: {GOLD}Bis {NUM}
+STR_HOUSE_PICKER_SIZE                                           :{BLACK}Größe: {GOLD}{NUM}×{NUM} Kacheln
 STR_HOUSE_PICKER_CARGO_ACCEPTED                                 :{BLACK}Akzeptierte Fracht: {ORANGE}
-STR_HOUSE_PICKER_CARGO_PRODUCED                                 :{BLACK}Produzierte Fracht: {ORANGE}{CARGO_LIST}
+STR_HOUSE_PICKER_CARGO_PRODUCED                                 :{BLACK}Produzierte Fracht: {GOLD}{CARGO_LIST}
 
 STR_HOUSE_PICKER_CLASS_ZONE1                                    :Rand
 STR_HOUSE_PICKER_CLASS_ZONE2                                    :Peripherie
@@ -3693,7 +3694,7 @@ STR_SIGN_LIST_MATCH_CASE                                        :{BLACK}Groß-/K
 STR_SIGN_LIST_MATCH_CASE_TOOLTIP                                :{BLACK}Umschalten zwischen Beachtung und Nichtbeachtung der Groß- und Kleinschreibung beim Vergleich von Schildern mit dem Suchbegriff
 
 # Sign window
-STR_EDIT_SIGN_CAPTION                                           :{WHITE}Schildtext ändern
+STR_EDIT_SIGN_CAPTION                                           :{WHITE}Schild bearbeiten
 STR_EDIT_SIGN_LOCATION_TOOLTIP                                  :{BLACK}Hauptansicht auf Schildposition zentrieren. Mit Strg+Klick wird ein neues Ansichtsfenster auf der Position des Schildes geöffnet
 STR_EDIT_SIGN_NEXT_SIGN_TOOLTIP                                 :{BLACK}Zum nächsten Schild wechseln
 STR_EDIT_SIGN_PREVIOUS_SIGN_TOOLTIP                             :{BLACK}Zum vorherigen Schild wechseln
@@ -3911,14 +3912,14 @@ STR_CARGO_RATING_EXCELLENT                                      :Ausgezeichnet
 STR_CARGO_RATING_OUTSTANDING                                    :Hervorragend
 
 STR_STATION_VIEW_CENTER_TOOLTIP                                 :{BLACK}Hauptansicht zur Station scrollen. Mit Strg+Klick wird eine neue Zusatzansicht bei der Station geöffnet
-STR_STATION_VIEW_RENAME_TOOLTIP                                 :{BLACK}Namen der Station ändern
+STR_STATION_VIEW_EDIT_TOOLTIP                                   :{BLACK}Station umbenennen oder Schild verschieben
 
 STR_STATION_VIEW_SCHEDULED_TRAINS_TOOLTIP                       :{BLACK}Alle Züge, die diesen Bahnhof anfahren, anzeigen
 STR_STATION_VIEW_SCHEDULED_ROAD_VEHICLES_TOOLTIP                :{BLACK}Alle Straßenfahrzeuge, die diese Station anfahren, anzeigen
 STR_STATION_VIEW_SCHEDULED_AIRCRAFT_TOOLTIP                     :{BLACK}Alle Flugzeuge, die diesen Flughafen anfliegen, anzeigen
 STR_STATION_VIEW_SCHEDULED_SHIPS_TOOLTIP                        :{BLACK}Alle Schiffe, die diesen Hafen ansteuern, anzeigen
 
-STR_STATION_VIEW_RENAME_STATION_CAPTION                         :Station/Ladeplatz umbenennen
+STR_STATION_VIEW_EDIT_STATION_SIGN                              :{WHITE}Stationsschild bearbeiten
 
 STR_STATION_VIEW_CLOSE_AIRPORT                                  :{BLACK}Flughafen schließen
 STR_STATION_VIEW_CLOSE_AIRPORT_TOOLTIP                          :{BLACK}Luftfahrzeugen die Landeerlaubnis verweigern
@@ -3926,11 +3927,11 @@ STR_STATION_VIEW_CLOSE_AIRPORT_TOOLTIP                          :{BLACK}Luftfahr
 # Waypoint/buoy view window
 STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOINT}
 STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}Hauptansicht auf den Wegpunktstandort zentrieren. Mit Strg+Klick wird neue Zusatzansicht beim Wegpunktstandort geöffnet
-STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}Namen der Wegpunkte ändern
+STR_WAYPOINT_VIEW_EDIT_TOOLTIP                                  :{BLACK}Wegpunkt umbenennen oder Schild verschieben
 STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}Hauptansicht zum Bojenstandort zentrierten. Mit Strg+Klick wird eine neue Zusatzansicht beim Bojenstandort geöffnet
 STR_BUOY_VIEW_RENAME_TOOLTIP                                    :{BLACK}Namen der Boje ändern
 
-STR_EDIT_WAYPOINT_NAME                                          :{WHITE}Namen des Wegpunkts ändern
+STR_WAYPOINT_VIEW_EDIT_WAYPOINT_SIGN                            :{WHITE}Wegpunktschild bearbeiten
 
 # Finances window
 STR_FINANCES_CAPTION                                            :{WHITE}{COMPANY} – Finanzen {BLACK}{COMPANY_NUM}
@@ -5145,6 +5146,7 @@ STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Zu viele
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Zu dicht an einem anderen Hafen
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Zu dicht an einem anderen Flughafen
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Station kann nicht umbenannt werden ...
+STR_ERROR_CAN_T_MOVE_STATION_NAME                               :{WHITE}Stationsschild kann nicht bewegt werden …
 STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :{WHITE}... Staße im Stadteigentum
 STR_ERROR_DRIVE_THROUGH_DIRECTION                               :{WHITE}... Straße verläuft in die falsche Richtung
 STR_ERROR_DRIVE_THROUGH_CORNER                                  :{WHITE}... Bus- und Lkw-Haltestellen können nicht um die Kurve gehen
@@ -5176,6 +5178,7 @@ STR_ERROR_CAN_T_BUILD_RAIL_WAYPOINT                             :{WHITE}Wegpunkt
 STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT                             :{WHITE}Straßenwegpunkt kann hier nicht gebaut werden …
 STR_ERROR_CAN_T_POSITION_BUOY_HERE                              :{WHITE}Boje kann hier nicht platziert werden ...
 STR_ERROR_CAN_T_CHANGE_WAYPOINT_NAME                            :{WHITE}Wegpunktname kann nicht geändert werden ...
+STR_ERROR_CAN_T_MOVE_WAYPOINT_NAME                              :{WHITE}Wegpunktschild kann nicht bewegt werden …
 
 STR_ERROR_CAN_T_REMOVE_RAIL_WAYPOINT                            :{WHITE}Wegpunkt kann hier nicht entfernt werden ...
 STR_ERROR_CAN_T_REMOVE_ROAD_WAYPOINT                            :{WHITE}Straßenwegpunkt kann hier nicht entfernt werden …

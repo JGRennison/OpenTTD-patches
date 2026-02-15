@@ -313,6 +313,7 @@ STR_SHOW_HIDDEN_ENGINES_VEHICLE_AIRCRAFT_TOOLTIP                :{BLACK}Al activ
 STR_BUTTON_DEFAULT                                              :{BLACK}Por defecto
 STR_BUTTON_CANCEL                                               :{BLACK}Cancelar
 STR_BUTTON_OK                                                   :{BLACK}Aceptar
+STR_BUTTON_MOVE                                                 :{BLACK}Mover
 
 # On screen keyboard window
 STR_OSK_KEYBOARD_LAYOUT                                         :º1234567890'¡qwertyuiop`+asdfghjklñ´ç<zxcvbnm,.- .
@@ -2865,15 +2866,15 @@ STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :Selecciona una 
 STR_PICKER_HOUSE_TYPE_TOOLTIP                                   :Selecciona un tipo de edificio para construir. Ctrl+clic para añadir o eliminar en elementos guardados
 
 STR_HOUSE_PICKER_CAPTION                                        :Selección de Edificios
-STR_HOUSE_PICKER_NAME                                           :{BLACK}Nombre: {ORANGE}{STRING}
-STR_HOUSE_PICKER_POPULATION                                     :{BLACK}Población: {ORANGE}{NUM}
-STR_HOUSE_PICKER_YEARS                                          :{BLACK}Años: {ORANGE}{NUM}-{NUM}
-STR_HOUSE_PICKER_YEARS_ANY                                      :{BLACK}Años: {ORANGE}Cualquiera
-STR_HOUSE_PICKER_YEARS_FROM                                     :{BLACK}Años: {ORANGE}Desde {NUM}
-STR_HOUSE_PICKER_YEARS_UNTIL                                    :{BLACK}Años: {ORANGE}Hasta {NUM}
-STR_HOUSE_PICKER_SIZE                                           :{BLACK}Tamaño: {ORANGE}{NUM}x{NUM} casillas
+STR_HOUSE_PICKER_NAME                                           :{BLACK}Nombre: {GOLD}{STRING}
+STR_HOUSE_PICKER_POPULATION                                     :{BLACK}Población: {GOLD}{NUM}
+STR_HOUSE_PICKER_YEARS                                          :{BLACK}Años: {GOLD}{NUM}-{NUM}
+STR_HOUSE_PICKER_YEARS_ANY                                      :{BLACK}Años: {GOLD}Cualquiera
+STR_HOUSE_PICKER_YEARS_FROM                                     :{BLACK}Años: {GOLD}Desde {NUM}
+STR_HOUSE_PICKER_YEARS_UNTIL                                    :{BLACK}Años: {GOLD}Hasta {NUM}
+STR_HOUSE_PICKER_SIZE                                           :{BLACK}Tamaño: {GOLD}{NUM}x{NUM} casillas
 STR_HOUSE_PICKER_CARGO_ACCEPTED                                 :{BLACK}Carga aceptada: {ORANGE}
-STR_HOUSE_PICKER_CARGO_PRODUCED                                 :{BLACK}Carga producida: {ORANGE}{CARGO_LIST}
+STR_HOUSE_PICKER_CARGO_PRODUCED                                 :{BLACK}Carga producida: {GOLD}{CARGO_LIST}
 
 STR_HOUSE_PICKER_CLASS_ZONE1                                    :Afueras
 STR_HOUSE_PICKER_CLASS_ZONE2                                    :Periferia
@@ -3693,7 +3694,7 @@ STR_SIGN_LIST_MATCH_CASE                                        :{BLACK}Mayúscu
 STR_SIGN_LIST_MATCH_CASE_TOOLTIP                                :{BLACK}Activa/desactiva la coincidencia de mayúsculas y minúsculas al filtrar la lista de letreros
 
 # Sign window
-STR_EDIT_SIGN_CAPTION                                           :{WHITE}Editar texto del letrero
+STR_EDIT_SIGN_CAPTION                                           :{WHITE}Editar letrero
 STR_EDIT_SIGN_LOCATION_TOOLTIP                                  :{BLACK}Centra la vista principal en el letrero. Ctrl+clic abre un nuevo punto de vista en dicha posición
 STR_EDIT_SIGN_NEXT_SIGN_TOOLTIP                                 :{BLACK}Ir al letrero siguiente
 STR_EDIT_SIGN_PREVIOUS_SIGN_TOOLTIP                             :{BLACK}Ir al letrero anterior
@@ -3911,14 +3912,14 @@ STR_CARGO_RATING_EXCELLENT                                      :Excelente
 STR_CARGO_RATING_OUTSTANDING                                    :Excepcional
 
 STR_STATION_VIEW_CENTER_TOOLTIP                                 :{BLACK}Centra la vista principal en la posición de la estación. Ctrl+clic abre un punto de vista en dicha posición
-STR_STATION_VIEW_RENAME_TOOLTIP                                 :{BLACK}Cambia el nombre de la estación
+STR_STATION_VIEW_EDIT_TOOLTIP                                   :{BLACK}Renombra la estación o mueve el letrero
 
 STR_STATION_VIEW_SCHEDULED_TRAINS_TOOLTIP                       :{BLACK}Muestra todos los trenes que tienen esta estación en sus órdenes
 STR_STATION_VIEW_SCHEDULED_ROAD_VEHICLES_TOOLTIP                :{BLACK}Muestra todos los vehículos de carretera que tienen esta estación en sus órdenes
 STR_STATION_VIEW_SCHEDULED_AIRCRAFT_TOOLTIP                     :{BLACK}Muestra todas las aeronaves que tienen esta estación en sus órdenes
 STR_STATION_VIEW_SCHEDULED_SHIPS_TOOLTIP                        :{BLACK}Muestra todos los barcos que tienen esta estación en sus órdenes
 
-STR_STATION_VIEW_RENAME_STATION_CAPTION                         :Renombrar estación/zona de carga
+STR_STATION_VIEW_EDIT_STATION_SIGN                              :{WHITE}Editar letrero de estación
 
 STR_STATION_VIEW_CLOSE_AIRPORT                                  :{BLACK}Cerrar aeropuerto
 STR_STATION_VIEW_CLOSE_AIRPORT_TOOLTIP                          :{BLACK}Evita que las aeronaves aterricen en este aeropuerto
@@ -3926,11 +3927,11 @@ STR_STATION_VIEW_CLOSE_AIRPORT_TOOLTIP                          :{BLACK}Evita qu
 # Waypoint/buoy view window
 STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOINT}
 STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}Centrar vista principal en la posición del punto de ruta. Ctrl+clic abre un punto de vista en dicha posición
-STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}Cambiar nombre del punto de ruta
+STR_WAYPOINT_VIEW_EDIT_TOOLTIP                                  :{BLACK}Renombra el punto de ruta o mueve el letrero
 STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}Centra la vista principal en la boya. Ctrl+clic abre una nueva vista en dicha posición
 STR_BUOY_VIEW_RENAME_TOOLTIP                                    :{BLACK}Cambiar nombre de boya
 
-STR_EDIT_WAYPOINT_NAME                                          :{WHITE}Editar nombre del punto de ruta
+STR_WAYPOINT_VIEW_EDIT_WAYPOINT_SIGN                            :{WHITE}Editar letrero del punto de ruta
 
 # Finances window
 STR_FINANCES_CAPTION                                            :{WHITE}Finanzas de {COMPANY} {BLACK}{COMPANY_NUM}
@@ -5145,6 +5146,7 @@ STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Demasiad
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Demasiado cerca de otro muelle
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Demasiado cerca de otro aeropuerto
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}No se puede renombrar estación...
+STR_ERROR_CAN_T_MOVE_STATION_NAME                               :{WHITE}No se puede mover el letrero de la estación
 STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :{WHITE}... carretera propiedad del municipio
 STR_ERROR_DRIVE_THROUGH_DIRECTION                               :{WHITE}... carretera en dirección incorrecta
 STR_ERROR_DRIVE_THROUGH_CORNER                                  :{WHITE}... las estaciones de autobuses de paso no pueden tener esquinas
@@ -5176,6 +5178,7 @@ STR_ERROR_CAN_T_BUILD_RAIL_WAYPOINT                             :{WHITE}No se pu
 STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT                             :{WHITE}No se puede construir punto de ruta de carretera aquí...
 STR_ERROR_CAN_T_POSITION_BUOY_HERE                              :{WHITE}No se puede colocar boya aquí...
 STR_ERROR_CAN_T_CHANGE_WAYPOINT_NAME                            :{WHITE}No se puede cambiar el nombre del punto de ruta...
+STR_ERROR_CAN_T_MOVE_WAYPOINT_NAME                              :WHITE}No se puede mover el letrero del punto de ruta
 
 STR_ERROR_CAN_T_REMOVE_RAIL_WAYPOINT                            :{WHITE}No se puede retirar punto de ruta de ferrocarril aquí...
 STR_ERROR_CAN_T_REMOVE_ROAD_WAYPOINT                            :{WHITE}No se puede retirar punto de ruta de carretera aquí...

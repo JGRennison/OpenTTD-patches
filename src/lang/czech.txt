@@ -387,6 +387,7 @@ STR_SHOW_HIDDEN_ENGINES_VEHICLE_AIRCRAFT_TOOLTIP                :{BLACK}Zapnutí
 STR_BUTTON_DEFAULT                                              :{BLACK}Původní
 STR_BUTTON_CANCEL                                               :{BLACK}Zrušit
 STR_BUTTON_OK                                                   :{BLACK}OK
+STR_BUTTON_MOVE                                                 :{BLACK}Přesunout
 
 # On screen keyboard window
 STR_OSK_KEYBOARD_LAYOUT                                         :"+ěščřžýáíé=-\qwertyuiopú)asdfghjklů' zxcvbnm,./ .
@@ -2951,15 +2952,15 @@ STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :Vyber městskou
 STR_PICKER_HOUSE_TYPE_TOOLTIP                                   :Zvol typ domu pro stavbu. Podrž Shift pro přidání nebo odebrání z oblíbených položek
 
 STR_HOUSE_PICKER_CAPTION                                        :Výběr domu
-STR_HOUSE_PICKER_NAME                                           :{BLACK}Název: {ORANGE}{STRING}
-STR_HOUSE_PICKER_POPULATION                                     :{BLACK}Populace: {ORANGE}{NUM}
-STR_HOUSE_PICKER_YEARS                                          :{BLACK}Roky: {ORANGE}{NUM}-{NUM}
-STR_HOUSE_PICKER_YEARS_ANY                                      :{BLACK}Roky: {ORANGE}Jakékoliv
-STR_HOUSE_PICKER_YEARS_FROM                                     :{BLACK}Roky: {ORANGE}Od {NUM}
-STR_HOUSE_PICKER_YEARS_UNTIL                                    :{BLACK}Roky: {ORANGE}Do {NUM}
-STR_HOUSE_PICKER_SIZE                                           :{BLACK}Velikost: {ORANGE}{NUM}x{NUM} polí
+STR_HOUSE_PICKER_NAME                                           :{BLACK}Název: {GOLD}{STRING}
+STR_HOUSE_PICKER_POPULATION                                     :{BLACK}Populace: {GOLD}{NUM}
+STR_HOUSE_PICKER_YEARS                                          :{BLACK}Roky: {GOLD}{NUM}-{NUM}
+STR_HOUSE_PICKER_YEARS_ANY                                      :{BLACK}Roky: {GOLD}Jakékoliv
+STR_HOUSE_PICKER_YEARS_FROM                                     :{BLACK}Roky: {GOLD}Od {NUM}
+STR_HOUSE_PICKER_YEARS_UNTIL                                    :{BLACK}Roky: {GOLD}Do {NUM}
+STR_HOUSE_PICKER_SIZE                                           :{BLACK}Velikost: {GOLD}{NUM}x{NUM} polí
 STR_HOUSE_PICKER_CARGO_ACCEPTED                                 :{BLACK}Přijímaný náklad: {ORANGE}
-STR_HOUSE_PICKER_CARGO_PRODUCED                                 :{BLACK}Vyprodukováno nákladu: {ORANGE}{CARGO_LIST}
+STR_HOUSE_PICKER_CARGO_PRODUCED                                 :{BLACK}Vyprodukováno nákladu: {GOLD}{CARGO_LIST}
 
 STR_HOUSE_PICKER_CLASS_ZONE1                                    :Okraj
 STR_HOUSE_PICKER_CLASS_ZONE2                                    :Periferie
@@ -3785,7 +3786,7 @@ STR_SIGN_LIST_MATCH_CASE                                        :{BLACK}Shoda
 STR_SIGN_LIST_MATCH_CASE_TOOLTIP                                :{BLACK}Přepne rozlišování velikosti písmen při filtrování popisků
 
 # Sign window
-STR_EDIT_SIGN_CAPTION                                           :{WHITE}Upravit text popisku
+STR_EDIT_SIGN_CAPTION                                           :{WHITE}Upravit text cedule
 STR_EDIT_SIGN_LOCATION_TOOLTIP                                  :{BLACK}Vystředit pohled na značku. Podrž Ctrl pro otevření nového pohledu
 STR_EDIT_SIGN_NEXT_SIGN_TOOLTIP                                 :{BLACK}Na další návěstidlo
 STR_EDIT_SIGN_PREVIOUS_SIGN_TOOLTIP                             :{BLACK}Na předešlé návěstidlo
@@ -4003,14 +4004,14 @@ STR_CARGO_RATING_EXCELLENT                                      :Vynikající
 STR_CARGO_RATING_OUTSTANDING                                    :Úžasné
 
 STR_STATION_VIEW_CENTER_TOOLTIP                                 :{BLACK}Vystředit pohled na stanici. Ctrl+Klik otevře nový pohled na umístění stanice
-STR_STATION_VIEW_RENAME_TOOLTIP                                 :{BLACK}Přejmenovat stanici
+STR_STATION_VIEW_EDIT_TOOLTIP                                   :{BLACK}Přejmenovat stanici nebo přesunout značku
 
 STR_STATION_VIEW_SCHEDULED_TRAINS_TOOLTIP                       :{BLACK}Zobrazit všechny vlaky, které mají tuto stanici v jízdním řádu
 STR_STATION_VIEW_SCHEDULED_ROAD_VEHICLES_TOOLTIP                :{BLACK}Zobrazit všechna silniční vozidla, která mají tuto stanici v jízdním řádu
 STR_STATION_VIEW_SCHEDULED_AIRCRAFT_TOOLTIP                     :{BLACK}Zobrazit všechna letadla, která mají tuto stanici v jízdním řádu
 STR_STATION_VIEW_SCHEDULED_SHIPS_TOOLTIP                        :{BLACK}Zobrazit všechny lodě, které mají tuto stanici v jízdním řádu
 
-STR_STATION_VIEW_RENAME_STATION_CAPTION                         :Přejmenovat stanici
+STR_STATION_VIEW_EDIT_STATION_SIGN                              :{WHITE}Změnit značku stanice
 
 STR_STATION_VIEW_CLOSE_AIRPORT                                  :{BLACK}Uzavřít letiště
 STR_STATION_VIEW_CLOSE_AIRPORT_TOOLTIP                          :{BLACK}Zabránit letadlu od přistání na tomto letišti
@@ -4018,11 +4019,11 @@ STR_STATION_VIEW_CLOSE_AIRPORT_TOOLTIP                          :{BLACK}Zabráni
 # Waypoint/buoy view window
 STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOINT}
 STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}Zaměřit hlavní pohled na umístění bodu na trase. Při stisknutí Ctrl+Klik otevřete nové okno na umístění bodu na trase
-STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}Přejmenovat směrování
+STR_WAYPOINT_VIEW_EDIT_TOOLTIP                                  :{BLACK}Přejmenovat směřování nebo přesunout značku
 STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}Vycentrovat pohled na bójku. Ctrl+Klik otevře nové okno náhledu
 STR_BUOY_VIEW_RENAME_TOOLTIP                                    :{BLACK}Přejmenovat bójku
 
-STR_EDIT_WAYPOINT_NAME                                          :{WHITE}Přejmenovat směrování
+STR_WAYPOINT_VIEW_EDIT_WAYPOINT_SIGN                            :{WHITE}Upravit značku směřování
 
 # Finances window
 STR_FINANCES_CAPTION                                            :{WHITE}Finance - {COMPANY} {BLACK}{COMPANY_NUM}
@@ -5240,6 +5241,7 @@ STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Příli�
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Příliš blízko k jinému doku
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Příliš blízko k jinému letišti
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Nelze přejmenovat stanici...
+STR_ERROR_CAN_T_MOVE_STATION_NAME                               :{WHITE}Nelze posunout značku stanice
 STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :{WHITE}... silnice vlastněná obcí
 STR_ERROR_DRIVE_THROUGH_DIRECTION                               :{WHITE}... silnice je otočena jiným směrem
 STR_ERROR_DRIVE_THROUGH_CORNER                                  :{WHITE}... průjezdné zastávky nemohou být v zatáčce
@@ -5271,6 +5273,7 @@ STR_ERROR_CAN_T_BUILD_RAIL_WAYPOINT                             :{WHITE}Zde nelz
 STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT                             :{WHITE}Zde nelze postavit směrování...
 STR_ERROR_CAN_T_POSITION_BUOY_HERE                              :{WHITE}Zde nelze umístit bójku...
 STR_ERROR_CAN_T_CHANGE_WAYPOINT_NAME                            :{WHITE}Nelze přejmenovat směrování...
+STR_ERROR_CAN_T_MOVE_WAYPOINT_NAME                              :{WHITE}Nelze posunout značku směřování...
 
 STR_ERROR_CAN_T_REMOVE_RAIL_WAYPOINT                            :{WHITE}Zde nelze zbourat směrování...
 STR_ERROR_CAN_T_REMOVE_ROAD_WAYPOINT                            :{WHITE}Zde nelze odstranit směrovaní...

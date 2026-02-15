@@ -313,6 +313,7 @@ STR_SHOW_HIDDEN_ENGINES_VEHICLE_AIRCRAFT_TOOLTIP                :{BLACK}Bu düğ
 STR_BUTTON_DEFAULT                                              :{BLACK}Öntanımlı
 STR_BUTTON_CANCEL                                               :{BLACK}İptal
 STR_BUTTON_OK                                                   :{BLACK}Tamam
+STR_BUTTON_MOVE                                                 :{BLACK}Taşı
 
 # On screen keyboard window
 STR_OSK_KEYBOARD_LAYOUT                                         :"1234567890*- qwertyuıopğüasdfghjklşi,#\zxcvbnmöç. .
@@ -2865,14 +2866,15 @@ STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :Görüntülemek
 STR_PICKER_HOUSE_TYPE_TOOLTIP                                   :Bir konut türü seçin. Kaydedilmiş öğelere eklemek veya kaldırmak için Ctrl+Tıklayın
 
 STR_HOUSE_PICKER_CAPTION                                        :Ev Seçimi
-STR_HOUSE_PICKER_NAME                                           :{BLACK}İsim: {ORANGE}{STRING}
-STR_HOUSE_PICKER_POPULATION                                     :{BLACK}Nüfus: {ORANGE}{NUM}
-STR_HOUSE_PICKER_YEARS                                          :{BLACK}Yıl: {ORANGE}{NUM}-{NUM} arası
-STR_HOUSE_PICKER_YEARS_ANY                                      :{BLACK}Yıl: {ORANGE}Her zaman
-STR_HOUSE_PICKER_YEARS_FROM                                     :{BLACK}Yıl: {ORANGE}{NUM} tarihinden beri
-STR_HOUSE_PICKER_YEARS_UNTIL                                    :{BLACK}Yıl: {ORANGE}{NUM} tarihine kadar
-STR_HOUSE_PICKER_SIZE                                           :{BLACK}Boyut: {ORANGE}{NUM}x{NUM} kare
+STR_HOUSE_PICKER_NAME                                           :{BLACK}İsim: {GOLD}{STRING}
+STR_HOUSE_PICKER_POPULATION                                     :{BLACK}Nüfus: {GOLD}{NUM}
+STR_HOUSE_PICKER_YEARS                                          :{BLACK}Yıl: {GOLD}{NUM}-{NUM}
+STR_HOUSE_PICKER_YEARS_ANY                                      :{BLACK}Yıl: {GOLD}Herhangi biri
+STR_HOUSE_PICKER_YEARS_FROM                                     :{BLACK}Yıl: {GOLD}{NUM} yılından itibaren
+STR_HOUSE_PICKER_YEARS_UNTIL                                    :{BLACK}Yıl: {GOLD}{NUM} yılına kadar
+STR_HOUSE_PICKER_SIZE                                           :{BLACK}Boyut: {GOLD}{NUM}x{NUM} kare
 STR_HOUSE_PICKER_CARGO_ACCEPTED                                 :{BLACK}Kabul edilen kargo: {ORANGE}
+STR_HOUSE_PICKER_CARGO_PRODUCED                                 :{BLACK}Üretilen kargo: {GOLD}{CARGO_LIST}
 
 STR_HOUSE_PICKER_CLASS_ZONE1                                    :Kenar
 STR_HOUSE_PICKER_CLASS_ZONE2                                    :Banliyöler
@@ -3692,7 +3694,7 @@ STR_SIGN_LIST_MATCH_CASE                                        :{BLACK}Büyük/
 STR_SIGN_LIST_MATCH_CASE_TOOLTIP                                :{BLACK}Tabela adlarını süzgeç metniyle karşılaştırırken büyük/küçük harf eşleştirmeyi aç/kapa
 
 # Sign window
-STR_EDIT_SIGN_CAPTION                                           :{WHITE}Tabelayı değiştir
+STR_EDIT_SIGN_CAPTION                                           :{WHITE}Tabelayı düzenle
 STR_EDIT_SIGN_LOCATION_TOOLTIP                                  :{BLACK}Ana görünümü tabelanın konumuna ortalar. Ctrl + Sol Tıklama tabelanın olduğu yere ait bir görünüm penceresi açar.
 STR_EDIT_SIGN_NEXT_SIGN_TOOLTIP                                 :{BLACK}Sonraki tabelaya git
 STR_EDIT_SIGN_PREVIOUS_SIGN_TOOLTIP                             :{BLACK}Önceki tabelaya git
@@ -3910,14 +3912,14 @@ STR_CARGO_RATING_EXCELLENT                                      :Harika
 STR_CARGO_RATING_OUTSTANDING                                    :Mükemmel
 
 STR_STATION_VIEW_CENTER_TOOLTIP                                 :{BLACK}Durağın oldugu yeri ortala. Ctrl + Sol Tıklama durağın olduğu yere ait bir görünüm penceresi açar.
-STR_STATION_VIEW_RENAME_TOOLTIP                                 :{BLACK}İstasyonun ismini değiştir
+STR_STATION_VIEW_EDIT_TOOLTIP                                   :{BLACK}İstasyon ismini değiştir veya tabelayı taşı
 
 STR_STATION_VIEW_SCHEDULED_TRAINS_TOOLTIP                       :{BLACK}Talimat listesinde bu durak olan trenleri listele
 STR_STATION_VIEW_SCHEDULED_ROAD_VEHICLES_TOOLTIP                :{BLACK}Talimat listesinde bu durak olan tüm karayolu taşıtlarını listele
 STR_STATION_VIEW_SCHEDULED_AIRCRAFT_TOOLTIP                     :{BLACK}Talimat listesinde bu durak olan uçakları listele
 STR_STATION_VIEW_SCHEDULED_SHIPS_TOOLTIP                        :{BLACK}Talimat listesinde bu durak olan gemileri listele
 
-STR_STATION_VIEW_RENAME_STATION_CAPTION                         :İstasyonu yeniden adlandır
+STR_STATION_VIEW_EDIT_STATION_SIGN                              :{WHITE}İstasyon tabelasını değiştir
 
 STR_STATION_VIEW_CLOSE_AIRPORT                                  :{BLACK}Havalimanını kapat
 STR_STATION_VIEW_CLOSE_AIRPORT_TOOLTIP                          :{BLACK}Uçağın bu havalimanına iniş yapmasını engelle
@@ -3925,11 +3927,11 @@ STR_STATION_VIEW_CLOSE_AIRPORT_TOOLTIP                          :{BLACK}Uçağı
 # Waypoint/buoy view window
 STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOINT}
 STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}Ana görünümü güzergaha ortala. Ctrl+Sol tık ile güzegahın konumunu gösteren yeni bir pencere açabilirsiniz
-STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}Ara nokta adını değiştir
+STR_WAYPOINT_VIEW_EDIT_TOOLTIP                                  :{BLACK}Yerimi ismini değiştir veya tabelayı taşı
 STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}Ana görünümü şamandıra(duba) konumuna ortala. Ctrl + Sol Tıklama şamandıranın olduğu yere ait bir görünüm penceresi açar.
 STR_BUOY_VIEW_RENAME_TOOLTIP                                    :{BLACK}Şamandıra adını değiştir
 
-STR_EDIT_WAYPOINT_NAME                                          :{WHITE}Yerimi adını değiştir
+STR_WAYPOINT_VIEW_EDIT_WAYPOINT_SIGN                            :{WHITE}Yerimi tabelasını düzenle
 
 # Finances window
 STR_FINANCES_CAPTION                                            :{WHITE}{COMPANY} Hesaplar {BLACK}{COMPANY_NUM}
@@ -5144,6 +5146,7 @@ STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Çok faz
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Başka bir limana çok yakın
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Başka bir havalimanına çok yakın
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}İsim değiştirilemiyor...
+STR_ERROR_CAN_T_MOVE_STATION_NAME                               :{WHITE}İstasyon tabelası taşınamıyor...
 STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :{WHITE}... yol kasabaya ait
 STR_ERROR_DRIVE_THROUGH_DIRECTION                               :{WHITE}... yol yanlış yönde
 STR_ERROR_DRIVE_THROUGH_CORNER                                  :{WHITE}... yol üstü duraklar köşe üzerine inşa edilemez
@@ -5175,6 +5178,7 @@ STR_ERROR_CAN_T_BUILD_RAIL_WAYPOINT                             :{WHITE}Buraya t
 STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT                             :{WHITE}Yol yerimi buraya yapılamaz...
 STR_ERROR_CAN_T_POSITION_BUOY_HERE                              :{WHITE}Buraya şamandıra yerleştirilemez...
 STR_ERROR_CAN_T_CHANGE_WAYPOINT_NAME                            :{WHITE}Yerimi adı değiştirilemedi...
+STR_ERROR_CAN_T_MOVE_WAYPOINT_NAME                              :{WHITE}Yerimi tabelası taşınamıyor...
 
 STR_ERROR_CAN_T_REMOVE_RAIL_WAYPOINT                            :{WHITE}Tren yerimi kaldırılamaz...
 STR_ERROR_CAN_T_REMOVE_ROAD_WAYPOINT                            :{WHITE}yol yerimi kaldırılamaz....

@@ -312,6 +312,7 @@ STR_SHOW_HIDDEN_ENGINES_VEHICLE_AIRCRAFT_TOOLTIP                :{BLACK}如啟�
 STR_BUTTON_DEFAULT                                              :{BLACK}預設值
 STR_BUTTON_CANCEL                                               :{BLACK}取消
 STR_BUTTON_OK                                                   :{BLACK}確定
+STR_BUTTON_MOVE                                                 :{BLACK}移動
 
 # On screen keyboard window
 STR_OSK_KEYBOARD_LAYOUT                                         :`1234567890-=\qwertyuiop[]asdfghjkl;'  zxcvbnm,./ .
@@ -2882,15 +2883,15 @@ STR_PICKER_HOUSE_TYPE_TOOLTIP                                   :選擇建設的
 STR_PICKER_HOUSE_COLLECTION_TOOLTIP                             :選擇要顯示的房屋收藏夾
 
 STR_HOUSE_PICKER_CAPTION                                        :房屋選擇
-STR_HOUSE_PICKER_NAME                                           :{BLACK}名稱：{ORANGE}{STRING}
-STR_HOUSE_PICKER_POPULATION                                     :{BLACK}人口：{ORANGE}{NUM}
-STR_HOUSE_PICKER_YEARS                                          :{BLACK}可用年份：{ORANGE}{NUM}-{NUM}
-STR_HOUSE_PICKER_YEARS_ANY                                      :{BLACK}可用年份：{ORANGE}不限
-STR_HOUSE_PICKER_YEARS_FROM                                     :{BLACK}可用年份：{ORANGE}自 {NUM} 年起可用
-STR_HOUSE_PICKER_YEARS_UNTIL                                    :{BLACK}可用年份：{ORANGE}至 {NUM} 年前可用
-STR_HOUSE_PICKER_SIZE                                           :{BLACK}大小：{ORANGE}{NUM}x{NUM} 格
+STR_HOUSE_PICKER_NAME                                           :{BLACK}名稱：{GOLD}{STRING}
+STR_HOUSE_PICKER_POPULATION                                     :{BLACK}人口：{GOLD}{NUM}
+STR_HOUSE_PICKER_YEARS                                          :{BLACK}可用年份：{GOLD}{NUM}-{NUM}
+STR_HOUSE_PICKER_YEARS_ANY                                      :{BLACK}可用年份：{GOLD}不限
+STR_HOUSE_PICKER_YEARS_FROM                                     :{BLACK}可用年份：{GOLD}自 {NUM} 年起可用
+STR_HOUSE_PICKER_YEARS_UNTIL                                    :{BLACK}可用年份：{GOLD}至 {NUM} 年前可用
+STR_HOUSE_PICKER_SIZE                                           :{BLACK}大小：{GOLD}{NUM}x{NUM} 格
 STR_HOUSE_PICKER_CARGO_ACCEPTED                                 :{BLACK}接受貨物：{ORANGE}
-STR_HOUSE_PICKER_CARGO_PRODUCED                                 :{BLACK}產出的貨物：{ORANGE}{CARGO_LIST}
+STR_HOUSE_PICKER_CARGO_PRODUCED                                 :{BLACK}產出貨物：{GOLD}{CARGO_LIST}
 
 STR_HOUSE_PICKER_CLASS_ZONE1                                    :市鎮邊緣
 STR_HOUSE_PICKER_CLASS_ZONE2                                    :郊區邊緣
@@ -3710,7 +3711,7 @@ STR_SIGN_LIST_MATCH_CASE                                        :{BLACK}符合�
 STR_SIGN_LIST_MATCH_CASE_TOOLTIP                                :{BLACK}切換比對標誌名稱是否與篩選字串相符時是否要符合大小寫
 
 # Sign window
-STR_EDIT_SIGN_CAPTION                                           :{WHITE}編輯標誌文字
+STR_EDIT_SIGN_CAPTION                                           :{WHITE}編輯標誌
 STR_EDIT_SIGN_LOCATION_TOOLTIP                                  :{BLACK}將號誌置於畫面正中央。按住 <Ctrl> 點選可於號誌位置開啟新檢視視窗
 STR_EDIT_SIGN_NEXT_SIGN_TOOLTIP                                 :{BLACK}前往下個標誌
 STR_EDIT_SIGN_PREVIOUS_SIGN_TOOLTIP                             :{BLACK}前往上個標誌
@@ -3928,14 +3929,14 @@ STR_CARGO_RATING_EXCELLENT                                      :極佳
 STR_CARGO_RATING_OUTSTANDING                                    :傑出
 
 STR_STATION_VIEW_CENTER_TOOLTIP                                 :{BLACK}將車站置於畫面正中央。按住 <Ctrl> 點選可於車站位置開啟新檢視視窗
-STR_STATION_VIEW_RENAME_TOOLTIP                                 :{BLACK}修改車站名稱
+STR_STATION_VIEW_EDIT_TOOLTIP                                   :{BLACK}重新命名車站或移動車站標誌
 
 STR_STATION_VIEW_SCHEDULED_TRAINS_TOOLTIP                       :{BLACK}顯示所有指令內包含這個車站的列車
 STR_STATION_VIEW_SCHEDULED_ROAD_VEHICLES_TOOLTIP                :{BLACK}顯示所有指令內包含這個車站的車輛
 STR_STATION_VIEW_SCHEDULED_AIRCRAFT_TOOLTIP                     :{BLACK}顯示所有指令內包含這座機場的飛機
 STR_STATION_VIEW_SCHEDULED_SHIPS_TOOLTIP                        :{BLACK}顯示所有指令內包含這個碼頭的船舶
 
-STR_STATION_VIEW_RENAME_STATION_CAPTION                         :修改車站／載貨區名稱
+STR_STATION_VIEW_EDIT_STATION_SIGN                              :{WHITE}編輯車站標誌
 
 STR_STATION_VIEW_CLOSE_AIRPORT                                  :{BLACK}關閉機場
 STR_STATION_VIEW_CLOSE_AIRPORT_TOOLTIP                          :{BLACK}防止飛機在此機場降落
@@ -3943,11 +3944,11 @@ STR_STATION_VIEW_CLOSE_AIRPORT_TOOLTIP                          :{BLACK}防止�
 # Waypoint/buoy view window
 STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOINT}
 STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}將中途站置於畫面正中央。按住 <Ctrl> 點選可於中途站位置開啟新檢視視窗
-STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}修改中途站名稱
+STR_WAYPOINT_VIEW_EDIT_TOOLTIP                                  :{BLACK}重新命名中途站或移動中途站標誌
 STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}將浮標置於畫面正中央。按住 <Ctrl> 點選可於浮標位置開啟新檢視視窗
 STR_BUOY_VIEW_RENAME_TOOLTIP                                    :{BLACK}修改浮標名稱
 
-STR_EDIT_WAYPOINT_NAME                                          :{WHITE}編輯中途站名稱
+STR_WAYPOINT_VIEW_EDIT_WAYPOINT_SIGN                            :{WHITE}編輯中途站標誌
 
 # Finances window
 STR_FINANCES_CAPTION                                            :{WHITE}{COMPANY} 財務狀況 {BLACK}{COMPANY_NUM}
@@ -5169,6 +5170,7 @@ STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}太多�
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}太接近另一個碼頭
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}太接近另一個機場
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}無法修改車站名稱...
+STR_ERROR_CAN_T_MOVE_STATION_NAME                               :{WHITE}無法移動車站標誌……
 STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :{WHITE}… 市鎮擁有的路段
 STR_ERROR_DRIVE_THROUGH_DIRECTION                               :{WHITE}... 此道路面向錯誤的方向
 STR_ERROR_DRIVE_THROUGH_CORNER                                  :{WHITE}... 路邊車站不能建在轉角處
@@ -5200,6 +5202,7 @@ STR_ERROR_CAN_T_BUILD_RAIL_WAYPOINT                             :{WHITE}無法�
 STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT                             :{WHITE}無法在此道路興建中途站……
 STR_ERROR_CAN_T_POSITION_BUOY_HERE                              :{WHITE}無法在此放置浮標...
 STR_ERROR_CAN_T_CHANGE_WAYPOINT_NAME                            :{WHITE}無法修改中途站名稱……
+STR_ERROR_CAN_T_MOVE_WAYPOINT_NAME                              :{WHITE}無法移動中途站標誌……
 
 STR_ERROR_CAN_T_REMOVE_RAIL_WAYPOINT                            :{WHITE}無法移除此鐵道的中途站……
 STR_ERROR_CAN_T_REMOVE_ROAD_WAYPOINT                            :{WHITE}無法移除此道路的中途站……

@@ -375,6 +375,7 @@ STR_SHOW_HIDDEN_ENGINES_VEHICLE_AIRCRAFT_TOOLTIP                :{BLACK}Ezzel a 
 STR_BUTTON_DEFAULT                                              :{BLACK}Alapértelmezett
 STR_BUTTON_CANCEL                                               :{BLACK}Mégsem
 STR_BUTTON_OK                                                   :{BLACK}OK
+STR_BUTTON_MOVE                                                 :{BLACK}Mozgatás
 
 # On screen keyboard window
 STR_OSK_KEYBOARD_LAYOUT                                         :0123456789öüóqwertzuiopőúasdfghjkléáűíyxcvbnm,.- .
@@ -2946,15 +2947,15 @@ STR_PICKER_HOUSE_TYPE_TOOLTIP                                   :Válassz egy h�
 STR_PICKER_HOUSE_COLLECTION_TOOLTIP                             :Jelöljön ki egy ház kollekciót a megjelenítéshez
 
 STR_HOUSE_PICKER_CAPTION                                        :Ház kiválasztása
-STR_HOUSE_PICKER_NAME                                           :{BLACK}Név: {ORANGE}{STRING}
-STR_HOUSE_PICKER_POPULATION                                     :{BLACK}Lakosság: {ORANGE}{NUM}
-STR_HOUSE_PICKER_YEARS                                          :{BLACK}Év: {ORANGE}{NUM}-{NUM}
-STR_HOUSE_PICKER_YEARS_ANY                                      :{BLACK}Év: {ORANGE}Bármelyik
-STR_HOUSE_PICKER_YEARS_FROM                                     :{BLACK}Év: {ORANGE}{NUM} óta
-STR_HOUSE_PICKER_YEARS_UNTIL                                    :{BLACK}Év: {ORANGE}{NUM}-ig
-STR_HOUSE_PICKER_SIZE                                           :{BLACK}Méret: {ORANGE}{NUM}x{NUM} négyzet
+STR_HOUSE_PICKER_NAME                                           :{BLACK}Név: {GOLD}{STRING}
+STR_HOUSE_PICKER_POPULATION                                     :{BLACK}Lakosság: {GOLD}{NUM}
+STR_HOUSE_PICKER_YEARS                                          :{BLACK}Év: {GOLD}{NUM}-{NUM}
+STR_HOUSE_PICKER_YEARS_ANY                                      :{BLACK}Év: {GOLD}Bármelyik
+STR_HOUSE_PICKER_YEARS_FROM                                     :{BLACK}Év: {GOLD}{NUM} óta
+STR_HOUSE_PICKER_YEARS_UNTIL                                    :{BLACK}Év: {GOLD}{NUM}-ig
+STR_HOUSE_PICKER_SIZE                                           :{BLACK}Méret: {GOLD}{NUM}x{NUM} négyzet
 STR_HOUSE_PICKER_CARGO_ACCEPTED                                 :{BLACK}Rakomány elfogadva: {ORANGE}
-STR_HOUSE_PICKER_CARGO_PRODUCED                                 :{BLACK}Előállított rakomány: {ORANGE}{CARGO_LIST}
+STR_HOUSE_PICKER_CARGO_PRODUCED                                 :{BLACK}Előállított rakomány: {GOLD}{CARGO_LIST}
 
 STR_HOUSE_PICKER_CLASS_ZONE1                                    :Szél
 STR_HOUSE_PICKER_CLASS_ZONE2                                    :Külváros
@@ -3774,7 +3775,7 @@ STR_SIGN_LIST_MATCH_CASE                                        :{BLACK}Kis- és
 STR_SIGN_LIST_MATCH_CASE_TOOLTIP                                :{BLACK}Kis- és nagybetűk megkülönböztetése a feliratok szövegei és a szűrő kulcsszó összehasonlítása közben
 
 # Sign window
-STR_EDIT_SIGN_CAPTION                                           :{WHITE}Felirat szerkesztése
+STR_EDIT_SIGN_CAPTION                                           :{WHITE}Tábla szerkesztése
 STR_EDIT_SIGN_LOCATION_TOOLTIP                                  :{BLACK}A fő nézetet a felirat helyére állítja. Ctrl+kattintással új nézet nyílik a felirat helyzeténél
 STR_EDIT_SIGN_NEXT_SIGN_TOOLTIP                                 :{BLACK}Következő felirat
 STR_EDIT_SIGN_PREVIOUS_SIGN_TOOLTIP                             :{BLACK}Előző felirat
@@ -3992,14 +3993,14 @@ STR_CARGO_RATING_EXCELLENT                                      :kiváló
 STR_CARGO_RATING_OUTSTANDING                                    :kimagasló
 
 STR_STATION_VIEW_CENTER_TOOLTIP                                 :{BLACK}A fő nézetet az állomásra állítja. Ctrl+kattintással új nézet nyílik az állomás helyzeténél
-STR_STATION_VIEW_RENAME_TOOLTIP                                 :{BLACK}Az állomás nevének megváltoztatása
+STR_STATION_VIEW_EDIT_TOOLTIP                                   :{BLACK}Nevezze át az állomást vagy mozgassa a táblát
 
 STR_STATION_VIEW_SCHEDULED_TRAINS_TOOLTIP                       :{BLACK}Kilistázza az összes vonatot, aminek a menetrendjében szerepel ez az állomás
 STR_STATION_VIEW_SCHEDULED_ROAD_VEHICLES_TOOLTIP                :{BLACK}Kilistázza az összes közúti járművet, aminek a menetrendjében szerepel ez az állomás
 STR_STATION_VIEW_SCHEDULED_AIRCRAFT_TOOLTIP                     :{BLACK}Kilistázza az összes repülőt, aminek a menetrendjében szerepel ez az állomás
 STR_STATION_VIEW_SCHEDULED_SHIPS_TOOLTIP                        :{BLACK}Kilistázza az összes hajót, aminek a menetrendjében szerepel ez az állomás
 
-STR_STATION_VIEW_RENAME_STATION_CAPTION                         :Állomás/rakodóhely átnevezése
+STR_STATION_VIEW_EDIT_STATION_SIGN                              :{WHITE}Állomás tábla szerkesztése
 
 STR_STATION_VIEW_CLOSE_AIRPORT                                  :{BLACK}Reptér bezárása
 STR_STATION_VIEW_CLOSE_AIRPORT_TOOLTIP                          :{BLACK}Repülőgép leszállásának megakadályozása ezen a reptéren
@@ -4007,11 +4008,11 @@ STR_STATION_VIEW_CLOSE_AIRPORT_TOOLTIP                          :{BLACK}Repülő
 # Waypoint/buoy view window
 STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOINT}
 STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}A fő nézetet az ellenőrzőpontra állítja. Ctrl+kattintással új nézet nyílik az ellenőrzőpontnál
-STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}Ellenőrzőpont nevének megváltoztatása
+STR_WAYPOINT_VIEW_EDIT_TOOLTIP                                  :{BLACK}Nevezze át az ellenőrző pontot vagy mozgassa el a táblát
 STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}A fő nézetet a bójára állítja. Ctrl+kattintással új nézet nyílik a bója helyzeténél
 STR_BUOY_VIEW_RENAME_TOOLTIP                                    :{BLACK}Bója nevének megváltoztatása
 
-STR_EDIT_WAYPOINT_NAME                                          :{WHITE}Ellenőrző pont nevének módosítása
+STR_WAYPOINT_VIEW_EDIT_WAYPOINT_SIGN                            :{WHITE}Ellenőrzőpont tábla szerkesztése
 
 # Finances window
 STR_FINANCES_CAPTION                                            :{WHITE}{COMPANY} pénzügyei {BLACK}{COMPANY_NUM}
@@ -5233,6 +5234,7 @@ STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Túl sok
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Túl közel van egy másik kikötőhöz
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Túl közel van egy másik repülőtérhez
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Nem nevezheted át az állomást...
+STR_ERROR_CAN_T_MOVE_STATION_NAME                               :{WHITE}Az állomás tábla nem mozgatható
 STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :{WHITE}... városi tulajdonban lévő út
 STR_ERROR_DRIVE_THROUGH_DIRECTION                               :{WHITE}... az út a másik irányba vezet
 STR_ERROR_DRIVE_THROUGH_CORNER                                  :{WHITE}... áthaladó megállóhelyeken nem lehet kanyar
@@ -5264,6 +5266,7 @@ STR_ERROR_CAN_T_BUILD_RAIL_WAYPOINT                             :{WHITE}Ide nem 
 STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT                             :{WHITE}Ide nem lehet útpontot építeni...
 STR_ERROR_CAN_T_POSITION_BUOY_HERE                              :{WHITE}Nem rakhatsz ide bóját...
 STR_ERROR_CAN_T_CHANGE_WAYPOINT_NAME                            :{WHITE}Nem lehet megváltoztatni az ellenőrző pont nevét...
+STR_ERROR_CAN_T_MOVE_WAYPOINT_NAME                              :{WHITE}Az ellenőrzőpont tábla nem mozgatható...
 
 STR_ERROR_CAN_T_REMOVE_RAIL_WAYPOINT                            :{WHITE}Nem lehet eltávolítani az ellenőrző pontot...
 STR_ERROR_CAN_T_REMOVE_ROAD_WAYPOINT                            :{WHITE}Nem lehet innen útpontot eltávolítani...

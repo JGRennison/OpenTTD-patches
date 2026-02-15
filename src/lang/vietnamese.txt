@@ -312,6 +312,7 @@ STR_SHOW_HIDDEN_ENGINES_VEHICLE_AIRCRAFT_TOOLTIP                :{BLACK}Khi bậ
 STR_BUTTON_DEFAULT                                              :{BLACK}Mặc định
 STR_BUTTON_CANCEL                                               :{BLACK}Hủy bỏ
 STR_BUTTON_OK                                                   :{BLACK}Đồng ý
+STR_BUTTON_MOVE                                                 :{BLACK}Di chuyển
 
 # On screen keyboard window
 STR_OSK_KEYBOARD_LAYOUT                                         :`1234567890-= qwertyuiop[]asdfghjkl;'#\zxcvbnm,./ .
@@ -2882,15 +2883,15 @@ STR_PICKER_HOUSE_TYPE_TOOLTIP                                   :Chọn kiểu n
 STR_PICKER_HOUSE_COLLECTION_TOOLTIP                             :Chọn một nhóm nhà cửa để hiển thị
 
 STR_HOUSE_PICKER_CAPTION                                        :Chọn Kiểu Nhà
-STR_HOUSE_PICKER_NAME                                           :{BLACK}Tên: {ORANGE}{STRING}
-STR_HOUSE_PICKER_POPULATION                                     :{BLACK}Dân số: {ORANGE}{NUM}
-STR_HOUSE_PICKER_YEARS                                          :{BLACK}Năm: {ORANGE}{NUM}-{NUM}
-STR_HOUSE_PICKER_YEARS_ANY                                      :{BLACK}Năm: {ORANGE}Tất cả
-STR_HOUSE_PICKER_YEARS_FROM                                     :{BLACK}Năm: {ORANGE}Từ {NUM}
-STR_HOUSE_PICKER_YEARS_UNTIL                                    :{BLACK}Năm: {ORANGE}Đến {NUM}
-STR_HOUSE_PICKER_SIZE                                           :{BLACK}Kích thước: {ORANGE}{NUM}x{NUM} ô
+STR_HOUSE_PICKER_NAME                                           :{BLACK}Tên: {GOLD}{STRING}
+STR_HOUSE_PICKER_POPULATION                                     :{BLACK}Dân số: {GOLD}{NUM}
+STR_HOUSE_PICKER_YEARS                                          :{BLACK}Năm: {GOLD}{NUM}-{NUM}
+STR_HOUSE_PICKER_YEARS_ANY                                      :{BLACK}Năm: {GOLD}Tất cả
+STR_HOUSE_PICKER_YEARS_FROM                                     :{BLACK}Năm: {GOLD}Từ {NUM}
+STR_HOUSE_PICKER_YEARS_UNTIL                                    :{BLACK}Năm: {GOLD}Đến {NUM}
+STR_HOUSE_PICKER_SIZE                                           :{BLACK}Kích thước: {GOLD}{NUM}x{NUM} ô
 STR_HOUSE_PICKER_CARGO_ACCEPTED                                 :{BLACK}Hàng hóa được chấp nhận: {ORANGE}
-STR_HOUSE_PICKER_CARGO_PRODUCED                                 :{BLACK}Hàng hóa cung cấp: {ORANGE}{CARGO_LIST}
+STR_HOUSE_PICKER_CARGO_PRODUCED                                 :{BLACK}Hàng hóa cung cấp: {GOLD}{CARGO_LIST}
 
 STR_HOUSE_PICKER_CLASS_ZONE1                                    :Ngoài rìa
 STR_HOUSE_PICKER_CLASS_ZONE2                                    :Ngoại ô
@@ -3928,14 +3929,14 @@ STR_CARGO_RATING_EXCELLENT                                      :Tuyệt vời
 STR_CARGO_RATING_OUTSTANDING                                    :Hoàn hảo
 
 STR_STATION_VIEW_CENTER_TOOLTIP                                 :{BLACK}Xem trung tâm ga, bến, cảng. Ctrl+Click mở cửa sổ mới để xem
-STR_STATION_VIEW_RENAME_TOOLTIP                                 :{BLACK}Đổi tên ga, bến, cảng
+STR_STATION_VIEW_EDIT_TOOLTIP                                   :{BLACK}Đổi tên trạm hoặc di chuyển biển hiệu
 
 STR_STATION_VIEW_SCHEDULED_TRAINS_TOOLTIP                       :{BLACK}Hiện lên tất cả các đoàn tàu có lộ trình đi qua ga này
 STR_STATION_VIEW_SCHEDULED_ROAD_VEHICLES_TOOLTIP                :{BLACK}Hiện lên tất cả các xe có lộ trình đi qua bến này
 STR_STATION_VIEW_SCHEDULED_AIRCRAFT_TOOLTIP                     :{BLACK}Hiện tất cả các máy bay có lộ trình đi qua sân bay này
 STR_STATION_VIEW_SCHEDULED_SHIPS_TOOLTIP                        :{BLACK}Hiện tất cả tàu thuỷ có lộ trình đi qua cảng này.
 
-STR_STATION_VIEW_RENAME_STATION_CAPTION                         :Đổi tên ga, bến, cảng
+STR_STATION_VIEW_EDIT_STATION_SIGN                              :{WHITE}Sửa biển hiệu của trạm
 
 STR_STATION_VIEW_CLOSE_AIRPORT                                  :{BLACK}Đóng cửa sân bay
 STR_STATION_VIEW_CLOSE_AIRPORT_TOOLTIP                          :{BLACK}Không cho máy bay hạ cánh ở sân bay này
@@ -3943,11 +3944,11 @@ STR_STATION_VIEW_CLOSE_AIRPORT_TOOLTIP                          :{BLACK}Không c
 # Waypoint/buoy view window
 STR_WAYPOINT_VIEW_CAPTION                                       :{WHITE}{WAYPOINT}
 STR_WAYPOINT_VIEW_CENTER_TOOLTIP                                :{BLACK}Xem vị trí của điểm mốc. Ctrl+Click để mở cửa sổ mới cho điểm mốc
-STR_WAYPOINT_VIEW_CHANGE_WAYPOINT_NAME                          :{BLACK}Đổi tên điểm mốc
+STR_WAYPOINT_VIEW_EDIT_TOOLTIP                                  :{BLACK}Đổi tên điểm mốc hoặc di chuyển biển hiệu
 STR_BUOY_VIEW_CENTER_TOOLTIP                                    :{BLACK}Xem vị trí phao hàng hải. Ctrl+Click mở cửa sổ mới vị trí phao
 STR_BUOY_VIEW_RENAME_TOOLTIP                                    :{BLACK}Đổi tên phao
 
-STR_EDIT_WAYPOINT_NAME                                          :{WHITE}Sửa tên điểm mốc
+STR_WAYPOINT_VIEW_EDIT_WAYPOINT_SIGN                            :{WHITE}Đổi biển hiệu điểm mốc
 
 # Finances window
 STR_FINANCES_CAPTION                                            :{WHITE}Tài Chính Công Ty {COMPANY} {BLACK}{COMPANY_NUM}
@@ -5169,6 +5170,7 @@ STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Quá nhi
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Quá sát với hải cảng khác
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Quá sát với sân bay khác
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Không thể đổi tên ga, bến,cảng...
+STR_ERROR_CAN_T_MOVE_STATION_NAME                               :{WHITE}Không thể di chuyển biển hiệu của trạm...
 STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :{WHITE}... đây là đường sở hữu bởi địa phương
 STR_ERROR_DRIVE_THROUGH_DIRECTION                               :{WHITE}... đường quay mặt sai hướng
 STR_ERROR_DRIVE_THROUGH_CORNER                                  :{WHITE}... đi qua điểm dừng không thể đi qua góc
@@ -5200,6 +5202,7 @@ STR_ERROR_CAN_T_BUILD_RAIL_WAYPOINT                             :{WHITE}Không t
 STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT                             :{WHITE}Không thể xây điểm mốc đường bộ ở đây...
 STR_ERROR_CAN_T_POSITION_BUOY_HERE                              :{WHITE}Không thể xây phao hàng hải ở đây...
 STR_ERROR_CAN_T_CHANGE_WAYPOINT_NAME                            :{WHITE}Không thể thay đổi tên điểm mốc...
+STR_ERROR_CAN_T_MOVE_WAYPOINT_NAME                              :{WHITE}Không thể di chuyển biển hiệu của điểm mốc...
 
 STR_ERROR_CAN_T_REMOVE_RAIL_WAYPOINT                            :{WHITE}Không thể xoá bỏ điểm mốc tàu hoả...
 STR_ERROR_CAN_T_REMOVE_ROAD_WAYPOINT                            :{WHITE}Không thể xóa điểm mốc đường bộ ở đây...
