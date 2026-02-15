@@ -170,9 +170,7 @@ inline constexpr auto MakeCommandsFromTraits(std::integer_sequence<T, i...>) noe
 /**
  * The master command table
  *
- * This table contains all possible CommandProc functions with
- * the flags which belongs to it. The indices are the same
- * as the value from the CMD_* enums.
+ * This table contains the CommandInfo for all possible commands.
  */
 static constexpr auto _command_proc_table = MakeCommandsFromTraits(std::make_integer_sequence<std::underlying_type_t<Commands>, CMD_END>{});
 
@@ -180,9 +178,7 @@ static constexpr auto _command_proc_table = MakeCommandsFromTraits(std::make_int
 /**
  * Define a callback function for the client, after the command is finished.
  *
- * Functions of this type are called after the command is finished. The parameters
- * are from the #CommandProc callback type. The boolean parameter indicates if the
- * command succeeded or failed.
+ * Functions of this type are called after the command is finished.
  *
  * @param result The result of the executed command
  * @param cmd Executed command ID
@@ -554,8 +550,8 @@ bool IsCorrectCommandPayloadType(Commands cmd, const CommandPayloadBase &payload
 static int _docommand_recursive = 0;
 
 /**
- * This function executes a given command with the parameters from the #CommandProc parameter list.
- * Depending on the flags parameter it execute or test a command.
+ * This function executes a given command with the parameters from the command payload.
+ * Depending on the flags parameter it executes or tests a command.
  *
  * @param cmd The command-id to execute (a value of the CMD_* enums)
  * @param tile The tile to apply the command on
