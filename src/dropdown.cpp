@@ -103,7 +103,7 @@ struct DropdownWindow : Window {
 	int selected_click_result = -1; ///< Click result value, from the OnClick handler of the selected item.
 	uint8_t click_delay = 0;        ///< Timer to delay selection.
 	bool drag_mode = true;
-	DropDownModeFlags mode_flags{}; ///< Mode flags.
+	DropDownOptions options;        ///< Options for this drop down menu.
 	int scrolling = 0;              ///< If non-zero, auto-scroll the item list (one time).
 	GUITimer scrolling_timer{};     ///< Timer for auto-scroll of the item list.
 	Point position{};               ///< Position of the topleft corner of the window.
@@ -119,17 +119,16 @@ struct DropdownWindow : Window {
 	 * @param selected      Initial selected result of the list.
 	 * @param button        Widget of the parent window doing the dropdown.
 	 * @param wi_rect       Rect of the button that opened the dropdown.
-	 * @param instant_close Close the window when the mouse button is raised.
 	 * @param wi_colour     Colour of the parent widget.
-	 * @param persist
+	 * @param options Drop Down options for this menu.
 	 */
-	DropdownWindow(Window *parent, DropDownList &&list, int selected, WidgetID button, const Rect wi_rect, DropDownModeFlags mode_flags, Colours wi_colour, DropDownSyncFocus sync_parent_focus)
+	DropdownWindow(Window *parent, DropDownList &&list, int selected, WidgetID button, const Rect wi_rect, Colours wi_colour, DropDownOptions options, DropDownSyncFocus sync_parent_focus)
 			: Window(_dropdown_desc)
 			, parent_button(button)
 			, wi_rect(wi_rect)
 			, list(std::move(list))
 			, selected_result(selected)
-			, mode_flags(mode_flags)
+			, options(options)
 			, sync_parent_focus(sync_parent_focus)
 	{
 		assert(!this->list.empty());
@@ -158,7 +157,7 @@ struct DropdownWindow : Window {
 			Point pt = _cursor.pos;
 			pt.x -= w2->left;
 			pt.y -= w2->top;
-			w2->OnDropdownClose(pt, this->parent_button, this->selected_result, this->selected_click_result, (this->mode_flags & DDMF_INSTANT_CLOSE) != 0);
+			w2->OnDropdownClose(pt, this->parent_button, this->selected_result, this->selected_click_result, this->options.Test(DropDownOption::InstantClose));
 		}
 	}
 
@@ -341,7 +340,7 @@ struct DropdownWindow : Window {
 		}
 
 		if (this->click_delay != 0 && --this->click_delay == 0) {
-			if ((this->mode_flags & DDMF_PERSIST) == 0) {
+			if (!this->options.Test(DropDownOption::Persist)) {
 				if (this->sync_parent_focus & DDSF_FOCUS_PARENT_ON_SELECT) {
 					SetFocusedWindow(w2);
 				}
@@ -360,7 +359,7 @@ struct DropdownWindow : Window {
 			if (!_left_button_clicked) {
 				this->drag_mode = false;
 				if (!this->GetDropDownItem(result, click_result)) {
-					if ((this->mode_flags & DDMF_INSTANT_CLOSE) != 0) this->Close();
+					if (this->options.Test(DropDownOption::InstantClose)) this->Close();
 					return;
 				}
 				this->click_delay = 2;
@@ -462,12 +461,12 @@ Dimension GetDropDownListDimension(const DropDownList &list)
  * @param button   The widget which is passed to Window::OnDropdownSelect and OnDropdownClose.
  *                 Unless you override those functions, this should be then widget index of the dropdown button.
  * @param wi_rect  Coord of the parent drop down button, used to position the dropdown menu.
- * @param mode_flags Mode flags.
+ * @param options Drop Down options for this menu.
  */
-void ShowDropDownListAt(Window *w, DropDownList &&list, int selected, WidgetID button, Rect wi_rect, Colours wi_colour, DropDownModeFlags mode_flags, DropDownSyncFocus sync_parent_focus)
+void ShowDropDownListAt(Window *w, DropDownList &&list, int selected, WidgetID button, Rect wi_rect, Colours wi_colour, DropDownOptions options, DropDownSyncFocus sync_parent_focus)
 {
 	CloseWindowByClass(WC_DROPDOWN_MENU);
-	new DropdownWindow(w, std::move(list), selected, button, wi_rect, mode_flags, wi_colour, sync_parent_focus);
+	new DropdownWindow(w, std::move(list), selected, button, wi_rect, wi_colour, options, sync_parent_focus);
 }
 
 /**
@@ -478,9 +477,9 @@ void ShowDropDownListAt(Window *w, DropDownList &&list, int selected, WidgetID b
  * @param button   The widget within the parent window that is used to determine
  *                 the list's location.
  * @param width    Override the minimum width determined by the selected widget and list contents.
- * @param mode_flags Mode flags.
+ * @param options Drop Down options for this menu.
  */
-void ShowDropDownList(Window *w, DropDownList &&list, int selected, WidgetID button, uint width, DropDownModeFlags mode_flags, DropDownSyncFocus sync_parent_focus)
+void ShowDropDownList(Window *w, DropDownList &&list, int selected, WidgetID button, uint width, DropDownOptions options, DropDownSyncFocus sync_parent_focus)
 {
 	/* Handle the beep of the player's click. */
 	SndClickBeep();
@@ -506,7 +505,7 @@ void ShowDropDownList(Window *w, DropDownList &&list, int selected, WidgetID but
 		}
 	}
 
-	ShowDropDownListAt(w, std::move(list), selected, button, wi_rect, wi_colour, mode_flags, sync_parent_focus);
+	ShowDropDownListAt(w, std::move(list), selected, button, wi_rect, wi_colour, options, sync_parent_focus);
 }
 
 /**
@@ -532,7 +531,7 @@ void ShowDropDownMenu(Window *w, std::span<const StringID> strings, int selected
 		++i;
 	}
 
-	if (!list.empty()) ShowDropDownList(w, std::move(list), selected, button, width, DDMF_NONE, sync_parent_focus);
+	if (!list.empty()) ShowDropDownList(w, std::move(list), selected, button, width, DropDownOptions{}, sync_parent_focus);
 }
 
 /**

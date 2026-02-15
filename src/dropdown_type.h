@@ -10,6 +10,7 @@
 #ifndef DROPDOWN_TYPE_H
 #define DROPDOWN_TYPE_H
 
+#include "core/enum_type.hpp"
 #include "window_type.h"
 #include "gfx_func.h"
 #include "gfx_type.h"
@@ -78,16 +79,15 @@ public:
  */
 typedef std::vector<std::unique_ptr<const DropDownListItem>> DropDownList;
 
-enum DropDownModeFlags : uint8_t {
-	DDMF_NONE              = 0,
-	DDMF_INSTANT_CLOSE     = 1 << 0, ///< Close the window when the mouse button is raised.
-	DDMF_PERSIST           = 1 << 1, ///< Dropdown menu will persist.
+enum class DropDownOption : uint8_t {
+	InstantClose, ///< Set if releasing mouse button should close the list regardless of where the cursor is.
+	Persist, ///< Set if this dropdown should stay open after an option is selected.
 };
-DECLARE_ENUM_AS_BIT_SET(DropDownModeFlags)
+using DropDownOptions = EnumBitSet<DropDownOption, uint8_t>;
 
-void ShowDropDownListAt(Window *w, DropDownList &&list, int selected, WidgetID button, Rect wi_rect, Colours wi_colour, DropDownModeFlags mode_flags = DDMF_NONE, DropDownSyncFocus sync_parent_focus = DDSF_NONE);
+void ShowDropDownListAt(Window *w, DropDownList &&list, int selected, WidgetID button, Rect wi_rect, Colours wi_colour, DropDownOptions options = {}, DropDownSyncFocus sync_parent_focus = DDSF_NONE);
 
-void ShowDropDownList(Window *w, DropDownList &&list, int selected, WidgetID button, uint width = 0, DropDownModeFlags mode_flags = DDMF_NONE, DropDownSyncFocus sync_parent_focus = DDSF_NONE);
+void ShowDropDownList(Window *w, DropDownList &&list, int selected, WidgetID button, uint width = 0, DropDownOptions options = {}, DropDownSyncFocus sync_parent_focus = DDSF_NONE);
 
 Dimension GetDropDownListDimension(const DropDownList &list);
 

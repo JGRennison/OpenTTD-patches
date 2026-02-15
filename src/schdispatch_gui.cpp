@@ -1292,7 +1292,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					}
 				}
 
-				ShowDropDownList(this, std::move(list), -1, WID_SCHDISPATCH_MANAGEMENT, 0, DDMF_NONE, DDSF_SHARED);
+				ShowDropDownList(this, std::move(list), -1, WID_SCHDISPATCH_MANAGEMENT, 0, DropDownOptions{}, DDSF_SHARED);
 				break;
 			}
 
@@ -1409,7 +1409,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					}
 				}
 
-				ShowDropDownList(this, std::move(list), -1, WID_SCHDISPATCH_MANAGE_SLOT, 0, DDMF_NONE, DDSF_SHARED);
+				ShowDropDownList(this, std::move(list), -1, WID_SCHDISPATCH_MANAGE_SLOT, 0, DropDownOptions{}, DDSF_SHARED);
 				break;
 			}
 
