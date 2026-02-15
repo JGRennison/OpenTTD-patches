@@ -2871,19 +2871,23 @@ STR_PICKER_COLLECTION_DELETE_TOOLTIP                            :Esborra la col�
 STR_PICKER_COLLECTION_RENAME_QUERY                              :Reanomena aquesta col·lecció
 STR_PICKER_COLLECTION_DELETE_QUERY                              :Esborra la col·lecció
 STR_PICKER_COLLECTION_DELETE_QUERY_TEXT                         :{YELLOW}Esteu segur que voleu esborrar aquesta col·lecció?
+STR_PICKER_COLLECTION_DELETE_QUERY_DISABLED_TEXT                :{YELLOW}Esteu segur que voleu esborrar aquesta col·lecció? Hi ha elements de fitxers NewGRF desactivats.
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Trieu quina classe d'estació voleu veure.
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Trieu quin tipus d'estació voleu construir. Amb Ctrl+clic, s'afegeix o es trau l'element de la llista de desats.
 STR_PICKER_WAYPOINT_CLASS_TOOLTIP                               :Trieu quina classe de punts de control voleu veure.
 STR_PICKER_WAYPOINT_TYPE_TOOLTIP                                :Trieu quin tipus de punt de control voleu construir. Amb Ctrl+clic, s'afegeix o es trau l'element de la llista de desats.
+STR_PICKER_WAYPOINT_COLLECTION_TOOLTIP                          :Seleccioneu quina col·lecció de punts de pas voleu veure.
 STR_PICKER_ROADSTOP_BUS_CLASS_TOOLTIP                           :Trieu quina classe d'estacions d'autobús voleu veure.
 STR_PICKER_ROADSTOP_BUS_TYPE_TOOLTIP                            :Trieu quin tipus d'estació d'autobús voleu construir. Amb Ctrl+clic, s'afegeix o es trau l'element de la llista de desats.
+STR_PICKER_ROADSTOP_BUS_COLLECTION_TOOLTIP                      :Seleccioneu quina col·lecció d'estacions d'autobús voleu veure.
 STR_PICKER_ROADSTOP_TRUCK_CLASS_TOOLTIP                         :Trieu quina classe d'estació de camions voleu veure.
 STR_PICKER_ROADSTOP_TRUCK_TYPE_TOOLTIP                          :Trieu un tipus d'estació de camió a construir. Amb Ctrl+clic, s'afegeix o es trau l'element de la llista de desats.
 STR_PICKER_OBJECT_CLASS_TOOLTIP                                 :Trieu quina classe d'objectes voleu veure.
 STR_PICKER_OBJECT_TYPE_TOOLTIP                                  :Trieu quin tipus d'objecte voleu construir. Amb Ctrl+clic, s'afegeix o es trau l'element de la llista de desats. Amb Ctrl+clic+arrossega es selecciona l'àrea en diagonal. Amb Maj, només es mostrarà el cost estimat de l'acció.
 STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :Trieu quina zona de població voleu veure.
 STR_PICKER_HOUSE_TYPE_TOOLTIP                                   :Trieu quin tipus de casa construir. Amb Ctrl+clic, s'afegeix o es trau l'element de la llista de desats.
+STR_PICKER_HOUSE_COLLECTION_TOOLTIP                             :Seleccioneu quina col·lecció de cases voleu veure.
 
 STR_HOUSE_PICKER_CAPTION                                        :Selecció de cases
 STR_HOUSE_PICKER_NAME                                           :{BLACK}Nom: {GOLD}{STRING}
