@@ -28,6 +28,7 @@ enum QueryEditSignWidgets : WidgetID {
 	WID_QES_OK,          ///< OK button.
 	WID_QES_CANCEL,      ///< Cancel button.
 	WID_QES_DELETE,      ///< Delete button.
+	WID_QES_MOVE,        ///< Move Sign button.
 	WID_QES_COLOUR_PANE, ///< Pane to show/hide the color dropdown.
 	WID_QES_COLOUR,      ///< Colour selection dropdown.
 	WID_QES_PREVIOUS,    ///< Previous button.

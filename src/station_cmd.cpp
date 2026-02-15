@@ -27,6 +27,7 @@
 #include "road_internal.h" /* For drawing catenary/checking road removal */
 #include "autoslope.h"
 #include "water.h"
+#include "tilehighlight_func.h"
 #include "strings_func.h"
 #include "clear_func.h"
 #include "date_func.h"
@@ -66,6 +67,7 @@
 #include "rail_cmd.h"
 
 #include "widgets/station_widget.h"
+#include "widgets/misc_widget.h"
 
 #include "table/strings.h"
 
@@ -4848,6 +4850,61 @@ CommandCost CmdRenameStation(DoCommandFlags flags, StationID station_id, bool ge
 	}
 
 	return CommandCost();
+}
+
+/**
+ * Move a station name.
+ * @param flags type of operation
+ * @param station_id id of the station
+ * @param tile to move the station name to
+ * @return the cost of this operation or an error and the station ID
+ */
+CommandCost CmdMoveStationName(DoCommandFlags flags, StationID station_id, TileIndex tile)
+{
+	Station *st = Station::GetIfValid(station_id);
+	if (st == nullptr) return CMD_ERROR;
+
+	if (st->owner != OWNER_NONE) {
+		CommandCost ret = CheckOwnership(st->owner);
+		if (ret.Failed()) return ret;
+	}
+
+	const StationRect *r = &st->rect;
+	if (!r->PtInExtendedRect(TileX(tile), TileY(tile))) {
+		return CommandCost(STR_ERROR_SITE_UNSUITABLE);
+	}
+
+	bool other_station = false;
+	/* Check if the tile is the base tile of another station */
+	ForAllStationsRadius(tile, 0, [&](BaseStation *s) {
+		if (s != nullptr) {
+			if (s != st && s->xy == tile) other_station = true;
+		}
+	});
+	if (other_station) return CommandCost(STR_ERROR_SITE_UNSUITABLE);
+
+	if (flags.Test(DoCommandFlag::Execute)) {
+		st->MoveSign(tile);
+
+		st->UpdateVirtCoord();
+	}
+	return CommandCost();
+}
+
+/**
+* Callback function that is called after a name is moved
+* @param result of the operation
+* @param station_id ID of the changed station
+*/
+void CcMoveStationName(const CommandCost &result, StationID station_id, TileIndex tile)
+{
+	{
+		if (result.Failed()) return;
+
+		ResetObjectToPlace();
+		Station *st = Station::Get(station_id);
+		SetViewportStationRect(st, false);
+	}
 }
 
 /**

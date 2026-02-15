@@ -16,5 +16,6 @@
 
 DEF_CMD_TUPLE   (CMD_PLACE_SIGN,  CmdPlaceSign,  CMD_LOG_AUX | CMD_DEITY, CommandType::OtherManagement, CmdDataT<std::string>)
 DEF_CMD_TUPLE_NT(CMD_RENAME_SIGN, CmdRenameSign, CMD_LOG_AUX | CMD_DEITY, CommandType::OtherManagement, CmdDataT<SignID, std::string, Colours>)
+DEF_CMD_TUPLE_NT(CMD_MOVE_SIGN,   CmdMoveSign,   CMD_LOG_AUX | CMD_DEITY, CommandType::OtherManagement, CmdDataT<SignID, TileIndex>)
 
 #endif /* SIGNS_CMD_H */

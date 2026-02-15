@@ -19,6 +19,7 @@ enum class QueryStringFlag : uint8_t {
 	AcceptUnchanged, ///< return success even when the text didn't change
 	EnableDefault,   ///< enable the 'Default' button ("\0" is returned)
 	LengthIsInChars, ///< the length of the string is counted in characters
+	EnableMove, ///< enable the 'Move' button
 	Password,        ///< password entry box, show warning about password security
 	DefaultIsDelete, ///< Default button is labelled 'Delete'
 };

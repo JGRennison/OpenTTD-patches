@@ -470,7 +470,7 @@ CommandCost CmdDeleteGroup(DoCommandFlags flags, GroupID group_id)
 			Company *c = Company::Get(g->owner);
 
 			/* If we set an autoreplace for the group we delete, remove it. */
-			for (EngineRenew *er : EngineRenew::Iterate()) {
+			for (const EngineRenew *er : EngineRenew::Iterate()) {
 				if (er->group_id == g->index) RemoveEngineReplacementForCompany(c, er->from, g->index, flags);
 			}
 
@@ -664,7 +664,7 @@ CommandCost CmdAddVehicleGroup(DoCommandFlags flags, GroupID group_id, VehicleID
 	if (v == nullptr || (!Group::IsValidID(new_g) && !IsDefaultGroupID(new_g) && new_g != NEW_GROUP)) return CMD_ERROR;
 
 	if (Group::IsValidID(new_g)) {
-		Group *g = Group::Get(new_g);
+		const Group *g = Group::Get(new_g);
 		if (g->owner != _current_company || g->vehicle_type != v->type) return CMD_ERROR;
 	}
 
@@ -802,7 +802,7 @@ CommandCost CmdAddSharedVehicleGroup(DoCommandFlags flags, GroupID id_g, Vehicle
  */
 CommandCost CmdRemoveAllVehiclesGroup(DoCommandFlags flags, GroupID group_id)
 {
-	Group *g = Group::GetIfValid(group_id);
+	const Group *g = Group::GetIfValid(group_id);
 
 	if (g == nullptr || g->owner != _current_company) return CMD_ERROR;
 
@@ -968,7 +968,7 @@ uint GetGroupNumEngines(CompanyID company, GroupID id_g, EngineID id_e)
 {
 	uint count = 0;
 	const Engine *e = Engine::Get(id_e);
-	IterateDescendantsOfGroup(id_g, [&](Group *g) {
+	IterateDescendantsOfGroup(id_g, [&](const Group *g) {
 		count += GroupStatistics::Get(company, g->index, e->type).GetNumEngines(id_e);
 	});
 	return count + GroupStatistics::Get(company, id_g, e->type).GetNumEngines(id_e);
@@ -985,7 +985,7 @@ uint GetGroupNumEngines(CompanyID company, GroupID id_g, EngineID id_e)
 uint GetGroupNumVehicle(CompanyID company, GroupID id_g, VehicleType type)
 {
 	uint count = 0;
-	IterateDescendantsOfGroup(id_g, [&](Group *g) {
+	IterateDescendantsOfGroup(id_g, [&](const Group *g) {
 		count += GroupStatistics::Get(company, g->index, type).num_vehicle;
 	});
 	return count + GroupStatistics::Get(company, id_g, type).num_vehicle;
@@ -1002,7 +1002,7 @@ uint GetGroupNumVehicle(CompanyID company, GroupID id_g, VehicleType type)
 uint GetGroupNumVehicleMinAge(CompanyID company, GroupID id_g, VehicleType type)
 {
 	uint count = 0;
-	IterateDescendantsOfGroup(id_g, [&](Group *g) {
+	IterateDescendantsOfGroup(id_g, [&](const Group *g) {
 		count += GroupStatistics::Get(company, g->index, type).num_vehicle_min_age;
 	});
 	return count + GroupStatistics::Get(company, id_g, type).num_vehicle_min_age;
@@ -1019,7 +1019,7 @@ uint GetGroupNumVehicleMinAge(CompanyID company, GroupID id_g, VehicleType type)
 Money GetGroupProfitLastYearMinAge(CompanyID company, GroupID id_g, VehicleType type)
 {
 	Money sum = 0;
-	IterateDescendantsOfGroup(id_g, [&](Group *g) {
+	IterateDescendantsOfGroup(id_g, [&](const Group *g) {
 		sum += GroupStatistics::Get(company, g->index, type).profit_last_year_min_age;
 	});
 	return sum + GroupStatistics::Get(company, id_g, type).profit_last_year_min_age;

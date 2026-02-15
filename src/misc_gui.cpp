@@ -15,11 +15,16 @@
 #include "error.h"
 #include "gui.h"
 #include "gfx_layout.h"
+#include "tilehighlight_func.h"
 #include "command_func.h"
 #include "company_func.h"
 #include "town.h"
 #include "string_func.h"
 #include "company_base.h"
+#include "station_base.h"
+#include "waypoint_base.h"
+#include "station_cmd.h"
+#include "waypoint_cmd.h"
 #include "texteff.hpp"
 #include "strings_func.h"
 #include "window_func.h"
@@ -980,6 +985,8 @@ struct QueryStringWindow : public Window {
 	QueryStringFlags flags{};   ///< Flags controlling behaviour of the window.
 	Dimension warning_size{};   ///< How much space to use for the warning text
 
+	WidgetID last_user_action = INVALID_WIDGET; ///< Last started user action.
+
 	/**
 	 * Compute the maximum size in bytes of the described editbox.
 	 *
@@ -1053,6 +1060,8 @@ private:
 		if (this->flags.Test(QueryStringFlag::DefaultIsDelete)) {
 			this->GetWidget<NWidgetCore>(WID_QS_DEFAULT)->SetString(STR_TOWN_VIEW_DELETE_BUTTON);
 		}
+		this->GetWidget<NWidgetStacked>(WID_QS_DEFAULT_SEL)->SetDisplayedPlane((this->flags.Test(QueryStringFlag::EnableDefault)) ? 0 : SZSP_NONE);
+		this->GetWidget<NWidgetStacked>(WID_QS_MOVE_SEL)->SetDisplayedPlane((this->flags.Test(QueryStringFlag::EnableMove)) ? 0 : SZSP_NONE);
 		this->FinishInitNested(WN_QUERY_STRING);
 		this->UpdateWarningStringSize();
 
@@ -1076,13 +1085,6 @@ public:
 
 	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
-		if (widget == WID_QS_DEFAULT && !this->flags.Test(QueryStringFlag::EnableDefault)) {
-			/* We don't want this widget to show! */
-			fill.width = 0;
-			resize.width = 0;
-			size.width = 0;
-		}
-
 		if constexpr (N == 1) {
 			if (widget == WID_QS_LABEL1 || widget == WID_QS_LABEL2 || widget == WID_QS_TEXT2) {
 				fill.height = 0;
@@ -1178,17 +1180,65 @@ public:
 			case WID_QS_CANCEL:
 				this->Close();
 				break;
+
+			case WID_QS_MOVE:
+				this->last_user_action = widget;
+
+				if (Station::IsExpected(Station::Get(this->parent->window_number))) {
+					/* this is a station */
+					SetViewportStationRect(Station::Get(this->parent->window_number), !this->IsWidgetLowered(WID_QS_MOVE));
+				} else {
+					/* this is a waypoint */
+					SetViewportWaypointRect(Waypoint::Get(this->parent->window_number), !this->IsWidgetLowered(WID_QS_MOVE));
+				}
+
+				HandlePlacePushButton(this, WID_QS_MOVE, SPR_CURSOR_SIGN, HT_RECT);
+				break;
 		}
+	}
+
+	void OnPlaceObject([[maybe_unused]] Point pt, TileIndex tile) override
+	{
+		switch (this->last_user_action) {
+			case WID_QS_MOVE: // Move name button
+				if (Station::IsExpected(Station::Get(this->parent->window_number))) {
+					/* this is a station */
+					Command<CMD_MOVE_STATION_NAME>::Post(STR_ERROR_CAN_T_MOVE_STATION_NAME, CommandCallback::MoveStationName, this->parent->window_number, tile);
+				} else {
+					/* this is a waypoint */
+					Command<CMD_MOVE_WAYPOINT_NAME>::Post(STR_ERROR_CAN_T_MOVE_WAYPOINT_NAME, CommandCallback::MoveWaypointName, this->parent->window_number, tile);
+				}
+				break;
+
+			default: NOT_REACHED();
+		}
+	}
+
+	void OnPlaceObjectAbort() override
+	{
+		if (Station::IsExpected(Station::Get(this->parent->window_number))) {
+			/* this is a station */
+			SetViewportStationRect(Station::Get(this->parent->window_number), false);
+		} else {
+			/* this is a waypoint */
+			SetViewportWaypointRect(Waypoint::Get(this->parent->window_number), false);
+		}
+
+		this->RaiseButtons();
 	}
 
 	void Close([[maybe_unused]] int data = 0) override
 	{
+		if (this->parent->window_class == WC_STATION_VIEW) SetViewportStationRect(Station::Get(this->parent->window_number), false);
+		if (this->parent->window_class == WC_WAYPOINT_VIEW) SetViewportWaypointRect(Waypoint::Get(this->parent->window_number), false);
+
 		auto has_been_handled = [](const QueryString &editbox) { return editbox.handled; };
 		if (!std::ranges::any_of(editboxes, has_been_handled) && this->parent != nullptr) {
 			Window *parent = this->parent;
 			this->parent = nullptr; // so parent doesn't try to close us again
 			parent->OnQueryTextFinished(std::nullopt);
 		}
+
 		this->Window::Close();
 	}
 };
@@ -1210,9 +1260,14 @@ static constexpr std::initializer_list<NWidgetPart> _nested_query_string_widgets
 	EndContainer(),
 	NWidget(WWT_PANEL, COLOUR_GREY, WID_QS_WARNING), EndContainer(),
 	NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
-		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_QS_DEFAULT), SetMinimalSize(87, 12), SetFill(1, 1), SetStringTip(STR_BUTTON_DEFAULT),
-		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_QS_CANCEL), SetMinimalSize(86, 12), SetFill(1, 1), SetStringTip(STR_BUTTON_CANCEL),
-		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_QS_OK), SetMinimalSize(87, 12), SetFill(1, 1), SetStringTip(STR_BUTTON_OK),
+		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_QS_DEFAULT_SEL),
+			NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_QS_DEFAULT), SetMinimalSize(65, 12), SetFill(1, 1), SetStringTip(STR_BUTTON_DEFAULT),
+		EndContainer(),
+		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_QS_CANCEL), SetMinimalSize(65, 12), SetFill(1, 1), SetStringTip(STR_BUTTON_CANCEL),
+		NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_QS_OK), SetMinimalSize(65, 12), SetFill(1, 1), SetStringTip(STR_BUTTON_OK),
+		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_QS_MOVE_SEL),
+			NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_QS_MOVE), SetMinimalSize(65, 12), SetFill(1, 1), SetStringTip(STR_BUTTON_MOVE),
+		EndContainer(),
 	EndContainer(),
 };
 
