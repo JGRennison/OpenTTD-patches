@@ -156,6 +156,7 @@ RoadType AllocateRoadType(RoadTypeLabel label, RoadTramType rtt)
 	RoadType rt = rti.Index();
 
 	/* Set up new road type based on default tram or road. */
+	rti = _original_roadtypes[(rtt == RTT_TRAM) ? ROADTYPE_TRAM : ROADTYPE_ROAD];
 	rti.label = label;
 	rti.alternate_labels.clear();
 	rti.flags = {};
