@@ -346,7 +346,7 @@ void DrawSpriteIgnorePadding(SpriteID img, PaletteID pal, const Rect &r, StringA
  */
 static inline void DrawImageButtons(const Rect &r, WidgetType type, Colours colour, bool clicked, SpriteID img, StringAlignment align)
 {
-	assert(img != 0);
+	dbg_assert(img != 0);
 	DrawFrameRect(r, colour, clicked ? FrameFlag::Lowered : FrameFlags{});
 
 	if ((type & WWT_MASK) == WWT_IMGBTN_2 && clicked) img++; // Show different image when clicked for #WWT_IMGBTN_2.
