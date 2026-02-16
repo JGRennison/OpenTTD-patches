@@ -658,9 +658,6 @@ STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_HELPTEXT             :决定货物运
 STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_TRADITIONAL          :原版
 STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_MODERN               :现代
 
-STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :城镇间最小距离：{STRING}
-STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :设置在生成地图时城镇间的最小距离
-
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO                       :对此货物重载分配模式：{STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_PARAM                 :重载{STRING}的分配模式：{STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_HELPTEXT              :“默认”使用默认配置{}“对称”意味着从甲车站运往乙车站的货物数量与从乙车站运往甲车站的大致相同{}“不对称”意味着任何一站前往另一个车站的货物的数量会被系统任意地决定{}“手动”意味着对于此类货物系统不会自动分配其目的地

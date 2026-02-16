@@ -671,9 +671,6 @@ STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_HELPTEXT             :O algoritmo que
 STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_TRADITIONAL          :Tradicional
 STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_MODERN               :Moderno
 
-STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :Distancia mínima entre vilas: {STRING}
-STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :Fixa a distancia mínima en cadros entre cidades para a xeración do mapa e as fundacións aleatorias
-
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO                       :Modo de distribución para esta carga: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_PARAM                 :Anulación do modo de distribución para {STRING}: {STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_HELPTEXT              :"(por defecto)" significa que o modo de distribución é o por defecto para a clase desta carga. "simétrica" significa que aproximadamente o mesmo número de carga irá da estación A a B como da B a A. "asimétrica" significa que cantidades arbitrarias de carga enviaranse en calquera direción. "manual" significa que non se fará unha distribución automática para esta carga.

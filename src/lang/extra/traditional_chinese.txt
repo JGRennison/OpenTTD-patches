@@ -634,9 +634,6 @@ STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_HELPTEXT             :決定貨物運
 STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_TRADITIONAL          :原版
 STR_CONFIG_SETTING_CARGO_PAYMENT_ALGORITHM_MODERN               :現代
 
-STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :市鎮間最小距離：{STRING}
-STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :設定在產生地圖時市鎮間的最小距離
-
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO                       :對此貨物重載分配模式：{STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_PARAM                 :重載{STRING}的分配模式：{STRING}
 STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_HELPTEXT              :「預設」使用預設配置{}「對稱」意味著從甲車站運往乙車站的貨物數量與從乙車站運往甲車站的大致相同{}「不對稱」意味著任何一站前往另一個車站的貨物的數量會被系統任意地決定{}「手動」意味著對於此類貨物系統不會自動分配其目的地
