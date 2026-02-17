@@ -276,6 +276,7 @@ add_files(
     livery.h
     load_check.h
     main_gui.cpp
+    maintenance_func.h
     map.cpp
     map_func.h
     map_type.h

@@ -142,3 +142,6 @@ STR_INTRO_TOOLTIP_NEWGRF_SETTINGS                               :{BLACK}Open New
 STR_INTRO_TOOLTIP_AI_SETTINGS                                   :{BLACK}Open AI settings
 STR_INTRO_TOOLTIP_GAMESCRIPT_SETTINGS                           :{BLACK}Open Game script settings
 STR_INTRO_CAPTION_TRADITIONAL                                   :{WHITE}OpenTTD {REV}
+
+STR_CONFIG_SETTING_LINEAR_MAINTENANCE                           :Linear maintenance growth: {STRING}
+STR_CONFIG_SETTING_LINEAR_MAINTENANCE_HELPTEXT                  :When enabled, infrastructure maintenance costs grow linearly rather than polynomially

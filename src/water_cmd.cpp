@@ -25,6 +25,7 @@
 #include "sound_func.h"
 #include "company_func.h"
 #include "economy_func.h"
+#include "maintenance_func.h"
 #include "clear_map.h"
 #include "tree_map.h"
 #include "aircraft.h"
@@ -591,7 +592,8 @@ CommandCost CmdBuildCanal(DoCommandFlags flags, TileIndex tile, TileIndex start_
  */
 Money CanalMaintenanceCost(uint32_t num)
 {
-	return (_price[PR_INFRASTRUCTURE_WATER] * num * (1 + IntSqrt(num))) >> 6; // 6 bits scaling.
+	/* 6 bits scaling. 11 is roughly equivalent to the polynomial maint cost at 100 pieces. */
+	return (_price[PR_INFRASTRUCTURE_WATER] * num * GetMaintenanceCostScale(num, 11)) >> 6;
 }
 
 

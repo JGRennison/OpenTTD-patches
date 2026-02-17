@@ -15,6 +15,7 @@
 #include "viewport_kdtree.h"
 #include "date_func.h"
 #include "economy_func.h"
+#include "maintenance_func.h"
 #include "command_func.h"
 #include "news_func.h"
 #include "aircraft.h"
@@ -754,7 +755,8 @@ StationRect& StationRect::operator = (const Rect &src)
  */
 Money StationMaintenanceCost(uint32_t num)
 {
-	return (_price[PR_INFRASTRUCTURE_STATION] * num * (1 + IntSqrt(num))) >> 7; // 7 bits scaling.
+	/* 7 bits scaling. 23 is roughly equivalent to the polynomial maint cost at 500 pieces. */
+	return (_price[PR_INFRASTRUCTURE_STATION] * num * GetMaintenanceCostScale(num, 23)) >> 7;
 }
 
 /**

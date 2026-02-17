@@ -1006,6 +1006,7 @@ SettingsContainer &GetSettingsTree()
 			accounting->Add(new SettingEntry("difficulty.subsidy_duration"));
 			accounting->Add(new SettingEntry("economy.feeder_payment_share"));
 			accounting->Add(new SettingEntry("economy.infrastructure_maintenance"));
+			accounting->Add(new ConditionallyHiddenSettingEntry("economy.linear_maintenance", []() -> bool { return !GetGameSettings().economy.infrastructure_maintenance; }));
 			accounting->Add(new SettingEntry("difficulty.vehicle_costs"));
 			accounting->Add(new SettingEntry("difficulty.vehicle_costs_in_depot"));
 			accounting->Add(new SettingEntry("difficulty.vehicle_costs_when_stopped"));

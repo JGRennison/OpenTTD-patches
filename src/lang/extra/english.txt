@@ -2576,3 +2576,6 @@ STR_PICKER_ROADSTOP_BUS_RANDOM_TOOLTIP                          :Place random bu
 STR_PICKER_ROADSTOP_TRUCK_RANDOM_TOOLTIP                        :Place random lorry stations from the selected collection
 STR_PICKER_OBJECT_RANDOM_TOOLTIP                                :Place random 1x1 objects from the selected collection
 STR_PICKER_HOUSE_RANDOM_TOOLTIP                                 :Place random 1x1 houses from the selected collection
+
+STR_CONFIG_SETTING_LINEAR_MAINTENANCE                           :Linear maintenance growth: {STRING2}
+STR_CONFIG_SETTING_LINEAR_MAINTENANCE_HELPTEXT                  :When enabled, infrastructure maintenance costs grow linearly rather than polynomially

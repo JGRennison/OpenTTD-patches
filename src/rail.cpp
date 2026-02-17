@@ -15,6 +15,7 @@
 #include "company_base.h"
 #include "engine_base.h"
 #include "economy_func.h"
+#include "maintenance_func.h"
 
 #include "table/track_data.h"
 
@@ -313,7 +314,8 @@ RailType GetRailTypeByLabel(RailTypeLabel label, bool allow_alternate_labels)
 Money RailMaintenanceCost(RailType railtype, uint32_t num, uint32_t total_num)
 {
 	dbg_assert(railtype < RAILTYPE_END);
-	return (_price[PR_INFRASTRUCTURE_RAIL] * GetRailTypeInfo(railtype)->maintenance_multiplier * num * (1 + IntSqrt(total_num))) >> 11; // 4 bits fraction for the multiplier and 7 bits scaling.
+	/* 4 bits fraction for the multiplier and 7 bits scaling. 72 is roughly equivalent to the polynomial maintenance cost at 5000 pieces. */
+	return (_price[PR_INFRASTRUCTURE_RAIL] * GetRailTypeInfo(railtype)->maintenance_multiplier * num * GetMaintenanceCostScale(total_num, 72)) >> 11;
 }
 
 /**
@@ -323,5 +325,6 @@ Money RailMaintenanceCost(RailType railtype, uint32_t num, uint32_t total_num)
  */
 Money SignalMaintenanceCost(uint32_t num)
 {
-	return (_price[PR_INFRASTRUCTURE_RAIL] * 15 * num * (1 + IntSqrt(num))) >> 8; // 1 bit fraction for the multiplier and 7 bits scaling.
+	/* 1 bit fraction for the multiplier and 7 bits scaling. 33 is roughly equivalent to the polynomial maintenance cost at 1000 pieces. */
+	return (_price[PR_INFRASTRUCTURE_RAIL] * 15 * num * GetMaintenanceCostScale(num, 33)) >> 8;
 }

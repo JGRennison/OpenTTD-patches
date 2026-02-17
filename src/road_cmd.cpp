@@ -45,6 +45,7 @@
 #include "landscape_cmd.h"
 #include "rail_cmd.h"
 #include "economy_func.h"
+#include "maintenance_func.h"
 
 #include "table/strings.h"
 #include "table/roadtypes.h"
@@ -475,7 +476,8 @@ void UpdateCompanyRoadInfrastructure(RoadType rt, Owner o, int count)
 Money RoadMaintenanceCost(RoadType roadtype, uint32_t num, uint32_t total_num)
 {
 	dbg_assert(roadtype < ROADTYPE_END);
-	return (_price[PR_INFRASTRUCTURE_ROAD] * GetRoadTypeInfo(roadtype)->maintenance_multiplier * num * (1 + IntSqrt(total_num))) >> 12;
+	/* 33 is roughly equivalent to the polynomial maintenance cost at 1000 pieces. */
+	return (_price[PR_INFRASTRUCTURE_ROAD] * GetRoadTypeInfo(roadtype)->maintenance_multiplier * num * GetMaintenanceCostScale(total_num, 33)) >> 12;
 }
 
 /** Invalid RoadBits on slopes.  */

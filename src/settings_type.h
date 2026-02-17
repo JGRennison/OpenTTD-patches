@@ -833,6 +833,7 @@ struct EconomySettings {
 	bool     allow_town_bridges;             ///< towns are allowed to build bridges
 	bool     default_allow_town_growth;      ///< town growth is allowed per-town by default
 	bool     infrastructure_maintenance;     ///< enable monthly maintenance fee for owner infrastructure
+	bool     linear_maintenance;             ///< set maintenance costs to grow linearly rather than polynomially
 	TimekeepingUnits timekeeping_units;      ///< time units to use for the game economy, either calendar or wallclock
 	uint16_t minutes_per_calendar_year;      ///< minutes per calendar year. Special value 0 means that calendar time is frozen.
 	uint16_t town_cargo_scale;               ///< scale cargo production of towns by this percentage.
