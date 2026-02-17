@@ -1496,12 +1496,19 @@ class btree : public Params::key_compare {
   template <typename... Args>
   iterator internal_insert(iterator iter, Args&&... args);
 
+  static iterator internal_as_mutable(const const_iterator &iter) {
+    return iterator(iter.node, iter.position);
+  }
+
   // Returns an iterator pointing to the first value >= the value "iter" is
   // pointing at. Note that "iter" might be pointing to an invalid location as
   // iter.position == iter.node->count(). This routine simply moves iter up in
   // the tree to a valid location.
-  template <typename IterType>
-  static IterType internal_last(IterType iter);
+  static iterator internal_last(iterator iter);
+
+  static const_iterator internal_last(const const_iterator &iter) {
+    return internal_last(internal_as_mutable(iter));
+  }
 
   // Returns an iterator pointing to the leaf position at which key would
   // reside in the tree. We provide 2 versions of internal_locate. The first
@@ -1512,35 +1519,48 @@ class btree : public Params::key_compare {
   // field of the pair. The compare_to specialization allows the caller to
   // avoid a subsequent comparison to determine if an exact match was made,
   // speeding up string keys.
-  template <typename IterType>
-  std::pair<IterType, int> internal_locate(
-      const key_type &key, IterType iter) const;
-  template <typename IterType>
-  std::pair<IterType, int> internal_locate_plain_compare(
-      const key_type &key, IterType iter) const;
-  template <typename IterType>
-  std::pair<IterType, int> internal_locate_compare_to(
-      const key_type &key, IterType iter) const;
+  std::pair<iterator, int> internal_locate(
+      const key_type &key, iterator iter) const;
+  std::pair<iterator, int> internal_locate_plain_compare(
+      const key_type &key, iterator iter) const;
+  std::pair<iterator, int> internal_locate_compare_to(
+      const key_type &key, iterator iter) const;
 
   // Internal routine which implements lower_bound().
-  template <typename IterType>
-  IterType internal_lower_bound(
-      const key_type &key, IterType iter) const;
+  iterator internal_lower_bound(
+      const key_type &key, iterator iter) const;
+
+  const_iterator internal_lower_bound(
+      const key_type &key, const const_iterator &iter) const {
+    return internal_lower_bound(key, internal_as_mutable(iter));
+  }
 
   // Internal routine which implements upper_bound().
-  template <typename IterType>
-  IterType internal_upper_bound(
-      const key_type &key, IterType iter) const;
+  iterator internal_upper_bound(
+      const key_type &key, iterator iter) const;
+
+  const_iterator internal_upper_bound(
+      const key_type &key, const const_iterator &iter) const {
+    return internal_upper_bound(key, internal_as_mutable(iter));
+  }
 
   // Internal routine which implements find_unique().
-  template <typename IterType>
-  IterType internal_find_unique(
-      const key_type &key, IterType iter) const;
+  iterator internal_find_unique(
+      const key_type &key, iterator iter) const;
+
+  const_iterator internal_find_unique(
+      const key_type &key, const const_iterator &iter) const {
+    return internal_find_unique(key, internal_as_mutable(iter));
+  }
 
   // Internal routine which implements find_multi().
-  template <typename IterType>
-  IterType internal_find_multi(
-      const key_type &key, IterType iter) const;
+  iterator internal_find_multi(
+      const key_type &key, iterator iter) const;
+
+  const_iterator internal_find_multi(
+      const key_type &key, const const_iterator &iter) const {
+    return internal_find_multi(key, internal_as_mutable(iter));
+  }
 
   // Deletes a node and all of its children.
   void internal_clear(node_type *node);
@@ -2407,8 +2427,8 @@ void btree<P>::try_shrink() {
   }
 }
 
-template <typename P> template <typename IterType>
-inline IterType btree<P>::internal_last(IterType iter) {
+template <typename P>
+inline typename btree<P>::iterator btree<P>::internal_last(iterator iter) {
   while (iter.node && iter.position == iter.node->count()) {
     iter.position = iter.node->position();
     iter.node = iter.node->parent();
@@ -2457,15 +2477,15 @@ btree<P>::internal_insert(iterator iter, Args&&... args) {
   return iter;
 }
 
-template <typename P> template <typename IterType>
-inline std::pair<IterType, int> btree<P>::internal_locate(
-    const key_type &key, IterType iter) const {
+template <typename P>
+inline std::pair<typename btree<P>::iterator, int> btree<P>::internal_locate(
+    const key_type &key, iterator iter) const {
   return internal_locate_type::dispatch(key, *this, iter);
 }
 
-template <typename P> template <typename IterType>
-inline std::pair<IterType, int> btree<P>::internal_locate_plain_compare(
-    const key_type &key, IterType iter) const {
+template <typename P>
+inline std::pair<typename btree<P>::iterator, int> btree<P>::internal_locate_plain_compare(
+    const key_type &key, iterator iter) const {
   for (;;) {
     iter.position = iter.node->lower_bound(key, key_comp());
     if (iter.node->leaf()) {
@@ -2476,9 +2496,9 @@ inline std::pair<IterType, int> btree<P>::internal_locate_plain_compare(
   return std::make_pair(iter, 0);
 }
 
-template <typename P> template <typename IterType>
-inline std::pair<IterType, int> btree<P>::internal_locate_compare_to(
-    const key_type &key, IterType iter) const {
+template <typename P>
+inline std::pair<typename btree<P>::iterator, int> btree<P>::internal_locate_compare_to(
+    const key_type &key, iterator iter) const {
   for (;;) {
     int res = iter.node->lower_bound(key, key_comp());
     iter.position = res & kMatchMask;
@@ -2493,9 +2513,9 @@ inline std::pair<IterType, int> btree<P>::internal_locate_compare_to(
   return std::make_pair(iter, -kExactMatch);
 }
 
-template <typename P> template <typename IterType>
-IterType btree<P>::internal_lower_bound(
-    const key_type &key, IterType iter) const {
+template <typename P>
+typename btree<P>::iterator btree<P>::internal_lower_bound(
+    const key_type &key, iterator iter) const {
   if (iter.node) {
     for (;;) {
       iter.position =
@@ -2510,9 +2530,9 @@ IterType btree<P>::internal_lower_bound(
   return iter;
 }
 
-template <typename P> template <typename IterType>
-IterType btree<P>::internal_upper_bound(
-    const key_type &key, IterType iter) const {
+template <typename P>
+typename btree<P>::iterator btree<P>::internal_upper_bound(
+    const key_type &key, iterator iter) const {
   if (iter.node) {
     for (;;) {
       iter.position = iter.node->upper_bound(key, key_comp());
@@ -2526,11 +2546,11 @@ IterType btree<P>::internal_upper_bound(
   return iter;
 }
 
-template <typename P> template <typename IterType>
-IterType btree<P>::internal_find_unique(
-    const key_type &key, IterType iter) const {
+template <typename P>
+typename btree<P>::iterator btree<P>::internal_find_unique(
+    const key_type &key, iterator iter) const {
   if (iter.node) {
-    std::pair<IterType, int> res = internal_locate(key, iter);
+    std::pair<iterator, int> res = internal_locate(key, iter);
     if (res.second == kExactMatch) {
       return res.first;
     }
@@ -2541,12 +2561,12 @@ IterType btree<P>::internal_find_unique(
       }
     }
   }
-  return IterType(NULL, 0);
+  return iterator(NULL, 0);
 }
 
-template <typename P> template <typename IterType>
-IterType btree<P>::internal_find_multi(
-    const key_type &key, IterType iter) const {
+template <typename P>
+typename btree<P>::iterator btree<P>::internal_find_multi(
+    const key_type &key, iterator iter) const {
   if (iter.node) {
     iter = internal_lower_bound(key, iter);
     if (iter.node) {
@@ -2556,7 +2576,7 @@ IterType btree<P>::internal_find_multi(
       }
     }
   }
-  return IterType(NULL, 0);
+  return iterator(NULL, 0);
 }
 
 template <typename P>
