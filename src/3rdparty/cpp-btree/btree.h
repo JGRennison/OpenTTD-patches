@@ -818,41 +818,44 @@ public:
 #endif
 #endif /* _MSC_VER */
 
-template <typename BaseIterator>
-struct btree_mutable_iterator : public BaseIterator {
-  typedef typename BaseIterator::normal_node node_type;
-  typedef typename BaseIterator::normal_pointer pointer;
-  typedef typename BaseIterator::normal_reference reference;
-  typedef btree_mutable_iterator<BaseIterator> self_type;
+template <typename Params>
+struct btree_const_iterator;
 
-  btree_mutable_iterator()
-      : BaseIterator() {
+template <typename Params>
+struct btree_iterator : public btree_const_iterator<Params> {
+  typedef btree_node<Params> node_type;
+  typedef typename Params::pointer pointer;
+  typedef typename Params::reference reference;
+  typedef btree_iterator<Params> self_type;
+
+  btree_iterator()
+      : btree_const_iterator<Params>() {
   }
-  btree_mutable_iterator(node_type *n, int p)
-      : BaseIterator(n, p) {
+  btree_iterator(node_type *n, int p)
+      : btree_const_iterator<Params>(n, p) {
   }
-  btree_mutable_iterator(const btree_mutable_iterator &x)
-      : BaseIterator(x) {
+  btree_iterator(const btree_iterator &x)
+      : btree_const_iterator<Params>(x) {
   }
 
-  btree_mutable_iterator &operator=(const btree_mutable_iterator &) = default;
+  btree_iterator &operator=(const btree_iterator &) = default;
 
-  bool operator==(const BaseIterator &x) const {
+  bool operator==(const btree_const_iterator<Params> &x) const {
     return this->node == x.node && this->position == x.position;
   }
 
 #if defined(__cplusplus) && __cplusplus >= 202002L
-  friend bool operator==(const btree_mutable_iterator &a, const btree_mutable_iterator &b) noexcept {
+  friend bool operator==(const btree_iterator &a, const btree_iterator &b) noexcept {
     return a.node == b.node && a.position == b.position;
   }
 #else
-  bool operator==(const btree_mutable_iterator &x) const {
+  bool operator==(const btree_iterator &x) const {
     return this->node == x.node && this->position == x.position;
   }
-  bool operator!=(const btree_mutable_iterator &x) const {
+  bool operator!=(const btree_iterator &x) const {
     return this->node != x.node || this->position != x.position;
   }
-  bool operator!=(const BaseIterator &x) const {
+  bool operator!=(const btree_const_iterator<Params> &x) const {
     return this->node != x.node || this->position != x.position;
   }
 #endif
@@ -884,49 +887,48 @@ struct btree_mutable_iterator : public BaseIterator {
   }
 };
 
-template <typename Node, typename Reference, typename Pointer>
-struct btree_iterator {
+template <typename Params>
+struct btree_const_iterator {
+  typedef btree_node<Params> Node;
   typedef typename Node::key_type key_type;
   typedef typename Node::size_type size_type;
   typedef typename Node::difference_type difference_type;
-  typedef typename Node::params_type params_type;
 
   typedef Node node_type;
-  typedef typename std::remove_const<Node>::type normal_node;
+  typedef Node normal_node;
   typedef const Node const_node;
-  typedef typename params_type::value_type value_type;
-  typedef typename params_type::pointer normal_pointer;
-  typedef typename params_type::reference normal_reference;
-  typedef typename params_type::const_pointer const_pointer;
-  typedef typename params_type::const_reference const_reference;
+  typedef typename Params::value_type value_type;
+  typedef typename Params::pointer normal_pointer;
+  typedef typename Params::reference normal_reference;
+  typedef typename Params::const_pointer const_pointer;
+  typedef typename Params::const_reference const_reference;
 
-  typedef Pointer pointer;
-  typedef Reference reference;
+  typedef const_pointer pointer;
+  typedef const_reference reference;
   typedef std::bidirectional_iterator_tag iterator_category;
 
-  typedef btree_iterator<
-    node_type, const_reference, const_pointer> const_iterator;
-  typedef btree_mutable_iterator<const_iterator> iterator;
-  typedef btree_iterator<Node, Reference, Pointer> self_type;
+  typedef btree_const_iterator<Params> const_iterator;
+  typedef btree_iterator<Params> iterator;
+  typedef const_iterator self_type;
 
-  btree_iterator()
+  btree_const_iterator()
       : node(NULL),
         position(-1) {
   }
-  btree_iterator(const Node *n, int p)
+  btree_const_iterator(const Node *n, int p)
       : node(const_cast<Node *>(n)),
         position(p) {
   }
-  btree_iterator(const const_iterator &x)
+  btree_const_iterator(const const_iterator &x)
       : node(x.node),
         position(x.position) {
   }
-  btree_iterator(const iterator &x)
+  btree_const_iterator(const iterator &x)
       : node(x.node),
         position(x.position) {
   }
 
-  btree_iterator &operator=(const btree_iterator &) = default;
+  btree_const_iterator &operator=(const btree_const_iterator &) = default;
 
   // Increment/decrement the iterator.
   void increment() {
@@ -946,9 +948,9 @@ struct btree_iterator {
   }
   void decrement_slow();
 
-  static size_t distance(btree_iterator from, const btree_iterator to);
+  static size_t distance(btree_const_iterator from, const btree_const_iterator to);
 
-  friend bool operator==(const btree_iterator &a, const btree_iterator &b) noexcept {
+  friend bool operator==(const btree_const_iterator &a, const btree_const_iterator &b) noexcept {
     return a.node == b.node && a.position == b.position;
   }
 
@@ -1079,8 +1081,8 @@ class btree : public Params::key_compare {
   typedef typename Params::const_reference const_reference;
   typedef typename Params::size_type size_type;
   typedef typename Params::difference_type difference_type;
-  typedef btree_iterator<node_type, const_reference, const_pointer> const_iterator;
-  typedef typename const_iterator::iterator iterator;
+  typedef btree_const_iterator<Params> const_iterator;
+  typedef btree_iterator<Params> iterator;
   typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
   typedef std::reverse_iterator<iterator> reverse_iterator;
 
@@ -1884,9 +1886,9 @@ void btree_node<P>::swap(btree_node *x) {
 }
 
 ////
-// btree_iterator methods
-template <typename N, typename R, typename P>
-void btree_iterator<N, R, P>::increment_slow() {
+// btree_const_iterator methods
+template <typename P>
+void btree_const_iterator<P>::increment_slow() {
   if (node->leaf()) {
     dbg_assert(position >= node->count());
     self_type save(*this);
@@ -1908,8 +1910,8 @@ void btree_iterator<N, R, P>::increment_slow() {
   }
 }
 
-template <typename N, typename R, typename P>
-void btree_iterator<N, R, P>::increment_by(int count) {
+template <typename P>
+void btree_const_iterator<P>::increment_by(int count) {
   while (count > 0) {
     if (node->leaf()) {
       int rest = node->count() - position;
@@ -1925,8 +1927,8 @@ void btree_iterator<N, R, P>::increment_by(int count) {
   }
 }
 
-template <typename N, typename R, typename P>
-void btree_iterator<N, R, P>::decrement_slow() {
+template <typename P>
+void btree_const_iterator<P>::decrement_slow() {
   if (node->leaf()) {
     dbg_assert(position <= -1);
     self_type save(*this);
@@ -1948,8 +1950,8 @@ void btree_iterator<N, R, P>::decrement_slow() {
   }
 }
 
-template <typename N, typename R, typename P>
-size_t btree_iterator<N, R, P>::distance(btree_iterator<N, R, P> from, const btree_iterator<N, R, P> to) {
+template <typename P>
+size_t btree_const_iterator<P>::distance(btree_const_iterator<P> from, const btree_const_iterator<P> to) {
   size_t result = 0;
   while (from != to) {
     if (from.node->leaf()) {
