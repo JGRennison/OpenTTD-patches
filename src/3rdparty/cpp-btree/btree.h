@@ -818,6 +818,72 @@ public:
 #endif
 #endif /* _MSC_VER */
 
+template <typename BaseIterator>
+struct btree_mutable_iterator : public BaseIterator {
+  typedef typename BaseIterator::normal_node node_type;
+  typedef typename BaseIterator::normal_pointer pointer;
+  typedef typename BaseIterator::normal_reference reference;
+  typedef btree_mutable_iterator<BaseIterator> self_type;
+
+  btree_mutable_iterator()
+      : BaseIterator() {
+  }
+  btree_mutable_iterator(node_type *n, int p)
+      : BaseIterator(n, p) {
+  }
+  btree_mutable_iterator(const btree_mutable_iterator &x)
+      : BaseIterator(x) {
+  }
+
+  btree_mutable_iterator &operator=(const btree_mutable_iterator &) = default;
+
+  bool operator==(const BaseIterator &x) const {
+    return this->node == x.node && this->position == x.position;
+  }
+
+#if defined(__cplusplus) && __cplusplus >= 202002L
+  friend bool operator==(const btree_mutable_iterator &a, const btree_mutable_iterator &b) noexcept {
+    return a.node == b.node && a.position == b.position;
+  }
+#else
+  bool operator==(const btree_mutable_iterator &x) const {
+    return this->node == x.node && this->position == x.position;
+  }
+  bool operator!=(const btree_mutable_iterator &x) const {
+    return this->node != x.node || this->position != x.position;
+  }
+  bool operator!=(const BaseIterator &x) const {
+    return this->node != x.node || this->position != x.position;
+  }
+#endif
+
+  reference operator*() const {
+    return this->node->value(this->position);
+  }
+  pointer operator->() const {
+    return &this->node->value(this->position);
+  }
+
+  self_type& operator++() {
+    this->increment();
+    return *this;
+  }
+  self_type& operator--() {
+    this->decrement();
+    return *this;
+  }
+  self_type operator++(int) {
+    self_type tmp = *this;
+    ++*this;
+    return tmp;
+  }
+  self_type operator--(int) {
+    self_type tmp = *this;
+    --*this;
+    return tmp;
+  }
+};
+
 template <typename Node, typename Reference, typename Pointer>
 struct btree_iterator {
   typedef typename Node::key_type key_type;
@@ -839,18 +905,21 @@ struct btree_iterator {
   typedef std::bidirectional_iterator_tag iterator_category;
 
   typedef btree_iterator<
-    normal_node, normal_reference, normal_pointer> iterator;
-  typedef btree_iterator<
-    const_node, const_reference, const_pointer> const_iterator;
+    node_type, const_reference, const_pointer> const_iterator;
+  typedef btree_mutable_iterator<const_iterator> iterator;
   typedef btree_iterator<Node, Reference, Pointer> self_type;
 
   btree_iterator()
       : node(NULL),
         position(-1) {
   }
-  btree_iterator(Node *n, int p)
-      : node(n),
+  btree_iterator(const Node *n, int p)
+      : node(const_cast<Node *>(n)),
         position(p) {
+  }
+  btree_iterator(const const_iterator &x)
+      : node(x.node),
+        position(x.position) {
   }
   btree_iterator(const iterator &x)
       : node(x.node),
@@ -1010,8 +1079,8 @@ class btree : public Params::key_compare {
   typedef typename Params::const_reference const_reference;
   typedef typename Params::size_type size_type;
   typedef typename Params::difference_type difference_type;
-  typedef btree_iterator<node_type, reference, pointer> iterator;
-  typedef typename iterator::const_iterator const_iterator;
+  typedef btree_iterator<node_type, const_reference, const_pointer> const_iterator;
+  typedef typename const_iterator::iterator iterator;
   typedef std::reverse_iterator<const_iterator> const_reverse_iterator;
   typedef std::reverse_iterator<iterator> reverse_iterator;
 
