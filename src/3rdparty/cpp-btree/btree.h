@@ -877,6 +877,8 @@ struct btree_iterator {
   }
   void decrement_slow();
 
+  static size_t distance(btree_iterator from, const btree_iterator to);
+
   friend bool operator==(const btree_iterator &a, const btree_iterator &b) noexcept {
     return a.node == b.node && a.position == b.position;
   }
@@ -1201,7 +1203,7 @@ class btree : public Params::key_compare {
   }
   // Returns a count of the number of times the key appears in the btree.
   size_type count_multi(const key_type &key) const {
-    return distance(lower_bound(key), upper_bound(key));
+    return const_iterator::distance(lower_bound(key), upper_bound(key));
   }
 
   // Clear the btree, deleting all of the values it contains.
@@ -1857,6 +1859,24 @@ void btree_iterator<N, R, P>::decrement_slow() {
   }
 }
 
+template <typename N, typename R, typename P>
+size_t btree_iterator<N, R, P>::distance(btree_iterator<N, R, P> from, const btree_iterator<N, R, P> to) {
+  size_t result = 0;
+  while (from != to) {
+    if (from.node->leaf()) {
+      if (from.node == to.node) {
+        return result + (to.position - from.position);
+      }
+      result += from.node->count() - from.position;
+      from.position = from.node->count();
+    } else {
+      result++;
+    }
+    from.increment_slow();
+  }
+  return result;
+}
+
 ////
 // btree methods
 template <typename P>
@@ -2057,8 +2077,8 @@ typename btree<P>::iterator btree<P>::erase(iterator iter) {
 
 template <typename P>
 int btree<P>::erase(iterator begin, iterator end) {
-  int count = distance(begin, end);
-  for (int i = 0; i < count; i++) {
+  size_t count = const_iterator::distance(begin, end);
+  for (size_t i = 0; i < count; i++) {
     begin = erase(begin);
   }
   return count;
