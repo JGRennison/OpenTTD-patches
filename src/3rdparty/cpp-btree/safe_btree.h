@@ -367,14 +367,14 @@ class safe_btree {
     ++generation_;
     return iterator(this, res);
   }
-  int erase_unique(const key_type &key) {
-    int res = tree_.erase_unique(key);
-    generation_ += res;
+  size_t erase_unique(const key_type &key) {
+    size_t res = tree_.erase_unique(key);
+    generation_ += static_cast<int64_t>(res);
     return res;
   }
-  int erase_multi(const key_type &key) {
-    int res = tree_.erase_multi(key);
-    generation_ += res;
+  size_t erase_multi(const key_type &key) {
+    size_t res = tree_.erase_multi(key);
+    generation_ += static_cast<int64_t>(res);
     return res;
   }
 

@@ -1162,15 +1162,15 @@ class btree : public Params::key_compare {
   iterator erase(iterator iter);
 
   // Erases range. Returns the number of keys erased.
-  int erase(iterator begin, iterator end);
+  size_t erase(iterator begin, iterator end);
 
   // Erases the specified key from the btree. Returns 1 if an element was
   // erased and 0 otherwise.
-  int erase_unique(const key_type &key);
+  size_t erase_unique(const key_type &key);
 
   // Erases all of the entries matching the specified key from the
   // btree. Returns the number of elements erased.
-  int erase_multi(const key_type &key);
+  size_t erase_multi(const key_type &key);
 
   // Finds the iterator corresponding to a key or returns end() if the key is
   // not present.
@@ -2076,7 +2076,7 @@ typename btree<P>::iterator btree<P>::erase(iterator iter) {
 }
 
 template <typename P>
-int btree<P>::erase(iterator begin, iterator end) {
+size_t btree<P>::erase(iterator begin, iterator end) {
   size_t count = const_iterator::distance(begin, end);
   for (size_t i = 0; i < count; i++) {
     begin = erase(begin);
@@ -2085,7 +2085,7 @@ int btree<P>::erase(iterator begin, iterator end) {
 }
 
 template <typename P>
-int btree<P>::erase_unique(const key_type &key) {
+size_t btree<P>::erase_unique(const key_type &key) {
   iterator iter = internal_find_unique(key, iterator(root(), 0));
   if (!iter.node) {
     // The key doesn't exist in the tree, return nothing done.
@@ -2096,7 +2096,7 @@ int btree<P>::erase_unique(const key_type &key) {
 }
 
 template <typename P>
-int btree<P>::erase_multi(const key_type &key) {
+size_t btree<P>::erase_multi(const key_type &key) {
   iterator begin = internal_lower_bound(key, iterator(root(), 0));
   if (!begin.node) {
     // The key doesn't exist in the tree, return nothing done.
