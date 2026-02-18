@@ -94,6 +94,11 @@ class safe_btree_set : public btree_unique_container<
   void swap(btree_set<Key, Compare, Alloc, TargetNodeSize> &x) {
     this->tree_.swap(x.tree_);
   }
+
+  // Unprotected read-only view
+  auto unprotected_view() const {
+    return safe_btree_unprotected_view(*this->tree_.internal_btree());
+  }
 };
 
 template <typename K, typename C, typename A, int N>

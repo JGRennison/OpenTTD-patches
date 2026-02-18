@@ -443,6 +443,39 @@ class safe_btree {
   int64_t generation_;
 };
 
+template <typename Tree>
+class safe_btree_unprotected_view {
+ public:
+  typedef typename Tree::const_iterator iterator;
+  typedef typename Tree::const_iterator const_iterator;
+  typedef typename Tree::key_type key_type;
+  typedef typename Tree::data_type data_type;
+  typedef typename Tree::mapped_type mapped_type;
+  typedef typename Tree::value_type value_type;
+  typedef typename Tree::key_compare key_compare;
+  typedef typename Tree::allocator_type allocator_type;
+  typedef typename Tree::pointer pointer;
+  typedef typename Tree::const_pointer const_pointer;
+  typedef typename Tree::reference reference;
+  typedef typename Tree::const_reference const_reference;
+  typedef typename Tree::size_type size_type;
+  typedef typename Tree::difference_type difference_type;
+
+  safe_btree_unprotected_view(const Tree &tree) : tree_(tree) {}
+
+  const_iterator begin() const {
+    return tree_.begin();
+  }
+  const_iterator end() const {
+    return tree_.end();
+  }
+
+  size_type size() const { return tree_.size(); }
+
+ private:
+  const Tree &tree_;
+};
+
 }  // namespace btree
 
 #endif  // UTIL_BTREE_SAFE_BTREE_H__
