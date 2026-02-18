@@ -938,7 +938,7 @@ struct btree_const_iterator {
     }
     increment_slow();
   }
-  void increment_by(int count);
+  void increment_by(ptrdiff_t count);
   void increment_slow();
 
   void decrement() {
@@ -947,6 +947,7 @@ struct btree_const_iterator {
     }
     decrement_slow();
   }
+  void decrement_by(ptrdiff_t count);
   void decrement_slow();
 
   static size_t distance(btree_const_iterator from, const btree_const_iterator to);
@@ -1938,11 +1939,11 @@ void btree_const_iterator<P>::increment_slow() {
 }
 
 template <typename P>
-void btree_const_iterator<P>::increment_by(int count) {
+void btree_const_iterator<P>::increment_by(ptrdiff_t count) {
   while (count > 0) {
     if (node->leaf()) {
       int rest = node->count() - position;
-      position += std::min(rest, count);
+      position += static_cast<int>(std::min<ptrdiff_t>(rest, count));
       count = count - rest;
       if (position < node->count()) {
         return;
@@ -1974,6 +1975,23 @@ void btree_const_iterator<P>::decrement_slow() {
       node = node->child(node->count());
     }
     position = node->count() - 1;
+  }
+}
+
+template <typename P>
+void btree_const_iterator<P>::decrement_by(ptrdiff_t count) {
+  while (count > 0) {
+    if (node->leaf()) {
+      int rest = position + 1;
+      position -= static_cast<int>(std::min<ptrdiff_t>(rest, count));
+      count -= rest;
+      if (position >= 0) {
+        return;
+      }
+    } else {
+      --count;
+    }
+    decrement_slow();
   }
 }
 
