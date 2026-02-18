@@ -365,6 +365,14 @@ class safe_btree {
     ++generation_;
     return iterator(this, res);
   }
+  template <typename Pred>
+  iterator erase_count_if(const iterator &begin, size_t count, Pred pred) {
+    if (count == 0) return begin;
+    const size_t initial_size = tree_.size();
+    tree_iterator res = tree_.erase_count_if(begin.iter(), count, std::move(pred));
+    if (initial_size != tree_.size()) ++generation_;
+    return iterator(this, res);
+  }
   // Erase the specified iterator from the btree. The iterator must be valid
   // (i.e. not equal to end()).  Return an iterator pointing to the node after
   // the one that was erased (or end() if none exists).

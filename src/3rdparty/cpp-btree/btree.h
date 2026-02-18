@@ -789,6 +789,9 @@ public:
     root.rightmost = parent;
     root.size = parent->count();
   }
+  void value_destroy(int i) {
+    get_values_ptr()[i].~value_type();
+  }
   void destroy() {
     for (int i = 0; i < count(); ++i) {
       value_destroy(i);
@@ -799,9 +802,6 @@ public:
   template <typename... Args>
   void value_init_args(int i, Args&&... args) {
     new (get_values_ptr() + i) value_type(std::forward<Args>(args)...);
-  }
-  void value_destroy(int i) {
-    get_values_ptr()[i].~value_type();
   }
 
  private:
@@ -1243,6 +1243,11 @@ class btree : public Params::key_compare {
   // Erases count items starting at begin iterator. Return an iterator pointing to the node after
   // the ones that were erased (or end() if none exists).
   iterator erase_count(iterator begin, size_t count);
+
+  // Erases count items starting at begin iterator, which match pred. Return an iterator pointing to the node after
+  // the ones that were evaluated by pred (or end() if none exists).
+  template <typename Pred>
+  iterator erase_count_if(iterator begin, size_t count, Pred pred);
 
   // Erases the specified key from the btree. Returns 1 if an element was
   // erased and 0 otherwise.
@@ -2218,6 +2223,42 @@ typename btree<P>::iterator btree<P>::erase_count(iterator begin, size_t count) 
     } else {
       begin = erase(begin);
       count--;
+    }
+  }
+  return begin;
+}
+
+template <typename P> template <typename Pred>
+typename btree<P>::iterator btree<P>::erase_count_if(iterator begin, size_t count, Pred pred) {
+  ptrdiff_t remaining = static_cast<ptrdiff_t>(count);
+  while (remaining > 0) {
+    if (begin.node->leaf()) {
+      int target_pos = begin.position;
+      const int end_pos = begin.node->count();
+      for (int pos = begin.position; pos < end_pos; pos++) {
+        --remaining;
+        if (remaining >= 0 && pred(begin.node->value(pos))) {
+          begin.node->value_destroy(pos);
+        } else {
+          if (pos != target_pos) {
+            begin.node->value_move_construct(target_pos, begin.node, pos);
+            begin.node->value_destroy(pos);
+          }
+          target_pos++;
+        }
+      }
+      begin.node->set_count(target_pos);
+      if (!root()->leaf()) *mutable_size() -= (end_pos - target_pos);
+      begin.position = target_pos;
+      if (remaining < 0) begin.position += static_cast<int>(remaining);
+      begin = rebalance_after_delete(begin);
+    } else {
+      if (pred(*begin)) {
+        begin = erase(begin);
+      } else {
+        ++begin;
+      }
+      remaining--;
     }
   }
   return begin;

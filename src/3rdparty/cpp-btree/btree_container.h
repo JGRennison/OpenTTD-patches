@@ -244,6 +244,10 @@ class btree_unique_container : public btree_container<Tree> {
   iterator erase_count(const iterator &first, size_t count) {
     return this->tree_.erase_count(first, count);
   }
+  template <typename Pred>
+  iterator erase_count_if(const iterator &first, size_t count, Pred pred) {
+    return this->tree_.erase_count_if(first, count, std::move(pred));
+  }
 };
 
 // A common base class for btree_map and safe_btree_map.
@@ -389,6 +393,10 @@ class btree_multi_container : public btree_container<Tree> {
   }
   iterator erase_count(const iterator &first, size_t count) {
     return this->tree_.erase_count(first, count);
+  }
+  template <typename Pred>
+  iterator erase_count_if(const iterator &first, size_t count, Pred pred) {
+    return this->tree_.erase_count_if(first, count, std::move(pred));
   }
 };
 
