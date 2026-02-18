@@ -810,18 +810,23 @@ bool ScriptList::KeepTopBottomFastPath(SQInteger count)
 	/* Fast path: keeping <= 20% of list, and don't need to update the sorter, just create new container(s) */
 	SQInteger keep = this->Count() - count;
 
-	ScriptListMap new_items;       ///< The items in the list
-	ScriptListValueSet new_values; ///< The items in the list, sorted by value
+	using ItemMap = btree::btree_map<SQInteger, SQInteger>;
+	using ValueSet = btree::btree_set<std::pair<SQInteger, SQInteger>>;
+	ItemMap new_items;                                 ///< The new items in the list
+	ValueSet new_values;                               ///< The new items in the list, sorted by value
+	auto old_items = this->items.unprotected_view();   ///< The old/current items in the list
+	auto old_values = this->values.unprotected_view(); ///< The old/current items in the list, sorted by value
 
 	switch (this->sorter_type) {
 		default: NOT_REACHED();
 		case SORT_BY_VALUE:
 			if (this->values_inited) {
-				ScriptListValueSet::iterator iter;
+				ValueSet::const_iterator iter;
 				if constexpr (KEEP_BOTTOM) {
-					iter = std::prev(this->values.end(), keep);
+					iter = old_values.end();
+					iter.decrement_by(static_cast<ptrdiff_t>(keep));
 				} else {
-					iter = this->values.begin();
+					iter = old_values.begin();
 				}
 				while (true) {
 					new_values.insert(new_values.end(), *iter);
@@ -830,7 +835,7 @@ bool ScriptList::KeepTopBottomFastPath(SQInteger count)
 					++iter;
 				}
 			} else {
-				for (const auto &iter : this->items) {
+				for (const auto &iter : old_items) {
 					auto to_insert = std::make_pair(iter.second, iter.first);
 					if (static_cast<SQInteger>(new_values.size()) < keep) {
 						new_values.insert(to_insert);
@@ -854,11 +859,12 @@ bool ScriptList::KeepTopBottomFastPath(SQInteger count)
 			break;
 
 		case SORT_BY_ITEM: {
-			ScriptListMap::iterator iter;
+			ItemMap::const_iterator iter;
 			if constexpr (KEEP_BOTTOM) {
-				iter = std::prev(this->items.end(), keep);
+				iter = old_items.end();
+				iter.decrement_by(static_cast<ptrdiff_t>(keep));
 			} else {
-				iter = this->items.begin();
+				iter = old_items.begin();
 			}
 			while (true) {
 				new_items.insert(new_items.end(), *iter);
@@ -869,9 +875,9 @@ bool ScriptList::KeepTopBottomFastPath(SQInteger count)
 		}
 	}
 
-	Squirrel::DecreaseAllocatedSize((this->items.size() - new_items.size()) * SCRIPT_LIST_BYTES_PER_ITEM);
-	this->items = std::move(new_items);
-	this->values = std::move(new_values);
+	Squirrel::DecreaseAllocatedSize((old_items.size() - new_items.size()) * SCRIPT_LIST_BYTES_PER_ITEM);
+	this->items.swap(new_items);
+	this->values.swap(new_values);
 	this->values_inited = !this->values.empty();
 
 	return true;
