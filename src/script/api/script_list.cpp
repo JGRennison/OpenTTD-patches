@@ -755,21 +755,13 @@ void ScriptList::RemoveItems(ValueFilter value_filter)
 
 	if (!this->initialized || this->sorter->IsEnd()) {
 		/* Fast path */
-		for (ScriptListMap::iterator iter = this->items.begin(); iter != this->items.end();) {
-			if (value_filter(iter->first, iter->second)) {
-				iter = this->items.erase(iter);
-			} else {
-				++iter;
-			}
-		}
+		this->items.erase_count_if(this->items.begin(), this->items.size(), [value_filter](const ScriptListMap::value_type &item) -> bool {
+			return value_filter(item.first, item.second);
+		});
 		if (this->values_inited) {
-			for (ScriptListValueSet::iterator iter = this->values.begin(); iter != this->values.end();) {
-				if (value_filter(iter->second, iter->first)) {
-					iter = this->values.erase(iter);
-				} else {
-					++iter;
-				}
-			}
+			this->values.erase_count_if(this->values.begin(), this->values.size(), [value_filter](const ScriptListValueSet::value_type &item) -> bool {
+				return value_filter(item.second, item.first);
+			});
 			assert(this->values.size() == this->items.size());
 		}
 
