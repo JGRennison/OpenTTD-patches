@@ -2547,6 +2547,8 @@ STR_NETWORK_CLIENT_LIST_SERVER_CONNECTION_TYPE_TURN             :{BLACK}Mā tēt
 STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_KICK                       :Whana atu
 STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_BAN                        :Aukati
 STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_RESET                     :Muku
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_ALLOW_ANY                 :Tukuna ngā kiritaki katoa
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_ALLOW_LISTED              :Tukuna ngā kiritaki anake kei te rārangi
 
 STR_NETWORK_CLIENT_LIST_ASK_CAPTION                             :{WHITE}Mahi whakahaere
 STR_NETWORK_CLIENT_LIST_ASK_CLIENT_KICK                         :{YELLOW}Kei te tino hiahia rānei koe ki te whana i te kaitākaro ko {STRING}?
@@ -3797,7 +3799,7 @@ STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_MEDIUM_ADVERTISING           :{PUSH_COLOUR}{Y
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_LARGE_ADVERTISING            :{PUSH_COLOUR}{YELLOW}Tīmatahia he whakatairanga rahi kia whakamanea ai i te maha ake o ngā kaieke me te utanga ki ō ratonga kawekawe.{}Ka whakapai taupuatia te hau o ngā teihana i tētahi pūtoro rahi mai i te pokapū o te tāone.{}{POP_COLOUR}Utu: {CURRENCY_LONG}
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_ROAD_RECONSTRUCTION_MONTHS   :{PUSH_COLOUR}{YELLOW}Whakarato moni mō te whakahouhou i te whatunga rori tāone.{}Ka whakatōhenehene nuitia ngā waka rori mō te 6 marama pea i te mōrahi.{}{POP_COLOUR}Utu: {CURRENCY_LONG}
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_ROAD_RECONSTRUCTION_MINUTES  :{PUSH_COLOUR}{YELLOW}Whakarato moni mō te whakahouhou i te whatunga rori tāone.{}Ka whakatōhenehene nuitia ngā waka rori mō te 6 meneti pea i te mōrahi.{}{POP_COLOUR}Utu: {CURRENCY_LONG}
-STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_STATUE_OF_COMPANY            :{PUSH_COLOUR}{YELLOW}Hangaia he pakoko kia hōnore i tō umanga.{}Ka whakapaia te hau o ngā teihana i tēnei tāone mō āke tonu.{}{POP_COLOUR}Utu: {CURRENCY_LONG}
+STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_STATUE_OF_COMPANY            :{PUSH_COLOUR}{YELLOW}Hangaia he pakoko kia hōnore i tō umanga.{}Ka whakapaia ake tonu atu te hau o ngā teihana i tēnei tāone.{}{POP_COLOUR}Utu: {CURRENCY_LONG}
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_NEW_BUILDINGS                :{PUSH_COLOUR}{YELLOW}Whakarato moni mō te hanga i ētahi whare hou i te tāone.{}Ka whakahohoro taupuatia te tupu a te tāone.{}{POP_COLOUR}Utu: {CURRENCY_LONG}
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT_MONTHS   :{PUSH_COLOUR}{YELLOW}Hokona mai ngā mōtika kawekawe kaupare i te tāone mō te 12 marama.{}Ka āraia te kāwanatanga ā rohe kei whakamahi ngā kaieke me te utanga i ngā teihana o ngā kaiwhakataetae. Ka whakakorea tēnei kirimana e te whakapati nā ngā kaiwhakataetae.{}{POP_COLOUR}Utu: {CURRENCY_LONG}
 STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_EXCLUSIVE_TRANSPORT_MINUTES  :{PUSH_COLOUR}{YELLOW}Hokona mai ngā mōtika kawekawe kaupare i te tāone mō te 12 meneti.{}Ka āraia te kāwanatanga ā rohe kei whakamahi ngā kaieke me te utanga i ngā teihana o ngā kaiwhakataetae. Ka whakakorea tēnei kirimana e te whakapati nā ngā kaiwhakataetae.{}{POP_COLOUR}Utu: {CURRENCY_LONG}

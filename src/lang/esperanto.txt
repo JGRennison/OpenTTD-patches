@@ -2641,6 +2641,8 @@ STR_NETWORK_CLIENT_LIST_SERVER_CONNECTION_TYPE_TURN             :{BLACK}Tra rela
 STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_KICK                       :Forbati
 STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_BAN                        :Forbaru
 STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_RESET                     :Forigi
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_ALLOW_ANY                 :Permesi ĉiun klienton
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_ALLOW_LISTED              :Permesi nur listigitajn klientojn
 
 STR_NETWORK_CLIENT_LIST_ASK_CAPTION                             :{WHITE}Administra ago
 STR_NETWORK_CLIENT_LIST_ASK_CLIENT_KICK                         :{YELLOW}Ĉu vi certas ke vi volas forĵeti la ludantoj '{STRING}'?

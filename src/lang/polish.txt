@@ -2927,6 +2927,8 @@ STR_NETWORK_CLIENT_LIST_SERVER_CONNECTION_TYPE_TURN             :{BLACK}Przez pr
 STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_KICK                       :Wyrzuć
 STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_BAN                        :Zbanuj
 STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_RESET                     :Usuń
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_ALLOW_ANY                 :Zezwól wszystkim graczą na dołączanie
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_ALLOW_LISTED              :Zezwól tylko wybranym graczą na dołączanie
 
 STR_NETWORK_CLIENT_LIST_ASK_CAPTION                             :{WHITE}Działanie administratora
 STR_NETWORK_CLIENT_LIST_ASK_CLIENT_KICK                         :{YELLOW}Czy na pewno chcesz wyrzucić gracza „{STRING}”?
@@ -4612,6 +4614,17 @@ STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Typ samo
 STR_PURCHASE_INFO_RAILTYPES                                     :{BLACK}Rodzaje torów: {GOLD}{STRING}
 
 # Vehicle sort details
+STR_PURCHASE_SORT_DETAILS_COST                                  :{CURRENCY_LONG}
+STR_PURCHASE_SORT_DETAILS_SPEED                                 :{VELOCITY}
+STR_PURCHASE_SORT_DETAILS_POWER                                 :{POWER}
+STR_PURCHASE_SORT_DETAILS_MAX_TE                                :{FORCE}
+STR_PURCHASE_SORT_DETAILS_INTRO_DATE                            :{NUM}
+STR_PURCHASE_SORT_DETAILS_RUNNINGCOST_YEAR                      :{CURRENCY_LONG}/rok
+STR_PURCHASE_SORT_DETAILS_RUNNINGCOST_PERIOD                    :{CURRENCY_LONG}/okres
+STR_PURCHASE_SORT_DETAILS_RELIABILITY                           :{COMMA}%
+STR_PURCHASE_SORT_DETAILS_POWER_VS_RUNNING_COST                 :{DECIMAL}
+STR_PURCHASE_SORT_DETAILS_AIRCRAFT_RANGE                        :{COMMA} pól
+STR_PURCHASE_SORT_DETAILS_CAPACITY                              :{COMMA}
 
 ###length 3
 STR_CARGO_TYPE_FILTER_ALL                                       :Wszystkie typy ładunków

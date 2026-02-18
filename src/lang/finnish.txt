@@ -2547,6 +2547,8 @@ STR_NETWORK_CLIENT_LIST_SERVER_CONNECTION_TYPE_TURN             :{BLACK}Välitys
 STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_KICK                       :Potki
 STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_BAN                        :Estä
 STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_RESET                     :Poista
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_ALLOW_ANY                 :Salli kaikki asiakkaat
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_ALLOW_LISTED              :Salli vain luetellut asiakkaat
 
 STR_NETWORK_CLIENT_LIST_ASK_CAPTION                             :{WHITE}Ylläpitäjän toiminta
 STR_NETWORK_CLIENT_LIST_ASK_CLIENT_KICK                         :{YELLOW}Haluatko varmasti potkia pelaajan ”{STRING}” pelistä?

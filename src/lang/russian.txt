@@ -2698,6 +2698,8 @@ STR_NETWORK_CLIENT_LIST_SERVER_CONNECTION_TYPE_TURN             :{BLACK}Чере
 STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_KICK                       :Отключить
 STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_BAN                        :Заблокировать
 STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_RESET                     :Удалить
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_ALLOW_ANY                 :Разрешить подключение любых клиентов
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_ALLOW_LISTED              :Разрешить подключение только указанных клиентов
 
 STR_NETWORK_CLIENT_LIST_ASK_CAPTION                             :{WHITE}Подтверждение действия
 STR_NETWORK_CLIENT_LIST_ASK_CLIENT_KICK                         :{YELLOW}Отключить игрока «{STRING}»?

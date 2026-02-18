@@ -2640,6 +2640,8 @@ STR_NETWORK_CLIENT_LIST_SERVER_CONNECTION_TYPE_TURN             :{BLACK}Μέσω
 STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_KICK                       :Εκδίωξη
 STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_BAN                        :Απαγόρευση
 STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_RESET                     :Διαγραφή
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_ALLOW_ANY                 :Επιτρέπονται όλοι οι πελάτες
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_ALLOW_LISTED              :Επιτρέπονται μόνο πελάτες που βρίσκονται στη λίστα
 
 STR_NETWORK_CLIENT_LIST_ASK_CAPTION                             :{WHITE}Ενέργεια διαχειριστή
 STR_NETWORK_CLIENT_LIST_ASK_CLIENT_KICK                         :{YELLOW}Σίγουρα θέλετε να διώξετε τον παίκτη «{STRING}»;
