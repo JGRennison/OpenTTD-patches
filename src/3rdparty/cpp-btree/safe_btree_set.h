@@ -87,6 +87,13 @@ class safe_btree_set : public btree_unique_container<
                  const allocator_type &alloc = allocator_type())
       : super_type(b, e, comp, alloc) {
   }
+
+  using super_type::swap;
+
+  // Swap with equivalent normal btree set
+  void swap(btree_set<Key, Compare, Alloc, TargetNodeSize> &x) {
+    this->tree_.swap(x.tree_);
+  }
 };
 
 template <typename K, typename C, typename A, int N>

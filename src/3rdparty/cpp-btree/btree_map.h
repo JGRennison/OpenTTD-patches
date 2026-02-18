@@ -33,6 +33,13 @@
 
 namespace btree {
 
+// Forward declare safe_btree_map so it can be declared a friend;
+template <typename Key, typename Value,
+          typename Compare,
+          typename Alloc,
+          int TargetNodeSize>
+class safe_btree_map;
+
 // The btree_map class is needed mainly for its constructors.
 template <typename Key, typename Value,
           typename Compare = std::less<Key>,
@@ -50,6 +57,8 @@ class btree_map : public btree_map_container<
  public:
   typedef typename btree_type::key_compare key_compare;
   typedef typename btree_type::allocator_type allocator_type;
+
+  friend class safe_btree_map<Key, Value, Compare, Alloc, TargetNodeSize>;
 
  public:
   // Default constructor.
