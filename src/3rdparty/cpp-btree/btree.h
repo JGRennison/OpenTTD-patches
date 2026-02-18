@@ -748,6 +748,7 @@ public:
   // Removes the value at position i, shifting all existing values and children
   // at positions > i to the left by 1.
   void remove_value(int i);
+  void remove_values_from_leaf(int i, int to_remove);
 
   // Rebalances a node with its right sibling.
   void rebalance_right_to_left(btree_node *sibling, int to_move);
@@ -1232,8 +1233,16 @@ class btree : public Params::key_compare {
   // the one that was erased (or end() if none exists).
   iterator erase(iterator iter);
 
+ private:
+  iterator rebalance_after_delete(iterator iter);
+
+ public:
   // Erases range. Returns the number of keys erased.
   size_t erase(iterator begin, iterator end);
+
+  // Erases count items starting at begin iterator. Return an iterator pointing to the node after
+  // the ones that were erased (or end() if none exists).
+  iterator erase_count(iterator begin, size_t count);
 
   // Erases the specified key from the btree. Returns 1 if an element was
   // erased and 0 otherwise.
@@ -1678,6 +1687,19 @@ inline void btree_node<P>::remove_value(int i) {
     value_move(i, this, i + 1);
   }
   value_destroy(i);
+}
+
+template <typename P>
+inline void btree_node<P>::remove_values_from_leaf(int i, int to_remove) {
+  dbg_assert(leaf());
+
+  set_count(count() - to_remove);
+  for (; i < count(); ++i) {
+    value_move(i, this, i + to_remove);
+  }
+  for (int j = 0; j < to_remove; j++) {
+    value_destroy(i + j);
+  }
 }
 
 template <typename P>
@@ -2130,6 +2152,16 @@ typename btree<P>::iterator btree<P>::erase(iterator iter) {
   // internal node and the value in the internal node may move to a leaf node
   // (iter.node) when rebalancing is performed at the leaf level.
 
+  iterator res = rebalance_after_delete(iter);
+  // If we erased from an internal node, advance the iterator.
+  if (internal_delete) {
+    ++res;
+  }
+  return res;
+}
+
+template <typename P>
+typename btree<P>::iterator btree<P>::rebalance_after_delete(iterator iter) {
   // Merge/rebalance as we walk back up the tree.
   iterator res(iter);
   for (;;) {
@@ -2159,20 +2191,36 @@ typename btree<P>::iterator btree<P>::erase(iterator iter) {
     res.position = res.node->count() - 1;
     ++res;
   }
-  // If we erased from an internal node, advance the iterator.
-  if (internal_delete) {
-    ++res;
-  }
   return res;
 }
 
 template <typename P>
 size_t btree<P>::erase(iterator begin, iterator end) {
   size_t count = const_iterator::distance(begin, end);
-  for (size_t i = 0; i < count; i++) {
-    begin = erase(begin);
-  }
+  erase_count(begin, count);
   return count;
+}
+
+template <typename P>
+typename btree<P>::iterator btree<P>::erase_count(iterator begin, size_t count) {
+  if (count == size()) {
+    clear();
+    return end();
+  }
+  while (count > 0) {
+    if (begin.node->leaf()) {
+      size_t remaining = static_cast<size_t>(begin.node->count() - begin.position);
+      size_t to_remove = std::min(count, remaining);
+      if (!root()->leaf()) *mutable_size() -= to_remove;
+      count -= to_remove;
+      begin.node->remove_values_from_leaf(begin.position, static_cast<int>(to_remove));
+      begin = rebalance_after_delete(begin);
+    } else {
+      begin = erase(begin);
+      count--;
+    }
+  }
+  return begin;
 }
 
 template <typename P>

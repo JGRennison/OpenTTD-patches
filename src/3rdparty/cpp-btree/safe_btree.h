@@ -359,6 +359,12 @@ class safe_btree {
     tree_.erase(begin.iter(), end.iter());
     ++generation_;
   }
+  iterator erase_count(const iterator &begin, size_t count) {
+    if (count == 0) return begin;
+    tree_iterator res = tree_.erase_count(begin.iter(), count);
+    ++generation_;
+    return iterator(this, res);
+  }
   // Erase the specified iterator from the btree. The iterator must be valid
   // (i.e. not equal to end()).  Return an iterator pointing to the node after
   // the one that was erased (or end() if none exists).
