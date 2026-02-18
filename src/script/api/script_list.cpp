@@ -404,7 +404,7 @@ bool ScriptList::SaveObject(HSQUIRRELVM vm)
 	sq_pushbool(vm, this->sort_ascending ? SQTrue : SQFalse);
 	sq_arrayappend(vm, -2);
 	sq_newtable(vm);
-	for (const auto &item : this->items) {
+	for (const auto &item : this->items.unprotected_view()) {
 		sq_pushinteger(vm, item.first);
 		sq_pushinteger(vm, item.second);
 		sq_rawset(vm, -3);
@@ -592,10 +592,11 @@ void ScriptList::RemoveItem(SQInteger item)
 
 void ScriptList::InitValues()
 {
-	this->values.clear();
-	for (const auto &iter : this->items) {
-		this->values.insert(std::make_pair(iter.second, iter.first));
+	btree::btree_set<std::pair<SQInteger, SQInteger>> new_values;
+	for (const auto &iter : this->items.unprotected_view()) {
+		new_values.insert(std::make_pair(iter.second, iter.first));
 	}
+	this->values.swap(new_values);
 	this->values_inited = true;
 }
 
@@ -967,9 +968,8 @@ void ScriptList::RemoveList(ScriptList *list)
 	if (list == this) {
 		this->Clear();
 	} else {
-		ScriptListMap &list_items = list->items;
-		for (ScriptListMap::iterator iter = list_items.begin(); iter != list_items.end(); iter++) {
-			this->RemoveItem(iter->first);
+		for (const auto &it : list->items.unprotected_view()) {
+			this->RemoveItem(it.first);
 		}
 	}
 }
