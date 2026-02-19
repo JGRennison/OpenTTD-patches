@@ -1445,7 +1445,7 @@ static void CrashAirplane(Aircraft *v)
 	v->cargo.Truncate();
 	v->Next()->cargo.Truncate();
 	const Station *st = GetTargetAirportIfValid(v);
-	TileIndex vt = TileVirtXY(v->x_pos, v->y_pos);
+	TileIndex vt = TileVirtXYClampedToMap(v->x_pos, v->y_pos);
 
 	EncodedString headline;
 	if (st == nullptr) {
