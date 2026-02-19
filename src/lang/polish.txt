@@ -2927,8 +2927,8 @@ STR_NETWORK_CLIENT_LIST_SERVER_CONNECTION_TYPE_TURN             :{BLACK}Przez pr
 STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_KICK                       :Wyrzuć
 STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_BAN                        :Zbanuj
 STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_RESET                     :Usuń
-STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_ALLOW_ANY                 :Zezwól wszystkim graczą na dołączanie
-STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_ALLOW_LISTED              :Zezwól tylko wybranym graczą na dołączanie
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_ALLOW_ANY                 :Zezwól wszystkim na dołączenie
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_ALLOW_LISTED              :Zezwól tylko wybranym na dołączenie
 
 STR_NETWORK_CLIENT_LIST_ASK_CAPTION                             :{WHITE}Działanie administratora
 STR_NETWORK_CLIENT_LIST_ASK_CLIENT_KICK                         :{YELLOW}Czy na pewno chcesz wyrzucić gracza „{STRING}”?
@@ -4623,7 +4623,7 @@ STR_PURCHASE_SORT_DETAILS_RUNNINGCOST_YEAR                      :{CURRENCY_LONG}
 STR_PURCHASE_SORT_DETAILS_RUNNINGCOST_PERIOD                    :{CURRENCY_LONG}/okres
 STR_PURCHASE_SORT_DETAILS_RELIABILITY                           :{COMMA}%
 STR_PURCHASE_SORT_DETAILS_POWER_VS_RUNNING_COST                 :{DECIMAL}
-STR_PURCHASE_SORT_DETAILS_AIRCRAFT_RANGE                        :{COMMA} pól
+STR_PURCHASE_SORT_DETAILS_AIRCRAFT_RANGE                        :{COMMA} p{P ole ola ól}
 STR_PURCHASE_SORT_DETAILS_CAPACITY                              :{COMMA}
 
 ###length 3

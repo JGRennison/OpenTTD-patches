@@ -2547,6 +2547,8 @@ STR_NETWORK_CLIENT_LIST_SERVER_CONNECTION_TYPE_TURN             :{BLACK}使用�
 STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_KICK                       :踢出
 STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_BAN                        :封禁
 STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_RESET                     :删除
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_ALLOW_ANY                 :允许任何客户端
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_ALLOW_LISTED              :仅允许名单内的客户端
 
 STR_NETWORK_CLIENT_LIST_ASK_CAPTION                             :{WHITE}管理命令
 STR_NETWORK_CLIENT_LIST_ASK_CLIENT_KICK                         :{YELLOW}确定踢出“{STRING}”吗？
@@ -4232,6 +4234,17 @@ STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}飞机�
 STR_PURCHASE_INFO_RAILTYPES                                     :{BLACK}轨道类型：{GOLD}{STRING}
 
 # Vehicle sort details
+STR_PURCHASE_SORT_DETAILS_COST                                  :{CURRENCY_LONG}
+STR_PURCHASE_SORT_DETAILS_SPEED                                 :{VELOCITY}
+STR_PURCHASE_SORT_DETAILS_POWER                                 :{POWER}
+STR_PURCHASE_SORT_DETAILS_MAX_TE                                :{FORCE}
+STR_PURCHASE_SORT_DETAILS_INTRO_DATE                            :{NUM}
+STR_PURCHASE_SORT_DETAILS_RUNNINGCOST_YEAR                      :{CURRENCY_LONG}/年
+STR_PURCHASE_SORT_DETAILS_RUNNINGCOST_PERIOD                    :{CURRENCY_LONG}/周期
+STR_PURCHASE_SORT_DETAILS_RELIABILITY                           :{COMMA}%
+STR_PURCHASE_SORT_DETAILS_POWER_VS_RUNNING_COST                 :{DECIMAL}
+STR_PURCHASE_SORT_DETAILS_AIRCRAFT_RANGE                        :{COMMA}格
+STR_PURCHASE_SORT_DETAILS_CAPACITY                              :{COMMA}
 
 ###length 3
 STR_CARGO_TYPE_FILTER_ALL                                       :所有货物类型
@@ -5107,6 +5120,7 @@ STR_ERROR_ALREADY_AT_SEA_LEVEL                                  :{WHITE}……�
 STR_ERROR_TOO_HIGH                                              :{WHITE}……太高
 STR_ERROR_ALREADY_LEVELLED                                      :{WHITE}……已经平整
 STR_ERROR_BRIDGE_TOO_HIGH_AFTER_LOWER_LAND                      :{WHITE}于地形上的桥梁会过高
+STR_ERROR_MUST_DEMOLISH_RIVER_FIRST                             :{WHITE}必须先移除河流
 
 # Company related errors
 STR_ERROR_CAN_T_CHANGE_COMPANY_NAME                             :{WHITE}无法修改公司名称……
