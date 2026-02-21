@@ -391,11 +391,11 @@ int GetTrainDetailsWndVScroll(VehicleID veh_id, TrainDetailsWindowTabs det_tab)
 		}
 
 		num = max_cargo.GetCount();
-
+		num += 2; // needs two more because first line is description string and we have the feeder share
+	} else if (det_tab == TDW_TAB_PERF) {
+		num = 1; // empty and full weights
 		if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) {
-			num += 7; // needs seven more because first line is description string and we have the weight, speed, power/weight ratio, TE/weight ratio and the feeder share
-		} else {
-			num += 2; // needs one more because first line is description string and we have the feeder share
+			num += 3; // needs three more: speed, power/weight ratio, TE/weight ratio
 		}
 	} else {
 		for (const Train *v = Train::Get(veh_id); v != nullptr; v = v->GetNextVehicle()) {
@@ -428,7 +428,7 @@ void DrawTrainDetails(const Train *v, const Rect &r, int vscroll_pos, uint16_t v
 	int text_y_offset = (line_height - GetCharacterHeight(FS_NORMAL)) / 2;
 
 	/* draw the first 3 details tabs */
-	if (det_tab != TDW_TAB_TOTALS) {
+	if (det_tab != TDW_TAB_TOTALS && det_tab != TDW_TAB_PERF) {
 		Direction dir = rtl ? DIR_E : DIR_W;
 		int x = rtl ? r.right : r.left;
 		uint8_t line_number = 0;
@@ -506,30 +506,22 @@ void DrawTrainDetails(const Train *v, const Rect &r, int vscroll_pos, uint16_t v
 				vscroll_pos--;
 			}
 		}
-	} else {
+	} else if (det_tab == TDW_TAB_PERF) {
 		int y = r.top;
-		CargoArray act_cargo{};
-		CargoArray max_cargo{};
-		Money feeder_share = 0;
 		int empty_weight = 0;
 		int loaded_weight = 0;
+		for (const Train *u = v; u != nullptr; u = u->Next()) {
+			const auto weight_without_cargo = u->GetWeightWithoutCargo();
+			empty_weight  += weight_without_cargo;
+			loaded_weight += weight_without_cargo + u->GetCargoWeight(u->cargo_cap);
+		}
 
-		for (const Vehicle *u = v; u != nullptr; u = u->Next()) {
-			const Train *train = Train::From(u);
-			const auto weight_without_cargo = train->GetWeightWithoutCargo();
-			act_cargo[u->cargo_type] += u->cargo.StoredCount();
-			max_cargo[u->cargo_type] += u->cargo_cap;
-			feeder_share             += u->cargo.GetFeederShare();
-			empty_weight             += weight_without_cargo;
-			loaded_weight            += weight_without_cargo + train->GetCargoWeight(train->cargo_cap);
+		if (--vscroll_pos < 0 && vscroll_pos >= -vscroll_cap) {
+			DrawString(r.left, r.right, y + text_y_offset, GetString(STR_VEHICLE_DETAILS_TRAIN_TOTAL_WEIGHT, empty_weight, loaded_weight));
+			y += line_height;
 		}
 
 		if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) {
-			if (--vscroll_pos < 0 && vscroll_pos >= -vscroll_cap) {
-				DrawString(r.left, r.right, y + text_y_offset, GetString(STR_VEHICLE_DETAILS_TRAIN_TOTAL_WEIGHT, empty_weight, loaded_weight));
-				y += line_height;
-			}
-
 			if (--vscroll_pos < 0 && vscroll_pos >= -vscroll_cap) {
 				const int empty_max_speed = GetTrainEstimatedMaxAchievableSpeed(v, empty_weight, v->GetDisplayMaxSpeed());
 				const int loaded_max_speed = GetTrainEstimatedMaxAchievableSpeed(v, loaded_weight, v->GetDisplayMaxSpeed());
@@ -550,10 +542,17 @@ void DrawTrainDetails(const Train *v, const Rect &r, int vscroll_pos, uint16_t v
 				DrawString(r.left, r.right, y + text_y_offset, GetString(STR_VEHICLE_DETAILS_TRAIN_TE_WEIGHT_RATIO, empty_force_weight_ratio, loaded_force_weight_ratio));
 				y += line_height;
 			}
+		}
+	} else {
+		int y = r.top;
+		CargoArray act_cargo{};
+		CargoArray max_cargo{};
+		Money feeder_share = 0;
 
-			if (--vscroll_pos < 0 && vscroll_pos >= -vscroll_cap) {
-				y += line_height;
-			}
+		for (const Train *u = v; u != nullptr; u = u->Next()) {
+			act_cargo[u->cargo_type] += u->cargo.StoredCount();
+			max_cargo[u->cargo_type] += u->cargo_cap;
+			feeder_share             += u->cargo.GetFeederShare();
 		}
 
 		if (--vscroll_pos < 0 && vscroll_pos >= -vscroll_cap) {

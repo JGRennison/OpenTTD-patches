@@ -28,6 +28,7 @@ enum TrainDetailsWindowTabs : uint8_t {
 	TDW_TAB_INFO,      ///< Tab with name and value of the vehicles
 	TDW_TAB_CAPACITY,  ///< Tab with cargo capacity of the vehicles
 	TDW_TAB_TOTALS,    ///< Tab with sum of total cargo transported
+	TDW_TAB_PERF,      ///< Tab with empty/full train performance statistics
 };
 DECLARE_ENUM_AS_ADDABLE(TrainDetailsWindowTabs)
 

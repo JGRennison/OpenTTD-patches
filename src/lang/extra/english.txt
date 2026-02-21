@@ -1731,6 +1731,9 @@ STR_VEHICLE_DETAILS_SERVICING_INTERVAL_PRODUCTION_INTERVALS     :{BLACK}Servicin
 STR_VEHICLE_DETAILS_INCREASE_SERVICING_INTERVAL_TOOLTIP_PRODINT :{BLACK}Increase servicing interval by 5 production intervals. Ctrl+Click to increase servicing interval by 1 production interval
 STR_VEHICLE_DETAILS_DECREASE_SERVICING_INTERVAL_TOOLTIP_PRODINT :{BLACK}Decrease servicing interval by 5 production intervals. Ctrl+Click to decrease servicing interval by 1 production interval
 
+STR_VEHICLE_DETAIL_TAB_PERFORMANCE                              :{BLACK}Performance
+STR_VEHICLE_DETAILS_TRAIN_PERFORMANCE_TOOLTIP                   :{BLACK}Show train performance statistics when empty and fully loaded
+
 STR_ORDER_DROP_CARGO_TYPE_LOAD                                  :Load by cargo type
 STR_ORDER_DROP_CARGO_TYPE_UNLOAD                                :Unload by cargo type
 
