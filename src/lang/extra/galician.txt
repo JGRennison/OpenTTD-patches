@@ -541,11 +541,6 @@ STR_CONFIG_SETTING_SHARING_PAYMENT_IN_DEBT                      :Permitir as com
 STR_CONFIG_SETTING_SHARING_USED_BY_VEHICLES                     :Non se pode cambiar esta opción, hai vehículos usando infraestrutura compartida.
 STR_CONFIG_SETTING_SHARING_ORDERS_TO_OTHERS                     :Non sep ode cambiar esta opción, hai vehículos con ordes a destinos doutras compañías.
 
-STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_RAIL               :Permitir os competidores comprar e anovar trens nos depósitos: {STRING}
-STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_ROAD               :Permitir os competidores comprar e anovar vehículos de estrada nos depósitos: {STRING}
-STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_WATER              :Permitir os competidores comprar e anovar barcos nos depósitos: {STRING}
-STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_AIR                :Permitir os competidores comprar e anovar avións nos haganres: {STRING}
-
 STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION                       :Habilitar adaptación da velocidade do tren: {STRING}
 STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION_HELPTEXT              :Cando se habilita, os trens máis rápidos axustan a súa velocidade para igualala cos trens lentos que teñan diante.
 

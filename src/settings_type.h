@@ -910,7 +910,6 @@ struct CompanySettings {
 	VehicleDefaultSettings vehicle{};               ///< default settings for vehicles
 	uint8_t order_occupancy_smoothness = 0;         ///< percentage smoothness of occupancy measurement changes
 	uint8_t  auto_timetable_separation_rate = 0;    ///< percentage of auto timetable separation change to apply
-	bool infra_others_buy_in_depot[4]{};            ///< other companies can buy/autorenew in this companies depots (where infra sharing enabled)
 	uint16_t timetable_autofill_rounding = 0;       ///< round up timetable times to be a multiple of this number of ticks
 	bool advance_order_on_clone = false;            ///< when cloning a vehicle or copying/sharing an order list, advance the current order to a suitable point
 	bool copy_clone_add_to_group = false;           ///< whether to add cloned vehicles to the source vehicle's group, when cloning a vehicle without sharing orders

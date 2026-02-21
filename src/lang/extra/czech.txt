@@ -441,11 +441,6 @@ STR_CONFIG_SETTING_SHARING_PAYMENT_IN_DEBT                      :Povolit zadluž
 STR_CONFIG_SETTING_SHARING_USED_BY_VEHICLES                     :Nastavení nelze změnit, některá vozidla používají sdílenou infrastrukturu.
 STR_CONFIG_SETTING_SHARING_ORDERS_TO_OTHERS                     :Nastavení nelze změnit, některá vozidla mají příkazy do stanic cizí infrastruktury.
 
-STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_RAIL               :Povolit konkurentům nakupovat a nahrazovat vlaky v depech: {STRING}
-STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_ROAD               :Povolit konkurentům nakupovat a nahrazovat silniční vozidla v depech: {STRING}
-STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_WATER              :Povolit konkurentům nakupovat a nahrazovat lodě v docích: {STRING}
-STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_AIR                :Povolit konkurentům nakupovat a nahrazovat letadla v hangárech: {STRING}
-
 STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION                       :Povolit adaptaci rychlosti vlaku: {STRING}
 STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION_HELPTEXT              :Je-li zapnuto, rychlejší vlaky budou přizpůsobovat svou rychlost, aby se shodovala s rychlostmi pomalejších vlaků jedoucích před nimi.
 

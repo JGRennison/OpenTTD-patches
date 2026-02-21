@@ -528,11 +528,6 @@ STR_CONFIG_SETTING_SHARING_PAYMENT_IN_DEBT                      :允许公司支
 STR_CONFIG_SETTING_SHARING_USED_BY_VEHICLES                     :不能更改这个设定，载具正在使用共享设施
 STR_CONFIG_SETTING_SHARING_ORDERS_TO_OTHERS                     :不能更改这个设定，载具有途径其他公司设施的调度计划
 
-STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_RAIL               :允许其他公司在车库内购买与维护列车：{STRING}
-STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_ROAD               :允许其他公司在车库内购买与维护汽车：{STRING}
-STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_WATER              :允许其他公司在船坞内购买与维护轮船：{STRING}
-STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_AIR                :允许其他公司在机库内购买与维护飞机：{STRING}
-
 STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION                       :启用列车速度调整：{STRING}
 STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION_HELPTEXT              :当开启后，较快的列车会在经过信号时调整速度以与前方较慢列车的速度相匹配。{}“速度调整”功能可能不适用于部分信号设置风格；此功能可以使用信号“寻路限制”功能针对特定列车手动启用或禁用
 

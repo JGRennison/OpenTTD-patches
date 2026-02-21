@@ -504,11 +504,6 @@ STR_CONFIG_SETTING_SHARING_PAYMENT_IN_DEBT                      :允許公司繳
 STR_CONFIG_SETTING_SHARING_USED_BY_VEHICLES                     :不能更改這個設定，車輛正在使用共享設施
 STR_CONFIG_SETTING_SHARING_ORDERS_TO_OTHERS                     :不能更改這個設定，車輛有前往其他公司設施的指令清單
 
-STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_RAIL               :允許其他公司在機廠內購買與維護列車：{STRING}
-STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_ROAD               :允許其他公司在車廠內購買與維護汽車：{STRING}
-STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_WATER              :允許其他公司在船塢內購買與維護輪船：{STRING}
-STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_AIR                :允許其他公司在機棚內購買與維護飛機：{STRING}
-
 STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION                       :啟用列車速度調整：{STRING}
 STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION_HELPTEXT              :當開啟後，較快的列車會在經過號誌時調整速度以與前方較慢列車的速度相符合。{}「速度調整」功能可能不適用於部分號誌設定風格；此功能可以使用號誌「尋路限制」功能針對特定列車手動啟用或停用
 

@@ -595,11 +595,6 @@ STR_CONFIG_SETTING_SHARING_PAYMENT_IN_DEBT                      :Allow companies
 STR_CONFIG_SETTING_SHARING_USED_BY_VEHICLES                     :Can't change this setting, vehicles are using shared infrastructure.
 STR_CONFIG_SETTING_SHARING_ORDERS_TO_OTHERS                     :Can't change this setting, vehicles have orders to destinations of others.
 
-STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_RAIL               :Enable competitors to buy and renew trains in depots: {STRING2}
-STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_ROAD               :Enable competitors to buy and renew road vehicles in depots: {STRING2}
-STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_WATER              :Enable competitors to buy and renew ships in depots: {STRING2}
-STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_AIR                :Enable competitors to buy and renew aircraft in hangars: {STRING2}
-
 STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION                       :Enable train speed adaptation: {STRING2}
 STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION_HELPTEXT              :When enabled, faster trains adjust their speed when passing signals to attempt to match slower trains in front.{}This may not be appropriate for some signalling styles or layouts, and can be disabled and re-enabled on a per-train basis using signal routing restrictions.
 

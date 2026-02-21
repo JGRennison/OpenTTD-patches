@@ -545,11 +545,6 @@ STR_CONFIG_SETTING_SHARING_PAYMENT_IN_DEBT                      :사용료를 �
 STR_CONFIG_SETTING_SHARING_USED_BY_VEHICLES                     :차량이 공유된 시설을 사용하고 있을 경우 설정을 변경할 수 없습니다
 STR_CONFIG_SETTING_SHARING_ORDERS_TO_OTHERS                     :차량이 타사의 정류장을 경로에 포함하고 있을 경우 설정을 변경할 수 없습니다
 
-STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_RAIL               :경쟁사가 차량기지에서 자사의 열차를 구매하거나 교체하는 것을 허용: {STRING}
-STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_ROAD               :경쟁사가 차고지에서 자사의 차량을 구매하거나 교체하는 것을 허용: {STRING}
-STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_WATER              :경쟁사가 정박소에서 자사의 선박을 구매하거나 교체하는 것을 허용: {STRING}
-STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_AIR                :경쟁사가 격납고에서 자사의 항공기를 구매하거나 교체하는 것을 허용: {STRING}
-
 STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION                       :열차 속력 조정 활성화: {STRING}
 STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION_HELPTEXT              :이 설정을 켜면, 빠른 속력의 열차가 앞서가는 느린 속력의 열차의 속력에 맞춰 운행합니다
 

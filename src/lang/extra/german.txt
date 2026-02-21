@@ -393,11 +393,6 @@ STR_CONFIG_SETTING_SHARING_PAYMENT_IN_DEBT                      :Erlaube verschu
 STR_CONFIG_SETTING_SHARING_USED_BY_VEHICLES                     :Einstellung kann nicht geändert werden, da Fahrzeuge die geteilte Infrastruktur benutzen.
 STR_CONFIG_SETTING_SHARING_ORDERS_TO_OTHERS                     :Einstellung kann nicht geändert werden, da Fahrzeuge Aufträge haben die auf fremdes Eigentum zeigen.
 
-STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_RAIL               :Erlaube Mitbewerbern in fremden Depots Züge zu kaufen und zu erneuern: {STRING}
-STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_ROAD               :Erlaube Mitbewerbern in fremden Depots Straßenfahrzeuge zu kaufen und zu erneuern: {STRING}
-STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_WATER              :Erlaube Mitbewerbern in fremden Werften Schiffe zu kaufen und zu erneuern: {STRING}
-STR_CONFIG_SETTING_INFRA_OTHERS_BUY_IN_DEPOT_AIR                :Erlaube Mitbewerbern in fremden Hangars Flugzeuge zu kaufen und zu erneuern: {STRING}
-
 STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION                       :Zuggeschwindigkeitsanpassung aktivieren: {STRING}
 STR_CONFIG_SETTING_TRAIN_SPEED_ADAPTATION_HELPTEXT              :Wenn aktiviert, passen schnellere Züge ihre Geschwindigkeit an vor ihnen fahrende langsamere Züge an.
 
