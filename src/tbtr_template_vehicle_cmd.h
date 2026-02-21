@@ -10,7 +10,9 @@
 #ifndef TBTR_TEMPLATE_VEHICLE_CMD_H
 #define TBTR_TEMPLATE_VEHICLE_CMD_H
 
+#include "cargo_type.h"
 #include "command_type.h"
+#include "engine_type.h"
 #include "group_type.h"
 #include "tbtr_template_vehicle_type.h"
 #include "train_cmd.h"
