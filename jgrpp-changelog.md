@@ -2,6 +2,15 @@
 
 * * *
 
+### v0.70.2 (2026-02-21)
+* Fix road/tram types for some NewGRFs not being initialised correctly.
+* Fix incorrect transfer credits total in train details window.
+* Fix crash which could occur when an aircraft crashed outside of the map.
+* Add setting for linear infrastructure maintenance costs.
+* Move empty/full performance statistics to a separate tab in the train details window.
+* Remove company settings for other companies buying/renewing vehicles in this company's depots, this is now allowed whenever infrastructure sharing is enabled.
+* Bump trunk base from commit e8ba7d0a08c1f8c7536a828bd0e906c9357bbb7b to commit c1d37d86999ec391d5830f16887024b719f9cd18.
+
 ### v0.70.1 (2026-02-14)
 * Fix multiplayer desync when placing single houses.
 * Fix company faces not being shown in ownership error messages.
