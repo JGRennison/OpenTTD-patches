@@ -14,6 +14,7 @@
 #include "viewport_func.h"
 #include "viewport_kdtree.h"
 #include "date_func.h"
+#include "economy_func.h"
 #include "command_func.h"
 #include "news_func.h"
 #include "aircraft.h"
@@ -744,6 +745,16 @@ StationRect& StationRect::operator = (const Rect &src)
 	this->right = src.right;
 	this->bottom = src.bottom;
 	return *this;
+}
+
+/**
+ * Calculates the maintenance cost of a number of station tiles.
+ * @param num Number of station tiles.
+ * @return Total cost.
+ */
+Money StationMaintenanceCost(uint32_t num)
+{
+	return (_price[PR_INFRASTRUCTURE_STATION] * num * (1 + IntSqrt(num))) >> 7; // 7 bits scaling.
 }
 
 /**

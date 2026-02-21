@@ -11,7 +11,6 @@
 #define WATER_H
 
 #include "water_map.h"
-#include "economy_func.h"
 
 /**
  * Describes the behaviour of a tile during flooding.
@@ -46,14 +45,6 @@ bool IsWateredTile(TileIndex tile, Direction from);
 
 void ForceClearWaterTile(TileIndex tile);
 
-/**
- * Calculates the maintenance cost of a number of canal tiles.
- * @param num Number of canal tiles.
- * @return Total cost.
- */
-inline Money CanalMaintenanceCost(uint32_t num)
-{
-	return (_price[PR_INFRASTRUCTURE_WATER] * num * (1 + IntSqrt(num))) >> 6; // 6 bits scaling.
-}
+Money CanalMaintenanceCost(uint32_t num);
 
 #endif /* WATER_H */

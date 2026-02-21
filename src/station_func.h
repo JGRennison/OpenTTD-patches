@@ -14,7 +14,6 @@
 #include "rail_type.h"
 #include "road_type.h"
 #include "vehicle_type.h"
-#include "economy_func.h"
 #include "rail.h"
 #include "road.h"
 #include "linkgraph/linkgraph_type.h"
@@ -54,16 +53,7 @@ void RerouteCargoFromSource(Station *st, CargoType c, StationID source, StationI
 
 void FreeTrainStationPlatformReservation(const Train *v);
 
-/**
- * Calculates the maintenance cost of a number of station tiles.
- * @param num Number of station tiles.
- * @return Total cost.
- */
-inline Money StationMaintenanceCost(uint32_t num)
-{
-	return (_price[PR_INFRASTRUCTURE_STATION] * num * (1 + IntSqrt(num))) >> 7; // 7 bits scaling.
-}
-
+Money StationMaintenanceCost(uint32_t num);
 Money AirportMaintenanceCost(Owner owner);
 
 bool ShouldShowBaseStationViewportLabel(const BaseStation *bst);

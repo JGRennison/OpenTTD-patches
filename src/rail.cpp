@@ -14,6 +14,7 @@
 #include "company_func.h"
 #include "company_base.h"
 #include "engine_base.h"
+#include "economy_func.h"
 
 #include "table/track_data.h"
 
@@ -300,4 +301,27 @@ RailType GetRailTypeByLabel(RailTypeLabel label, bool allow_alternate_labels)
 
 	/* No matching label was found, so it is invalid */
 	return INVALID_RAILTYPE;
+}
+
+/**
+ * Calculates the maintenance cost of a number of track bits.
+ * @param railtype The railtype to get the cost of.
+ * @param num Number of track bits of this railtype.
+ * @param total_num Total number of track bits of all railtypes.
+ * @return Total cost.
+ */
+Money RailMaintenanceCost(RailType railtype, uint32_t num, uint32_t total_num)
+{
+	dbg_assert(railtype < RAILTYPE_END);
+	return (_price[PR_INFRASTRUCTURE_RAIL] * GetRailTypeInfo(railtype)->maintenance_multiplier * num * (1 + IntSqrt(total_num))) >> 11; // 4 bits fraction for the multiplier and 7 bits scaling.
+}
+
+/**
+ * Calculates the maintenance cost of a number of signals.
+ * @param num Number of signals.
+ * @return Total cost.
+ */
+Money SignalMaintenanceCost(uint32_t num)
+{
+	return (_price[PR_INFRASTRUCTURE_RAIL] * 15 * num * (1 + IntSqrt(num))) >> 8; // 1 bit fraction for the multiplier and 7 bits scaling.
 }

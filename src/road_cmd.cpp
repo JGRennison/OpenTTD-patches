@@ -44,6 +44,7 @@
 #include "scope.h"
 #include "landscape_cmd.h"
 #include "rail_cmd.h"
+#include "economy_func.h"
 
 #include "table/strings.h"
 #include "table/roadtypes.h"
@@ -462,6 +463,19 @@ void UpdateCompanyRoadInfrastructure(RoadType rt, Owner o, int count)
 
 	c->infrastructure.road[rt] += count;
 	DirtyCompanyInfrastructureWindows(c->index);
+}
+
+/**
+ * Calculates the maintenance cost of a number of road bits.
+ * @param roadtype Road type to get the cost for.
+ * @param num Number of road bits.
+ * @param total_num Total number of road bits of all road/tram-types.
+ * @return Total cost.
+ */
+Money RoadMaintenanceCost(RoadType roadtype, uint32_t num, uint32_t total_num)
+{
+	dbg_assert(roadtype < ROADTYPE_END);
+	return (_price[PR_INFRASTRUCTURE_ROAD] * GetRoadTypeInfo(roadtype)->maintenance_multiplier * num * (1 + IntSqrt(total_num))) >> 12;
 }
 
 /** Invalid RoadBits on slopes.  */
