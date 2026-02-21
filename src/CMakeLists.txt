@@ -108,6 +108,7 @@ add_files(
     clear_func.h
     clear_map.h
     command.cpp
+    command_callback.cpp
     command_func.h
     command_log.h
     command_serialisation.h
