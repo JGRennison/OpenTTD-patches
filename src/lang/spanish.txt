@@ -2092,6 +2092,8 @@ STR_CONFIG_SETTING_LARGER_TOWNS_VALUE                           :1 de cada {COMM
 STR_CONFIG_SETTING_LARGER_TOWNS_DISABLED                        :Ninguna
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER                         :Multiplicador inicial del tamaño de ciudad: {STRING}
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER_HELPTEXT                :Tamaño medio de las ciudades en relación a los municipios normales al comienzo de la partida
+STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :Distancia mínima entre municipios: {STRING}
+STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :Fija la distancia mínima entre municipios en casillas para la generación de mapas y la fundación aleatoria de municipios
 
 STR_CONFIG_SETTING_LINKGRAPH_RECALC_INTERVAL                    :Actualizar gráfico de distribución cada {STRING}
 STR_CONFIG_SETTING_LINKGRAPH_RECALC_INTERVAL_HELPTEXT           :Intervalo entre cálculos sucesivos del grafo de distribución. Cada cálculo planifica uno de los componentes del grafo. Esto significa que un valor X en este ajuste no implica que el grafo completo se actualice cada X segundos. Solo lo hará algún componente. Cuanto más corto sea, más tiempo de CPU será necesario para calcularlo. Cuanto más largo sea, más tiempo tardará la distribución de carga en incorporar nuevas rutas

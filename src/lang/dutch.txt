@@ -2091,6 +2091,8 @@ STR_CONFIG_SETTING_LARGER_TOWNS_VALUE                           :1 op {COMMA}
 STR_CONFIG_SETTING_LARGER_TOWNS_DISABLED                        :Geen
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER                         :Beginfactor voor stadsgroei: {STRING}
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER_HELPTEXT                :Gemiddelde grootte van steden in vergelijking tot normale steden bij het begin van het spel.
+STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :Minimale afstand tussen steden: {STRING}
+STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :Minimale afstand in tegels instellen tussen steden bij kaart genereren en willekeurig stichten
 
 STR_CONFIG_SETTING_LINKGRAPH_RECALC_INTERVAL                    :Distributiegrafiek elke {STRING} bijwerken
 STR_CONFIG_SETTING_LINKGRAPH_RECALC_INTERVAL_HELPTEXT           :De tijd tussen opeenvolgende herberekeningen van de koppelingsgrafiek. Elke berekening berekent de plannen voor één component van de grafiek. Dat betekent dat een waarde X voor deze instelling niet betekent dat de hele grafiek elke X seconden wordt bijgewerkt. Dat geldt alleen voor één component. Hoe korter je deze waarde instelt, hoe meer CPU-tijd er nodig is voor de berekening. Hoe langer je deze waarde instelt, hoe langer het duurt voordat de vrachtdistributie start op nieuwe routes.

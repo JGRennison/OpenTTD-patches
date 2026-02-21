@@ -2178,6 +2178,8 @@ STR_CONFIG_SETTING_LARGER_TOWNS_VALUE                           :1 z {COMMA}
 STR_CONFIG_SETTING_LARGER_TOWNS_DISABLED                        :Žádné
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER                         :Činitel základní velikosti města: {STRING}
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER_HELPTEXT                :Průměrná velikost větších měst v porovnání s ostatními městy na začátku hry
+STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :Minimální vzdálenost mezi městy: {STRING}
+STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :Nastav minimální vzdálenost mezi městy pro generování mapy a náhodné zakládání
 
 STR_CONFIG_SETTING_LINKGRAPH_RECALC_INTERVAL                    :Aktualizovat graf spojení každých: {STRING}
 STR_CONFIG_SETTING_LINKGRAPH_RECALC_INTERVAL_HELPTEXT           :{BLACK}Doba mezi následnými přepočty grafu spojení. Každý přepočet počítá plány pro jednu komponentu grafu. To znamená, že hodnota X v tomto nastavení neznamená, že se celý graf aktualizuje každých X sekund. Aktualizuje se pouze jedna část. Čím kratší dobu nastavíte, tím více procesorového času bude potřeba k výpočtu. Čím delší dobu nastavíte, tím déle bude trvat, než začne distribuce nákladu na nových trasách.

@@ -2093,6 +2093,8 @@ STR_CONFIG_SETTING_LARGER_TOWNS_VALUE                           :1 pret {COMMA}
 STR_CONFIG_SETTING_LARGER_TOWNS_DISABLED                        :neviena
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER                         :Pilsētu sākuma lieluma reizinātājs: {STRING}
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER_HELPTEXT                :Pilsētu vidējais lielums attiecībā pret parastām apdzīvotām vietām spēles sākumā
+STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :Minimālais attālums starp pilsētām: {STRING}
+STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :Iestatiet minimālo attālumu starp pilsētām lauciņos kartes ģenerēšanai un nejaušai dibināšanai
 
 STR_CONFIG_SETTING_LINKGRAPH_RECALC_INTERVAL                    :Atjaunināt sadalījuma grafu ik pēc {STRING}
 STR_CONFIG_SETTING_LINKGRAPH_RECALC_INTERVAL_HELPTEXT           :Laiks starp turpmākajiem saišu grafa pārrēķiniem. Katrs pārrēķins aprēķina viena grafa komponentes plānus. Tas nozīmē, ka vērtība X šim iestatījumam nenozīmē, ka visa diagramma tiks atjaunināta ik pēc X sekundēm. Būs tikai daži komponenti. Jo īsāku to iestatīsit, jo vairāk CPU laika būs nepieciešams tā aprēķināšanai. Jo ilgāk to iestatīsit, jo ilgāks laiks paies, līdz sāksies kravu sadale jaunos maršrutos.

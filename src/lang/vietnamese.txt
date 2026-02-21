@@ -2091,6 +2091,8 @@ STR_CONFIG_SETTING_LARGER_TOWNS_VALUE                           :1 trong {COMMA}
 STR_CONFIG_SETTING_LARGER_TOWNS_DISABLED                        :Không
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER                         :Hệ số quy mô đô thị coi là thành phố: {STRING}
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER_HELPTEXT                :Kích thước trung bình của thành phố tỉ lệ với đô thị lúc bắt đầu trò chơi
+STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :Khoảng cách tối thiểu giữa các thị trấn: {STRING}
+STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :Thiết lập khoảng cách tối thiểu (tính bằng ô) giữa các thị trấn trong quá trình khởi tạo bản đồ và thành lập ngẫu nhiên
 
 STR_CONFIG_SETTING_LINKGRAPH_RECALC_INTERVAL                    :Cập nhật biểu đồ phân phối mỗi {STRING}
 STR_CONFIG_SETTING_LINKGRAPH_RECALC_INTERVAL_HELPTEXT           :Thời gian giữa các lần tính toán lại tiếp theo của biểu đồ liên kết. Mỗi lần tính toán lại sẽ tính toán các kế hoạch cho một thành phần của biểu đồ. Điều đó có nghĩa là giá trị X cho cài đặt này không có nghĩa là toàn bộ biểu đồ sẽ được cập nhật X giây một lần. Chỉ một số thành phần sẽ làm như vậy. Bạn đặt nó càng ngắn thì càng cần nhiều thời gian CPU để tính toán nó. Bạn đặt càng lâu thì càng mất nhiều thời gian cho đến khi việc phân phối hàng hóa bắt đầu trên các tuyến đường mới

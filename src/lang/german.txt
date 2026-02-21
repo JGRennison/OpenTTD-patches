@@ -2092,6 +2092,8 @@ STR_CONFIG_SETTING_LARGER_TOWNS_VALUE                           :1 von {COMMA}
 STR_CONFIG_SETTING_LARGER_TOWNS_DISABLED                        :Keine
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER                         :Größe von Großstädten bei Spielbeginn: {STRING}×
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER_HELPTEXT                :Durchschnittliche Größe von Großstädten relativ zu normalen Städten bei Spielbeginn
+STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :Minimale Distanz zwischen Städten: {STRING}
+STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :Legt die minimale Distanz in Kacheln zwischen Städten für die Kartenerzeugung und Zufallsgründung fest
 
 STR_CONFIG_SETTING_LINKGRAPH_RECALC_INTERVAL                    :Verteilungsgraphen alle {STRING} aktualisieren
 STR_CONFIG_SETTING_LINKGRAPH_RECALC_INTERVAL_HELPTEXT           :Zeit zwischen anfolgenden Neuberechnungen der Warenverteilung. Jede Neuberechnung berechnet die Pläne für eine Komponente des Graphen. Das bedeutet, dass ein Wert X für diese Einstellung nicht bedeutet, dass der gesamte Graph alle X Sekunden aktualisiert wird. Nur ein Teil wird es. Je kürzer die Zeit festgelegt ist, desto mehr CPU-Zeit wird nötig sein, um ihn zu berechnen. Je länger die Zeit festgelegt ist, desto länger wird es dauern, bis die Frachtverteilung auf neuen Strecken beginnt

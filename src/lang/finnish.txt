@@ -2091,6 +2091,8 @@ STR_CONFIG_SETTING_LARGER_TOWNS_VALUE                           :1/{COMMA}
 STR_CONFIG_SETTING_LARGER_TOWNS_DISABLED                        :Ei yhtään
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER                         :Kasvukerroin alussa: {STRING}
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER_HELPTEXT                :Kaupunkien keskimääräinen koko suhteessa muihin kuntiin pelin alussa
+STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :Vähimmäisetäisyys kuntien välillä: {STRING}
+STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :Aseta kuntien välinen vähimmäisetäisyys ruutuina kartan luomista ja kuntien satunnaista perustamista varten
 
 STR_CONFIG_SETTING_LINKGRAPH_RECALC_INTERVAL                    :Yhteyskuvaajan päivitysväli: {STRING}
 STR_CONFIG_SETTING_LINKGRAPH_RECALC_INTERVAL_HELPTEXT           :Yhteyskuvaajan uudelleenlaskentojen välinen aika. Jokainen uudelleenlaskenta laskee suunnitelmat kuvaajan yhdelle osalle. Tämän asetuksen arvo X ei siis tarkoita, että koko kuvaaja päivittyisi X sekunnin välein, vaan ainoastaan sen yksi osa. Mitä lyhyemmäksi asetat tämän ajan, sitä enemmän suoritinaikaa kuluu laskentaan. Mitä pitemmäksi asetat ajan, sitä pitempään kestää rahdin jakautumisen alkaminen uusille reiteille

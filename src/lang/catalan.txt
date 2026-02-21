@@ -2092,6 +2092,8 @@ STR_CONFIG_SETTING_LARGER_TOWNS_VALUE                           :1 de cada {COMM
 STR_CONFIG_SETTING_LARGER_TOWNS_DISABLED                        :Cap
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER                         :Multiplicador de mida inicial de ciutats: {STRING}
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER_HELPTEXT                :La grandària mitjana de les ciutats en relació als pobles a l'inici de la partida.
+STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :Distància mínima entre poblacions: {STRING}
+STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :Estableix la distància mínima en caselles entre poblacions per a la generació del mapa i per a la fundació aleatòria de poblacions.
 
 STR_CONFIG_SETTING_LINKGRAPH_RECALC_INTERVAL                    :Actualitza el graf de distribució cada {STRING}
 STR_CONFIG_SETTING_LINKGRAPH_RECALC_INTERVAL_HELPTEXT           :Temps entre actualitzacions de les arestes del graf de distribució. Cada vegada es calcularan els plans d'un dels components del graf. Això vol dir que un valor X d'aquesta opció no significa que es recalculi el graf sencer cada X segons. Només ho farà algun component. Com més curt sigui, farà falta més temps de CPU per a calcular-lo. Com més llarg sigui, més es trigarà a què la distribució de càrrega s'apliqui a les rutes noves.
@@ -2866,6 +2868,7 @@ STR_PICKER_COLLECTION_DELETE_QUERY_DISABLED_TEXT                :{YELLOW}Esteu s
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Trieu quina classe d'estació voleu veure.
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Trieu quin tipus d'estació voleu construir. Amb Ctrl+clic, s'afegeix o es trau l'element de la llista de desats.
+STR_PICKER_STATION_COLLECTION_TOOLTIP                           :Seleccioneu quina col·lecció d'estacions voleu veure.
 STR_PICKER_WAYPOINT_CLASS_TOOLTIP                               :Trieu quina classe de punts de control voleu veure.
 STR_PICKER_WAYPOINT_TYPE_TOOLTIP                                :Trieu quin tipus de punt de control voleu construir. Amb Ctrl+clic, s'afegeix o es trau l'element de la llista de desats.
 STR_PICKER_WAYPOINT_COLLECTION_TOOLTIP                          :Seleccioneu quina col·lecció de punts de pas voleu veure.
@@ -2874,8 +2877,10 @@ STR_PICKER_ROADSTOP_BUS_TYPE_TOOLTIP                            :Trieu quin tipu
 STR_PICKER_ROADSTOP_BUS_COLLECTION_TOOLTIP                      :Seleccioneu quina col·lecció d'estacions d'autobús voleu veure.
 STR_PICKER_ROADSTOP_TRUCK_CLASS_TOOLTIP                         :Trieu quina classe d'estació de camions voleu veure.
 STR_PICKER_ROADSTOP_TRUCK_TYPE_TOOLTIP                          :Trieu un tipus d'estació de camió a construir. Amb Ctrl+clic, s'afegeix o es trau l'element de la llista de desats.
+STR_PICKER_ROADSTOP_TRUCK_COLLECTION_TOOLTIP                    :Seleccioneu quina col·lecció d'estacions de camions voleu veure.
 STR_PICKER_OBJECT_CLASS_TOOLTIP                                 :Trieu quina classe d'objectes voleu veure.
 STR_PICKER_OBJECT_TYPE_TOOLTIP                                  :Trieu quin tipus d'objecte voleu construir. Amb Ctrl+clic, s'afegeix o es trau l'element de la llista de desats. Amb Ctrl+clic+arrossega es selecciona l'àrea en diagonal. Amb Maj, només es mostrarà el cost estimat de l'acció.
+STR_PICKER_OBJECT_COLLECTION_TOOLTIP                            :Seleccioneu quina col·lecció d'objectes voleu veure.
 STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :Trieu quina zona de població voleu veure.
 STR_PICKER_HOUSE_TYPE_TOOLTIP                                   :Trieu quin tipus de casa construir. Amb Ctrl+clic, s'afegeix o es trau l'element de la llista de desats.
 STR_PICKER_HOUSE_COLLECTION_TOOLTIP                             :Seleccioneu quina col·lecció de cases voleu veure.
@@ -4379,10 +4384,13 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}Estàs 
 
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Missatge del fabricant de vehicles
+STR_ENGINE_PREVIEW_CAPTION_COUNT                                :{WHITE}Missatge del fabricant de vehicles ({COMMA} de {COMMA})
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Acabem de dissenyar {G un una} {G nou nova} {STRING}. Esteu interessats en fer ús exclusiu d'aquest vehicle durant un any, per veure com va, abans del seu llançament mundial?
 
 STR_ENGINE_PREVIEW_PREVIOUS                                     :Anterior
+STR_ENGINE_PREVIEW_PREVIOUS_TOOLTIP                             :Feu-hi clic per a passar al vehicle nou anterior.
 STR_ENGINE_PREVIEW_NEXT                                         :Següent
+STR_ENGINE_PREVIEW_NEXT_TOOLTIP                                 :Feu-hi clic per a passar al vehicle nou següent.
 STR_ENGINE_PREVIEW_ENGINE_LIST                                  :{COMMA}: {ENGINE}
 STR_ENGINE_PREVIEW_ENGINE_LIST_TOOLTIP                          :Feu-hi clic per a saltar a un vehicle nou.
 

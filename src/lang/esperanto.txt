@@ -2182,6 +2182,8 @@ STR_CONFIG_SETTING_LARGER_TOWNS_VALUE                           :1 el {COMMA}
 STR_CONFIG_SETTING_LARGER_TOWNS_DISABLED                        :Neniom
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER                         :Komenca urbgrandeca multobligo: {STRING}
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER_HELPTEXT                :Averaĝa grandeco de urbegoj rilate al normalaj urboj je la komenco de la ludo
+STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :Malpleja distanco inter urboj: {STRING}
+STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :Elektu malplejan distancon inter urboj, en kaheloj, por generado kaj hazarda fondado de urboj
 
 STR_CONFIG_SETTING_LINKGRAPH_RECALC_INTERVAL                    :Ĝisdatigu la distribuan grafeon ĉiujn {STRING.n}
 STR_CONFIG_SETTING_LINKGRAPH_RECALC_INTERVAL_HELPTEXT           :Tempo inter sinsekvaj rekalkuloj de la liga grafeo. Ĉiu rekalkulo kalkulas planoj por unu komponento de la grafeo. Tio signifas ke meti valoron X por tiu ĉi agordo ne signifas ke la tuta grafeo estos ĝisdatigita ĉiujn X sekundojn. Nur iu komponento estos. Ju pli mallongan tempon vi elektas, des pli da procesora tempo bezonatas por la kalkulado. Ju pli longan tempon vi elektas, des pli longe daŭros ĝis kiam komenciĝos distribuado de kargoj en novaj itineroj

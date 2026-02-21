@@ -2091,6 +2091,8 @@ STR_CONFIG_SETTING_LARGER_TOWNS_VALUE                           :1 zu {COMMA}
 STR_CONFIG_SETTING_LARGER_TOWNS_DISABLED                        :Keng
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER                         :Ufangs-Gréisst vu Stied multiplizéiren mat: {STRING}
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER_HELPTEXT                :Duerchschnëttsgréisst vu Stied an Proportioun zu normalen Dierfer um Spillstart
+STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :Minimal Distanz tëschent Stied: {STRING}
+STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :Definéier d'minimal Distanz a Felder tëschend Stied fir d'Kaartegeneratioun and zoufälleg Grënnung
 
 STR_CONFIG_SETTING_LINKGRAPH_RECALC_INTERVAL                    :Update de Verdeelergraph all {STRING}
 STR_CONFIG_SETTING_LINKGRAPH_RECALC_INTERVAL_HELPTEXT           :Zäit tëschend zwou Neiberechnungen vun der Linkgrafik. All Neiberechnung berechent eng Komponent vun der Grafik. Dëst bedeit dass e Wäert X net heescht dass déi ganze Grafik all X Sekonne geupdate gëtt. Nëmmen eng Komponent gëtt berechent. Wat de Wäert méi kuerz gesat gëtt, wat méi CPU Leeschtung gebraucht gëtt fir alles ze berechnen. Je gréisser de Wäert gesat gëtt desto méi laang brauch et bis d'Wuereverdeelung op neie Route gestart gëtt

@@ -2092,6 +2092,8 @@ STR_CONFIG_SETTING_LARGER_TOWNS_VALUE                           :{COMMA}'de 1
 STR_CONFIG_SETTING_LARGER_TOWNS_DISABLED                        :Hiçbiri
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER                         :Birincil şehir büyüklüğü çarpanı: {STRING}
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER_HELPTEXT                :Oyun başlangıcında şehirlerin normal kasabalara kıyasla ortalama büyüklüğü
+STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :Şehirler arası asgari uzaklık: {STRING}
+STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :Harita oluştururken ve rastgele kurulurken şehirlerin arasındaki asgari uzaklığı kare cinsinden belirleyin
 
 STR_CONFIG_SETTING_LINKGRAPH_RECALC_INTERVAL                    :Dağıtım grafiğini her {STRING}
 STR_CONFIG_SETTING_LINKGRAPH_RECALC_INTERVAL_HELPTEXT           :Bağlantı grafiğinin sonraki yeniden hesaplamaları arasındaki süre. Her yeniden hesaplama, grafiğin bir bileşeni için planları hesaplar. Bu, bu ayar için bir X değerinin tüm grafiğin her X saniyede bir güncelleneceği anlamına gelmediği anlamına gelir. Sadece bazı bileşenler olacaktır. Ne kadar kısa ayarlarsanız, hesaplamak için o kadar fazla CPU süresi gerekir. Ne kadar uzun ayarlarsanız, kargo dağıtımının yeni rotalarda başlaması o kadar uzun sürer

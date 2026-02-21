@@ -2195,6 +2195,8 @@ STR_CONFIG_SETTING_LARGER_TOWNS_VALUE                           :1 u {COMMA}
 STR_CONFIG_SETTING_LARGER_TOWNS_DISABLED                        :Nijedan
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER                         :Inicijalni množilac rasta gradova: {STRING}
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER_HELPTEXT                :Prosečna veličina naselja relativno u odnosu na gradove na početku igre
+STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :Najmanje rastojanje između gradova: {STRING}
+STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :Podešava najmanje rastojanje u broju pločica između gradova za generisanje mape i nasumično osnivanje
 
 
 STR_CONFIG_SETTING_DISTRIBUTION_PAX                             :Način distribucije putnika: {STRING}

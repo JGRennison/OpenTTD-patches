@@ -2091,6 +2091,8 @@ STR_CONFIG_SETTING_LARGER_TOWNS_VALUE                           :1 / {COMMA}
 STR_CONFIG_SETTING_LARGER_TOWNS_DISABLED                        :无
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER                         :初始都市规模系数：{STRING}
 STR_CONFIG_SETTING_CITY_SIZE_MULTIPLIER_HELPTEXT                :游戏开局时，城市的平均规模相对于普通城镇的比值
+STR_CONFIG_SETTING_TOWN_MIN_DISTANCE                            :城镇间最小距离：{STRING}
+STR_CONFIG_SETTING_TOWN_MIN_DISTANCE_HELPTEXT                   :设定生成地图与随机建设城镇时城镇间的最小距离
 
 STR_CONFIG_SETTING_LINKGRAPH_RECALC_INTERVAL                    :客货流更新周期：{STRING}
 STR_CONFIG_SETTING_LINKGRAPH_RECALC_INTERVAL_HELPTEXT           :重新计算客货流的周期。由于重新计算时仅会计算部分客货流，此处设定的数值并不代表所有客货流会按照此周期更新。设定赋值越小，重新计算客货流所需的 CPU 时间越多；设定赋值越大，线路改变时货物再分配所需时间越长
