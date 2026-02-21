@@ -14,7 +14,7 @@
 #endif
 #include "../debug.h"
 #include "../os/windows/win32.h"
-#include "../core/mem_func.hpp"
+#include "../core/bit_cast.hpp"
 #include "../thread.h"
 #include "../fileio_func.h"
 #include "../base_media_base.h"
@@ -930,7 +930,7 @@ static const char *LoadDefaultDLSFile(std::optional<std::string_view> user_dls)
 			wave->ulOffsetTable[1] = offsetof(WAVE_DOWNLOAD, dmWaveData);
 			wave->dmWave.ulWaveDataIdx = 1;
 			wave->dmWaveData.cbSize = (DWORD)dls_file.waves[i].data.size();
-			reinterpret_cast<PCMWAVEFORMAT &>(wave->dmWave.WaveformatEx) = dls_file.waves[i].fmt;
+			wave->dmWave.WaveformatEx = bit_cast_to_storage<WAVEFORMATEX>(dls_file.waves[i].fmt);
 			std::copy_n(dls_file.waves[i].data.begin(), dls_file.waves[i].data.size(), wave->dmWaveData.byData);
 
 			_dls_downloads.push_back(dl_wave);
