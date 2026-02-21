@@ -113,6 +113,8 @@ add_files(
     command_log.h
     command_serialisation.h
     command_settings_type.h
+    command_table.cpp
+    command_table.h
     command_type.h
     company_base.h
     company_cmd.cpp

@@ -7,15 +7,13 @@
 
 /** @file command.cpp Handling of commands. */
 
-#define CMD_DEFINE
-
 #include "stdafx.h"
 #include "landscape.h"
 #include "error.h"
 #include "gui.h"
 #include "command_func.h"
-#include "command_serialisation.h"
 #include "command_settings_type.h"
+#include "command_table.h"
 #include "network/network_type.h"
 #include "network/network.h"
 #include "genworld.h"
@@ -40,140 +38,11 @@
 #include "order_backup.h"
 #include "core/checksum_func.hpp"
 #include "3rdparty/cpp-ring-buffer/ring_buffer.hpp"
-#include "3rdparty/nlohmann/json.hpp"
-#include "3rdparty/fmt/std.h"
 #include <array>
-#include <typeinfo>
-
-#include "autoreplace_cmd.h"
-#include "company_cmd.h"
-#include "depot_cmd.h"
-#include "engine_cmd.h"
-#include "goal_cmd.h"
-#include "group_cmd.h"
-#include "industry_cmd.h"
-#include "landscape_cmd.h"
-#include "league_cmd.h"
-#include "misc_cmd.h"
-#include "news_cmd.h"
-#include "object_cmd.h"
-#include "order_cmd.h"
-#include "plans_cmd.h"
-#include "programmable_signals_cmd.h"
-#include "rail_cmd.h"
-#include "road_cmd.h"
-#include "settings_cmd.h"
-#include "signs_cmd.h"
-#include "station_cmd.h"
-#include "story_cmd.h"
-#include "subsidy_cmd.h"
-#include "tbtr_template_vehicle_cmd.h"
-#include "terraform_cmd.h"
-#include "timetable_cmd.h"
-#include "town_cmd.h"
-#include "tracerestrict_cmd.h"
-#include "train_cmd.h"
-#include "tree_cmd.h"
-#include "tunnelbridge_cmd.h"
-#include "vehicle_cmd.h"
-#include "viewport_cmd.h"
-#include "water_cmd.h"
-#include "waypoint_cmd.h"
 
 #include "table/strings.h"
 
 #include "safeguards.h"
-
-using CommandExecTrampoline = CommandCost(const CommandExecData &);
-
-template <typename T, CommandProcDirect<T> proc, bool no_tile>
-static constexpr CommandExecTrampoline *MakeTrampoline()
-{
-	return [](const CommandExecData &exec_data) -> CommandCost
-	{
-		const T &data = static_cast<const T &>(exec_data.payload);
-		return proc(exec_data.flags, exec_data.tile, data);
-	};
-}
-
-template <typename T, CommandProcDirectNoTile<T> proc, bool no_tile>
-static constexpr CommandExecTrampoline *MakeTrampoline()
-{
-	return [](const CommandExecData &exec_data) -> CommandCost
-	{
-		const T &data = static_cast<const T &>(exec_data.payload);
-		return proc(exec_data.flags, data);
-	};
-}
-
-template <bool no_tile, typename F, typename T, size_t... Tindices>
-CommandCost CommandExecTrampolineTuple(F proc, TileIndex tile, DoCommandFlags flags, const T &payload, std::index_sequence<Tindices...>)
-{
-	if constexpr (no_tile) {
-		return proc(flags, std::get<Tindices>(payload.GetValues())...);
-	} else {
-		return proc(flags, tile, std::get<Tindices>(payload.GetValues())...);
-	}
-}
-
-template <typename T, auto &proc, bool no_tile, typename = std::enable_if_t<std::is_base_of_v<BaseTupleCmdDataTag, T>>>
-static constexpr CommandExecTrampoline *MakeTrampoline()
-{
-	return [](const CommandExecData &exec_data) -> CommandCost
-	{
-		const T &data = static_cast<const T &>(exec_data.payload);
-		return CommandExecTrampolineTuple<no_tile>(proc, exec_data.tile, exec_data.flags, data, std::make_index_sequence<std::tuple_size_v<typename T::Tuple>>{});
-	};
-}
-
-template <typename T>
-static constexpr CommandPayloadDeserialiser *MakePayloadDeserialiser()
-{
-	return [](DeserialisationBuffer &buffer, StringValidationSettings default_string_validation) -> std::unique_ptr<CommandPayloadBase>
-	{
-		auto payload = std::make_unique<T>();
-		if (!payload->Deserialise(buffer, default_string_validation)) payload = nullptr;
-		return payload;
-	};
-}
-
-enum CommandIntlFlags : uint8_t {
-	CIF_NONE                = 0x0, ///< no flag is set
-	CIF_NO_OUTPUT_TILE      = 0x1, ///< command does not take a tile at the output side (omit when logging)
-};
-DECLARE_ENUM_AS_BIT_SET(CommandIntlFlags)
-
-struct CommandInfo {
-	CommandExecTrampoline *exec;                      ///< Command proc exec trampoline function
-	CommandPayloadDeserialiser *payload_deserialiser; ///< Command payload deserialiser
-	const std::type_info &payload_type_info;          ///< Command payload type info
-	const char *name;                                 ///< A human readable name for the procedure
-	CommandFlags flags;                               ///< The (command) flags to that apply to this command
-	CommandType type;                                 ///< The type of command
-	CommandIntlFlags intl_flags;                      ///< Internal flags
-};
-
-/* Helpers to generate the master command table from the command traits. */
-template <typename T, typename H>
-inline constexpr CommandInfo CommandFromTrait() noexcept
-{
-	using Payload = typename T::PayloadType;
-	static_assert(std::is_final_v<Payload>);
-	return { MakeTrampoline<Payload, H::proc, T::output_no_tile>(), MakePayloadDeserialiser<Payload>(), typeid(Payload), H::name, T::flags, T::type, T::output_no_tile ? CIF_NO_OUTPUT_TILE : CIF_NONE };
-};
-
-template <typename T, T... i>
-inline constexpr auto MakeCommandsFromTraits(std::integer_sequence<T, i...>) noexcept {
-	return std::array<CommandInfo, sizeof...(i)>{{ CommandFromTrait<CommandTraits<static_cast<Commands>(i)>, CommandHandlerTraits<static_cast<Commands>(i)>>()... }};
-}
-
-/**
- * The master command table
- *
- * This table contains the CommandInfo for all possible commands.
- */
-static constexpr auto _command_proc_table = MakeCommandsFromTraits(std::make_integer_sequence<std::underlying_type_t<Commands>, CMD_END>{});
-
 
 ClientID _cmd_client_id = INVALID_CLIENT_ID;
 
@@ -507,32 +376,6 @@ static void AppendCommandLogEntry(const CommandCost &res, TileIndex tile, Comman
 	DebugLogCommandLogEntry(cmd_log.log[cmd_log.next]);
 	cmd_log.next = (cmd_log.next + 1) % cmd_log.log.size();
 	cmd_log.count++;
-}
-
-/**
- * Set client ID for this command payload using the field returned by Payload::GetClientIDField().
- * This provided payload must have already been type-checked as valid for cmd.
- * Not many commands set CMD_CLIENT_ID so a series of ifs is not too onerous.
- */
-void SetPreCheckedCommandPayloadClientID(Commands cmd, CommandPayloadBase &payload, ClientID client_id)
-{
-	static_assert(INVALID_CLIENT_ID == (ClientID)0);
-
-	auto cmd_check = [&]<Commands Tcmd>() -> bool {
-		if constexpr (CommandTraits<Tcmd>::flags.Test(CommandFlag::ClientID)) {
-			if (cmd == Tcmd) {
-				SetCommandPayloadClientID(static_cast<CmdPayload<Tcmd> &>(payload), client_id);
-				return true;
-			}
-		}
-		return false;
-	};
-
-	using Tseq = std::underlying_type_t<Commands>;
-	auto cmd_loop = [&]<Tseq... Tindices>(std::integer_sequence<Tseq, Tindices...>) {
-		(cmd_check.template operator()<static_cast<Commands>(Tindices)>() || ...);
-	};
-	cmd_loop(std::make_integer_sequence<Tseq, static_cast<Tseq>(CMD_END)>{});
 }
 
 /**
