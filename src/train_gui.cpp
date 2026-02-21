@@ -577,12 +577,6 @@ void DrawTrainDetails(const Train *v, const Rect &r, int vscroll_pos, uint16_t v
 			}
 		}
 
-		for (const Vehicle *u = v; u != nullptr; u = u->Next()) {
-			act_cargo[u->cargo_type] += u->cargo.StoredCount();
-			max_cargo[u->cargo_type] += u->cargo_cap;
-			feeder_share             += u->cargo.GetFeederShare();
-		}
-
 		if (--vscroll_pos < 0 && vscroll_pos >= -vscroll_cap) {
 			DrawString(r.left, r.right, y + text_y_offset, GetString(STR_VEHICLE_INFO_FEEDER_CARGO_VALUE, feeder_share));
 		}
