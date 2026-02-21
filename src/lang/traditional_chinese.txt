@@ -4243,7 +4243,7 @@ STR_PURCHASE_SORT_DETAILS_RUNNINGCOST_YEAR                      :{CURRENCY_LONG}
 STR_PURCHASE_SORT_DETAILS_RUNNINGCOST_PERIOD                    :{CURRENCY_LONG}/週期
 STR_PURCHASE_SORT_DETAILS_RELIABILITY                           :{COMMA}%
 STR_PURCHASE_SORT_DETAILS_POWER_VS_RUNNING_COST                 :{DECIMAL}
-STR_PURCHASE_SORT_DETAILS_AIRCRAFT_RANGE                        :{COMMA}格區塊
+STR_PURCHASE_SORT_DETAILS_AIRCRAFT_RANGE                        :{COMMA}格
 STR_PURCHASE_SORT_DETAILS_CAPACITY                              :{COMMA}
 
 ###length 3
@@ -6021,7 +6021,8 @@ STR_LORRY                                                       :{BLACK}{LORRY}
 STR_PLANE                                                       :{BLACK}{PLANE}
 STR_SHIP                                                        :{BLACK}{SHIP}
 
-STR_TOOLBAR_RAILTYPE_VELOCITY                                   :{STRING} ({VELOCITY})
+STR_TOOLBAR_RAILTYPE_VELOCITY                                   :{STRING} {YELLOW}（{VELOCITY}）
+STR_TOOLBAR_ROADTYPE_VELOCITY                                   :{STRING} {YELLOW}（{VELOCITY}）
 
 STR_BADGE_NAME_LIST                                             :{STRING}：{GOLD}{STRING}
 STR_BADGE_CONFIG_MENU_TOOLTIP                                   :開啟徽章設定
