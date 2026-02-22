@@ -81,20 +81,20 @@ namespace TupleCmdDataDetail {
 	}
 };
 
-template <typename... T>
-void TupleCmdDataDetail::BaseTupleCmdData<T...>::Serialise(BufferSerialisationRef buffer) const
+template <typename Parent, typename... T>
+void TupleCmdData<Parent, T...>::Serialise(BufferSerialisationRef buffer) const
 {
 	buffer.Send_generic(this->values);
 }
 
-template <typename... T>
-void TupleCmdDataDetail::BaseTupleCmdData<T...>::SanitiseStrings(StringValidationSettings settings)
+template <typename Parent, typename... T>
+void TupleCmdData<Parent, T...>::SanitiseStrings(StringValidationSettings settings)
 {
 	TupleCmdDataDetail::SanitiseStringsTuple(this->values, settings, std::index_sequence_for<T...>{});
 }
 
-template <typename... T>
-bool TupleCmdDataDetail::BaseTupleCmdData<T...>::Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation)
+template <typename Parent, typename... T>
+bool TupleCmdData<Parent, T...>::Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation)
 {
 	buffer.Recv_generic(this->values, default_string_validation);
 	return true;
@@ -128,6 +128,12 @@ void AutoFmtTupleCmdData<Parent, flags, T...>::FormatDebugSummary(format_target 
 	} else {
 		TupleCmdDataDetail::FmtTupleData<Parent::fmt_str>(output, TupleCmdDataDetail::MakeRefTupleWithoutStrings(this->values, std::index_sequence_for<T...>{}));
 	}
+}
+
+template <typename... T>
+void CmdDataT<T...>::FormatDebugSummary(format_target &output) const
+{
+	output.format("{}", fmt::join(TupleCmdDataDetail::MakeRefTupleWithoutStrings(this->values, std::index_sequence_for<T...>{}), ", "));
 }
 
 #endif /* COMMAND_SERIALISATION_H */

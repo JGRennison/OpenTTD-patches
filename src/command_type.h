@@ -994,42 +994,34 @@ concept CommandPayloadStringType = std::is_same_v<T, std::string> || std::is_sam
 template <typename T>
 concept CommandPayloadAsRef = CommandPayloadStringType<T> || T::command_payload_as_ref || false;
 
+template <typename T>
+concept PayloadHasBaseTupleCmdDataTag = T::BaseTupleCmdDataTag || false;
+
 struct CommandProcTupleAdapter {
 	template <typename T>
 	using with_ref_params = std::conditional_t<CommandPayloadAsRef<T>, const T &, T>;
 };
 
-struct BaseTupleCmdDataTag{};
-
-namespace TupleCmdDataDetail {
-	/**
-	 * For internal use by TupleCmdData, AutoFmtTupleCmdData.
-	 */
-	template <typename... T>
-	struct EMPTY_BASES BaseTupleCmdData : public CommandPayloadBase, public BaseTupleCmdDataTag {
-		using CommandProc = CommandCost(DoCommandFlags, TileIndex, typename CommandProcTupleAdapter::with_ref_params<T>...);
-		using CommandProcNoTile = CommandCost(DoCommandFlags, typename CommandProcTupleAdapter::with_ref_params<T>...);
-		using Tuple = std::tuple<T...>;
-		Tuple values;
-
-		template <typename... Args>
-		BaseTupleCmdData(Args&& ... args) : values(std::forward<Args>(args)...) {}
-
-		BaseTupleCmdData(Tuple&& values) : values(std::move(values)) {}
-
-		virtual void Serialise(BufferSerialisationRef buffer) const override;
-		virtual void SanitiseStrings(StringValidationSettings settings) override;
-		bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
-
-		Tuple &GetValues() { return this->values; }
-		const Tuple &GetValues() const { return this->values; }
-	};
-};
-
 template <typename Parent, typename... T>
-struct TupleCmdData : public TupleCmdDataDetail::BaseTupleCmdData<T...> {
-	using TupleCmdDataDetail::BaseTupleCmdData<T...>::BaseTupleCmdData;
-	using Tuple = typename TupleCmdDataDetail::BaseTupleCmdData<T...>::Tuple;
+struct EMPTY_BASES TupleCmdData : public CommandPayloadBase {
+	static constexpr bool BaseTupleCmdDataTag = true;
+
+	using CommandProc = CommandCost(DoCommandFlags, TileIndex, typename CommandProcTupleAdapter::with_ref_params<T>...);
+	using CommandProcNoTile = CommandCost(DoCommandFlags, typename CommandProcTupleAdapter::with_ref_params<T>...);
+	using Tuple = std::tuple<T...>;
+	Tuple values;
+
+	template <typename... Args>
+	TupleCmdData(Args&& ... args) : values(std::forward<Args>(args)...) {}
+
+	TupleCmdData(Tuple&& values) : values(std::move(values)) {}
+
+	virtual void Serialise(BufferSerialisationRef buffer) const override;
+	virtual void SanitiseStrings(StringValidationSettings settings) override;
+	bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
+
+	Tuple &GetValues() { return this->values; }
+	const Tuple &GetValues() const { return this->values; }
 
 	std::unique_ptr<CommandPayloadBase> Clone() const override;
 
@@ -1063,7 +1055,9 @@ struct AutoFmtTupleCmdData : public TupleCmdData<Parent, T...> {
 };
 
 template <typename Parent, typename T>
-struct EMPTY_BASES TupleRefCmdData : public CommandPayloadSerialisable<Parent>, public T, public BaseTupleCmdDataTag {
+struct EMPTY_BASES TupleRefCmdData : public CommandPayloadBase, public T {
+	static constexpr bool BaseTupleCmdDataTag = true;
+
 private:
 	template <typename H> struct TupleHelper;
 
@@ -1099,6 +1093,7 @@ private:
 public:
 	static inline constexpr MakeHelper<Tuple> Make{};
 
+	std::unique_ptr<CommandPayloadBase> Clone() const override;
 	virtual void Serialise(BufferSerialisationRef buffer) const override;
 	virtual void SanitiseStrings(StringValidationSettings settings) override;
 	bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
@@ -1107,9 +1102,18 @@ public:
 	typename Helper::ConstRefTuple GetValues() const { return typename Helper::ConstRefTuple(const_cast<TupleRefCmdData *>(this)->GetValues()); }
 };
 
+template <typename Parent, typename T>
+std::unique_ptr<CommandPayloadBase> TupleRefCmdData<Parent, T>::Clone() const
+{
+	static_assert(std::is_final_v<Parent>);
+	return std::make_unique<Parent>(*static_cast<const Parent *>(this));
+}
+
 /** Wrapper for commands to handle the most common case where no custom/special behaviour is required. */
 template <typename... T>
-struct EMPTY_BASES CmdDataT final : public AutoFmtTupleCmdData<CmdDataT<T...>, TCDF_NONE, T...> {};
+struct EMPTY_BASES CmdDataT final : public TupleCmdData<CmdDataT<T...>, T...> {
+	void FormatDebugSummary(struct format_target &output) const override;
+};
 
 /** Specialisation for string which doesn't bother implementing FormatDebugSummary at all. */
 template <>
@@ -1120,7 +1124,9 @@ template <>
 struct EMPTY_BASES CmdDataT<std::string, std::string, std::string> final : public TupleCmdData<CmdDataT<std::string, std::string, std::string>, std::string, std::string, std::string> {};
 
 template <>
-struct EMPTY_BASES CmdDataT<> final : public CommandPayloadSerialisable<CmdDataT<>>, public BaseTupleCmdDataTag {
+struct EMPTY_BASES CmdDataT<> final : public CommandPayloadBase {
+	static constexpr bool BaseTupleCmdDataTag = true;
+
 	using CommandProc = CommandCost(DoCommandFlags, TileIndex);
 	using CommandProcNoTile = CommandCost(DoCommandFlags);
 	using Tuple = std::tuple<>;
@@ -1129,6 +1135,7 @@ struct EMPTY_BASES CmdDataT<> final : public CommandPayloadSerialisable<CmdDataT
 	void Serialise(BufferSerialisationRef buffer) const override {}
 	bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation) { return true; }
 	static inline CmdDataT<> Make() { return CmdDataT<>{}; }
+	std::unique_ptr<CommandPayloadBase> Clone() const override { return std::make_unique<CmdDataT<>>(); }
 };
 using EmptyCmdData = CmdDataT<>;
 

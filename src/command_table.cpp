@@ -79,7 +79,7 @@ CommandCost CommandExecTrampolineTuple(F proc, TileIndex tile, DoCommandFlags fl
 	}
 }
 
-template <typename T, auto &proc, bool no_tile, typename = std::enable_if_t<std::is_base_of_v<BaseTupleCmdDataTag, T>>>
+template <typename T, auto &proc, bool no_tile, typename = std::enable_if_t<PayloadHasBaseTupleCmdDataTag<T>>>
 static constexpr CommandExecTrampoline *MakeTrampoline()
 {
 	return [](const CommandExecData &exec_data) -> CommandCost
