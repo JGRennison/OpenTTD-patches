@@ -7,7 +7,7 @@
 
 /** @file command_serialisation.h Internal template implementations related to command serialisation.
  *
- * Generally only needed by command.cpp and non-trivial commmand payload implementations.
+ * Generally only needed by command_table.cpp and non-trivial commmand payload implementations.
  */
 
 #ifndef COMMAND_SERIALISATION_H
@@ -15,7 +15,6 @@
 
 #include "command_type.h"
 #include "core/format.hpp"
-#include "3rdparty/fmt/ranges.h"
 
 template <typename T>
 inline bool EncodedString::Deserialise(T &buffer, StringValidationSettings default_string_validation)
@@ -47,37 +46,34 @@ namespace TupleCmdDataDetail {
 		((SanitiseGeneric(std::get<Tindices>(values), settings)), ...);
 	}
 
-	template <typename T, size_t Tindex>
-	constexpr auto MakeRefTupleWithoutStringsItem(const T &values)
-	{
-		const auto &val = std::get<Tindex>(values);
-		if constexpr (CommandPayloadStringType<std::remove_cvref_t<decltype(val)>>) {
-			return std::tuple<>();
-		} else {
-			return std::forward_as_tuple(val);
-		}
-	}
+	template<typename T, size_t I, size_t N, size_t... integers>
+	struct NonStringTupleIndexSequenceHelper {
+		using type = std::conditional_t<
+				CommandPayloadStringType<std::remove_cvref_t<std::tuple_element_t<I, T>>>,
+				typename NonStringTupleIndexSequenceHelper<T, I + 1, N, integers...>::type,
+				typename NonStringTupleIndexSequenceHelper<T, I + 1, N, integers..., I>::type>;
+	};
 
-	template <typename T, size_t... Tindices>
-	constexpr auto MakeRefTupleWithoutStrings(const T &values, std::index_sequence<Tindices...>)
-	{
-		return std::tuple_cat(MakeRefTupleWithoutStringsItem<T, Tindices>(values)...);
-	}
+	template<typename T, size_t N, size_t... integers>
+	struct NonStringTupleIndexSequenceHelper<T, N, N, integers...> {
+		using type = std::integer_sequence<size_t, integers...>;
+	};
+
+	template<typename T>
+	using NonStringTupleIndexSequence = NonStringTupleIndexSequenceHelper<T, 0, std::tuple_size_v<T>>::type;
 
 	template <auto fmt_str, typename T, size_t... Tindices>
-	void FmtTupleDataTuple(format_target &output, const T &values, std::index_sequence<Tindices...>)
+	inline void FmtTupleDataTuple(format_target &output, const T &values, std::index_sequence<Tindices...>)
 	{
 		output.format(fmt_str, std::get<Tindices>(values)...);
 	}
 
-	template <auto fmt_str, typename T>
-	void FmtTupleData(format_target &output, const T &values)
+	void FmtSimpleTupleArgs(format_target &output, size_t count, fmt::format_args args);
+
+	template <typename T, size_t... Tindices>
+	inline void FmtSimpleTupleData(format_target &output, const T &values, std::index_sequence<Tindices...> seq)
 	{
-		if constexpr (std::string_view(fmt_str).size() == 0) {
-			output.format("{}", fmt::join(values, ", "));
-		} else {
-			FmtTupleDataTuple<fmt_str, T>(output, values, std::make_index_sequence<std::tuple_size_v<T>>{});
-		}
+		FmtSimpleTupleArgs(output, seq.size(), make_preprocessed_format_args(std::get<Tindices>(values)...));
 	}
 };
 
@@ -123,17 +119,29 @@ bool TupleRefCmdData<Parent, T>::Deserialise(DeserialisationBuffer &buffer, Stri
 template <typename Parent, TupleCmdDataFlags flags, typename... T>
 void AutoFmtTupleCmdData<Parent, flags, T...>::FormatDebugSummary(format_target &output) const
 {
-	if constexpr (flags & TCDF_STRINGS) {
-		TupleCmdDataDetail::FmtTupleData<Parent::fmt_str>(output, this->values);
+	if constexpr (std::string_view(Parent::fmt_str).size() == 0) {
+		if constexpr ((flags & TCDF_STRINGS) || !TupleCmdData<Parent, T...>::HasStringType) {
+			TupleCmdDataDetail::FmtSimpleTupleData(output, this->values, std::index_sequence_for<T...>{});
+		} else {
+			TupleCmdDataDetail::FmtSimpleTupleData(output, this->values, TupleCmdDataDetail::NonStringTupleIndexSequence<typename TupleCmdData<Parent, T...>::Tuple>{});
+		}
 	} else {
-		TupleCmdDataDetail::FmtTupleData<Parent::fmt_str>(output, TupleCmdDataDetail::MakeRefTupleWithoutStrings(this->values, std::index_sequence_for<T...>{}));
+		if constexpr ((flags & TCDF_STRINGS) || !TupleCmdData<Parent, T...>::HasStringType) {
+			TupleCmdDataDetail::FmtTupleDataTuple<Parent::fmt_str>(output, this->values, std::index_sequence_for<T...>{});
+		} else {
+			TupleCmdDataDetail::FmtTupleDataTuple<Parent::fmt_str>(output, this->values, TupleCmdDataDetail::NonStringTupleIndexSequence<typename TupleCmdData<Parent, T...>::Tuple>{});
+		}
 	}
 }
 
 template <typename... T>
 void CmdDataT<T...>::FormatDebugSummary(format_target &output) const
 {
-	output.format("{}", fmt::join(TupleCmdDataDetail::MakeRefTupleWithoutStrings(this->values, std::index_sequence_for<T...>{}), ", "));
+	if constexpr (!TupleCmdData<void, T...>::HasStringType) {
+		TupleCmdDataDetail::FmtSimpleTupleData(output, this->values, std::index_sequence_for<T...>{});
+	} else {
+		TupleCmdDataDetail::FmtSimpleTupleData(output, this->values, TupleCmdDataDetail::NonStringTupleIndexSequence<typename TupleCmdData<void, T...>::Tuple>{});
+	}
 }
 
 #endif /* COMMAND_SERIALISATION_H */

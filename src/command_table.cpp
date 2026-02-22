@@ -146,3 +146,12 @@ void SetPreCheckedCommandPayloadClientID(Commands cmd, CommandPayloadBase &paylo
 	};
 	cmd_loop(std::make_integer_sequence<Tseq, static_cast<Tseq>(CMD_END)>{});
 }
+
+void TupleCmdDataDetail::FmtSimpleTupleArgs(format_target &output, size_t count, fmt::format_args args)
+{
+	for (size_t i = 0; i < count; i++) {
+		if (i != 0) output.append(", ");
+		auto arg = args.get(static_cast<int>(i));
+		output.vformat("{}", fmt::format_args(&arg, 1));
+	}
+}

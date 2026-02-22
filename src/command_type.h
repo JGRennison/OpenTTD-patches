@@ -1014,6 +1014,8 @@ struct EMPTY_BASES TupleCmdData : public CommandPayloadBase {
 	using CommandProc = CommandCost(DoCommandFlags, TileIndex, typename CommandProcTupleAdapter::with_ref_params<T>...);
 	using CommandProcNoTile = CommandCost(DoCommandFlags, typename CommandProcTupleAdapter::with_ref_params<T>...);
 	using Tuple = std::tuple<T...>;
+	static constexpr bool HasStringType = (CommandPayloadStringType<T> || ...);
+
 	Tuple values;
 
 	template <typename... Args>
