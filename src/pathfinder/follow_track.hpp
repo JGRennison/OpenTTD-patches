@@ -150,7 +150,7 @@ struct CFollowTrackT {
 			 * that function failed can have to do with a
 			 * missing road bit, or inability to connect the
 			 * different bits due to slopes. */
-			if (IsRoadTT() && !this->IsTram() && this->TryReverse()) return true;
+			if (((IsRoadTT() && !this->IsTram()) || IsRailTT()) && this->TryReverse()) return true;
 
 			/* CanEnterNewTile already set a reason.
 			 * Do NOT overwrite it (important for example for EC_RAIL_ROAD_TYPE).
@@ -325,7 +325,22 @@ protected:
 		}
 		if (IsRailTT() && IsDepotTypeTile(this->new_tile, TT())) {
 			DiagDirection exitdir = GetRailDepotDirection(this->new_tile);
-			if (ReverseDiagDir(exitdir) != this->exitdir) {
+			/* new and old tile are both depots */
+			if (IsDepotTypeTile(this->old_tile, TT())) {
+				DiagDirection oldExitdir = GetRailDepotDirection(this->new_tile);
+				if (exitdir != oldExitdir && ReverseDiagDir(exitdir) != oldExitdir) {
+					/* depots are 90 degress to each other */
+					this->err = EC_NO_WAY;
+					return false;
+				}
+				if (GetTileMaxZ(this->new_tile) != GetTileMaxZ(this->old_tile)) {
+					/* depots are on different level */
+					this->err = EC_NO_WAY;
+					return false;
+				}
+
+			}
+			else if (ReverseDiagDir(exitdir) != this->exitdir) {
 				this->err = EC_NO_WAY;
 				return false;
 			}
@@ -415,8 +430,8 @@ protected:
 	inline bool ForcedReverse()
 	{
 		/* rail and road depots cause reversing */
-		if (!IsWaterTT() && IsDepotTypeTile(this->old_tile, TT())) {
-			DiagDirection exitdir = IsRailTT() ? GetRailDepotDirection(this->old_tile) : GetRoadDepotDirection(this->old_tile);
+		if (!IsWaterTT() && !IsRailTT() && IsDepotTypeTile(this->old_tile, TT())) {
+			DiagDirection exitdir = GetRoadDepotDirection(this->old_tile);
 			if (exitdir != this->exitdir) {
 				/* reverse */
 				this->new_tile = this->old_tile;
@@ -462,6 +477,17 @@ protected:
 				/* we have some trackdirs reachable after reversal */
 				return true;
 			}
+		}
+		if (IsRailTT() && IsDepotTypeTile(this->old_tile, TT())) {
+			/* reverse if this is rail depot that isn't drive-through */
+			this->new_tile = this->old_tile;
+			this->new_td_bits = TrackdirToTrackdirBits(ReverseTrackdir(this->old_td));
+			this->exitdir = GetRailDepotDirection(this->old_tile);
+			this->tiles_skipped = 0;
+			this->is_tunnel = false;
+			this->is_bridge = false;
+			this->is_station = false;
+			return true;
 		}
 		this->err = EC_NO_WAY;
 		return false;
