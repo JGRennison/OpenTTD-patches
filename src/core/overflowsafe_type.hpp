@@ -177,7 +177,8 @@ public:
 	static inline constexpr OverflowSafeInt<T> max() { return T_MAX; }
 	static inline constexpr OverflowSafeInt<T> min() { return T_MIN; }
 
-	BaseType base() const noexcept { return this->m_value; }
+	constexpr BaseType base() const noexcept { return this->m_value; }
+	constexpr const BaseType &base_ref() const noexcept { return this->m_value; }
 };
 
 

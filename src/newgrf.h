@@ -464,7 +464,7 @@ template <typename... T>
 void GrfMsgIntl(int severity, fmt::format_string<T...> msg, T&&... args)
 {
 	extern void GrfInfoVFmt(int severity, fmt::string_view msg, fmt::format_args args);
-	GrfInfoVFmt(severity, msg, fmt::make_format_args(args...));
+	GrfInfoVFmt(severity, msg, make_preprocessed_format_args(args...));
 }
 
 #define GrfMsg(severity, format_string, ...) do { if ((severity) == 0 || GetDebugLevel(DebugLevelID::grf) >= (severity)) GrfMsgIntl(severity, FMT_STRING(format_string) __VA_OPT__(,) __VA_ARGS__); } while(false)

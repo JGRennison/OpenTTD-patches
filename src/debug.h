@@ -67,7 +67,7 @@ template <typename... T>
 void DebugIntl(DebugLevelID dbg, int8_t level, fmt::format_string<T...> msg, T&&... args)
 {
 	extern void DebugIntlVFmt(DebugLevelID dbg, int8_t level, fmt::string_view msg, fmt::format_args args);
-	DebugIntlVFmt(dbg, level, msg, fmt::make_format_args(args...));
+	DebugIntlVFmt(dbg, level, msg, make_preprocessed_format_args(args...));
 }
 
 /**
@@ -99,7 +99,7 @@ template <typename... T>
 void ShowInfo(fmt::format_string<T...> msg, T&&... args)
 {
 	extern void ShowInfoVFmt(fmt::string_view msg, fmt::format_args args);
-	ShowInfoVFmt(msg, fmt::make_format_args(args...));
+	ShowInfoVFmt(msg, make_preprocessed_format_args(args...));
 }
 
 struct log_prefix {
@@ -120,13 +120,13 @@ template <typename... T>
 [[noreturn]] void AssertMsgError(int line, const char *file, const char *expr, fmt::format_string<T...> msg, T&&... args)
 {
 	[[noreturn]] extern void AssertMsgErrorVFmt(int line, const char *file, const char *expr, fmt::string_view msg, fmt::format_args args);
-	AssertMsgErrorVFmt(line, file, expr, msg, fmt::make_format_args(args...));
+	AssertMsgErrorVFmt(line, file, expr, msg, make_preprocessed_format_args(args...));
 }
 template <typename... T>
 [[noreturn]] void AssertMsgTileError(int line, const char *file, const char *expr, uint32_t tile, fmt::format_string<T...> msg, T&&... args)
 {
 	[[noreturn]] extern void AssertMsgTileErrorVFmt(int line, const char *file, const char *expr, uint32_t tile, fmt::string_view msg, fmt::format_args args);
-	AssertMsgTileErrorVFmt(line, file, expr, tile, msg, fmt::make_format_args(args...));
+	AssertMsgTileErrorVFmt(line, file, expr, tile, msg, make_preprocessed_format_args(args...));
 }
 
 #if !defined(NDEBUG) || defined(WITH_ASSERT)

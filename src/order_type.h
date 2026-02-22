@@ -47,6 +47,7 @@ struct DestinationID {
 	constexpr TraceRestrictSlotGroupID ToSlotGroupID() const noexcept { return static_cast<TraceRestrictSlotGroupID>(this->value); }
 	constexpr TraceRestrictCounterID ToCounterID() const noexcept { return static_cast<TraceRestrictCounterID>(this->value); }
 	constexpr BaseType base() const noexcept { return this->value; }
+	constexpr const BaseType &base_ref() const noexcept { return this->value; }
 	constexpr BaseType &edit_base() { return this->value; }
 
 	constexpr bool operator ==(const DestinationID &destination) const { return this->value == destination.value; }

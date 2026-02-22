@@ -71,6 +71,7 @@ struct EMPTY_BASES PoolID : TTag, PoolIDBase {
 
 	/* Only allow conversion to BaseType via method. */
 	constexpr BaseType base() const noexcept { return this->value; }
+	constexpr const BaseType &base_ref() const noexcept { return this->value; }
 	constexpr BaseType &edit_base() { return this->value; }
 
 	static constexpr PoolID Begin() { return PoolID{}; }

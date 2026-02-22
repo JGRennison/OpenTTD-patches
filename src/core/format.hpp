@@ -143,6 +143,27 @@ public:
 	constexpr trivial_appender operator++(int) { return *this; }
 };
 
+namespace format_detail {
+	template <typename T>
+	constexpr auto &preprocess_format_arg(T& arg)
+	{
+		if constexpr (FmtAsBase<T>) {
+			return arg.base_ref();
+		} else {
+			return arg;
+		}
+	}
+};
+
+/**
+ * fmt::make_format_args wrapper which unwraps trivial types (FmtAsBase).
+ */
+template <typename... T>
+constexpr auto make_preprocessed_format_args(T&... args)
+{
+	return fmt::make_format_args(format_detail::preprocess_format_arg(args)...);
+}
+
 /**
  * Base fmt format target class. Users should take by reference.
  * Not directly instantiable, use format_to_buffer, format_buffer, format_buffer_sized, format_to_fixed or format_to_fixed_z.
@@ -180,7 +201,7 @@ public:
 	template <typename... T>
 	void format(fmt::format_string<T...> fmtstr, T&&... args)
 	{
-		fmt::detail::vformat_to(this->buffer, fmt::string_view(fmtstr), fmt::make_format_args(args...), {});
+		fmt::detail::vformat_to(this->buffer, fmt::string_view(fmtstr), make_preprocessed_format_args(args...), {});
 	}
 
 	void vformat(fmt::string_view fmtstr, fmt::format_args args)
@@ -478,7 +499,7 @@ struct format_to_fixed_z final : public format_to_fixed_base {
 			return dst;
 		}
 		format_to_fixed_z buf(dst, last);
-		buf.vformat(fmtstr, fmt::make_format_args(args...));
+		buf.vformat(fmtstr, make_preprocessed_format_args(args...));
 		return buf.finalise();
 	}
 };

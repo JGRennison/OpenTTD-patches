@@ -322,6 +322,7 @@ struct EMPTY_BASES ST : public StrongTypedefBase, public TTraits::FmtTag, public
 
 	/* Only allow conversion to BaseType via method. */
 	constexpr BaseType base() const { return this->value; }
+	constexpr const BaseType &base_ref() const { return this->value; }
 	constexpr BaseType &edit_base() { return this->value; }
 
 	/* Only allow TProperties classes access to the internal value. Everyone else needs to call .base(). */
@@ -360,6 +361,7 @@ struct EMPTY_BASES STRef : public StrongTypedefBase, public TTraits::FmtTag, pub
 
 	/* Only allow conversion to BaseType via method. */
 	constexpr BaseType base() const { return this->value; }
+	constexpr const BaseType &base_ref() const { return this->value; }
 	constexpr BaseType &edit_base() { return this->value; }
 
 	/* Only allow TProperties classes access to the internal value. Everyone else needs to call .base(). */

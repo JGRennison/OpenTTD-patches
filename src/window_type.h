@@ -876,6 +876,7 @@ public:
 	operator int32_t() const { return value; }
 
 	constexpr int32_t base() const noexcept { return this->value; }
+	constexpr const int32_t &base_ref() const noexcept { return this->value; }
 
 	/* Automatically convert to any other type that might be requested. */
 	template <typename T> requires (std::is_enum_v<T> || std::is_class_v<T>)

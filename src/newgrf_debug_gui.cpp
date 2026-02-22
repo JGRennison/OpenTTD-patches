@@ -209,7 +209,7 @@ struct NIExtraInfoOutput {
 	template <typename... T>
 	void Print(fmt::format_string<T...> fmtstr, T&&... args)
 	{
-		this->PrintV(fmtstr, fmt::make_format_args(args...));
+		this->PrintV(fmtstr, make_preprocessed_format_args(args...));
 	}
 };
 
@@ -532,7 +532,7 @@ struct NewGRFInspectWindow final : Window {
 	template <typename... T>
 	void DrawString(const Rect &r, int offset, fmt::format_string<T...> fmtstr, T&&... args) const
 	{
-		this->DrawStringV(r, offset, fmtstr, fmt::make_format_args(args...));
+		this->DrawStringV(r, offset, fmtstr, make_preprocessed_format_args(args...));
 	}
 
 	void DrawWidget(const Rect &r, WidgetID widget) const override
