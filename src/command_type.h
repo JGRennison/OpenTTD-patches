@@ -1002,9 +1002,14 @@ struct CommandProcTupleAdapter {
 	using with_ref_params = std::conditional_t<CommandPayloadAsRef<T>, const T &, T>;
 };
 
+template <typename... T>
+struct CmdDataT;
+
 template <typename Parent, typename... T>
 struct EMPTY_BASES TupleCmdData : public CommandPayloadBase {
 	static constexpr bool BaseTupleCmdDataTag = true;
+
+	using RealParent = std::conditional_t<std::is_same_v<Parent, void>, CmdDataT<T...>, Parent>;
 
 	using CommandProc = CommandCost(DoCommandFlags, TileIndex, typename CommandProcTupleAdapter::with_ref_params<T>...);
 	using CommandProcNoTile = CommandCost(DoCommandFlags, typename CommandProcTupleAdapter::with_ref_params<T>...);
@@ -1025,9 +1030,9 @@ struct EMPTY_BASES TupleCmdData : public CommandPayloadBase {
 
 	std::unique_ptr<CommandPayloadBase> Clone() const override;
 
-	static Parent Make(T... args)
+	static RealParent Make(T... args)
 	{
-		Parent out;
+		RealParent out;
 		out.values = Tuple(std::forward<T>(args)...);
 		return out;
 	}
@@ -1036,8 +1041,8 @@ struct EMPTY_BASES TupleCmdData : public CommandPayloadBase {
 template <typename Parent, typename... T>
 std::unique_ptr<CommandPayloadBase> TupleCmdData<Parent, T...>::Clone() const
 {
-	static_assert(std::is_final_v<Parent>);
-	return std::make_unique<Parent>(*static_cast<const Parent *>(this));
+	static_assert(std::is_final_v<RealParent>);
+	return std::make_unique<RealParent>(*static_cast<const RealParent *>(this));
 }
 
 enum TupleCmdDataFlags : uint8_t {
@@ -1111,17 +1116,17 @@ std::unique_ptr<CommandPayloadBase> TupleRefCmdData<Parent, T>::Clone() const
 
 /** Wrapper for commands to handle the most common case where no custom/special behaviour is required. */
 template <typename... T>
-struct EMPTY_BASES CmdDataT final : public TupleCmdData<CmdDataT<T...>, T...> {
+struct EMPTY_BASES CmdDataT final : public TupleCmdData<void, T...> {
 	void FormatDebugSummary(struct format_target &output) const override;
 };
 
 /** Specialisation for string which doesn't bother implementing FormatDebugSummary at all. */
 template <>
-struct EMPTY_BASES CmdDataT<std::string> final : public TupleCmdData<CmdDataT<std::string>, std::string> {};
+struct EMPTY_BASES CmdDataT<std::string> final : public TupleCmdData<void, std::string> {};
 template <>
-struct EMPTY_BASES CmdDataT<std::string, std::string> final : public TupleCmdData<CmdDataT<std::string, std::string>, std::string, std::string> {};
+struct EMPTY_BASES CmdDataT<std::string, std::string> final : public TupleCmdData<void, std::string, std::string> {};
 template <>
-struct EMPTY_BASES CmdDataT<std::string, std::string, std::string> final : public TupleCmdData<CmdDataT<std::string, std::string, std::string>, std::string, std::string, std::string> {};
+struct EMPTY_BASES CmdDataT<std::string, std::string, std::string> final : public TupleCmdData<void, std::string, std::string, std::string> {};
 
 template <>
 struct EMPTY_BASES CmdDataT<> final : public CommandPayloadBase {
