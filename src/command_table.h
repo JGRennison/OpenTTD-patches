@@ -27,7 +27,7 @@ DECLARE_ENUM_AS_BIT_SET(CommandIntlFlags)
 struct CommandInfo {
 	CommandExecTrampoline *exec;                      ///< Command proc exec trampoline function
 	CommandPayloadDeserialiser *payload_deserialiser; ///< Command payload deserialiser
-	const std::type_info &payload_type_info;          ///< Command payload type info
+	const CommandPayloadBase::Operations &operations; ///< Command payload operations
 	const char *name;                                 ///< A human readable name for the procedure
 	CommandFlags flags;                               ///< The (command) flags to that apply to this command
 	CommandType type;                                 ///< The type of command

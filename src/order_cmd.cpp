@@ -4371,7 +4371,7 @@ const char *GetOrderTypeName(OrderType order_type)
 	return "???";
 }
 
-void InsertOrderCmdData::Serialise(BufferSerialisationRef buffer) const
+void InsertOrderCmdData::SerialisePayload(BufferSerialisationRef buffer) const
 {
 	buffer.Send_generic(this->veh);
 	buffer.Send_generic(this->sel_ord);
@@ -4397,7 +4397,7 @@ void InsertOrderCmdData::FormatDebugSummary(format_target &output) const
 	handler(std::make_index_sequence<std::tuple_size_v<decltype(this->new_order)>>{});
 }
 
-void BulkOrderCmdData::Serialise(BufferSerialisationRef buffer) const
+void BulkOrderCmdData::SerialisePayload(BufferSerialisationRef buffer) const
 {
 	buffer.Send_generic(this->veh);
 	buffer.Send_buffer(this->cmds);

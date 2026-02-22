@@ -56,15 +56,17 @@ enum TraceRestrictAlterCounterOperation : uint8_t {
 };
 
 struct TraceRestrictFollowUpCmdData final : public CommandPayloadSerialisable<TraceRestrictFollowUpCmdData> {
+	static constexpr bool HasStringSanitiser = false;
+
 	DynBaseCommandContainer cmd;
 
 	TraceRestrictFollowUpCmdData() = default;
 	TraceRestrictFollowUpCmdData(DynBaseCommandContainer cmd) : cmd(std::move(cmd)) {}
 
-	void Serialise(BufferSerialisationRef buffer) const override;
+	void SerialisePayload(BufferSerialisationRef buffer) const;
 	bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
 	CommandCost ExecuteWithValue(uint16_t value, DoCommandFlags flags) const;
-	void FormatDebugSummary(struct format_target &) const override;
+	void FormatDebugSummary(struct format_target &) const;
 };
 
 struct TraceRestrictCreateSlotCmdData final : public CommandPayloadSerialisable<TraceRestrictCreateSlotCmdData> {
@@ -74,20 +76,20 @@ struct TraceRestrictCreateSlotCmdData final : public CommandPayloadSerialisable<
 	uint32_t max_occupancy;
 	std::optional<TraceRestrictFollowUpCmdData> follow_up_cmd;
 
-	void Serialise(BufferSerialisationRef buffer) const override;
+	void SerialisePayload(BufferSerialisationRef buffer) const;
 	bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
-	void SanitiseStrings(StringValidationSettings settings) override;
-	void FormatDebugSummary(struct format_target &) const override;
+	void SanitisePayloadStrings(StringValidationSettings settings);
+	void FormatDebugSummary(struct format_target &) const;
 };
 
 struct TraceRestrictCreateCounterCmdData final : public CommandPayloadSerialisable<TraceRestrictCreateCounterCmdData> {
 	std::string name;
 	std::optional<TraceRestrictFollowUpCmdData> follow_up_cmd;
 
-	void Serialise(BufferSerialisationRef buffer) const override;
+	void SerialisePayload(BufferSerialisationRef buffer) const;
 	bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
-	void SanitiseStrings(StringValidationSettings settings) override;
-	void FormatDebugSummary(struct format_target &) const override;
+	void SanitisePayloadStrings(StringValidationSettings settings);
+	void FormatDebugSummary(struct format_target &) const;
 };
 
 struct TraceRestrictProgramSignalInnerData {
@@ -101,7 +103,7 @@ struct TraceRestrictProgramSignalInnerData {
 	auto GetRefTuple() { return std::tie(this->track, this->type, this->offset, this->data, this->name); }
 };
 struct TraceRestrictProgramSignalData final : public TupleRefCmdData<TraceRestrictProgramSignalData, TraceRestrictProgramSignalInnerData> {
-	void FormatDebugSummary(struct format_target &) const override;
+	void FormatDebugSummary(struct format_target &) const;
 };
 
 /* Flag values for TraceRestrictProgramSignalData::data for TRDCT_MOVE_ITEM operations */
@@ -121,7 +123,7 @@ struct TraceRestrictManageSignalInnerData {
 	auto GetRefTuple() { return std::tie(this->track, this->type, this->source_tile, this->source_track); }
 };
 struct TraceRestrictManageSignalData final : public TupleRefCmdData<TraceRestrictManageSignalData, TraceRestrictManageSignalInnerData> {
-	void FormatDebugSummary(struct format_target &) const override;
+	void FormatDebugSummary(struct format_target &) const;
 };
 
 BaseCommandContainer<CMD_PROGRAM_TRACERESTRICT_SIGNAL> GetTraceRestrictCommandContainer(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value);

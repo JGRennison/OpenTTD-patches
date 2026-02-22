@@ -246,7 +246,7 @@ bool IsCommandAllowedWhilePaused(Commands cmd)
 bool IsCorrectCommandPayloadType(Commands cmd, const CommandPayloadBase &payload)
 {
 	assert(IsValidCommand(cmd));
-	return typeid(payload) == _command_proc_table[cmd].payload_type_info;
+	return &payload.GetOperations() == &_command_proc_table[cmd].operations;
 }
 
 static int _docommand_recursive = 0;
@@ -269,7 +269,7 @@ CommandCost DoCommandImplementation(Commands cmd, TileIndex tile, const CommandP
 	FunctorScopeStackRecord scope_print([=, &payload](format_target &output) {
 		output.format("DoCommand: tile: {}, flags: 0x{:X}, intl_flags: 0x{:X}, company: {}, cmd: 0x{:X} {}, payload: ",
 				tile, flags, intl_flags, CompanyInfoDumper(_current_company), cmd, GetCommandName(cmd));
-		payload.FormatDebugSummary(output);
+		payload.fmt_format_value(output);
 	});
 #endif
 
@@ -348,7 +348,7 @@ static void AppendCommandLogEntry(const CommandCost &res, TileIndex tile, Comman
 	CommandLog &cmd_log = GetCommandFlags(cmd).Test(CommandFlag::LogAux) ? _command_log_aux : _command_log;
 
 	format_buffer summary;
-	payload.FormatDebugSummary(summary);
+	payload.fmt_format_value(summary);
 	if (res.HasAnyResultData()) {
 		summary.format(" --> {}", res.GetUntypedResultData());
 	}
@@ -398,7 +398,7 @@ bool DoCommandPImplementation(Commands cmd, TileIndex tile, const CommandPayload
 	FunctorScopeStackRecord scope_print([=, &orig_payload](format_target &output) {
 		output.format("DoCommandP: tile: {}, intl_flags: 0x{:X}, company: {}, cmd: 0x{:X} {}, payload: ",
 				tile, intl_flags, CompanyInfoDumper(_current_company), cmd, GetCommandName(cmd));
-		orig_payload.FormatDebugSummary(output);
+		orig_payload.fmt_format_value(output);
 	});
 #endif
 
@@ -434,7 +434,7 @@ bool DoCommandPImplementation(Commands cmd, TileIndex tile, const CommandPayload
 		return false;
 	}
 
-	std::unique_ptr<CommandPayloadBase> modified_payload;
+	CommandPayloadBaseUniquePtr modified_payload;
 	const CommandPayloadBase *use_payload = &orig_payload;
 
 	/* Only set client ID when the command does not come from the network. */
@@ -617,7 +617,7 @@ CommandCost DoCommandPInternal(Commands cmd, TileIndex tile, const CommandPayloa
 		format_buffer buffer;
 		buffer.format("Random seed changed in test command: company: {:02x}; tile: {:06x} ({} x {}); cmd: {:03x}; {}; payload: ",
 				_current_company, tile, TileX(tile), TileY(tile), cmd, GetCommandName(cmd));
-		payload.FormatDebugSummary(buffer);
+		payload.fmt_format_value(buffer);
 		Debug(desync, 0, "msg: {}; {}", debug_date_dumper().HexDate(), buffer);
 		LogDesyncMsg(buffer.to_string());
 	}

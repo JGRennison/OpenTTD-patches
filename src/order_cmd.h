@@ -20,6 +20,8 @@ enum class ReverseOrderOperation : uint8_t {
 };
 
 struct InsertOrderCmdData final : public CommandPayloadSerialisable<InsertOrderCmdData> {
+	static constexpr bool HasStringSanitiser = false;
+
 	VehicleID veh;
 	VehicleOrderID sel_ord; // This may be INVALID_VEH_ORDER_ID to append to the end of the order list
 	typename TupleTypeAdapter<decltype(std::declval<Order>().GetCmdRefTuple())>::Value new_order;
@@ -28,9 +30,9 @@ struct InsertOrderCmdData final : public CommandPayloadSerialisable<InsertOrderC
 	InsertOrderCmdData(VehicleID veh, VehicleOrderID sel_ord, const Order &order) :
 			veh(veh), sel_ord(sel_ord), new_order(const_cast<Order &>(order).GetCmdRefTuple()) {}
 
-	void Serialise(BufferSerialisationRef buffer) const override;
+	void SerialisePayload(BufferSerialisationRef buffer) const;
 	bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
-	void FormatDebugSummary(struct format_target &) const override;
+	void FormatDebugSummary(struct format_target &) const;
 };
 
 DEF_CMD_TUPLE_LT (CMD_MODIFY_ORDER,             CmdModifyOrder,                     {}, CommandType::RouteManagement, CmdDataT<VehicleID, VehicleOrderID, ModifyOrderFlags, uint16_t, CargoType, std::string>)
@@ -48,12 +50,14 @@ DEF_CMD_TUPLE_NT (CMD_MASS_CHANGE_ORDER,        CmdMassChangeOrder,             
 DEF_CMD_TUPLE    (CMD_CLEAR_ORDER_BACKUP,       CmdClearOrderBackup,     CMD_CLIENT_ID, CommandType::ServerSetting,   CmdDataT<ClientID>)
 
 struct BulkOrderCmdData final : public CommandPayloadSerialisable<BulkOrderCmdData> {
+	static constexpr bool HasStringSanitiser = false;
+
 	VehicleID veh;
 	std::vector<uint8_t> cmds;
 
-	void Serialise(BufferSerialisationRef buffer) const override;
+	void SerialisePayload(BufferSerialisationRef buffer) const;
 	bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
-	void FormatDebugSummary(format_target &output) const override;
+	void FormatDebugSummary(format_target &output) const;
 };
 
 DEF_CMD_DIRECT_NT(CMD_BULK_ORDER,         CmdBulkOrder,              CMD_NO_TEST, CommandType::RouteManagement, BulkOrderCmdData)

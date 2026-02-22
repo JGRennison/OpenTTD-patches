@@ -78,15 +78,15 @@ namespace TupleCmdDataDetail {
 };
 
 template <typename Parent, typename... T>
-void TupleCmdData<Parent, T...>::Serialise(BufferSerialisationRef buffer) const
+void TupleCmdData<Parent, T...>::SerialisePayload(const CommandPayloadBase *ptr, BufferSerialisationRef buffer)
 {
-	buffer.Send_generic(this->values);
+	buffer.Send_generic(static_cast<const Self *>(ptr)->values);
 }
 
 template <typename Parent, typename... T>
-void TupleCmdData<Parent, T...>::SanitiseStrings(StringValidationSettings settings)
+void TupleCmdData<Parent, T...>::SanitisePayloadStrings(CommandPayloadBase *ptr, StringValidationSettings settings)
 {
-	TupleCmdDataDetail::SanitiseStringsTuple(this->values, settings, std::index_sequence_for<T...>{});
+	TupleCmdDataDetail::SanitiseStringsTuple(static_cast<Self *>(ptr)->values, settings, std::index_sequence_for<T...>{});
 }
 
 template <typename Parent, typename... T>
@@ -97,15 +97,15 @@ bool TupleCmdData<Parent, T...>::Deserialise(DeserialisationBuffer &buffer, Stri
 }
 
 template <typename Parent, typename T>
-void TupleRefCmdData<Parent, T>::Serialise(BufferSerialisationRef buffer) const
+void TupleRefCmdData<Parent, T>::SerialisePayload(const CommandPayloadBase *ptr, BufferSerialisationRef buffer)
 {
-	buffer.Send_generic(this->GetValues());
+	buffer.Send_generic(static_cast<const Self *>(ptr)->GetValues());
 }
 
 template <typename Parent, typename T>
-void TupleRefCmdData<Parent, T>::SanitiseStrings(StringValidationSettings settings)
+void TupleRefCmdData<Parent, T>::SanitisePayloadStrings(CommandPayloadBase *ptr, StringValidationSettings settings)
 {
-	TupleCmdDataDetail::SanitiseStringsTuple(this->GetValues(), settings, std::make_index_sequence<std::tuple_size_v<Tuple>>{});
+	TupleCmdDataDetail::SanitiseStringsTuple(static_cast<Self *>(ptr)->GetValues(), settings, std::make_index_sequence<std::tuple_size_v<Tuple>>{});
 }
 
 template <typename Parent, typename T>
@@ -117,30 +117,32 @@ bool TupleRefCmdData<Parent, T>::Deserialise(DeserialisationBuffer &buffer, Stri
 }
 
 template <typename Parent, TupleCmdDataFlags flags, typename... T>
-void AutoFmtTupleCmdData<Parent, flags, T...>::FormatDebugSummary(format_target &output) const
+void AutoFmtTupleCmdData<Parent, flags, T...>::FormatDebugSummary(const CommandPayloadBase *ptr, format_target &output)
 {
+	const Self *self = static_cast<const Self *>(ptr);
 	if constexpr (std::string_view(Parent::fmt_str).size() == 0) {
 		if constexpr ((flags & TCDF_STRINGS) || !TupleCmdData<Parent, T...>::HasStringType) {
-			TupleCmdDataDetail::FmtSimpleTupleData(output, this->values, std::index_sequence_for<T...>{});
+			TupleCmdDataDetail::FmtSimpleTupleData(output, self->values, std::index_sequence_for<T...>{});
 		} else {
-			TupleCmdDataDetail::FmtSimpleTupleData(output, this->values, TupleCmdDataDetail::NonStringTupleIndexSequence<typename TupleCmdData<Parent, T...>::Tuple>{});
+			TupleCmdDataDetail::FmtSimpleTupleData(output, self->values, TupleCmdDataDetail::NonStringTupleIndexSequence<typename TupleCmdData<Parent, T...>::Tuple>{});
 		}
 	} else {
 		if constexpr ((flags & TCDF_STRINGS) || !TupleCmdData<Parent, T...>::HasStringType) {
-			TupleCmdDataDetail::FmtTupleDataTuple<Parent::fmt_str>(output, this->values, std::index_sequence_for<T...>{});
+			TupleCmdDataDetail::FmtTupleDataTuple<Parent::fmt_str>(output, self->values, std::index_sequence_for<T...>{});
 		} else {
-			TupleCmdDataDetail::FmtTupleDataTuple<Parent::fmt_str>(output, this->values, TupleCmdDataDetail::NonStringTupleIndexSequence<typename TupleCmdData<Parent, T...>::Tuple>{});
+			TupleCmdDataDetail::FmtTupleDataTuple<Parent::fmt_str>(output, self->values, TupleCmdDataDetail::NonStringTupleIndexSequence<typename TupleCmdData<Parent, T...>::Tuple>{});
 		}
 	}
 }
 
 template <typename... T>
-void CmdDataT<T...>::FormatDebugSummary(format_target &output) const
+void CmdDataT<T...>::FormatDebugSummary(const CommandPayloadBase *ptr, format_target &output)
 {
+	const Self *self = static_cast<const Self *>(ptr);
 	if constexpr (!TupleCmdData<void, T...>::HasStringType) {
-		TupleCmdDataDetail::FmtSimpleTupleData(output, this->values, std::index_sequence_for<T...>{});
+		TupleCmdDataDetail::FmtSimpleTupleData(output, self->values, std::index_sequence_for<T...>{});
 	} else {
-		TupleCmdDataDetail::FmtSimpleTupleData(output, this->values, TupleCmdDataDetail::NonStringTupleIndexSequence<typename TupleCmdData<void, T...>::Tuple>{});
+		TupleCmdDataDetail::FmtSimpleTupleData(output, self->values, TupleCmdDataDetail::NonStringTupleIndexSequence<typename TupleCmdData<void, T...>::Tuple>{});
 	}
 }
 

@@ -918,7 +918,7 @@ CommandCost CmdBulkTree(DoCommandFlags flags, const BulkTreeCmdData &cmd_data)
 	}
 }
 
-void BulkTreeCmdData::Serialise(BufferSerialisationRef buffer) const
+void BulkTreeCmdData::SerialisePayload(BufferSerialisationRef buffer) const
 {
 	buffer.Send_uint32((uint32_t)this->plant_tree_data.size());
 	for (const auto& [tile, data] : this->plant_tree_data) {

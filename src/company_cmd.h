@@ -27,7 +27,7 @@ struct CmdCompanyCtrlInnerData {
 	auto GetRefTuple() { return std::tie(this->cca, this->company_id, this->reason, this->client_id, this->to_merge_id); }
 };
 struct CmdCompanyCtrlData final : public TupleRefCmdData<CmdCompanyCtrlData, CmdCompanyCtrlInnerData> {
-	void FormatDebugSummary(struct format_target &) const override;
+	void FormatDebugSummary(struct format_target &) const;
 };
 
 DEF_CMD_TUPLE_NT (CMD_COMPANY_CTRL,             CmdCompanyCtrl,           CMD_SPECTATOR | CMD_CLIENT_ID | CMD_NO_EST, CommandType::ServerSetting,   CmdCompanyCtrlData)

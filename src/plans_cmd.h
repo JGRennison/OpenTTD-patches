@@ -16,12 +16,13 @@
 #include "tile_type.h"
 
 struct PlanLineCmdData final : public CommandPayloadSerialisable<PlanLineCmdData> {
+	static constexpr bool HasStringSanitiser = false;
 	PlanID plan;
 	std::vector<TileIndex> tiles;
 
-	void Serialise(BufferSerialisationRef buffer) const override;
+	void SerialisePayload(BufferSerialisationRef buffer) const;
 	bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
-	void FormatDebugSummary(format_target &output) const override;
+	void FormatDebugSummary(format_target &output) const;
 };
 
 DEF_CMD_TUPLE_NT (CMD_ADD_PLAN,               CmdAddPlan,                         {}, CommandType::OtherManagement, EmptyCmdData)

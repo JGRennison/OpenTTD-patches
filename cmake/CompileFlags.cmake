@@ -173,6 +173,11 @@ macro(compile_flags)
             endif()
         endif()
 
+        if(CMAKE_CXX_COMPILER_ID STREQUAL "Clang" OR CMAKE_CXX_COMPILER_ID STREQUAL "AppleClang")
+            # Suppress useless warnings about template static members instantiated in translation unit only.
+            add_compile_options(-Wno-undefined-var-template)
+        endif()
+
         if(OPTION_COMPRESS_DEBUG)
             include(CheckCXXCompilerFlag)
             check_cxx_compiler_flag("-gz" GZ_FOUND)

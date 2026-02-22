@@ -17,13 +17,14 @@
 void PlaceTree(TileIndex tile, uint32_t r, bool keep_density = false);
 
 struct BulkTreeCmdData final : public CommandPayloadSerialisable<BulkTreeCmdData> {
+	static constexpr bool HasStringSanitiser = false;
 	static constexpr size_t MAX_SERIALISED_COUNT = 512;
 
 	std::vector<std::pair<TileIndex, TreePlacerData>> plant_tree_data; // List of every tile index and the tree type/count intended to be on this tile.
 
-	void Serialise(BufferSerialisationRef buffer) const override;
+	void SerialisePayload(BufferSerialisationRef buffer) const;
 	bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
-	void FormatDebugSummary(format_target &output) const override;
+	void FormatDebugSummary(format_target &output) const;
 };
 
 DEF_CMD_TUPLE(CMD_PLANT_TREE, CmdPlantTree, CMD_AUTO, CommandType::LandscapeConstruction, CmdDataT<TileIndex, TreeTypes, uint8_t, bool>)

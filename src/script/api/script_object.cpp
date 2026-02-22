@@ -296,7 +296,7 @@ ScriptObject::DisableDoCommandScope::DisableDoCommandScope()
 	FunctorScopeStackRecord scope_print([=, &payload](format_target &output) {
 		output.format("ScriptObject::DoCommand: tile: {}, intl_flags: 0x{:X}, company: {}, cmd: 0x{:X} {}, estimate_only: {}, payload: ",
 				tile, intl_flags, CompanyInfoDumper(_current_company), cmd, GetCommandName(cmd), estimate_only);
-		payload.FormatDebugSummary(output);
+		payload.fmt_format_value(output);
 	});
 #endif
 

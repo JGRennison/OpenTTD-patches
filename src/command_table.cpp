@@ -92,11 +92,11 @@ static constexpr CommandExecTrampoline *MakeTrampoline()
 template <typename T>
 static constexpr CommandPayloadDeserialiser *MakePayloadDeserialiser()
 {
-	return [](DeserialisationBuffer &buffer, StringValidationSettings default_string_validation) -> std::unique_ptr<CommandPayloadBase>
+	return [](DeserialisationBuffer &buffer, StringValidationSettings default_string_validation) -> CommandPayloadBaseUniquePtr
 	{
 		auto payload = std::make_unique<T>();
 		if (!payload->Deserialise(buffer, default_string_validation)) payload = nullptr;
-		return payload;
+		return CommandPayloadBaseUniquePtr(payload.release());
 	};
 }
 
@@ -106,7 +106,7 @@ inline constexpr CommandInfo CommandFromTrait() noexcept
 {
 	using Payload = typename T::PayloadType;
 	static_assert(std::is_final_v<Payload>);
-	return { MakeTrampoline<Payload, H::proc, T::output_no_tile>(), MakePayloadDeserialiser<Payload>(), typeid(Payload), H::name, T::flags, T::type, T::output_no_tile ? CIF_NO_OUTPUT_TILE : CIF_NONE };
+	return { MakeTrampoline<Payload, H::proc, T::output_no_tile>(), MakePayloadDeserialiser<Payload>(), Payload::operations, H::name, T::flags, T::type, T::output_no_tile ? CIF_NO_OUTPUT_TILE : CIF_NONE };
 };
 
 template <typename T, T... i>
@@ -155,3 +155,88 @@ void TupleCmdDataDetail::FmtSimpleTupleArgs(format_target &output, size_t count,
 		output.vformat("{}", fmt::format_args(&arg, 1));
 	}
 }
+
+struct CommandPayloadBaseOperationsBuilder {
+	template <typename T>
+	static CommandPayloadBaseUniquePtr Cloner(const CommandPayloadBase *ptr)
+	{
+		static_assert(std::is_final_v<T>);
+		return CommandPayloadBaseUniquePtr(new T(*static_cast<const T *>(ptr)));
+	}
+
+	template <typename T>
+	static void Deleter(CommandPayloadBase *ptr)
+	{
+		static_assert(std::is_final_v<T>);
+		delete static_cast<T *>(ptr);
+	}
+
+	template <typename T>
+	static void Serialiser(const CommandPayloadBase *ptr, struct BufferSerialisationRef buffer)
+	{
+		static_cast<const T *>(ptr)->SerialisePayload(buffer);
+	}
+
+	template <typename T>
+	static void SanitiseStrings(CommandPayloadBase *ptr, StringValidationSettings settings)
+	{
+		static_cast<T *>(ptr)->SanitisePayloadStrings(settings);
+	}
+
+	template <typename T>
+	static void FormatDebugSummary(const CommandPayloadBase *ptr, struct format_target &output)
+	{
+		static_cast<const T *>(ptr)->FormatDebugSummary(output);
+	}
+
+	static void NullFormatDebugSummary(const CommandPayloadBase *, struct format_target &);
+
+	template <typename T>
+	static constexpr CommandPayloadBase::Operations Build()
+	{
+		CommandPayloadBase::SerialiseFn serialise = nullptr;
+		if constexpr (requires { T::SerialisePayload(nullptr, std::declval<struct BufferSerialisationRef>()); }) {
+			serialise = &T::SerialisePayload;
+		} else {
+			serialise = &Serialiser<T>;
+		}
+
+		CommandPayloadBase::SanitiseStringsFn sanitise_strings = nullptr;
+		if constexpr (T::HasStringSanitiser) {
+			if constexpr (requires { T::SanitisePayloadStrings(nullptr, StringValidationSettings{}); }) {
+				sanitise_strings = &T::SanitisePayloadStrings;
+			} else {
+				sanitise_strings = &SanitiseStrings<T>;
+			}
+		}
+
+		CommandPayloadBase::FormatDebugSummaryFn format_debug_summary = &NullFormatDebugSummary;
+		if constexpr (T::HasFormatDebugSummary) {
+			if constexpr (requires { T::FormatDebugSummary(nullptr, std::declval<struct format_target &>()); }) {
+				format_debug_summary = &T::FormatDebugSummary;
+			} else {
+				format_debug_summary = &FormatDebugSummary<T>;
+			}
+		}
+
+		return {
+			&Cloner<T>,
+			&Deleter<T>,
+			serialise,
+			sanitise_strings,
+			format_debug_summary
+		};
+	}
+};
+
+void CommandPayloadBaseOperationsBuilder::NullFormatDebugSummary(const CommandPayloadBase *, struct format_target &) {}
+
+template<typename T>
+const CommandPayloadBase::Operations CommandPayloadSerialisable<T>::operations = CommandPayloadBaseOperationsBuilder::Build<T>();
+
+template <typename Parent, typename... T>
+const CommandPayloadBase::Operations TupleCmdData<Parent, T...>::operations = CommandPayloadBaseOperationsBuilder::Build<TupleCmdData<Parent, T...>::RealParent>();
+
+/* This isn't directly referenced in the command table, so ensure it is instantiated here. */
+template<>
+const CommandPayloadBase::Operations CommandPayloadSerialisable<TraceRestrictFollowUpCmdData>::operations = CommandPayloadBaseOperationsBuilder::Build<TraceRestrictFollowUpCmdData>();

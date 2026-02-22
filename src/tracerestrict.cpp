@@ -4026,7 +4026,7 @@ CommandCost CmdAlterTraceRestrictCounter(DoCommandFlags flags, TraceRestrictCoun
 	return CommandCost();
 }
 
-void TraceRestrictFollowUpCmdData::Serialise(BufferSerialisationRef buffer) const
+void TraceRestrictFollowUpCmdData::SerialisePayload(BufferSerialisationRef buffer) const
 {
 	this->cmd.Serialise(buffer);
 }
@@ -4039,10 +4039,12 @@ bool TraceRestrictFollowUpCmdData::Deserialise(DeserialisationBuffer &buffer, St
 
 CommandCost TraceRestrictFollowUpCmdData::ExecuteWithValue(uint16_t value, DoCommandFlags flags) const
 {
+	if (this->cmd.payload == nullptr) return CMD_ERROR;
+
 	switch (cmd.cmd) {
 		case CMD_PROGRAM_TRACERESTRICT_SIGNAL: {
 			using Payload = CmdPayload<CMD_PROGRAM_TRACERESTRICT_SIGNAL>;
-			if (const auto *src = dynamic_cast<const Payload *>(this->cmd.payload.get()); src != nullptr) {
+			if (const Payload *src = this->cmd.payload->AsType<Payload>(); src != nullptr) {
 				Payload payload = *src;
 				TraceRestrictInstructionItemRef(payload.data).SetValue(value);
 				return DoCommand<CMD_PROGRAM_TRACERESTRICT_SIGNAL>(this->cmd.tile, payload, flags);
@@ -4052,7 +4054,7 @@ CommandCost TraceRestrictFollowUpCmdData::ExecuteWithValue(uint16_t value, DoCom
 
 		case CMD_PROGPRESIG_MODIFY_INSTRUCTION: {
 			using Payload = CmdPayload<CMD_PROGPRESIG_MODIFY_INSTRUCTION>;
-			if (const auto *src = dynamic_cast<const Payload *>(this->cmd.payload.get()); src != nullptr) {
+			if (const Payload *src = this->cmd.payload->AsType<Payload>(); src != nullptr) {
 				Payload payload = *src;
 				uint32_t &cmd_value = std::get<3>(payload.GetValues()); // Make sure that it is the expected type
 				cmd_value = value;
@@ -4063,7 +4065,7 @@ CommandCost TraceRestrictFollowUpCmdData::ExecuteWithValue(uint16_t value, DoCom
 
 		case CMD_MODIFY_ORDER: {
 			using Payload = CmdPayload<CMD_MODIFY_ORDER>;
-			if (const auto *src = dynamic_cast<const Payload *>(this->cmd.payload.get()); src != nullptr) {
+			if (const Payload *src = this->cmd.payload->AsType<Payload>(); src != nullptr) {
 				Payload payload = *src;
 				uint16_t &cmd_value = std::get<3>(payload.GetValues()); // Make sure that it is the expected type
 				cmd_value = value;
@@ -4082,10 +4084,10 @@ CommandCost TraceRestrictFollowUpCmdData::ExecuteWithValue(uint16_t value, DoCom
 void TraceRestrictFollowUpCmdData::FormatDebugSummary(format_target &output) const
 {
 	output.format("follow up: {}, cmd: {:X} ({}), ", this->cmd.tile, this->cmd.cmd, GetCommandName(this->cmd.cmd));
-	this->cmd.payload->FormatDebugSummary(output);
+	if (this->cmd.payload) this->cmd.payload->fmt_format_value(output);
 }
 
-void TraceRestrictCreateSlotCmdData::Serialise(BufferSerialisationRef buffer) const
+void TraceRestrictCreateSlotCmdData::SerialisePayload(BufferSerialisationRef buffer) const
 {
 	buffer.Send_generic_seq(this->vehtype, this->parent, this->name, this->max_occupancy);
 	buffer.Send_bool(this->follow_up_cmd.has_value());
@@ -4104,7 +4106,7 @@ bool TraceRestrictCreateSlotCmdData::Deserialise(DeserialisationBuffer &buffer, 
 	return true;
 }
 
-void TraceRestrictCreateSlotCmdData::SanitiseStrings(StringValidationSettings settings)
+void TraceRestrictCreateSlotCmdData::SanitisePayloadStrings(StringValidationSettings settings)
 {
 	StrMakeValidInPlace(this->name, settings);
 }
@@ -4118,7 +4120,7 @@ void TraceRestrictCreateSlotCmdData::FormatDebugSummary(format_target &output) c
 	}
 }
 
-void TraceRestrictCreateCounterCmdData::Serialise(BufferSerialisationRef buffer) const
+void TraceRestrictCreateCounterCmdData::SerialisePayload(BufferSerialisationRef buffer) const
 {
 	buffer.Send_string(this->name);
 	buffer.Send_bool(this->follow_up_cmd.has_value());
@@ -4137,7 +4139,7 @@ bool TraceRestrictCreateCounterCmdData::Deserialise(DeserialisationBuffer &buffe
 	return true;
 }
 
-void TraceRestrictCreateCounterCmdData::SanitiseStrings(StringValidationSettings settings)
+void TraceRestrictCreateCounterCmdData::SanitisePayloadStrings(StringValidationSettings settings)
 {
 	StrMakeValidInPlace(this->name, settings);
 }

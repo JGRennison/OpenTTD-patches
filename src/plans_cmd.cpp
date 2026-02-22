@@ -224,7 +224,7 @@ CommandCost CmdAcquireUnownedPlan(DoCommandFlags flags, PlanID plan)
 	return CommandCost();
 }
 
-void PlanLineCmdData::Serialise(BufferSerialisationRef buffer) const
+void PlanLineCmdData::SerialisePayload(BufferSerialisationRef buffer) const
 {
 	buffer.Send_uint16(this->plan);
 	buffer.Send_uint32((uint32_t)this->tiles.size());
