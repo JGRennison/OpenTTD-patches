@@ -3665,11 +3665,7 @@ static void DrawTrackBitsOverlay(TileInfo *ti, TrackBits track, const RailTypeIn
 
 	const SubSprite *sub = nullptr;
 	if (draw_half_tile != CORNER_INVALID) {
-		if (halftile_corner != CORNER_INVALID) {
-			sub = &(_halftile_sub_sprite[draw_half_tile]);
-		} else {
-			sub = &(_dual_track_halftile_sub_sprite[draw_half_tile]);
-		}
+		sub = &(_dual_track_halftile_sub_sprite[draw_half_tile]);
 	}
 
 	if (track == TRACK_BIT_NONE) {
@@ -3829,13 +3825,9 @@ void DrawTrackBits(TileInfo *ti, TrackBits track, RailType rt, RailGroundType rg
 
 	if (halftile_corner != CORNER_INVALID) {
 		track &= ~CornerToTrackBits(halftile_corner);
-		if (draw_half_tile != CORNER_INVALID) {
-			sub = &(_halftile_sub_sprite[draw_half_tile]);
-		}
-	} else {
-		if (draw_half_tile != CORNER_INVALID) {
-			sub = &(_dual_track_halftile_sub_sprite[draw_half_tile]);
-		}
+	}
+	if (draw_half_tile != CORNER_INVALID) {
+		sub = &(_dual_track_halftile_sub_sprite[draw_half_tile]);
 	}
 
 	/* Select the sprite to use. */
