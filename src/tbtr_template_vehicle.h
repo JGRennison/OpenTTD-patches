@@ -139,7 +139,6 @@ public:
 	void SetFirst(TemplateVehicle *v);
 
 	TemplateVehicle *GetNextUnit() const;
-	TemplateVehicle *GetPrevUnit();
 
 	bool IsSetReuseDepotVehicles() const { return this->reuse_depot_vehicles; }
 	bool IsSetKeepRemainingVehicles() const { return this->keep_remaining_vehicles; }

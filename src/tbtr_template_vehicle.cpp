@@ -99,16 +99,6 @@ TemplateVehicle *TemplateVehicle::GetNextUnit() const
 		return tv;
 }
 
-TemplateVehicle *TemplateVehicle::GetPrevUnit()
-{
-	TemplateVehicle *tv = this->Prev();
-	while (tv && HasBit(tv->subtype, GVSF_ARTICULATED_PART|GVSF_ENGINE)) {
-		tv = tv->Prev();
-	}
-	if (tv && HasBit(tv->subtype, GVSF_MULTIHEADED|GVSF_ENGINE)) tv = tv->Prev();
-	return tv;
-}
-
 void ClearTemplateReplacements()
 {
 	_template_replacements.clear();
