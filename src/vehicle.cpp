@@ -1776,16 +1776,21 @@ void CallVehicleTicks()
 			t = Train::Get(*result_v);
 		}
 		SubtractMoneyFromCompany(CommandCost(EXPENSES_NEW_VEHICLES, -(Money)c->settings.engine_renew_money));
-		if (res2.Succeeded() || res.GetCost() == 0) res.AddCost(res2.GetCost());
 
 		if (!IsLocalCompany()) continue;
 
-		if (res.GetCost() != 0) {
-			ShowCostOrIncomeAnimation(x, y, z, res.GetCost());
+		Money total_cost = 0;
+		if (res.Succeeded()) total_cost += res.GetCost();
+		if (res2.Succeeded()) total_cost += res2.GetCost();
+
+		if (total_cost != 0) {
+			ShowCostOrIncomeAnimation(x, y, z, total_cost);
 		}
 
 		if (res.Failed()) {
 			ShowAutoReplaceAdviceMessage(res, t);
+		} else if (res2.Failed()) {
+			ShowAutoReplaceAdviceMessage(res2, t);
 		}
 	}
 	tmpl_cur_company.Restore();
