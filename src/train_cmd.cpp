@@ -1551,23 +1551,25 @@ static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlags flags, const
 
 		CheckConsistencyOfArticulatedVehicle(v);
 
-		/* Try to connect the vehicle to one of free chains of wagons. */
-		std::vector<Train *> candidates;
-		for (Train *w = Train::From(GetFirstVehicleOnTile(tile, VEH_TRAIN)); w != nullptr; w = w->HashTileNext()) {
-			if (w->IsFreeWagon() &&                          ///< A free wagon chain
-					w->engine_type == e->index &&            ///< Same type
-					w->First() != v &&                       ///< Don't connect to ourself
-					!w->vehstatus.Test(VehState::Crashed) && ///< Not crashed/flooded
-					w->owner == v->owner) {                  ///< Same owner
-				candidates.push_back(w);
+		if (!flags.Test(DoCommandFlag::AutoReplace)) {
+			/* Try to connect the vehicle to one of free chains of wagons. */
+			std::vector<Train *> candidates;
+			for (Train *w = Train::From(GetFirstVehicleOnTile(tile, VEH_TRAIN)); w != nullptr; w = w->HashTileNext()) {
+				if (w->IsFreeWagon() &&                          ///< A free wagon chain
+						w->engine_type == e->index &&            ///< Same type
+						w->First() != v &&                       ///< Don't connect to ourself
+						!w->vehstatus.Test(VehState::Crashed) && ///< Not crashed/flooded
+						w->owner == v->owner) {                  ///< Same owner
+					candidates.push_back(w);
+				}
 			}
-		}
-		std::sort(candidates.begin(), candidates.end(), [](const Train *a, const Train *b) {
-			return a->index < b->index;
-		});
-		for (Train *w : candidates) {
-			if (Command<CMD_MOVE_RAIL_VEHICLE>::Do(DoCommandFlag::Execute, v->index, w->Last()->index, MoveRailVehicleFlags::MoveChain).Succeeded()) {
-				break;
+			std::sort(candidates.begin(), candidates.end(), [](const Train *a, const Train *b) {
+				return a->index < b->index;
+			});
+			for (Train *w : candidates) {
+				if (Command<CMD_MOVE_RAIL_VEHICLE>::Do(DoCommandFlag::Execute, v->index, w->Last()->index, MoveRailVehicleFlags::MoveChain).Succeeded()) {
+					break;
+				}
 			}
 		}
 
@@ -7445,8 +7447,8 @@ static CommandCost CmdTemplateReplaceVehicle(DoCommandFlags flags, Train *incomi
 			if (eid == incoming->engine_type) {
 				new_chain = incoming;
 				remainder_chain = incoming->GetNextUnit();
-				if (remainder_chain) {
-					CommandCost move_cost = CmdMoveRailVehicle(flags, remainder_chain->index, VehicleID::Invalid(), MoveRailVehicleFlags::MoveChain);
+				if (remainder_chain != nullptr) {
+					CommandCost move_cost = CmdMoveRailVehicle(flags | DoCommandFlag::AutoReplace, remainder_chain->index, VehicleID::Invalid(), MoveRailVehicleFlags::MoveChain);
 					if (move_cost.Failed()) {
 						/* This should not fail, if it does give up immediately */
 						return move_cost;
@@ -7459,7 +7461,7 @@ static CommandCost CmdTemplateReplaceVehicle(DoCommandFlags flags, Train *incomi
 			new_chain = ChainContainsEngine(eid, incoming);
 			if (new_chain != nullptr) {
 				/* new_chain is the needed engine, move it to an empty spot in the depot */
-				CommandCost move_cost = Command<CMD_MOVE_RAIL_VEHICLE>::Do(flags, new_chain->index, VehicleID::Invalid(), MoveRailVehicleFlags::None);
+				CommandCost move_cost = Command<CMD_MOVE_RAIL_VEHICLE>::Do(flags | DoCommandFlag::AutoReplace, new_chain->index, VehicleID::Invalid(), MoveRailVehicleFlags::None);
 				if (move_cost.Succeeded()) {
 					remainder_chain = incoming;
 					return CommandCost();
@@ -7471,7 +7473,7 @@ static CommandCost CmdTemplateReplaceVehicle(DoCommandFlags flags, Train *incomi
 				new_chain = depot_vehicles.ContainsEngine(eid, incoming);
 				if (new_chain != nullptr) {
 					ClearVehicleWindows(new_chain);
-					CommandCost move_cost = Command<CMD_MOVE_RAIL_VEHICLE>::Do(flags, new_chain->index, VehicleID::Invalid(), MoveRailVehicleFlags::None);
+					CommandCost move_cost = Command<CMD_MOVE_RAIL_VEHICLE>::Do(flags | DoCommandFlag::AutoReplace, new_chain->index, VehicleID::Invalid(), MoveRailVehicleFlags::None);
 					if (move_cost.Succeeded()) {
 						depot_vehicles.RemoveVehicle(new_chain->index);
 						remainder_chain = incoming;
@@ -7481,7 +7483,7 @@ static CommandCost CmdTemplateReplaceVehicle(DoCommandFlags flags, Train *incomi
 			}
 
 			/* Case 4 */
-			CommandCost buy_cost = Command<CMD_BUILD_VEHICLE>::Do(flags, tile, eid, false, INVALID_CARGO, INVALID_CLIENT_ID);
+			CommandCost buy_cost = Command<CMD_BUILD_VEHICLE>::Do(flags | DoCommandFlag::AutoReplace, tile, eid, false, INVALID_CARGO, INVALID_CLIENT_ID);
 			/* break up in case buying the vehicle didn't succeed */
 			if (buy_cost.Failed()) return buy_cost;
 			auto buy_veh_id = buy_cost.GetResultData<VehicleID>();
@@ -7524,7 +7526,7 @@ static CommandCost CmdTemplateReplaceVehicle(DoCommandFlags flags, Train *incomi
 					if (new_part == remainder_chain) {
 						remainder_chain_next = remainder_chain->GetNextUnit();
 					}
-					CommandCost move_cost = CmdMoveRailVehicle(flags, new_part->index, last_veh->index, MoveRailVehicleFlags::None);
+					CommandCost move_cost = CmdMoveRailVehicle(flags | DoCommandFlag::AutoReplace, new_part->index, last_veh->index, MoveRailVehicleFlags::None);
 					if (move_cost.Succeeded()) {
 						remainder_chain = remainder_chain_next;
 						return;
@@ -7544,7 +7546,7 @@ static CommandCost CmdTemplateReplaceVehicle(DoCommandFlags flags, Train *incomi
 				}
 
 				/* Case 3: must buy new engine */
-				CommandCost buy_cost = Command<CMD_BUILD_VEHICLE>::Do(flags, tile, cur_tmpl->engine_type, false, INVALID_CARGO, INVALID_CLIENT_ID);
+				CommandCost buy_cost = Command<CMD_BUILD_VEHICLE>::Do(flags | DoCommandFlag::AutoReplace, tile, cur_tmpl->engine_type, false, INVALID_CARGO, INVALID_CLIENT_ID);
 				if (buy_cost.Failed()) {
 					new_part = nullptr;
 					return;
@@ -7556,7 +7558,7 @@ static CommandCost CmdTemplateReplaceVehicle(DoCommandFlags flags, Train *incomi
 				}
 
 				new_part = Train::Get(*buy_veh_id);
-				CommandCost move_cost = CmdMoveRailVehicle(flags, new_part->index, last_veh->index, MoveRailVehicleFlags::None);
+				CommandCost move_cost = CmdMoveRailVehicle(flags | DoCommandFlag::AutoReplace, new_part->index, last_veh->index, MoveRailVehicleFlags::None);
 				if (move_cost.Succeeded()) {
 					buy.AddCost(buy_cost.GetCost());
 				} else {
