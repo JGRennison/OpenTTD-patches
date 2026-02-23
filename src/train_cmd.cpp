@@ -7368,6 +7368,10 @@ static CommandCost CmdTemplateReplaceVehicle(DoCommandFlags flags, Train *incomi
 		}
 	}
 
+	if (tv->IsFreeWagonChain()) {
+		return CommandCost(STR_TMPL_ERROR_NOT_RUNNABLE);
+	}
+
 	TemplateDepotVehicles depot_vehicles;
 	if (tv->IsSetReuseDepotVehicles()) depot_vehicles.Init(tile);
 
@@ -7448,7 +7452,9 @@ static CommandCost CmdTemplateReplaceVehicle(DoCommandFlags flags, Train *incomi
 				new_chain = incoming;
 				remainder_chain = incoming->GetNextUnit();
 				if (remainder_chain != nullptr) {
-					CommandCost move_cost = CmdMoveRailVehicle(flags | DoCommandFlag::AutoReplace, remainder_chain->index, VehicleID::Invalid(), MoveRailVehicleFlags::MoveChain);
+					DoCommandFlags subflags = flags;
+					if (!tv->IsSetKeepRemainingVehicles()) subflags.Set(DoCommandFlag::AutoReplace);
+					CommandCost move_cost = CmdMoveRailVehicle(subflags, remainder_chain->index, VehicleID::Invalid(), MoveRailVehicleFlags::MoveChain);
 					if (move_cost.Failed()) {
 						/* This should not fail, if it does give up immediately */
 						return move_cost;

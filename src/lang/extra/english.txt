@@ -2250,6 +2250,7 @@ STR_TMPL_RPLALLGUI_USE_TIP                                      :{BLACK}Select a
 
 STR_TMPL_CANT_CREATE                                            :{WHITE}Can't create template or virtual vehicle...
 STR_TMPL_CANT_RENAME                                            :{WHITE}Can't rename template...
+STR_TMPL_ERROR_NOT_RUNNABLE                                     :{WHITE}... template is not runnable
 
 # Scheduled Dispatch
 STR_SCHDISPATCH_CAPTION                                         :{WHITE}{VEHICLE} (Scheduled Dispatch)
