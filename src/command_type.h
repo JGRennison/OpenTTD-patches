@@ -1045,10 +1045,10 @@ void SetCommandPayloadClientID(T &payload, ClientID client_id)
 	if constexpr (requires { payload.GetClientIDField(); }) {
 		if (payload.GetClientIDField() == (ClientID)0) payload.GetClientIDField() = client_id;
 	} else {
-		constexpr size_t idx = GetTupleIndexIgnoreCvRef<ClientID, decltype(payload.GetValues())>();
-		static_assert(idx < std::tuple_size_v<std::remove_cvref_t<decltype(payload.GetValues())>>,
+		constexpr size_t idx = GetTupleIndexIgnoreCvRef<ClientID, typename T::Tuple>();
+		static_assert(idx < T::ValueCount,
 				"There must be exactly one ClientID value in the command payload tuple unless a GetClientIDField method is present");
-		if (std::get<idx>(payload.GetValues()) == (ClientID)0) std::get<idx>(payload.GetValues()) = client_id;
+		if (payload.template GetValue<idx>() == (ClientID)0) payload.template GetValue<idx>() = client_id;
 	}
 }
 
@@ -1079,6 +1079,7 @@ struct EMPTY_BASES TupleCmdData : public CommandPayloadBase {
 	using CommandProc = CommandCost(DoCommandFlags, TileIndex, typename CommandProcTupleAdapter::with_ref_params<T>...);
 	using CommandProcNoTile = CommandCost(DoCommandFlags, typename CommandProcTupleAdapter::with_ref_params<T>...);
 	using Tuple = std::tuple<T...>;
+	static constexpr size_t ValueCount = sizeof...(T);
 	static constexpr bool HasStringType = (CommandPayloadStringType<T> || ...);
 	static constexpr bool HasNonStringType = ((!CommandPayloadStringType<T>) || ...);
 	static constexpr bool HasStringSanitiser = HasStringType;
@@ -1096,8 +1097,11 @@ struct EMPTY_BASES TupleCmdData : public CommandPayloadBase {
 	static void SanitisePayloadStrings(CommandPayloadBase *ptr, StringValidationSettings settings);
 	bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
 
-	Tuple &GetValues() { return this->values; }
-	const Tuple &GetValues() const { return this->values; }
+	template <size_t IDX>
+	auto &GetValue() { return std::get<IDX>(this->values); }
+
+	template <size_t IDX>
+	const auto &GetValue() const { return std::get<IDX>(this->values); }
 
 	bool operator==(const Self &other) const { return this->values == other.values; }
 
@@ -1131,39 +1135,58 @@ struct EMPTY_BASES TupleRefCmdData : public CommandPayloadSerialisable<Parent>, 
 	static constexpr bool BaseTupleCmdDataTag = true;
 
 private:
+	template <typename P>
+	using ValueT = std::remove_cvref_t<decltype(std::declval<T>().*P{})>;
+
 	template <typename H> struct TupleHelper;
 
 	template <typename... Targs>
 	struct TupleHelper<std::tuple<Targs...>> {
-		using CommandProc = CommandCost(DoCommandFlags, TileIndex, typename CommandProcTupleAdapter::with_ref_params<std::remove_cvref_t<Targs>>...);
-		using CommandProcNoTile = CommandCost(DoCommandFlags, typename CommandProcTupleAdapter::with_ref_params<std::remove_cvref_t<Targs>>...);
-		using ValueTuple = std::tuple<std::remove_cvref_t<Targs>...>;
-		using ConstRefTuple = std::tuple<const std::remove_reference_t<Targs> &...>;
-		static constexpr bool HasStringType = (CommandPayloadStringType<Targs> || ...);
-		static constexpr bool HasNonStringType = ((!CommandPayloadStringType<Targs>) || ...);
+		using ValueTuple = std::tuple<ValueT<Targs>...>;
+		using CommandProc = CommandCost(DoCommandFlags, TileIndex, typename CommandProcTupleAdapter::with_ref_params<ValueT<Targs>>...);
+		using CommandProcNoTile = CommandCost(DoCommandFlags, typename CommandProcTupleAdapter::with_ref_params<ValueT<Targs>>...);
+		static constexpr size_t ValueCount = sizeof...(Targs);
+		static constexpr bool HasStringType = (CommandPayloadStringType<ValueT<Targs>> || ...);
+		static constexpr bool HasNonStringType = ((!CommandPayloadStringType<ValueT<Targs>>) || ...);
 
-		static_assert((std::is_lvalue_reference_v<Targs> && ...));
+		static_assert((std::is_member_pointer_v<Targs> && ...));
 	};
-	using Helper = TupleHelper<decltype(std::declval<T>().GetRefTuple())>;
+	using Helper = TupleHelper<decltype(T::GetTupleFields())>;
 
 public:
 	using Self = TupleRefCmdData<Parent, T>;
 	using Tuple = typename Helper::ValueTuple;
 	using CommandProc = typename Helper::CommandProc;
 	using CommandProcNoTile = typename Helper::CommandProcNoTile;
+	static constexpr size_t ValueCount = Helper::ValueCount;
 	static constexpr bool HasStringType = Helper::HasStringType;
 	static constexpr bool HasNonStringType = Helper::HasNonStringType;
 	static constexpr bool HasStringSanitiser = HasStringType;
 
 private:
+	template <size_t I, typename Targ0, typename... Targs>
+	struct MakeIndexHelper {
+		Parent &payload;
+
+		inline constexpr auto operator <<(Targ0 &&arg) const
+		{
+			payload.template GetValue<I>() = std::move(arg);
+			if constexpr (sizeof...(Targs) > 0) {
+				return MakeIndexHelper<I + 1, Targs...>{this->payload};
+			} else {
+				return;
+			}
+		}
+	};
+
 	template <typename H> struct MakeHelper;
 
 	template <typename... Targs>
 	struct MakeHelper<std::tuple<Targs...>> {
-		Parent operator()(Targs... args) const
+		constexpr Parent operator()(Targs... args) const
 		{
 			Parent out;
-			out.T::GetRefTuple() = std::forward_as_tuple(args...);
+			(MakeIndexHelper<0, Targs...>{out} << ... << std::move(args));
 			return out;
 		}
 	};
@@ -1175,10 +1198,19 @@ public:
 	static void SanitisePayloadStrings(CommandPayloadBase *ptr, StringValidationSettings settings);
 	bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
 
-	auto GetValues() { return this->T::GetRefTuple(); }
-	typename Helper::ConstRefTuple GetValues() const { return typename Helper::ConstRefTuple(const_cast<TupleRefCmdData *>(this)->GetValues()); }
+	template <size_t IDX>
+	auto &GetValue() { return static_cast<Parent *>(this)->*std::get<IDX>(Parent::GetTupleFields()); }
 
-	bool operator==(const Self &other) const { return this->GetValues() == other.GetValues(); }
+	template <size_t IDX>
+	const auto &GetValue() const { return static_cast<const Parent *>(this)->*std::get<IDX>(Parent::GetTupleFields()); }
+
+	bool operator==(const Self &other) const
+	{
+		auto handler = [&]<size_t... Tindices>(std::index_sequence<Tindices...>) -> bool {
+			return (... && (this->GetValue<Tindices>() == other.GetValue<Tindices>()));
+		};
+		return handler(std::make_index_sequence<ValueCount>{});
+	}
 };
 
 /** Wrapper for commands to handle the most common case where no custom/special behaviour is required. */

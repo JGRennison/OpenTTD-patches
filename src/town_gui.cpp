@@ -1739,7 +1739,7 @@ struct SelectTownWindow : Window {
 		if (pos >= this->towns.size()) return;
 
 		/* Place a house */
-		TownID &town_id = std::get<2>(this->cmd.payload.GetValues());
+		TownID &town_id = this->cmd.payload.GetValue<2>();
 		town_id = this->towns[pos];
 		DoCommandPContainer(this->cmd);
 

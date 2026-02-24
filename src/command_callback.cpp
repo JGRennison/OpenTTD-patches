@@ -93,7 +93,7 @@ struct CommandCallbackTupleHelper<Tcmd, std::tuple<Targs...>> {
 	{
 		if (cmd != Tcmd) return false;
 		auto handler = [&]<size_t... Tindices>(std::index_sequence<Tindices...>) {
-			cb(result, std::get<Tindices>(static_cast<const CmdPayload<Tcmd> &>(payload).GetValues())...);
+			cb(result, static_cast<const CmdPayload<Tcmd> &>(payload).template GetValue<Tindices>()...);
 		};
 		handler(std::index_sequence_for<Targs...>{});
 		return true;
@@ -103,7 +103,7 @@ struct CommandCallbackTupleHelper<Tcmd, std::tuple<Targs...>> {
 	{
 		if (cmd != Tcmd) return false;
 		auto handler = [&]<size_t... Tindices>(std::index_sequence<Tindices...>) {
-			cb(result, tile, std::get<Tindices>(static_cast<const CmdPayload<Tcmd> &>(payload).GetValues())...);
+			cb(result, tile, static_cast<const CmdPayload<Tcmd> &>(payload).template GetValue<Tindices>()...);
 		};
 		handler(std::index_sequence_for<Targs...>{});
 		return true;
@@ -111,7 +111,7 @@ struct CommandCallbackTupleHelper<Tcmd, std::tuple<Targs...>> {
 };
 
 #define DEF_CB_RES_TUPLE(cb_, cmd_) \
-namespace cmd_detail { using cc_helper_ ## cb_ = CommandCallbackTupleHelper<cmd_, std::remove_cvref_t<decltype(std::declval<CmdPayload<cmd_>>().GetValues())>>; } \
+namespace cmd_detail { using cc_helper_ ## cb_ = CommandCallbackTupleHelper<cmd_, typename CmdPayload<cmd_>::Tuple>; } \
 typename cmd_detail::cc_helper_ ## cb_ ::ResultTupleCommandCallback Cc ## cb_; \
 template <> struct CommandCallbackTraits<CommandCallback::cb_> { \
 	static constexpr CommandCallbackTrampoline *handler = [](const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param) { \
@@ -120,7 +120,7 @@ template <> struct CommandCallbackTraits<CommandCallback::cb_> { \
 };
 
 #define DEF_CB_RES_TILE_TUPLE(cb_, cmd_) \
-namespace cmd_detail { using cc_helper_ ## cb_ = CommandCallbackTupleHelper<cmd_, std::remove_cvref_t<decltype(std::declval<CmdPayload<cmd_>>().GetValues())>>; } \
+namespace cmd_detail { using cc_helper_ ## cb_ = CommandCallbackTupleHelper<cmd_, typename CmdPayload<cmd_>::Tuple>; } \
 typename cmd_detail::cc_helper_ ## cb_ ::ResultTileTupleCommandCallback Cc ## cb_; \
 template <> struct CommandCallbackTraits<CommandCallback::cb_> { \
 	static constexpr CommandCallbackTrampoline *handler = [](const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param) { \

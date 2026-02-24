@@ -24,7 +24,8 @@ struct CmdCompanyCtrlInnerData {
 	CompanyID to_merge_id;
 
 	/* This must include all fields */
-	auto GetRefTuple() { return std::tie(this->cca, this->company_id, this->reason, this->client_id, this->to_merge_id); }
+	using Self = CmdCompanyCtrlInnerData;
+	static constexpr auto GetTupleFields() { return std::make_tuple(&Self::cca, &Self::company_id, &Self::reason, &Self::client_id, &Self::to_merge_id); }
 };
 struct CmdCompanyCtrlData final : public TupleRefCmdData<CmdCompanyCtrlData, CmdCompanyCtrlInnerData> {
 	void FormatDebugSummary(struct format_target &) const;

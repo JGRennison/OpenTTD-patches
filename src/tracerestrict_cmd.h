@@ -100,7 +100,8 @@ struct TraceRestrictProgramSignalInnerData {
 	std::string name;
 
 	/* This must include all fields */
-	auto GetRefTuple() { return std::tie(this->track, this->type, this->offset, this->data, this->name); }
+	using Self = TraceRestrictProgramSignalInnerData;
+	static constexpr auto GetTupleFields() { return std::make_tuple(&Self::track, &Self::type, &Self::offset, &Self::data, &Self::name); }
 };
 struct TraceRestrictProgramSignalData final : public TupleRefCmdData<TraceRestrictProgramSignalData, TraceRestrictProgramSignalInnerData> {
 	void FormatDebugSummary(struct format_target &) const;
@@ -120,7 +121,8 @@ struct TraceRestrictManageSignalInnerData {
 	Track source_track;
 
 	/* This must include all fields */
-	auto GetRefTuple() { return std::tie(this->track, this->type, this->source_tile, this->source_track); }
+	using Self = TraceRestrictManageSignalInnerData;
+	static constexpr auto GetTupleFields() { return std::make_tuple(&Self::track, &Self::type, &Self::source_tile, &Self::source_track); }
 };
 struct TraceRestrictManageSignalData final : public TupleRefCmdData<TraceRestrictManageSignalData, TraceRestrictManageSignalInnerData> {
 	void FormatDebugSummary(struct format_target &) const;

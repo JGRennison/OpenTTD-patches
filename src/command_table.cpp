@@ -73,9 +73,9 @@ template <bool no_tile, typename F, typename T, size_t... Tindices>
 CommandCost CommandExecTrampolineTuple(F proc, TileIndex tile, DoCommandFlags flags, const T &payload, std::index_sequence<Tindices...>)
 {
 	if constexpr (no_tile) {
-		return proc(flags, std::get<Tindices>(payload.GetValues())...);
+		return proc(flags, payload.template GetValue<Tindices>()...);
 	} else {
-		return proc(flags, tile, std::get<Tindices>(payload.GetValues())...);
+		return proc(flags, tile, payload.template GetValue<Tindices>()...);
 	}
 }
 

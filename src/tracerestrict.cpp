@@ -4056,7 +4056,7 @@ CommandCost TraceRestrictFollowUpCmdData::ExecuteWithValue(uint16_t value, DoCom
 			using Payload = CmdPayload<CMD_PROGPRESIG_MODIFY_INSTRUCTION>;
 			if (const Payload *src = this->cmd.payload->AsType<Payload>(); src != nullptr) {
 				Payload payload = *src;
-				uint32_t &cmd_value = std::get<3>(payload.GetValues()); // Make sure that it is the expected type
+				uint32_t &cmd_value = payload.GetValue<3>(); // Make sure that it is the expected type
 				cmd_value = value;
 				return DoCommand<CMD_PROGPRESIG_MODIFY_INSTRUCTION>(this->cmd.tile, payload, flags);
 			}
@@ -4067,7 +4067,7 @@ CommandCost TraceRestrictFollowUpCmdData::ExecuteWithValue(uint16_t value, DoCom
 			using Payload = CmdPayload<CMD_MODIFY_ORDER>;
 			if (const Payload *src = this->cmd.payload->AsType<Payload>(); src != nullptr) {
 				Payload payload = *src;
-				uint16_t &cmd_value = std::get<3>(payload.GetValues()); // Make sure that it is the expected type
+				uint16_t &cmd_value = payload.GetValue<3>(); // Make sure that it is the expected type
 				cmd_value = value;
 				return DoCommand<CMD_MODIFY_ORDER>(this->cmd.tile, payload, flags);
 			}

@@ -243,7 +243,7 @@ public:
 		return *this;
 	}
 
-	auto GetCmdRefTuple()
+	constexpr auto GetCmdRefTuple()
 	{
 		return std::tie(this->type, this->flags, this->dest);
 	}
