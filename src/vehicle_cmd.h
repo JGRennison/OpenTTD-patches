@@ -11,6 +11,7 @@
 #define VEHICLE_CMD_H
 
 #include "command_type.h"
+#include "engine_type.h"
 #include "vehicle_type.h"
 #include "vehiclelist.h"
 
