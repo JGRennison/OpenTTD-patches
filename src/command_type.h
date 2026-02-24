@@ -1099,6 +1099,8 @@ struct EMPTY_BASES TupleCmdData : public CommandPayloadBase {
 	Tuple &GetValues() { return this->values; }
 	const Tuple &GetValues() const { return this->values; }
 
+	bool operator==(const Self &other) const { return this->values == other.values; }
+
 	static RealParent Make(T... args)
 	{
 		RealParent out;
@@ -1175,6 +1177,8 @@ public:
 
 	auto GetValues() { return this->T::GetRefTuple(); }
 	typename Helper::ConstRefTuple GetValues() const { return typename Helper::ConstRefTuple(const_cast<TupleRefCmdData *>(this)->GetValues()); }
+
+	bool operator==(const Self &other) const { return this->GetValues() == other.GetValues(); }
 };
 
 /** Wrapper for commands to handle the most common case where no custom/special behaviour is required. */

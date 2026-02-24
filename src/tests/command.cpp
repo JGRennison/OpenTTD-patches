@@ -64,9 +64,9 @@ bool TestGeneralCommandPayload(const CmdPayload<Cmd> &src_payload, F payload_che
 	const PayloadType *recv_payload = recv_cmd.payload->AsType<CmdPayload<Cmd>>();
 
 	if constexpr (std::is_same_v<E, std::monostate>) {
-		CHECK(recv_payload->GetValues() == src_payload.GetValues());
+		CHECK(*recv_payload == src_payload);
 	} else {
-		CHECK(payload_equality(recv_payload->GetValues(), src_payload.GetValues()));
+		CHECK(payload_equality(*recv_payload, src_payload));
 	}
 
 	return true;
@@ -93,6 +93,9 @@ bool TestCommandPayload(const typename CmdPayload<Cmd>::Tuple &values, std::init
 
 TEST_CASE("CmdDataT simple tests")
 {
+	CHECK(CmdPayload<CMD_REMOVE_PLAN>::Make(PlanID{5}) == CmdPayload<CMD_REMOVE_PLAN>::Make(PlanID{5}));
+	CHECK(CmdPayload<CMD_REMOVE_PLAN>::Make(PlanID{5}) != CmdPayload<CMD_REMOVE_PLAN>::Make(PlanID{6}));
+
 	CHECK(TestCommandPayload<CMD_ADD_PLAN>({}, {}));
 	CHECK(TestCommandPayload<CMD_REMOVE_PLAN>({ PlanID{5} }, { 5, 0 }));
 	CHECK(TestCommandPayload<CMD_RENAME_PLAN>({ PlanID{6}, "abc" }, { 6, 0, 0x61, 0x62, 0x63, 0 }));
@@ -109,7 +112,9 @@ TEST_CASE("TupleRefCmdData tests")
 	CmdCompanyCtrlData payload = CmdCompanyCtrlData::Make(CCA_NEW_AI, CompanyID{2}, CompanyRemoveReason{3}, {}, CompanyID{5});
 	CHECK(TestGeneralCommandPayload<CMD_COMPANY_CTRL>(payload, PayloadChecker{{ 1, 2, 3, 0, 5 }}));
 
-	SetPreCheckedCommandPayloadClientID(CMD_COMPANY_CTRL, payload, ClientID{4});
-	CHECK(TestGeneralCommandPayload<CMD_COMPANY_CTRL>(payload, PayloadChecker{{ 1, 2, 3, 4, 5 }}));
+	CmdCompanyCtrlData payload2 = payload;
+	SetPreCheckedCommandPayloadClientID(CMD_COMPANY_CTRL, payload2, ClientID{4});
+	CHECK(payload2 != payload);
+	CHECK(TestGeneralCommandPayload<CMD_COMPANY_CTRL>(payload2, PayloadChecker{{ 1, 2, 3, 4, 5 }}));
 }
 
