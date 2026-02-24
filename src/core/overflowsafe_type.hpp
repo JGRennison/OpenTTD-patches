@@ -25,6 +25,7 @@ class OverflowSafeInt
 {
 public:
 	static inline constexpr bool fmt_as_base = true;
+	static inline constexpr bool serialisation_as_base = true;
 	static inline constexpr bool saveload_primitive_type = true;
 	static inline constexpr bool string_parameter_as_base = true;
 	static inline constexpr bool integer_type_hint = true;
@@ -179,6 +180,7 @@ public:
 
 	constexpr BaseType base() const noexcept { return this->m_value; }
 	constexpr const BaseType &base_ref() const noexcept { return this->m_value; }
+	constexpr BaseType &edit_base() { return this->m_value; }
 };
 
 
