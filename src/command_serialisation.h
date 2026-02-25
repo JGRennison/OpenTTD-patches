@@ -47,20 +47,20 @@ namespace TupleCmdDataDetail {
 	}
 
 	template<typename T, size_t I, size_t N, size_t... integers>
-	struct NonStringTupleIndexSequenceHelper {
+	struct NonStringTypeIndexSequenceHelper {
 		using type = std::conditional_t<
 				CommandPayloadStringType<std::remove_cvref_t<std::tuple_element_t<I, T>>>,
-				typename NonStringTupleIndexSequenceHelper<T, I + 1, N, integers...>::type,
-				typename NonStringTupleIndexSequenceHelper<T, I + 1, N, integers..., I>::type>;
+				typename NonStringTypeIndexSequenceHelper<T, I + 1, N, integers...>::type,
+				typename NonStringTypeIndexSequenceHelper<T, I + 1, N, integers..., I>::type>;
 	};
 
 	template<typename T, size_t N, size_t... integers>
-	struct NonStringTupleIndexSequenceHelper<T, N, N, integers...> {
+	struct NonStringTypeIndexSequenceHelper<T, N, N, integers...> {
 		using type = std::integer_sequence<size_t, integers...>;
 	};
 
 	template<typename T>
-	using NonStringTupleIndexSequence = NonStringTupleIndexSequenceHelper<T, 0, std::tuple_size_v<T>>::type;
+	using NonStringTypeIndexSequence = NonStringTypeIndexSequenceHelper<T, 0, std::tuple_size_v<T>>::type;
 
 	template <auto fmt_str, typename T, size_t... Tindices>
 	inline void FmtTupleDataTuple(format_target &output, const T &payload, std::index_sequence<Tindices...>)
@@ -130,13 +130,13 @@ void AutoFmtTupleCmdData<Parent, flags, T...>::FormatDebugSummary(const CommandP
 		if constexpr ((flags & TCDF_STRINGS) || !TupleCmdData<Parent, T...>::HasStringType) {
 			TupleCmdDataDetail::FmtSimpleTupleData(output, *self, std::index_sequence_for<T...>{});
 		} else {
-			TupleCmdDataDetail::FmtSimpleTupleData(output, *self, TupleCmdDataDetail::NonStringTupleIndexSequence<typename TupleCmdData<Parent, T...>::Tuple>{});
+			TupleCmdDataDetail::FmtSimpleTupleData(output, *self, TupleCmdDataDetail::NonStringTypeIndexSequence<typename TupleCmdData<Parent, T...>::Types>{});
 		}
 	} else {
 		if constexpr ((flags & TCDF_STRINGS) || !TupleCmdData<Parent, T...>::HasStringType) {
 			TupleCmdDataDetail::FmtTupleDataTuple<Parent::fmt_str>(output, *self, std::index_sequence_for<T...>{});
 		} else {
-			TupleCmdDataDetail::FmtTupleDataTuple<Parent::fmt_str>(output, *self, TupleCmdDataDetail::NonStringTupleIndexSequence<typename TupleCmdData<Parent, T...>::Tuple>{});
+			TupleCmdDataDetail::FmtTupleDataTuple<Parent::fmt_str>(output, *self, TupleCmdDataDetail::NonStringTypeIndexSequence<typename TupleCmdData<Parent, T...>::Types>{});
 		}
 	}
 }
@@ -148,7 +148,7 @@ void CmdDataT<T...>::FormatDebugSummary(const CommandPayloadBase *ptr, format_ta
 	if constexpr (!TupleCmdData<void, T...>::HasStringType) {
 		TupleCmdDataDetail::FmtSimpleTupleData(output, *self, std::index_sequence_for<T...>{});
 	} else {
-		TupleCmdDataDetail::FmtSimpleTupleData(output, *self, TupleCmdDataDetail::NonStringTupleIndexSequence<typename TupleCmdData<void, T...>::Tuple>{});
+		TupleCmdDataDetail::FmtSimpleTupleData(output, *self, TupleCmdDataDetail::NonStringTypeIndexSequence<typename TupleCmdData<void, T...>::Types>{});
 	}
 }
 

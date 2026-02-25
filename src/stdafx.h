@@ -344,6 +344,12 @@ inline void builtin_assume(bool condition)
 #endif
 }
 
+#if defined(__has_builtin)
+#define HAS_BUILTIN(...) __has_builtin(__VA_ARGS__)
+#else
+#define HAS_BUILTIN(...) 0
+#endif
+
 #if defined(__GNUC__) || defined(__clang__)
 __attribute__((aligned(1))) typedef uint16_t unaligned_uint16;
 __attribute__((aligned(1))) typedef uint32_t unaligned_uint32;
