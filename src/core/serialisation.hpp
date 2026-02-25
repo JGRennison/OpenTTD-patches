@@ -134,15 +134,17 @@ struct BufferSerialisationHelper {
 	template <typename V>
 	void Send_generic_integer(const V &data)
 	{
+		using Integral = typename std::conditional_t<std::is_enum_v<V>, std::underlying_type<V>, std::type_identity<V>>::type;
+		static_assert(std::is_integral_v<Integral>);
 		static_assert(sizeof(V) <= 8);
 		if constexpr (sizeof(V) <= 1) {
 			this->Send_uint8(static_cast<uint8_t>(data));
 		} else if constexpr (sizeof(V) == 2) {
 			this->Send_uint16(static_cast<uint16_t>(data));
 		} else {
-			if constexpr (std::is_signed<V>::value) {
+			if constexpr (std::is_signed<Integral>::value) {
 				/* Zig-zag encode */
-				using U = typename std::make_unsigned<V>::type;
+				using U = typename std::make_unsigned<Integral>::type;
 				U zigzag = (static_cast<U>(data) << 1);
 				if (data < 0) zigzag = ~zigzag;
 				this->Send_varuint(zigzag);
@@ -475,9 +477,11 @@ public:
 	template <typename V>
 	void Recv_generic_integer(V &data)
 	{
+		using Integral = typename std::conditional_t<std::is_enum_v<V>, std::underlying_type<V>, std::type_identity<V>>::type;
+		static_assert(std::is_integral_v<Integral>);
 		static_assert(sizeof(V) <= 8);
-		if constexpr (std::is_same_v<V, bool>) {
-			data = this->Recv_bool();
+		if constexpr (std::is_same_v<Integral, bool>) {
+			data = static_cast<V>(this->Recv_bool());
 		} else if constexpr (sizeof(V) <= 1) {
 			data = static_cast<V>(this->Recv_uint8());
 		} else if constexpr (sizeof(V) == 2) {
@@ -485,9 +489,9 @@ public:
 		} else {
 			uint64_t val = this->Recv_varuint();
 			if (unlikely((val & GetBitMaskSC<uint64_t>(0, sizeof(V) * 8)) != val)) this->RaiseRecvError();
-			if constexpr (std::is_signed<V>::value) {
+			if constexpr (std::is_signed<Integral>::value) {
 				/* Zig-zag decode */
-				using U = typename std::make_unsigned<V>::type;
+				using U = typename std::make_unsigned<Integral>::type;
 				data = static_cast<V>((static_cast<U>(val) >> 1) ^ static_cast<U>(-(static_cast<V>(val) & 1)));
 			} else {
 				data = static_cast<V>(val);
