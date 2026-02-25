@@ -49,6 +49,74 @@
 #include "water_cmd.h"
 #include "waypoint_cmd.h"
 
+
+enum class CmdTypeID : uint8_t {
+	Uint8,
+	Int8,
+	Uint16,
+	Int16,
+	Uint32,
+	Int32,
+	Uint64,
+	Int64,
+	Bool,
+	String,
+	EncodedString,
+	Invalid,
+};
+
+template <typename T>
+constexpr CmdTypeID GetCmdType()
+{
+	/* See: Recv_generic */
+	if constexpr (std::is_same_v<T, bool>) {
+		return CmdTypeID::Bool;
+	} else if constexpr (std::is_same_v<T, std::string>) {
+		return CmdTypeID::String;
+	} else if constexpr (std::is_same_v<T, EncodedString>) {
+		return CmdTypeID::EncodedString;
+	} else if constexpr (SerialisationAsBase<T>) {
+		return GetCmdType<typename T::BaseType>();
+	} else if constexpr (requires { std::declval<T>().Deserialise(std::declval<DeserialisationBuffer &>(), StringValidationSettings{}); }) {
+		return CmdTypeID::Invalid; // Can't handle this in simple path
+	} else if constexpr (std::is_enum_v<T>) {
+		return GetCmdType<std::underlying_type_t<T>>();
+	} else if constexpr (std::is_integral_v<T>) {
+		if constexpr (sizeof(T) == 1) {
+			return std::is_signed<T>::value ? CmdTypeID::Int8 : CmdTypeID::Uint8;
+		} else if constexpr (sizeof(T) == 2) {
+			return std::is_signed<T>::value ? CmdTypeID::Int16 : CmdTypeID::Uint16;
+		} else if constexpr (sizeof(T) == 4) {
+			return std::is_signed<T>::value ? CmdTypeID::Int32 : CmdTypeID::Uint32;
+		} else if constexpr (sizeof(T) == 8) {
+			return std::is_signed<T>::value ? CmdTypeID::Int64 : CmdTypeID::Uint64;
+		}
+	}
+	return CmdTypeID::Invalid;
+}
+
+constexpr bool IsCmdTypeString(CmdTypeID ct)
+{
+	return ct == CmdTypeID::String || ct == CmdTypeID::EncodedString;
+}
+
+template <typename H> struct UseSimplePathHelper;
+
+template <typename... Targs>
+struct UseSimplePathHelper<TypeList<Targs...>> {
+	static constexpr bool AnyStrings = (IsCmdTypeString(GetCmdType<Targs>()) || ...);
+	static constexpr bool AllValid = ((GetCmdType<Targs>() != CmdTypeID::Invalid) && ...);
+};
+
+template <typename T>
+constexpr bool UseSimplePath()
+{
+	if constexpr (PayloadHasTupleCmdDataTag<T>) {
+		return T::ValueCount < 64 && sizeof(T) < (1 << 10) && UseSimplePathHelper<typename T::Types>::AllValid;
+	}
+	return false;
+}
+
 template <typename T, CommandProcDirect<T> proc, bool no_tile>
 static constexpr CommandExecTrampoline *MakeTrampoline()
 {
@@ -79,25 +147,29 @@ CommandCost CommandExecTrampolineTuple(F proc, TileIndex tile, DoCommandFlags fl
 	}
 }
 
-template <typename T, auto &proc, bool no_tile, typename = std::enable_if_t<PayloadHasBaseTupleCmdDataTag<T>>>
+template <typename T, auto &proc, bool no_tile, typename = std::enable_if_t<PayloadHasTupleCmdDataTag<T>>>
 static constexpr CommandExecTrampoline *MakeTrampoline()
 {
 	return [](const CommandExecData &exec_data) -> CommandCost
 	{
 		const T &data = static_cast<const T &>(exec_data.payload);
-		return CommandExecTrampolineTuple<no_tile>(proc, exec_data.tile, exec_data.flags, data, std::make_index_sequence<std::tuple_size_v<typename T::Tuple>>{});
+		return CommandExecTrampolineTuple<no_tile>(proc, exec_data.tile, exec_data.flags, data, std::make_index_sequence<T::ValueCount>{});
 	};
 }
 
 template <typename T>
 static constexpr CommandPayloadDeserialiser *MakePayloadDeserialiser()
 {
-	return [](DeserialisationBuffer &buffer, StringValidationSettings default_string_validation) -> CommandPayloadBaseUniquePtr
-	{
-		auto payload = std::make_unique<T>();
-		if (!payload->Deserialise(buffer, default_string_validation)) payload = nullptr;
-		return CommandPayloadBaseUniquePtr(payload.release());
-	};
+	if constexpr (UseSimplePath<T>() && PayloadHasValueTupleCmdDataTag<T>) {
+		return nullptr; // Use the simple path for deserialisation
+	} else {
+		return [](DeserialisationBuffer &buffer, StringValidationSettings default_string_validation) -> CommandPayloadBaseUniquePtr
+		{
+			auto payload = std::make_unique<T>();
+			if (!payload->Deserialise(buffer, default_string_validation)) payload = nullptr;
+			return CommandPayloadBaseUniquePtr(payload.release());
+		};
+	}
 }
 
 /* Helpers to generate the master command table from the command traits. */
@@ -156,6 +228,322 @@ void TupleCmdDataDetail::FmtSimpleTupleArgs(format_target &output, size_t count,
 	}
 }
 
+/*
+ * From: https://stackoverflow.com/questions/70647441/how-to-determine-the-offset-of-an-element-of-a-tuple-at-compile-time
+ */
+template <typename Payload, size_t I>
+constexpr size_t GetPayloadElementOffset()
+{
+	union u {
+		constexpr u() : a{} {}  // GCC bug needs a constructor definition
+		constexpr ~u() {}
+		char a[sizeof(Payload)]{};
+		Payload t;
+	} x;
+	auto* p = std::addressof(x.t.template GetValue<I>());
+	for (std::size_t i = 0;; ++i) {
+		if (static_cast<void*>(x.a + i) == p) return i;
+	}
+}
+
+template <typename Payload>
+constexpr bool IsPayloadBaseAtStart()
+{
+	Payload *p = nullptr;
+	CommandPayloadBase *base = p;
+	return static_cast<void*>(p) == static_cast<void*>(base);
+}
+
+template <typename T>
+struct SimpleDescriptorBuilder {
+	using ArrayType = std::array<uint16_t, T::ValueCount + 1>;
+	using Types = T::Types;
+
+	template <size_t I>
+	static constexpr uint16_t MakeDescriptorField()
+	{
+		constexpr CmdTypeID field_type = GetCmdType<std::tuple_element_t<I, Types>>();
+		static_assert(field_type != CmdTypeID::Invalid);
+		return static_cast<uint16_t>((to_underlying(field_type) << 10) | GetPayloadElementOffset<T, I>());
+	}
+
+	template <size_t... Tindices>
+	static constexpr ArrayType MakeDescriptor(std::index_sequence<Tindices...>)
+	{
+		return ArrayType{ static_cast<uint16_t>((T::ValueCount << 10) | sizeof(T)), MakeDescriptorField<Tindices>()... };
+	}
+
+	static inline const ArrayType descriptor = MakeDescriptor(std::make_index_sequence<T::ValueCount>{});
+};
+
+struct SimpleDescriptorHelper {
+	const uint16_t *descriptor;
+
+	SimpleDescriptorHelper(const uint16_t *descriptor) : descriptor(descriptor) {}
+
+	inline size_t GetSize()
+	{
+		return GB(this->descriptor[0], 0, 10);
+	}
+
+	inline size_t GetFieldCount()
+	{
+		return GB(this->descriptor[0], 10, 6);
+	}
+
+	inline std::pair<CmdTypeID, size_t> GetField(size_t field_num)
+	{
+		const uint16_t field = this->descriptor[field_num + 1];
+		return {static_cast<CmdTypeID>(GB(field, 10, 6)), GB(field, 0, 10)};
+	}
+
+	struct CopyConstructHelper {
+		const char *from;
+		char *to;
+
+		template <typename T>
+		void Exec()
+		{
+			new (this->to) T(*reinterpret_cast<const T *>(this->from));
+		}
+	};
+
+	struct SerialiseHelper {
+		const char *from;
+		struct BufferSerialisationRef buffer;
+
+		template <typename T>
+		void Exec()
+		{
+			this->buffer.Send_generic(*reinterpret_cast<const T *>(this->from));
+		}
+	};
+
+	struct ConstructDeserialiseHelper {
+		char *to;
+		DeserialisationBuffer &buffer;
+		StringValidationSettings default_string_validation;
+
+		template <typename T>
+		void Exec()
+		{
+			T *ptr = new (this->to) T();
+			this->buffer.Recv_generic(*ptr, this->default_string_validation);
+		}
+	};
+
+	template <typename T>
+	static void DestructField(char *ptr)
+	{
+		reinterpret_cast<T *>(ptr)->~T();
+	}
+
+	template <typename V>
+	static void VisitType(CmdTypeID ftype, V &&visitor)
+	{
+		switch (ftype) {
+			case CmdTypeID::Uint8:
+				visitor.template Exec<uint8_t>();
+				break;
+
+			case CmdTypeID::Int8:
+				visitor.template Exec<int8_t>();
+				break;
+
+			case CmdTypeID::Bool:
+				visitor.template Exec<bool>();
+				break;
+
+			case CmdTypeID::Uint16:
+				visitor.template Exec<uint16_t>();
+				break;
+
+			case CmdTypeID::Int16:
+				visitor.template Exec<int16_t>();
+				break;
+
+			case CmdTypeID::Uint32:
+				visitor.template Exec<uint32_t>();
+				break;
+
+			case CmdTypeID::Int32:
+				visitor.template Exec<int32_t>();
+				break;
+
+			case CmdTypeID::Uint64:
+				visitor.template Exec<uint64_t>();
+				break;
+
+			case CmdTypeID::Int64:
+				visitor.template Exec<int64_t>();
+				break;
+
+			case CmdTypeID::String:
+				visitor.template Exec<std::string>();
+				break;
+
+			case CmdTypeID::EncodedString:
+				visitor.template Exec<EncodedString>();
+				break;
+
+			default:
+				NOT_REACHED();
+		}
+	}
+};
+
+static CommandPayloadBaseUniquePtr SimpleCloner(const CommandPayloadBase *ptr)
+{
+	const CommandPayloadBase::Operations &ops = ptr->GetOperations();
+	SimpleDescriptorHelper helper(ops.descriptor);
+	const size_t fields = helper.GetFieldCount();
+
+	const char *src = reinterpret_cast<const char *>(ptr);
+	char *storage = static_cast<char *>(::operator new(helper.GetSize()));
+	memcpy(storage, src, sizeof(CommandPayloadBase));
+	for (size_t i = 0; i < fields; i++) {
+		auto [ftype, offset] = helper.GetField(i);
+
+		SimpleDescriptorHelper::CopyConstructHelper cch{src + offset, storage + offset};
+
+		switch (ftype) {
+			case CmdTypeID::Uint8:
+			case CmdTypeID::Int8:
+			case CmdTypeID::Bool:
+				cch.Exec<uint8_t>();
+				break;
+
+			case CmdTypeID::Uint16:
+			case CmdTypeID::Int16:
+				cch.Exec<uint16_t>();
+				break;
+
+			case CmdTypeID::Uint32:
+			case CmdTypeID::Int32:
+				cch.Exec<uint32_t>();
+				break;
+
+			case CmdTypeID::Uint64:
+			case CmdTypeID::Int64:
+				cch.Exec<uint64_t>();
+				break;
+
+			case CmdTypeID::String:
+			case CmdTypeID::EncodedString:
+				cch.Exec<std::string>();
+				break;
+
+			default:
+				NOT_REACHED();
+		}
+	}
+
+	return CommandPayloadBaseUniquePtr(reinterpret_cast<CommandPayloadBase *>(storage));
+}
+
+static CommandPayloadBaseUniquePtr TrivialCloner(const CommandPayloadBase *ptr)
+{
+	const CommandPayloadBase::Operations &ops = ptr->GetOperations();
+	SimpleDescriptorHelper helper(ops.descriptor);
+	const size_t size = helper.GetSize();
+
+	char *storage = static_cast<char *>(::operator new(size));
+	memcpy(storage, ptr, size);
+	return CommandPayloadBaseUniquePtr(reinterpret_cast<CommandPayloadBase *>(storage));
+}
+
+static void SimpleDeleter(CommandPayloadBase *ptr)
+{
+	const CommandPayloadBase::Operations &ops = ptr->GetOperations();
+	SimpleDescriptorHelper helper(ops.descriptor);
+	const size_t fields = helper.GetFieldCount();
+
+	char *src = reinterpret_cast<char *>(ptr);
+	for (size_t i = 0; i < fields; i++) {
+		auto [ftype, offset] = helper.GetField(i);
+
+		switch (ftype) {
+			case CmdTypeID::String:
+			case CmdTypeID::EncodedString:
+				SimpleDescriptorHelper::DestructField<std::string>(src + offset);
+				break;
+
+			default:
+				break;
+		}
+	}
+
+	::operator delete(static_cast<void *>(ptr));
+}
+
+static void TrivialDeleter(CommandPayloadBase *ptr)
+{
+	::operator delete(static_cast<void *>(ptr));
+}
+
+CommandPayloadBaseUniquePtr DeserialiseSimpleCommandPayload(const CommandPayloadBase::Operations &ops, DeserialisationBuffer &buffer, StringValidationSettings default_string_validation)
+{
+	SimpleDescriptorHelper helper(ops.descriptor);
+	const size_t size = helper.GetSize();
+	const size_t fields = helper.GetFieldCount();
+
+	char *storage = static_cast<char *>(::operator new(size));
+
+	struct CommandPayloadWrap : public CommandPayloadBase {
+		CommandPayloadWrap(const CommandPayloadBase::Operations &ops) : CommandPayloadBase(ops) {}
+	};
+	new (storage) CommandPayloadWrap(ops);
+
+	for (size_t i = 0; i < fields; i++) {
+		auto [ftype, offset] = helper.GetField(i);
+
+		SimpleDescriptorHelper::VisitType(ftype, SimpleDescriptorHelper::ConstructDeserialiseHelper{storage + offset, buffer, default_string_validation});
+	}
+
+	return CommandPayloadBaseUniquePtr(reinterpret_cast<CommandPayloadBase *>(storage));
+}
+
+static void SimpleSerialiser(const CommandPayloadBase *ptr, struct BufferSerialisationRef buffer)
+{
+	const CommandPayloadBase::Operations &ops = ptr->GetOperations();
+	SimpleDescriptorHelper helper(ops.descriptor);
+	const size_t fields = helper.GetFieldCount();
+
+	const char *src = reinterpret_cast<const char *>(ptr);
+	for (size_t i = 0; i < fields; i++) {
+		auto [ftype, offset] = helper.GetField(i);
+
+		SimpleDescriptorHelper::VisitType(ftype, SimpleDescriptorHelper::SerialiseHelper{src + offset, buffer});
+	}
+}
+
+static void SimpleSanitiseStrings(CommandPayloadBase *ptr, StringValidationSettings settings)
+{
+	const CommandPayloadBase::Operations &ops = ptr->GetOperations();
+	SimpleDescriptorHelper helper(ops.descriptor);
+	const size_t fields = helper.GetFieldCount();
+
+	char *src = reinterpret_cast<char *>(ptr);
+	for (size_t i = 0; i < fields; i++) {
+		auto [ftype, offset] = helper.GetField(i);
+
+		switch (ftype) {
+			case CmdTypeID::String:
+				TupleCmdDataDetail::SanitiseGeneric(*reinterpret_cast<std::string *>(src + offset), settings);
+				break;
+
+			case CmdTypeID::EncodedString:
+				TupleCmdDataDetail::SanitiseGeneric(*reinterpret_cast<EncodedString *>(src + offset), settings);
+				break;
+
+			default:
+				break;
+		}
+	}
+}
+
+static void NullFormatDebugSummary(const CommandPayloadBase *, struct format_target &) {}
+
 struct CommandPayloadBaseOperationsBuilder {
 	template <typename T>
 	static CommandPayloadBaseUniquePtr Cloner(const CommandPayloadBase *ptr)
@@ -189,12 +577,10 @@ struct CommandPayloadBaseOperationsBuilder {
 		static_cast<const T *>(ptr)->FormatDebugSummary(output);
 	}
 
-	static void NullFormatDebugSummary(const CommandPayloadBase *, struct format_target &);
-
 	template <typename T>
-	static constexpr CommandPayloadBase::Operations Build()
+	static constexpr CommandPayloadBase::Operations BuildCustom()
 	{
-		CommandPayloadBase::SerialiseFn serialise = nullptr;
+		CommandPayloadBase::SerialiseFn serialise;
 		if constexpr (requires { T::SerialisePayload(nullptr, std::declval<struct BufferSerialisationRef>()); }) {
 			serialise = &T::SerialisePayload;
 		} else {
@@ -224,12 +610,69 @@ struct CommandPayloadBaseOperationsBuilder {
 			&Deleter<T>,
 			serialise,
 			sanitise_strings,
-			format_debug_summary
+			format_debug_summary,
+			nullptr
 		};
 	}
-};
 
-void CommandPayloadBaseOperationsBuilder::NullFormatDebugSummary(const CommandPayloadBase *, struct format_target &) {}
+	template <typename T>
+	static constexpr CommandPayloadBase::Operations BuildSimple()
+	{
+		static_assert(std::is_final_v<T>);
+
+		using Helper = UseSimplePathHelper<typename T::Types>;
+
+		CommandPayloadBase::CloneFn cloner;
+		CommandPayloadBase::DeleterFn deleter;
+		if constexpr (!PayloadHasValueTupleCmdDataTag<T>) {
+			cloner = &Cloner<T>; // Need to use instantiated clone method
+			deleter = &Deleter<T>;
+		} else {
+			static_assert(IsPayloadBaseAtStart<T>());
+			static_assert(sizeof(typename T::TupleCmdDataType) == sizeof(T));
+			if constexpr (Helper::AnyStrings) {
+				cloner = &SimpleCloner;
+				deleter = &SimpleDeleter;
+			} else {
+				cloner = &TrivialCloner;
+				deleter = &TrivialDeleter;
+			}
+		}
+
+		CommandPayloadBase::SanitiseStringsFn sanitise_strings = nullptr;
+		if constexpr (T::HasStringSanitiser) {
+			sanitise_strings = &SimpleSanitiseStrings;
+		}
+
+		CommandPayloadBase::FormatDebugSummaryFn format_debug_summary = &NullFormatDebugSummary;
+		if constexpr (T::HasFormatDebugSummary) {
+			if constexpr (requires { T::FormatDebugSummary(nullptr, std::declval<struct format_target &>()); }) {
+				format_debug_summary = &T::FormatDebugSummary;
+			} else {
+				format_debug_summary = &FormatDebugSummary<T>;
+			}
+		}
+
+		return {
+			cloner,
+			deleter,
+			&SimpleSerialiser,
+			sanitise_strings,
+			format_debug_summary,
+			SimpleDescriptorBuilder<T>::descriptor.data(),
+		};
+	}
+
+	template <typename T>
+	static constexpr CommandPayloadBase::Operations Build()
+	{
+		if constexpr (UseSimplePath<T>()) {
+			return BuildSimple<T>();
+		} else {
+			return BuildCustom<T>();
+		}
+	}
+};
 
 template<typename T>
 const CommandPayloadBase::Operations CommandPayloadSerialisable<T>::operations = CommandPayloadBaseOperationsBuilder::Build<T>();

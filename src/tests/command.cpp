@@ -100,6 +100,7 @@ TEST_CASE("CmdDataT simple tests")
 	CHECK(TestCommandPayload<CMD_ADD_PLAN>({}, {}));
 	CHECK(TestCommandPayload<CMD_REMOVE_PLAN>({ PlanID{5} }, { 5, 0 }));
 	CHECK(TestCommandPayload<CMD_RENAME_PLAN>({ PlanID{6}, "abc" }, { 6, 0, 0x61, 0x62, 0x63, 0 }));
+	CHECK(TestCommandPayload<CMD_RENAME_PLAN>({ PlanID{6}, "abcdefabcdefabcdefabcdefabcdef" }, { 6, 0, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0 }));
 	CHECK(TestCommandPayload<CMD_CHANGE_PLAN_VISIBILITY>({ PlanID{7}, true }, { 7, 0, 1 }));
 	CHECK(TestCommandPayload<CMD_START_STOP_VEHICLE>({ VehicleID{8}, true }, { 8, 1 }));
 	CHECK(TestCommandPayload<CMD_MONEY_CHEAT>({ 0 }, { 0 }));

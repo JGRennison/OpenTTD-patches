@@ -956,6 +956,7 @@ struct CommandPayloadBase {
 		SerialiseFn serialise;
 		SanitiseStringsFn sanitise_strings;
 		FormatDebugSummaryFn format_debug_summary;
+		const uint16_t *descriptor;
 	};
 
 	const Operations &ops;
@@ -1060,7 +1061,10 @@ template <typename T>
 concept CommandPayloadAsRef = CommandPayloadStringType<T> || T::command_payload_as_ref || false;
 
 template <typename T>
-concept PayloadHasBaseTupleCmdDataTag = T::BaseTupleCmdDataTag || false;
+concept PayloadHasTupleCmdDataTag = T::ValueTupleCmdDataTag || T::RefTupleCmdDataTag || false;
+
+template <typename T>
+concept PayloadHasValueTupleCmdDataTag = T::ValueTupleCmdDataTag || false;
 
 struct CommandProcTupleAdapter {
 	template <typename T>
@@ -1072,9 +1076,10 @@ struct CmdDataT;
 
 template <typename Parent, typename... T>
 struct EMPTY_BASES TupleCmdData : public CommandPayloadBase {
-	static constexpr bool BaseTupleCmdDataTag = true;
+	static constexpr bool ValueTupleCmdDataTag = true;
 
-	using Self = TupleCmdData<Parent, T...>;
+	using TupleCmdDataType = TupleCmdData<Parent, T...>;
+	using Self = TupleCmdDataType;
 	using RealParent = std::conditional_t<std::is_same_v<Parent, void>, CmdDataT<T...>, Parent>;
 
 	using CommandProc = CommandCost(DoCommandFlags, TileIndex, typename CommandProcTupleAdapter::with_ref_params<T>...);
@@ -1134,7 +1139,7 @@ struct AutoFmtTupleCmdData : public TupleCmdData<Parent, T...> {
 
 template <typename Parent, typename T>
 struct EMPTY_BASES TupleRefCmdData : public CommandPayloadSerialisable<Parent>, public T {
-	static constexpr bool BaseTupleCmdDataTag = true;
+	static constexpr bool RefTupleCmdDataTag = true;
 
 private:
 	template <typename P>

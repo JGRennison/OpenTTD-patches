@@ -948,7 +948,14 @@ const char *DynBaseCommandContainer::Deserialise(DeserialisationBuffer &buffer)
 
 	uint16_t payload_size = buffer.Recv_uint16();
 	size_t expected_offset = buffer.GetDeserialisationPosition() + payload_size;
-	this->payload = _command_proc_table[this->cmd].payload_deserialiser(buffer, default_settings);
+	const CommandInfo &cmdinfo = _command_proc_table[this->cmd];
+	if (cmdinfo.payload_deserialiser != nullptr) {
+		this->payload = cmdinfo.payload_deserialiser(buffer, default_settings);
+	} else {
+		/* Simple path for deserialisation */
+		extern CommandPayloadBaseUniquePtr DeserialiseSimpleCommandPayload(const CommandPayloadBase::Operations &ops, DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
+		this->payload = DeserialiseSimpleCommandPayload(cmdinfo.operations, buffer, default_settings);
+	}
 	if (this->payload == nullptr || expected_offset != buffer.GetDeserialisationPosition()) return "failed to deserialise command payload";
 
 	return nullptr;
