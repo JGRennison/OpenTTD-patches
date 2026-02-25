@@ -17,6 +17,7 @@
 #include "../company_cmd.h"
 #include "../misc_cmd.h"
 #include "../plans_cmd.h"
+#include "../signs_cmd.h"
 #include "../vehicle_cmd.h"
 
 #include "../3rdparty/fmt/ranges.h"
@@ -118,3 +119,13 @@ TEST_CASE("TupleRefCmdData tests")
 	CHECK(TestGeneralCommandPayload<CMD_COMPANY_CTRL>(payload2, PayloadChecker{{ 1, 2, 3, 4, 5 }}));
 }
 
+TEST_CASE("Command string sanitise tests")
+{
+	auto non_string = CmdPayload<CMD_ADD_PLAN>::Make();
+	CHECK(non_string.GetOperations().sanitise_strings == nullptr);
+
+	auto simple_string = CmdPayload<CMD_RENAME_SIGN>::Make(SignID{1}, "ab_\x1F\x1E_cd", INVALID_COLOUR);
+	simple_string.SanitiseStrings(StringValidationSetting::ReplaceWithQuestionMark);
+	CHECK(simple_string.GetValue<1>() == "ab_??_cd");
+	CHECK(simple_string == CmdPayload<CMD_RENAME_SIGN>::Make(SignID{1}, "ab_??_cd", INVALID_COLOUR));
+}
