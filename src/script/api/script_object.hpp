@@ -165,7 +165,7 @@ protected:
 	template <Commands TCmd, typename T> struct ScriptDoCommandHelperNoTile;
 
 	template <Commands Tcmd, typename... Targs>
-	struct ScriptDoCommandHelper<Tcmd, std::tuple<Targs...>> {
+	struct ScriptDoCommandHelper<Tcmd, TypeList<Targs...>> {
 		using PayloadType = CmdPayload<Tcmd>;
 
 		static bool Do(Script_SuspendCallbackProc *callback, TileIndex tile, Targs... args)
@@ -180,7 +180,7 @@ protected:
 	};
 
 	template <Commands Tcmd, typename... Targs>
-	struct ScriptDoCommandHelperNoTile<Tcmd, std::tuple<Targs...>> {
+	struct ScriptDoCommandHelperNoTile<Tcmd, TypeList<Targs...>> {
 		using PayloadType = CmdPayload<Tcmd>;
 
 		static bool Do(Script_SuspendCallbackProc *callback, Targs... args)
@@ -197,8 +197,8 @@ protected:
 	/* Note that output_no_tile is used here instead of input_no_tile, because a tile index used only for error messages is not useful */
 	template <Commands Tcmd>
 	struct Command : public std::conditional_t<::CommandTraits<Tcmd>::output_no_tile,
-			ScriptDoCommandHelperNoTile<Tcmd, typename ::CmdPayload<Tcmd>::Tuple>,
-			ScriptDoCommandHelper<Tcmd, typename ::CmdPayload<Tcmd>::Tuple>> {};
+			ScriptDoCommandHelperNoTile<Tcmd, typename ::CmdPayload<Tcmd>::Types>,
+			ScriptDoCommandHelper<Tcmd, typename ::CmdPayload<Tcmd>::Types>> {};
 
 	/**
 	 * Store the latest command executed by the script.

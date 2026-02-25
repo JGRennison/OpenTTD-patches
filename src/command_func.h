@@ -72,7 +72,7 @@ template <Commands TCmd, typename T> struct DoCommandHelper;
 template <Commands TCmd, typename T> struct DoCommandHelperNoTile;
 
 template <Commands Tcmd, typename... Targs>
-struct DoCommandHelper<Tcmd, std::tuple<Targs...>> {
+struct DoCommandHelper<Tcmd, TypeList<Targs...>> {
 	static inline CommandCost Do(DoCommandFlags flags, TileIndex tile, Targs... args)
 	{
 		return DoCommand<Tcmd>(tile, CmdPayload<Tcmd>::Make(std::forward<Targs>(args)...), flags);
@@ -80,7 +80,7 @@ struct DoCommandHelper<Tcmd, std::tuple<Targs...>> {
 };
 
 template <Commands Tcmd, typename... Targs>
-struct DoCommandHelperNoTile<Tcmd, std::tuple<Targs...>> {
+struct DoCommandHelperNoTile<Tcmd, TypeList<Targs...>> {
 	static inline CommandCost Do(DoCommandFlags flags, Targs... args)
 	{
 		return DoCommand<Tcmd>(CmdPayload<Tcmd>::Make(std::forward<Targs>(args)...), flags);
@@ -91,7 +91,7 @@ template <Commands TCmd, typename T> struct DoCommandPHelper;
 template <Commands TCmd, typename T> struct DoCommandPHelperNoTile;
 
 template <Commands Tcmd, typename... Targs>
-struct DoCommandPHelper<Tcmd, std::tuple<Targs...>> {
+struct DoCommandPHelper<Tcmd, TypeList<Targs...>> {
 	using PayloadType = CmdPayload<Tcmd>;
 
 	static inline bool Post(TileIndex tile, Targs... args)
@@ -116,7 +116,7 @@ struct DoCommandPHelper<Tcmd, std::tuple<Targs...>> {
 };
 
 template <Commands Tcmd, typename... Targs>
-struct DoCommandPHelperNoTile<Tcmd, std::tuple<Targs...>> {
+struct DoCommandPHelperNoTile<Tcmd, TypeList<Targs...>> {
 	using PayloadType = CmdPayload<Tcmd>;
 
 	static inline bool Post(Targs... args)
@@ -143,11 +143,11 @@ struct DoCommandPHelperNoTile<Tcmd, std::tuple<Targs...>> {
 template <Commands Tcmd>
 struct Command :
 		public std::conditional_t<CommandTraits<Tcmd>::output_no_tile,
-			DoCommandHelperNoTile<Tcmd, typename CmdPayload<Tcmd>::Tuple>,
-			DoCommandHelper<Tcmd, typename CmdPayload<Tcmd>::Tuple>>,
+			DoCommandHelperNoTile<Tcmd, typename CmdPayload<Tcmd>::Types>,
+			DoCommandHelper<Tcmd, typename CmdPayload<Tcmd>::Types>>,
 		public std::conditional_t<CommandTraits<Tcmd>::input_no_tile,
-			DoCommandPHelperNoTile<Tcmd, typename CmdPayload<Tcmd>::Tuple>,
-			DoCommandPHelper<Tcmd, typename CmdPayload<Tcmd>::Tuple>> {};
+			DoCommandPHelperNoTile<Tcmd, typename CmdPayload<Tcmd>::Types>,
+			DoCommandPHelper<Tcmd, typename CmdPayload<Tcmd>::Types>> {};
 
 /* Other command functions */
 

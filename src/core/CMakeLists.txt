@@ -42,6 +42,7 @@ add_files(
     string_consumer.hpp
     strong_typedef_type.hpp
     tinystring_type.hpp
+    type_util.hpp
     typed_container.hpp
     utf8.cpp
     utf8.hpp

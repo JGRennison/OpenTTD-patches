@@ -16,6 +16,7 @@
 #include "strings_type.h"
 #include "tile_type.h"
 #include "core/serialisation.hpp"
+#include "core/type_util.hpp"
 #include <optional>
 #include <string>
 #include <tuple>
@@ -33,7 +34,7 @@ enum CommandCostIntlFlags : uint8_t {
 };
 DECLARE_ENUM_AS_BIT_SET(CommandCostIntlFlags)
 
-using CommandCostAllowedResultTypes = std::tuple<uint32_t, struct PlanIDTag, struct VehicleIDTag, struct SignIDTag, struct GroupIDTag, struct GoalIDTag, struct TownIDTag,
+using CommandCostAllowedResultTypes = TypeList<uint32_t, struct PlanIDTag, struct VehicleIDTag, struct SignIDTag, struct GroupIDTag, struct GoalIDTag, struct TownIDTag,
 		struct StoryPageIDTag, struct StoryPageElementIDTag, struct LeagueTableElementIDTag, struct LeagueTableIDTag,
 		struct TraceRestrictSlotIDTag, struct TraceRestrictSlotGroupIDTag, struct TraceRestrictCounterIDTag>;
 using CommandCostResultTypeIndex = uint8_t;
@@ -46,8 +47,8 @@ constexpr CommandCostResultTypeIndex GetCommandCostResultDataTypeID()
 	} else if constexpr (std::is_same_v<uint16_t, T>) {
 		return GetCommandCostResultDataTypeID<uint32_t>();
 	} else {
-		constexpr size_t idx = GetTupleIndexIgnoreCvRef<T, CommandCostAllowedResultTypes>();
-		static_assert(idx < std::tuple_size_v<CommandCostAllowedResultTypes>,
+		constexpr size_t idx = GetTypeListIndexIgnoreCvRef<T, CommandCostAllowedResultTypes>();
+		static_assert(idx < CommandCostAllowedResultTypes::Size,
 				"Could not find CommandCost result type in CommandCostAllowedResultTypes");
 		static_assert(idx < std::numeric_limits<CommandCostResultTypeIndex>::max());
 		return static_cast<CommandCostResultTypeIndex>(idx) + 1;
@@ -1045,7 +1046,7 @@ void SetCommandPayloadClientID(T &payload, ClientID client_id)
 	if constexpr (requires { payload.GetClientIDField(); }) {
 		if (payload.GetClientIDField() == (ClientID)0) payload.GetClientIDField() = client_id;
 	} else {
-		constexpr size_t idx = GetTupleIndexIgnoreCvRef<ClientID, typename T::Tuple>();
+		constexpr size_t idx = GetTypeListIndexIgnoreCvRef<ClientID, typename T::Types>();
 		static_assert(idx < T::ValueCount,
 				"There must be exactly one ClientID value in the command payload tuple unless a GetClientIDField method is present");
 		if (payload.template GetValue<idx>() == (ClientID)0) payload.template GetValue<idx>() = client_id;
@@ -1078,6 +1079,7 @@ struct EMPTY_BASES TupleCmdData : public CommandPayloadBase {
 
 	using CommandProc = CommandCost(DoCommandFlags, TileIndex, typename CommandProcTupleAdapter::with_ref_params<T>...);
 	using CommandProcNoTile = CommandCost(DoCommandFlags, typename CommandProcTupleAdapter::with_ref_params<T>...);
+	using Types = TypeList<T...>;
 	using Tuple = std::tuple<T...>;
 	static constexpr size_t ValueCount = sizeof...(T);
 	static constexpr bool HasStringType = (CommandPayloadStringType<T> || ...);
@@ -1098,10 +1100,10 @@ struct EMPTY_BASES TupleCmdData : public CommandPayloadBase {
 	bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
 
 	template <size_t IDX>
-	auto &GetValue() { return std::get<IDX>(this->values); }
+	constexpr auto &GetValue() { return std::get<IDX>(this->values); }
 
 	template <size_t IDX>
-	const auto &GetValue() const { return std::get<IDX>(this->values); }
+	constexpr const auto &GetValue() const { return std::get<IDX>(this->values); }
 
 	bool operator==(const Self &other) const { return this->values == other.values; }
 
@@ -1142,6 +1144,7 @@ private:
 
 	template <typename... Targs>
 	struct TupleHelper<std::tuple<Targs...>> {
+		using ValueTypes = TypeList<ValueT<Targs>...>;
 		using ValueTuple = std::tuple<ValueT<Targs>...>;
 		using CommandProc = CommandCost(DoCommandFlags, TileIndex, typename CommandProcTupleAdapter::with_ref_params<ValueT<Targs>>...);
 		using CommandProcNoTile = CommandCost(DoCommandFlags, typename CommandProcTupleAdapter::with_ref_params<ValueT<Targs>>...);
@@ -1155,6 +1158,7 @@ private:
 
 public:
 	using Self = TupleRefCmdData<Parent, T>;
+	using Types = typename Helper::ValueTypes;
 	using Tuple = typename Helper::ValueTuple;
 	using CommandProc = typename Helper::CommandProc;
 	using CommandProcNoTile = typename Helper::CommandProcNoTile;
@@ -1182,7 +1186,7 @@ private:
 	template <typename H> struct MakeHelper;
 
 	template <typename... Targs>
-	struct MakeHelper<std::tuple<Targs...>> {
+	struct MakeHelper<TypeList<Targs...>> {
 		constexpr Parent operator()(Targs... args) const
 		{
 			Parent out;
@@ -1192,7 +1196,7 @@ private:
 	};
 
 public:
-	static inline constexpr MakeHelper<Tuple> Make{};
+	static inline constexpr MakeHelper<Types> Make{};
 
 	static void SerialisePayload(const CommandPayloadBase *ptr, BufferSerialisationRef buffer);
 	static void SanitisePayloadStrings(CommandPayloadBase *ptr, StringValidationSettings settings);

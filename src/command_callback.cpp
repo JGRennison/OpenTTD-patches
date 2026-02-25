@@ -85,7 +85,7 @@ template <> struct CommandCallbackTraits<CommandCallback::cb_> { \
 template <Commands Tcmd, typename S> struct CommandCallbackTupleHelper;
 
 template <Commands Tcmd, typename... Targs>
-struct CommandCallbackTupleHelper<Tcmd, std::tuple<Targs...>> {
+struct CommandCallbackTupleHelper<Tcmd, TypeList<Targs...>> {
 	using ResultTupleCommandCallback = void(const CommandCost &, typename CommandProcTupleAdapter::with_ref_params<std::remove_cvref_t<Targs>>...);
 	using ResultTileTupleCommandCallback = void(const CommandCost &, TileIndex, typename CommandProcTupleAdapter::with_ref_params<std::remove_cvref_t<Targs>>...);
 
@@ -111,7 +111,7 @@ struct CommandCallbackTupleHelper<Tcmd, std::tuple<Targs...>> {
 };
 
 #define DEF_CB_RES_TUPLE(cb_, cmd_) \
-namespace cmd_detail { using cc_helper_ ## cb_ = CommandCallbackTupleHelper<cmd_, typename CmdPayload<cmd_>::Tuple>; } \
+namespace cmd_detail { using cc_helper_ ## cb_ = CommandCallbackTupleHelper<cmd_, typename CmdPayload<cmd_>::Types>; } \
 typename cmd_detail::cc_helper_ ## cb_ ::ResultTupleCommandCallback Cc ## cb_; \
 template <> struct CommandCallbackTraits<CommandCallback::cb_> { \
 	static constexpr CommandCallbackTrampoline *handler = [](const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param) { \
@@ -120,7 +120,7 @@ template <> struct CommandCallbackTraits<CommandCallback::cb_> { \
 };
 
 #define DEF_CB_RES_TILE_TUPLE(cb_, cmd_) \
-namespace cmd_detail { using cc_helper_ ## cb_ = CommandCallbackTupleHelper<cmd_, typename CmdPayload<cmd_>::Tuple>; } \
+namespace cmd_detail { using cc_helper_ ## cb_ = CommandCallbackTupleHelper<cmd_, typename CmdPayload<cmd_>::Types>; } \
 typename cmd_detail::cc_helper_ ## cb_ ::ResultTileTupleCommandCallback Cc ## cb_; \
 template <> struct CommandCallbackTraits<CommandCallback::cb_> { \
 	static constexpr CommandCallbackTrampoline *handler = [](const CommandCost &result, Commands cmd, TileIndex tile, const CommandPayloadBase &payload, CallbackParameter param) { \
