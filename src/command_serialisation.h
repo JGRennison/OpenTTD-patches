@@ -122,34 +122,4 @@ bool TupleRefCmdData<Parent, T>::Deserialise(DeserialisationBuffer &buffer, Stri
 	return true;
 }
 
-template <typename Parent, TupleCmdDataFlags flags, typename... T>
-void AutoFmtTupleCmdData<Parent, flags, T...>::FormatDebugSummary(const CommandPayloadBase *ptr, format_target &output)
-{
-	const Self *self = static_cast<const Self *>(ptr);
-	if constexpr (std::string_view(Parent::fmt_str).size() == 0) {
-		if constexpr ((flags & TCDF_STRINGS) || !TupleCmdData<Parent, T...>::HasStringType) {
-			TupleCmdDataDetail::FmtSimpleTupleData(output, *self, std::index_sequence_for<T...>{});
-		} else {
-			TupleCmdDataDetail::FmtSimpleTupleData(output, *self, TupleCmdDataDetail::NonStringTypeIndexSequence<typename TupleCmdData<Parent, T...>::Types>{});
-		}
-	} else {
-		if constexpr ((flags & TCDF_STRINGS) || !TupleCmdData<Parent, T...>::HasStringType) {
-			TupleCmdDataDetail::FmtTupleDataTuple<Parent::fmt_str>(output, *self, std::index_sequence_for<T...>{});
-		} else {
-			TupleCmdDataDetail::FmtTupleDataTuple<Parent::fmt_str>(output, *self, TupleCmdDataDetail::NonStringTypeIndexSequence<typename TupleCmdData<Parent, T...>::Types>{});
-		}
-	}
-}
-
-template <typename... T>
-void CmdDataT<T...>::FormatDebugSummary(const CommandPayloadBase *ptr, format_target &output)
-{
-	const Self *self = static_cast<const Self *>(ptr);
-	if constexpr (!TupleCmdData<void, T...>::HasStringType) {
-		TupleCmdDataDetail::FmtSimpleTupleData(output, *self, std::index_sequence_for<T...>{});
-	} else {
-		TupleCmdDataDetail::FmtSimpleTupleData(output, *self, TupleCmdDataDetail::NonStringTypeIndexSequence<typename TupleCmdData<void, T...>::Types>{});
-	}
-}
-
 #endif /* COMMAND_SERIALISATION_H */

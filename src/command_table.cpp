@@ -49,6 +49,23 @@
 #include "water_cmd.h"
 #include "waypoint_cmd.h"
 
+template <class T>
+concept IsCmdDataT = requires(T payload) {
+	[]<typename... X>(CmdDataT<X...>&){}(payload);
+};
+
+template <typename Parent, TupleCmdDataFlags flags, typename... X>
+constexpr std::integral_constant<TupleCmdDataFlags, flags> GetAutoFmtTupleCmdDataFlagsAsType(AutoFmtTupleCmdData<Parent, flags, X...>&) {
+	return {};
+};
+
+template <class T>
+concept IsAutoFmtTupleCmdData = requires(T payload) {
+	GetAutoFmtTupleCmdDataFlagsAsType(payload);
+};
+
+template <class T>
+static constexpr TupleCmdDataFlags AutoFmtTupleCmdDataFlags = decltype(GetAutoFmtTupleCmdDataFlagsAsType(std::declval<T &>()))::value;
 
 enum class CmdTypeID : uint8_t {
 	Uint8,
@@ -544,6 +561,30 @@ static void SimpleSanitiseStrings(CommandPayloadBase *ptr, StringValidationSetti
 
 static void NullFormatDebugSummary(const CommandPayloadBase *, struct format_target &) {}
 
+template <typename Payload, bool SKIP_STRINGS>
+static void CommandFormatDebugSummaryList(const CommandPayloadBase *ptr, format_target &output)
+{
+	static_assert(std::is_final_v<Payload>);
+	const Payload *payload = static_cast<const Payload *>(ptr);
+	if constexpr (SKIP_STRINGS) {
+		TupleCmdDataDetail::FmtSimpleTupleData(output, *payload, TupleCmdDataDetail::NonStringTypeIndexSequence<typename Payload::Types>{});
+	} else {
+		TupleCmdDataDetail::FmtSimpleTupleData(output, *payload, std::make_index_sequence<Payload::ValueCount>{});
+	}
+}
+
+template <typename Payload, bool SKIP_STRINGS>
+static void CommandFormatDebugSummaryCustom(const CommandPayloadBase *ptr, format_target &output)
+{
+	static_assert(std::is_final_v<Payload>);
+	const Payload *payload = static_cast<const Payload *>(ptr);
+	if constexpr (SKIP_STRINGS) {
+		TupleCmdDataDetail::FmtTupleDataTuple<Payload::fmt_str>(output, *payload, TupleCmdDataDetail::NonStringTypeIndexSequence<typename Payload::Types>{});
+	} else {
+		TupleCmdDataDetail::FmtTupleDataTuple<Payload::fmt_str>(output, *payload, std::make_index_sequence<Payload::ValueCount>{});
+	}
+}
+
 struct CommandPayloadBaseOperationsBuilder {
 	template <typename T>
 	static CommandPayloadBaseUniquePtr Cloner(const CommandPayloadBase *ptr)
@@ -578,6 +619,30 @@ struct CommandPayloadBaseOperationsBuilder {
 	}
 
 	template <typename T>
+	static constexpr CommandPayloadBase::FormatDebugSummaryFn GetFormatDebugSummary()
+	{
+		static_assert(std::is_final_v<T>);
+		if constexpr (!T::HasFormatDebugSummary) {
+			return &NullFormatDebugSummary;
+		} else if constexpr (requires { T::FormatDebugSummary(nullptr, std::declval<struct format_target &>()); }) {
+			return &T::FormatDebugSummary;
+		} else if constexpr (requires { std::declval<T>().FormatDebugSummary(std::declval<struct format_target &>()); }) {
+			return &FormatDebugSummary<T>;
+		} else if constexpr (IsCmdDataT<T>) {
+			return &CommandFormatDebugSummaryList<T, T::HasStringType>;
+		} else if constexpr (IsAutoFmtTupleCmdData<T>) {
+			constexpr bool skip_strings = !(AutoFmtTupleCmdDataFlags<T> & TCDF_STRINGS) && T::HasStringType;
+			if constexpr (std::string_view(T::fmt_str).size() == 0) {
+				return &CommandFormatDebugSummaryList<T, skip_strings>;
+			} else {
+				return &CommandFormatDebugSummaryCustom<T, skip_strings>;
+			}
+		} else {
+			static_assert(false, "Command payload: FormatDebugSummary implementation missing or incorrect");
+		}
+	}
+
+	template <typename T>
 	static constexpr CommandPayloadBase::Operations BuildCustom()
 	{
 		CommandPayloadBase::SerialiseFn serialise;
@@ -596,21 +661,12 @@ struct CommandPayloadBaseOperationsBuilder {
 			}
 		}
 
-		CommandPayloadBase::FormatDebugSummaryFn format_debug_summary = &NullFormatDebugSummary;
-		if constexpr (T::HasFormatDebugSummary) {
-			if constexpr (requires { T::FormatDebugSummary(nullptr, std::declval<struct format_target &>()); }) {
-				format_debug_summary = &T::FormatDebugSummary;
-			} else {
-				format_debug_summary = &FormatDebugSummary<T>;
-			}
-		}
-
 		return {
 			&Cloner<T>,
 			&Deleter<T>,
 			serialise,
 			sanitise_strings,
-			format_debug_summary,
+			GetFormatDebugSummary<T>(),
 			nullptr
 		};
 	}
@@ -644,21 +700,12 @@ struct CommandPayloadBaseOperationsBuilder {
 			sanitise_strings = &SimpleSanitiseStrings;
 		}
 
-		CommandPayloadBase::FormatDebugSummaryFn format_debug_summary = &NullFormatDebugSummary;
-		if constexpr (T::HasFormatDebugSummary) {
-			if constexpr (requires { T::FormatDebugSummary(nullptr, std::declval<struct format_target &>()); }) {
-				format_debug_summary = &T::FormatDebugSummary;
-			} else {
-				format_debug_summary = &FormatDebugSummary<T>;
-			}
-		}
-
 		return {
 			cloner,
 			deleter,
 			&SimpleSerialiser,
 			sanitise_strings,
-			format_debug_summary,
+			GetFormatDebugSummary<T>(),
 			SimpleDescriptorBuilder<T>::descriptor.data(),
 		};
 	}

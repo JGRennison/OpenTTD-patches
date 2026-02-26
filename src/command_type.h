@@ -1133,8 +1133,6 @@ struct AutoFmtTupleCmdData : public TupleCmdData<Parent, T...> {
 	static inline constexpr const char fmt_str[] = "";
 
 	using TupleCmdData<Parent, T...>::TupleCmdData;
-
-	static void FormatDebugSummary(const CommandPayloadBase *, struct format_target &output);
 };
 
 template <typename Parent, typename T>
@@ -1227,8 +1225,6 @@ template <typename... T>
 struct EMPTY_BASES CmdDataT final : public TupleCmdData<void, T...> {
 	using Self = CmdDataT<T...>;
 	static constexpr bool HasFormatDebugSummary = Self::HasNonStringType;
-
-	static void FormatDebugSummary(const CommandPayloadBase *, struct format_target &output);
 };
 using EmptyCmdData = CmdDataT<>;
 
