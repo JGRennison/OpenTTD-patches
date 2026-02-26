@@ -349,6 +349,19 @@ struct SimpleDescriptorHelper {
 		}
 	};
 
+	struct FormatHelper {
+		const char *from;
+		format_target &output;
+
+		template <typename T>
+		void Exec()
+		{
+			if constexpr (!std::is_same_v<T, EncodedString>) {
+				output.format("{}", *reinterpret_cast<const T *>(this->from));
+			}
+		}
+	};
+
 	template <typename T>
 	static void DestructField(char *ptr)
 	{
@@ -585,6 +598,64 @@ static void CommandFormatDebugSummaryCustom(const CommandPayloadBase *ptr, forma
 	}
 }
 
+template <typename T>
+constexpr bool CommandFormatDebugUsingDescriptorIsValid()
+{
+	if constexpr (std::is_same_v<T, bool>) {
+		return true;
+	} else if constexpr (std::is_integral_v<T>) {
+		return sizeof(T) >= 1 && sizeof(T) <= 8;
+	} else if constexpr (std::is_same_v<T, std::string>) {
+		return true;
+	} else if constexpr (std::is_same_v<T, EncodedString>) {
+		return true;
+	} else if constexpr (format_detail::FmtAsBase<T>) {
+		return CommandFormatDebugUsingDescriptorIsValid<typename T::BaseType>();
+	} else if constexpr (std::is_enum_v<T>) {
+		return CommandFormatDebugUsingDescriptorIsValid<std::underlying_type_t<T>>();
+	}
+	return false;
+}
+
+template <typename H> struct CommandFormatDebugUsingDescriptorHelper;
+
+template <typename... Targs>
+struct CommandFormatDebugUsingDescriptorHelper<TypeList<Targs...>> {
+	static constexpr bool AllValid = (CommandFormatDebugUsingDescriptorIsValid<Targs>() && ...);
+};
+
+static void CommandFormatDebugSummaryUsingDescriptor(const CommandPayloadBase *ptr, format_target &output, bool skip_strings)
+{
+	const CommandPayloadBase::Operations &ops = ptr->GetOperations();
+	SimpleDescriptorHelper helper(ops.descriptor);
+	const size_t fields = helper.GetFieldCount();
+
+	const char *src = reinterpret_cast<const char *>(ptr);
+	bool written_any = false;
+	for (size_t i = 0; i < fields; i++) {
+		auto [ftype, offset] = helper.GetField(i);
+
+		if (skip_strings && (ftype == CmdTypeID::String || ftype == CmdTypeID::EncodedString)) continue;
+
+		if (written_any) {
+			output.append(", ");
+		} else {
+			written_any = true;
+		}
+		SimpleDescriptorHelper::VisitType(ftype, SimpleDescriptorHelper::FormatHelper{src + offset, output});
+	}
+}
+
+static void CommandFormatDebugSummarySimple(const CommandPayloadBase *ptr, format_target &output)
+{
+	CommandFormatDebugSummaryUsingDescriptor(ptr, output, false);
+}
+
+static void CommandFormatDebugSummarySimpleSkipStrings(const CommandPayloadBase *ptr, format_target &output)
+{
+	CommandFormatDebugSummaryUsingDescriptor(ptr, output, true);
+}
+
 struct CommandPayloadBaseOperationsBuilder {
 	template <typename T>
 	static CommandPayloadBaseUniquePtr Cloner(const CommandPayloadBase *ptr)
@@ -618,7 +689,17 @@ struct CommandPayloadBaseOperationsBuilder {
 		static_cast<const T *>(ptr)->FormatDebugSummary(output);
 	}
 
-	template <typename T>
+	template <typename T, bool skip_strings, bool enable_simple>
+	static constexpr CommandPayloadBase::FormatDebugSummaryFn GetFormatDebugSummaryList()
+	{
+		if constexpr (enable_simple && CommandFormatDebugUsingDescriptorHelper<typename T::Types>::AllValid) {
+			return skip_strings ? &CommandFormatDebugSummarySimpleSkipStrings : &CommandFormatDebugSummarySimple;
+		} else {
+			return &CommandFormatDebugSummaryList<T, skip_strings>;
+		}
+	}
+
+	template <typename T, bool enable_simple>
 	static constexpr CommandPayloadBase::FormatDebugSummaryFn GetFormatDebugSummary()
 	{
 		static_assert(std::is_final_v<T>);
@@ -629,11 +710,11 @@ struct CommandPayloadBaseOperationsBuilder {
 		} else if constexpr (requires { std::declval<T>().FormatDebugSummary(std::declval<struct format_target &>()); }) {
 			return &FormatDebugSummary<T>;
 		} else if constexpr (IsCmdDataT<T>) {
-			return &CommandFormatDebugSummaryList<T, T::HasStringType>;
+			return GetFormatDebugSummaryList<T, T::HasStringType, enable_simple>();
 		} else if constexpr (IsAutoFmtTupleCmdData<T>) {
 			constexpr bool skip_strings = !(AutoFmtTupleCmdDataFlags<T> & TCDF_STRINGS) && T::HasStringType;
 			if constexpr (std::string_view(T::fmt_str).size() == 0) {
-				return &CommandFormatDebugSummaryList<T, skip_strings>;
+				return GetFormatDebugSummaryList<T, skip_strings, enable_simple>();
 			} else {
 				return &CommandFormatDebugSummaryCustom<T, skip_strings>;
 			}
@@ -666,7 +747,7 @@ struct CommandPayloadBaseOperationsBuilder {
 			&Deleter<T>,
 			serialise,
 			sanitise_strings,
-			GetFormatDebugSummary<T>(),
+			GetFormatDebugSummary<T, false>(),
 			nullptr
 		};
 	}
@@ -705,7 +786,7 @@ struct CommandPayloadBaseOperationsBuilder {
 			deleter,
 			&SimpleSerialiser,
 			sanitise_strings,
-			GetFormatDebugSummary<T>(),
+			GetFormatDebugSummary<T, true>(),
 			SimpleDescriptorBuilder<T>::descriptor.data(),
 		};
 	}

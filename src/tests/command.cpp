@@ -15,9 +15,12 @@
 #include "../core/format.hpp"
 
 #include "../company_cmd.h"
+#include "../landscape_cmd.h"
 #include "../misc_cmd.h"
 #include "../plans_cmd.h"
+#include "../settings_cmd.h"
 #include "../signs_cmd.h"
+#include "../tracerestrict_cmd.h"
 #include "../vehicle_cmd.h"
 
 #include "../3rdparty/fmt/ranges.h"
@@ -129,4 +132,32 @@ TEST_CASE("Command string sanitise tests")
 	simple_string.SanitiseStrings(StringValidationSetting::ReplaceWithQuestionMark);
 	CHECK(simple_string.GetValue<1>() == "ab_??_cd");
 	CHECK(simple_string == CmdPayload<CMD_RENAME_SIGN>::Make(SignID{1}, "ab_??_cd", INVALID_COLOUR));
+}
+
+TEST_CASE("Command format debug summary")
+{
+	AllocateMap(64, 64);
+
+	format_buffer buf;
+	auto get_summary = [&buf](const CommandPayloadBase &payload) -> std::string_view {
+		buf.clear();
+		buf.format("{}", payload);
+		return buf;
+	};
+
+	CHECK(get_summary(CmdPayload<CMD_ADD_PLAN>::Make()) == "");
+	CHECK(get_summary(CmdPayload<CMD_RENAME_PLAN>::Make(PlanID{1}, "abc")) == "1");
+	CHECK(get_summary(CmdPayload<CMD_START_STOP_VEHICLE>::Make(VehicleID{2}, true)) == "2, true");
+	CHECK(get_summary(CmdPayload<CMD_CLEAR_AREA>::Make(TileIndex{0x405}, false)) == "405 (5 x 16), false");
+	CHECK(get_summary(CmdPayload<CMD_CHANGE_SETTING>::Make("setting_name", 1234)) == "setting_name, 1234");
+	CHECK(get_summary(CmdPayload<CMD_PROGRAM_TRACERESTRICT_SIGNAL>::Make(TRACK_Y, TRDCT_MODIFY_ITEM, 5, 0x12345678, "string")) == "track: 1, type: 1 (modify), offset: 5, data: 12345678");
+
+	TraceRestrictCreateSlotCmdData data;
+	data.vehtype = VEH_TRAIN;
+	data.parent = TraceRestrictSlotGroupID{1};
+	data.name = "slot name";
+	data.max_occupancy = 2;
+	CHECK(get_summary(data) == "vt: 0, parent: 1, max occupancy: 2");
+
+	DeallocateMap();
 }
