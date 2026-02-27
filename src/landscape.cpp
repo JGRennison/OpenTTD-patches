@@ -327,7 +327,7 @@ Slope UpdateFoundationSlopeFromTileSlope(TileIndex tile, Slope tileh, int &tilez
  * @param tile The tile of interest.
  * @return The slope on top of the foundation and the z of the foundation slope.
  */
-std::tuple<Slope, int> GetFoundationSlope(TileIndex tile)
+std::pair<Slope, int> GetFoundationSlope(TileIndex tile)
 {
 	auto [tileh, z] = GetTileSlopeZ(tile);
 	tileh = UpdateFoundationSlopeFromTileSlope(tile, tileh, z);

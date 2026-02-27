@@ -269,7 +269,7 @@ inline void SetAnimationFrame(TileIndex t, uint8_t frame)
 	_me[t].m7 = frame;
 }
 
-std::tuple<Slope, int> GetTileSlopeZ(TileIndex tile);
+std::pair<Slope, int> GetTileSlopeZ(TileIndex tile);
 int GetTileZ(TileIndex tile);
 int GetTileMaxZ(TileIndex tile);
 
@@ -333,13 +333,13 @@ inline Slope GetTileSlope(TileIndex tile)
  * @param tile Tile to compute slope of
  * @return Slope of the tile, except for the HALFTILE part, and the z height.
  */
-inline std::tuple<Slope, int> GetTilePixelSlope(TileIndex tile)
+inline std::pair<Slope, int> GetTilePixelSlope(TileIndex tile)
 {
 	auto [s, h] = GetTileSlopeZ(tile);
 	return {s, h * TILE_HEIGHT};
 }
 
-std::tuple<Slope, int> GetTilePixelSlopeOutsideMap(int x, int y);
+std::pair<Slope, int> GetTilePixelSlopeOutsideMap(int x, int y);
 
 /**
  * Get bottom height of the tile

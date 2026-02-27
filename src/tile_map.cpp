@@ -20,7 +20,7 @@
  * @param hsouth The height at the southern corner in the same unit as TileHeight.
  * @return The slope and the lowest height of the four corners.
  */
-static std::tuple<Slope, int> GetTileSlopeGivenHeight(int hnorth, int hwest, int heast, int hsouth)
+static std::pair<Slope, int> GetTileSlopeGivenHeight(int hnorth, int hwest, int heast, int hsouth)
 {
 	/* Due to the fact that tiles must connect with each other without leaving gaps, the
 	 * biggest difference in height between any corner and 'min' is between 0, 1, or 2.
@@ -52,7 +52,7 @@ static std::tuple<Slope, int> GetTileSlopeGivenHeight(int hnorth, int hwest, int
  * @param tile Tile to compute slope of
  * @return Slope of the tile, except for the HALFTILE part, and the z height
  */
-std::tuple<Slope, int> GetTileSlopeZ(TileIndex tile)
+std::pair<Slope, int> GetTileSlopeZ(TileIndex tile)
 {
 	uint x1 = TileX(tile);
 	uint y1 = TileY(tile);
@@ -75,7 +75,7 @@ std::tuple<Slope, int> GetTileSlopeZ(TileIndex tile)
  * @param h If not \c nullptr, pointer to storage of z height.
  * @return Slope of the tile, except for the HALFTILE part, and the z height of the tile.
  */
-std::tuple<Slope, int> GetTilePixelSlopeOutsideMap(int x, int y)
+std::pair<Slope, int> GetTilePixelSlopeOutsideMap(int x, int y)
 {
 	int hnorth = TileHeightOutsideMap(x,     y);     // N corner.
 	int hwest  = TileHeightOutsideMap(x + 1, y);     // W corner.
