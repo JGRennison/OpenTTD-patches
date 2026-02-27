@@ -80,7 +80,11 @@ namespace TupleCmdDataDetail {
 template <typename Parent, typename... T>
 void TupleCmdData<Parent, T...>::SerialisePayload(const CommandPayloadBase *ptr, BufferSerialisationRef buffer)
 {
-	buffer.Send_generic(static_cast<const Self *>(ptr)->values);
+	const Self *self = static_cast<const Self *>(ptr);
+	auto handler = [&]<size_t... Tindices>(std::index_sequence<Tindices...>) {
+		((buffer.Send_generic(self->GetValue<Tindices>())), ...);
+	};
+	handler(std::make_index_sequence<ValueCount>{});
 }
 
 template <typename Parent, typename... T>
@@ -92,7 +96,10 @@ void TupleCmdData<Parent, T...>::SanitisePayloadStrings(CommandPayloadBase *ptr,
 template <typename Parent, typename... T>
 bool TupleCmdData<Parent, T...>::Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation)
 {
-	buffer.Recv_generic(this->values, default_string_validation);
+	auto handler = [&]<size_t... Tindices>(std::index_sequence<Tindices...>) {
+		((buffer.Recv_generic(this->GetValue<Tindices>(), default_string_validation)), ...);
+	};
+	handler(std::make_index_sequence<ValueCount>{});
 	return true;
 }
 

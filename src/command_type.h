@@ -1074,6 +1074,34 @@ struct CommandProcTupleAdapter {
 template <typename... T>
 struct CmdDataT;
 
+namespace TupleCmdDataDetail {
+	template <size_t I, typename T>
+	struct TupleCmdDataValue {
+		T data;
+
+		bool operator==(TupleCmdDataValue const &) const = default;
+	};
+
+	template <class IndexSequence, typename... T>
+	struct TupleCmdDataValueList;
+
+	template <size_t... I, typename... T>
+	struct TupleCmdDataValueList<std::index_sequence<I...>, T...> : public TupleCmdDataValue<I, T>... {
+		using Types = TypeList<T...>;
+
+		template <size_t IDX>
+		using ElementType = TupleCmdDataValue<IDX, std::tuple_element_t<IDX, Types>>;
+
+		template <size_t IDX>
+		constexpr auto &GetValue() { ElementType<IDX> *elem = this; return elem->data; }
+
+		template <size_t IDX>
+		constexpr const auto &GetValue() const { const ElementType<IDX> *elem = this; return elem->data; }
+
+		bool operator==(TupleCmdDataValueList const &) const = default;
+	};
+};
+
 template <typename Parent, typename... T>
 struct EMPTY_BASES TupleCmdData : public CommandPayloadBase {
 	static constexpr bool ValueTupleCmdDataTag = true;
@@ -1093,30 +1121,26 @@ struct EMPTY_BASES TupleCmdData : public CommandPayloadBase {
 
 	static const CommandPayloadBase::Operations operations;
 
-	Tuple values;
+	TupleCmdDataDetail::TupleCmdDataValueList<std::index_sequence_for<T...>, T...> values;
 
 	template <typename... Args>
-	TupleCmdData(Args&& ... args) : CommandPayloadBase(RealParent::operations), values(std::forward<Args>(args)...) {}
-
-	TupleCmdData(Tuple&& values) : CommandPayloadBase(RealParent::operations), values(std::move(values)) {}
+	TupleCmdData(Args&& ... args) : CommandPayloadBase(RealParent::operations), values({ std::forward<Args>(args)... }) {}
 
 	static void SerialisePayload(const CommandPayloadBase *ptr, BufferSerialisationRef buffer);
 	static void SanitisePayloadStrings(CommandPayloadBase *ptr, StringValidationSettings settings);
 	bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
 
 	template <size_t IDX>
-	constexpr auto &GetValue() { return std::get<IDX>(this->values); }
+	constexpr auto &GetValue() { return this->values.template GetValue<IDX>(); }
 
 	template <size_t IDX>
-	constexpr const auto &GetValue() const { return std::get<IDX>(this->values); }
+	constexpr const auto &GetValue() const { return this->values.template GetValue<IDX>(); }
 
 	bool operator==(const Self &other) const { return this->values == other.values; }
 
 	static RealParent Make(T... args)
 	{
-		RealParent out;
-		out.values = Tuple(std::forward<T>(args)...);
-		return out;
+		return { TupleCmdDataDetail::TupleCmdDataValueList<std::index_sequence_for<T...>, T...>{ std::forward<T>(args)... } };
 	}
 };
 

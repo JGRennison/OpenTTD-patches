@@ -92,7 +92,7 @@ struct PayloadChecker {
 template <Commands Cmd>
 bool TestCommandPayload(const typename CmdPayload<Cmd>::Tuple &values, std::initializer_list<uint8_t> expected)
 {
-	return TestGeneralCommandPayload<Cmd>(CmdPayload<Cmd>(values), PayloadChecker{expected});
+	return TestGeneralCommandPayload<Cmd>(std::apply(CmdPayload<Cmd>::Make, values), PayloadChecker{expected});
 }
 
 TEST_CASE("CmdDataT simple tests")
