@@ -40,12 +40,6 @@ namespace TupleCmdDataDetail {
 		}
 	}
 
-	template <typename T, size_t... Tindices>
-	void SanitiseStringsTuple(const T &payload, StringValidationSettings settings, std::index_sequence<Tindices...>)
-	{
-		((SanitiseGeneric(payload.template GetValue<Tindices>(), settings)), ...);
-	}
-
 	template<typename T, size_t I, size_t N, size_t... integers>
 	struct NonStringTypeIndexSequenceHelper {
 		using type = std::conditional_t<
@@ -78,22 +72,6 @@ namespace TupleCmdDataDetail {
 };
 
 template <typename Parent, typename... T>
-void TupleCmdData<Parent, T...>::SerialisePayload(const CommandPayloadBase *ptr, BufferSerialisationRef buffer)
-{
-	const Self *self = static_cast<const Self *>(ptr);
-	auto handler = [&]<size_t... Tindices>(std::index_sequence<Tindices...>) {
-		((buffer.Send_generic(self->GetValue<Tindices>())), ...);
-	};
-	handler(std::make_index_sequence<ValueCount>{});
-}
-
-template <typename Parent, typename... T>
-void TupleCmdData<Parent, T...>::SanitisePayloadStrings(CommandPayloadBase *ptr, StringValidationSettings settings)
-{
-	TupleCmdDataDetail::SanitiseStringsTuple(*static_cast<Self *>(ptr), settings, std::index_sequence_for<T...>{});
-}
-
-template <typename Parent, typename... T>
 bool TupleCmdData<Parent, T...>::Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation)
 {
 	auto handler = [&]<size_t... Tindices>(std::index_sequence<Tindices...>) {
@@ -101,22 +79,6 @@ bool TupleCmdData<Parent, T...>::Deserialise(DeserialisationBuffer &buffer, Stri
 	};
 	handler(std::make_index_sequence<ValueCount>{});
 	return true;
-}
-
-template <typename Parent, typename T>
-void TupleRefCmdData<Parent, T>::SerialisePayload(const CommandPayloadBase *ptr, BufferSerialisationRef buffer)
-{
-	const Self *self = static_cast<const Self *>(ptr);
-	auto handler = [&]<size_t... Tindices>(std::index_sequence<Tindices...>) {
-		((buffer.Send_generic(self->GetValue<Tindices>())), ...);
-	};
-	handler(std::make_index_sequence<Parent::ValueCount>{});
-}
-
-template <typename Parent, typename T>
-void TupleRefCmdData<Parent, T>::SanitisePayloadStrings(CommandPayloadBase *ptr, StringValidationSettings settings)
-{
-	TupleCmdDataDetail::SanitiseStringsTuple(*static_cast<Self *>(ptr), settings, std::make_index_sequence<Parent::ValueCount>{});
 }
 
 template <typename Parent, typename T>

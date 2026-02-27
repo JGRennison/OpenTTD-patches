@@ -1126,8 +1126,6 @@ struct EMPTY_BASES TupleCmdData : public CommandPayloadBase {
 	template <typename... Args>
 	TupleCmdData(Args&& ... args) : CommandPayloadBase(RealParent::operations), values({ std::forward<Args>(args)... }) {}
 
-	static void SerialisePayload(const CommandPayloadBase *ptr, BufferSerialisationRef buffer);
-	static void SanitisePayloadStrings(CommandPayloadBase *ptr, StringValidationSettings settings);
 	bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
 
 	template <size_t IDX>
@@ -1225,8 +1223,6 @@ private:
 public:
 	static inline constexpr MakeHelper<Types> Make{};
 
-	static void SerialisePayload(const CommandPayloadBase *ptr, BufferSerialisationRef buffer);
-	static void SanitisePayloadStrings(CommandPayloadBase *ptr, StringValidationSettings settings);
 	bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
 
 	template <size_t IDX>

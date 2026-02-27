@@ -656,7 +656,7 @@ static void CommandFormatDebugSummarySimpleSkipStrings(const CommandPayloadBase 
 	CommandFormatDebugSummaryUsingDescriptor(ptr, output, true);
 }
 
-struct CommandPayloadBaseOperationsBuilder {
+struct PayloadOpsBuilder {
 	template <typename T>
 	static CommandPayloadBaseUniquePtr Cloner(const CommandPayloadBase *ptr)
 	{
@@ -669,6 +669,30 @@ struct CommandPayloadBaseOperationsBuilder {
 	{
 		static_assert(std::is_final_v<T>);
 		delete static_cast<T *>(ptr);
+	}
+
+	template <typename T>
+	static void SerialiseTuplePayload(const CommandPayloadBase *ptr, BufferSerialisationRef buffer)
+	{
+		static_assert(std::is_final_v<T>);
+		static_assert(PayloadHasTupleCmdDataTag<T>);
+		const T *payload = static_cast<const T *>(ptr);
+		auto handler = [&]<size_t... Tindices>(std::index_sequence<Tindices...>) {
+			((buffer.Send_generic(payload->template GetValue<Tindices>())), ...);
+		};
+		handler(std::make_index_sequence<T::ValueCount>{});
+	}
+
+	template <typename T>
+	static void SanitiseTuplePayloadStrings(CommandPayloadBase *ptr, StringValidationSettings settings)
+	{
+		static_assert(std::is_final_v<T>);
+		static_assert(PayloadHasTupleCmdDataTag<T>);
+		T *payload = static_cast<T *>(ptr);
+		auto handler = [&]<size_t... Tindices>(std::index_sequence<Tindices...>) {
+			((TupleCmdDataDetail::SanitiseGeneric(payload->template GetValue<Tindices>(), settings)), ...);
+		};
+		handler(std::make_index_sequence<T::ValueCount>{});
 	}
 
 	template <typename T>
@@ -727,7 +751,9 @@ struct CommandPayloadBaseOperationsBuilder {
 	static constexpr CommandPayloadBase::Operations BuildCustom()
 	{
 		CommandPayloadBase::SerialiseFn serialise;
-		if constexpr (requires { T::SerialisePayload(nullptr, std::declval<struct BufferSerialisationRef>()); }) {
+		if constexpr (PayloadHasTupleCmdDataTag<T>) {
+			serialise = &SerialiseTuplePayload<T>;
+		} else if constexpr (requires { T::SerialisePayload(nullptr, std::declval<struct BufferSerialisationRef>()); }) {
 			serialise = &T::SerialisePayload;
 		} else {
 			serialise = &Serialiser<T>;
@@ -735,7 +761,9 @@ struct CommandPayloadBaseOperationsBuilder {
 
 		CommandPayloadBase::SanitiseStringsFn sanitise_strings = nullptr;
 		if constexpr (T::HasStringSanitiser) {
-			if constexpr (requires { T::SanitisePayloadStrings(nullptr, StringValidationSettings{}); }) {
+			if constexpr (PayloadHasTupleCmdDataTag<T>) {
+				sanitise_strings = &SanitiseTuplePayloadStrings<T>;
+			} else if constexpr (requires { T::SanitisePayloadStrings(nullptr, StringValidationSettings{}); }) {
 				sanitise_strings = &T::SanitisePayloadStrings;
 			} else {
 				sanitise_strings = &SanitiseStrings<T>;
@@ -803,11 +831,11 @@ struct CommandPayloadBaseOperationsBuilder {
 };
 
 template<typename T>
-const CommandPayloadBase::Operations CommandPayloadSerialisable<T>::operations = CommandPayloadBaseOperationsBuilder::Build<T>();
+const CommandPayloadBase::Operations CommandPayloadSerialisable<T>::operations = PayloadOpsBuilder::Build<T>();
 
 template <typename Parent, typename... T>
-const CommandPayloadBase::Operations TupleCmdData<Parent, T...>::operations = CommandPayloadBaseOperationsBuilder::Build<TupleCmdData<Parent, T...>::RealParent>();
+const CommandPayloadBase::Operations TupleCmdData<Parent, T...>::operations = PayloadOpsBuilder::Build<TupleCmdData<Parent, T...>::RealParent>();
 
 /* This isn't directly referenced in the command table, so ensure it is instantiated here. */
 template<>
-const CommandPayloadBase::Operations CommandPayloadSerialisable<TraceRestrictFollowUpCmdData>::operations = CommandPayloadBaseOperationsBuilder::Build<TraceRestrictFollowUpCmdData>();
+const CommandPayloadBase::Operations CommandPayloadSerialisable<TraceRestrictFollowUpCmdData>::operations = PayloadOpsBuilder::Build<TraceRestrictFollowUpCmdData>();
