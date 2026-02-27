@@ -958,7 +958,6 @@ static inline CommandCost CanBuildChunnel(TileIndex tile, DiagDirection directio
 				/* Pass the water and find a proper shore tile that potentially
 				 * could have a tunnel portal behind. */
 				for (;;) {
-					end_tileh = GetTileSlope(tile);
 					if (direction == DIAGDIR_NE && (end_tileh & SLOPE_NE) == SLOPE_NE) break;
 					if (direction == DIAGDIR_SE && (end_tileh & SLOPE_SE) == SLOPE_SE) break;
 					if (direction == DIAGDIR_SW && (end_tileh & SLOPE_SW) == SLOPE_SW) break;
@@ -975,6 +974,7 @@ static inline CommandCost CanBuildChunnel(TileIndex tile, DiagDirection directio
 
 					tile += delta;
 					if (!IsValidTile(tile)) return CommandCost(STR_ERROR_CHUNNEL_THROUGH_MAP_BORDER);
+					end_tileh = GetTileSlope(tile);
 					_build_tunnel_endtile = tile;
 					sea_tiles++;
 				}
