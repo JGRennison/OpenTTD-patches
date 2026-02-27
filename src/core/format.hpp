@@ -144,14 +144,28 @@ public:
 };
 
 namespace format_detail {
-	template <typename T>
-	constexpr auto &preprocess_format_arg(T& arg)
+	template <typename T> requires (!std::is_enum_v<T>)
+	constexpr auto &preprocess_format_arg(T &arg)
 	{
 		if constexpr (FmtAsBase<T>) {
 			return arg.base_ref();
 		} else {
 			return arg;
 		}
+	}
+
+	template <typename T> requires std::is_enum_v<T>
+	constexpr auto preprocess_format_arg(T &arg)
+	{
+		return to_underlying(arg);
+	}
+
+	template<class T>
+	constexpr T &unmove_helper(T &&t)
+	{
+		/* Cast to lvalue, as this is required by fmt::make_format_args.
+		 * This is for the enum to_underlying above. */
+		return static_cast<T &>(t);
 	}
 };
 
@@ -161,7 +175,7 @@ namespace format_detail {
 template <typename... T>
 constexpr auto make_preprocessed_format_args(T&... args)
 {
-	return fmt::make_format_args(format_detail::preprocess_format_arg(args)...);
+	return fmt::make_format_args(format_detail::unmove_helper(format_detail::preprocess_format_arg(args))...);
 }
 
 /**
