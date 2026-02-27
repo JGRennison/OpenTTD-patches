@@ -593,9 +593,9 @@ int32_t IntSettingDesc::GetDefaultValue() const
  * Get the min/max range for the setting.
  * @return The min/max range.
  */
-std::tuple<int32_t, uint32_t> IntSettingDesc::GetRange() const
+std::pair<int32_t, uint32_t> IntSettingDesc::GetRange() const
 {
-	return this->get_range_cb != nullptr ? this->get_range_cb(*this) : std::tuple(this->min, this->max);
+	return this->get_range_cb != nullptr ? this->get_range_cb(*this) : std::make_pair(this->min, this->max);
 }
 
 /**
@@ -1417,7 +1417,7 @@ static void ChangeMinutesPerYear(int32_t new_value)
 	}
 }
 
-static std::tuple<int32_t, uint32_t> GetServiceIntervalRange(const IntSettingDesc &)
+static std::pair<int32_t, uint32_t> GetServiceIntervalRange(const IntSettingDesc &)
 {
 	VehicleDefaultSettings *vds;
 	if (_game_mode == GM_MENU || !Company::IsValidID(_current_company)) {

@@ -185,7 +185,7 @@ struct IntSettingDesc : SettingDesc {
 	using GetHelpCallback = StringID(const IntSettingDesc &sd);
 	using GetValueParamsCallback = std::pair<StringParameter, StringParameter>(const IntSettingDesc &sd, int32_t value);
 	using GetDefaultValueCallback = int32_t(const IntSettingDesc &sd);
-	using GetRangeCallback = std::tuple<int32_t, uint32_t>(const IntSettingDesc &sd);
+	using GetRangeCallback = std::pair<int32_t, uint32_t>(const IntSettingDesc &sd);
 
 	/**
 	 * A check to be performed before the setting gets changed. The passed integer may be
@@ -236,7 +236,7 @@ struct IntSettingDesc : SettingDesc {
 	StringID GetHelp() const;
 	std::pair<StringParameter, StringParameter> GetValueParams(int32_t value) const;
 	int32_t GetDefaultValue() const;
-	std::tuple<int32_t, uint32_t> GetRange() const;
+	std::pair<int32_t, uint32_t> GetRange() const;
 
 	/**
 	 * Check whether this setting is a boolean type setting.
