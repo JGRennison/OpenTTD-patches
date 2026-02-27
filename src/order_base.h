@@ -243,10 +243,7 @@ public:
 		return *this;
 	}
 
-	constexpr auto GetCmdRefTuple()
-	{
-		return std::tie(this->type, this->flags, this->dest);
-	}
+	static constexpr auto GetCmdRefFields() { return std::make_tuple(&Order::type, &Order::flags, &Order::dest); }
 	static constexpr char CMD_TUPLE_FMT[] = "t: {:X}, f: {:X}, d: {}";
 
 	/**

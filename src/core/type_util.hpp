@@ -70,12 +70,14 @@ namespace std {
 };
 
 template <typename T>
-struct TupleTypeAdapter {
+struct MemberPtrTupleTypeAdapter {
 private:
 	template <typename H> struct TupleHelper;
 
-	template <typename... Targs>
-	struct TupleHelper<std::tuple<Targs...>> {
+	template <typename Tobj, typename... Targs>
+	struct TupleHelper<std::tuple<Targs Tobj::*...>> {
+		static constexpr size_t Count = sizeof...(Targs);
+		using Object = Tobj;
 		using Value = std::tuple<std::remove_cvref_t<Targs>...>;
 		using Reference = std::tuple<std::remove_cvref_t<Targs> &...>;
 		using ConstReference = std::tuple<const std::remove_cvref_t<Targs> &...>;
@@ -83,10 +85,21 @@ private:
 	using Helper = TupleHelper<T>;
 
 public:
+	static constexpr size_t Count = Helper::Count;
+	using Object = typename Helper::Object;
 	using Value = typename Helper::Value;
 	using Reference = typename Helper::Reference;
 	using ConstReference = typename Helper::ConstReference;
 };
+
+template <typename Obj, typename T>
+static constexpr auto MemberPtrsTie(Obj &object, const T &ptrs)
+{
+	auto handler = [&]<size_t... Tindices>(std::index_sequence<Tindices...>) -> auto {
+		return std::tie(object.*std::get<Tindices>(ptrs)...);
+	};
+	return handler(std::make_index_sequence<MemberPtrTupleTypeAdapter<T>::Count>{});
+}
 
 namespace TypesDetail {
 	template <typename TFind, typename... T>

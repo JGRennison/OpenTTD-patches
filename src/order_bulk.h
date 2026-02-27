@@ -61,7 +61,7 @@ public:
 	void Insert(const Order &order)
 	{
 		this->OpCode(BulkOrderOp::Insert);
-		this->serialiser.Send_generic(const_cast<Order &>(order).GetCmdRefTuple());
+		this->serialiser.Send_generic_member_ptrs(order, Order::GetCmdRefFields());
 	}
 
 	void Modify(ModifyOrderFlags mof, uint16_t data, CargoType cargo_id, std::string_view text)

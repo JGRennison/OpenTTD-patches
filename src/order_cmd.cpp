@@ -954,7 +954,7 @@ uint GetOrderDistance(const Order *prev, const Order *cur, const Vehicle *v, int
 CommandCost CmdInsertOrder(DoCommandFlags flags, const InsertOrderCmdData &data)
 {
 	Order new_order{};
-	new_order.GetCmdRefTuple() = data.new_order;
+	MemberPtrsTie(new_order, Order::GetCmdRefFields()) = data.new_order;
 
 	return CmdInsertOrderIntl(flags, Vehicle::GetIfValid(data.veh), data.sel_ord, new_order, {});
 }
@@ -4485,8 +4485,7 @@ CommandCost CmdBulkOrder(DoCommandFlags flags, const BulkOrderCmdData &cmd_data)
 
 				case BulkOrderOp::Insert: {
 					Order new_order{};
-					auto ref_tuple = new_order.GetCmdRefTuple();
-					buf.Recv_generic(ref_tuple, {});
+					buf.Recv_generic_member_ptrs(new_order, Order::GetCmdRefFields());
 					if (buf.error) return CMD_ERROR;
 					last_result = CmdInsertOrderIntl(flags, v, insert_pos, new_order, {});
 					auto result_pos = last_result.GetResultData<VehicleOrderID>();

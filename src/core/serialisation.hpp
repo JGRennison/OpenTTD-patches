@@ -204,6 +204,15 @@ struct BufferSerialisationHelper {
 		(this->Send_generic(data), ...);
 	}
 
+	template <typename V, typename... X>
+	void Send_generic_member_ptrs(const V& object, std::tuple<X V::*...> ptrs)
+	{
+		auto handler = [&]<size_t... Tindices>(std::index_sequence<Tindices...>) {
+			((this->Send_generic(object.*std::get<Tindices>(ptrs))), ...);
+		};
+		handler(std::index_sequence_for<X...>{});
+	}
+
 	size_t GetSendOffset() const
 	{
 		T *self = const_cast<T *>(static_cast<const T *>(this));
@@ -549,6 +558,15 @@ public:
 	void Recv_generic_seq(StringValidationSettings settings, V&... data)
 	{
 		(this->Recv_generic(data, settings), ...);
+	}
+
+	template <typename V, typename... X>
+	void Recv_generic_member_ptrs(V& object, std::tuple<X V::*...> ptrs, StringValidationSettings settings = StringValidationSetting::ReplaceWithQuestionMark)
+	{
+		auto handler = [&]<size_t... Tindices>(std::index_sequence<Tindices...>) {
+			((this->Recv_generic(object.*std::get<Tindices>(ptrs))), ...);
+		};
+		handler(std::index_sequence_for<X...>{});
 	}
 
 	struct DeserialisationBuffer BorrowAsDeserialisationBuffer();

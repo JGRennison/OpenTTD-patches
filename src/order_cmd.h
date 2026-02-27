@@ -22,13 +22,15 @@ enum class ReverseOrderOperation : uint8_t {
 struct InsertOrderCmdData final : public CommandPayloadSerialisable<InsertOrderCmdData> {
 	static constexpr bool HasStringSanitiser = false;
 
+	using OrderFields = MemberPtrTupleTypeAdapter<decltype(Order::GetCmdRefFields())>;
+
 	VehicleID veh;
 	VehicleOrderID sel_ord; // This may be INVALID_VEH_ORDER_ID to append to the end of the order list
-	typename TupleTypeAdapter<decltype(std::declval<Order>().GetCmdRefTuple())>::Value new_order;
+	OrderFields::Value new_order;
 
 	InsertOrderCmdData() = default;
 	InsertOrderCmdData(VehicleID veh, VehicleOrderID sel_ord, const Order &order) :
-			veh(veh), sel_ord(sel_ord), new_order(const_cast<Order &>(order).GetCmdRefTuple()) {}
+			veh(veh), sel_ord(sel_ord), new_order(MemberPtrsTie(order, Order::GetCmdRefFields())) {}
 
 	void SerialisePayload(BufferSerialisationRef buffer) const;
 	bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
