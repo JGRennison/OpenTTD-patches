@@ -1339,6 +1339,30 @@ uint ConvertDisplayQuantityToCargoQuantity(CargoType cargo, uint quantity)
 }
 
 /**
+ * Convert the given ticks to the timetable display unit.
+ * @param time the ticks to convert
+ * @return the converted time.
+ */
+uint ConvertTicksToDisplayTimeUnit(uint time)
+{
+	uint t = time;
+	if (_settings_game.game_time.time_in_minutes) t /= _settings_game.game_time.ticks_per_minute;
+	return t;
+}
+
+/**
+ * Convert the given display time to ticks.
+ * @param time the time to convert
+ * @return the converted time.
+ */
+uint ConvertDisplayTimeUnitToTicks(uint time)
+{
+	uint t = time;
+	if (_settings_game.game_time.time_in_minutes) t *= _settings_game.game_time.ticks_per_minute;
+	return t;
+}
+
+/**
  * Decodes an encoded string during FormatString.
  * @param consumer The encoded string.
  * @param game_script Set if decoding a GameScript-encoded string. This affects how string IDs are handled.
