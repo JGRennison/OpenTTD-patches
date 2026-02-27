@@ -473,6 +473,19 @@ void TraceRestrictProgram::Execute(const Train *v, const TraceRestrictProgramInp
 						result = TestStationCondition(v->last_station_visited, item);
 						break;
 
+					case TRIT_COND_ORDERS_INCLUDE: {
+						if (v->orders == nullptr) break;
+						if (v->orders->GetNumOrders() == 0) break;
+
+						for (const Order *order = v->orders->GetFirstOrder(); order != v->orders->GetLastOrder(); order = v->orders->GetNext(order)) {
+							result = TestOrderCondition(order, item);
+							if (result) {
+								break;
+							}
+						}
+						break;
+					}
+
 					case TRIT_COND_CARGO: {
 						bool have_cargo = false;
 						for (const Vehicle *v_iter = v; v_iter != nullptr; v_iter = v_iter->Next()) {
@@ -1277,6 +1290,7 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictPr
 				case TRIT_COND_CURRENT_ORDER:
 				case TRIT_COND_NEXT_ORDER:
 				case TRIT_COND_LAST_STATION:
+				case TRIT_COND_ORDERS_INCLUDE:
 					if (invalid_order_condition()) return unknown_instruction();
 					break;
 
@@ -1447,6 +1461,7 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictPr
 				case TRIT_COND_CURRENT_ORDER:
 				case TRIT_COND_NEXT_ORDER:
 				case TRIT_COND_LAST_STATION:
+				case TRIT_COND_ORDERS_INCLUDE:
 				case TRIT_COND_TARGET_DIRECTION:
 					actions_used_flags |= TRPAUF_ORDER_CONDITIONALS;
 					break;
@@ -2804,7 +2819,8 @@ void TraceRestrictRemoveDestinationID(TraceRestrictOrderCondAuxField type, Desti
 			TraceRestrictInstructionItemRef item = iter.InstructionRef(); // note this is a reference wrapper
 			if (item.GetType() == TRIT_COND_CURRENT_ORDER ||
 					item.GetType() == TRIT_COND_NEXT_ORDER ||
-					item.GetType() == TRIT_COND_LAST_STATION) {
+					item.GetType() == TRIT_COND_LAST_STATION ||
+					item.GetType() == TRIT_COND_ORDERS_INCLUDE) {
 				if (item.GetAuxField() == type && item.GetValue() == index.base()) {
 					SetTraceRestrictValueDefault(item, TRVT_ORDER); // this updates the instruction in-place
 				}
