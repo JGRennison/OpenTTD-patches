@@ -737,24 +737,10 @@ CommandCost DoCommandPInternal(Commands cmd, TileIndex tile, const CommandPayloa
 
 CommandLargeResultBase::~CommandLargeResultBase() {}
 
-CommandCost::CommandCost(const CommandCost &other)
+void CommandCost::CopyFromHandleAuxiliary()
 {
-	*this = other;
-}
-
-CommandCost &CommandCost::operator=(const CommandCost &other)
-{
-	this->cost = other.cost;
-	this->expense_type = other.expense_type;
-	this->flags = other.flags;
-	this->owner = other.owner;
-	this->message = other.message;
-	if (other.GetInlineType() == CommandCostInlineType::AuxiliaryData) {
-		this->inl.aux_data = new CommandCostAuxiliaryData(*other.inl.aux_data);
-	} else {
-		this->inl = other.inl;
-	}
-	return *this;
+	/* Clone auxiliary data after CommandCost copy init/assignment */
+	this->inl.aux_data = new CommandCostAuxiliaryData(*this->inl.aux_data);
 }
 
 /**

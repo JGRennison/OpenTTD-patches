@@ -143,6 +143,38 @@ class CommandCost {
 	void AllocAuxData();
 	bool AddInlineData(CommandCostInlineType inl_type);
 
+	constexpr void ReleaseAuxiliary()
+	{
+		if (this->GetInlineType() == CommandCostInlineType::AuxiliaryData) delete this->inl.aux_data;
+	}
+
+	constexpr void CopyMainFields(const CommandCost &other) noexcept
+	{
+		this->cost = other.cost;
+		this->expense_type = other.expense_type;
+		this->flags = other.flags;
+		this->owner = other.owner;
+		this->message = other.message;
+	}
+
+	constexpr void MoveFrom(CommandCost &&other) noexcept
+	{
+		this->CopyMainFields(other);
+		this->inl = other.inl;
+		other.flags = CCIF_NONE; // Clear any ownership of other.inl.aux_data
+	}
+
+	void CopyFromHandleAuxiliary();
+
+	void CopyFrom(const CommandCost &other)
+	{
+		this->CopyMainFields(other);
+		this->inl = other.inl;
+		if (this->GetInlineType() == CommandCostInlineType::AuxiliaryData) {
+			this->CopyFromHandleAuxiliary();
+		}
+	}
+
 public:
 	/**
 	 * Creates a command cost return with no cost and no error
@@ -154,29 +186,33 @@ public:
 	 */
 	explicit constexpr CommandCost(StringID msg) : cost(0), expense_type(INVALID_EXPENSES), flags(CCIF_NONE), message(msg) {}
 
-	CommandCost(const CommandCost &other);
-	CommandCost &operator=(const CommandCost &other);
+	CommandCost(const CommandCost &other)
+	{
+		this->CopyFrom(other);
+	}
+
+	CommandCost &operator=(const CommandCost &other)
+	{
+		this->ReleaseAuxiliary();
+		this->CopyFrom(other);
+		return *this;
+	}
 
 	constexpr CommandCost(CommandCost &&other) noexcept
 	{
-		*this = std::move(other);
+		this->MoveFrom(std::move(other));
 	}
 
 	constexpr CommandCost &operator=(CommandCost &&other) noexcept
 	{
-		this->cost = other.cost;
-		this->expense_type = other.expense_type;
-		this->flags = other.flags;
-		this->owner = other.owner;
-		this->message = other.message;
-		this->inl = other.inl;
-		other.flags = CCIF_NONE; // Clear any ownership of other.inl.aux_data
+		this->ReleaseAuxiliary();
+		this->MoveFrom(std::move(other));
 		return *this;
 	}
 
 	constexpr ~CommandCost()
 	{
-		if (this->GetInlineType() == CommandCostInlineType::AuxiliaryData) delete this->inl.aux_data;
+		this->ReleaseAuxiliary();
 	}
 
 	/**
