@@ -115,7 +115,7 @@ class CommandCost {
 		AdditionalCash,
 	};
 
-	CommandCostInlineType GetInlineType() const { return static_cast<CommandCostInlineType>(this->flags >> 4); }
+	constexpr CommandCostInlineType GetInlineType() const { return static_cast<CommandCostInlineType>(this->flags >> 4); }
 
 	void SetInlineType(CommandCostInlineType inl_type)
 	{
@@ -147,22 +147,22 @@ public:
 	/**
 	 * Creates a command cost return with no cost and no error
 	 */
-	CommandCost() : cost(0), expense_type(INVALID_EXPENSES), flags(CCIF_SUCCESS), message(INVALID_STRING_ID) {}
+	constexpr CommandCost() : cost(0), expense_type(INVALID_EXPENSES), flags(CCIF_SUCCESS), message(INVALID_STRING_ID) {}
 
 	/**
 	 * Creates a command return value the is failed with the given message
 	 */
-	explicit CommandCost(StringID msg) : cost(0), expense_type(INVALID_EXPENSES), flags(CCIF_NONE), message(msg) {}
+	explicit constexpr CommandCost(StringID msg) : cost(0), expense_type(INVALID_EXPENSES), flags(CCIF_NONE), message(msg) {}
 
 	CommandCost(const CommandCost &other);
 	CommandCost &operator=(const CommandCost &other);
 
-	CommandCost(CommandCost &&other) noexcept
+	constexpr CommandCost(CommandCost &&other) noexcept
 	{
 		*this = std::move(other);
 	}
 
-	CommandCost &operator=(CommandCost &&other) noexcept
+	constexpr CommandCost &operator=(CommandCost &&other) noexcept
 	{
 		this->cost = other.cost;
 		this->expense_type = other.expense_type;
@@ -174,7 +174,7 @@ public:
 		return *this;
 	}
 
-	~CommandCost()
+	constexpr ~CommandCost()
 	{
 		if (this->GetInlineType() == CommandCostInlineType::AuxiliaryData) delete this->inl.aux_data;
 	}
@@ -201,7 +201,7 @@ public:
 	 * @param ex_t the expense type
 	 * @param cst the initial cost of this command
 	 */
-	CommandCost(ExpensesType ex_t, const Money &cst) : cost(cst), expense_type(ex_t), flags(CCIF_SUCCESS), message(INVALID_STRING_ID) {}
+	constexpr CommandCost(ExpensesType ex_t, const Money &cst) : cost(cst), expense_type(ex_t), flags(CCIF_SUCCESS), message(INVALID_STRING_ID) {}
 
 	/**
 	 * Set the 'owner' (the originator) of this error message. This is used to show a company owner's face if you
@@ -441,7 +441,7 @@ CommandCost CommandCostWithParam(StringID str, StringParameterAsBase auto value)
  * Other functions just need to return this error if there is an error,
  * which doesn't need to specific by a StringID.
  */
-static const CommandCost CMD_ERROR = CommandCost(INVALID_STRING_ID);
+static constexpr CommandCost CMD_ERROR = CommandCost(INVALID_STRING_ID);
 
 /**
  * List of commands.
