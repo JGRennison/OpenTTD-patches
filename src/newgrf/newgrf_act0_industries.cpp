@@ -19,9 +19,10 @@
 #include "newgrf_stringmapping.h"
 
 #include "table/strings.h"
-#include "../table/build_industry.h"
 
 #include "../safeguards.h"
+
+extern const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET];
 
 /**
  * Ignore an industry tile property
