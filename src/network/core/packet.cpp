@@ -255,3 +255,7 @@ bool SubPacketDeserialiser::CanDeserialiseBytes(size_t bytes_to_read, bool raise
 
 	return true;
 }
+
+template struct BufferDeserialisationHelper<struct Packet>;
+template struct BufferDeserialisationHelper<struct SubPacketDeserialiser>;
+template struct BufferSerialisationHelper<struct Packet>;

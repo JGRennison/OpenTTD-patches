@@ -647,4 +647,10 @@ void BufferDeserialisationHelper<T>::ReturnDeserialisationBuffer(Deserialisation
 	b.buffer = nullptr;
 }
 
+extern template struct BufferDeserialisationHelper<struct DeserialisationBuffer>;
+extern template struct BufferDeserialisationHelper<struct Packet>;
+extern template struct BufferDeserialisationHelper<struct SubPacketDeserialiser>;
+extern template struct BufferSerialisationHelper<struct BufferSerialisationRef>;
+extern template struct BufferSerialisationHelper<struct Packet>;
+
 #endif /* SERIALISATION_HPP */

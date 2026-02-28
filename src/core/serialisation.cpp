@@ -204,3 +204,6 @@ void BufferRecvStringValidate(std::string &buffer, StringValidationSettings sett
 {
 	StrMakeValidInPlace(buffer, settings);
 }
+
+template struct BufferDeserialisationHelper<DeserialisationBuffer>;
+template struct BufferSerialisationHelper<BufferSerialisationRef>;
