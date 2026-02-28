@@ -175,17 +175,20 @@ static constexpr CommandExecTrampoline *MakeTrampoline()
 }
 
 template <typename T>
+CommandPayloadBaseUniquePtr DeserialiseCmdPayload(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation)
+{
+	auto payload = std::make_unique<T>();
+	if (!payload->Deserialise(buffer, default_string_validation)) payload = nullptr;
+	return CommandPayloadBaseUniquePtr(payload.release());
+}
+
+template <typename T>
 static constexpr CommandPayloadDeserialiser *MakePayloadDeserialiser()
 {
 	if constexpr (UseSimplePath<T>() && PayloadHasValueTupleCmdDataTag<T>) {
 		return nullptr; // Use the simple path for deserialisation
 	} else {
-		return [](DeserialisationBuffer &buffer, StringValidationSettings default_string_validation) -> CommandPayloadBaseUniquePtr
-		{
-			auto payload = std::make_unique<T>();
-			if (!payload->Deserialise(buffer, default_string_validation)) payload = nullptr;
-			return CommandPayloadBaseUniquePtr(payload.release());
-		};
+		return &DeserialiseCmdPayload<T>;
 	}
 }
 
