@@ -2631,7 +2631,6 @@ bool AfterLoadGame()
 					o->build_date    = CalTime::CurDate();
 					o->town          = type == OBJECT_STATUE ? Town::Get(_m[t].m2) : CalcClosestTownFromTile(t, UINT_MAX);
 					_m[t].m2 = o->index.base();
-					Object::IncTypeCount(type);
 				} else {
 					/* We're at an offset, so get the ID from our "root". */
 					TileIndex northern_tile = t - TileDiffXY(GB(offset, 0, 4), GB(offset, 4, 4));
