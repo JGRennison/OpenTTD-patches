@@ -17,6 +17,7 @@
 #include "debug_desync.h"
 #include "debug_settings.h"
 #include "industry.h"
+#include "object_base.h"
 #include "roadstop_base.h"
 #include "roadveh.h"
 #include "scope_info.h"
@@ -330,6 +331,24 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 				}
 			}
 			i++;
+		}
+
+		std::vector<uint16_t> object_counts;
+		for (const Object *o : Object::Iterate()) {
+			size_t type = static_cast<size_t>(o->type);
+			if (type >= NUM_OBJECTS) {
+				cclog("Object: {} at {} has invalid type {}", o->index, o->location.tile, o->type);
+				continue;
+			}
+			if (type >= object_counts.size()) object_counts.resize(type + 1);
+			object_counts[type]++;
+		}
+		for (size_t type = 0; type < NUM_OBJECTS; type++) {
+			uint16_t value = Object::GetTypeCount(static_cast<ObjectType>(type));
+			uint16_t expected = (type < object_counts.size()) ? object_counts[type] : 0;
+			if (value != expected) {
+				cclog("Object count mismatch for {}: was: {}, expected: {}", type, value, expected);
+			}
 		}
 	}
 
