@@ -54,9 +54,8 @@ public:
 	 * Date data type is an integer value. Use ScriptDate::GetDate to
 	 * compose valid date values for a known year, month and day.
 	 */
-	enum Date {
-		DATE_INVALID = ::EconTime::INVALID_DATE.base(), ///< A value representing an invalid date.
-	};
+	using Date = typename ::EconTime::Date::BaseType;
+	static constexpr Date DATE_INVALID = ::EconTime::INVALID_DATE.base(); ///< A value representing an invalid date.
 
 	/**
 	 * Validates if a date value represent a valid date.
