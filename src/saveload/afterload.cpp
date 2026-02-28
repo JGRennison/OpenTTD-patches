@@ -282,6 +282,7 @@ static void InitializeWindowsAndCaches()
 
 	/* Count number of objects per type */
 	for (Object *o : Object::Iterate()) {
+		if (o->type >= NUM_OBJECTS) SlErrorCorrupt("Invalid object type");
 		Object::IncTypeCount(o->type);
 	}
 
