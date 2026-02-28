@@ -12,7 +12,7 @@
 #include "stdafx.h"
 #include "command_serialisation.h"
 #include "command_table.h"
-#include "3rdparty/fmt/std.h"
+#include "core/format_variant.hpp"
 
 #include "autoreplace_cmd.h"
 #include "company_cmd.h"

@@ -16,6 +16,7 @@ add_files(
     flatset_type.hpp
     format.cpp
     format.hpp
+    format_variant.hpp
     geometry_func.cpp
     geometry_func.hpp
     geometry_type.hpp

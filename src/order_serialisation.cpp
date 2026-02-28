@@ -28,7 +28,6 @@
 #include "core/serialisation.hpp"
 #include "depot_base.h"
 #include "town.h"
-#include "3rdparty/fmt/std.h"
 #include "3rdparty/nlohmann/json.hpp"
 #include "3rdparty/robin_hood/robin_hood.h"
 

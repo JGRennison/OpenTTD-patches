@@ -11,6 +11,7 @@
 
 #include "../3rdparty/catch2/catch.hpp"
 #include "../core/serialisation.hpp"
+#include "../core/format_variant.hpp"
 
 #include "../core/format.hpp"
 #include "../3rdparty/fmt/ranges.h"

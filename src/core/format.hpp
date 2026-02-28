@@ -10,6 +10,10 @@
 #ifndef FORMAT_HPP
 #define FORMAT_HPP
 
+/* The std::variant in fmt is not very useful as it doesn't indicate which value is being formatted.
+ * Use our own variant formatter in format_variant.hpp. */
+#define FMT_CPP_LIB_VARIANT 0
+
 #if defined(__GNUC__) && (__GNUC__ >= 12)
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Warray-bounds"

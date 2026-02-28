@@ -11,12 +11,13 @@
 
 #include "../3rdparty/catch2/catch.hpp"
 #include "../core/serialisation.hpp"
-
 #include "../core/format.hpp"
+#include "../strings_func.h"
 
 #include "../company_cmd.h"
 #include "../landscape_cmd.h"
 #include "../misc_cmd.h"
+#include "../news_cmd.h"
 #include "../plans_cmd.h"
 #include "../settings_cmd.h"
 #include "../signs_cmd.h"
@@ -151,6 +152,8 @@ TEST_CASE("Command format debug summary")
 	CHECK(get_summary(CmdPayload<CMD_CLEAR_AREA>::Make(TileIndex{0x405}, false)) == "405 (5 x 16), false");
 	CHECK(get_summary(CmdPayload<CMD_CHANGE_SETTING>::Make("setting_name", 1234)) == "setting_name, 1234");
 	CHECK(get_summary(CmdPayload<CMD_PROGRAM_TRACERESTRICT_SIGNAL>::Make(TRACK_Y, TRDCT_MODIFY_ITEM, 5, 0x12345678, "string")) == "track: 1, type: 1 (modify), offset: 5, data: 12345678");
+	CHECK(get_summary(CmdPayload<CMD_CUSTOM_NEWS_ITEM>::Make(NewsType{1}, CompanyID{2}, VehicleID{42}, GetEncodedRawString("test string"))) == "1, 2, (2: 42)");
+	CHECK(get_summary(CmdPayload<CMD_CUSTOM_NEWS_ITEM>::Make(NewsType{1}, CompanyID{2}, IndustryID{42}, GetEncodedRawString("test string"))) == "1, 2, (4: 42)");
 
 	TraceRestrictCreateSlotCmdData data;
 	data.vehtype = VEH_TRAIN;
