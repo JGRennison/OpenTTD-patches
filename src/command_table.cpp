@@ -134,28 +134,8 @@ constexpr bool UseSimplePath()
 	return false;
 }
 
-template <typename T, CommandProcDirect<T> proc, bool no_tile>
-static constexpr CommandExecTrampoline *MakeTrampoline()
-{
-	return [](const CommandExecData &exec_data) -> CommandCost
-	{
-		const T &data = static_cast<const T &>(exec_data.payload);
-		return proc(exec_data.flags, exec_data.tile, data);
-	};
-}
-
-template <typename T, CommandProcDirectNoTile<T> proc, bool no_tile>
-static constexpr CommandExecTrampoline *MakeTrampoline()
-{
-	return [](const CommandExecData &exec_data) -> CommandCost
-	{
-		const T &data = static_cast<const T &>(exec_data.payload);
-		return proc(exec_data.flags, data);
-	};
-}
-
 template <bool no_tile, typename F, typename T, size_t... Tindices>
-CommandCost CommandExecTrampolineTuple(F proc, TileIndex tile, DoCommandFlags flags, const T &payload, std::index_sequence<Tindices...>)
+static inline CommandCost CommandExecTrampolineTuple(F proc, TileIndex tile, DoCommandFlags flags, const T &payload, std::index_sequence<Tindices...>)
 {
 	if constexpr (no_tile) {
 		return proc(flags, payload.template GetValue<Tindices>()...);
@@ -164,14 +144,23 @@ CommandCost CommandExecTrampolineTuple(F proc, TileIndex tile, DoCommandFlags fl
 	}
 }
 
-template <typename T, auto &proc, bool no_tile, typename = std::enable_if_t<PayloadHasTupleCmdDataTag<T>>>
-static constexpr CommandExecTrampoline *MakeTrampoline()
+template <Commands Cmd>
+static CommandCost CmdExecTrampoline(const CommandExecData &exec_data)
 {
-	return [](const CommandExecData &exec_data) -> CommandCost
-	{
-		const T &data = static_cast<const T &>(exec_data.payload);
-		return CommandExecTrampolineTuple<no_tile>(proc, exec_data.tile, exec_data.flags, data, std::make_index_sequence<T::ValueCount>{});
-	};
+	using T = CommandTraits<Cmd>;
+	using H = CommandHandlerTraits<Cmd>;
+	using Payload = typename T::PayloadType;
+	const Payload &data = static_cast<const Payload &>(exec_data.payload);
+	if constexpr (PayloadHasTupleCmdDataTag<typename T::PayloadType>) {
+		return CommandExecTrampolineTuple<T::output_no_tile>(H::proc, exec_data.tile, exec_data.flags, data, std::make_index_sequence<Payload::ValueCount>{});
+	} else if constexpr (std::is_same_v<std::remove_cvref_t<decltype(H::proc)>, CommandProcDirect<Payload>>) {
+		return H::proc(exec_data.flags, exec_data.tile, data);
+	} else if constexpr (std::is_same_v<std::remove_cvref_t<decltype(H::proc)>, CommandProcDirectNoTile<Payload>>) {
+		return H::proc(exec_data.flags, data);
+	} else {
+		static_assert(!H::proc, "Unexpected command proc type");
+		static_assert(false, "Unexpected command proc type");
+	}
 }
 
 template <typename T>
@@ -193,17 +182,19 @@ static constexpr CommandPayloadDeserialiser *MakePayloadDeserialiser()
 }
 
 /* Helpers to generate the master command table from the command traits. */
-template <typename T, typename H>
+template <Commands Cmd>
 inline constexpr CommandInfo CommandFromTrait() noexcept
 {
+	using T = CommandTraits<Cmd>;
+	using H = CommandHandlerTraits<Cmd>;
 	using Payload = typename T::PayloadType;
 	static_assert(std::is_final_v<Payload>);
-	return { MakeTrampoline<Payload, H::proc, T::output_no_tile>(), MakePayloadDeserialiser<Payload>(), Payload::operations, H::name, T::flags, T::type, T::output_no_tile ? CIF_NO_OUTPUT_TILE : CIF_NONE };
+	return { &CmdExecTrampoline<Cmd>, MakePayloadDeserialiser<Payload>(), Payload::operations, H::name, T::flags, T::type, T::output_no_tile ? CIF_NO_OUTPUT_TILE : CIF_NONE };
 };
 
 template <typename T, T... i>
 inline constexpr auto MakeCommandsFromTraits(std::integer_sequence<T, i...>) noexcept {
-	return std::array<CommandInfo, sizeof...(i)>{{ CommandFromTrait<CommandTraits<static_cast<Commands>(i)>, CommandHandlerTraits<static_cast<Commands>(i)>>()... }};
+	return std::array<CommandInfo, sizeof...(i)>{{ CommandFromTrait<static_cast<Commands>(i)>()... }};
 }
 
 /**
