@@ -1138,7 +1138,7 @@ struct EMPTY_BASES TupleCmdData : public CommandPayloadBase {
 
 	static RealParent Make(T... args)
 	{
-		return { TupleCmdDataDetail::TupleCmdDataValueList<std::index_sequence_for<T...>, T...>{ std::forward<T>(args)... } };
+		return { TupleCmdDataDetail::TupleCmdDataValueList<std::index_sequence_for<T...>, T...>{ {std::forward<T>(args)}... } };
 	}
 };
 
