@@ -983,6 +983,12 @@ public:
 	TileArea GetTileArea(StationType type) const override;
 };
 
+/* Helper for constexpr cpp_offsetof for BaseStation, which is abstract. */
+template <>
+struct CppOffsetConstruct<BaseStation> {
+	using type = Station;
+};
+
 /** Iterator to iterate over all tiles belonging to an airport. */
 class AirportTileIterator : public OrthogonalTileIterator {
 private:

@@ -293,7 +293,33 @@ char (&ArraySizeHelper(T (&array)[N]))[N];
  */
 #define lastof(x) (&x[lengthof(x) - 1])
 
-#define cpp_offsetof(s, m)   (((size_t)&reinterpret_cast<const volatile char&>((((s*)(char*)8)->m))) - 8)
+template <typename T>
+struct CppOffsetConstruct {
+	using type = T;
+};
+
+template <typename T, typename S>
+consteval size_t CppOffsetHelper(S)
+{
+	/* Indirection point to allow using a different type, for the case where T is abstract. */
+	using C = typename CppOffsetConstruct<T>::type;
+
+	union u {
+		constexpr u() : a{} {}  // GCC bug needs a constructor definition
+		constexpr ~u() {}
+		char a[sizeof(C)]{};
+		C t;
+	} x;
+	T *base = &x.t;
+	auto *p = S{}(x.t);
+	size_t offset = 0;
+	for (std::size_t i = 0;; ++i) {
+		if (static_cast<void*>(x.a + i) == base) offset = i;
+		if (static_cast<void*>(x.a + i) == p) return i - offset;
+	}
+}
+
+#define cpp_offsetof(s, m) CppOffsetHelper<s>([](s &_obj_) { return &_obj_.m; })
 #if !defined(offsetof)
 #	define offsetof(s, m) cpp_offsetof(s, m)
 #endif /* offsetof */
