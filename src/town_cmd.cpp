@@ -3354,6 +3354,26 @@ CommandCost CmdPlaceHouseArea(DoCommandFlags flags, TileIndex tile, TileIndex st
 	return had_success ? CommandCost{} : last_error;
 }
 
+void HouseIDCmdVector::Serialise(BufferSerialisationRef buffer) const
+{
+	buffer.Send_generic_integer(this->ids.size());
+	for (HouseID id : this->ids) {
+		buffer.Send_generic_integer(id);
+	}
+}
+
+bool HouseIDCmdVector::Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation)
+{
+	size_t size{};
+	buffer.Recv_generic_integer(size);
+	if (size > MAX_HOUSE_IDS) return false;
+	this->ids.resize(size);
+	for (HouseID &id : this->ids) {
+		buffer.Recv_generic_integer(id);
+	}
+	return true;
+}
+
 void HouseIDCmdVector::fmt_format_value(struct format_target &buf) const
 {
 	buf.format("{} ids: [", this->ids.size());

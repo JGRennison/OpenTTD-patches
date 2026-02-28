@@ -45,27 +45,8 @@ struct ScheduledDispatchSlotSet {
 
 	std::vector<uint32_t> slots;
 
-	template <typename T>
-	void Serialise(T &&buffer) const
-	{
-		buffer.Send_generic_integer(this->slots.size());
-		for (uint32_t slot : this->slots) {
-			buffer.Send_generic_integer(slot);
-		}
-	}
-
-	template <typename T>
-	bool Deserialise(T &buffer, StringValidationSettings default_string_validation)
-	{
-		size_t size{};
-		buffer.Recv_generic_integer(size);
-		if (size > MAX_SLOTS) return false;
-		this->slots.resize(size);
-		for (uint32_t &slot : this->slots) {
-			buffer.Recv_generic_integer(slot);
-		}
-		return true;
-	}
+	void Serialise(BufferSerialisationRef buffer) const;
+	bool Deserialise(DeserialisationBuffer &buffer, StringValidationSettings default_string_validation);
 
 	bool IsValid() const;
 
