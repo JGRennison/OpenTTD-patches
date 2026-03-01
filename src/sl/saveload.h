@@ -484,10 +484,17 @@ inline constexpr bool SlCheckVar(SaveLoadType cmd, VarType type, size_t length)
 }
 
 template <typename T, SaveLoadType cmd, VarType type, size_t length>
-inline constexpr void *SlVarWrapper(void* ptr)
+inline constexpr void *SlVarWrapper(void *ptr)
 {
 	static_assert(SlCheckVar<T>(cmd, type, length));
 	return ptr;
+}
+
+template <typename T, SaveLoadType cmd, VarType type, size_t length>
+inline constexpr size_t SlVarWrapper(size_t offset)
+{
+	static_assert(SlCheckVar<T>(cmd, type, length));
+	return offset;
 }
 
 template <typename T>
@@ -549,7 +556,7 @@ inline constexpr SaveLoadCustomHandlers SlHandlerUnionValue()
  * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
  * @note In general, it is better to use one of the SLE_* macros below.
  */
-#define SLE_GENERAL_X(cmd, base, variable, type, length, from, to, extver) SaveLoad {false, cmd, type, length, from, to, SLTAG_DEFAULT, { SlVarWrapper<decltype(base::variable), cmd, type, length>((void*)cpp_offsetof(base, variable)) }, { .custom = SlHandlerUnionValue<decltype(base::variable), cmd>() }, extver}
+#define SLE_GENERAL_X(cmd, base, variable, type, length, from, to, extver) SaveLoad {false, cmd, type, length, from, to, SLTAG_DEFAULT, { .offset = SlVarWrapper<decltype(base::variable), cmd, type, length>(cpp_offsetof(base, variable)) }, { .custom = SlHandlerUnionValue<decltype(base::variable), cmd>() }, extver}
 #define SLE_GENERAL(cmd, base, variable, type, length, from, to) SLE_GENERAL_X(cmd, base, variable, type, length, from, to, SlXvFeatureTest())
 
 /**
@@ -1044,14 +1051,14 @@ inline void *GetVariableAddress(const void *object, const SaveLoad &sld)
 #ifdef _DEBUG
 	/* Entry is a null-variable, mostly used to read old savegames etc. */
 	if (GetVarMemType(sld.conv) == SLE_VAR_NULL) {
-		assert(sld.address == nullptr);
+		assert(sld.offset == 0);
 		return nullptr;
 	}
 
 	/* Everything else should be a non-null pointer. */
 	assert(object != nullptr);
 #endif
-	return const_cast<uint8_t *>((const uint8_t *)object + (ptrdiff_t)sld.address);
+	return const_cast<uint8_t *>((const uint8_t *)object + sld.offset);
 }
 
 int64_t ReadValue(const void *ptr, VarType conv);

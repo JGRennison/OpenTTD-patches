@@ -153,6 +153,50 @@ constexpr size_t GetTypeListIndexIgnoreCvRef()
 	return Helper::Get();
 }
 
+/*
+ * Determine if we can use a constexpr implementation for cpp_offsetof.
+ * This then enables making the settings tables constinit.
+ * Currently this means gcc-only.
+ */
+#if !defined(USE_CONSTEXPR_CPPOFFSET_OF)
+#if defined(__GNUC__) && !defined(_MSC_VER) && !defined(__clang__)
+#define USE_CONSTEXPR_CPPOFFSET_OF 1
+#else
+#define USE_CONSTEXPR_CPPOFFSET_OF 0
+#endif
+#endif
+
+template <typename T>
+struct CppOffsetConstruct {
+	using type = T;
+};
+
+#if USE_CONSTEXPR_CPPOFFSET_OF
+template <typename T, typename S>
+consteval size_t CppOffsetHelper(S)
+{
+	/* Indirection point to allow using a different type, for the case where T is abstract. */
+	using C = typename CppOffsetConstruct<T>::type;
+
+	union u {
+		constexpr u() : a{} {}  // GCC bug needs a constructor definition
+		constexpr ~u() {}
+		char a[sizeof(C)]{};
+		C t;
+	} x;
+	T *base = &x.t;
+	auto *p = S{}(x.t);
+	size_t offset = 0;
+	for (std::size_t i = 0;; ++i) {
+		if (static_cast<void*>(x.a + i) == base) offset = i;
+		if (static_cast<void*>(x.a + i) == p) return i - offset;
+	}
+}
+
+#define cpp_offsetof(s, m) CppOffsetHelper<s>([](s &_obj_) { return &_obj_.m; })
+
+#else
 #define cpp_offsetof(s, m) (((size_t)&reinterpret_cast<const volatile char&>((((s*)(char*)8)->m))) - 8)
+#endif /* USE_CONSTEXPR_CPPOFFSET_OF */
 
 #endif /* TYPE_UTIL_HPP */

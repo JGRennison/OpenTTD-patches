@@ -89,7 +89,12 @@ constexpr auto STUnwrap(T value)
 	}
 }
 
+#if USE_CONSTEXPR_CPPOFFSET_OF
+#define SDEF(id) static constinit const auto id =
+#else
 #define SDEF(id) static const auto id =
+#endif
+
 #define NSD(type, ...) type##SettingDesc(__VA_ARGS__)
 
 /* Macros for various objects to go in the configuration file.

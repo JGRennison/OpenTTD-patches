@@ -22,6 +22,12 @@
 
 #include "../safeguards.h"
 
+/* Helper for constexpr cpp_offsetof for BaseStation, which is abstract. */
+template <>
+struct CppOffsetConstruct<BaseStation> {
+	using type = Station;
+};
+
 static uint8_t _old_last_vehicle_type;
 static uint8_t _num_specs;
 static uint8_t _num_roadstop_specs;
