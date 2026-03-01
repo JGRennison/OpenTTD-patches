@@ -516,6 +516,9 @@ void MakeNewgameSettingsLive()
 	_settings_time = _settings_game.game_time = (TimeSettings)_settings_client.gui;
 	_old_vds = _settings_client.company.vehicle;
 
+	/* Unconditionally set freeform_edges, this is set to false by vanilla infinite water, so might end up false in shared config files. */
+	_settings_game.construction.freeform_edges = true;
+
 	UpdateEffectiveDayLengthFactor();
 }
 
