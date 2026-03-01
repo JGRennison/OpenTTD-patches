@@ -22,6 +22,17 @@ static void UpdateTimeSettings(int32_t new_value);
 /* Callback function used for various settings */
 static bool CheckTTDPatchSettingFlag(uint flag);
 
+template <typename T>
+static void SettingMarkWholeScreenDirty(T new_value)
+{
+	MarkWholeScreenDirty();
+}
+
+static void InvalidateSettingsWindows(int32_t new_value)
+{
+	InvalidateWindowClassesData(WC_GAME_OPTIONS);
+}
+
 /****************************
  * OTTD specific INI stuff
  ****************************
