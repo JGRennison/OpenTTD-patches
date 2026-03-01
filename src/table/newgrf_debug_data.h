@@ -27,6 +27,7 @@
 #include "../train_speed_adaptation.h"
 #include "../tracerestrict.h"
 #include "../newgrf_dump.h"
+#include "../core/type_util.hpp"
 
 /* Helper for filling property tables */
 #define NIP(prop, base, variable, type, name) { name, { (ptrdiff_t)cpp_offsetof(base, variable), cpp_sizeof(base, variable) }, prop, type }

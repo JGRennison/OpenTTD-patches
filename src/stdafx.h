@@ -293,9 +293,8 @@ char (&ArraySizeHelper(T (&array)[N]))[N];
  */
 #define lastof(x) (&x[lengthof(x) - 1])
 
-#define cpp_offsetof(s, m)   (((size_t)&reinterpret_cast<const volatile char&>((((s*)(char*)8)->m))) - 8)
 #if !defined(offsetof)
-#	define offsetof(s, m) cpp_offsetof(s, m)
+#	define offsetof(s, m) (((size_t)&reinterpret_cast<const volatile char&>((((s*)(char*)8)->m))) - 8)
 #endif /* offsetof */
 
 /**

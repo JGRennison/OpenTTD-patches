@@ -153,4 +153,6 @@ constexpr size_t GetTypeListIndexIgnoreCvRef()
 	return Helper::Get();
 }
 
+#define cpp_offsetof(s, m) (((size_t)&reinterpret_cast<const volatile char&>((((s*)(char*)8)->m))) - 8)
+
 #endif /* TYPE_UTIL_HPP */

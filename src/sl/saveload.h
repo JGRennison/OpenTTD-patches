@@ -17,6 +17,7 @@
 #include "../scope.h"
 #include "../3rdparty/cpp-ring-buffer/ring_buffer.hpp"
 #include "../core/tinystring_type.hpp"
+#include "../core/type_util.hpp"
 #include "../core/strong_typedef_type.hpp"
 
 #include <vector>
