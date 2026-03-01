@@ -110,7 +110,7 @@ struct SettingDescEnumEntry {
 
 /** Properties of config file settings. */
 struct SettingDesc {
-	SettingDesc(const SaveLoad &save, const char *name, SettingFlags flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name) :
+	constexpr SettingDesc(const SaveLoad &save, const char *name, SettingFlags flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name) :
 		name(name), flags(flags), startup(startup), save(save), guiproc(guiproc), patx_name(patx_name) {}
 	virtual ~SettingDesc() = default;
 
@@ -202,7 +202,7 @@ struct IntSettingDesc : SettingDesc {
 	 */
 	using PostChangeCallback = void(int32_t value);
 
-	IntSettingDesc(const SaveLoad &save, const char *name, SettingFlags flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name, int32_t def,
+	constexpr IntSettingDesc(const SaveLoad &save, const char *name, SettingFlags flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name, int32_t def,
 			int32_t min, uint32_t max, int32_t interval, StringID str, StringID str_help, StringID str_val,
 			SettingCategory cat, PreChangeCheck pre_check, PostChangeCallback post_callback,
 			GetTitleCallback get_title_cb, GetHelpCallback get_help_cb, GetValueParamsCallback get_value_params_cb,
@@ -264,7 +264,7 @@ private:
 
 /** Boolean setting. */
 struct BoolSettingDesc : IntSettingDesc {
-	BoolSettingDesc(const SaveLoad &save, const char *name, SettingFlags flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name, bool def,
+	constexpr BoolSettingDesc(const SaveLoad &save, const char *name, SettingFlags flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name, bool def,
 			StringID str, StringID str_help, StringID str_val, SettingCategory cat,
 			PreChangeCheck pre_check, PostChangeCallback post_callback,
 			GetTitleCallback get_title_cb, GetHelpCallback get_help_cb, GetValueParamsCallback get_value_params_cb,
@@ -283,22 +283,19 @@ struct BoolSettingDesc : IntSettingDesc {
 struct OneOfManySettingDesc : IntSettingDesc {
 	typedef std::optional<uint32_t> OnConvert(std::string_view value); ///< callback prototype for conversion error
 
-	OneOfManySettingDesc(const SaveLoad &save, const char *name, SettingFlags flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name,
+	constexpr OneOfManySettingDesc(const SaveLoad &save, const char *name, SettingFlags flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name,
 			int32_t def, int32_t max, StringID str, StringID str_help, StringID str_val, SettingCategory cat,
 			PreChangeCheck pre_check, PostChangeCallback post_callback,
 			GetTitleCallback get_title_cb, GetHelpCallback get_help_cb, GetValueParamsCallback get_value_params_cb,
 			GetDefaultValueCallback get_def_cb, std::initializer_list<const char *> many, OnConvert *many_cnvt) :
 		IntSettingDesc(save, name, flags, guiproc, startup, patx_name, def, 0, max, 0, str, str_help, str_val, cat,
-			pre_check, post_callback, get_title_cb, get_help_cb, get_value_params_cb, get_def_cb, nullptr, nullptr), many_cnvt(many_cnvt)
-	{
-		for (auto one : many) this->many.push_back(one);
-	}
+			pre_check, post_callback, get_title_cb, get_help_cb, get_value_params_cb, get_def_cb, nullptr, nullptr),
+			many(many), many_cnvt(many_cnvt) {}
 
-	std::vector<std::string> many; ///< possible values for this type
-	OnConvert *many_cnvt;          ///< callback procedure when loading value mechanism fails
+	std::span<const char * const> many; ///< possible values for this type
+	OnConvert *many_cnvt;               ///< callback procedure when loading value mechanism fails
 
-	static std::optional<uint32_t> ParseSingleValue(std::string_view str, std::span<const std::string> many);
-	static std::optional<uint32_t> ParseSingleValue(std::string_view str, std::span<const std::string_view> many);
+	static std::optional<uint32_t> ParseSingleValue(std::string_view str, std::span<const char * const> many);
 	void FormatSingleValue(struct format_target &buf, uint id) const;
 
 	int32_t ParseValue(std::string_view str) const override;
@@ -307,7 +304,7 @@ struct OneOfManySettingDesc : IntSettingDesc {
 
 /** Many of many setting. */
 struct ManyOfManySettingDesc : OneOfManySettingDesc {
-	ManyOfManySettingDesc(const SaveLoad &save, const char *name, SettingFlags flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name,
+	constexpr ManyOfManySettingDesc(const SaveLoad &save, const char *name, SettingFlags flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name,
 			int32_t def, StringID str, StringID str_help, StringID str_val, SettingCategory cat,
 			PreChangeCheck pre_check, PostChangeCallback post_callback,
 			GetTitleCallback get_title_cb, GetHelpCallback get_help_cb, GetValueParamsCallback get_value_params_cb,
@@ -336,12 +333,12 @@ struct StringSettingDesc : SettingDesc {
 	 */
 	typedef void PostChangeCallback(const std::string &value);
 
-	StringSettingDesc(const SaveLoad &save, const char *name, SettingFlags flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name, const char *def,
+	constexpr StringSettingDesc(const SaveLoad &save, const char *name, SettingFlags flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name, const char *def,
 			uint32_t max_length, PreChangeCheck pre_check, PostChangeCallback post_callback) :
 		SettingDesc(save, name, flags, guiproc, startup, patx_name), def(def == nullptr ? "" : def), max_length(max_length),
 			pre_check(pre_check), post_callback(post_callback) {}
 
-	std::string def;                   ///< Default value given when none is present
+	const char *def;                   ///< Default value given when none is present
 	uint32_t max_length;               ///< Maximum length of the string, 0 means no maximum length
 	PreChangeCheck *pre_check;         ///< Callback to check for the validity of the setting.
 	PostChangeCallback *post_callback; ///< Callback when the setting has been changed.
@@ -363,7 +360,7 @@ private:
 
 /** List/array settings. */
 struct ListSettingDesc : SettingDesc {
-	ListSettingDesc(const SaveLoad &save, const char *name, SettingFlags flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name, const char *def) :
+	constexpr ListSettingDesc(const SaveLoad &save, const char *name, SettingFlags flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name, const char *def) :
 		SettingDesc(save, name, flags, guiproc, startup, patx_name), def(def) {}
 
 	const char *def;        ///< default value given when none is present
@@ -377,9 +374,9 @@ struct ListSettingDesc : SettingDesc {
 
 /** Placeholder for settings that have been removed, but might still linger in the savegame. */
 struct NullSettingDesc : SettingDesc {
-	NullSettingDesc(const SaveLoad &save) :
+	constexpr NullSettingDesc(const SaveLoad &save) :
 		SettingDesc(save, "", SettingFlag::NotInConfig, nullptr, false, nullptr) {}
-	NullSettingDesc(const SaveLoad &save, const char *name, const char *patx_name) :
+	constexpr NullSettingDesc(const SaveLoad &save, const char *name, const char *patx_name) :
 		SettingDesc(save, name, SettingFlag::NotInConfig, nullptr, false, patx_name) {}
 
 	void FormatValue(struct format_target &buf, const void *object) const override { NOT_REACHED(); }
@@ -389,7 +386,8 @@ struct NullSettingDesc : SettingDesc {
 	void ResetToDefault(void *object) const override {}
 };
 
-typedef std::initializer_list<std::unique_ptr<const SettingDesc>> SettingTable;
+using SettingTablePtr = const SettingDesc *;
+typedef std::initializer_list<SettingTablePtr> SettingTable;
 
 const SettingDesc *GetSettingFromName(std::string_view name);
 
@@ -412,13 +410,13 @@ uint GetSettingIndexByFullName(const SettingTable &table, const char *name);
 inline const SettingDesc *GetSettingDescription(const SettingTable &table, uint index)
 {
 	if (index >= table.size()) return nullptr;
-	return table.begin()[index].get();
+	return table.begin()[index];
 }
 
 struct SettingTablesIterator {
-	typedef const std::unique_ptr<const SettingDesc> value_type;
-	typedef const std::unique_ptr<const SettingDesc> *pointer;
-	typedef const std::unique_ptr<const SettingDesc> &reference;
+	typedef SettingTablePtr value_type;
+	typedef SettingTablePtr *pointer;
+	typedef SettingTablePtr &reference;
 	typedef size_t difference_type;
 	typedef std::forward_iterator_tag iterator_category;
 
@@ -434,7 +432,7 @@ struct SettingTablesIterator {
 
 	bool operator==(const SettingTablesIterator &other) const { return this->outer == other.outer && this->inner == other.inner; }
 	bool operator!=(const SettingTablesIterator &other) const { return !(*this == other); }
-	const std::unique_ptr<const SettingDesc> &operator*() const { return *this->inner; }
+	const SettingDesc *operator*() const { return *this->inner; }
 	SettingTablesIterator &operator++() { ++this->inner; this->ValidateIndex(); return *this; }
 
 private:
@@ -472,7 +470,7 @@ enum class SettingsCompatType : uint8_t {
 };
 
 struct SettingsCompat {
-	std::string name;                 ///< Name of the field.
+	const char *name;                 ///< Name of the field.
 	SettingsCompatType type;          ///< Compat type
 	uint16_t length;                  ///< Length of the NULL field.
 	SaveLoadVersion version_from;     ///< Save/load the variable starting from this savegame version.

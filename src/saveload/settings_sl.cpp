@@ -33,7 +33,7 @@ namespace upstream_sl {
 static std::vector<SaveLoad> GetSettingsDesc(bool is_loading)
 {
 	std::vector<SaveLoad> saveloads;
-	for (auto &sd : IterateSettingTables(GetSaveLoadSettingsTables())) {
+	for (const SettingDesc *sd : IterateSettingTables(GetSaveLoadSettingsTables())) {
 		if (sd->flags.Test(SettingFlag::NotInSave)) continue;
 		if (is_loading && !SlXvIsFeaturePresent(XSLFI_TABLE_PATS) && sd->flags.Test(SettingFlag::Patch)) continue;
 		if (!sd->save.ext_feature_test.IsFeaturePresent(_sl_version, sd->save.version_from, sd->save.version_to)) continue;
@@ -166,7 +166,7 @@ static void LoadSettings(void *object, const SaveLoadCompatTable &slct)
 	if (!IsSavegameVersionBefore(SLV_RIFF_TO_ARRAY) && SlIterateArray() != -1) SlErrorCorrupt("Too many settings entries");
 
 	/* Ensure all IntSettings are valid (min/max could have changed between versions etc). */
-	for (auto &sd : IterateSettingTables(GetSaveLoadSettingsTables())) {
+	for (const SettingDesc *sd : IterateSettingTables(GetSaveLoadSettingsTables())) {
 		if (sd->flags.Test(SettingFlag::NotInSave)) continue;
 		if (sd->flags.Test(SettingFlag::NoNetworkSync) && _networking && !_network_server) continue;
 		if (!sd->save.ext_feature_test.IsFeaturePresent(_sl_xv_feature_static_versions, MAX_LOAD_SAVEGAME_VERSION, sd->save.version_from, sd->save.version_to)) continue;

@@ -252,34 +252,17 @@ const uint16_t INIFILE_VERSION = (IniFileVersion)(IFV_MAX_VERSION - 1); ///< Cur
  * @param many full domain of values the ONEofMANY setting can have
  * @return the integer index of the full-list, or std::nullopt if not found
  */
-std::optional<uint32_t> OneOfManySettingDesc::ParseSingleValue(std::string_view str, std::span<const std::string> many)
+std::optional<uint32_t> OneOfManySettingDesc::ParseSingleValue(std::string_view str, std::span<const char * const> many)
 {
 	StringConsumer consumer{str};
 	auto digit = consumer.TryReadIntegerBase<uint32_t>(10);
 	/* check if it's an integer */
 	if (digit.has_value()) return digit;
 
-	auto it = std::ranges::find(many, str);
-	if (it == many.end()) return std::nullopt;
-	return static_cast<uint32_t>(it - many.begin());
-}
-
-/**
- * Find the index value of a ONEofMANY type in a string
- * @param str the current value of the setting for which a value needs found
- * @param many full domain of values the ONEofMANY setting can have
- * @return the integer index of the full-list, or std::nullopt if not found
- */
-std::optional<uint32_t> OneOfManySettingDesc::ParseSingleValue(std::string_view str, std::span<const std::string_view> many)
-{
-	StringConsumer consumer{str};
-	auto digit = consumer.TryReadIntegerBase<uint32_t>(10);
-	/* check if it's an integer */
-	if (digit.has_value()) return digit;
-
-	auto it = std::ranges::find(many, str);
-	if (it == many.end()) return std::nullopt;
-	return static_cast<uint32_t>(it - many.begin());
+	for (size_t i = 0; i < many.size(); i++) {
+		if (str == many[i]) return static_cast<uint32_t>(i);
+	}
+	return std::nullopt;
 }
 
 /**
@@ -303,7 +286,7 @@ std::optional<bool> BoolSettingDesc::ParseSingleValue(std::string_view str)
  * of separated by a whitespace, tab or | character
  * @return the 'fully' set integer, or std::nullopt if a set is not found
  */
-static std::optional<uint32_t> LookupManyOfMany(const std::vector<std::string> &many, std::string_view str)
+static std::optional<uint32_t> LookupManyOfMany(std::span<const char * const> many, std::string_view str)
 {
 	static const std::string_view separators{" \t|"};
 
@@ -1825,6 +1808,13 @@ static void VelocityUnitsChanged(int32_t new_value)
 	MarkWholeScreenDirty();
 }
 
+static void DecimalSeparatorCharChanged(const std::string &new_value)
+{
+	extern void FillDecimalSeparatorChar();
+	FillDecimalSeparatorChar();
+	MarkWholeScreenDirty();
+}
+
 static void ChangeTrackTypeSortMode(int32_t new_value)
 {
 	extern void SortRailTypes();
@@ -1928,7 +1918,7 @@ static void RoadSideChanged(int32_t new_value)
 static std::optional<uint32_t> ConvertLandscape(std::string_view value)
 {
 	/* try with the old values */
-	static constexpr std::initializer_list<std::string_view> _old_landscape_values{"normal"sv, "hilly"sv, "desert"sv, "candy"sv};
+	static constexpr std::initializer_list<const char *> _old_landscape_values{"normal", "hilly", "desert", "candy"};
 	return OneOfManySettingDesc::ParseSingleValue(value, _old_landscape_values);
 }
 
@@ -2968,7 +2958,7 @@ void LoadFromConfig(bool startup)
 		}
 
 		if (generic_version < IFV_AUTOSAVE_RENAME && IsConversionNeeded(generic_ini, "gui", "autosave", "autosave_interval", &old_item)) {
-			static constexpr std::initializer_list<std::string_view> _old_autosave_interval{"off"sv, "monthly"sv, "quarterly"sv, "half year"sv, "yearly"sv, "custom_days"sv, "custom_realtime_minutes"sv};
+			static constexpr std::initializer_list<const char *> _old_autosave_interval{"off", "monthly", "quarterly", "half year", "yearly", "custom_days", "custom_realtime_minutes"};
 			auto old_value = OneOfManySettingDesc::ParseSingleValue(*old_item->value, _old_autosave_interval);
 
 			if (old_value.has_value()) {
@@ -3226,18 +3216,18 @@ void IntSettingDesc::ChangeValue(const void *object, int32_t newval, SaveToConfi
 static const SettingDesc *GetSettingFromName(std::string_view name, const SettingTable &settings)
 {
 	/* First check all full names */
-	for (auto &sd : settings) {
+	for (const SettingDesc *sd : settings) {
 		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
-		if (sd->name == name) return sd.get();
+		if (sd->name == name) return sd;
 	}
 
 	/* Then check the shortcut variant of the name. */
-	for (auto &sd : settings) {
+	for (const SettingDesc *sd : settings) {
 		if (!SlIsObjectCurrentlyValid(sd->save.version_from, sd->save.version_to, sd->save.ext_feature_test)) continue;
 		const char *short_name = strchr(sd->name, '.');
 		if (short_name != nullptr) {
 			short_name++;
-			if (short_name == name) return sd.get();
+			if (short_name == name) return sd;
 		}
 	}
 
@@ -3304,10 +3294,10 @@ std::vector<const SettingDesc *> GetFilteredSettingCollection(std::function<bool
 	std::vector<const SettingDesc *> collection;
 
 	IterateSettingsTables([&](const SettingTable &table, void *object) {
-		for (const auto &sd : table) {
+		for (const SettingDesc *sd : table) {
 			if (!func(*sd)) continue;
 
-			collection.push_back(sd.get());
+			collection.push_back(sd);
 		}
 	});
 
@@ -3667,10 +3657,10 @@ static void LoadSettings(std::initializer_list<SettingTable> settings, std::init
 		/* Populate setting references */
 
 		btree::btree_multimap<std::string_view, const SettingDesc *> names;
-		for (auto &osd : IterateSettingTables(settings)) {
+		for (const SettingDesc *osd : IterateSettingTables(settings)) {
 			if (osd->flags.Test(SettingFlag::NotInSave)) continue;
 			if (osd->name == nullptr) continue;
-			names.insert({osd->name, osd.get()});
+			names.insert({osd->name, osd});
 		}
 
 		for (const SettingsCompat &c : compat) {
@@ -3748,9 +3738,9 @@ static std::vector<const SettingDesc *> MakeSettingsPatxList(std::initializer_li
 {
 	std::vector<const SettingDesc *> sorted_patx_settings;
 
-	for (auto &sd : IterateSettingTables(settings)) {
+	for (const SettingDesc *sd : IterateSettingTables(settings)) {
 		if (sd->patx_name == nullptr) continue;
-		sorted_patx_settings.push_back(sd.get());
+		sorted_patx_settings.push_back(sd);
 	}
 
 	std::sort(sorted_patx_settings.begin(), sorted_patx_settings.end(), [](const SettingDesc *a, const SettingDesc *b) {
@@ -3893,9 +3883,9 @@ void LoadSettingsPlyx(bool skip)
 			const SettingDesc *setting = nullptr;
 
 			// not many company settings, so perform a linear scan
-			for (auto &sd : _company_settings) {
+			for (const SettingDesc *sd : _company_settings) {
 				if (sd->patx_name != nullptr && current_setting.name == sd->patx_name) {
-					setting = sd.get();
+					setting = sd;
 					break;
 				}
 			}
@@ -4003,7 +3993,7 @@ const SettingTable &GetLinkGraphSettingTable()
 
 void ResetSettingsToDefaultForLoad()
 {
-	for (auto &sd : IterateSettingTables(GetSaveLoadSettingsTables())) {
+	for (const SettingDesc *sd : IterateSettingTables(GetSaveLoadSettingsTables())) {
 		if (sd->flags.Test(SettingFlag::NotInSave)) continue;
 		if (sd->flags.Test(SettingFlag::NoNetworkSync) && _networking && !_network_server) continue;
 

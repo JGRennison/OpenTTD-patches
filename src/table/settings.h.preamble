@@ -78,7 +78,8 @@ constexpr auto STUnwrap(T value)
 	}
 }
 
-#define NSD(type, ...) std::unique_ptr<const SettingDesc>(new type##SettingDesc(__VA_ARGS__))
+#define SDEF(id) static const auto id =
+#define NSD(type, ...) type##SettingDesc(__VA_ARGS__)
 
 /* Macros for various objects to go in the configuration file.
  * This section is for global variables */
