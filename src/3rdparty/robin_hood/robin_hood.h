@@ -1379,7 +1379,7 @@ private:
     // Lower bits are used for indexing into the array (2^n size)
     // The upper 1-5 bits need to be a reasonable good hash, to save comparisons.
     template <typename HashKey>
-    void keyToIdx(HashKey&& key, size_t* idx, InfoType* info) const {
+    void keyToIdx(const HashKey& key, size_t* idx, InfoType* info) const {
         // In addition to whatever hash is used, add another mul & shift so we get better hashing.
         // This serves as a bad hash prevention, if the given data is
         // badly mixed.
@@ -2406,7 +2406,7 @@ private:
     // This potentially shifts nodes out of the way, updates mInfo and number of inserted
     // elements, so the only operation left to do is create/assign a new node at that spot.
     template <typename OtherKey>
-    std::pair<size_t, InsertionState> insertKeyPrepareEmptySpot(OtherKey&& key) {
+    std::pair<size_t, InsertionState> insertKeyPrepareEmptySpot(const OtherKey& key) {
         for (int i = 0; i < 256; ++i) {
             size_t idx{};
             InfoType info{};
