@@ -23,6 +23,12 @@
 
 #include "../safeguards.h"
 
+/* Helper for constexpr cpp_offsetof for BaseStation, which is abstract. */
+template <>
+struct CppOffsetConstruct<BaseStation> {
+	using type = Station;
+};
+
 namespace upstream_sl {
 
 static const SaveLoad _roadstop_desc[] = {

@@ -14,6 +14,7 @@
 #include "../fileio_type.h"
 #include "../fios.h"
 #include "../strings_type.h"
+#include "../core/type_util.hpp"
 #include "../3rdparty/cpp-ring-buffer/ring_buffer.hpp"
 #include <optional>
 #include <string>
@@ -256,9 +257,10 @@ enum VarTypes : uint16_t {
 	SLF_ALLOW_CONTROL   = 1 << 8, ///< Allow control codes in the strings.
 	SLF_ALLOW_NEWLINE   = 1 << 9, ///< Allow new lines in the strings.
 	SLF_REPLACE_TABCRLF = 1 << 10, ///< Replace tabs, cr and lf in the string with spaces.
+	SLF_GLOBAL          = 1 << 11, ///< Replace tabs, cr and lf in the string with spaces.
 };
 
-typedef uint32_t VarType;
+typedef uint16_t VarType;
 
 /** Type of data saved. */
 enum SaveLoadType : uint8_t {
@@ -293,8 +295,14 @@ struct SaveLoad {
 	uint16_t length;     ///< (Conditional) length of the variable (eg. arrays) (max array size is 65536 elements).
 	SaveLoadVersion version_from;   ///< Save/load the variable starting from this savegame version.
 	SaveLoadVersion version_to;     ///< Save/load the variable before this savegame version.
-	SaveLoadAddrProc *address_proc; ///< Callback proc the get the actual variable address in memory.
-	size_t extra_data;              ///< Extra data for the callback proc.
+	union {
+		/* NOTE: This element either denotes the address of the variable for a global
+		 * variable, or the offset within a struct which is then bound to a variable
+		 * during runtime. Decision on which one to use is controlled by the function
+		 * that is called to save it. address: SLF_GLOBAL set, offset: SLF_GLOBAL clear */
+		void *address; ///< address of variable (SLF_GLOBAL set)
+		size_t offset; ///< offset of variable in the struct (SLF_GLOBAL clear)
+	};
 	std::shared_ptr<SaveLoadHandler> handler; ///< Custom handler for Save/Load procs.
 };
 
@@ -397,6 +405,20 @@ inline constexpr bool SlCheckVarSize(SaveLoadType cmd, VarType type, size_t leng
 	}
 }
 
+template <SaveLoadType cmd, VarType type, size_t length, size_t size>
+inline constexpr void *SlVarWrapper(void *ptr)
+{
+	static_assert(SlCheckVarSize(cmd, type, length, size));
+	return ptr;
+}
+
+template <SaveLoadType cmd, VarType type, size_t length, size_t size>
+inline constexpr size_t SlVarWrapper(size_t offset)
+{
+	static_assert(SlCheckVarSize(cmd, type, length, size));
+	return offset;
+}
+
 /**
  * Storage of simple variables, references (pointers), and arrays.
  * @param cmd      Load/save type. @see SaveLoadType
@@ -407,15 +429,11 @@ inline constexpr bool SlCheckVarSize(SaveLoadType cmd, VarType type, size_t leng
  * @param length   Number of elements in the array.
  * @param from     First savegame version that has the field.
  * @param to       Last savegame version that has the field.
- * @param extra    Extra data to pass to the address callback function.
+ * @param extra    Extra data to pass to the address callback function (unused).
  * @note In general, it is better to use one of the SLE_* macros below.
  */
 #define SLE_GENERAL_NAME(cmd, name, base, variable, type, length, from, to, extra) \
-	SaveLoad {name, cmd, type, length, from, to, [] (void *b, size_t) -> void * { \
-		static_assert(SlCheckVarSize(cmd, type, length, sizeof(static_cast<base *>(b)->variable))); \
-		assert(b != nullptr); \
-		return const_cast<void *>(static_cast<const void *>(std::addressof(static_cast<base *>(b)->variable))); \
-	}, extra, nullptr}
+	SaveLoad {name, cmd, type, length, from, to, { .offset = SlVarWrapper<cmd, type, length, sizeof(base::variable)>(cpp_offsetof(base, variable)) }, nullptr}
 
 /**
  * Storage of simple variables, references (pointers), and arrays with a custom name.
@@ -660,13 +678,11 @@ inline constexpr bool SlCheckVarSize(SaveLoadType cmd, VarType type, size_t leng
  * @param type     Storage of the data in memory and in the savegame.
  * @param from     First savegame version that has the field.
  * @param to       Last savegame version that has the field.
- * @param extra    Extra data to pass to the address callback function.
+ * @param extra    Extra data to pass to the address callback function (unused).
  * @note In general, it is better to use one of the SLEG_* macros below.
  */
 #define SLEG_GENERAL(name, cmd, variable, type, length, from, to, extra) \
-	SaveLoad {name, cmd, type, length, from, to, [] (void *, size_t) -> void * { \
-		static_assert(SlCheckVarSize(cmd, type, length, sizeof(variable))); \
-		return static_cast<void *>(std::addressof(variable)); }, extra, nullptr}
+	SaveLoad {name, cmd, type | SLF_GLOBAL, length, from, to, { .address = SlVarWrapper<cmd, type, length, sizeof(variable)>(static_cast<void *>(std::addressof(variable))) }, nullptr}
 
 /**
  * Storage of a global variable in some savegame versions.
@@ -727,7 +743,7 @@ inline constexpr bool SlCheckVarSize(SaveLoadType cmd, VarType type, size_t leng
  * @param from     First savegame version that has the struct.
  * @param to       Last savegame version that has the struct.
  */
-#define SLEG_CONDSTRUCT(name, handler, from, to) SaveLoad {name, SL_STRUCT, 0, 0, from, to, nullptr, 0, std::make_shared<handler>()}
+#define SLEG_CONDSTRUCT(name, handler, from, to) SaveLoad {name, SL_STRUCT, 0, 0, from, to, nullptr, std::make_shared<handler>()}
 
 /**
  * Storage of a global reference list in some savegame versions.
@@ -766,7 +782,7 @@ inline constexpr bool SlCheckVarSize(SaveLoadType cmd, VarType type, size_t leng
  * @param from     First savegame version that has the list.
  * @param to       Last savegame version that has the list.
  */
-#define SLEG_CONDSTRUCTLIST(name, handler, from, to) SaveLoad {name, SL_STRUCTLIST, 0, 0, from, to, nullptr, 0, std::make_shared<handler>()}
+#define SLEG_CONDSTRUCTLIST(name, handler, from, to) SaveLoad {name, SL_STRUCTLIST, 0, 0, from, to, nullptr, std::make_shared<handler>()}
 
 /**
  * Storage of a global variable in every savegame version.
@@ -891,15 +907,18 @@ inline bool IsSavegameVersionBeforeOrAt(SaveLoadVersion major)
  */
 inline void *GetVariableAddress(const void *object, const SaveLoad &sld)
 {
+	/* Entry is a global address. */
+	if ((sld.conv & SLF_GLOBAL) != 0) return sld.address;
+
 	/* Entry is a null-variable, mostly used to read old savegames etc. */
 	if (GetVarMemType(sld.conv) == SLE_VAR_NULL) {
-		assert(sld.address_proc == nullptr);
+		assert(sld.offset == 0);
 		return nullptr;
 	}
 
 	/* Everything else should be a non-null pointer. */
-	assert(sld.address_proc != nullptr);
-	return sld.address_proc(const_cast<void *>(object), sld.extra_data);
+	assert(object != nullptr);
+	return const_cast<uint8_t *>((const uint8_t *)object + sld.offset);
 }
 
 int64_t ReadValue(const void *ptr, VarType conv);
