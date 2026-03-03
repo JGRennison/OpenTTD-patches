@@ -45,6 +45,8 @@
 
 static std::string _editing_text;
 
+bool _ini_no_mouse_capture;
+
 static void SetTextInputRect();
 
 bool IsWindowFocused();
@@ -902,7 +904,7 @@ const char *VideoDriver_SDL_Base::Start(const StringList &param)
 	if (error != nullptr) return error;
 
 #ifdef SDL_HINT_MOUSE_AUTO_CAPTURE
-	if (GetDriverParamBool(param, "no_mouse_capture")) {
+	if (_ini_no_mouse_capture || GetDriverParamBool(param, "no_mouse_capture")) {
 		/* By default SDL captures the mouse, while a button is pressed.
 		 * This is annoying during debugging, when OpenTTD is suspended while the button was pressed.
 		 */
