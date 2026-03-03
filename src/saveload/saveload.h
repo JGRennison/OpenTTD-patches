@@ -682,7 +682,7 @@ inline constexpr size_t SlVarWrapper(size_t offset)
  * @note In general, it is better to use one of the SLEG_* macros below.
  */
 #define SLEG_GENERAL(name, cmd, variable, type, length, from, to, extra) \
-	SaveLoad {name, cmd, type | SLF_GLOBAL, length, from, to, { .address = SlVarWrapper<cmd, type, length, sizeof(variable)>(static_cast<void *>(std::addressof(variable))) }, nullptr}
+	SaveLoad {name, cmd, static_cast<VarType>(type) | static_cast<VarType>(SLF_GLOBAL), length, from, to, { .address = SlVarWrapper<cmd, type, length, sizeof(variable)>(static_cast<void *>(std::addressof(variable))) }, nullptr}
 
 /**
  * Storage of a global variable in some savegame versions.
