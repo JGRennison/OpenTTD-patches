@@ -15,7 +15,6 @@
 #include <vector>
 
 uint CountArticulatedParts(EngineID engine_type, bool purchase_window);
-void GetArticulatedPartsEngineIDs(EngineID engine_type, bool purchase_window, std::vector<EngineID> &ids);
 CargoArray GetCapacityOfArticulatedParts(EngineID engine, CargoType attempt_refit = INVALID_CARGO);
 CargoTypes GetCargoTypesOfArticulatedParts(EngineID engine);
 void AddArticulatedParts(Vehicle *first);

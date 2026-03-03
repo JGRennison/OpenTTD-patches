@@ -104,38 +104,6 @@ uint CountArticulatedParts(EngineID engine_type, bool purchase_window)
 }
 
 /**
- * Count the number of articulated parts of an engine.
- * @param engine_type The engine to get the number of parts of.
- * @param purchase_window Whether we are in the scope of the purchase window or not, i.e. whether we cannot allocate vehicles.
- * @param ids [Out] The list of engine IDs.
- */
-void GetArticulatedPartsEngineIDs(EngineID engine_type, bool purchase_window, std::vector<EngineID> &ids)
-{
-	ids.clear();
-	if (!EngInfo(engine_type)->callback_mask.Test(VehicleCallbackMask::ArticEngine)) return;
-
-	/* If we can't allocate a vehicle now, we can't allocate it in the command
-	 * either, so it doesn't matter how many articulated parts there are. */
-	if (!Vehicle::CanAllocateItem()) return;
-
-	Vehicle *v = nullptr;
-	if (!purchase_window) {
-		v = Vehicle::Create();
-		v->engine_type = engine_type;
-		v->owner = _current_company;
-	}
-
-	for (uint i = 1; i < MAX_ARTICULATED_PARTS; i++) {
-		EngineID id = GetNextArticulatedPart(i, engine_type, v);
-		if (id == EngineID::Invalid()) break;
-		ids.push_back(id);
-	}
-
-	delete v;
-}
-
-
-/**
  * Returns the default (non-refitted) cargo and capacity of a specific EngineID.
  * @param engine the EngineID of interest
  * @param attempt_refit cargo ID to attempt to use
