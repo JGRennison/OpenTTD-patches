@@ -25,8 +25,6 @@
 
 #include "safeguards.h"
 
-static const uint MAX_ARTICULATED_PARTS = 100; ///< Maximum of articulated parts per vehicle, i.e. when to abort calling the articulated vehicle callback.
-
 /**
  * Determines the next articulated part to attach
  * @param index Position in chain

@@ -7144,10 +7144,14 @@ Train *BuildVirtualRailVehicle(EngineID eid, StringID &error, ClientID user, boo
 
 	const RailVehicleInfo &rvi = e->VehInfo<RailVehicleInfo>();
 
-	uint num_vehicles = (rvi.railveh_type == RAILVEH_MULTIHEAD ? 2 : 1) + CountArticulatedParts(eid);
-	if (!Train::CanAllocateItem(num_vehicles)) {
-		error = STR_ERROR_TOO_MANY_VEHICLES_IN_GAME;
-		return nullptr;
+	/* Check whether the number of vehicles we need to build can be built according to pool space.
+	 * If 2 + MAX_ARTICULATED_PARTS are available, then there's no need to call CountArticulatedParts, which is potentially expensive. */
+	if (!Vehicle::CanAllocateItem(2 + MAX_ARTICULATED_PARTS)) {
+		uint num_vehicles = (rvi.railveh_type == RAILVEH_MULTIHEAD ? 2 : 1) + CountArticulatedParts(eid);
+		if (!Train::CanAllocateItem(num_vehicles)) {
+			error = STR_ERROR_TOO_MANY_VEHICLES_IN_GAME;
+			return nullptr;
+		}
 	}
 
 	RegisterGameEvents(GEF_VIRT_TRAIN);

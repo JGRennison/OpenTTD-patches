@@ -14,6 +14,8 @@
 #include "engine_type.h"
 #include <vector>
 
+static constexpr uint MAX_ARTICULATED_PARTS = 100; ///< Maximum of articulated parts per vehicle, i.e. when to abort calling the articulated vehicle callback.
+
 uint CountArticulatedParts(EngineID engine_type);
 CargoArray GetCapacityOfArticulatedParts(EngineID engine, CargoType attempt_refit = INVALID_CARGO);
 CargoTypes GetCargoTypesOfArticulatedParts(EngineID engine);

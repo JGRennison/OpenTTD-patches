@@ -129,16 +129,19 @@ CommandCost CmdBuildVehicle(DoCommandFlags flags, TileIndex tile, EngineID eid, 
 
 	bool refitting = cargo != INVALID_CARGO && cargo != default_cargo;
 
-	/* Check whether the number of vehicles we need to build can be built according to pool space. */
-	uint num_vehicles;
-	switch (type) {
-		case VEH_TRAIN:    num_vehicles = (e->VehInfo<RailVehicleInfo>().railveh_type == RAILVEH_MULTIHEAD ? 2 : 1) + CountArticulatedParts(eid); break;
-		case VEH_ROAD:     num_vehicles = 1 + CountArticulatedParts(eid); break;
-		case VEH_SHIP:     num_vehicles = 1 + CountArticulatedParts(eid); break;
-		case VEH_AIRCRAFT: num_vehicles = e->VehInfo<AircraftVehicleInfo>().subtype & AIR_CTOL ? 2 : 3; break;
-		default: NOT_REACHED(); // Safe due to IsDepotTile()
+	/* Check whether the number of vehicles we need to build can be built according to pool space.
+	 * If 2 + MAX_ARTICULATED_PARTS are available, then there's no need to call CountArticulatedParts, which is potentially expensive. */
+	if (!Vehicle::CanAllocateItem(2 + MAX_ARTICULATED_PARTS)) {
+		uint num_vehicles;
+		switch (type) {
+			case VEH_TRAIN:    num_vehicles = (e->VehInfo<RailVehicleInfo>().railveh_type == RAILVEH_MULTIHEAD ? 2 : 1) + CountArticulatedParts(eid); break;
+			case VEH_ROAD:     num_vehicles = 1 + CountArticulatedParts(eid); break;
+			case VEH_SHIP:     num_vehicles = 1 + CountArticulatedParts(eid); break;
+			case VEH_AIRCRAFT: num_vehicles = e->VehInfo<AircraftVehicleInfo>().subtype & AIR_CTOL ? 2 : 3; break;
+			default: NOT_REACHED(); // Safe due to IsDepotTile()
+		}
+		if (!Vehicle::CanAllocateItem(num_vehicles)) return CommandCost(STR_ERROR_TOO_MANY_VEHICLES_IN_GAME);
 	}
-	if (!Vehicle::CanAllocateItem(num_vehicles)) return CommandCost(STR_ERROR_TOO_MANY_VEHICLES_IN_GAME);
 
 	/* Check whether we can allocate a unit number. Autoreplace does not allocate
 	 * an unit number as it will (always) reuse the one of the replaced vehicle
