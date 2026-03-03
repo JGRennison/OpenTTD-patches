@@ -1238,6 +1238,8 @@ Vehicle::~Vehicle()
 		return;
 	}
 
+	if (this->index == VehicleID::Invalid()) return; // Temporary instances which were never added to the pool
+
 	if (this->type != VEH_EFFECT) InvalidateVehicleTickCaches();
 
 	if (this->type == VEH_DISASTER) RemoveFromOtherVehicleTickCache(this);
