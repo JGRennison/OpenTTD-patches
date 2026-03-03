@@ -77,8 +77,9 @@ static void SwapPackets(GoodsEntry *ge)
 			it->second.swap(_packets);
 		}
 	} else {
-		assert(ge_packets[StationID::Invalid()].empty());
-		ge_packets[StationID::Invalid()].swap(_packets);
+		CargoPacketList &cplist = ge_packets[StationID::Invalid()];
+		assert(cplist.empty());
+		cplist.swap(_packets);
 	}
 }
 
