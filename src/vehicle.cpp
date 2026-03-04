@@ -221,7 +221,7 @@ void VehicleServiceInDepot(Vehicle *v)
 		Ship::From(v)->critical_breakdown_count = 0;
 	}
 	v->vehstatus.Reset(VehState::AircraftBroken);
-	v->vehicle_flags.Test(VehicleFlag::ReplacementPending);
+	v->vehicle_flags.Reset(VehicleFlag::ReplacementPending);
 	SetWindowDirty(WC_VEHICLE_DETAILS, v->index); // ensure that last service date and reliability are updated
 
 	do {
