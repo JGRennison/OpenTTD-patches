@@ -743,7 +743,7 @@ inline constexpr size_t SlVarWrapper(size_t offset)
  * @param from     First savegame version that has the struct.
  * @param to       Last savegame version that has the struct.
  */
-#define SLEG_CONDSTRUCT(name, handler, from, to) SaveLoad {name, SL_STRUCT, 0, 0, from, to, nullptr, std::make_shared<handler>()}
+#define SLEG_CONDSTRUCT(name, handler, from, to) SaveLoad {name, SL_STRUCT, 0, 0, from, to, { .address = nullptr }, std::make_shared<handler>()}
 
 /**
  * Storage of a global reference list in some savegame versions.
@@ -782,7 +782,7 @@ inline constexpr size_t SlVarWrapper(size_t offset)
  * @param from     First savegame version that has the list.
  * @param to       Last savegame version that has the list.
  */
-#define SLEG_CONDSTRUCTLIST(name, handler, from, to) SaveLoad {name, SL_STRUCTLIST, 0, 0, from, to, nullptr, std::make_shared<handler>()}
+#define SLEG_CONDSTRUCTLIST(name, handler, from, to) SaveLoad {name, SL_STRUCTLIST, 0, 0, from, to, { .address = nullptr }, std::make_shared<handler>()}
 
 /**
  * Storage of a global variable in every savegame version.

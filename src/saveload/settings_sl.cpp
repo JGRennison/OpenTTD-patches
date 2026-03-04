@@ -137,7 +137,7 @@ static std::vector<SaveLoad> GetSettingsDesc(bool is_loading)
 		if (is_loading && sd->flags.Test(SettingFlag::NoNetworkSync) && _networking && !_network_server) {
 			if (IsSavegameVersionBefore(SLV_TABLE_CHUNKS)) {
 				/* We don't want to read this setting, so we do need to skip over it. */
-				saveloads.push_back({sd->name, new_cmd, static_cast<VarType>(GetVarFileType(new_type) | SLE_VAR_NULL), sd->save.length, SL_MIN_VERSION, SL_MAX_VERSION, nullptr, nullptr});
+				saveloads.push_back({sd->name, new_cmd, static_cast<VarType>(GetVarFileType(new_type) | SLE_VAR_NULL), sd->save.length, SL_MIN_VERSION, SL_MAX_VERSION, { .address = nullptr }, nullptr});
 			}
 			continue;
 		}
