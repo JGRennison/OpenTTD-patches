@@ -888,6 +888,7 @@ static void SlString(void *ptr, size_t length, VarType conv)
 			}
 
 			size_t len = SlReadArrayLength();
+			char *str = nullptr;
 
 			switch (GetVarMemType(conv)) {
 				default: NOT_REACHED();
@@ -901,14 +902,14 @@ static void SlString(void *ptr, size_t length, VarType conv)
 						*(char **)ptr = nullptr;
 						return;
 					} else {
-						*(char **)ptr = MallocT<char>(len + 1); // terminating '\0'
-						ptr = *(char **)ptr;
-						SlCopyBytes(ptr, len);
+						str = MallocT<char>(len + 1); // terminating '\0'
+						*(char **)ptr = str;
+						SlCopyBytesRead(str, len);
+						str[len] = '\0'; // properly terminate the string
 					}
 					break;
 			}
 
-			((char *)ptr)[len] = '\0'; // properly terminate the string
 			StringValidationSettings settings = StringValidationSetting::ReplaceWithQuestionMark;
 			if ((conv & SLF_ALLOW_CONTROL) != 0) {
 				settings.Set(StringValidationSetting::AllowControlCode);
@@ -919,7 +920,7 @@ static void SlString(void *ptr, size_t length, VarType conv)
 			if ((conv & SLF_REPLACE_TABCRLF) != 0) {
 				settings.Set(StringValidationSetting::ReplaceTabCrNlWithSpace);
 			}
-			StrMakeValidInPlace((char *)ptr, (char *)ptr + len, settings);
+			StrMakeValidInPlace(str, str + len, settings);
 			break;
 		}
 		case SLA_PTRS: break;
