@@ -315,10 +315,20 @@ public:
 		 */
 		inline void operator delete(void *p)
 		{
+#if defined(__GNUC__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wuninitialized"
+#if !defined(__clang__) && !defined(__ICC)
+#pragma GCC diagnostic ignored "-Wmaybe-uninitialized"
+#endif
+#endif /* __GNUC__ */
 			if (p == nullptr) return;
 			Titem *pn = static_cast<Titem *>(p);
 			dbg_assert_msg(pn == Tpool->Get(Pool::GetRawIndex(pn->index)), "name: {}", Tpool->name);
 			Tpool->FreeItem(Pool::GetRawIndex(pn->index));
+#if defined(__GNUC__)
+#pragma GCC diagnostic pop
+#endif /* __GNUC__ */
 		}
 
 		/**
