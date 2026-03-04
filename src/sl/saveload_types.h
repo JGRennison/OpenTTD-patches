@@ -151,7 +151,7 @@ struct SaveLoad {
 		 * variable, or the offset within a struct which is then bound to a variable
 		 * during runtime. Decision on which one to use is controlled by the function
 		 * that is called to save it. address: global=true, offset: global=false */
-		void *address;                                       ///< address of variable in the struct (global is true)
+		void *address;                                       ///< address of global variable (global is true)
 		size_t offset;                                       ///< offset of variable in the struct (global is false)
 		SaveLoadStructHandlerFactory struct_handler_factory; ///< factory function pointer for SaveLoadStructHandler
 		SaveLoadIncludeFunctor include_functor;              ///< include functor for SL_INCLUDE

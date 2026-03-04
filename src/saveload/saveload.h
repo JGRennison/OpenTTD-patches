@@ -257,7 +257,7 @@ enum VarTypes : uint16_t {
 	SLF_ALLOW_CONTROL   = 1 << 8, ///< Allow control codes in the strings.
 	SLF_ALLOW_NEWLINE   = 1 << 9, ///< Allow new lines in the strings.
 	SLF_REPLACE_TABCRLF = 1 << 10, ///< Replace tabs, cr and lf in the string with spaces.
-	SLF_GLOBAL          = 1 << 11, ///< Replace tabs, cr and lf in the string with spaces.
+	SLF_GLOBAL          = 1 << 11, ///< This is a global variable (using SaveLoad::address), instead of a struct field (using SaveLoad::offset).
 };
 
 typedef uint16_t VarType;
