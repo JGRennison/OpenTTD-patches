@@ -498,26 +498,21 @@ public:
 private:
 	Storage *memcpy_to(Storage *target, uint32_t start_pos, uint32_t end_pos) const
 	{
-		if (start_pos == end_pos) return target;
+		const uint32_t to_copy = end_pos - start_pos;
+		if (to_copy == 0) return target;
 
 		const uint32_t start_offset = start_pos & this->mask;
-		const uint32_t end_offset = end_pos & this->mask;
-		if (end_offset <= start_offset) {
+		const uint32_t capacity = (uint32_t)this->capacity();
+		if (start_offset + to_copy > capacity) {
 			/* Copy in two chunks due to wrap */
-
-			const uint32_t to_copy = (uint32_t)this->capacity() - start_offset;
-			memcpy(target, this->data + start_offset, to_copy * sizeof(T));
-			target += to_copy;
-
-			memcpy(target, this->data, end_offset * sizeof(T));
-			target += end_offset;
+			const uint32_t to_copy_first = capacity - start_offset;
+			memcpy(target, this->data + start_offset, to_copy_first * sizeof(T));
+			memcpy(target + to_copy_first, this->data, (to_copy - to_copy_first) * sizeof(T));
 		} else {
 			/* Copy in one chunk */
-			const uint32_t to_copy = end_offset - start_offset;
 			memcpy(target, this->data + start_offset, to_copy * sizeof(T));
-			target += to_copy;
 		}
-		return target;
+		return target + to_copy;
 	}
 
 	Storage *memcpy_to(Storage *target) const
