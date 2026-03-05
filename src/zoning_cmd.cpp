@@ -528,11 +528,15 @@ void ZoningMarkDirtyStationCoverageArea(const Station *st, ZoningModeMask mask)
 		}
 		auto invalidate_cache_rect = [&](btree::btree_set<uint32_t> &cache) {
 			for (int y = rect.top; y <= rect.bottom; y++) {
-				auto iter = cache.lower_bound(TileXY(rect.left, y).base() << 3);
+				const auto iter = cache.lower_bound(TileXY(rect.left, y).base() << 3);
 				auto end_iter = iter;
-				uint end = (TileXY(rect.right, y).base() + 1) << 3;
-				while (end_iter != cache.end() && *end_iter < end) ++end_iter;
-				cache.erase(iter, end_iter);
+				size_t erase_count = 0;
+				const uint end = (TileXY(rect.right, y).base() + 1) << 3;
+				while (end_iter != cache.end() && *end_iter < end) {
+					++erase_count;
+					++end_iter;
+				}
+				cache.erase_count(iter, erase_count);
 			}
 		};
 		if (outer_radius) invalidate_cache_rect(_zoning_cache_outer);
