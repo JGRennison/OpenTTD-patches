@@ -12,3 +12,5 @@ query-filters:
     - cpp/trivial-switch
     # Our (GUI) code tends to use long switches.
     - cpp/long-switch
+    # This is not a problem, no warning required.
+    - cpp/function-in-block
