@@ -538,9 +538,8 @@ public:
 		const size_t idx = Recv_uint8();
 		auto subhandler = [&]<size_t Tidx>() {
 			if (idx == Tidx) {
-				std::variant_alternative_t<Tidx, std::variant<V...>> value;
+				std::variant_alternative_t<Tidx, std::variant<V...>> &value = data.template emplace<Tidx>();
 				this->Recv_generic(value, settings);
-				data = value;
 			}
 		};
 		auto handler = [&]<size_t... Tindices>(std::index_sequence<Tindices...>) {
