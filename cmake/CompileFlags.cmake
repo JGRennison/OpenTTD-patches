@@ -143,7 +143,8 @@ macro(compile_flags)
             if(CMAKE_CXX_COMPILER_VERSION VERSION_LESS 14)
                 add_compile_options(
                     # Disable these warnings on GCC < 14 due to false-positives
-                    "-Wno-stringop-overflow -Wno-stringop-overread"
+                    "-Wno-stringop-overflow"
+                    "-Wno-stringop-overread"
                 )
                 # Pass to linker as well in case LTO is being used
                 set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wno-stringop-overflow -Wno-stringop-overread")
