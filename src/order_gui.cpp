@@ -2132,6 +2132,14 @@ public:
 				break;
 			}
 
+			case WID_O_DELETE: {
+				Dimension d = maxdim(GetStringBoundingBox(STR_ORDERS_DELETE_BUTTON), GetStringBoundingBox(STR_ORDERS_DELETE_ALL_BUTTON));
+				d.width += padding.width;
+				d.height += padding.height;
+				size = maxdim(size, d);
+				break;
+			}
+
 			case WID_O_OCCUPANCY_TOGGLE:
 				size.width = GetStringBoundingBox(GetString(STR_ORDERS_OCCUPANCY_PERCENT, GetParamMaxValue(100))).width + 10 + WidgetDimensions::unscaled.framerect.Horizontal();
 				break;
@@ -2269,7 +2277,7 @@ public:
 			 * 'End of Orders' order or a regular order is selected. */
 			NWidgetCore *nwi = this->GetWidget<NWidgetCore>(WID_O_DELETE);
 			if (this->selected_order == this->vehicle->GetNumOrders()) {
-				nwi->SetStringTip(STR_ORDERS_DELETE_BUTTON, STR_ORDERS_DELETE_ALL_TOOLTIP);
+				nwi->SetStringTip(STR_ORDERS_DELETE_ALL_BUTTON, STR_ORDERS_DELETE_ALL_TOOLTIP);
 			} else {
 				nwi->SetStringTip(STR_ORDERS_DELETE_BUTTON, STR_ORDERS_DELETE_TOOLTIP);
 			}
