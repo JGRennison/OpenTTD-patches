@@ -51,7 +51,7 @@ struct BufferSerialisationHelper {
 
 	void Send_uint8(const SerialisationAsBase auto &data)
 	{
-		static_assert(sizeof(data.base()) == 1);
+		static_assert(sizeof(decltype(data.base())) == 1);
 		this->Send_uint8((uint8_t)data.base());
 	}
 
@@ -63,7 +63,7 @@ struct BufferSerialisationHelper {
 
 	void Send_uint16(const SerialisationAsBase auto &data)
 	{
-		static_assert(sizeof(data.base()) <= 2);
+		static_assert(sizeof(decltype(data.base())) <= 2);
 		this->Send_uint16((uint16_t)data.base());
 	}
 
@@ -75,7 +75,7 @@ struct BufferSerialisationHelper {
 
 	void Send_uint32(const SerialisationAsBase auto &data)
 	{
-		static_assert(sizeof(data.base()) <= 4);
+		static_assert(sizeof(decltype(data.base())) <= 4);
 		this->Send_uint32((uint32_t)data.base());
 	}
 

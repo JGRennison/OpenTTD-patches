@@ -477,19 +477,19 @@ void SlWriteUint64(uint64_t v);
 
 inline void SlWriteByte(const SlIsPrimitiveType auto &data)
 {
-	static_assert(sizeof(data.base()) == 1);
+	static_assert(sizeof(decltype(data.base())) == 1);
 	SlWriteByte((uint8_t)data.base());
 }
 
 inline void SlWriteUint16(const SlIsPrimitiveType auto &data)
 {
-	static_assert(sizeof(data.base()) <= 2);
+	static_assert(sizeof(decltype(data.base())) <= 2);
 	SlWriteUint16((uint16_t)data.base());
 }
 
 inline void SlWriteUint32(const SlIsPrimitiveType auto &data)
 {
-	static_assert(sizeof(data.base()) <= 4);
+	static_assert(sizeof(decltype(data.base())) <= 4);
 	SlWriteUint32((uint32_t)data.base());
 }
 
