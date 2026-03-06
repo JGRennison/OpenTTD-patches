@@ -2400,11 +2400,14 @@ CommandCost CmdProgramSignalTraceRestrict(DoCommandFlags flags, TileIndex tile, 
 		return ret;
 	}
 
-	bool can_make_new = (type == TRDCT_INSERT_ITEM) && (flags.Test(DoCommandFlag::Execute));
-	bool need_existing = (type != TRDCT_INSERT_ITEM);
+	const bool need_existing = (type != TRDCT_INSERT_ITEM);
+	const bool can_make_new = !need_existing && flags.Test(DoCommandFlag::Execute);
 	TraceRestrictProgram *prog = GetTraceRestrictProgram(MakeTraceRestrictRefId(tile, track), can_make_new);
 	if (need_existing && prog == nullptr) {
 		return CommandCost(STR_TRACE_RESTRICT_ERROR_NO_PROGRAM);
+	}
+	if (!need_existing && prog == nullptr && !TraceRestrictProgram::CanAllocateItem()) {
+		return CMD_ERROR;
 	}
 
 	uint32_t offset_limit_exclusive = ((type == TRDCT_INSERT_ITEM) ? 1 : 0);
