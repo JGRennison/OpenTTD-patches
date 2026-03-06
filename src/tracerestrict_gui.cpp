@@ -2218,6 +2218,7 @@ class TraceRestrictWindow: public Window {
 	int current_right_plane = 0;                                                ///< current plane for TR_WIDGET_SEL_TOP_RIGHT widget
 	int base_copy_plane = 0;                                                    ///< base plane for TR_WIDGET_SEL_COPY widget
 	int base_share_plane = 0;                                                   ///< base plane for TR_WIDGET_SEL_SHARE widget
+	uint display_remove_count = 0;                                              ///< number to display in remove button
 
 	enum QuerySubMode : uint8_t {
 		QSM_DEFAULT,
@@ -3156,6 +3157,14 @@ public:
 			case TR_WIDGET_GOTO_SIGNAL:
 				size.width = std::max<uint>(12, NWidgetScrollbar::GetVerticalDimension().width);
 				break;
+
+			case TR_WIDGET_REMOVE: {
+				Dimension d = maxdim(GetStringBoundingBox(STR_TRACE_RESTRICT_REMOVE), GetStringBoundingBox(GetString(STR_TRACE_RESTRICT_REMOVE_N, GetParamMaxValue(1000))));
+				d.width += padding.width;
+				d.height += padding.height;
+				size = maxdim(size, d);
+				break;
+			}
 		}
 	}
 
@@ -3281,6 +3290,13 @@ public:
 					return GetString(stringid, item.GetValue());
 				}
 				return GetString(stringid);
+			}
+
+			case TR_WIDGET_REMOVE: {
+				if (!_ctrl_pressed && this->display_remove_count > 1) {
+					return GetString(STR_TRACE_RESTRICT_REMOVE_N, this->display_remove_count);
+				}
+				return GetString(STR_TRACE_RESTRICT_REMOVE);
 			}
 
 			default:
@@ -3556,6 +3572,29 @@ private:
 		this->RaiseWidget(TR_WIDGET_LEFT_AUX_DROPDOWN);
 	}
 
+	void SetRemoveButtonCountForConditional()
+	{
+		const TraceRestrictProgram *prog = this->GetProgram();
+		std::vector<TraceRestrictProgramItem> items = prog->items; // copy
+		if (TraceRestrictProgramRemoveItemAt(items, this->selected_instruction - 1, false).Succeeded()) {
+			const size_t items_removed = prog->items.size() - items.size();
+
+			uint count = 0;
+			auto iter = TraceRestrictInstructionIteratorAt(prog->items, this->selected_instruction - 1);
+			const auto end = iter.ItemIter() + items_removed;
+			for (; iter < end; ++iter) {
+				TraceRestrictInstructionItem item = iter.Instruction();
+				if (item.GetType() == TRIT_COND_ENDIF && item.GetCondFlags() == 0) {
+					/* Don't count end if items. */
+					continue;
+				}
+
+				count++;
+			}
+			this->display_remove_count = count;
+		}
+	}
+
 	/**
 	 * Update button states, text values, etc.
 	 */
@@ -3603,6 +3642,8 @@ private:
 		left_aux_sel->SetDisplayedPlane(SZSP_NONE);
 		middle_sel->SetDisplayedPlane(DPM_BLANK);
 		right_sel->SetDisplayedPlane(DPR_BLANK);
+
+		this->display_remove_count = 1;
 
 		const TraceRestrictProgram *prog = this->GetProgram();
 
@@ -3674,6 +3715,7 @@ private:
 				if (item.GetCondFlags() != 0) {
 					/* This is not an end if, it must be an else, enable removing */
 					this->EnableWidget(TR_WIDGET_REMOVE);
+					this->SetRemoveButtonCountForConditional();
 
 					/* Setup condflags dropdown to show else */
 					left_2_sel->SetDisplayedPlane(DPL2_CONDFLAGS);
@@ -3968,6 +4010,7 @@ private:
 
 				this->EnableWidget(TR_WIDGET_INSERT);
 				this->EnableWidget(TR_WIDGET_REMOVE);
+				if (item.IsConditional() && item.GetCondFlags() != TRCF_OR) this->SetRemoveButtonCountForConditional();
 			}
 			if (this->IsUpDownBtnUsable(true)) this->EnableWidget(TR_WIDGET_UP_BTN);
 			if (this->IsUpDownBtnUsable(false)) this->EnableWidget(TR_WIDGET_DOWN_BTN);
@@ -4172,7 +4215,7 @@ static constexpr NWidgetPart _nested_program_widgets[] = {
 				NWidget(WWT_DROPDOWN, COLOUR_GREY, TR_WIDGET_INSERT), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetStringTip(STR_TRACE_RESTRICT_INSERT, STR_TRACE_RESTRICT_INSERT_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, TR_WIDGET_REMOVE), SetMinimalSize(124, 12), SetFill(1, 0),
-														SetStringTip(STR_TRACE_RESTRICT_REMOVE, STR_TRACE_RESTRICT_REMOVE_TOOLTIP), SetResize(1, 0),
+														SetToolTip(STR_TRACE_RESTRICT_REMOVE_TOOLTIP), SetResize(1, 0),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, TR_WIDGET_RESET), SetMinimalSize(124, 12), SetFill(1, 0),
 														SetStringTip(STR_TRACE_RESTRICT_RESET, STR_TRACE_RESTRICT_RESET_TOOLTIP), SetResize(1, 0),
 				NWidget(NWID_SELECTION, INVALID_COLOUR, TR_WIDGET_SEL_COPY),
