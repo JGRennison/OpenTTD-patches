@@ -2223,6 +2223,7 @@ class NIHTraceRestrict : public NIHelper {
 		CA(CMB_SIGNAL_MODE_CTRL)
 		CA(ORDER_CONDITIONALS)
 		CA(REVERSE_AT)
+		CA(COUNTER_CONDITIONALS)
 #undef CA
 		output.Print("");
 

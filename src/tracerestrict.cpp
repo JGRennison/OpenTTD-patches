@@ -1437,7 +1437,6 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictPr
 				case TRIT_COND_PHYS_RATIO:
 				case TRIT_COND_TRAIN_OWNER:
 				case TRIT_COND_LOAD_PERCENT:
-				case TRIT_COND_COUNTER_VALUE:
 				case TRIT_COND_TIME_DATE_VALUE:
 				case TRIT_COND_RESERVED_TILES:
 				case TRIT_COND_CATEGORY:
@@ -1480,6 +1479,10 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictPr
 					if (pbs_res_end_released_slot_group || !pbs_res_end_released_slots.empty() || !pbs_res_end_acquired_slots.empty()) {
 						actions_used_flags |= TRPAUF_PBS_RES_END_SIMULATE;
 					}
+					break;
+
+				case TRIT_COND_COUNTER_VALUE:
+					actions_used_flags |= TRPAUF_COUNTER_CONDITIONALS;
 					break;
 
 				default:
@@ -3882,6 +3885,7 @@ bool ClearOrderTraceRestrictCounterIf(Order *o, F cond)
 void TraceRestrictRemoveCounterID(TraceRestrictCounterID index)
 {
 	for (TraceRestrictProgram *prog : TraceRestrictProgram::Iterate()) {
+		if ((prog->actions_used_flags & TRPAUF_HAS_COUNTER_FLAG_MASK) == 0) continue; // No counter references in this program
 		ClearInstructionRangeTraceRestrictCounterIf(prog->items, [&](TraceRestrictCounterID idx) {
 			return idx == index;
 		});
