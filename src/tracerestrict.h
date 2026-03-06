@@ -809,6 +809,7 @@ enum TraceRestrictProgramActionsUsedFlags : uint32_t {
 	TRPAUF_ORDER_CONDITIONALS     = 1 << 19, ///< Order conditionals are present
 	TRPAUF_REVERSE_AT             = 1 << 20, ///< Reverse at signal
 	TRPAUF_COUNTER_CONDITIONALS   = 1 << 21, ///< Counter conditionals are present
+	TRPAUF_IS_BACKUP              = 1 << 22, ///< This program is a backup
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramActionsUsedFlags)
 

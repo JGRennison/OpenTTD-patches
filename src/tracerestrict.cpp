@@ -9,6 +9,7 @@
 
 #include "stdafx.h"
 #include "tracerestrict.h"
+#include "tracerestrict_backup.h"
 #include "tracerestrict_cmd.h"
 #include "debug.h"
 #include "train.h"
@@ -94,6 +95,8 @@ INSTANTIATE_POOL_METHODS(TraceRestrictCounter)
  */
 TraceRestrictMapping _tracerestrictprogram_mapping;
 
+TypedIndexContainer<std::array<TraceRestrictCompanyBackups, MAX_COMPANIES>, CompanyID> _tracerestrict_backups;
+
 static btree::btree_multimap<VehicleID, TraceRestrictSlotID> _slot_vehicle_index;
 
 /**
@@ -114,6 +117,72 @@ static_assert(lengthof(_tracerestrict_pathfinder_penalty_preset_values) == TRPPP
  */
 void ClearTraceRestrictMapping() {
 	_tracerestrictprogram_mapping.clear();
+
+	for (TraceRestrictCompanyBackups &backups : _tracerestrict_backups) {
+		backups.Reset();
+	}
+}
+
+void TraceRestrictCompanyBackups::Append(TraceRestrictProgramID program_id)
+{
+	if (this->next_index == 0) this->next_index++; // Don't use 0 as a valid value
+	this->programs.push_back({ this->next_index++, program_id});
+}
+
+void TraceRestrictCompanyBackups::EvictOldBackups()
+{
+	while (this->programs.size() >= TRACERESTRICT_MAX_BACKUPS) {
+		TraceRestrictDeleteBackup(this->programs.front().program_id);
+		this->programs.pop_front();
+	}
+}
+
+/**
+ * Try to register a program as a backup for the given company.
+ * The program must have a reference count of 0.
+ * Returns true if successfully added.
+ */
+bool TraceRestrictTryRegisterBackup(TraceRestrictProgram *prog, CompanyID owner)
+{
+	assert(prog->GetReferenceCount() == 0);
+
+	if (prog->items.empty()) return false; // Don't backup empty programs
+	if (owner.base() >= _tracerestrict_backups.size()) return false;
+	TraceRestrictCompanyBackups &backups = _tracerestrict_backups[owner];
+	backups.EvictOldBackups();
+	backups.Append(prog->index);
+
+	prog->actions_used_flags |= TRPAUF_IS_BACKUP;
+	return true;
+}
+
+/**
+ * Try to clone a program as a new backup program for the given company.
+ * Returns true if successfully backed up.
+ */
+bool TraceRestrictTryCreateBackupOfProgram(const TraceRestrictProgram *prog, CompanyID owner)
+{
+	if (prog->items.empty()) return false; // Don't backup empty programs
+	if (owner.base() >= _tracerestrict_backups.size()) return false;
+	TraceRestrictCompanyBackups &backups = _tracerestrict_backups[owner];
+	backups.EvictOldBackups();
+
+	if (!TraceRestrictProgram::CanAllocateItem()) return false; // Do this after evicting old backups as that make may space in the pool
+
+	TraceRestrictProgram *backup_prog = TraceRestrictProgram::Create();
+	backup_prog->actions_used_flags = prog->actions_used_flags | TRPAUF_IS_BACKUP;
+	backup_prog->items = prog->items;
+	if (prog->texts != nullptr) backup_prog->texts = std::make_unique<TraceRestrictProgramTexts>(*prog->texts); // copy texts
+
+	backups.Append(backup_prog->index);
+	return true;
+}
+
+void TraceRestrictDeleteBackup(TraceRestrictProgramID backup_program_id)
+{
+	TraceRestrictProgram *prog = TraceRestrictProgram::Get(backup_program_id);
+	assert(prog != nullptr && prog->GetReferenceCount() == 0 && (prog->actions_used_flags & TRPAUF_IS_BACKUP));
+	delete prog;
 }
 
 /**
@@ -1128,12 +1197,17 @@ void TraceRestrictProgram::DecrementRefCount(TraceRestrictRefId ref_id) {
 	const size_t old_ref_count = this->references.size();
 	assert(old_ref_count != 0);
 
-	/* Reference count is currently one, just delete this */
+	/* Reference count is currently one, just delete (or backup) this */
 	if (old_ref_count == 1) {
+		this->references.clear();
 		extern const TraceRestrictProgram *_viewport_highlight_tracerestrict_program;
 		if (_viewport_highlight_tracerestrict_program == this) {
 			_viewport_highlight_tracerestrict_program = nullptr;
 			InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+		}
+		if (TraceRestrictTryRegisterBackup(this, GetTileOwner(GetTraceRestrictRefIdTileIndex(ref_id)))) {
+			/* Backup has taken responsibility for this program, do not delete. */
+			return;
 		}
 		delete this;
 		return;
@@ -2849,6 +2923,16 @@ void TraceRestrictRemoveGroupID(GroupID index)
  */
 void TraceRestrictUpdateCompanyID(CompanyID old_company, CompanyID new_company)
 {
+	if (old_company.base() < _tracerestrict_backups.size()) {
+		TraceRestrictCompanyBackups &backups = _tracerestrict_backups[old_company];
+
+		for (const TraceRestrictProgramBackup &backup : backups.programs) {
+			TraceRestrictDeleteBackup(backup.program_id);
+		}
+
+		backups.Reset();
+	}
+
 	for (TraceRestrictProgram *prog : TraceRestrictProgram::Iterate()) {
 		for (auto iter : prog->IterateInstructionsMutable()) {
 			TraceRestrictInstructionItemRef item = iter.InstructionRef(); // note this is a reference wrapper

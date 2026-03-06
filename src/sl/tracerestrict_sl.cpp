@@ -9,6 +9,7 @@
 
 #include "../stdafx.h"
 #include "../tracerestrict.h"
+#include "../tracerestrict_backup.h"
 #include "../strings_func.h"
 #include "../string_func.h"
 #include "saveload.h"
@@ -267,6 +268,67 @@ static void Save_TRRC()
 	}
 }
 
+struct TraceRestrictCompanyBackupsProgramsHandler final : public TypedSaveLoadStructHandler<TraceRestrictCompanyBackupsProgramsHandler, TraceRestrictCompanyBackups> {
+public:
+	NamedSaveLoadTable GetDescription() const override
+	{
+		static const NamedSaveLoad description[] = {
+			NSLT("backup_index", SLE_VAR(TraceRestrictProgramBackup, backup_index, SLE_UINT32)),
+			NSLT("program_id",   SLE_VAR(TraceRestrictProgramBackup, program_id,   SLE_UINT32)),
+		};
+		return description;
+	}
+
+	void Save(TraceRestrictCompanyBackups *backups) const override
+	{
+		SlSetStructListLength(backups->programs.size());
+		for (TraceRestrictProgramBackup &item : backups->programs) {
+			SlObjectSaveFiltered(&item, this->GetLoadDescription());
+		}
+	}
+
+	void Load(TraceRestrictCompanyBackups *backups) const override
+	{
+		size_t count = SlGetStructListLength(UINT16_MAX);
+		backups->programs.resize(count);
+		for (TraceRestrictProgramBackup &item : backups->programs) {
+			SlObjectLoadFiltered(&item, this->GetLoadDescription());
+		}
+	}
+};
+
+static const NamedSaveLoad _trace_restrict_backup_desc[] = {
+	NSLT("next_index", SLE_VAR(TraceRestrictCompanyBackups, next_index, SLE_UINT32)),
+	NSLT_STRUCTLIST<TraceRestrictCompanyBackupsProgramsHandler>("programs"),
+};
+
+/**
+ * Load backup pool
+ */
+static void Load_TRRB()
+{
+	SaveLoadTableData slt = SlTableHeaderOrRiff(_trace_restrict_backup_desc);
+
+	int index;
+	while ((index = SlIterateArray()) != -1) {
+		if (index >= static_cast<int>(_tracerestrict_backups.size())) SlErrorCorrupt("Incorrect company ID loading trace restrict backups");
+		SlObjectLoadFiltered(&_tracerestrict_backups[static_cast<CompanyID>(index)], slt);
+	}
+}
+
+/**
+ * Save backup pool
+ */
+static void Save_TRRB()
+{
+	SaveLoadTableData slt = SlTableHeader(_trace_restrict_backup_desc);
+
+	for (CompanyID cid = CompanyID::Begin(); cid != static_cast<CompanyID>(_tracerestrict_backups.size()); ++cid) {
+		SlSetArrayIndex(cid);
+		SlObjectSaveFiltered(&_tracerestrict_backups[cid], slt);
+	}
+}
+
 /**
  * Update program reference counts from just-loaded mapping and slot group memberships from slot parent values
  */
@@ -274,6 +336,16 @@ void AfterLoadTraceRestrict()
 {
 	for (const auto &it : _tracerestrictprogram_mapping) {
 		TraceRestrictProgram::Get(it.second.program_id)->IncrementRefCount(it.first);
+	}
+
+	for (const TraceRestrictCompanyBackups &backups : _tracerestrict_backups) {
+		for (const TraceRestrictProgramBackup &item : backups.programs) {
+			TraceRestrictProgram *prog = TraceRestrictProgram::GetIfValid(item.program_id);
+			if (prog == nullptr || prog->GetReferenceCount() != 0 || (prog->actions_used_flags & TRPAUF_IS_BACKUP)) {
+				SlErrorCorrupt("Tracerestrict backup program ref error");
+			}
+			prog->actions_used_flags |= TRPAUF_IS_BACKUP; // Mark this program as a backup
+		}
 	}
 
 	for (const TraceRestrictSlot *slot : TraceRestrictSlot::Iterate()) {
@@ -292,6 +364,7 @@ extern const ChunkHandler trace_restrict_chunk_handlers[] = {
 	{ 'TRRS', Save_TRRS, Load_TRRS, nullptr, nullptr, CH_TABLE },           // Trace Restrict Slot Pool chunk
 	{ 'TRRG', Save_TRRG, Load_TRRG, nullptr, nullptr, CH_TABLE },           // Trace Restrict Slot Group Pool chunk
 	{ 'TRRC', Save_TRRC, Load_TRRC, nullptr, nullptr, CH_TABLE },           // Trace Restrict Counter Pool chunk
+	{ 'TRRB', Save_TRRB, Load_TRRB, nullptr, nullptr, CH_TABLE },           // Trace Restrict Backup chunk
 };
 
 extern const ChunkHandlerTable _trace_restrict_chunk_handlers(trace_restrict_chunk_handlers);

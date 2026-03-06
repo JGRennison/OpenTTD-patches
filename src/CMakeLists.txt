@@ -598,6 +598,7 @@ add_files(
     townname_type.h
     tracerestrict.cpp
     tracerestrict.h
+    tracerestrict_backup.h
     tracerestrict_cmd.h
     tracerestrict_id_type.h
     tracerestrict_gui.cpp

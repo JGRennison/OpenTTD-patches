@@ -2224,6 +2224,7 @@ class NIHTraceRestrict : public NIHelper {
 		CA(ORDER_CONDITIONALS)
 		CA(REVERSE_AT)
 		CA(COUNTER_CONDITIONALS)
+		CA(IS_BACKUP)
 #undef CA
 		output.Print("");
 
