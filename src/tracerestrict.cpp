@@ -2803,6 +2803,7 @@ int GetTraceRestrictTimeDateValueFromStateTicks(TraceRestrictTimeDateValueField 
 void TraceRestrictRemoveDestinationID(TraceRestrictOrderCondAuxField type, DestinationID index)
 {
 	for (TraceRestrictProgram *prog : TraceRestrictProgram::Iterate()) {
+		if ((prog->actions_used_flags & TRPAUF_ORDER_CONDITIONALS) == 0) continue; // No destination references in this program
 		for (auto iter : prog->IterateInstructionsMutable()) {
 			TraceRestrictInstructionItemRef item = iter.InstructionRef(); // note this is a reference wrapper
 			if (item.GetType() == TRIT_COND_CURRENT_ORDER ||
