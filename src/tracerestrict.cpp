@@ -3399,6 +3399,7 @@ bool ClearOrderTraceRestrictSlotIf(Order *o, F cond)
 void TraceRestrictRemoveSlotID(TraceRestrictSlotID index)
 {
 	for (TraceRestrictProgram *prog : TraceRestrictProgram::Iterate()) {
+		if ((prog->actions_used_flags & TRPAUF_HAS_SLOT_FLAG_MASK) == 0) continue; // No slot or slot group references in this program
 		ClearInstructionRangeTraceRestrictSlotIf(prog->items, [&](TraceRestrictSlotID idx) {
 			return idx == index;
 		});
@@ -3653,6 +3654,7 @@ bool ClearOrderTraceRestrictSlotGroupIf(Order *o, F cond)
 void TraceRestrictRemoveSlotGroupID(TraceRestrictSlotGroupID index)
 {
 	for (TraceRestrictProgram *prog : TraceRestrictProgram::Iterate()) {
+		if ((prog->actions_used_flags & TRPAUF_HAS_SLOT_FLAG_MASK) == 0) continue; // No slot or slot group references in this program
 		ClearInstructionRangeTraceRestrictSlotGroupIf(prog->items, [&](TraceRestrictSlotGroupID idx) {
 			return idx == index;
 		});
