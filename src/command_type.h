@@ -720,6 +720,7 @@ enum Commands : uint8_t {
 
 	CMD_PROGRAM_TRACERESTRICT_SIGNAL, ///< modify a signal tracerestrict program
 	CMD_MANAGE_TRACERESTRICT_SIGNAL,  ///< modify a signal tracerestrict program (management)
+	CMD_RESTORE_TRACERESTRICT_SIGNAL, ///< modify a signal tracerestrict program (restore from backup)
 	CMD_CREATE_TRACERESTRICT_SLOT,    ///< create a tracerestrict slot
 	CMD_ALTER_TRACERESTRICT_SLOT,     ///< alter a tracerestrict slot
 	CMD_DELETE_TRACERESTRICT_SLOT,    ///< delete a tracerestrict slot

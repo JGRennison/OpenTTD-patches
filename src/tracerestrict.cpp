@@ -2819,6 +2819,65 @@ CommandCost CmdProgramSignalTraceRestrictMgmt(DoCommandFlags flags, TileIndex ti
 	return CommandCost();
 }
 
+/**
+ * Restore tracerestrict program from backup.
+ * @param flags Internal command handler stuff.
+ * @param tile The tile which contains the signal.
+ * @param track Track on the tile to apply to
+ * @param backup_index backup index
+ * @return the cost of this operation (which is free), or an error
+ */
+CommandCost CmdRestoreSignalTraceRestrict(DoCommandFlags flags, TileIndex tile, Track track, uint32_t backup_index)
+{
+	CommandCost ret = TraceRestrictCheckTileIsUsable(tile, track);
+	if (ret.Failed()) {
+		return ret;
+	}
+
+	if (_current_company.base() >= _tracerestrict_backups.size()) return CMD_ERROR;
+
+	TraceRestrictProgramID backup_program_id = TraceRestrictProgramID::Invalid();
+	const TraceRestrictCompanyBackups &backups = _tracerestrict_backups[_current_company];
+	for (const TraceRestrictProgramBackup &item : backups.programs) {
+		if (item.backup_index == backup_index) {
+			backup_program_id = item.program_id;
+			break;
+		}
+	}
+	if (backup_program_id == TraceRestrictProgramID::Invalid()) return CMD_ERROR;
+
+	TraceRestrictProgram *prog = GetTraceRestrictProgram(MakeTraceRestrictRefId(tile, track), flags.Test(DoCommandFlag::Execute));
+	if (prog == nullptr && !TraceRestrictProgram::CanAllocateItem()) return CMD_ERROR;
+
+	if (!flags.Test(DoCommandFlag::Execute)) return CommandCost();
+
+	const TraceRestrictProgram *backup_prog = TraceRestrictProgram::Get(backup_program_id);
+	assert(prog != nullptr);
+	assert(backup_prog != nullptr);
+
+	/* Clone backup items and text */
+	std::vector<TraceRestrictProgramItem> items = backup_prog->items;
+	std::unique_ptr<TraceRestrictProgramTexts> texts;
+	if (backup_prog->texts != nullptr) texts = std::make_unique<TraceRestrictProgramTexts>(*backup_prog->texts); // copy texts
+
+	/* Any backup should be created after reading the source backup, in case this would evict that. */
+	TraceRestrictTryCreateBackupOfProgram(prog, _current_company);
+
+	size_t old_size = prog->items.size();
+	TraceRestrictProgramActionsUsedFlags old_actions_used_flags = prog->actions_used_flags;
+
+	prog->items = std::move(items);
+	prog->texts = std::move(texts);
+	prog->Validate();
+
+	TraceRestrictCheckRefreshSignals(prog, old_size, old_actions_used_flags);
+
+	/* Update windows */
+	InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+
+	return CommandCost();
+}
+
 int GetTraceRestrictTimeDateValue(TraceRestrictTimeDateValueField type)
 {
 	const TickMinutes now = _settings_game.game_time.NowInTickMinutes();

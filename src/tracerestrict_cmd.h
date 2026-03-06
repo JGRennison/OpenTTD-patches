@@ -128,10 +128,15 @@ struct TraceRestrictManageSignalData final : public TupleRefCmdData<TraceRestric
 	void FormatDebugSummary(struct format_target &) const;
 };
 
+struct TraceRestrictRestoreSignalData final : public AutoFmtTupleCmdData<TraceRestrictRestoreSignalData, TCDF_NONE, Track, uint32_t> {
+	static inline constexpr const char fmt_str[] = "track: {:X}, idx: {}";
+};
+
 BaseCommandContainer<CMD_PROGRAM_TRACERESTRICT_SIGNAL> GetTraceRestrictCommandContainer(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value);
 
 DEF_CMD_TUPLE    (CMD_PROGRAM_TRACERESTRICT_SIGNAL,      CmdProgramSignalTraceRestrict,     {}, CommandType::OtherManagement, TraceRestrictProgramSignalData)
 DEF_CMD_TUPLE    (CMD_MANAGE_TRACERESTRICT_SIGNAL,       CmdProgramSignalTraceRestrictMgmt, {}, CommandType::OtherManagement, TraceRestrictManageSignalData)
+DEF_CMD_TUPLE    (CMD_RESTORE_TRACERESTRICT_SIGNAL,      CmdRestoreSignalTraceRestrict,     {}, CommandType::OtherManagement, TraceRestrictRestoreSignalData)
 DEF_CMD_DIRECT_NT(CMD_CREATE_TRACERESTRICT_SLOT,         CmdCreateTraceRestrictSlot,        {}, CommandType::OtherManagement, TraceRestrictCreateSlotCmdData)
 DEF_CMD_TUPLE_NT (CMD_ALTER_TRACERESTRICT_SLOT,          CmdAlterTraceRestrictSlot,         {}, CommandType::OtherManagement, CmdDataT<TraceRestrictSlotID, TraceRestrictAlterSlotOperation, uint32_t, std::string>)
 DEF_CMD_TUPLE_NT (CMD_DELETE_TRACERESTRICT_SLOT,         CmdDeleteTraceRestrictSlot,        {}, CommandType::OtherManagement, CmdDataT<TraceRestrictSlotID>)
