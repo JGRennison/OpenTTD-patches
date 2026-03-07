@@ -12,7 +12,6 @@
 
 #include "station_type.h"
 #include "core/pool_type.hpp"
-#include "core/bitmath_func.hpp"
 #include "vehicle_type.h"
 #include "roadveh.h"
 #include "road_map.h"

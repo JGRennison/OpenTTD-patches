@@ -16,7 +16,6 @@
 #include "../town.h"
 #include "../window_func.h"
 #include "../toolbar_gui.h"
-#include "../core/geometry_func.hpp"
 #include "../zoom_func.h"
 #include "network.h"
 #include "network_client.h"

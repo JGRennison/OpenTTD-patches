@@ -10,7 +10,6 @@
 #include "../stdafx.h"
 #include "string_consumer.hpp"
 
-#include "bitmath_func.hpp"
 #include "utf8.hpp"
 #include "format.hpp"
 

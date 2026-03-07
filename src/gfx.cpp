@@ -28,7 +28,6 @@
 #include "transparency.h"
 #include "core/alloc_func.hpp"
 #include "core/backup_type.hpp"
-#include "core/container_func.hpp"
 #include "core/geometry_func.hpp"
 #include "viewport_func.h"
 

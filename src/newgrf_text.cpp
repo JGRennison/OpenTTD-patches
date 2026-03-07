@@ -28,7 +28,6 @@
 #include "string_func.h"
 #include "date_type.h"
 #include "debug.h"
-#include "core/alloc_type.hpp"
 #include "core/string_builder.hpp"
 #include "core/string_consumer.hpp"
 #include "core/typed_container.hpp"

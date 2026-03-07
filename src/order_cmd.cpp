@@ -24,7 +24,6 @@
 #include "core/bitmath_func.hpp"
 #include "core/container_func.hpp"
 #include "core/pool_func.hpp"
-#include "core/random_func.hpp"
 #include "aircraft.h"
 #include "roadveh.h"
 #include "station_base.h"
