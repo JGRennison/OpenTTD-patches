@@ -39,7 +39,7 @@ struct TraceRestrictCompanyBackups {
 extern TypedIndexContainer<std::array<TraceRestrictCompanyBackups, MAX_COMPANIES>, CompanyID> _tracerestrict_backups;
 
 bool TraceRestrictTryRegisterBackup(TraceRestrictProgram *prog, CompanyID owner);
-bool TraceRestrictTryCreateBackupOfProgram(const TraceRestrictProgram *prog, CompanyID owner);
+void TraceRestrictTryCreateBackupOfProgram(const TraceRestrictProgram *prog, CompanyID owner);
 void TraceRestrictDeleteBackup(TraceRestrictProgramID backup_program_id);
 
 #endif /* TRACERESTRICT_BACKUP_H */

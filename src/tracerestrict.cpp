@@ -137,10 +137,25 @@ void TraceRestrictCompanyBackups::EvictOldBackups()
 	}
 }
 
+static bool TraceRestrictTryReuseExistingBackup(TraceRestrictCompanyBackups &backups, const TraceRestrictProgram *prog)
+{
+	for (auto it = backups.programs.begin(); it != backups.programs.end(); ++it) {
+		if (TraceRestrictProgramsEquivalent(prog, TraceRestrictProgram::GetIfValid(it->program_id))) {
+			/* Found an existing backup which is equivalent. */
+			TraceRestrictProgramBackup item = std::move(*it);
+			backups.programs.erase(it);
+			backups.programs.push_back(std::move(item));
+			return true;
+		}
+	}
+
+	return false;
+}
+
 /**
  * Try to register a program as a backup for the given company.
  * The program must have a reference count of 0.
- * Returns true if successfully added.
+ * Returns true if successfully added and ownership of prog has been transferred.
  */
 bool TraceRestrictTryRegisterBackup(TraceRestrictProgram *prog, CompanyID owner)
 {
@@ -149,6 +164,7 @@ bool TraceRestrictTryRegisterBackup(TraceRestrictProgram *prog, CompanyID owner)
 	if (prog->items.empty()) return false; // Don't backup empty programs
 	if (owner.base() >= _tracerestrict_backups.size()) return false;
 	TraceRestrictCompanyBackups &backups = _tracerestrict_backups[owner];
+	if (TraceRestrictTryReuseExistingBackup(backups, prog)) return false;
 	backups.EvictOldBackups();
 	backups.Append(prog->index);
 
@@ -158,16 +174,16 @@ bool TraceRestrictTryRegisterBackup(TraceRestrictProgram *prog, CompanyID owner)
 
 /**
  * Try to clone a program as a new backup program for the given company.
- * Returns true if successfully backed up.
  */
-bool TraceRestrictTryCreateBackupOfProgram(const TraceRestrictProgram *prog, CompanyID owner)
+void TraceRestrictTryCreateBackupOfProgram(const TraceRestrictProgram *prog, CompanyID owner)
 {
-	if (prog->items.empty()) return false; // Don't backup empty programs
-	if (owner.base() >= _tracerestrict_backups.size()) return false;
+	if (prog->items.empty()) return; // Don't backup empty programs
+	if (owner.base() >= _tracerestrict_backups.size()) return;
 	TraceRestrictCompanyBackups &backups = _tracerestrict_backups[owner];
+	if (TraceRestrictTryReuseExistingBackup(backups, prog)) return;
 	backups.EvictOldBackups();
 
-	if (!TraceRestrictProgram::CanAllocateItem()) return false; // Do this after evicting old backups as that make may space in the pool
+	if (!TraceRestrictProgram::CanAllocateItem()) return; // Do this after evicting old backups as that make may space in the pool
 
 	TraceRestrictProgram *backup_prog = TraceRestrictProgram::Create();
 	backup_prog->actions_used_flags = prog->actions_used_flags | TRPAUF_IS_BACKUP;
@@ -175,7 +191,6 @@ bool TraceRestrictTryCreateBackupOfProgram(const TraceRestrictProgram *prog, Com
 	if (prog->texts != nullptr) backup_prog->texts = std::make_unique<TraceRestrictProgramTexts>(*prog->texts); // copy texts
 
 	backups.Append(backup_prog->index);
-	return true;
 }
 
 void TraceRestrictDeleteBackup(TraceRestrictProgramID backup_program_id)
@@ -1866,6 +1881,48 @@ std::string_view TraceRestrictProgram::GetLabel(uint16_t id) const
 {
 	if (this->texts != nullptr && id < this->texts->labels.size()) return this->texts->labels[id];
 	return {};
+}
+
+/**
+ * Get whether two trace restrict programs are equivalent.
+ */
+bool TraceRestrictProgramsEquivalent(const TraceRestrictProgram *a, const TraceRestrictProgram *b)
+{
+	if (a == nullptr && b == nullptr) return true; // Both nullptr is considered equivalent
+	if (a == nullptr || b == nullptr) return false;
+
+	if (a->texts == nullptr || b->texts == nullptr) {
+		/* One or both programs does not have texts, simple equality of instructions is sufficient. */
+		return a->items == b->items;
+	}
+
+	if (a->items.size() != b->items.size()) return false;
+
+	TraceRestrictInstructionIterateWrapper b_iteration(b->items);
+	auto b_iter = b_iteration.begin();
+	const auto b_end = b_iteration.end();
+
+	for (auto a_iter : a->IterateInstructions()) {
+		if (b_iter.ItemIter() >= b_end.ItemIter()) return false;
+
+		const TraceRestrictInstructionItem a_item = a_iter.Instruction();
+		const TraceRestrictItemType a_type = a_item.GetType();
+		const TraceRestrictInstructionItem b_item = b_iter.Instruction();
+		const TraceRestrictItemType b_type = b_item.GetType();
+
+		if (a_type == TRIT_GUI_LABEL) {
+			if (b_type != a_type) return false;
+			if (a->GetLabel(a_item.GetValue()) != b->GetLabel(b_item.GetValue())) return false;
+		} else {
+			if (a_item != b_item) return false;
+		}
+		if (a_item.IsDoubleItem()) {
+			if (a_iter.Secondary() != b_iter.Secondary()) return false;
+		}
+		++b_iter;
+	}
+
+	return true;
 }
 
 /**

@@ -1003,6 +1003,8 @@ public:
 	std::string_view GetLabel(uint16_t id) const;
 };
 
+bool TraceRestrictProgramsEquivalent(const TraceRestrictProgram *a, const TraceRestrictProgram *b);
+
 /**
  * Categorisation of what is allowed in the TraceRestrictItem condition op field
  * see TraceRestrictTypePropertySet
