@@ -12,6 +12,7 @@
 
 #include "stdafx.h"
 #include "tracerestrict.h"
+#include "tracerestrict_backup.h"
 #include "tracerestrict_cmd.h"
 #include "command_func.h"
 #include "window_func.h"
@@ -187,6 +188,17 @@ enum TraceRestrictWindowWidgets : WidgetID {
 	TR_WIDGET_SHARE,
 	TR_WIDGET_UNSHARE,
 	TR_WIDGET_SHARE_ONTO,
+	TR_WIDGET_RESIZE_SEL,
+
+	TR_WIDGET_EXTRA_PANEL_TOGGLE,
+	TR_WIDGET_EXTRA_PANEL_SEL,
+	TR_WIDGET_BACKUP_INSTRUCTION_LIST,
+	TR_WIDGET_BACKUP_SCROLLBAR,
+	TR_WIDGET_BACKUP_ROW,
+	TR_WIDGET_BACKUP_ROW_SPACER,
+	TR_WIDGET_BACKUP_RESTORE,
+	TR_WIDGET_BACKUP_FIRST,
+	TR_WIDGET_BACKUP_LAST = TR_WIDGET_BACKUP_FIRST + TRACERESTRICT_MAX_BACKUPS - 1,
 };
 
 /** Selection mappings for NWID_SELECTION selectors */
@@ -2205,11 +2217,12 @@ EncodedString TraceRestrictPrepareSlotCounterSelectTooltip(StringID base_str, Ve
 }
 
 /** Main GUI window class */
-class TraceRestrictWindow: public Window {
+class TraceRestrictWindow : public Window {
 	const TileIndex tile;                                                       ///< tile this window is for
 	const Track track;                                                          ///< track this window is for
 	int selected_instruction = -1;                                              ///< selected instruction index, this is offset by one due to the display of the "start" item
 	Scrollbar *vscroll = nullptr;                                               ///< scrollbar widget
+	Scrollbar *backup_vscroll = nullptr;                                        ///< scrollbar widget for backup instructions
 	btree::btree_map<int, const TraceRestrictDropDownListSet *> drop_down_list_mapping; ///< mapping of widget IDs to drop down list sets
 	bool value_drop_down_is_company = false;                                    ///< TR_WIDGET_VALUE_DROPDOWN is a company list
 	TraceRestrictInstructionItem expecting_inserted_item{};                     ///< set to instruction when performing an instruction insertion, used to handle selection update on insertion
@@ -2219,6 +2232,9 @@ class TraceRestrictWindow: public Window {
 	int base_copy_plane = 0;                                                    ///< base plane for TR_WIDGET_SEL_COPY widget
 	int base_share_plane = 0;                                                   ///< base plane for TR_WIDGET_SEL_SHARE widget
 	uint display_remove_count = 0;                                              ///< number to display in remove button
+	bool extra_panel_open = false;                                              ///< whether the extra panel is open
+	bool filled_backup_row = false;                                             ///< whether the backup items row has been filled
+	uint32_t selected_backup_index = 0;                                         ///< currently selected backup
 
 	enum QuerySubMode : uint8_t {
 		QSM_DEFAULT,
@@ -2227,6 +2243,8 @@ class TraceRestrictWindow: public Window {
 		QSM_SET_TEXT,
 	};
 	QuerySubMode query_submode = QSM_DEFAULT;                                   ///< sub-mode for query strings
+
+	static constexpr uint BACKUP_INSTRUCTION_LINES = 6;
 
 	void TraceRestrictShowQueryString(std::string_view str, StringID caption, uint maxsize, CharSetFilter afilter, QueryStringFlags flags, QuerySubMode query_submode = QSM_DEFAULT)
 	{
@@ -2252,7 +2270,10 @@ public:
 		this->invalidation_policy = WindowInvalidationPolicy::QueueSingle;
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(TR_WIDGET_SCROLLBAR);
+		this->backup_vscroll = this->GetScrollbar(TR_WIDGET_BACKUP_SCROLLBAR);
+		this->backup_vscroll->SetCapacity(BACKUP_INSTRUCTION_LINES);
 		this->GetWidget<NWidgetStacked>(TR_WIDGET_SEL_TOP_LEFT_AUX)->SetDisplayedPlane(SZSP_NONE);
+		this->GetWidget<NWidgetStacked>(TR_WIDGET_EXTRA_PANEL_SEL)->SetDisplayedPlane(SZSP_HORIZONTAL);
 		this->current_left_aux_plane = SZSP_NONE;
 		this->FinishInitNested(MakeTraceRestrictRefId(tile, track));
 
@@ -2273,6 +2294,21 @@ public:
 
 	virtual void OnClick(Point pt, WidgetID widget, int click_count) override
 	{
+		if (widget >= TR_WIDGET_BACKUP_FIRST && widget <= TR_WIDGET_BACKUP_LAST) {
+			Owner owner = this->GetOwner();
+			if (owner.base() < _tracerestrict_backups.size()) {
+				const TraceRestrictCompanyBackups &backups = _tracerestrict_backups[owner];
+				uint index = widget - TR_WIDGET_BACKUP_FIRST;
+				if (index < backups.programs.size()) {
+					this->selected_backup_index = backups.programs[backups.programs.size() - (index + 1)].backup_index;
+					this->UpdateBackupSection();
+					this->SetDirty();
+					return;
+				}
+			}
+			return;
+		}
+
 		switch (widget) {
 			case TR_WIDGET_INSTRUCTION_LIST: {
 				int sel = this->GetItemIndexFromPt(pt.y);
@@ -2725,6 +2761,52 @@ public:
 				}
 				break;
 			}
+
+			case TR_WIDGET_EXTRA_PANEL_TOGGLE: {
+				NWidgetCore *btn = this->GetWidget<NWidgetCore>(widget);
+				const bool panel_open = !btn->IsLowered();
+				this->extra_panel_open = panel_open;
+				btn->SetLowered(panel_open);
+				btn->SetSprite(panel_open ? SPR_WINDOW_UNSHADE : SPR_WINDOW_SHADE);
+				if (!this->filled_backup_row) {
+					this->filled_backup_row = true;
+					NWidgetHorizontal *row = this->GetWidget<NWidgetHorizontal>(TR_WIDGET_BACKUP_ROW);
+					WidgetData blank_widget_data{};
+					for (uint i = 0; i < TRACERESTRICT_MAX_BACKUPS; i++) {
+						auto backup_btn = std::make_unique<NWidgetLeaf>(WWT_TEXTBTN, COLOUR_GREY, TR_WIDGET_BACKUP_FIRST + i, blank_widget_data, STR_TRACE_RESTRICT_BACKUP_BUTTON_TOOLTIP);
+						backup_btn->SetFill(1, 0);
+						backup_btn->SetResize(1, 0);
+						row->Add(std::move(backup_btn));
+					}
+					row->FillWidgetLookup(this->widget_lookup);
+				}
+				this->GetWidget<NWidgetStacked>(TR_WIDGET_RESIZE_SEL)->SetDisplayedPlane(panel_open ? 1 : 0);
+				NWidgetStacked *sel = this->GetWidget<NWidgetStacked>(TR_WIDGET_EXTRA_PANEL_SEL);
+				sel->SetDisplayedPlane(panel_open ? 0 : SZSP_HORIZONTAL);
+
+				if (panel_open) {
+					this->selected_backup_index = 0;
+					Owner owner = this->GetOwner();
+					if (owner.base() < _tracerestrict_backups.size()) {
+						const TraceRestrictCompanyBackups &backups = _tracerestrict_backups[owner];
+						if (!backups.programs.empty()) this->selected_backup_index = backups.programs.back().backup_index;
+					}
+					this->UpdateBackupSection();
+
+					int height_delta = BACKUP_INSTRUCTION_LINES * GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical();
+					height_delta += btn->current_y;
+					height_delta += std::max(btn->current_y, NWidgetLeaf::GetResizeBoxDimension().height);
+					this->ReInit(0, height_delta);
+				} else {
+					this->ReInit(0, -sel->current_y);
+				}
+				break;
+			}
+
+			case TR_WIDGET_BACKUP_RESTORE: {
+				Command<CMD_RESTORE_TRACERESTRICT_SIGNAL>::Post(STR_TRACE_RESTRICT_BACKUP_ERROR_CAN_T_RESTORE, this->tile, this->track, this->selected_backup_index);
+				break;
+			}
 		}
 	}
 
@@ -3155,6 +3237,7 @@ public:
 				break;
 
 			case TR_WIDGET_GOTO_SIGNAL:
+			case TR_WIDGET_BACKUP_ROW_SPACER:
 				size.width = std::max<uint>(12, NWidgetScrollbar::GetVerticalDimension().width);
 				break;
 
@@ -3165,6 +3248,10 @@ public:
 				size = maxdim(size, d);
 				break;
 			}
+
+			case TR_WIDGET_BACKUP_INSTRUCTION_LIST:
+				size.height = BACKUP_INSTRUCTION_LINES * GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical();
+				break;
 		}
 	}
 
@@ -3181,20 +3268,42 @@ public:
 
 	virtual void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
-		if (widget != TR_WIDGET_INSTRUCTION_LIST) return;
+		if (widget != TR_WIDGET_INSTRUCTION_LIST && widget != TR_WIDGET_BACKUP_INSTRUCTION_LIST) return;
 
 		int y = r.top + WidgetDimensions::scaled.framerect.top;
-		int line_height = this->GetWidget<NWidgetBase>(TR_WIDGET_INSTRUCTION_LIST)->resize_y;
-		int scroll_position = this->vscroll->GetPosition();
+		int line_height = GetCharacterHeight(FS_NORMAL);
 
-		/* prog may be nullptr */
-		const TraceRestrictProgram *prog = this->GetProgram();
-
+		const TraceRestrictProgram *prog = nullptr; // prog may remain nullptr
+		int selected;
+		Scrollbar *scroll;
 		DrawInstructionStringFlags flags{};
-		if (IsTunnelBridgeWithSignalSimulation(this->tile)) {
-			if (IsTunnelBridgeSignalSimulationEntrance(this->tile)) flags.Set(DrawInstructionStringFlag::TunnelBridgeEntrance);
-			if (IsTunnelBridgeSignalSimulationExit(this->tile)) flags.Set(DrawInstructionStringFlag::TunnelBridgeExit);
+		if (widget == TR_WIDGET_INSTRUCTION_LIST) {
+			prog = this->GetProgram();
+			selected = this->selected_instruction;
+			scroll = this->vscroll;
+			if (IsTunnelBridgeWithSignalSimulation(this->tile)) {
+				if (IsTunnelBridgeSignalSimulationEntrance(this->tile)) flags.Set(DrawInstructionStringFlag::TunnelBridgeEntrance);
+				if (IsTunnelBridgeSignalSimulationExit(this->tile)) flags.Set(DrawInstructionStringFlag::TunnelBridgeExit);
+			}
+		} else {
+			if (this->selected_backup_index != 0) {
+				Owner owner = this->GetOwner();
+				if (owner.base() < _tracerestrict_backups.size()) {
+					const TraceRestrictCompanyBackups &backups = _tracerestrict_backups[owner];
+					for (const TraceRestrictProgramBackup &item : backups.programs) {
+						if (item.backup_index == this->selected_backup_index) {
+							prog = TraceRestrictProgram::GetIfValid(item.program_id);
+							break;
+						}
+					}
+				}
+			}
+			selected = -1;
+			scroll = this->backup_vscroll;
+			if (prog == nullptr) return; // Don't draw start/end markers if there's no backup selected
 		}
+
+		int scroll_position = scroll->GetPosition();
 
 		int count = this->GetItemCount(prog);
 		uint indent = 1;
@@ -3214,8 +3323,8 @@ public:
 				this_indent = 0;
 			}
 
-			if (i >= scroll_position && this->vscroll->IsVisible(i)) {
-				DrawInstructionString(prog, item, i, y, i == this->selected_instruction, this_indent,
+			if (i >= scroll_position && scroll->IsVisible(i)) {
+				DrawInstructionString(prog, item, i, y, i == selected, this_indent,
 						r.left + WidgetDimensions::scaled.framerect.left, r.right - WidgetDimensions::scaled.framerect.right, this->GetOwner(), flags);
 				y += line_height;
 			}
@@ -3231,6 +3340,10 @@ public:
 
 	virtual std::string GetWidgetString(WidgetID widget, StringID stringid) const override
 	{
+		if (widget >= TR_WIDGET_BACKUP_FIRST && widget <= TR_WIDGET_BACKUP_LAST) {
+			return GetString(STR_JUST_INT, 1 + widget - TR_WIDGET_BACKUP_FIRST);
+		}
+
 		switch (widget) {
 			case TR_WIDGET_VALUE_INT: {
 				StringID str = STR_JUST_COMMA;
@@ -3499,6 +3612,7 @@ private:
 		}
 		this->RaiseButtons();
 		this->UpdateButtonState();
+		this->UpdateBackupSection();
 	}
 
 	bool IsUpDownBtnUsable(bool up, bool update_selection = false) {
@@ -4020,6 +4134,45 @@ private:
 		this->SetDirty();
 	}
 
+	void UpdateBackupSection()
+	{
+		bool selected_ok = false;
+		if (this->extra_panel_open) {
+			/* Setup backup row buttons. */
+			Owner owner = this->GetOwner();
+			if (owner.base() < _tracerestrict_backups.size()) {
+				const TraceRestrictCompanyBackups &backups = _tracerestrict_backups[owner];
+				for (uint i = 0; i < TRACERESTRICT_MAX_BACKUPS; i++) {
+					NWidgetLeaf *btn = this->GetWidget<NWidgetLeaf>(TR_WIDGET_BACKUP_FIRST + i);
+					if (i < backups.programs.size()) {
+						const TraceRestrictProgramBackup &item = backups.programs[backups.programs.size() - (i + 1)];
+						bool found = (item.backup_index == selected_backup_index);
+						if (found) {
+							selected_ok = true;
+							this->backup_vscroll->SetCount(this->GetItemCount(TraceRestrictProgram::GetIfValid(item.program_id)));
+						}
+						btn->SetLowered(found);
+						btn->SetDisabled(false);
+					} else {
+						btn->SetLowered(false);
+						btn->SetDisabled(true);
+					}
+				}
+			} else {
+				for (uint i = 0; i < TRACERESTRICT_MAX_BACKUPS; i++) {
+					NWidgetLeaf *btn = this->GetWidget<NWidgetLeaf>(TR_WIDGET_BACKUP_FIRST + i);
+					btn->SetLowered(false);
+					btn->SetDisabled(true);
+				}
+			}
+			this->SetWidgetDisabledState(TR_WIDGET_BACKUP_RESTORE, !selected_ok);
+		}
+		if (!selected_ok) {
+			this->selected_backup_index = 0;
+			this->backup_vscroll->SetCount(0);
+		}
+	}
+
 	/**
 	 * Show a drop down list using @p list_set, setting the pre-selected item to the one corresponding to @p value
 	 * This asserts if @p value is not in @p list_set, and @p missing_ok is false
@@ -4235,7 +4388,32 @@ static constexpr NWidgetPart _nested_program_widgets[] = {
 														SetStringTip(STR_TRACE_RESTRICT_SHARE_ONTO, STR_NULL), SetResize(1, 0),
 				EndContainer(),
 		EndContainer(),
-		NWidget(WWT_RESIZEBOX, COLOUR_GREY),
+		NWidget(WWT_IMGBTN, COLOUR_GREY, TR_WIDGET_EXTRA_PANEL_TOGGLE), SetAspect(1), SetSpriteTip(SPR_WINDOW_SHADE, STR_TRACE_RESTRICT_BACKUP_TOGGLE_PANEL_TOOLTIP),
+		NWidget(NWID_SELECTION, COLOUR_GREY, TR_WIDGET_RESIZE_SEL),
+			NWidget(WWT_RESIZEBOX, COLOUR_GREY),
+			NWidget(WWT_PANEL, COLOUR_GREY), EndContainer(),
+		EndContainer(),
+	EndContainer(),
+
+	/* Optional extra panel. */
+	NWidget(NWID_SELECTION, INVALID_COLOUR, TR_WIDGET_EXTRA_PANEL_SEL),
+		NWidget(NWID_VERTICAL),
+			NWidget(NWID_HORIZONTAL),
+				NWidget(WWT_PANEL, COLOUR_GREY, TR_WIDGET_BACKUP_INSTRUCTION_LIST), SetMinimalSize(372, 62),
+						SetResize(1, 0), SetScrollbar(TR_WIDGET_BACKUP_SCROLLBAR), EndContainer(),
+				NWidget(NWID_VSCROLLBAR, COLOUR_GREY, TR_WIDGET_BACKUP_SCROLLBAR),
+			EndContainer(),
+			NWidget(NWID_HORIZONTAL),
+				NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize, TR_WIDGET_BACKUP_ROW),
+				EndContainer(),
+				NWidget(WWT_PANEL, COLOUR_GREY, TR_WIDGET_BACKUP_ROW_SPACER), SetFill(0, 1), SetResize(0, 0), EndContainer(),
+			EndContainer(),
+			NWidget(NWID_HORIZONTAL),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, TR_WIDGET_BACKUP_RESTORE), SetStringTip(STR_TRACE_RESTRICT_BACKUP_RESTORE, STR_TRACE_RESTRICT_BACKUP_RESTORE_TOOLTIP),
+				NWidget(WWT_PANEL, COLOUR_GREY), SetFill(1, 0), SetResize(1, 0), EndContainer(),
+				NWidget(WWT_RESIZEBOX, COLOUR_GREY),
+			EndContainer(),
+		EndContainer(),
 	EndContainer(),
 };
 

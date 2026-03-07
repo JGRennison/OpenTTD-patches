@@ -1213,6 +1213,12 @@ STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_DELETE                   :{WHITE}Can't de
 STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_RENAME                   :{WHITE}Can't rename counter...
 STR_TRACE_RESTRICT_ERROR_COUNTER_CAN_T_MODIFY                   :{WHITE}Can't modify this counter...
 
+STR_TRACE_RESTRICT_BACKUP_TOGGLE_PANEL_TOOLTIP                  :{BLACK}Click to open/close the backups panel
+STR_TRACE_RESTRICT_BACKUP_BUTTON_TOOLTIP                        :{BLACK}Click to select a backup
+STR_TRACE_RESTRICT_BACKUP_RESTORE                               :{BLACK}Restore from backup
+STR_TRACE_RESTRICT_BACKUP_RESTORE_TOOLTIP                       :{BLACK}Click to replace the contents of the current program with the selected backup.{}This does not remove any sharing. Use the Reset or Unshare buttons first if necessary.
+STR_TRACE_RESTRICT_BACKUP_ERROR_CAN_T_RESTORE                   :{WHITE}Can't restore program from backup
+
 # Programmable Pre-Signals
 STR_PROGRAM_SIGNAL_TOOLTIP                                      :{BLACK}Program pre-signal
 
