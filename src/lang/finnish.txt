@@ -4489,7 +4489,7 @@ STR_VEHICLE_VIEW_CLONE_SHIP_INFO                                :{BLACK}Osta lai
 STR_VEHICLE_VIEW_CLONE_AIRCRAFT_INFO                            :{BLACK}Osta ilma-aluksen kopio. Ctrl+napsautus jakaa käskyt. Paina lisäksi vaihtonäppäintä nähdäksesi vain kustannusarvion.
 
 STR_VEHICLE_VIEW_TRAIN_IGNORE_SIGNAL_TOOLTIP                    :{BLACK}Anna junalle lupa ohittaa punainen opastin
-STR_VEHICLE_VIEW_TRAIN_REVERSE_TOOLTIP                          :{BLACK}Käännä junan suunta
+STR_VEHICLE_VIEW_TRAIN_REVERSE_TOOLTIP                          :{BLACK}Vaihda junan suunta
 STR_VEHICLE_VIEW_ROAD_VEHICLE_REVERSE_TOOLTIP                   :{BLACK}Pakota ajoneuvo kääntymään ympäri
 STR_VEHICLE_VIEW_ORDER_LOCATION_TOOLTIP                         :{BLACK}Keskitä päänäkymä käskyn kohteeseen. Ctrl+napsautus avaa uuden näkymäikkunan käskyn kohteen sijaintiin.
 
@@ -4737,6 +4737,7 @@ STR_ORDERS_SKIP_BUTTON                                          :{BLACK}Ohita
 STR_ORDERS_SKIP_TOOLTIP                                         :{BLACK}Ohita nykyinen käsky ja aloita seuraava. Ctrl+napsautus hyppää valittuun käskyyn
 
 STR_ORDERS_DELETE_BUTTON                                        :{BLACK}Poista
+STR_ORDERS_DELETE_ALL_BUTTON                                    :{BLACK}Poista kaikki
 STR_ORDERS_DELETE_TOOLTIP                                       :{BLACK}Poista korostettu käsky
 STR_ORDERS_DELETE_ALL_TOOLTIP                                   :{BLACK}Poista kaikki käskyt
 STR_ORDERS_STOP_SHARING_BUTTON                                  :{BLACK}Lopeta jakaminen
