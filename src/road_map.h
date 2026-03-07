@@ -71,7 +71,7 @@ inline bool MayTileTypeHaveRoad(TileType type)
  * @pre IsTileType(t, MP_ROAD)
  * @return The road tile type.
  */
-debug_inline static RoadTileType GetRoadTileType(TileIndex t)
+[[debug_inline]] inline static RoadTileType GetRoadTileType(TileIndex t)
 {
 	dbg_assert_tile(IsTileType(t, MP_ROAD), t);
 	return static_cast<RoadTileType>(GB(_m[t].m5, 6, 2));
@@ -83,7 +83,7 @@ debug_inline static RoadTileType GetRoadTileType(TileIndex t)
  * @pre IsTileType(t, MP_ROAD)
  * @return True if normal road.
  */
-debug_inline static bool IsNormalRoad(TileIndex t)
+[[debug_inline]] inline static bool IsNormalRoad(TileIndex t)
 {
 	return GetRoadTileType(t) == RoadTileType::Normal;
 }
@@ -93,7 +93,7 @@ debug_inline static bool IsNormalRoad(TileIndex t)
  * @param t Tile to query.
  * @return True if normal road tile.
  */
-debug_inline static bool IsNormalRoadTile(TileIndex t)
+[[debug_inline]] inline static bool IsNormalRoadTile(TileIndex t)
 {
 	return IsTileType(t, MP_ROAD) && IsNormalRoad(t);
 }
@@ -125,7 +125,7 @@ inline bool IsLevelCrossingTile(TileIndex t)
  * @pre IsTileType(t, MP_ROAD)
  * @return True if road depot.
  */
-debug_inline static bool IsRoadDepot(TileIndex t)
+[[debug_inline]] inline static bool IsRoadDepot(TileIndex t)
 {
 	return GetRoadTileType(t) == RoadTileType::Depot;
 }
@@ -135,7 +135,7 @@ debug_inline static bool IsRoadDepot(TileIndex t)
  * @param t Tile to query.
  * @return True if road depot tile.
  */
-debug_inline static bool IsRoadDepotTile(TileIndex t)
+[[debug_inline]] inline static bool IsRoadDepotTile(TileIndex t)
 {
 	return IsTileType(t, MP_ROAD) && IsRoadDepot(t);
 }

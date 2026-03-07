@@ -5,7 +5,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file  vehicle_base.h Base class for all vehicles. */
+/** @file vehicle_base.h Base class for all vehicles. */
 
 #ifndef VEHICLE_BASE_H
 #define VEHICLE_BASE_H
@@ -563,7 +563,7 @@ public:
 	 * Check if the vehicle is a ground vehicle.
 	 * @return True iff the vehicle is a train or a road vehicle.
 	 */
-	debug_inline bool IsGroundVehicle() const
+	[[debug_inline]] inline bool IsGroundVehicle() const
 	{
 		return this->type == VEH_TRAIN || this->type == VEH_ROAD;
 	}
@@ -572,7 +572,7 @@ public:
 	 * Check if the vehicle type supports articulation.
 	 * @return True iff the vehicle is a train, road vehicle or ship.
 	 */
-	debug_inline bool IsArticulatedCallbackVehicleType() const
+	[[debug_inline]] bool IsArticulatedCallbackVehicleType() const
 	{
 		return this->type == VEH_TRAIN || this->type == VEH_ROAD || this->type == VEH_SHIP;
 	}
@@ -1077,7 +1077,7 @@ public:
 	 * Check if the vehicle is a front engine.
 	 * @return Returns true if the vehicle is a front engine.
 	 */
-	debug_inline bool IsFrontEngine() const
+	[[debug_inline]] inline bool IsFrontEngine() const
 	{
 		return this->IsGroundVehicle() && HasBit(this->subtype, GVSF_FRONT);
 	}

@@ -5,7 +5,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file enum_type.hpp Type (helpers) for enums */
+/** @file enum_type.hpp Type (helpers) for enums. */
 
 #ifndef ENUM_TYPE_HPP
 #define ENUM_TYPE_HPP
@@ -158,7 +158,7 @@ inline constexpr auto operator-(enum_type a, enum_type b)
  * @return True iff the flag is set.
  */
 template <typename T, class = typename std::enable_if_t<std::is_enum_v<T>>>
-debug_inline constexpr bool HasFlag(const T x, const T y)
+[[debug_inline]] inline constexpr bool HasFlag(const T x, const T y)
 {
 	return (x & y) == y;
 }
@@ -169,7 +169,7 @@ debug_inline constexpr bool HasFlag(const T x, const T y)
  * @param y The flag to toggle.
  */
 template <typename T, class = typename std::enable_if_t<std::is_enum_v<T>>>
-debug_inline constexpr void ToggleFlag(T &x, const T y)
+[[debug_inline]] inline constexpr void ToggleFlag(T &x, const T y)
 {
 	x ^= y;
 }
@@ -181,7 +181,7 @@ debug_inline constexpr void ToggleFlag(T &x, const T y)
  * @param set Whether to set or unset the flag.
  */
 template <typename T, class = typename std::enable_if_t<std::is_enum_v<T>>>
-debug_inline constexpr void SetFlagState(T &x, const T y, bool set)
+[[debug_inline]] constexpr void SetFlagState(T &x, const T y, bool set)
 {
 	if (set) {
 		x |= y;

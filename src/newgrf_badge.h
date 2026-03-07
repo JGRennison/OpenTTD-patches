@@ -50,7 +50,7 @@ public:
 	}
 
 private:
-	GrfSpecFeature feature;
+	GrfSpecFeature feature{};
 	std::vector<BadgeClassID> classes; ///< List of badge classes.
 };
 

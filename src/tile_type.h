@@ -217,7 +217,7 @@ static_assert(sizeof(TileIndex) == 4);
  */
 inline constexpr TileIndex INVALID_TILE = TileIndex{ (uint32_t)-1 };
 
-debug_inline uint32_t debug_tile_index_type_erasure(TileIndex tile) { return tile.base(); }
+[[debug_inline]] inline uint32_t debug_tile_index_type_erasure(TileIndex tile) { return tile.base(); }
 [[noreturn]] void assert_tile_error(int line, const char *file, const char *expr, TileIndex tile);
 
 #endif /* TILE_TYPE_H */

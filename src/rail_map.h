@@ -5,7 +5,7 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file rail_map.h Hides the direct accesses to the map array with map accessors */
+/** @file rail_map.h Hides the direct accesses to the map array with map accessors. */
 
 #ifndef RAIL_MAP_H
 #define RAIL_MAP_H
@@ -34,7 +34,7 @@ enum class RailTileType : uint8_t {
  * @pre IsTileType(t, MP_RAILWAY)
  * @return the RailTileType
  */
-debug_inline static RailTileType GetRailTileType(TileIndex t)
+[[debug_inline]] inline static RailTileType GetRailTileType(TileIndex t)
 {
 	dbg_assert_tile(IsTileType(t, MP_RAILWAY), t);
 	return static_cast<RailTileType>(GB(_m[t].m5, 6, 2));
@@ -47,7 +47,7 @@ debug_inline static RailTileType GetRailTileType(TileIndex t)
  * @pre IsTileType(t, MP_RAILWAY)
  * @return true if and only if the tile is normal rail (with or without signals)
  */
-debug_inline static bool IsPlainRail(TileIndex t)
+[[debug_inline]] inline static bool IsPlainRail(TileIndex t)
 {
 	RailTileType rtt = GetRailTileType(t);
 	return rtt == RailTileType::Normal || rtt == RailTileType::Signals;
@@ -58,7 +58,7 @@ debug_inline static bool IsPlainRail(TileIndex t)
  * @param t the tile to get the information from
  * @return true if and only if the tile is normal rail (with or without signals)
  */
-debug_inline static bool IsPlainRailTile(TileIndex t)
+[[debug_inline]] inline static bool IsPlainRailTile(TileIndex t)
 {
 	return IsTileType(t, MP_RAILWAY) && IsPlainRail(t);
 }
@@ -93,7 +93,7 @@ inline void SetHasSignals(TileIndex tile, bool signals)
  * @pre IsTileType(t, MP_RAILWAY)
  * @return true if and only if the tile is a rail depot
  */
-debug_inline static bool IsRailDepot(TileIndex t)
+[[debug_inline]] inline static bool IsRailDepot(TileIndex t)
 {
 	return GetRailTileType(t) == RailTileType::Depot;
 }
@@ -103,7 +103,7 @@ debug_inline static bool IsRailDepot(TileIndex t)
  * @param t the tile to get the information from
  * @return true if and only if the tile is a rail depot
  */
-debug_inline static bool IsRailDepotTile(TileIndex t)
+[[debug_inline]] inline static bool IsRailDepotTile(TileIndex t)
 {
 	return IsTileType(t, MP_RAILWAY) && IsRailDepot(t);
 }
