@@ -2798,7 +2798,7 @@ public:
 					height_delta += std::max(btn->current_y, NWidgetLeaf::GetResizeBoxDimension().height);
 					this->ReInit(0, height_delta);
 				} else {
-					this->ReInit(0, -sel->current_y);
+					this->ReInit(0, -static_cast<int>(sel->current_y));
 				}
 				break;
 			}

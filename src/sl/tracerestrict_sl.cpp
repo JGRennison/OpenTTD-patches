@@ -323,7 +323,7 @@ static void Save_TRRB()
 {
 	SaveLoadTableData slt = SlTableHeader(_trace_restrict_backup_desc);
 
-	for (CompanyID cid = CompanyID::Begin(); cid != static_cast<CompanyID>(_tracerestrict_backups.size()); ++cid) {
+	for (CompanyID cid = CompanyID::Begin(); cid.base() < _tracerestrict_backups.size(); ++cid) {
 		SlSetArrayIndex(cid);
 		SlObjectSaveFiltered(&_tracerestrict_backups[cid], slt);
 	}
