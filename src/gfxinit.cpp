@@ -153,9 +153,6 @@ void InitGRFGlobalVars()
 {
 	extern void ClearExtraStationNames();
 	ClearExtraStationNames();
-
-	extern bool _allow_rocks_desert;
-	_allow_rocks_desert = false;
 }
 
 /**

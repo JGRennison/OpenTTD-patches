@@ -25,8 +25,6 @@
 
 #include "safeguards.h"
 
-bool _allow_rocks_desert = false;
-
 static CommandCost ClearTile_Clear(TileIndex tile, DoCommandFlags flags)
 {
 	static constexpr Price clear_price_table[] = {
