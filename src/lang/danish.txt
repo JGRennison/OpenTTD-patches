@@ -1248,7 +1248,7 @@ STR_CONFIG_SETTING_EXPAND_ALL                                   :Udvid alle
 STR_CONFIG_SETTING_COLLAPSE_ALL                                 :Skjul alle
 STR_CONFIG_SETTING_RESET_ALL                                    :Nulstil alle værdier
 STR_CONFIG_SETTING_NO_EXPLANATION_AVAILABLE_HELPTEXT            :(ingen forklaring tilgængelig)
-STR_CONFIG_SETTING_VALUE                                        :{PUSH_COLOUR}{ORANGE}{STRING}{POP_COLOUR}
+STR_CONFIG_SETTING_VALUE                                        :{ORANGE}{STRING}
 STR_CONFIG_SETTING_DEFAULT_VALUE                                :{LTBLUE}Standard: {ORANGE}{STRING}
 STR_CONFIG_SETTING_TYPE                                         :{LTBLUE}Indstillingstype: {ORANGE}{STRING}
 STR_CONFIG_SETTING_TYPE_CLIENT                                  :Klient indstilling (ikke lagret i gemt spil, påvirker alle spil)
@@ -2892,7 +2892,7 @@ STR_HOUSE_PICKER_YEARS_ANY                                      :{BLACK}År: {GO
 STR_HOUSE_PICKER_YEARS_FROM                                     :{BLACK}År: {GOLD}From {NUM}
 STR_HOUSE_PICKER_YEARS_UNTIL                                    :{BLACK}År: {GOLD}til {NUM}
 STR_HOUSE_PICKER_SIZE                                           :{BLACK}Størrelse: {GOLD}{NUM}x{NUM} fliser
-STR_HOUSE_PICKER_CARGO_ACCEPTED                                 :{BLACK}Gods accepteret: {ORANGE}
+STR_HOUSE_PICKER_CARGO_ACCEPTED                                 :{BLACK}Last accepteret: {GOLD}{STRING}
 STR_HOUSE_PICKER_CARGO_PRODUCED                                 :{BLACK}Produceret last: {GOLD}{CARGO_LIST}
 
 STR_HOUSE_PICKER_CLASS_ZONE1                                    :Kant
@@ -3181,7 +3181,7 @@ STR_LAND_AREA_INFORMATION_AIRPORT_CLASS                         :{BLACK}Lufthavn
 STR_LAND_AREA_INFORMATION_AIRPORT_NAME                          :{BLACK}Lufthavns navn: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_AIRPORTTILE_NAME                      :{BLACK}Lufthavn brik navn: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_NEWGRF_NAME                           :{BLACK}NewGRF: {LTBLUE}{STRING}
-STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}Accepteret last: {LTBLUE}
+STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}Accepteret last: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_CARGO_EIGHTS                          :({COMMA}/8 {STRING})
 STR_LANG_AREA_INFORMATION_RAIL_TYPE                             :{BLACK}Tog type: {LTBLUE}{STRING}
 STR_LANG_AREA_INFORMATION_ROAD_TYPE                             :{BLACK}Vejtype: {LTBLUE}{STRING}
@@ -4065,7 +4065,7 @@ STR_COMPANY_INFRASTRUCTURE_VIEW_TOTAL_PERIOD                    :{WHITE}{CURRENC
 # Industry directory
 STR_INDUSTRY_DIRECTORY_CAPTION                                  :{WHITE}Industrier ({COMMA} of {COMMA})
 STR_INDUSTRY_DIRECTORY_NONE                                     :{ORANGE}- Ingen -
-STR_INDUSTRY_DIRECTORY_ITEM_INFO                                :{BLACK}{CARGO_LONG}{STRING}{YELLOW} ({COMMA}% transporteret){BLACK}
+STR_INDUSTRY_DIRECTORY_ITEM_INFO                                :{BLACK}{CARGO_LONG}{STRING}{YELLOW} ({COMMA}% transporteret)
 STR_INDUSTRY_DIRECTORY_ITEM_NOPROD                              :{ORANGE}{INDUSTRY}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUSTRY} {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}
@@ -4088,9 +4088,9 @@ STR_INDUSTRY_VIEW_CARGO_GRAPH_TOOLTIP                           :{BLACK}Viser gr
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Produktions niveauet: {YELLOW}{COMMA}%
 STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}Industrien har rapporteret øjeblikkelig nedlukning!
 
-STR_INDUSTRY_VIEW_REQUIRES_N_CARGO                              :{BLACK}Kræver: {YELLOW}{STRING}{STRING}
-STR_INDUSTRY_VIEW_PRODUCES_N_CARGO                              :{BLACK}Producerer: {YELLOW}{STRING}{STRING}
-STR_INDUSTRY_VIEW_CARGO_LIST_EXTENSION                          :, {STRING}{STRING}
+STR_INDUSTRY_VIEW_REQUIRES_N_CARGO                              :{BLACK}Kræver: {YELLOW}{STRING}
+STR_INDUSTRY_VIEW_PRODUCES_N_CARGO                              :{BLACK}Producerer: {YELLOW}{STRING}
+STR_INDUSTRY_VIEW_CARGO_LIST_EXTENSION                          :{STRING}{STRING}
 
 STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Kræver:
 STR_INDUSTRY_VIEW_ACCEPT_CARGO_SUFFIX                           :{YELLOW}{0:STRING}{BLACK}{3:STRING}
@@ -4624,7 +4624,7 @@ STR_VEHICLE_DETAILS_TRAIN_CAPACITIES_TOOLTIP                    :{BLACK}Vis kapa
 STR_VEHICLE_DETAIL_TAB_TOTAL_CARGO                              :{BLACK}Samlet last
 STR_VEHICLE_DETAILS_TRAIN_TOTAL_CARGO_TOOLTIP                   :{BLACK}Vis total lasteevne på toget, fordelt på lasttyper
 
-STR_VEHICLE_DETAILS_TRAIN_ARTICULATED_RV_CAPACITY               :{BLACK}Kapacitet: {LTBLUE}
+STR_VEHICLE_DETAILS_TRAIN_ARTICULATED_RV_CAPACITY               :{BLACK}Kapacitet: {LTBLUE}{STRING}
 
 # Vehicle refit
 STR_REFIT_CAPTION                                               :{WHITE}{VEHICLE} (tilpas)
@@ -5998,7 +5998,8 @@ STR_LORRY                                                       :{BLACK}{LORRY}
 STR_PLANE                                                       :{BLACK}{PLANE}
 STR_SHIP                                                        :{BLACK}{SHIP}
 
-STR_TOOLBAR_RAILTYPE_VELOCITY                                   :{STRING} ({VELOCITY})
+STR_TOOLBAR_RAILTYPE_VELOCITY                                   :{STRING} {YELLOW}({VELOCITY})
+STR_TOOLBAR_ROADTYPE_VELOCITY                                   :{STRING} {YELLOW}({VELOCITY})
 
 STR_BADGE_NAME_LIST                                             :{STRING}: {GOLD}{STRING}
 STR_BADGE_CONFIG_MENU_TOOLTIP                                   :Åbn badgekonfiguration

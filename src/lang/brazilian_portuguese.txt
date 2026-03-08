@@ -1249,7 +1249,7 @@ STR_CONFIG_SETTING_EXPAND_ALL                                   :Expandir tudo
 STR_CONFIG_SETTING_COLLAPSE_ALL                                 :Colapsar tudo
 STR_CONFIG_SETTING_RESET_ALL                                    :Restaurar todos os valores
 STR_CONFIG_SETTING_NO_EXPLANATION_AVAILABLE_HELPTEXT            :(sem explicação disponível)
-STR_CONFIG_SETTING_VALUE                                        :{PUSH_COLOUR}{ORANGE}{STRING}{POP_COLOUR}
+STR_CONFIG_SETTING_VALUE                                        :{ORANGE}{STRING}
 STR_CONFIG_SETTING_DEFAULT_VALUE                                :{LTBLUE}Valor padrão: {ORANGE}{STRING}
 STR_CONFIG_SETTING_TYPE                                         :{LTBLUE}Tipo de configuração: {ORANGE}{STRING}
 STR_CONFIG_SETTING_TYPE_CLIENT                                  :Configuração do cliente (não é armazenada no jogo salvo; afeta todos os jogos)
@@ -2893,7 +2893,7 @@ STR_HOUSE_PICKER_YEARS_ANY                                      :{BLACK}Anos: {G
 STR_HOUSE_PICKER_YEARS_FROM                                     :{BLACK}Anos: {GOLD}De {NUM}
 STR_HOUSE_PICKER_YEARS_UNTIL                                    :{BLACK}Anos: {GOLD}Até {NUM}
 STR_HOUSE_PICKER_SIZE                                           :{BLACK}Tamanho: {GOLD}{NUM}x{NUM} mosaicos
-STR_HOUSE_PICKER_CARGO_ACCEPTED                                 :{BLACK}Carga aceita: {ORANGE}
+STR_HOUSE_PICKER_CARGO_ACCEPTED                                 :{BLACK}Carga aceita: {GOLD}{STRING}
 STR_HOUSE_PICKER_CARGO_PRODUCED                                 :{BLACK}Carga produzida: {GOLD}{CARGO_LIST}
 
 STR_HOUSE_PICKER_CLASS_ZONE1                                    :Borda
@@ -3182,7 +3182,7 @@ STR_LAND_AREA_INFORMATION_AIRPORT_CLASS                         :{BLACK}Classe d
 STR_LAND_AREA_INFORMATION_AIRPORT_NAME                          :{BLACK}Tipo de aeroporto: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_AIRPORTTILE_NAME                      :{BLACK}Nome do mosaico do aeroporto: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_NEWGRF_NAME                           :{BLACK}NewGRF: {LTBLUE}{STRING}
-STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}Carga aceita: {LTBLUE}
+STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}Carga aceita: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_CARGO_EIGHTS                          :({COMMA}/8 {STRING})
 STR_LANG_AREA_INFORMATION_RAIL_TYPE                             :{BLACK}Tipo de ferrovia: {LTBLUE}{STRING}
 STR_LANG_AREA_INFORMATION_ROAD_TYPE                             :{BLACK}Tipo de estrada: {LTBLUE}{STRING}
@@ -4066,7 +4066,7 @@ STR_COMPANY_INFRASTRUCTURE_VIEW_TOTAL_PERIOD                    :{WHITE}{CURRENC
 # Industry directory
 STR_INDUSTRY_DIRECTORY_CAPTION                                  :{WHITE}Indústrias ({COMMA} of {COMMA})
 STR_INDUSTRY_DIRECTORY_NONE                                     :{ORANGE}- Nenhum -
-STR_INDUSTRY_DIRECTORY_ITEM_INFO                                :{BLACK}{CARGO_LONG}{STRING}{YELLOW} ({COMMA}% transportado){BLACK}
+STR_INDUSTRY_DIRECTORY_ITEM_INFO                                :{BLACK}{CARGO_LONG}{STRING}{YELLOW} ({COMMA}% transportado)
 STR_INDUSTRY_DIRECTORY_ITEM_NOPROD                              :{ORANGE}{INDUSTRY}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUSTRY} {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}
@@ -4089,9 +4089,9 @@ STR_INDUSTRY_VIEW_CARGO_GRAPH_TOOLTIP                           :{BLACK}Mostrar 
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Nível de produção: {YELLOW}{COMMA}%
 STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}A indústria anunciou fechamento iminente!
 
-STR_INDUSTRY_VIEW_REQUIRES_N_CARGO                              :{BLACK}Necessita: {YELLOW}{STRING}{STRING}
-STR_INDUSTRY_VIEW_PRODUCES_N_CARGO                              :{BLACK}Produz: {YELLOW}{STRING}{STRING}
-STR_INDUSTRY_VIEW_CARGO_LIST_EXTENSION                          :, {STRING}{STRING}
+STR_INDUSTRY_VIEW_REQUIRES_N_CARGO                              :{BLACK}Necessita: {YELLOW}{STRING}
+STR_INDUSTRY_VIEW_PRODUCES_N_CARGO                              :{BLACK}Produz: {YELLOW}{STRING}
+STR_INDUSTRY_VIEW_CARGO_LIST_EXTENSION                          :{STRING}{STRING}
 
 STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Necessita:
 STR_INDUSTRY_VIEW_ACCEPT_CARGO_SUFFIX                           :{YELLOW}{0:STRING}{BLACK}{3:STRING}
@@ -4625,7 +4625,7 @@ STR_VEHICLE_DETAILS_TRAIN_CAPACITIES_TOOLTIP                    :{BLACK}Mostrar 
 STR_VEHICLE_DETAIL_TAB_TOTAL_CARGO                              :{BLACK}Carga Total
 STR_VEHICLE_DETAILS_TRAIN_TOTAL_CARGO_TOOLTIP                   :{BLACK}Mostrar capacidade total do trem, separada por tipo de carga
 
-STR_VEHICLE_DETAILS_TRAIN_ARTICULATED_RV_CAPACITY               :{BLACK}Capacidade: {LTBLUE}
+STR_VEHICLE_DETAILS_TRAIN_ARTICULATED_RV_CAPACITY               :{BLACK}Capacidade: {LTBLUE}{STRING}
 
 # Vehicle refit
 STR_REFIT_CAPTION                                               :{WHITE}{VEHICLE} (Adaptação)
@@ -6000,7 +6000,8 @@ STR_LORRY                                                       :{BLACK}{LORRY}
 STR_PLANE                                                       :{BLACK}{PLANE}
 STR_SHIP                                                        :{BLACK}{SHIP}
 
-STR_TOOLBAR_RAILTYPE_VELOCITY                                   :{STRING} ({VELOCITY})
+STR_TOOLBAR_RAILTYPE_VELOCITY                                   :{STRING} {YELLOW}({VELOCITY})
+STR_TOOLBAR_ROADTYPE_VELOCITY                                   :{STRING} {YELLOW}({VELOCITY})
 
 STR_BADGE_NAME_LIST                                             :{STRING}: {GOLD}{STRING}
 STR_BADGE_CONFIG_MENU_TOOLTIP                                   :Abrir configuração de crachá

@@ -1249,7 +1249,7 @@ STR_CONFIG_SETTING_EXPAND_ALL                                   :Tümünü geni�
 STR_CONFIG_SETTING_COLLAPSE_ALL                                 :Tümünü kısalt
 STR_CONFIG_SETTING_RESET_ALL                                    :Tüm değerleri sıfırla
 STR_CONFIG_SETTING_NO_EXPLANATION_AVAILABLE_HELPTEXT            :(açıklama bulunmamaktadır)
-STR_CONFIG_SETTING_VALUE                                        :{PUSH_COLOUR}{ORANGE}{STRING}{POP_COLOUR}
+STR_CONFIG_SETTING_VALUE                                        :{ORANGE}{STRING}
 STR_CONFIG_SETTING_DEFAULT_VALUE                                :{LTBLUE}Varsayılan değer: {ORANGE}{STRING}
 STR_CONFIG_SETTING_TYPE                                         :{LTBLUE}Ayar türü: {ORANGE}{STRING}
 STR_CONFIG_SETTING_TYPE_CLIENT                                  :Kullanıcı ayarları (kayıtlı dosyada saklanmaz; tüm oyunları etkilemektedir)
@@ -2875,7 +2875,7 @@ STR_HOUSE_PICKER_YEARS_ANY                                      :{BLACK}Yıl: {G
 STR_HOUSE_PICKER_YEARS_FROM                                     :{BLACK}Yıl: {GOLD}{NUM} yılından itibaren
 STR_HOUSE_PICKER_YEARS_UNTIL                                    :{BLACK}Yıl: {GOLD}{NUM} yılına kadar
 STR_HOUSE_PICKER_SIZE                                           :{BLACK}Boyut: {GOLD}{NUM}x{NUM} kare
-STR_HOUSE_PICKER_CARGO_ACCEPTED                                 :{BLACK}Kabul edilen kargo: {ORANGE}
+STR_HOUSE_PICKER_CARGO_ACCEPTED                                 :{BLACK}Kabul edilen kargo: {GOLD}{STRING}
 STR_HOUSE_PICKER_CARGO_PRODUCED                                 :{BLACK}Üretilen kargo: {GOLD}{CARGO_LIST}
 
 STR_HOUSE_PICKER_CLASS_ZONE1                                    :Kenar
@@ -3164,7 +3164,7 @@ STR_LAND_AREA_INFORMATION_AIRPORT_CLASS                         :{BLACK}Havalima
 STR_LAND_AREA_INFORMATION_AIRPORT_NAME                          :{BLACK}Havalimanı adı: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_AIRPORTTILE_NAME                      :{BLACK}Havalimanı karesi adı: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_NEWGRF_NAME                           :{BLACK}NewGRF: {LTBLUE}{STRING}
-STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}İstenen: {LTBLUE}
+STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}İstenen: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_CARGO_EIGHTS                          :({COMMA}/8 {STRING})
 STR_LANG_AREA_INFORMATION_RAIL_TYPE                             :{BLACK}Ray türü: {LTBLUE}{STRING}
 STR_LANG_AREA_INFORMATION_ROAD_TYPE                             :{BLACK}Yol türü: {LTBLUE}{STRING}
@@ -4048,7 +4048,7 @@ STR_COMPANY_INFRASTRUCTURE_VIEW_TOTAL_PERIOD                    :{WHITE}{CURRENC
 # Industry directory
 STR_INDUSTRY_DIRECTORY_CAPTION                                  :{WHITE}Fabrikalar ({COMMA} / {COMMA})
 STR_INDUSTRY_DIRECTORY_NONE                                     :{ORANGE}- Hiçbiri -
-STR_INDUSTRY_DIRECTORY_ITEM_INFO                                :{BLACK}{CARGO_LONG}{STRING}{YELLOW} ({COMMA}% taşındı){BLACK}
+STR_INDUSTRY_DIRECTORY_ITEM_INFO                                :{BLACK}{CARGO_LONG}{STRING}{YELLOW} ({COMMA}% taşındı)
 STR_INDUSTRY_DIRECTORY_ITEM_NOPROD                              :{ORANGE}{INDUSTRY}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUSTRY} {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}
@@ -4071,9 +4071,9 @@ STR_INDUSTRY_VIEW_CARGO_GRAPH_TOOLTIP                           :{BLACK}Geçmiş
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Üretim seviyesi: %{YELLOW}{COMMA}
 STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}Fabrika çok yakında kapanacağını duyurdu!
 
-STR_INDUSTRY_VIEW_REQUIRES_N_CARGO                              :{BLACK}Gereken: {YELLOW}{STRING}{STRING}
-STR_INDUSTRY_VIEW_PRODUCES_N_CARGO                              :{BLACK}Üretilen: {YELLOW}{STRING}{STRING}
-STR_INDUSTRY_VIEW_CARGO_LIST_EXTENSION                          :, {STRING}{STRING}
+STR_INDUSTRY_VIEW_REQUIRES_N_CARGO                              :{BLACK}Gereken: {YELLOW}{STRING}
+STR_INDUSTRY_VIEW_PRODUCES_N_CARGO                              :{BLACK}Üretilen: {YELLOW}{STRING}
+STR_INDUSTRY_VIEW_CARGO_LIST_EXTENSION                          :{STRING}{STRING}
 
 STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Gereken:
 STR_INDUSTRY_VIEW_ACCEPT_CARGO_SUFFIX                           :{YELLOW}{0:STRING}{BLACK}{3:STRING}
@@ -4600,7 +4600,7 @@ STR_VEHICLE_DETAILS_TRAIN_CAPACITIES_TOOLTIP                    :{BLACK}Her arac
 STR_VEHICLE_DETAIL_TAB_TOTAL_CARGO                              :{BLACK}Toplam Kargo
 STR_VEHICLE_DETAILS_TRAIN_TOTAL_CARGO_TOOLTIP                   :{BLACK}Trenin kargo türlerine ayrılmış toplam kapasitesini göster
 
-STR_VEHICLE_DETAILS_TRAIN_ARTICULATED_RV_CAPACITY               :{BLACK}Kapasite: {LTBLUE}
+STR_VEHICLE_DETAILS_TRAIN_ARTICULATED_RV_CAPACITY               :{BLACK}Kapasite: {LTBLUE}{STRING}
 
 # Vehicle refit
 STR_REFIT_CAPTION                                               :{WHITE}{VEHICLE} (Modifiye)

@@ -2472,7 +2472,7 @@ STR_LAND_AREA_INFORMATION_AIRPORT_CLASS                         :{BLACK}Fleanfji
 STR_LAND_AREA_INFORMATION_AIRPORT_NAME                          :{BLACK}Fleanfjild namme: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_AIRPORTTILE_NAME                      :{BLACK}Fleanfjild tile namme: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_NEWGRF_NAME                           :{BLACK}NewGRF: {LTBLUE}{STRING}
-STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}Akseptearre fracht: {LTBLUE}
+STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}Akseptearre fracht: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_CARGO_EIGHTS                          :({COMMA}/8 {STRING})
 STR_LANG_AREA_INFORMATION_RAIL_TYPE                             :{BLACK}Spoarsoart: {LTBLUE}{STRING}
 STR_LANG_AREA_INFORMATION_TRAM_TYPE                             :{BLACK}Tramsoart: {LTBLUE}{STRING}
@@ -3156,7 +3156,7 @@ STR_INDUSTRY_VIEW_LOCATION_TOOLTIP                              :{BLACK}Sintrear
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Produksje nivo: {YELLOW}{COMMA}%
 STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}Yndustry kundicht drigend sluten oan!
 
-STR_INDUSTRY_VIEW_REQUIRES_N_CARGO                              :{BLACK}Nedichheden: {YELLOW}{STRING}{STRING}
+STR_INDUSTRY_VIEW_REQUIRES_N_CARGO                              :{BLACK}Nedichheden: {YELLOW}{STRING}
 
 STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Nedichheden:
 
@@ -3519,7 +3519,7 @@ STR_VEHICLE_DETAILS_TRAIN_INFORMATION_TOOLTIP                   :{BLACK}Treindet
 STR_VEHICLE_DETAIL_TAB_CAPACITIES                               :{BLACK}Kapasiteit
 STR_VEHICLE_DETAIL_TAB_TOTAL_CARGO                              :{BLACK}Totale Fracht
 
-STR_VEHICLE_DETAILS_TRAIN_ARTICULATED_RV_CAPACITY               :{BLACK}Kapasiteit: {LTBLUE}
+STR_VEHICLE_DETAILS_TRAIN_ARTICULATED_RV_CAPACITY               :{BLACK}Kapasiteit: {LTBLUE}{STRING}
 
 # Vehicle refit
 STR_REFIT_CAPTION                                               :{WHITE}{VEHICLE} (Ombouwe)

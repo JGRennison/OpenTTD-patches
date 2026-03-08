@@ -1385,7 +1385,7 @@ STR_CONFIG_SETTING_EXPAND_ALL                                   :Розгорн�
 STR_CONFIG_SETTING_COLLAPSE_ALL                                 :Згорнути всі
 STR_CONFIG_SETTING_RESET_ALL                                    :Скинути усі значення
 STR_CONFIG_SETTING_NO_EXPLANATION_AVAILABLE_HELPTEXT            :(пояснення відсутнє)
-STR_CONFIG_SETTING_VALUE                                        :{PUSH_COLOUR}{ORANGE}{STRING}{POP_COLOUR}
+STR_CONFIG_SETTING_VALUE                                        :{ORANGE}{STRING}
 STR_CONFIG_SETTING_DEFAULT_VALUE                                :{LTBLUE}Стандартне значення: {ORANGE}{STRING}
 STR_CONFIG_SETTING_TYPE                                         :{LTBLUE}Тип: {ORANGE}{STRING}
 STR_CONFIG_SETTING_TYPE_CLIENT                                  :Налаштування клієнта (не присутні в збережених іграх; впливають на будь-яку гру)
@@ -3014,7 +3014,7 @@ STR_HOUSE_PICKER_YEARS_ANY                                      :{BLACK}Роки
 STR_HOUSE_PICKER_YEARS_FROM                                     :{BLACK}Роки: {GOLD}з {NUM}
 STR_HOUSE_PICKER_YEARS_UNTIL                                    :{BLACK}Роки: {GOLD}до {NUM}
 STR_HOUSE_PICKER_SIZE                                           :{BLACK}Розмір: {GOLD}{NUM}x{NUM} клітинок
-STR_HOUSE_PICKER_CARGO_ACCEPTED                                 :{BLACK}Приймається вантаж: {ORANGE}
+STR_HOUSE_PICKER_CARGO_ACCEPTED                                 :{BLACK}Приймається вантаж: {GOLD}{STRING}
 STR_HOUSE_PICKER_CARGO_PRODUCED                                 :{BLACK}Вантажу вироблено: {GOLD}{CARGO_LIST}
 
 STR_HOUSE_PICKER_CLASS_ZONE1                                    :Край
@@ -3303,7 +3303,7 @@ STR_LAND_AREA_INFORMATION_AIRPORT_CLASS                         :{BLACK}Клас
 STR_LAND_AREA_INFORMATION_AIRPORT_NAME                          :{BLACK}Назва аеропорта: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_AIRPORTTILE_NAME                      :{BLACK}Назва ділянки аеропорту: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_NEWGRF_NAME                           :{BLACK}NewGRF: {LTBLUE}{STRING}
-STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}Приймає: {LTBLUE}
+STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}Приймає: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_CARGO_EIGHTS                          :({COMMA}/8 {STRING})
 STR_LANG_AREA_INFORMATION_RAIL_TYPE                             :{BLACK}Тип зал.колії: {LTBLUE}{STRING}
 STR_LANG_AREA_INFORMATION_ROAD_TYPE                             :{BLACK}Тип дороги: {LTBLUE}{STRING}
@@ -4187,7 +4187,7 @@ STR_COMPANY_INFRASTRUCTURE_VIEW_TOTAL_PERIOD                    :{WHITE}{CURRENC
 # Industry directory
 STR_INDUSTRY_DIRECTORY_CAPTION                                  :{WHITE}Підприємства ({COMMA} та {COMMA})
 STR_INDUSTRY_DIRECTORY_NONE                                     :{ORANGE}- немає -
-STR_INDUSTRY_DIRECTORY_ITEM_INFO                                :{BLACK}{CARGO_LONG}{STRING}{YELLOW} ({COMMA}% перевезено){BLACK}
+STR_INDUSTRY_DIRECTORY_ITEM_INFO                                :{BLACK}{CARGO_LONG}{STRING}{YELLOW} ({COMMA}% перевезено)
 STR_INDUSTRY_DIRECTORY_ITEM_NOPROD                              :{ORANGE}{INDUSTRY}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUSTRY} {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}
@@ -4210,9 +4210,9 @@ STR_INDUSTRY_VIEW_CARGO_GRAPH_TOOLTIP                           :{BLACK}Пока
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Обсяг виробництва: {YELLOW}{COMMA}%
 STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}Підприємство оголосило про близьке закриття!
 
-STR_INDUSTRY_VIEW_REQUIRES_N_CARGO                              :{BLACK}Потребує: {YELLOW}{STRING}{STRING}
-STR_INDUSTRY_VIEW_PRODUCES_N_CARGO                              :{BLACK}Виробляє: {YELLOW}{STRING}{STRING}
-STR_INDUSTRY_VIEW_CARGO_LIST_EXTENSION                          :, {STRING}{STRING}
+STR_INDUSTRY_VIEW_REQUIRES_N_CARGO                              :{BLACK}Потребує: {YELLOW}{STRING}
+STR_INDUSTRY_VIEW_PRODUCES_N_CARGO                              :{BLACK}Виробляє: {YELLOW}{STRING}
+STR_INDUSTRY_VIEW_CARGO_LIST_EXTENSION                          :{STRING}{STRING}
 
 STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Потребує:
 STR_INDUSTRY_VIEW_ACCEPT_CARGO_SUFFIX                           :{YELLOW}{0:STRING}{BLACK}{3:STRING}
@@ -4739,7 +4739,7 @@ STR_VEHICLE_DETAILS_TRAIN_CAPACITIES_TOOLTIP                    :{BLACK}Пока
 STR_VEHICLE_DETAIL_TAB_TOTAL_CARGO                              :{BLACK}Повна місткість
 STR_VEHICLE_DETAILS_TRAIN_TOTAL_CARGO_TOOLTIP                   :{BLACK}Показати загальну місткість поїзда, розділену за типом вантажу
 
-STR_VEHICLE_DETAILS_TRAIN_ARTICULATED_RV_CAPACITY               :{BLACK}Місткість: {LTBLUE}
+STR_VEHICLE_DETAILS_TRAIN_ARTICULATED_RV_CAPACITY               :{BLACK}Місткість: {LTBLUE}{STRING}
 
 # Vehicle refit
 STR_REFIT_CAPTION                                               :{WHITE}{VEHICLE} (Переобладнання)

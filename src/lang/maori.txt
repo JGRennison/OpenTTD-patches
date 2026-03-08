@@ -1248,7 +1248,7 @@ STR_CONFIG_SETTING_EXPAND_ALL                                   :Whakamakohatia 
 STR_CONFIG_SETTING_COLLAPSE_ALL                                 :Whakahingaia te katoa
 STR_CONFIG_SETTING_RESET_ALL                                    :Tautuhitia anō ngā uara katoa
 STR_CONFIG_SETTING_NO_EXPLANATION_AVAILABLE_HELPTEXT            :(kāore he whakamāramatanga i te wātea)
-STR_CONFIG_SETTING_VALUE                                        :{PUSH_COLOUR}{ORANGE}{STRING}{POP_COLOUR}
+STR_CONFIG_SETTING_VALUE                                        :{ORANGE}{STRING}
 STR_CONFIG_SETTING_DEFAULT_VALUE                                :{LTBLUE}Uara taunoa: {ORANGE}{STRING}
 STR_CONFIG_SETTING_TYPE                                         :{LTBLUE}Momo tautuhinga: {ORANGE}{STRING}
 STR_CONFIG_SETTING_TYPE_CLIENT                                  :Tautuhinga kiritaki (kāore e purutia i roto i ngā kōnae tiakikēmu; ka pāngia ngā kēmu katoa)
@@ -2892,7 +2892,7 @@ STR_HOUSE_PICKER_YEARS_ANY                                      :{BLACK}Tau: {GO
 STR_HOUSE_PICKER_YEARS_FROM                                     :{BLACK}Tau: {GOLD}Mai i te {NUM}
 STR_HOUSE_PICKER_YEARS_UNTIL                                    :{BLACK}Tau: {GOLD}Ki te {NUM}
 STR_HOUSE_PICKER_SIZE                                           :{BLACK}Rahi: {GOLD}{NUM}x{NUM} papariki
-STR_HOUSE_PICKER_CARGO_ACCEPTED                                 :{BLACK}Utanga hei whiwhi: {ORANGE}
+STR_HOUSE_PICKER_CARGO_ACCEPTED                                 :{BLACK}Utanga hei whiwhi: {GOLD}{STRING}
 STR_HOUSE_PICKER_CARGO_PRODUCED                                 :{BLACK}Utanga hei whakaputa: {GOLD}{CARGO_LIST}
 
 STR_HOUSE_PICKER_CLASS_ZONE1                                    :Tapa
@@ -3180,7 +3180,7 @@ STR_LAND_AREA_INFORMATION_AIRPORT_CLASS                         :{BLACK}Rōpū t
 STR_LAND_AREA_INFORMATION_AIRPORT_NAME                          :{BLACK}Ingoa o te taunga rererangi: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_AIRPORTTILE_NAME                      :{BLACK}Ingoa o te papariki taunga rererangi: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_NEWGRF_NAME                           :{BLACK}NewGRF: {LTBLUE}{STRING}
-STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}Utanga whiwhi: {LTBLUE}
+STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}Utanga whiwhi: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_CARGO_EIGHTS                          :({COMMA}/8 {STRING})
 STR_LANG_AREA_INFORMATION_RAIL_TYPE                             :{BLACK}Momo rēra: {LTBLUE}{STRING}
 STR_LANG_AREA_INFORMATION_ROAD_TYPE                             :{BLACK}Momo rori: {LTBLUE}{STRING}
@@ -4064,7 +4064,7 @@ STR_COMPANY_INFRASTRUCTURE_VIEW_TOTAL_PERIOD                    :{WHITE}{CURRENC
 # Industry directory
 STR_INDUSTRY_DIRECTORY_CAPTION                                  :{WHITE}Ahumahi ({COMMA} o te {COMMA})
 STR_INDUSTRY_DIRECTORY_NONE                                     :{ORANGE}- Kore -
-STR_INDUSTRY_DIRECTORY_ITEM_INFO                                :{BLACK}{CARGO_LONG}{STRING}{YELLOW} ({COMMA}% kua kawea){BLACK}
+STR_INDUSTRY_DIRECTORY_ITEM_INFO                                :{BLACK}{CARGO_LONG}{STRING}{YELLOW} ({COMMA}% kua kawea)
 STR_INDUSTRY_DIRECTORY_ITEM_NOPROD                              :{ORANGE}{INDUSTRY}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUSTRY} {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}
@@ -4087,9 +4087,9 @@ STR_INDUSTRY_VIEW_CARGO_GRAPH_TOOLTIP                           :{BLACK}Ka whaka
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Kōeke whakaputa: {YELLOW}{COMMA}%
 STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}Kua pānui te ahumahi ka katia ākuanei!
 
-STR_INDUSTRY_VIEW_REQUIRES_N_CARGO                              :{BLACK}Ka whiwhi mai: {YELLOW}{STRING}{STRING}
-STR_INDUSTRY_VIEW_PRODUCES_N_CARGO                              :{BLACK}Ka tuku atu: {YELLOW}{STRING}{STRING}
-STR_INDUSTRY_VIEW_CARGO_LIST_EXTENSION                          :, {STRING}{STRING}
+STR_INDUSTRY_VIEW_REQUIRES_N_CARGO                              :{BLACK}Ka whiwhi mai: {YELLOW}{STRING}
+STR_INDUSTRY_VIEW_PRODUCES_N_CARGO                              :{BLACK}Ka tuku atu: {YELLOW}{STRING}
+STR_INDUSTRY_VIEW_CARGO_LIST_EXTENSION                          :{STRING}{STRING}
 
 STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Ka whiwhi mai:
 STR_INDUSTRY_VIEW_ACCEPT_CARGO_SUFFIX                           :{YELLOW}{0:STRING}{BLACK}{3:STRING}
@@ -4623,7 +4623,7 @@ STR_VEHICLE_DETAILS_TRAIN_CAPACITIES_TOOLTIP                    :{BLACK}Whakaari
 STR_VEHICLE_DETAIL_TAB_TOTAL_CARGO                              :{BLACK}Utanga Tapeke
 STR_VEHICLE_DETAILS_TRAIN_TOTAL_CARGO_TOOLTIP                   :{BLACK}Whakaaria te kītanga tapeke o te tereina, kua wehea ki ia momo utanga
 
-STR_VEHICLE_DETAILS_TRAIN_ARTICULATED_RV_CAPACITY               :{BLACK}Kītanga: {LTBLUE}
+STR_VEHICLE_DETAILS_TRAIN_ARTICULATED_RV_CAPACITY               :{BLACK}Kītanga: {LTBLUE}{STRING}
 
 # Vehicle refit
 STR_REFIT_CAPTION                                               :{WHITE}{VEHICLE} (Urutaunga)
@@ -5997,7 +5997,8 @@ STR_LORRY                                                       :{BLACK}{LORRY}
 STR_PLANE                                                       :{BLACK}{PLANE}
 STR_SHIP                                                        :{BLACK}{SHIP}
 
-STR_TOOLBAR_RAILTYPE_VELOCITY                                   :{STRING} ({VELOCITY})
+STR_TOOLBAR_RAILTYPE_VELOCITY                                   :{STRING} {YELLOW}({VELOCITY})
+STR_TOOLBAR_ROADTYPE_VELOCITY                                   :{STRING} {YELLOW}({VELOCITY})
 
 STR_BADGE_NAME_LIST                                             :{STRING}: {GOLD}{STRING}
 STR_BADGE_CONFIG_MENU_TOOLTIP                                   :Huakina te whirihoranga tohu

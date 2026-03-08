@@ -1249,7 +1249,7 @@ STR_CONFIG_SETTING_EXPAND_ALL                                   :Alles ausklappe
 STR_CONFIG_SETTING_COLLAPSE_ALL                                 :Alles einklappen
 STR_CONFIG_SETTING_RESET_ALL                                    :Alle Werte zurücksetzen
 STR_CONFIG_SETTING_NO_EXPLANATION_AVAILABLE_HELPTEXT            :(keine Erklärung verfügbar)
-STR_CONFIG_SETTING_VALUE                                        :{PUSH_COLOUR}{ORANGE}{STRING}{POP_COLOUR}
+STR_CONFIG_SETTING_VALUE                                        :{ORANGE}{STRING}
 STR_CONFIG_SETTING_DEFAULT_VALUE                                :{LTBLUE}Standardwert: {ORANGE}{STRING}
 STR_CONFIG_SETTING_TYPE                                         :{LTBLUE}Art der Einstellung: {ORANGE}{STRING}
 STR_CONFIG_SETTING_TYPE_CLIENT                                  :Nutzer-Einstellung (nicht in Spielständen gespeichert; beeinflusst alle Spiele)
@@ -2875,7 +2875,7 @@ STR_HOUSE_PICKER_YEARS_ANY                                      :{BLACK}Jahre: {
 STR_HOUSE_PICKER_YEARS_FROM                                     :{BLACK}Jahre: {GOLD}Ab {NUM}
 STR_HOUSE_PICKER_YEARS_UNTIL                                    :{BLACK}Jahre: {GOLD}Bis {NUM}
 STR_HOUSE_PICKER_SIZE                                           :{BLACK}Größe: {GOLD}{NUM}×{NUM} Kacheln
-STR_HOUSE_PICKER_CARGO_ACCEPTED                                 :{BLACK}Akzeptierte Fracht: {ORANGE}
+STR_HOUSE_PICKER_CARGO_ACCEPTED                                 :{BLACK}Akzeptierte Fracht: {GOLD}{STRING}
 STR_HOUSE_PICKER_CARGO_PRODUCED                                 :{BLACK}Produzierte Fracht: {GOLD}{CARGO_LIST}
 
 STR_HOUSE_PICKER_CLASS_ZONE1                                    :Rand
@@ -3164,7 +3164,7 @@ STR_LAND_AREA_INFORMATION_AIRPORT_CLASS                         :{BLACK}Flughafe
 STR_LAND_AREA_INFORMATION_AIRPORT_NAME                          :{BLACK}Name des Flughafen: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_AIRPORTTILE_NAME                      :{BLACK}Name des Flughafenfeldes: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_NEWGRF_NAME                           :{BLACK}NewGRF: {LTBLUE}{STRING}
-STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}Angenommene Frachtarten: {LTBLUE}
+STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}Angenommene Frachtarten: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_CARGO_EIGHTS                          :({COMMA}/8 {STRING})
 STR_LANG_AREA_INFORMATION_RAIL_TYPE                             :{BLACK}Gleistyp: {LTBLUE}{STRING}
 STR_LANG_AREA_INFORMATION_ROAD_TYPE                             :{BLACK}Straßentyp: {LTBLUE}{STRING}
@@ -4048,7 +4048,7 @@ STR_COMPANY_INFRASTRUCTURE_VIEW_TOTAL_PERIOD                    :{WHITE}{CURRENC
 # Industry directory
 STR_INDUSTRY_DIRECTORY_CAPTION                                  :{WHITE}Industrien ({COMMA} von {COMMA})
 STR_INDUSTRY_DIRECTORY_NONE                                     :{ORANGE}- Keine -
-STR_INDUSTRY_DIRECTORY_ITEM_INFO                                :{BLACK}{CARGO_LONG}{STRING}{YELLOW} ({COMMA}% transportiert){BLACK}
+STR_INDUSTRY_DIRECTORY_ITEM_INFO                                :{BLACK}{CARGO_LONG}{STRING}{YELLOW} ({COMMA}% transportiert)
 STR_INDUSTRY_DIRECTORY_ITEM_NOPROD                              :{ORANGE}{INDUSTRY}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUSTRY} {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}
@@ -4071,9 +4071,9 @@ STR_INDUSTRY_VIEW_CARGO_GRAPH_TOOLTIP                           :{BLACK}Zeigt da
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Produktionsrate: {YELLOW}{COMMA}%
 STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}Diese Industrie wird in Kürze schließen!
 
-STR_INDUSTRY_VIEW_REQUIRES_N_CARGO                              :{BLACK}Benötigt: {YELLOW}{STRING}{STRING}
-STR_INDUSTRY_VIEW_PRODUCES_N_CARGO                              :{BLACK}Produziert: {YELLOW}{STRING}{STRING}
-STR_INDUSTRY_VIEW_CARGO_LIST_EXTENSION                          :, {STRING}{STRING}
+STR_INDUSTRY_VIEW_REQUIRES_N_CARGO                              :{BLACK}Benötigt: {YELLOW}{STRING}
+STR_INDUSTRY_VIEW_PRODUCES_N_CARGO                              :{BLACK}Produziert: {YELLOW}{STRING}
+STR_INDUSTRY_VIEW_CARGO_LIST_EXTENSION                          :{STRING}{STRING}
 
 STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Benötigt:
 STR_INDUSTRY_VIEW_ACCEPT_CARGO_SUFFIX                           :{YELLOW}{0:STRING}{BLACK}{3:STRING}
@@ -4600,7 +4600,7 @@ STR_VEHICLE_DETAILS_TRAIN_CAPACITIES_TOOLTIP                    :{BLACK}Zeige Ka
 STR_VEHICLE_DETAIL_TAB_TOTAL_CARGO                              :{BLACK}Frachtübersicht
 STR_VEHICLE_DETAILS_TRAIN_TOTAL_CARGO_TOOLTIP                   :{BLACK}Frachtübersicht des Zuges anzeigen, aufgeteilt nach Frachttyp
 
-STR_VEHICLE_DETAILS_TRAIN_ARTICULATED_RV_CAPACITY               :{BLACK}Kapazität: {LTBLUE}
+STR_VEHICLE_DETAILS_TRAIN_ARTICULATED_RV_CAPACITY               :{BLACK}Kapazität: {LTBLUE}{STRING}
 
 # Vehicle refit
 STR_REFIT_CAPTION                                               :{WHITE}{VEHICLE} (Umrüsten)

@@ -1334,7 +1334,7 @@ STR_CONFIG_SETTING_EXPAND_ALL                                   :Etendu ĉion
 STR_CONFIG_SETTING_COLLAPSE_ALL                                 :Maletendi ĉiujn
 STR_CONFIG_SETTING_RESET_ALL                                    :Restarigu ĉiujn valorojn
 STR_CONFIG_SETTING_NO_EXPLANATION_AVAILABLE_HELPTEXT            :(neniu ekspliko disponeble)
-STR_CONFIG_SETTING_VALUE                                        :{PUSH_COLOUR}{ORANGE}{STRING}{POP_COLOUR}
+STR_CONFIG_SETTING_VALUE                                        :{ORANGE}{STRING}
 STR_CONFIG_SETTING_DEFAULT_VALUE                                :{LTBLUE}Defaŭlta valoro: {ORANGE}{STRING}
 STR_CONFIG_SETTING_TYPE                                         :{LTBLUE}Tipo de agordo: {ORANGE}{STRING}
 STR_CONFIG_SETTING_TYPE_CLIENT                                  :Klienta agordo (ne enmemorigata en konservitaj ludoj; tuŝas ĉiujn ludojn)
@@ -2982,6 +2982,7 @@ STR_HOUSE_PICKER_YEARS_ANY                                      :{BLACK}Jaroj: {
 STR_HOUSE_PICKER_YEARS_FROM                                     :{BLACK}Jaroj: {GOLD}Ekde {NUM}
 STR_HOUSE_PICKER_YEARS_UNTIL                                    :{BLACK}Jaroj: {GOLD}Ĝis {NUM}
 STR_HOUSE_PICKER_SIZE                                           :{BLACK}Grandeco: {GOLD}{NUM} x {NUM} kaheloj
+STR_HOUSE_PICKER_CARGO_ACCEPTED                                 :{BLACK}Ŝarĝo akceptata: {GOLD}{STRING}
 STR_HOUSE_PICKER_CARGO_PRODUCED                                 :{BLACK}Produktata ŝarĝo: {GOLD}{CARGO_LIST}
 
 STR_HOUSE_PICKER_CLASS_ZONE1                                    :Rando
@@ -3271,7 +3272,7 @@ STR_LAND_AREA_INFORMATION_AIRPORT_CLASS                         :{BLACK}Aerohave
 STR_LAND_AREA_INFORMATION_AIRPORT_NAME                          :{BLACK}Aerohavena nomo: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_AIRPORTTILE_NAME                      :{BLACK}Nomo de flughavena kahelo: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_NEWGRF_NAME                           :{BLACK}NewGRF: {LTBLUE}{STRING}
-STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}Ŝarĝo akceptata: {LTBLUE}
+STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}Ŝarĝo akceptata: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_CARGO_EIGHTS                          :({COMMA}/8 {STRING})
 STR_LANG_AREA_INFORMATION_RAIL_TYPE                             :{BLACK}Tipo de relo: {LTBLUE}{STRING}
 STR_LANG_AREA_INFORMATION_ROAD_TYPE                             :{BLACK}Vojtipo: {LTBLUE}{STRING}
@@ -4156,7 +4157,7 @@ STR_COMPANY_INFRASTRUCTURE_VIEW_TOTAL_PERIOD                    :{WHITE}{CURRENC
 # Industry directory
 STR_INDUSTRY_DIRECTORY_CAPTION                                  :{WHITE}Entreprenoj ({COMMA} de {COMMA})
 STR_INDUSTRY_DIRECTORY_NONE                                     :{ORANGE}- Neniu -
-STR_INDUSTRY_DIRECTORY_ITEM_INFO                                :{BLACK}{CARGO_LONG}{STRING}{YELLOW} ({COMMA}% transportiĝis){BLACK}
+STR_INDUSTRY_DIRECTORY_ITEM_INFO                                :{BLACK}{CARGO_LONG}{STRING}{YELLOW} ({COMMA}% transportita)
 STR_INDUSTRY_DIRECTORY_ITEM_NOPROD                              :{ORANGE}{INDUSTRY}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUSTRY} {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}
@@ -4179,10 +4180,10 @@ STR_INDUSTRY_VIEW_CARGO_GRAPH_TOOLTIP                           :{BLACK}Montras 
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Produkta nivelo: {YELLOW}{COMMA}%
 STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}La entrepreno anoncas tre baldaŭan fermiĝon!
 
-STR_INDUSTRY_VIEW_REQUIRES_N_CARGO                              :{BLACK}Bezonas: {YELLOW}{STRING.n}{STRING.n}
-STR_INDUSTRY_VIEW_PRODUCES_N_CARGO                              :{BLACK}Produktas: {YELLOW}{STRING}{STRING.n}
-STR_INDUSTRY_VIEW_CARGO_LIST_EXTENSION                          :, {STRING}{STRING}
-STR_INDUSTRY_VIEW_CARGO_LIST_EXTENSION.n                        :, {STRING.n}{STRING.n}
+STR_INDUSTRY_VIEW_REQUIRES_N_CARGO                              :{BLACK}Bezonas: {YELLOW}{STRING}
+STR_INDUSTRY_VIEW_PRODUCES_N_CARGO                              :{BLACK}Produktas: {YELLOW}{STRING}
+STR_INDUSTRY_VIEW_CARGO_LIST_EXTENSION                          :{STRING.n}{STRING}
+STR_INDUSTRY_VIEW_CARGO_LIST_EXTENSION.n                        :{STRING.n}{STRING.n}
 
 STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Bezonas:
 STR_INDUSTRY_VIEW_ACCEPT_CARGO_SUFFIX                           :{YELLOW}{0:STRING.n}{BLACK}{3:STRING}
@@ -4722,7 +4723,7 @@ STR_VEHICLE_DETAILS_TRAIN_CAPACITIES_TOOLTIP                    :{BLACK}Montri k
 STR_VEHICLE_DETAIL_TAB_TOTAL_CARGO                              :{BLACK}Tuta ŝarĝo
 STR_VEHICLE_DETAILS_TRAIN_TOTAL_CARGO_TOOLTIP                   :{BLACK}Montri tutan kapablon de vagonaro, dividite laŭ ŝarĝtipo
 
-STR_VEHICLE_DETAILS_TRAIN_ARTICULATED_RV_CAPACITY               :{BLACK}Kapacito: {LTBLUE}
+STR_VEHICLE_DETAILS_TRAIN_ARTICULATED_RV_CAPACITY               :{BLACK}Kapacito: {LTBLUE}{STRING}
 
 # Vehicle refit
 STR_REFIT_CAPTION                                               :{WHITE}{VEHICLE} (Transformu)
@@ -6100,7 +6101,8 @@ STR_LORRY                                                       :{BLACK}{LORRY}
 STR_PLANE                                                       :{BLACK}{PLANE}
 STR_SHIP                                                        :{BLACK}{SHIP}
 
-STR_TOOLBAR_RAILTYPE_VELOCITY                                   :{STRING} ({VELOCITY})
+STR_TOOLBAR_RAILTYPE_VELOCITY                                   :{STRING} {YELLOW}({VELOCITY})
+STR_TOOLBAR_ROADTYPE_VELOCITY                                   :{STRING} {YELLOW}({VELOCITY})
 
 STR_BADGE_NAME_LIST                                             :{STRING}: {GOLD}{STRING}
 STR_BADGE_CONFIG_MENU_TOOLTIP                                   :Malfermi agordadon de insignoj

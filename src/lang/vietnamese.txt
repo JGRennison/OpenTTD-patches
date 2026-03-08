@@ -1248,7 +1248,7 @@ STR_CONFIG_SETTING_EXPAND_ALL                                   :Mở xuống t�
 STR_CONFIG_SETTING_COLLAPSE_ALL                                 :Đóng lại tất cả
 STR_CONFIG_SETTING_RESET_ALL                                    :Thiết lập lại tất cả
 STR_CONFIG_SETTING_NO_EXPLANATION_AVAILABLE_HELPTEXT            :(hiện không có giải thích nào)
-STR_CONFIG_SETTING_VALUE                                        :{PUSH_COLOUR}{ORANGE}{STRING}{POP_COLOUR}
+STR_CONFIG_SETTING_VALUE                                        :{ORANGE}{STRING}
 STR_CONFIG_SETTING_DEFAULT_VALUE                                :{LTBLUE}Giá trị mặc định: {ORANGE}{STRING}
 STR_CONFIG_SETTING_TYPE                                         :{LTBLUE}Kiểu thiết lập: {ORANGE}{STRING}
 STR_CONFIG_SETTING_TYPE_CLIENT                                  :Cấu hình máy khách (không được lưu trong save; tác động tới tất cả các ván chơi)
@@ -2892,7 +2892,7 @@ STR_HOUSE_PICKER_YEARS_ANY                                      :{BLACK}Năm: {G
 STR_HOUSE_PICKER_YEARS_FROM                                     :{BLACK}Năm: {GOLD}Từ {NUM}
 STR_HOUSE_PICKER_YEARS_UNTIL                                    :{BLACK}Năm: {GOLD}Đến {NUM}
 STR_HOUSE_PICKER_SIZE                                           :{BLACK}Kích thước: {GOLD}{NUM}x{NUM} ô
-STR_HOUSE_PICKER_CARGO_ACCEPTED                                 :{BLACK}Hàng hóa được chấp nhận: {ORANGE}
+STR_HOUSE_PICKER_CARGO_ACCEPTED                                 :{BLACK}Hàng hóa được chấp nhận: {GOLD}{STRING}
 STR_HOUSE_PICKER_CARGO_PRODUCED                                 :{BLACK}Hàng hóa cung cấp: {GOLD}{CARGO_LIST}
 
 STR_HOUSE_PICKER_CLASS_ZONE1                                    :Ngoài rìa
@@ -3181,7 +3181,7 @@ STR_LAND_AREA_INFORMATION_AIRPORT_CLASS                         :{BLACK}Loại s
 STR_LAND_AREA_INFORMATION_AIRPORT_NAME                          :{BLACK}Tên sân bay: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_AIRPORTTILE_NAME                      :{BLACK}Tên sân bay vị trí này: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_NEWGRF_NAME                           :{BLACK}NewGRF: {LTBLUE}{STRING}
-STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}Hàng hoá chấp nhận: {LTBLUE}
+STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}Hàng hoá chấp nhận: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_CARGO_EIGHTS                          :({COMMA}/8 {STRING})
 STR_LANG_AREA_INFORMATION_RAIL_TYPE                             :{BLACK}Kiểu đường ray: {LTBLUE}{STRING}
 STR_LANG_AREA_INFORMATION_ROAD_TYPE                             :{BLACK}Kiểu đường: {LTBLUE}{STRING}
@@ -4065,7 +4065,7 @@ STR_COMPANY_INFRASTRUCTURE_VIEW_TOTAL_PERIOD                    :{WHITE}{CURRENC
 # Industry directory
 STR_INDUSTRY_DIRECTORY_CAPTION                                  :{WHITE}Nhà máy ({COMMA} đến {COMMA})
 STR_INDUSTRY_DIRECTORY_NONE                                     :{ORANGE}- Không Có -
-STR_INDUSTRY_DIRECTORY_ITEM_INFO                                :{BLACK}{CARGO_LONG}{STRING}{YELLOW} ({COMMA}% đã vận chuyển){BLACK}
+STR_INDUSTRY_DIRECTORY_ITEM_INFO                                :{BLACK}{CARGO_LONG}{STRING}{YELLOW} ({COMMA}% đã vận chuyển)
 STR_INDUSTRY_DIRECTORY_ITEM_NOPROD                              :{ORANGE}{INDUSTRY}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUSTRY} {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}
@@ -4088,9 +4088,9 @@ STR_INDUSTRY_VIEW_CARGO_GRAPH_TOOLTIP                           :{BLACK}Xem đ�
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Mức sản lượng: {YELLOW}{COMMA}%
 STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}Nhà máy này đã thông báo sắp đóng cửa!
 
-STR_INDUSTRY_VIEW_REQUIRES_N_CARGO                              :{BLACK}Yêu cầu: {YELLOW}{STRING}{STRING}
-STR_INDUSTRY_VIEW_PRODUCES_N_CARGO                              :{BLACK}Sản lượng: {YELLOW}{STRING}{STRING}
-STR_INDUSTRY_VIEW_CARGO_LIST_EXTENSION                          :, {STRING}{STRING}
+STR_INDUSTRY_VIEW_REQUIRES_N_CARGO                              :{BLACK}Yêu cầu: {YELLOW}{STRING}
+STR_INDUSTRY_VIEW_PRODUCES_N_CARGO                              :{BLACK}Sản lượng: {YELLOW}{STRING}
+STR_INDUSTRY_VIEW_CARGO_LIST_EXTENSION                          :{STRING}{STRING}
 
 STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Cần cung cấp:
 STR_INDUSTRY_VIEW_ACCEPT_CARGO_SUFFIX                           :{YELLOW}{0:STRING}{BLACK}{3:STRING}
@@ -4624,7 +4624,7 @@ STR_VEHICLE_DETAILS_TRAIN_CAPACITIES_TOOLTIP                    :{BLACK}Hiện s
 STR_VEHICLE_DETAIL_TAB_TOTAL_CARGO                              :{BLACK}Tổng sức chứa
 STR_VEHICLE_DETAILS_TRAIN_TOTAL_CARGO_TOOLTIP                   :{BLACK}Xem tổng sức chứa của tàu, phân chia bởi loại hàng hoá
 
-STR_VEHICLE_DETAILS_TRAIN_ARTICULATED_RV_CAPACITY               :{BLACK}Sức chứa: {LTBLUE}
+STR_VEHICLE_DETAILS_TRAIN_ARTICULATED_RV_CAPACITY               :{BLACK}Sức chứa: {LTBLUE}{STRING}
 
 # Vehicle refit
 STR_REFIT_CAPTION                                               :{WHITE}{VEHICLE} (Cải biến)

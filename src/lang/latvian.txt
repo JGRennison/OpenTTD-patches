@@ -1250,7 +1250,7 @@ STR_CONFIG_SETTING_EXPAND_ALL                                   :Izvērst visu
 STR_CONFIG_SETTING_COLLAPSE_ALL                                 :Sakļaut visu
 STR_CONFIG_SETTING_RESET_ALL                                    :Atiestatīt visas vērtības
 STR_CONFIG_SETTING_NO_EXPLANATION_AVAILABLE_HELPTEXT            :(skaidrojums nav pieejams)
-STR_CONFIG_SETTING_VALUE                                        :{PUSH_COLOUR}{ORANGE}{STRING}{POP_COLOUR}
+STR_CONFIG_SETTING_VALUE                                        :{ORANGE}{STRING}
 STR_CONFIG_SETTING_DEFAULT_VALUE                                :{LTBLUE}Noklusējuma vērtība: {ORANGE}{STRING}
 STR_CONFIG_SETTING_TYPE                                         :{LTBLUE}Iestatījuma veids: {ORANGE}{STRING}
 STR_CONFIG_SETTING_TYPE_CLIENT                                  :lietotāja iestatījums (netiek iekļauts saglabājumos, ietekmē visas spēles)
@@ -2896,7 +2896,7 @@ STR_HOUSE_PICKER_YEARS_ANY                                      :{BLACK}Gadi: {G
 STR_HOUSE_PICKER_YEARS_FROM                                     :{BLACK}Gadi: {GOLD}No {NUM}
 STR_HOUSE_PICKER_YEARS_UNTIL                                    :{BLACK}Gadi: {GOLD}No {NUM}
 STR_HOUSE_PICKER_SIZE                                           :{BLACK}Izmērs: {GOLD}{NUM}x{NUM} lauciņi
-STR_HOUSE_PICKER_CARGO_ACCEPTED                                 :{BLACK}Pieņemamā krava: {ORANGE}
+STR_HOUSE_PICKER_CARGO_ACCEPTED                                 :{BLACK}Pieņemamā krava: {GOLD}{STRING}
 STR_HOUSE_PICKER_CARGO_PRODUCED                                 :{BLACK}Saražotā krava: {GOLD}{CARGO_LIST}
 
 STR_HOUSE_PICKER_CLASS_ZONE1                                    :Mala
@@ -3186,7 +3186,7 @@ STR_LAND_AREA_INFORMATION_AIRPORT_CLASS                         :{BLACK}Lidostas
 STR_LAND_AREA_INFORMATION_AIRPORT_NAME                          :{BLACK}Lidostas nosaukums: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_AIRPORTTILE_NAME                      :{BLACK}Lidostas lauciņa nosaukums: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_NEWGRF_NAME                           :{BLACK}NewGRF: {LTBLUE}{STRING}
-STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}Pieņem kravu: {LTBLUE}
+STR_LAND_AREA_INFORMATION_CARGO_ACCEPTED                        :{BLACK}Pieņem kravu: {LTBLUE}{STRING}
 STR_LAND_AREA_INFORMATION_CARGO_EIGHTS                          :({COMMA}/8 {STRING})
 STR_LANG_AREA_INFORMATION_RAIL_TYPE                             :{BLACK}Sliežu veids: {LTBLUE}{STRING}
 STR_LANG_AREA_INFORMATION_ROAD_TYPE                             :{BLACK}Ceļu tips: {LTBLUE}{STRING}
@@ -4076,7 +4076,7 @@ STR_COMPANY_INFRASTRUCTURE_VIEW_TOTAL_PERIOD                    :{WHITE}{CURRENC
 STR_INDUSTRY_DIRECTORY_CAPTION                                  :{WHITE}Ražotnes ({COMMA} no {COMMA})
 STR_INDUSTRY_DIRECTORY_NONE                                     :{G=m}{ORANGE}- Neviens -
 STR_INDUSTRY_DIRECTORY_NONE.kas                                 :{ORANGE}- Neviena -
-STR_INDUSTRY_DIRECTORY_ITEM_INFO                                :{BLACK}{CARGO_LONG}{STRING}{YELLOW} (pārvadāti {COMMA}%){BLACK}
+STR_INDUSTRY_DIRECTORY_ITEM_INFO                                :{BLACK}{CARGO_LONG}{STRING}{YELLOW} (pārvadāti {COMMA}%)
 STR_INDUSTRY_DIRECTORY_ITEM_NOPROD                              :{ORANGE}{INDUSTRY}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUSTRY} {STRING}
 STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}
@@ -4099,9 +4099,9 @@ STR_INDUSTRY_VIEW_CARGO_GRAPH_TOOLTIP                           :{BLACK}Rāda no
 STR_INDUSTRY_VIEW_PRODUCTION_LEVEL                              :{BLACK}Ražošanas līmenis: {YELLOW}{COMMA}%
 STR_INDUSTRY_VIEW_INDUSTRY_ANNOUNCED_CLOSURE                    :{YELLOW}Nozare ir paziņojusi par nenovēršamu slēgšanu!
 
-STR_INDUSTRY_VIEW_REQUIRES_N_CARGO                              :{BLACK}Pieprasa: {YELLOW}{STRING}{STRING}
-STR_INDUSTRY_VIEW_PRODUCES_N_CARGO                              :{BLACK}Ražo: {YELLOW}{STRING}{STRING}
-STR_INDUSTRY_VIEW_CARGO_LIST_EXTENSION                          :, {STRING}{STRING}
+STR_INDUSTRY_VIEW_REQUIRES_N_CARGO                              :{BLACK}Pieprasa: {YELLOW}{STRING}
+STR_INDUSTRY_VIEW_PRODUCES_N_CARGO                              :{BLACK}Ražo: {YELLOW}{STRING}
+STR_INDUSTRY_VIEW_CARGO_LIST_EXTENSION                          :{STRING}{STRING}
 
 STR_INDUSTRY_VIEW_REQUIRES                                      :{BLACK}Pieprasa:
 STR_INDUSTRY_VIEW_ACCEPT_CARGO_SUFFIX                           :{YELLOW}{0:STRING}{BLACK}{3:STRING}
@@ -4635,7 +4635,7 @@ STR_VEHICLE_DETAILS_TRAIN_CAPACITIES_TOOLTIP                    :{BLACK}Rādīt 
 STR_VEHICLE_DETAIL_TAB_TOTAL_CARGO                              :{BLACK}Krava kopā
 STR_VEHICLE_DETAILS_TRAIN_TOTAL_CARGO_TOOLTIP                   :{BLACK}Rādīt kopējo vilciena ietilpību, sadalīt to kravu veidos
 
-STR_VEHICLE_DETAILS_TRAIN_ARTICULATED_RV_CAPACITY               :{BLACK}Ietilpība: {LTBLUE}
+STR_VEHICLE_DETAILS_TRAIN_ARTICULATED_RV_CAPACITY               :{BLACK}Ietilpība: {LTBLUE}{STRING}
 
 # Vehicle refit
 STR_REFIT_CAPTION                                               :{WHITE}{VEHICLE} (Pielāgot)
@@ -6009,7 +6009,8 @@ STR_LORRY                                                       :{BLACK}{LORRY}
 STR_PLANE                                                       :{BLACK}{PLANE}
 STR_SHIP                                                        :{BLACK}{SHIP}
 
-STR_TOOLBAR_RAILTYPE_VELOCITY                                   :{STRING} ({VELOCITY})
+STR_TOOLBAR_RAILTYPE_VELOCITY                                   :{STRING} {YELLOW}({VELOCITY})
+STR_TOOLBAR_ROADTYPE_VELOCITY                                   :{STRING} {YELLOW}({VELOCITY})
 
 STR_BADGE_NAME_LIST                                             :{STRING}: {GOLD}{STRING}
 STR_BADGE_CONFIG_MENU_TOOLTIP                                   :Atvērt nozīmītes konfigurāciju
