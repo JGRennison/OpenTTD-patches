@@ -228,7 +228,7 @@ public:
 		ProviderManager<FontCacheFactory>::Register(*this);
 	}
 
-	virtual ~FontCacheFactory()
+	~FontCacheFactory() override
 	{
 		ProviderManager<FontCacheFactory>::Unregister(*this);
 	}

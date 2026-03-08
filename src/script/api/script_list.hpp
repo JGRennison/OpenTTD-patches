@@ -28,7 +28,7 @@ class ScriptListSorter;
 class ScriptList : public ScriptObject {
 public:
 	/** Type of sorter */
-	enum SorterType {
+	enum SorterType : uint8_t {
 		SORT_BY_VALUE, ///< Sort the list based on the value of the item.
 		SORT_BY_ITEM,  ///< Sort the list based on the item itself.
 	};
@@ -202,9 +202,9 @@ protected:
 		return this->items.size();
 	}
 
-	virtual bool SaveObject(HSQUIRRELVM vm) override;
+	virtual bool SaveObject(HSQUIRRELVM vm) const override;
 	virtual bool LoadObject(HSQUIRRELVM vm) override;
-	virtual ScriptObject *CloneObject() override;
+	virtual ScriptObject *CloneObject() const override;
 
 	/**
 	 * Copy the content of a list.
@@ -224,7 +224,7 @@ public:
 	ScriptListValueSet values; ///< The items in the list, sorted by value
 
 	ScriptList();
-	~ScriptList();
+	~ScriptList() override;
 
 #ifdef DOXYGEN_API
 	/**
@@ -263,7 +263,7 @@ public:
 	 * @param item the item to check for.
 	 * @return true if the item is in the list.
 	 */
-	bool HasItem(SQInteger item);
+	bool HasItem(SQInteger item) const;
 
 	/**
 	 * Go to the beginning of the list and return the item. To get the value use list.GetValue(list.Begin()).
@@ -283,27 +283,27 @@ public:
 	 * Check if a list is empty.
 	 * @return true if the list is empty.
 	 */
-	bool IsEmpty();
+	bool IsEmpty() const;
 
 	/**
 	 * Check if there is a element left. In other words, if this is false,
 	 * the last call to Begin() or Next() returned a valid item.
 	 * @return true if the current item is beyond end-of-list.
 	 */
-	bool IsEnd();
+	bool IsEnd() const;
 
 	/**
 	 * Returns the amount of items in the list.
 	 * @return amount of items in the list.
 	 */
-	SQInteger Count();
+	SQInteger Count() const;
 
 	/**
 	 * Get the value that belongs to this item.
 	 * @param item the item to get the value from
 	 * @return the value that belongs to this item.
 	 */
-	SQInteger GetValue(SQInteger item);
+	SQInteger GetValue(SQInteger item) const;
 
 	/**
 	 * Set a value of an item directly.
@@ -331,8 +331,13 @@ public:
 	 * @note All added items keep their value as it was in 'list'.
 	 * @note If the item already exists inside the caller, the value of the
 	 *  list that is added is set on the item.
+	 * @suspendable
 	 */
+#ifdef DOXYGEN_API
 	void AddList(ScriptList *list);
+#else
+	bool AddList(ScriptList *list);
+#endif /* DOXYGEN_API */
 
 	/**
 	 * Swap the contents of two lists.
@@ -432,7 +437,7 @@ public:
 	/**
 	 * Used for 'foreach()' and [] get from Squirrel.
 	 */
-	SQInteger _get(HSQUIRRELVM vm);
+	SQInteger _get(HSQUIRRELVM vm) const;
 
 	/**
 	 * Used for [] set from Squirrel.

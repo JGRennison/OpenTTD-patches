@@ -120,7 +120,7 @@ public:
 		this->Reflow();
 	}
 
-	~UniscribeParagraphLayout() override {}
+	~UniscribeParagraphLayout() override = default;
 
 	void Reflow() override
 	{

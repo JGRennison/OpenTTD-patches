@@ -57,7 +57,7 @@ template <typename T>
 class BaseProvider {
 public:
 	constexpr BaseProvider(std::string_view name, std::string_view description) : name(name), description(description) {}
-	virtual ~BaseProvider() {}
+	virtual ~BaseProvider() = default;
 
 	inline std::string_view GetName() const { return this->name; }
 	inline std::string_view GetDescription() const { return this->description; }
@@ -85,7 +85,6 @@ template <typename T>
 class PriorityBaseProvider : public BaseProvider<T> {
 public:
 	constexpr PriorityBaseProvider(std::string_view name, std::string_view description, int priority) : BaseProvider<T>(name, description), priority(priority) {}
-	virtual ~PriorityBaseProvider() {}
 
 	inline int GetPriority() const { return this->priority; }
 

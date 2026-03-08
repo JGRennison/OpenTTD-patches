@@ -395,7 +395,7 @@ public:
 
 
 
-bool ScriptList::SaveObject(HSQUIRRELVM vm)
+bool ScriptList::SaveObject(HSQUIRRELVM vm) const
 {
 	sq_pushstring(vm, "List");
 	sq_newarray(vm, 0);
@@ -445,7 +445,7 @@ bool ScriptList::LoadObject(HSQUIRRELVM vm)
 	return true;
 }
 
-ScriptObject *ScriptList::CloneObject()
+ScriptObject *ScriptList::CloneObject() const
 {
 	ScriptList *clone = new ScriptList();
 	clone->CopyList(this);
@@ -479,7 +479,7 @@ ScriptList::~ScriptList()
 	}
 }
 
-bool ScriptList::HasItem(SQInteger item)
+bool ScriptList::HasItem(SQInteger item) const
 {
 	return this->items.count(item) == 1;
 }
@@ -643,12 +643,12 @@ SQInteger ScriptList::Next()
 	return this->sorter->Next().value_or(0);
 }
 
-bool ScriptList::IsEmpty()
+bool ScriptList::IsEmpty() const
 {
 	return this->items.empty();
 }
 
-bool ScriptList::IsEnd()
+bool ScriptList::IsEnd() const
 {
 	if (!this->initialized) {
 		Debug(script, 0, "IsEnd() is invalid as Begin() is never called");
@@ -657,14 +657,14 @@ bool ScriptList::IsEnd()
 	return this->sorter->IsEnd();
 }
 
-SQInteger ScriptList::Count()
+SQInteger ScriptList::Count() const
 {
 	return this->items.size();
 }
 
-SQInteger ScriptList::GetValue(SQInteger item)
+SQInteger ScriptList::GetValue(SQInteger item) const
 {
-	ScriptListMap::iterator item_iter = this->items.find(item);
+	ScriptListMap::const_iterator item_iter = this->items.find(item);
 	return item_iter == this->items.end() ? 0 : item_iter->second;
 }
 
@@ -710,9 +710,9 @@ void ScriptList::Sort(SorterType sorter, bool ascending)
 	this->initialized    = false;
 }
 
-void ScriptList::AddList(ScriptList *list)
+bool ScriptList::AddList(ScriptList *list)
 {
-	if (list == this) return;
+	if (list == this) return false;
 
 	if (this->IsEmpty()) {
 		/* If this is empty, we can just take the items of the other list as is. */
@@ -725,10 +725,31 @@ void ScriptList::AddList(ScriptList *list)
 		this->modifications++;
 		Squirrel::IncreaseAllocatedSize(SCRIPT_LIST_BYTES_PER_ITEM * this->items.size());
 	} else {
-		for (const auto &it : list->items) {
-			this->AddOrSetItem(it.first, it.second);
+		ScriptObject::DisableDoCommandScope disabler{};
+
+		auto begin = list->items.begin();
+		if (disabler.GetOriginalValue() && this->resume_item.has_value()) {
+			begin = list->items.lower_bound(this->resume_item.value());
 		}
+
+		const int max_ops = ScriptController::GetOpsTillSuspend();
+		int ops_used = 0;
+
+		for (const auto &item : std::ranges::subrange(begin, list->items.end())) {
+			if (disabler.GetOriginalValue() && ops_used > max_ops && ops_used != 0) {
+				ScriptController::DecreaseOps(ops_used);
+				this->resume_item = item.first;
+				return true;
+			}
+			this->AddOrSetItem(item.first, item.second);
+			ops_used += 5;
+		}
+
+		ScriptController::DecreaseOps(ops_used);
+		this->resume_item.reset();
 	}
+
+	return false;
 }
 
 void ScriptList::SwapList(ScriptList *list)
@@ -1059,7 +1080,7 @@ void ScriptList::KeepList(ScriptList *list)
 	this->RemoveItems([&](const SQInteger &k, const SQInteger &) { return !list->HasItem(k); });
 }
 
-SQInteger ScriptList::_get(HSQUIRRELVM vm)
+SQInteger ScriptList::_get(HSQUIRRELVM vm) const
 {
 	if (sq_gettype(vm, 2) != OT_INTEGER) return SQ_ERROR;
 

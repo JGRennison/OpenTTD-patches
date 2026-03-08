@@ -186,9 +186,14 @@ static void DrawTile_Clear(TileInfo *ti, DrawTileProcParams params)
 
 		case CLEAR_ROCKS:
 			if (!params.no_ground_tiles) {
-				uint8_t slope_to_sprite_offset = SlopeToSpriteOffset(ti->tileh);
-				if (DrawCustomSpriteIDForRocks(ti, slope_to_sprite_offset, false)) break;
-				DrawGroundSprite(GetSpriteIDForRocksUsingOffset(slope_to_sprite_offset, ti->x, ti->y), PAL_NONE);
+				if (GetTropicZone(ti->tile) == TROPICZONE_DESERT) {
+					DrawGroundSprite(_clear_land_sprites_snow_desert[GetClearDensity(ti->tile)] + SlopeToSpriteOffset(ti->tileh), PAL_NONE);
+					DrawGroundSprite(SPR_OVERLAY_ROCKS_BASE + SlopeToSpriteOffset(ti->tileh), PAL_NONE);
+				} else {
+					uint8_t slope_to_sprite_offset = SlopeToSpriteOffset(ti->tileh);
+					if (DrawCustomSpriteIDForRocks(ti, slope_to_sprite_offset, false)) break;
+					DrawGroundSprite(GetSpriteIDForRocksUsingOffset(slope_to_sprite_offset, ti->x, ti->y), PAL_NONE);
+				}
 			}
 			break;
 
@@ -319,9 +324,11 @@ static inline bool NeighbourIsNormal(TileIndex tile)
 
 static void TileLoopClearDesert(TileIndex tile)
 {
+	ClearGround ground = GetClearGround(tile);
+
 	/* Current desert level - 0 if it is not desert */
 	uint current = 0;
-	if (IsClearGround(tile, CLEAR_DESERT)) current = GetClearDensity(tile);
+	if (ground == CLEAR_DESERT || ground == CLEAR_ROCKS) current = GetClearDensity(tile);
 
 	/* Expected desert level - 0 if it shouldn't be desert */
 	uint expected = 0;
@@ -331,9 +338,9 @@ static void TileLoopClearDesert(TileIndex tile)
 
 	if (current == expected) return;
 
-	if (_allow_rocks_desert && IsClearGround(tile, CLEAR_ROCKS)) return;
-
-	if (expected == 0) {
+	if (ground == CLEAR_ROCKS) {
+		SetClearGroundDensity(tile, CLEAR_ROCKS, expected);
+	} else if (expected == 0) {
 		SetClearGroundDensity(tile, CLEAR_GRASS, 3);
 	} else {
 		/* Transition from clear to desert is not smooth (after clearing desert tile) */
@@ -424,10 +431,7 @@ void GenerateClearTile()
 		tile = RandomTileSeed(r);
 
 		IncreaseGeneratingWorldProgress(GWP_ROUGH_ROCKY);
-		auto IsUsableTile = [&](TileIndex t) -> bool {
-			return IsTileType(t, MP_CLEAR) && (_allow_rocks_desert || !IsClearGround(t, CLEAR_DESERT));
-		};
-		if (IsUsableTile(tile)) {
+		if (IsTileType(tile, MP_CLEAR)) {
 			uint j = GB(r, 16, 4) + _settings_game.game_creation.amount_of_rocks + ((int)TileHeight(tile) * _settings_game.game_creation.height_affects_rocks);
 			for (;;) {
 				TileIndex tile_new;
@@ -437,7 +441,7 @@ void GenerateClearTile()
 				do {
 					if (--j == 0) goto get_out;
 					tile_new = tile + TileOffsByDiagDir((DiagDirection)GB(Random(), 0, 2));
-				} while (!IsUsableTile(tile_new));
+				} while (!IsTileType(tile_new, MP_CLEAR));
 				tile = tile_new;
 			}
 get_out:;

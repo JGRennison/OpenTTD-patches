@@ -288,8 +288,6 @@ public:
 	 */
 	virtual void PostResize() { };
 
-	virtual ~Blitter() = default;
-
 	template <typename SetPixelT> void DrawLineGeneric(int x, int y, int x2, int y2, int screen_width, int screen_height, int width, int dash, SetPixelT set_pixel);
 };
 

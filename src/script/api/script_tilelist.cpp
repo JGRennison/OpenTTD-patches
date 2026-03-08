@@ -15,7 +15,7 @@
 
 #include "../../safeguards.h"
 
-bool ScriptTileList::SaveObject(HSQUIRRELVM vm)
+bool ScriptTileList::SaveObject(HSQUIRRELVM vm) const
 {
 	sq_pushstring(vm, "TileList");
 	if (!ScriptList::SaveObject(vm)) return false;
@@ -23,24 +23,45 @@ bool ScriptTileList::SaveObject(HSQUIRRELVM vm)
 	return true;
 }
 
-ScriptObject *ScriptTileList::CloneObject()
+ScriptObject *ScriptTileList::CloneObject() const
 {
 	ScriptTileList *clone = new ScriptTileList();
 	clone->CopyList(this);
 	return clone;
 }
 
-void ScriptTileList::AddRectangle(TileIndex t1, TileIndex t2)
+bool ScriptTileList::AddRectangle(TileIndex t1, TileIndex t2)
 {
-	if (!::IsValidTile(t1)) return;
-	if (!::IsValidTile(t2)) return;
-
-	const size_t old_size = this->GetSize();
+	if (!::IsValidTile(t1)) return false;
+	if (!::IsValidTile(t2)) return false;
 
 	TileArea ta(t1, t2);
-	for (TileIndex t : ta) this->AddItem(t.base());
 
-	ScriptController::DecreaseOps(3 * static_cast<int>(this->GetSize() - old_size));
+	ScriptObject::DisableDoCommandScope disabler{};
+
+	OrthogonalTileIterator begin = ta.begin();
+	if (disabler.GetOriginalValue() && this->resume_iter.has_value()) {
+		begin = this->resume_iter.value();
+	}
+
+	const int max_ops = ScriptController::GetOpsTillSuspend();
+	int ops_used = 0;
+
+	const auto end = ta.end();
+	for (OrthogonalTileIterator iter = begin; iter != end; ++iter) {
+		TileIndex t = iter;
+		if (disabler.GetOriginalValue() && ops_used > max_ops && ops_used != 0) {
+			ScriptController::DecreaseOps(ops_used);
+			this->resume_iter = iter;
+			return true;
+		}
+		this->AddItem(t.base());
+		ops_used += 5;
+	}
+
+	ScriptController::DecreaseOps(ops_used);
+	this->resume_iter.reset();
+	return false;
 }
 
 void ScriptTileList::AddTile(TileIndex tile)
@@ -50,17 +71,38 @@ void ScriptTileList::AddTile(TileIndex tile)
 	this->AddItem(tile.base());
 }
 
-void ScriptTileList::RemoveRectangle(TileIndex t1, TileIndex t2)
+bool ScriptTileList::RemoveRectangle(TileIndex t1, TileIndex t2)
 {
-	if (!::IsValidTile(t1)) return;
-	if (!::IsValidTile(t2)) return;
-
-	const size_t old_size = this->GetSize();
+	if (!::IsValidTile(t1)) return false;
+	if (!::IsValidTile(t2)) return false;
 
 	TileArea ta(t1, t2);
-	for (TileIndex t : ta) this->RemoveItem(t.base());
 
-	ScriptController::DecreaseOps(3 * static_cast<int>(old_size - this->GetSize()));
+	ScriptObject::DisableDoCommandScope disabler{};
+
+	OrthogonalTileIterator begin = ta.begin();
+	if (disabler.GetOriginalValue() && this->resume_iter.has_value()) {
+		begin = this->resume_iter.value();
+	}
+
+	const int max_ops = ScriptController::GetOpsTillSuspend();
+	int ops_used = 0;
+
+	const auto end = ta.end();
+	for (OrthogonalTileIterator iter = begin; iter != end; ++iter) {
+		TileIndex t = iter;
+		if (disabler.GetOriginalValue() && ops_used > max_ops && ops_used != 0) {
+			ScriptController::DecreaseOps(ops_used);
+			this->resume_iter = iter;
+			return true;
+		}
+		this->RemoveItem(t.base());
+		ops_used += 5;
+	}
+
+	ScriptController::DecreaseOps(ops_used);
+	this->resume_iter.reset();
+	return false;
 }
 
 void ScriptTileList::RemoveTile(TileIndex tile)

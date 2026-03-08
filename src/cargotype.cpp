@@ -291,7 +291,6 @@ std::optional<std::string> BuildCargoAcceptanceString(const CargoArray &acceptan
 
 	/* Cargo acceptance is displayed in a extra multiline */
 	format_buffer line;
-	AppendStringInPlace(line, label);
 
 	bool found = false;
 	for (const CargoSpec *cs : _sorted_cargo_specs) {
@@ -310,7 +309,7 @@ std::optional<std::string> BuildCargoAcceptanceString(const CargoArray &acceptan
 		}
 	}
 
-	if (found) return line.to_string();
+	if (found) return GetString(label, line);
 
 	return std::nullopt;
 }

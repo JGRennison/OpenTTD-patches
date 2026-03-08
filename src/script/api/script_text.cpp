@@ -22,7 +22,7 @@
 
 #include "../../safeguards.h"
 
-EncodedString RawText::GetEncodedText()
+EncodedString RawText::GetEncodedText() const
 {
 	return ::GetEncodedRawString(this->text);
 }
@@ -185,7 +185,7 @@ void ScriptText::SetPadParameterCount(HSQUIRRELVM vm)
 	sq_settop(vm, top);
 }
 
-EncodedString ScriptText::GetEncodedText()
+EncodedString ScriptText::GetEncodedText() const
 {
 	static ScriptTextList seen_texts;
 	seen_texts.clear();
@@ -197,12 +197,12 @@ EncodedString ScriptText::GetEncodedText()
 	return ::EncodedString{result.to_string()};
 }
 
-void ScriptText::_FillParamList(ParamList &params, ScriptTextList &seen_texts)
+void ScriptText::_FillParamList(ParamList &params, ScriptTextList &seen_texts) const
 {
 	if (std::ranges::find(seen_texts, this) != seen_texts.end()) throw Script_FatalError(fmt::format("{}: Circular reference detected", GetGameStringName(this->string)));
 	seen_texts.push_back(this);
 
-	for (int idx = 0; Param &p : this->param) {
+	for (int idx = 0; const Param &p : this->param) {
 		params.emplace_back(this->string, idx, &p);
 		++idx;
 		if (!std::holds_alternative<ScriptTextRef>(p)) continue;
@@ -261,7 +261,7 @@ void ScriptText::ParamCheck::Encode(format_target &output, std::string_view cmd)
 	this->used = true;
 }
 
-void ScriptText::_GetEncodedText(format_target &output, int &param_count, ParamSpan args, bool first)
+void ScriptText::_GetEncodedText(format_target &output, int &param_count, ParamSpan args, bool first) const
 {
 	const std::string &name = GetGameStringName(this->string);
 
@@ -323,7 +323,7 @@ void ScriptText::_GetEncodedText(format_target &output, int &param_count, ParamS
 						continue;
 					}
 					int count = 0;
-					ScriptTextRef &ref = std::get<ScriptTextRef>(*p.param);
+					const ScriptTextRef &ref = std::get<ScriptTextRef>(*p.param);
 					ref->_GetEncodedText(output, count, args.subspan(idx), false);
 					if (++count != cur_param.consumes) {
 						log_warning(fmt::format("{}({}): {{{}}} expects {} to be consumed, but {} consumes {}", name, param_count + 1, cur_param.cmd, cur_param.consumes - 1, GetGameStringName(ref->string), count - 1));
@@ -353,7 +353,7 @@ void ScriptText::_GetEncodedText(format_target &output, int &param_count, ParamS
 	}
 }
 
-const std::string Text::GetDecodedText()
+std::string Text::GetDecodedText() const
 {
 	return this->GetEncodedText().GetDecodedString();
 }

@@ -42,7 +42,7 @@ struct Ship final : public SpecializedVehicle<Ship, VEH_SHIP> {
 
 	Ship(VehicleID index) : SpecializedVehicleBase(index) {}
 	/** We want to 'destruct' the right class. */
-	virtual ~Ship() { this->PreDestructor(); }
+	~Ship() override { this->PreDestructor(); }
 
 	void MarkDirty() override;
 	void UpdateDeltaXY() override;

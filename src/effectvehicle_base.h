@@ -27,7 +27,7 @@ struct EffectVehicle final : public SpecializedVehicle<EffectVehicle, VEH_EFFECT
 
 	EffectVehicle(VehicleID index) : SpecializedVehicleBase(index) {}
 	/** We want to 'destruct' the right class. */
-	virtual ~EffectVehicle() { this->RemoveEffectVehicleFromTickCache(); }
+	~EffectVehicle() override { this->RemoveEffectVehicleFromTickCache(); }
 
 	void UpdateDeltaXY() override;
 	bool Tick() override;

@@ -70,7 +70,7 @@ private:
 	std::vector<CursorSprite> cursor_sprites{}; ///< Sprites comprising cursor
 
 	OpenGLBackend();
-	~OpenGLBackend();
+	~OpenGLBackend() override;
 
 	const char *Init(const Dimension &screen_res);
 	bool InitShaders();

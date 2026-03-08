@@ -178,7 +178,7 @@ struct Train final : public GroundVehicle<Train, VEH_TRAIN> {
 
 	Train(VehicleID index) : GroundVehicleBase(index) {}
 	/** We want to 'destruct' the right class. */
-	virtual ~Train() { this->PreDestructor(); }
+	~Train() override { this->PreDestructor(); }
 
 	friend struct GroundVehicle<Train, VEH_TRAIN>; // GroundVehicle needs to use the acceleration functions defined at Train.
 

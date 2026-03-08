@@ -93,7 +93,7 @@ protected:
 
 public:
 	ClientNetworkGameSocketHandler(SOCKET s, std::string connection_string);
-	~ClientNetworkGameSocketHandler();
+	~ClientNetworkGameSocketHandler() override;
 
 	NetworkRecvStatus CloseConnection(NetworkRecvStatus status) override;
 	void ClientError(NetworkRecvStatus res);

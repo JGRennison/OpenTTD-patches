@@ -156,7 +156,7 @@ struct RoadVehicle final : public GroundVehicle<RoadVehicle, VEH_ROAD> {
 
 	RoadVehicle(VehicleID index) : GroundVehicleBase(index) {}
 	/** We want to 'destruct' the right class. */
-	virtual ~RoadVehicle() { this->PreDestructor(); }
+	~RoadVehicle() override { this->PreDestructor(); }
 
 	friend struct GroundVehicle<RoadVehicle, VEH_ROAD>; // GroundVehicle needs to use the acceleration functions defined at RoadVehicle.
 

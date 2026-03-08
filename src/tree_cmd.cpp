@@ -1211,11 +1211,28 @@ static void TileLoopTreesAlps(TileIndex tile)
 	MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE_NON_VEG);
 }
 
-static bool CanPlantExtraTrees(TileIndex tile)
+/*
+ * Check if trees on this tile are allowed to spread.
+ * If they are allowed to spread, they are also allowed to die.
+ * @param tile The tile to check.
+ * @return Whether trees on this tile can spread.
+ */
+static bool TreesOnTileCanSpread(TileIndex tile)
 {
-	return ((_settings_game.game_creation.landscape == LandscapeType::Tropic && GetTropicZone(tile) == TROPICZONE_RAINFOREST) ?
-		(_settings_game.construction.extra_tree_placement == ETP_SPREAD_ALL || _settings_game.construction.extra_tree_placement == ETP_SPREAD_RAINFOREST) :
-		_settings_game.construction.extra_tree_placement == ETP_SPREAD_ALL);
+	/* Desert and rainforest trees need special handling. */
+	if (_settings_game.game_creation.landscape == LandscapeType::Tropic) {
+		switch (GetTropicZone(tile)) {
+			case TROPICZONE_DESERT:
+				/* Cacti never spread. */
+				return false;
+			case TROPICZONE_RAINFOREST:
+				return (_settings_game.construction.extra_tree_placement == ETP_SPREAD_ALL || _settings_game.construction.extra_tree_placement == ETP_SPREAD_RAINFOREST);
+			default:
+				return _settings_game.construction.extra_tree_placement == ETP_SPREAD_ALL;
+		}
+	}
+
+	return (_settings_game.construction.extra_tree_placement == ETP_SPREAD_ALL);
 }
 
 static bool IsTemperateTreeOnSnow(TileIndex tile)
@@ -1292,7 +1309,7 @@ static void TileLoop_Trees(TileIndex tile)
 								SetTreeGrowth(tile, TreeGrowthStage::Growing1);
 								break;
 							}
-						} else if (GetTreeCount(tile) < 4 && CanPlantExtraTrees(tile)) {
+						} else if (GetTreeCount(tile) < 4 && TreesOnTileCanSpread(tile)) {
 							AddTreeCount(tile, 1);
 							SetTreeGrowth(tile, TreeGrowthStage::Growing1);
 							break;
@@ -1301,7 +1318,7 @@ static void TileLoop_Trees(TileIndex tile)
 					[[fallthrough]];
 
 					case 2: { // add a neighbouring tree
-						if (!CanPlantExtraTrees(tile)) break;
+						if (!TreesOnTileCanSpread(tile)) break;
 
 						if (_settings_game.game_creation.tree_placer == TP_PERFECT &&
 							((_settings_game.game_creation.landscape != LandscapeType::Tropic && GetTileZ(tile) <= GetSparseTreeRange()) ||
@@ -1342,7 +1359,7 @@ static void TileLoop_Trees(TileIndex tile)
 			break;
 
 		case TreeGrowthStage::Dead: // final stage of tree destruction
-			if (!CanPlantExtraTrees(tile) && !IsTemperateTreeOnSnow(tile)) {
+			if (!TreesOnTileCanSpread(tile) && !IsTemperateTreeOnSnow(tile)) {
 				/* if trees can't spread just plant a new one to prevent deforestation */
 				SetTreeGrowth(tile, TreeGrowthStage::Growing1);
 			} else if (GetTreeCount(tile) > 1) {
