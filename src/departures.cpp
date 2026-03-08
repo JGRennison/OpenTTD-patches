@@ -185,8 +185,12 @@ static DeparturesConditionalJumpResult GetNonScheduleDepartureConditionalOrderMo
 	return _settings_client.gui.departure_conditionals;
 }
 
-static DeparturesConditionalJumpResult GetDepartureConditionalOrderMode(const Order *order, const Vehicle *v, StateTicks eval_tick, const ScheduledDispatchVehicleRecords &records)
+static DeparturesConditionalJumpResult GetDepartureConditionalOrderMode(const Order *order, const Vehicle *v, StateTicks eval_tick, const ScheduledDispatchVehicleRecords &records, Ticks current_lateness)
 {
+	if (order->GetConditionVariable() == OCV_TIMETABLE) {
+		return EvaluateTimetableStateConditionalOrder(order, current_lateness) ? DCJD_TAKEN : DCJD_NOT_TAKEN;
+	}
+
 	if (order->GetConditionVariable() == OCV_DISPATCH_SLOT) {
 		auto get_vehicle_records = [&](uint16_t schedule_index) -> const LastDispatchRecord * {
 			auto record = records.find(schedule_index);
@@ -589,7 +593,7 @@ static ProcessLiveDepartureCandidateVehicleResult ProcessLiveDepartureCandidateV
 
 		/* If the order is a conditional branch, handle it. */
 		if (order->IsType(OT_CONDITIONAL)) {
-			switch (GetDepartureConditionalOrderMode(order, v, state_ticks_base + start_ticks, candidate.dispatch_records)) {
+			switch (GetDepartureConditionalOrderMode(order, v, state_ticks_base + start_ticks, candidate.dispatch_records, current_lateness)) {
 					case DCJD_GIVE_UP: {
 						/* Give up */
 						break;
@@ -927,7 +931,7 @@ static void AdvanceLiveDepartureOrderToNextCandidate(LiveQueueItem queue_item, O
 		/* If the order is a conditional branch, handle it. */
 		if (order->IsType(OT_CONDITIONAL)) {
 			HandleLatenessPostAdjustment(lod);
-			switch (GetDepartureConditionalOrderMode(order, lod.v, state_ticks_base + lod.expected_tick, lod.dispatch_records)) {
+			switch (GetDepartureConditionalOrderMode(order, lod.v, state_ticks_base + lod.expected_tick, lod.dispatch_records, lod.lateness)) {
 					case DCJD_GIVE_UP: {
 						/* Give up */
 						break;
@@ -1152,7 +1156,7 @@ static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector
 
 				/* If the order is a conditional branch, handle it. */
 				if (order->IsType(OT_CONDITIONAL)) {
-					switch (GetDepartureConditionalOrderMode(order, lod.v, departure_tick, dispatch_records)) {
+					switch (GetDepartureConditionalOrderMode(order, lod.v, departure_tick, dispatch_records, lod.lateness)) {
 							case DCJD_GIVE_UP: {
 								/* Give up */
 								break;
@@ -1410,6 +1414,12 @@ DeparturesConditionalJumpResult DepartureListScheduleModeSlotEvaluator::Evaluate
 			return DCJD_GIVE_UP;
 		}
 	}
+
+	if (order->GetConditionVariable() == OCV_TIMETABLE) {
+		/* In schedule/slot evaluation mode, take lateness/earliness to always be 0. */
+		return EvaluateTimetableStateConditionalOrder(order, 0) ? DCJD_TAKEN : DCJD_NOT_TAKEN;
+	}
+
 	if (order->GetConditionVariable() == OCV_DISPATCH_SLOT) {
 		LastDispatchRecord record{};
 
