@@ -3645,6 +3645,27 @@ static bool ExecuteVehicleInSlotOrderCondition(const Vehicle *v, TraceRestrictSl
 	return occupant;
 }
 
+bool EvaluateTimetableStateConditionalOrder(const Order *order, int lateness)
+{
+	dbg_assert(order->GetConditionVariable() == OCV_TIMETABLE);
+
+	int tt_value = 0;
+	switch (static_cast<OrderTimetableConditionMode>(order->GetConditionValue())) {
+		case OTCM_LATENESS:
+			tt_value = lateness;
+			break;
+
+		case OTCM_EARLINESS:
+			tt_value = -lateness;
+			break;
+
+		default:
+			break;
+	}
+
+	return OrderConditionCompare(order->GetConditionComparator(), tt_value, order->GetXData());
+}
+
 /**
  * Process a conditional order and determine the next order.
  * @param order the order the vehicle currently has
@@ -3826,20 +3847,7 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, Pro
 			break;
 		}
 		case OCV_TIMETABLE: {
-			int tt_value = 0;
-			switch (static_cast<OrderTimetableConditionMode>(value)) {
-				case OTCM_LATENESS:
-					tt_value = v->lateness_counter;
-					break;
-
-				case OTCM_EARLINESS:
-					tt_value = -v->lateness_counter;
-					break;
-
-				default:
-					break;
-			}
-			skip_order = OrderConditionCompare(occ, tt_value, order->GetXData());
+			skip_order = EvaluateTimetableStateConditionalOrder(order, v->lateness_counter);
 			break;
 		}
 		case OCV_DISPATCH_SLOT: {

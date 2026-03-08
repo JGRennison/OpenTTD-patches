@@ -58,6 +58,7 @@ static const uint MAX_SERVINT_PERCENT = 90;
 
 uint16_t GetServiceIntervalClamped(int interval, bool ispercent);
 bool OrderConditionCompare(OrderConditionComparator occ, int variable, int value);
+bool EvaluateTimetableStateConditionalOrder(const Order *order, int lateness);
 
 const char *GetOrderTypeName(OrderType order_type);
 

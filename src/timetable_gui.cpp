@@ -194,6 +194,12 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 					break;
 				}
 
+				case OCV_TIMETABLE: {
+					predicted = true;
+					jump = EvaluateTimetableStateConditionalOrder(order, no_offset ? 0 : v->lateness_counter);
+					break;
+				}
+
 				default:
 					return;
 			}
