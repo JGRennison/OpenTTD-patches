@@ -637,8 +637,16 @@ struct TimetableWindow : GeneralVehicleWindow {
 							disable_time = false;
 							clearable_when_wait_locked = true;
 						} else {
-							disable = (!(order->IsType(OT_GOTO_STATION) || (order->IsType(OT_GOTO_DEPOT) && !(order->GetDepotActionType() & ODATFB_HALT))) ||
-									(order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION));
+							if (order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) {
+								disable = true;
+							} else if (order->IsType(OT_GOTO_STATION)) {
+								disable = false;
+							} else if (order->IsType(OT_GOTO_DEPOT) && !(order->GetDepotActionType() & ODATFB_HALT)) {
+								disable = false;
+								clearable_when_wait_locked = true;
+							} else {
+								disable = true;
+							}
 							disable_time = disable;
 						}
 						wait_lockable = !disable_time;
