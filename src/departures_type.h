@@ -116,7 +116,9 @@ struct Departure {
 	DepartureShowAs show_as = DSA_NORMAL;  ///< Show as type
 	const Vehicle *vehicle = nullptr;      ///< The vehicle performing this departure
 	const Order *order = nullptr;          ///< The order corresponding to this departure
+	const Order *dispatch_order = nullptr; ///< The original dispatch order, if applicable
 	Ticks scheduled_waiting_time = INVALID_WAIT_TICKS; ///< Scheduled waiting time if scheduled dispatch is used
+	Ticks dispatch_offset = 0;             ///< Tick offset from original dispatch order, if applicable
 	uint32_t sequence_id = 0;              ///< Nominal sequence ID, used in determining vehicle_idx
 	uint32_t vehicle_idx = 0;              ///< Nominal vehicle index within a shared order group
 

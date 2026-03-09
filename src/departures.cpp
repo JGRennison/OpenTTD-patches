@@ -1452,8 +1452,10 @@ std::pair<const Order *, StateTicks> DepartureListScheduleModeSlotEvaluator::Eva
 	d.type = D_DEPARTURE;
 	d.show_as = this->calling_settings.GetShowAsType(source_order, D_DEPARTURE);
 	d.order = source_order;
+	d.dispatch_order = this->start_order;
 	d.scheduled_waiting_time = source_order->IsScheduledDispatchOrder(true) ? Departure::MISSING_WAIT_TICKS : Departure::INVALID_WAIT_TICKS;
-	if (this->calling_settings.VehicleCycleTrackingEnabled() && source_order == this->start_order) {
+	d.dispatch_offset = (departure_tick - this->slot).AsTicks();
+	if (this->calling_settings.VehicleCycleTrackingEnabled() && (source_order == this->start_order || this->source.OrderMatches(source_order))) {
 		d.sequence_id = this->sequence_id_handler.last_sequence_id;
 	}
 
@@ -1892,8 +1894,13 @@ static DepartureList MakeDepartureListScheduleMode(DepartureOrderDestinationDete
 					for (size_t i = initial_result_size; i < result.size(); i++) {
 						Departure *d = result[i].get();
 						if (d->type == D_DEPARTURE && d->scheduled_waiting_time == Departure::MISSING_WAIT_TICKS && d->order == start_order) {
+							/* Calculate arrival time for departure from dispatch order and optionally handle vehicle cycle tracking. */
 							pending_departures.push_back(d);
 							if (calling_settings.VehicleCycleTrackingEnabled()) pending_departure_ticks.insert(d->scheduled_tick);
+						} else if (d->type == D_DEPARTURE && d->scheduled_waiting_time != Departure::MISSING_WAIT_TICKS && d->dispatch_order == start_order && calling_settings.VehicleCycleTrackingEnabled()) {
+							/* For departures starting after the dispatch order, handle vehicle cycle tracking if enabled. */
+							pending_departures.push_back(d);
+							pending_departure_ticks.insert(d->scheduled_tick - d->dispatch_offset);
 						}
 					}
 					if (calling_settings.VehicleCycleTrackingEnabled()) {
@@ -1925,7 +1932,7 @@ static DepartureList MakeDepartureListScheduleMode(DepartureOrderDestinationDete
 						for (size_t i = 0; i < pending_departures.size(); i++) {
 							const Departure *d = pending_departures[i];
 
-							StateTicks tick = d->scheduled_tick;
+							StateTicks tick = d->scheduled_tick - d->dispatch_offset; // Tick of departure from dispatch order
 							bool is_wrapped = false;
 							if (arrival_tick <= tick - start_order->GetWaitTime()) {
 								/* Found a usable departure */
@@ -1964,7 +1971,9 @@ static DepartureList MakeDepartureListScheduleMode(DepartureOrderDestinationDete
 							pending_departures[best_idx] = pending_departures.back();
 							pending_departures.pop_back();
 
-							d->scheduled_waiting_time = (best_tick - arrival_tick).AsTicks();
+							if (d->scheduled_waiting_time == Departure::MISSING_WAIT_TICKS) {
+								d->scheduled_waiting_time = (best_tick - arrival_tick).AsTicks();
+							}
 
 							if (!best_wrapped && d->sequence_id > 0 && it.sequence_id > 0) {
 								/* Vehicle cycle tracking is active, record a match to be resolved later. */
