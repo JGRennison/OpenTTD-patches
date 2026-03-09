@@ -16,7 +16,7 @@
 #define SLCX_XREF(name, from, to, extver) {name, SettingsCompatType::Xref, 0, from, to, extver, nullptr}
 #define SLCX_XREFCVT(name, from, to, extver, cvt) {name, SettingsCompatType::Xref, 0, from, to, extver, cvt}
 
-static std::initializer_list<SettingsCompat> _gameopt_compat{
+extern const std::initializer_list<SettingsCompat> _gameopt_compat{
 	SLCX_VAR("diff_custom"),
 	SLCX_VAR("diff_level"),
 	SLCX_VAR("locale.currency"),
@@ -30,7 +30,7 @@ static std::initializer_list<SettingsCompat> _gameopt_compat{
 	SLCX_VAR("vehicle.road_side"),
 };
 
-static std::initializer_list<SettingsCompat> _settings_compat{
+extern const std::initializer_list<SettingsCompat> _settings_compat{
 	SLCX_VAR("difficulty.max_no_competitors"),
 	SLCX_NULL(1, SLV_97, SLV_110), // difficulty.competitor_start_time
 	SLCX_VAR("difficulty.number_towns"),

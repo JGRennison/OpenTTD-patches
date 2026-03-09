@@ -469,6 +469,8 @@ add_files(
     settings_gui.cpp
     settings_gui.h
     settings_internal.h
+    settings_table.cpp
+    settings_table.h
     settings_type.h
     ship.h
     ship_cmd.cpp
