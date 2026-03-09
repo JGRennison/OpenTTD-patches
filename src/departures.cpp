@@ -1647,11 +1647,11 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateSlotIndexForType(uint slot_
 		if (order->IsType(OT_CONDITIONAL)) {
 			if (this->IsDepartureDependantConditionVariable(order->GetConditionVariable())) this->departure_dependant_condition_found = true;
 			switch (this->EvaluateConditionalOrder(order, departure_tick)) {
-				case 0: {
+				case DCJD_GIVE_UP: {
 					/* Give up */
 					break;
 				}
-				case 1: {
+				case DCJD_TAKEN: {
 					/* Take the branch */
 					const Order *target = this->v->GetOrder(order->GetConditionSkipToOrder());
 					if (target == nullptr) {
@@ -1665,7 +1665,7 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateSlotIndexForType(uint slot_
 					require_travel_time = false;
 					continue;
 				}
-				case 2: {
+				case DCJD_NOT_TAKEN: {
 					/* Do not take the branch */
 					departure_tick -= order->GetWaitTime(); /* Added previously above */
 					order = this->v->orders->GetNext(order);
