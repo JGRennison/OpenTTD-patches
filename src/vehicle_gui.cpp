@@ -3443,8 +3443,15 @@ struct VehicleDetailsWindow : Window {
 					format_buffer buffer;
 					AppendStringInPlace(buffer, STR_TRACE_RESTRICT_SLOT_LIST_HEADER, slots.size());
 
+					std::string_view list_separator;
+					if (slots.size() > 1) list_separator = GetListSeparator();
+
 					for (size_t i = 0; i < slots.size(); i++) {
-						if (i != 0) AppendStringInPlace(buffer, STR_TRACE_RESTRICT_SLOT_LIST_SEPARATOR);
+						if (i != 0) {
+							buffer.push_back_utf8(SCC_BLACK);
+							buffer.append(list_separator);
+						}
+						buffer.push_back_utf8(SCC_LTBLUE);
 						buffer.append(TraceRestrictSlot::Get(slots[i])->name);
 					}
 					DrawString(tr, buffer);
