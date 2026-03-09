@@ -2148,7 +2148,7 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 			}
 
 			DrawVehicleImage(v, {image_left, ir.top, image_right, ir.bottom}, selected_vehicle, EIT_IN_LIST, 0);
-			DrawString(tr.left, tr.right, ir.top + line_height - GetCharacterHeight(FS_SMALL) - WidgetDimensions::scaled.framerect.bottom - 1, GetStringWithArgs(str, params));
+			DrawString(tr.left, tr.right, ir.top + line_height - GetCharacterHeight(FS_SMALL) - WidgetDimensions::scaled.framerect.bottom - 1, GetStringWithArgs(str, params), TC_BLACK);
 
 			/* company colour stripe along vehicle description row */
 			if (_settings_client.gui.show_vehicle_list_company_colour && v->owner != this->vli.company) {
@@ -2190,7 +2190,7 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 					break;
 			}
 
-			DrawString(tr.left, tr.right, ir.bottom - GetCharacterHeight(FS_SMALL) - WidgetDimensions::scaled.framerect.bottom, GetStringWithArgs(str, params));
+			DrawString(tr.left, tr.right, ir.bottom - GetCharacterHeight(FS_SMALL) - WidgetDimensions::scaled.framerect.bottom, GetStringWithArgs(str, params), TC_BLACK);
 		}
 
 		DrawVehicleProfitButton(vehgroup.GetOldestVehicleAge(), vehgroup.GetDisplayProfitLastYear(), vehgroup.NumVehicles(), vehicle_button_x, ir.top + GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal);
