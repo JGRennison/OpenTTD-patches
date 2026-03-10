@@ -352,6 +352,12 @@ inline void FormatStringDirect(StringBuilder builder, std::string_view str, std:
 	return FormatString(builder, str, params, case_index, false, FormatStringRunMode::Direct);
 }
 
+inline void FormatRawString(StringBuilder builder, std::string_view str)
+{
+	StringParameters tmp_params{};
+	FormatString(builder, str, tmp_params, 0, false, FormatStringRunMode::NoDryRun);
+}
+
 struct LanguagePack : public LanguagePackHeader {
 	char data[]; // list of strings
 
@@ -2089,8 +2095,7 @@ static void FormatString(StringBuilder builder, std::string_view str_arg, String
 					if (c == nullptr) break;
 
 					if (!c->name.empty()) {
-						auto tmp_params = MakeReferenceParameters(c->name);
-						GetStringWithArgs(builder, STR_JUST_RAW_STRING, tmp_params);
+						FormatRawString(builder, c->name);
 					} else {
 						auto tmp_params = MakeReferenceParameters(c->name_2);
 						GetStringWithArgs(builder, c->name_1, tmp_params);
@@ -2119,8 +2124,7 @@ static void FormatString(StringBuilder builder, std::string_view str_arg, String
 
 					const Depot *d = Depot::Get(args.GetNextParameter<DepotID>());
 					if (!d->name.empty()) {
-						auto tmp_params = MakeReferenceParameters(d->name);
-						GetStringWithArgs(builder, STR_JUST_RAW_STRING, tmp_params);
+						FormatRawString(builder, d->name);
 					} else {
 						auto tmp_params = MakeParameters(d->town->index, d->town_cn + 1);
 						GetStringWithArgs(builder, STR_FORMAT_DEPOT_NAME_TRAIN + 2 * vt + (d->town_cn == 0 ? 0 : 1), tmp_params);
@@ -2134,8 +2138,7 @@ static void FormatString(StringBuilder builder, std::string_view str_arg, String
 					if (e == nullptr) break;
 
 					if (!e->name.empty() && e->IsEnabled()) {
-						auto tmp_params = MakeReferenceParameters(e->name);
-						GetStringWithArgs(builder, STR_JUST_RAW_STRING, tmp_params);
+						FormatRawString(builder, e->name);
 						break;
 					}
 
@@ -2175,8 +2178,7 @@ static void FormatString(StringBuilder builder, std::string_view str_arg, String
 							GetStringWithArgs(builder, STR_HIERARCHY_SEPARATOR, tmp_params);
 						}
 						if (!g->name.empty()) {
-							auto tmp_params = MakeReferenceParameters(g->name);
-							GetStringWithArgs(builder, STR_JUST_RAW_STRING, tmp_params);
+							FormatRawString(builder, g->name);
 						} else {
 							auto tmp_params = MakeParameters(g->number);
 							GetStringWithArgs(builder, STR_FORMAT_GROUP_NAME, tmp_params);
@@ -2212,8 +2214,7 @@ static void FormatString(StringBuilder builder, std::string_view str_arg, String
 					if (c == nullptr) break;
 
 					if (!c->president_name.empty()) {
-						auto tmp_params = MakeReferenceParameters(c->president_name);
-						GetStringWithArgs(builder, STR_JUST_RAW_STRING, tmp_params);
+						FormatRawString(builder, c->president_name);
 					} else {
 						auto tmp_params = MakeParameters(c->president_name_2);
 						GetStringWithArgs(builder, c->president_name_1, tmp_params);
@@ -2238,8 +2239,7 @@ static void FormatString(StringBuilder builder, std::string_view str_arg, String
 						AutoRestoreBackup cache_backup(use_cache, false);
 						builder += st->GetCachedName();
 					} else if (!st->name.empty()) {
-						auto tmp_params = MakeReferenceParameters(st->name);
-						GetStringWithArgs(builder, STR_JUST_RAW_STRING, tmp_params);
+						FormatRawString(builder, st->name);
 					} else {
 						StringID string_id = st->string_id;
 						if (st->indtype != IT_INVALID) {
@@ -2272,8 +2272,7 @@ static void FormatString(StringBuilder builder, std::string_view str_arg, String
 						AutoRestoreBackup cache_backup(use_cache, false);
 						builder += t->GetCachedName();
 					} else if (!t->name.empty()) {
-						auto tmp_params = MakeReferenceParameters(t->name);
-						GetStringWithArgs(builder, STR_JUST_RAW_STRING, tmp_params);
+						FormatRawString(builder, t->name);
 					} else {
 						GetTownName(builder, t);
 					}
@@ -2298,8 +2297,7 @@ static void FormatString(StringBuilder builder, std::string_view str_arg, String
 					if (wp == nullptr) break;
 
 					if (!wp->name.empty()) {
-						auto tmp_params = MakeReferenceParameters(wp->name);
-						GetStringWithArgs(builder, STR_JUST_RAW_STRING, tmp_params);
+						FormatRawString(builder, wp->name);
 					} else {
 						auto tmp_params = MakeParameters(wp->town->index, wp->town_cn + 1);
 						StringID string_id = ((wp->string_id == STR_SV_STNAME_BUOY) ? STR_FORMAT_BUOY_NAME : STR_FORMAT_WAYPOINT_NAME);
@@ -2322,8 +2320,7 @@ static void FormatString(StringBuilder builder, std::string_view str_arg, String
 					if (v == nullptr) break;
 
 					if (!v->name.empty()) {
-						auto tmp_params = MakeReferenceParameters(v->name);
-						GetStringWithArgs(builder, STR_JUST_RAW_STRING, tmp_params);
+						FormatRawString(builder, v->name);
 					} else if (v->group_id != DEFAULT_GROUP && vehicle_names != 0 && v->type < VEH_COMPANY_END) {
 						/* The vehicle has no name, but is member of a group, so print group name */
 						uint32_t group_name = v->group_id.base();
@@ -2355,8 +2352,7 @@ static void FormatString(StringBuilder builder, std::string_view str_arg, String
 					if (si == nullptr) break;
 
 					if (!si->name.empty()) {
-						auto tmp_params = MakeReferenceParameters(si->name);
-						GetStringWithArgs(builder, STR_JUST_RAW_STRING, tmp_params);
+						FormatRawString(builder, si->name);
 					} else {
 						GetStringWithArgs(builder, STR_DEFAULT_SIGN_NAME, {});
 					}
@@ -2366,24 +2362,21 @@ static void FormatString(StringBuilder builder, std::string_view str_arg, String
 				case SCC_TR_SLOT_NAME: { // {TRSLOT}
 					const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(args.GetNextParameter<uint32_t>());
 					if (slot == nullptr) break;
-					auto tmp_params = MakeReferenceParameters(slot->name);
-					GetStringWithArgs(builder, STR_JUST_RAW_STRING, tmp_params);
+					FormatRawString(builder, slot->name);
 					break;
 				}
 
 				case SCC_TR_SLOT_GROUP_NAME: { // {TRSLOTGROUP}
 					const TraceRestrictSlotGroup *slot = TraceRestrictSlotGroup::GetIfValid(args.GetNextParameter<uint32_t>());
 					if (slot == nullptr) break;
-					auto tmp_params = MakeReferenceParameters(slot->name);
-					GetStringWithArgs(builder, STR_JUST_RAW_STRING, tmp_params);
+					FormatRawString(builder, slot->name);
 					break;
 				}
 
 				case SCC_TR_COUNTER_NAME: { // {TRCOUNTER}
 					const TraceRestrictCounter *ctr = TraceRestrictCounter::GetIfValid(args.GetNextParameter<uint32_t>());
 					if (ctr == nullptr) break;
-					auto tmp_params = MakeReferenceParameters(ctr->name);
-					GetStringWithArgs(builder, STR_JUST_RAW_STRING, tmp_params);
+					FormatRawString(builder, ctr->name);
 					break;
 				}
 
