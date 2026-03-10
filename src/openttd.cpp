@@ -1486,11 +1486,7 @@ void WriteVehicleInfo(format_target &buffer, const Vehicle *u, const Vehicle *v,
 {
 	buffer.format(": type {}, vehicle {} ({}), company {}, unit number {}, wagon {}, engine: ",
 			u->type, u->index, v->index, u->owner, v->unitnumber, length);
-	{
-		format_buffer engname;
-		AppendStringInPlace(engname, STR_ENGINE_NAME, u->engine_type);
-		buffer.append(engname);
-	}
+	AppendStringInPlace(buffer, STR_ENGINE_NAME, u->engine_type);
 	uint32_t grfid = u->GetGRFID();
 	if (grfid) {
 		buffer.format(", GRF:{:08X}", std::byteswap(grfid));
