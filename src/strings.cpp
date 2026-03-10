@@ -72,6 +72,7 @@ enum class FormatStringRunMode : uint8_t {
 	Normal,         ///< Normal mode of operation for top-level calls.
 	NoDryRun,       ///< Disable dry-run, but still do colour push/pop.
 	DryRun,         ///< Internally triggered dry-run.
+	DryRunTopLevel, ///< Same as DryRun, except skip the string scan.
 	Direct,         ///< Disable dry-run and auto colour push/pop, single-pass operation with direct output.
 };
 
@@ -1454,6 +1455,24 @@ static bool IsColourSafe(std::string_view buffer)
 }
 
 /**
+ * Test if a string is trivial and does not need any special processing.
+ * @param buffer String to test.
+ * @return True iff the string is trivial.
+ */
+static bool IsStringTrivial(std::string_view buffer)
+{
+	while (!buffer.empty()) {
+		/* Use DecodeUtf8 instead of Utf8View so that UTF-8 decode errors (len == 0) can be detected (return false). */
+		auto [len, c] = DecodeUtf8(buffer);
+		if (len == 0 || c == 0) return false;
+		if (c >= SCC_CONTROL_START && c <= SCC_CONTROL_END) return false;
+		buffer.remove_prefix(len);
+	}
+
+	return true;
+}
+
+/**
  * Parse most format codes within a string and write the result to a buffer.
  * @param builder The string builder to write the final string to.
  * @param str_arg The original string with format codes.
@@ -1462,6 +1481,15 @@ static bool IsColourSafe(std::string_view buffer)
  */
 static void FormatString(StringBuilder builder, std::string_view str_arg, StringParameters &args, uint orig_case_index, bool game_script, FormatStringRunMode run_mode)
 {
+	if (run_mode == FormatStringRunMode::DryRunTopLevel) {
+		/* Don't do the IsStringTrivial scan, as it has already been done for this string. */
+		run_mode = FormatStringRunMode::DryRun;
+	} else if (run_mode != FormatStringRunMode::Direct && IsStringTrivial(str_arg)) {
+		/* String has no string codes at all, copy it to the output with minimum overhead. */
+		builder.Put(str_arg);
+		return;
+	}
+
 	size_t orig_first_param_offset = args.GetOffset();
 	bool emit_automatic_push_pop = false;
 
@@ -1479,7 +1507,7 @@ static void FormatString(StringBuilder builder, std::string_view str_arg, String
 		const uint32_t start_dry_run_gender_read_count = dry_run_gender_read_count;
 		format_buffer buffer;
 		StringBuilder dry_run_builder(buffer);
-		FormatString(dry_run_builder, str_arg, args, orig_case_index, game_script, FormatStringRunMode::DryRun);
+		FormatString(dry_run_builder, str_arg, args, orig_case_index, game_script, FormatStringRunMode::DryRunTopLevel);
 		emit_automatic_push_pop = !IsColourSafe(buffer);
 
 		if (start_dry_run_gender_read_count == dry_run_gender_read_count) {
