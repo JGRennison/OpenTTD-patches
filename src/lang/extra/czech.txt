@@ -1080,7 +1080,7 @@ STR_SAVELOAD_DIFFERENT_ID                                       :{YELLOW}Tento s
 STR_SAVELOAD_OVERWRITE_TITLE_DIFFERENT_ID                       :{WHITE}Přepsat soubor (z jiné hry)
 STR_SAVELOAD_OVERWRITE_TITLE_DIFFERENT_VERSION_SUFFIX           :{STRING} (odlišná verze)
 STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_ID                     :{YELLOW}Opravdu chceš přepsat existující soubor?{}{}Soubor pochází z jiné hry.
-STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_VERSION_SUFFIX         :{STRING}{}{}Soubor pochází z jiné verze.{STRING}.{}Bude-li přepsán, soubor už nebude zpracovatelný v původní verzi.
+STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_VERSION_SUFFIX         :{YELLOW}{STRING}{}{}Soubor pochází z jiné verze.{STRING}.{}Bude-li přepsán, soubor už nebude zpracovatelný v původní verzi.
 STR_SAVELOAD_OVERWRITE_WARNING_VERSION_NAME                     : ({STRING})
 
 STR_MAPGEN_SNOW_LINE_HEIGHT                                     :{BLACK}Výška sněžné čáry:

@@ -1278,7 +1278,7 @@ STR_SAVELOAD_DIFFERENT_ID                                       :{YELLOW}Este ar
 STR_SAVELOAD_OVERWRITE_TITLE_DIFFERENT_ID                       :{WHITE}Sobreescribir arquivo (Diferente partida)
 STR_SAVELOAD_OVERWRITE_TITLE_DIFFERENT_VERSION_SUFFIX           :{STRING} (Diferente versión)
 STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_ID                     :{YELLOW}Estás seguro de que queres sobreescrivir o arquivo existente?{}{}Este arquivo é de outra partida.
-STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_VERSION_SUFFIX         :{STRING}{}{}O arquivo é dunha versión distinta{STRING}.{}Se sobreescribe o ficheiro non será lexible pola versión orixinal
+STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_VERSION_SUFFIX         :{YELLOW}{STRING}{}{}O arquivo é dunha versión distinta{STRING}.{}Se sobreescribe o ficheiro non será lexible pola versión orixinal
 STR_SAVELOAD_OVERWRITE_WARNING_VERSION_NAME                     : ({STRING})
 
 STR_SAVELOAD_SAVE_ORDERLIST                                     :{WHITE}Gardar lista de ordes

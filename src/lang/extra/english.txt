@@ -1345,7 +1345,7 @@ STR_SAVELOAD_DIFFERENT_ID                                       :{YELLOW}This fi
 STR_SAVELOAD_OVERWRITE_TITLE_DIFFERENT_ID                       :{WHITE}Overwrite File (Different Game)
 STR_SAVELOAD_OVERWRITE_TITLE_DIFFERENT_VERSION_SUFFIX           :{STRING} (Different Version)
 STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_ID                     :{YELLOW}Are you sure you want to overwrite the existing file?{}{}The file is from a different game.
-STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_VERSION_SUFFIX         :{STRING}{}{}The file is from a different version{STRING1}.{}If overwritten the file will no longer be readable by the original version.
+STR_SAVELOAD_OVERWRITE_WARNING_DIFFERENT_VERSION_SUFFIX         :{YELLOW}{STRING}{}{}The file is from a different version{STRING1}.{}If overwritten the file will no longer be readable by the original version.
 STR_SAVELOAD_OVERWRITE_WARNING_VERSION_NAME                     : ({RAW_STRING})
 
 STR_SAVELOAD_SAVE_ORDERLIST                                     :{WHITE}Save Orderlist
