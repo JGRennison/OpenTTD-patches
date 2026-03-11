@@ -593,6 +593,9 @@ void Window::RaiseButtons(bool autoraise)
  */
 void Window::SetWidgetDirty(WidgetID widget_index)
 {
+	/* If the whole window is already dirty then don't set the widget dirty as well. */
+	if (this->flags.Test(WindowFlag::Dirty)) return;
+
 	/* Sometimes this function is called before the window is even fully initialized */
 	auto it = this->widget_lookup.find(widget_index);
 	if (it == std::end(this->widget_lookup)) return;
