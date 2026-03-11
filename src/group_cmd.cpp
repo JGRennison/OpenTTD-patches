@@ -680,6 +680,10 @@ CommandCost CmdAddVehicleGroup(DoCommandFlags flags, GroupID group_id, VehicleID
 
 	if (v->owner != _current_company || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
+	if (new_g == v->group_id) {
+		return CommandCost();
+	}
+
 	CommandCost ret;
 	if (new_g == NEW_GROUP) {
 		/* Create new group. */
