@@ -549,11 +549,21 @@ CommandCost CmdAlterGroup(DoCommandFlags flags, AlterGroupMode mode, GroupID gro
 			if (!g->livery.in_use.All({Livery::Flag::Primary, Livery::Flag::Secondary})) {
 				/* Update livery with new parent's colours if either colour is default. */
 				const Livery *livery = GetParentLivery(g);
-				if (!g->livery.in_use.Test(Livery::Flag::Primary)) g->livery.colour1 = livery->colour1;
-				if (!g->livery.in_use.Test(Livery::Flag::Secondary)) g->livery.colour2 = livery->colour2;
 
-				PropagateChildLivery(g, true);
-				MarkWholeScreenDirty();
+				bool colour_changed = false;
+				auto update_colour = [&colour_changed](Colours &group_colour, Colours new_parent_colour) {
+					if (group_colour != new_parent_colour) {
+						group_colour = new_parent_colour;
+						colour_changed = true;
+					}
+				};
+				if (!g->livery.in_use.Test(Livery::Flag::Primary)) update_colour(g->livery.colour1, livery->colour1);
+				if (!g->livery.in_use.Test(Livery::Flag::Secondary)) update_colour(g->livery.colour2, livery->colour2);
+
+				if (colour_changed) {
+					PropagateChildLivery(g, true);
+					MarkWholeScreenDirty();
+				}
 			}
 		}
 	}
