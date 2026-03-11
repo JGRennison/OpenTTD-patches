@@ -1163,11 +1163,9 @@ void Vehicle::PreDestructor()
 
 		if (this->owner == _local_company) InvalidateAutoreplaceWindow(this->engine_type, this->group_id);
 		DeleteGroupHighlightOfVehicle(this);
-		if (this->type == VEH_TRAIN) {
-			extern void DeleteTraceRestrictSlotHighlightOfVehicle(const Vehicle *v);
 
-			DeleteTraceRestrictSlotHighlightOfVehicle(this);
-		}
+		extern void DeleteTraceRestrictSlotHighlightOfVehicle(const Vehicle *v);
+		DeleteTraceRestrictSlotHighlightOfVehicle(this);
 	}
 
 	Company::Get(this->owner)->freeunits[this->type].ReleaseID(this->unitnumber);

@@ -5432,17 +5432,6 @@ void ShowTraceRestrictSlotWindow(CompanyID company, VehicleType vehtype)
 }
 
 /**
- * Finds a group list window determined by vehicle type and owner
- * @param vt vehicle type
- * @param owner owner of groups
- * @return pointer to VehicleGroupWindow, nullptr if not found
- */
-static inline TraceRestrictSlotWindow *FindTraceRestrictSlotWindow(Owner owner)
-{
-	return (TraceRestrictSlotWindow *)FindWindowById(GetWindowClassForVehicleType(VEH_TRAIN), VehicleListIdentifier(VL_SLOT_LIST, VEH_TRAIN, owner).ToWindowNumber());
-}
-
-/**
  * Removes the highlight of a vehicle in a group window
  * @param *v Vehicle to remove all highlights from
  */
@@ -5453,7 +5442,7 @@ void DeleteTraceRestrictSlotHighlightOfVehicle(const Vehicle *v)
 	 */
 	if (_special_mouse_mode != WSM_DRAGDROP) return;
 
-	TraceRestrictSlotWindow *w = FindTraceRestrictSlotWindow(v->owner);
+	TraceRestrictSlotWindow *w = (TraceRestrictSlotWindow *)FindWindowById(WC_TRACE_RESTRICT_SLOTS, VehicleListIdentifier(VL_SLOT_LIST, v->type, v->owner).ToWindowNumber());
 	if (w != nullptr) w->UnselectVehicle(v->index);
 }
 
