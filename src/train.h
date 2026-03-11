@@ -558,7 +558,7 @@ public:
 
 	/**
 	 * Check if this vehicle can lead a train.
-	 * @return \c True iff this vehicle can lead a train.
+	 * @return \c true iff this vehicle can lead a train.
 	 */
 	inline bool CanLeadTrain() const
 	{
