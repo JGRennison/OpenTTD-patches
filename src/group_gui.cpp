@@ -948,7 +948,7 @@ public:
 					GetEncodedString(STR_QUERY_GROUP_DELETE_CAPTION),
 					GetEncodedString(STR_GROUP_DELETE_QUERY_TEXT),
 					this, DeleteGroupCallback);
-				InvalidateWindowData(WC_TEMPLATEGUI_MAIN, 0, 0, 0);
+				InvalidateWindowData(WC_TEMPLATEGUI_MAIN, 0, 0);
 				break;
 			}
 
