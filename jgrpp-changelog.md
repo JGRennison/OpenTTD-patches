@@ -2,6 +2,26 @@
 
 * * *
 
+### v0.71.0 (2026-03-13)
+* Fix undrawn gap between vertical half-tile foundations of different railtypes.
+* Fix map edge selectors not being enabled in the map generation window for some setting values.
+* Show "Delete All" in the order window delete button when this would delete all orders.
+* Follow timetable early/late conditional orders in the timetable window departure/arrival estimates.
+* Departure boards:
+  * Follow timetable early/late conditional orders.
+  * Support schedule mode vehicle cycle tracking when the departure order is separate from (but the same location as) the dispatch order.
+* Routing restrictions:
+  * Show instruction remove count in button when removing a conditional item block.
+  * Maintain per-company backups of recently deleted routing restriction programs. Allow restoring programs from these backups.
+  * Change category of wait at path signal and penalty control to non-advanced.
+* Template-based train replacement:
+  * Fix incorrect cost overlay when template replacement fails.
+  * Disallow replacing to a free wagon chain. Fixes crash when replacing to a free wagon chain with wagons already in depot.
+* Fix various windows not being refreshed on vehicle group changes.
+* Fix multiplayer desync which could occur after a train crash with some combinations of platforms/build types.
+* Fix not being able to clear depot wait times when the lock flag was set and timetable automation enabled.
+* Bump trunk base from commit c1d37d86999ec391d5830f16887024b719f9cd18 to commit 27c5f9a5cdee5c2586a9688a7eca23975008abf4.
+
 ### v0.70.2 (2026-02-21)
 * Fix road/tram types for some NewGRFs not being initialised correctly.
 * Fix incorrect transfer credits total in train details window.
