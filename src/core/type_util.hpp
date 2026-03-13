@@ -199,4 +199,16 @@ consteval size_t CppOffsetHelper(S)
 #define cpp_offsetof(s, m) (((size_t)&reinterpret_cast<const volatile char&>((((s*)(char*)8)->m))) - 8)
 #endif /* USE_CONSTEXPR_CPPOFFSET_OF */
 
+template <typename... T>
+struct AlwaysFalseType {
+	static constexpr bool value = false;
+};
+
+/**
+ * This is primarily a helper for static_assert when the assert should always fail.
+ * However a direct static_assert(false) does not behave as expected on older compilers (e.g. when used with if constexpr).
+ */
+template <typename... T>
+constexpr bool AlwaysFalse = AlwaysFalseType<T...>::value;
+
 #endif /* TYPE_UTIL_HPP */

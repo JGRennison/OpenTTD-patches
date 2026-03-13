@@ -158,8 +158,7 @@ static CommandCost CmdExecTrampoline(const CommandExecData &exec_data)
 	} else if constexpr (std::is_same_v<std::remove_cvref_t<decltype(H::proc)>, CommandProcDirectNoTile<Payload>>) {
 		return H::proc(exec_data.flags, data);
 	} else {
-		static_assert(!H::proc, "Unexpected command proc type");
-		static_assert(false, "Unexpected command proc type");
+		static_assert(AlwaysFalse<H>, "Unexpected command proc type");
 	}
 }
 
@@ -737,7 +736,7 @@ struct PayloadOpsBuilder {
 				return &CommandFormatDebugSummaryCustom<T, skip_strings>;
 			}
 		} else {
-			static_assert(false, "Command payload: FormatDebugSummary implementation missing or incorrect");
+			static_assert(AlwaysFalse<T>, "Command payload: FormatDebugSummary implementation missing or incorrect");
 		}
 	}
 
