@@ -2770,12 +2770,10 @@ CommandCost CmdProgramSignalTraceRestrictMgmt(DoCommandFlags flags, TileIndex ti
 		return CMD_ERROR;
 	}
 
-	if (!flags.Test(DoCommandFlag::Execute)) {
-		return CommandCost();
-	}
-
 	switch (type) {
 		case TRMDCT_PROG_COPY: {
+			if (!flags.Test(DoCommandFlag::Execute)) return CommandCost();
+
 			TraceRestrictRemoveProgramMapping(self);
 
 			TraceRestrictProgram *source_prog = GetTraceRestrictProgram(source, false);
@@ -2796,6 +2794,8 @@ CommandCost CmdProgramSignalTraceRestrictMgmt(DoCommandFlags flags, TileIndex ti
 		}
 
 		case TRMDCT_PROG_COPY_APPEND: {
+			if (!flags.Test(DoCommandFlag::Execute)) return CommandCost();
+
 			TraceRestrictProgram *source_prog = GetTraceRestrictProgram(source, false);
 			if (source_prog != nullptr && !source_prog->items.empty()) {
 				TraceRestrictProgram *prog = GetTraceRestrictProgram(self, true);
@@ -2823,6 +2823,8 @@ CommandCost CmdProgramSignalTraceRestrictMgmt(DoCommandFlags flags, TileIndex ti
 
 		case TRMDCT_PROG_SHARE:
 		case TRMDCT_PROG_SHARE_IF_UNMAPPED: {
+			if (!flags.Test(DoCommandFlag::Execute)) return CommandCost();
+
 			TraceRestrictRemoveProgramMapping(self);
 			TraceRestrictProgram *source_prog = GetTraceRestrictProgram(source, true);
 			if (source_prog == nullptr) {
@@ -2836,6 +2838,8 @@ CommandCost CmdProgramSignalTraceRestrictMgmt(DoCommandFlags flags, TileIndex ti
 		}
 
 		case TRMDCT_PROG_UNSHARE: {
+			if (!flags.Test(DoCommandFlag::Execute)) return CommandCost();
+
 			std::vector<TraceRestrictProgramItem> items;
 			TraceRestrictProgram *prog = GetTraceRestrictProgram(self, false);
 			if (prog != nullptr) {
@@ -2862,6 +2866,8 @@ CommandCost CmdProgramSignalTraceRestrictMgmt(DoCommandFlags flags, TileIndex ti
 		}
 
 		case TRMDCT_PROG_RESET: {
+			if (!flags.Test(DoCommandFlag::Execute)) return CommandCost();
+
 			TraceRestrictRemoveProgramMapping(self);
 			break;
 		}
