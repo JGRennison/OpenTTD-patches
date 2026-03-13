@@ -33,6 +33,7 @@ enum TraceRestrictMgmtDoCommandType : uint8_t {
 	TRMDCT_PROG_SHARE_IF_UNMAPPED,           ///< share program operation (if unmapped)
 	TRMDCT_PROG_UNSHARE,                     ///< unshare program (copy as a new program)
 	TRMDCT_PROG_RESET,                       ///< reset program state of signal
+	TRMDCT_PROG_CREATE_BACKUP,               ///< create backup of program
 };
 
 const char *GetTraceRestrictMgmtDoCommandTypeName(TraceRestrictMgmtDoCommandType type);

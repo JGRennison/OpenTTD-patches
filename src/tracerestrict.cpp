@@ -2872,6 +2872,16 @@ CommandCost CmdProgramSignalTraceRestrictMgmt(DoCommandFlags flags, TileIndex ti
 			break;
 		}
 
+		case TRMDCT_PROG_CREATE_BACKUP: {
+			const TraceRestrictProgram *prog = GetTraceRestrictProgram(self, false);
+			if (prog == nullptr || prog->items.empty()) return CommandCost(STR_TRACE_RESTRICT_ERROR_NO_PROGRAM);
+
+			if (!flags.Test(DoCommandFlag::Execute)) return CommandCost();
+
+			TraceRestrictTryCreateBackupOfProgram(prog, _current_company);
+			break;
+		}
+
 		default:
 			return CMD_ERROR;
 	}
@@ -4392,6 +4402,7 @@ const char *GetTraceRestrictMgmtDoCommandTypeName(TraceRestrictMgmtDoCommandType
 		case TRMDCT_PROG_SHARE_IF_UNMAPPED: return "share_if_unmapped";
 		case TRMDCT_PROG_UNSHARE: return "unshare";
 		case TRMDCT_PROG_RESET: return "reset";
+		case TRMDCT_PROG_CREATE_BACKUP: return "create_backup";
 	}
 
 	return "???";

@@ -197,6 +197,7 @@ enum TraceRestrictWindowWidgets : WidgetID {
 	TR_WIDGET_BACKUP_ROW,
 	TR_WIDGET_BACKUP_ROW_SPACER,
 	TR_WIDGET_BACKUP_RESTORE,
+	TR_WIDGET_BACKUP_CREATE,
 	TR_WIDGET_BACKUP_FIRST,
 	TR_WIDGET_BACKUP_LAST = TR_WIDGET_BACKUP_FIRST + TRACERESTRICT_MAX_BACKUPS - 1,
 };
@@ -2807,6 +2808,11 @@ public:
 				Command<CMD_RESTORE_TRACERESTRICT_SIGNAL>::Post(STR_TRACE_RESTRICT_BACKUP_ERROR_CAN_T_RESTORE, this->tile, this->track, this->selected_backup_index);
 				break;
 			}
+
+			case TR_WIDGET_BACKUP_CREATE: {
+				Command<CMD_MANAGE_TRACERESTRICT_SIGNAL>::Post(STR_TRACE_RESTRICT_BACKUP_ERROR_CAN_T_CREATE_BACKUP, this->tile, this->track, TRMDCT_PROG_CREATE_BACKUP, INVALID_TILE, INVALID_TRACK);
+				break;
+			}
 		}
 	}
 
@@ -4166,6 +4172,9 @@ private:
 				}
 			}
 			this->SetWidgetDisabledState(TR_WIDGET_BACKUP_RESTORE, !selected_ok);
+
+			const TraceRestrictProgram *prog = this->GetProgram();
+			this->SetWidgetDisabledState(TR_WIDGET_BACKUP_CREATE, prog == nullptr || prog->items.empty());
 		}
 		if (!selected_ok) {
 			this->selected_backup_index = 0;
@@ -4410,6 +4419,7 @@ static constexpr NWidgetPart _nested_program_widgets[] = {
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL),
 				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, TR_WIDGET_BACKUP_RESTORE), SetStringTip(STR_TRACE_RESTRICT_BACKUP_RESTORE, STR_TRACE_RESTRICT_BACKUP_RESTORE_TOOLTIP),
+				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, TR_WIDGET_BACKUP_CREATE), SetStringTip(STR_TRACE_RESTRICT_BACKUP_CREATE, STR_TRACE_RESTRICT_BACKUP_CREATE_TOOLTIP),
 				NWidget(WWT_PANEL, COLOUR_GREY), SetFill(1, 0), SetResize(1, 0), EndContainer(),
 				NWidget(WWT_RESIZEBOX, COLOUR_GREY),
 			EndContainer(),
