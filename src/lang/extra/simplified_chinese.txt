@@ -1619,7 +1619,7 @@ STR_VEHICLE_INFO_MAX_SPEED_LOADED                               :{BLACK}最高�
 
 STR_VEHICLE_INFO_AGE_RUNNING_COST_ORIG_YR                       :{BLACK}寿命：{LTBLUE}{STRING}{BLACK}   运行费用：{LTBLUE}{CURRENCY_LONG}/原始年
 
-STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME            :{STRING}（寿命：{CURRENCY_LONG}）
+STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME            :{STRING}{LTBLUE}（寿命：{CURRENCY_LONG}）
 
 STR_VEHICLE_INFO_GROUP                                          :{BLACK}载具组：{LTBLUE}{GROUP}
 

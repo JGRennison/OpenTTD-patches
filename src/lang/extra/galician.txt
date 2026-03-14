@@ -1634,7 +1634,7 @@ STR_VEHICLE_INFO_MAX_SPEED_LOADED                               :{BLACK}Velocida
 
 STR_VEHICLE_INFO_AGE_RUNNING_COST_ORIG_YR                       :{BLACK}Idade: {LTBLUE}{STRING}{BLACK}   Custo de mantemento: {LTBLUE}{CURRENCY_LONG}/ano orixinal
 
-STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME            :{STRING} (vida útil: {CURRENCY_LONG})
+STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_LIFETIME            :{STRING} {LTBLUE}(vida útil: {CURRENCY_LONG})
 
 STR_VEHICLE_INFO_GROUP                                          :{BLACK}Grupo: {LTBLUE}{GROUP}
 
