@@ -84,25 +84,29 @@ void DrawShipDetails(const Vehicle *v, const Rect &r)
 			}
 		}
 
-		format_buffer capacity;
-		AppendStringInPlace(capacity, STR_VEHICLE_DETAILS_TRAIN_ARTICULATED_RV_CAPACITY);
+		{
+			format_buffer capacity;
+			std::string_view list_separator = GetListSeparator();
 
-		bool first = true;
-		for (CargoType i = 0; i < NUM_CARGO; i++) {
-			if (max_cargo[i] > 0) {
-				if (!first) capacity.append(", ");
-				AppendStringInPlace(capacity, STR_JUST_CARGO, i, max_cargo[i]);
+			bool first = true;
+			for (CargoType i = 0; i < NUM_CARGO; i++) {
+				if (max_cargo[i] > 0) {
+					if (!first) capacity.append(list_separator);
+					AppendStringInPlace(capacity, STR_JUST_CARGO, i, max_cargo[i]);
 
-				if (subtype_text[i] != 0) {
-					AppendStringInPlace(capacity, subtype_text[i]);
+					if (subtype_text[i] != 0) {
+						AppendStringInPlace(capacity, subtype_text[i]);
+					}
+
+					first = false;
 				}
-
-				first = false;
 			}
-		}
 
-		DrawString(r.left, r.right, y, capacity, TC_BLUE);
-		y += GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal;
+			format_buffer capacity_str;
+			AppendStringInPlace(capacity_str, STR_VEHICLE_DETAILS_TRAIN_ARTICULATED_RV_CAPACITY, capacity);
+			DrawString(r.left, r.right, y, capacity_str, TC_BLUE);
+			y += GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal;
+		}
 
 		for (const Vehicle *u = v; u != nullptr; u = u->Next()) {
 			if (u->cargo_cap == 0) continue;
