@@ -1219,7 +1219,7 @@ STR_TRACE_RESTRICT_BACKUP_RESTORE_TOOLTIP                       :{BLACK}Click to
 STR_TRACE_RESTRICT_BACKUP_CREATE                                :{BLACK}Backup current program
 STR_TRACE_RESTRICT_BACKUP_CREATE_TOOLTIP                        :{BLACK}Click to manually create a backup of the current program.
 STR_TRACE_RESTRICT_BACKUP_ERROR_CAN_T_RESTORE                   :{WHITE}Can't restore program from backup
-STR_TRACE_RESTRICT_BACKUP_ERROR_CAN_T_CREATE_BACKUP             :{WHITE}Can't restore create backup of program
+STR_TRACE_RESTRICT_BACKUP_ERROR_CAN_T_CREATE_BACKUP             :{WHITE}Can't create backup of program
 
 # Programmable Pre-Signals
 STR_PROGRAM_SIGNAL_TOOLTIP                                      :{BLACK}Program pre-signal
