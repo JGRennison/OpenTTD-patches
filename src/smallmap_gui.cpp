@@ -49,25 +49,25 @@ static int _smallmap_cargo_count;    ///< Number of cargos in the link stats leg
 static const uint8_t _linkstat_colours_in_legenda[] = {0, 1, 3, 5, 7, 9, 11};
 
 /** Macro for ordinary entry of LegendAndColour */
-#define MK(a, b) {a, b, IT_INVALID, 0, CompanyID::Invalid(), true, false, false}
+#define MK(a, b) {b, a, IT_INVALID, 0, CompanyID::Invalid(), true, false, false}
 
 /** Macro for a height legend entry with configurable colour. */
-#define MC(col_break) {{}, STR_TINY_BLACK_HEIGHT, IT_INVALID, 0, CompanyID::Invalid(), true, false, col_break}
+#define MC(col_break) {STR_TINY_BLACK_HEIGHT, {}, IT_INVALID, 0, CompanyID::Invalid(), true, false, col_break}
 
 /** Macro for non-company owned property entry of LegendAndColour */
-#define MO(a, b) {a, b, IT_INVALID, 0, CompanyID::Invalid(), true, false, false}
+#define MO(a, b) {b, a, IT_INVALID, 0, CompanyID::Invalid(), true, false, false}
 
 /** Macro used for forcing a rebuild of the owner legend the first time it is used. */
-#define MOEND() {{}, STR_NULL, IT_INVALID, 0, OWNER_NONE, true, true, false}
+#define MOEND() {STR_NULL, {}, IT_INVALID, 0, OWNER_NONE, true, true, false}
 
 /** Macro for end of list marker in arrays of LegendAndColour */
-#define MKEND() {{}, STR_NULL, IT_INVALID, 0, CompanyID::Invalid(), true, true, false}
+#define MKEND() {STR_NULL, {}, IT_INVALID, 0, CompanyID::Invalid(), true, true, false}
 
 /**
  * Macro for break marker in arrays of LegendAndColour.
  * It will have valid data, though
  */
-#define MS(a, b) {a, b, IT_INVALID, 0, CompanyID::Invalid(), true, false, true}
+#define MS(a, b) {b, a, IT_INVALID, 0, CompanyID::Invalid(), true, false, true}
 
 /** Legend text giving the colours to look for on the minimap */
 static LegendAndColour _legend_land_contours[] = {

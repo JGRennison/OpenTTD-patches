@@ -419,27 +419,6 @@ inline void free(const void *ptr)
 	free(const_cast<void *>(ptr));
 }
 
-#if defined(_MSC_VER) && !defined(_DEBUG)
-#	define IGNORE_UNINITIALIZED_WARNING_START __pragma(warning(push)) __pragma(warning(disable:4700))
-#	define IGNORE_UNINITIALIZED_WARNING_STOP __pragma(warning(pop))
-#elif defined(__GNUC__) && !defined(_DEBUG)
-#	define HELPER0(x) #x
-#	define HELPER1(x) HELPER0(GCC diagnostic ignored x)
-#	define HELPER2(y) HELPER1(#y)
-#if (__GNUC__ > 4 || (__GNUC__ == 4 && __GNUC_MINOR__ >= 6))
-#	define IGNORE_UNINITIALIZED_WARNING_START \
-		_Pragma("GCC diagnostic push") \
-		_Pragma(HELPER2(-Wuninitialized)) \
-		_Pragma(HELPER2(-Wmaybe-uninitialized))
-#	define IGNORE_UNINITIALIZED_WARNING_STOP _Pragma("GCC diagnostic pop")
-#endif
-#endif
-
-#ifndef IGNORE_UNINITIALIZED_WARNING_START
-#	define IGNORE_UNINITIALIZED_WARNING_START
-#	define IGNORE_UNINITIALIZED_WARNING_STOP
-#endif
-
 /**
  * Using _mm_prefetch() with gcc implies the compile flag -msse.
  * This is not the case with __builtin_prefetch() so the latter can be used in normal .cpp files.

@@ -23,25 +23,11 @@
 #undef Rect
 #undef Point
 
-#ifndef __clang__
-#define __bridge
-#endif
-
 /*
  * This file contains objective C
  * Apple uses objective C instead of plain C to interact with OS specific/native functions
  */
 
-
-#if (MAC_OS_X_VERSION_MAX_ALLOWED < MAC_OS_X_VERSION_10_10)
-typedef struct {
-	NSInteger majorVersion;
-	NSInteger minorVersion;
-	NSInteger patchVersion;
-} OTTDOperatingSystemVersion;
-
-#define NSOperatingSystemVersion OTTDOperatingSystemVersion
-#endif
 
 #ifdef WITH_COCOA
 static NSAutoreleasePool *_ottd_autorelease_pool;
@@ -71,28 +57,6 @@ void GetMacOSVersion(int *return_major, int *return_minor, int *return_bugfix)
 
 		return;
 	}
-
-#if (MAC_OS_X_VERSION_MIN_REQUIRED < MAC_OS_X_VERSION_10_10)
-#ifdef __clang__
-#	pragma clang diagnostic push
-#	pragma clang diagnostic ignored "-Wdeprecated-declarations"
-#endif
-	SInt32 systemVersion, version_major, version_minor, version_bugfix;
-	if (Gestalt(gestaltSystemVersion, &systemVersion) == noErr) {
-		if (systemVersion >= 0x1040) {
-			if (Gestalt(gestaltSystemVersionMajor,  &version_major) == noErr) *return_major = (int)version_major;
-			if (Gestalt(gestaltSystemVersionMinor,  &version_minor) == noErr) *return_minor = (int)version_minor;
-			if (Gestalt(gestaltSystemVersionBugFix, &version_bugfix) == noErr) *return_bugfix = (int)version_bugfix;
-		} else {
-			*return_major = (int)(GB(systemVersion, 12, 4) * 10 + GB(systemVersion, 8, 4));
-			*return_minor = (int)GB(systemVersion, 4, 4);
-			*return_bugfix = (int)GB(systemVersion, 0, 4);
-		}
-	}
-#ifdef __clang__
-#	pragma clang diagnostic pop
-#endif
-#endif
 }
 
 #ifdef WITH_COCOA
