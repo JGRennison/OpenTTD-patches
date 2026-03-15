@@ -1770,13 +1770,13 @@ void CallVehicleTicks()
 		if (auto result_v = res.GetResultData<VehicleID>(); result_v.has_value()) {
 			t = Train::Get(*result_v);
 		}
-		const Company *c = Company::Get(_current_company);
-		SubtractMoneyFromCompany(CommandCost(EXPENSES_NEW_VEHICLES, (Money)c->settings.engine_renew_money));
+		Company *c = Company::Get(_current_company);
+		SubtractMoneyFromCompany(c, CommandCost(EXPENSES_NEW_VEHICLES, (Money)c->settings.engine_renew_money));
 		CommandCost res2 = Command<CMD_AUTOREPLACE_VEHICLE>::Do(DoCommandFlag::Execute, t->index, true);
 		if (auto result_v = res2.GetResultData<VehicleID>(); result_v.has_value()) {
 			t = Train::Get(*result_v);
 		}
-		SubtractMoneyFromCompany(CommandCost(EXPENSES_NEW_VEHICLES, -(Money)c->settings.engine_renew_money));
+		SubtractMoneyFromCompany(c, CommandCost(EXPENSES_NEW_VEHICLES, -(Money)c->settings.engine_renew_money));
 
 		if (!IsLocalCompany()) continue;
 
@@ -1819,9 +1819,9 @@ void CallVehicleTicks()
 		int z = v->z_pos;
 
 		const Company *c = Company::Get(_current_company);
-		SubtractMoneyFromCompany(CommandCost(EXPENSES_NEW_VEHICLES, (Money)c->settings.engine_renew_money));
+		SubtractMoneyFromCompany(_current_company, CommandCost(EXPENSES_NEW_VEHICLES, (Money)c->settings.engine_renew_money));
 		CommandCost res = Command<CMD_AUTOREPLACE_VEHICLE>::Do(DoCommandFlag::Execute, v->index, false);
-		SubtractMoneyFromCompany(CommandCost(EXPENSES_NEW_VEHICLES, -(Money)c->settings.engine_renew_money));
+		SubtractMoneyFromCompany(_current_company, CommandCost(EXPENSES_NEW_VEHICLES, -(Money)c->settings.engine_renew_money));
 
 		if (!IsLocalCompany()) continue;
 
@@ -1835,13 +1835,11 @@ void CallVehicleTicks()
 	cur_company.Restore();
 	if (!_vehicles_to_autoreplace.empty()) RecordSyncEvent(NSRE_VEH_AUTOREPLACE);
 
-	Backup<CompanyID> repair_cur_company(_current_company, FILE_LINE);
 	for (VehicleID index : _vehicles_to_pay_repair) {
 		Vehicle *v = Vehicle::Get(index);
 		SCOPE_INFO_FMT([v], "CallVehicleTicks: repair: {}", VehicleInfoDumper(v));
 
 		ExpensesType type = INVALID_EXPENSES;
-		_current_company = v->owner;
 		switch (v->type) {
 			case VEH_AIRCRAFT:
 				type = EXPENSES_AIRCRAFT_RUN;
@@ -1871,11 +1869,12 @@ void CallVehicleTicks()
 		if (v->age > v->max_age) repair_cost <<= 1;
 		CommandCost cost(type, repair_cost);
 		v->First()->profit_this_year -= cost.GetCost() << 8;
-		SubtractMoneyFromCompany(cost);
-		ShowCostOrIncomeAnimation(v->x_pos, v->y_pos, v->z_pos, cost.GetCost());
+		SubtractMoneyFromCompany(v->owner, cost);
+		if (v->owner == _local_company) {
+			ShowCostOrIncomeAnimation(v->x_pos, v->y_pos, v->z_pos, cost.GetCost());
+		}
 		v->breakdowns_since_last_service = 0;
 	}
-	repair_cur_company.Restore();
 	if (!_vehicles_to_pay_repair.empty()) RecordSyncEvent(NSRE_VEH_REPAIR);
 	_vehicles_to_pay_repair.clear();
 }
@@ -3991,7 +3990,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlags flags, DepotCommandFlags command
 							ShowCostOrIncomeAnimation(x, y, z, cost.GetCost());
 						}
 					}
-					SubtractMoneyFromCompany(cost);
+					SubtractMoneyFromCompany(_current_company, cost);
 				}
 			}
 			return CommandCost();

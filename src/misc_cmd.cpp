@@ -350,9 +350,7 @@ CommandCost CmdChangeBankBalance(DoCommandFlags flags, TileIndex tile, Money del
 
 	if (flags.Test(DoCommandFlag::Execute)) {
 		/* Change company bank balance of company. */
-		Backup<CompanyID> cur_company(_current_company, company, FILE_LINE);
-		SubtractMoneyFromCompany(CommandCost(expenses_type, -delta));
-		cur_company.Restore();
+		SubtractMoneyFromCompany(company, CommandCost(expenses_type, -delta));
 
 		if (tile != 0) {
 			ShowCostOrIncomeAnimation(TileX(tile) * TILE_SIZE, TileY(tile) * TILE_SIZE, GetTilePixelZ(tile), -delta);
@@ -387,9 +385,7 @@ CommandCost CmdGiveMoney(DoCommandFlags flags, Money money, CompanyID dest_compa
 
 	if (flags.Test(DoCommandFlag::Execute)) {
 		/* Add money to company */
-		Backup<CompanyID> cur_company(_current_company, dest_company, FILE_LINE);
-		SubtractMoneyFromCompany(CommandCost(EXPENSES_OTHER, -amount.GetCost()));
-		cur_company.Restore();
+		SubtractMoneyFromCompany(dest_company, CommandCost(EXPENSES_OTHER, -amount.GetCost()));
 	}
 
 	/* Subtract money from local-company */

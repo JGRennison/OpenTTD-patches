@@ -32,7 +32,7 @@ jobs:
         git config --global --add safe.directory ${GITHUB_WORKSPACE}
 
     - name: Setup cache
-      uses: actions/cache@v4
+      uses: actions/cache@v5
       with:
         # If you change this version, change the numbers in the image configuration step,
         # .github/workflows/preview-build.yml (2x) and os/emscripten/Dockerfile too.

@@ -325,7 +325,7 @@ CommandCost DoCommandImplementation(Commands cmd, TileIndex tile, const CommandP
 
 	/* if toplevel, subtract the money. */
 	if (--_docommand_recursive == 0 && !flags.Test(DoCommandFlag::Bankrupt)) {
-		SubtractMoneyFromCompany(res);
+		SubtractMoneyFromCompany(_current_company, res);
 	}
 
 	return res;
@@ -722,7 +722,7 @@ CommandCost DoCommandPInternal(Commands cmd, TileIndex tile, const CommandPayloa
 		if (c != nullptr) c->last_build_coordinate = tile;
 	}
 
-	SubtractMoneyFromCompany(res2);
+	SubtractMoneyFromCompany(_current_company, res2);
 	if (_networking) UpdateStateChecksum(res2.GetCost());
 
 	/* update signals if needed */

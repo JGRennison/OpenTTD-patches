@@ -264,8 +264,6 @@ void CargoPacket::PayDeferredPayments()
 {
 	if (this->flags & CPF_HAS_DEFERRED_PAYMENT) {
 		IterateCargoPacketDeferredPayments(this->index, true, [&](Money &payment, CompanyID cid, VehicleType type) {
-			Backup<CompanyID> cur_company(_current_company, cid, FILE_LINE);
-
 			ExpensesType exp;
 			switch (type) {
 				case VEH_TRAIN: exp = EXPENSES_TRAIN_REVENUE; break;
@@ -274,9 +272,7 @@ void CargoPacket::PayDeferredPayments()
 				case VEH_AIRCRAFT: exp = EXPENSES_AIRCRAFT_REVENUE; break;
 				default: NOT_REACHED();
 			}
-			SubtractMoneyFromCompany(CommandCost(exp, -payment));
-
-			cur_company.Restore();
+			SubtractMoneyFromCompany(cid, CommandCost(exp, -payment));
 		});
 		this->flags &= ~CPF_HAS_DEFERRED_PAYMENT;
 	}

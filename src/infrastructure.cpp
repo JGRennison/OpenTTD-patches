@@ -164,10 +164,7 @@ static void RemoveAndSellVehicle(Vehicle *v, bool give_money)
 		for (Vehicle *u = v->First(); u != nullptr; u = u->Next()) {
 			value += u->value;
 		}
-		CompanyID old = _current_company;
-		_current_company = v->owner;
-		SubtractMoneyFromCompany(CommandCost(EXPENSES_NEW_VEHICLES, -value));
-		_current_company = old;
+		SubtractMoneyFromCompany(v->owner, CommandCost(EXPENSES_NEW_VEHICLES, -value));
 	}
 
 	/* take special measures for trains, but not when sharing is disabled or when the train is a free wagon chain */
