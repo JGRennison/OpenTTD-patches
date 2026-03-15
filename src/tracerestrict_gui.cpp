@@ -4266,7 +4266,12 @@ private:
 
 		auto iter = TraceRestrictInstructionIteratorAt(items, offset);
 		if (replace) {
+			const bool is_double = iter.Instruction().IsDoubleItem();
 			iter.InstructionRef() = item;
+			if (is_double) {
+				if (iter.ItemIter() + 1 >= items.end()) return false;
+				items.erase(iter.ItemIter() + 1);
+			}
 		} else {
 			items.insert(iter.ItemIter(), item.AsProgramItem());
 		}
