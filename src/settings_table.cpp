@@ -14,6 +14,7 @@
 #include "currency.h"
 #include "date_func.h"
 #include "elrail_func.h"
+#include "engine_func.h"
 #include "engine_override.h"
 #include "station_base.h"
 #include "station_func.h"
@@ -884,6 +885,11 @@ static void TrainSpeedAdaptationChanged(int32_t new_value)
 		t->signal_speed_restriction = 0;
 	}
 	SetWindowClassesDirty(WC_VEHICLE_DETAILS);
+}
+
+static void EngineLifetimeSettingsChanged(int32_t new_value)
+{
+	StartupEngines();
 }
 
 static void AutosaveModeChanged(int32_t new_value)
