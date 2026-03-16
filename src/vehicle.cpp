@@ -282,7 +282,7 @@ bool Vehicle::NeedsServicing() const
 	/* If we're servicing anyway, because we have not disabled servicing when
 	 * there are no breakdowns or we are playing with breakdowns, bail out. */
 	if (needs_service && (!_settings_game.order.no_servicing_if_no_breakdowns ||
-			_settings_game.difficulty.vehicle_breakdowns != 0)) {
+			_settings_game.difficulty.vehicle_breakdowns != VB_NONE)) {
 		return true;
 	}
 
@@ -2275,29 +2275,47 @@ void DetermineBreakdownType(Vehicle *v, uint32_t r) {
 	}
 }
 
+/**
+ * Periodic check for a vehicle to maybe break down.
+ * @param v The vehicle to consider breaking.
+ */
 void CheckVehicleBreakdown(Vehicle *v)
 {
-	int rel, rel_old;
+	/* Vehicles in the menu don't break down. */
+	if (_game_mode == GM_MENU) return;
 
-	/* decrease reliability */
-	if (!_settings_game.order.no_servicing_if_no_breakdowns ||
-			_settings_game.difficulty.vehicle_breakdowns != 0) {
-		const int reliability_dec = (v->reliability_spd_dec << 5) >> (5 - _settings_game.difficulty.reliability_decay_speed);
-		v->reliability = rel = std::max((rel_old = v->reliability) - reliability_dec, 0);
-		if ((rel_old >> 8) != (rel >> 8)) SetWindowDirty(WC_VEHICLE_DETAILS, v->First()->index);
-	}
+	/* If both breakdowns and automatic servicing are disabled, we don't decrease reliability or break down. */
+	if (_settings_game.difficulty.vehicle_breakdowns == VB_NONE && _settings_game.order.no_servicing_if_no_breakdowns) return;
 
-	if (v->breakdown_ctr != 0 || v->First()->vehstatus.Test(VehState::Stopped) ||
-			_settings_game.difficulty.vehicle_breakdowns < 1 ||
-			v->First()->cur_speed < 5 || _game_mode == GM_MENU ||
-			(v->type == VEH_AIRCRAFT && ((Aircraft*)v)->state != FLYING) ||
-			(v->type == VEH_TRAIN && !(Train::From(v)->IsFrontEngine()) && !_settings_game.vehicle.improved_breakdowns)) {
-		return;
-	}
+	/* With Reduced breakdowns, vehicles (un)loading at stations don't lose reliability. */
+	if (_settings_game.difficulty.vehicle_breakdowns != VB_NORMAL && v->current_order.IsType(OT_LOADING)) return;
+
+	/* Decrease reliability. */
+	const int rel_old = v->reliability;
+	const int reliability_dec = (v->reliability_spd_dec << 5) >> (5 - _settings_game.difficulty.reliability_decay_speed);
+	const int rel = std::max(rel_old - reliability_dec, 0);
+	v->reliability = rel;
+	if ((rel_old >> 8) != (rel >> 8)) SetWindowDirty(WC_VEHICLE_DETAILS, v->First()->index);
+
+	/* Some vehicles lose reliability but won't break down. */
+	/* Breakdowns are disabled. */
+	if (_settings_game.difficulty.vehicle_breakdowns == VB_NONE) return;
+	/* The vehicle is already broken down. */
+	if (v->breakdown_ctr != 0) return;
+	/* The vehicle is stopped or going very slow. */
+	if (v->First()->cur_speed < 5) return;
+	/* The vehicle has been manually stopped. */
+	if (v->First()->vehstatus.Test(VehState::Stopped)) return;
+	/* Aircraft is not flying. */
+	if (v->type == VEH_AIRCRAFT && Aircraft::From(v)->state != FLYING) return;
+	/* Not a suitable train engine to break down. */
+	if (v->type == VEH_TRAIN && !(Train::From(v)->IsFrontEngine()) && !_settings_game.vehicle.improved_breakdowns) return;
+
+	/* Time to consider breaking down. */
 
 	uint32_t r = Random();
 
-	/* increase chance of failure */
+	/* Increase chance of failure. */
 	int chance = v->breakdown_chance + 1;
 	if (Chance16I(1, 25, r)) chance += 25;
 	chance = ClampTo<uint8_t>(chance);
@@ -2323,7 +2341,7 @@ void CheckVehicleBreakdown(Vehicle *v)
 	 * their impact will be significantly less.
 	 */
 	uint32_t r1 = Random();
-	uint32_t breakdown_scaling_x2 = (_settings_game.difficulty.vehicle_breakdowns == 64) ? 1 : (_settings_game.difficulty.vehicle_breakdowns * 2);
+	uint32_t breakdown_scaling_x2 = (_settings_game.difficulty.vehicle_breakdowns == VB_VERY_REDUCED) ? 1 : (_settings_game.difficulty.vehicle_breakdowns * 2);
 	if ((uint32_t) (0xffff - v->reliability) * breakdown_scaling_x2 * chance > GB(r1, 0, 24) * 10 * 2) {
 		uint32_t r2 = Random();
 		v->breakdown_ctr = GB(r1, 24, 6) + 0xF;

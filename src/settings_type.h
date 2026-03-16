@@ -114,6 +114,14 @@ enum PlaceHouses : uint8_t {
 	PH_ALLOWED_CONSTRUCTED,
 };
 
+/** Possible values for "vehicle_breakdowns" setting. */
+enum VehicleBreakdowns : uint8_t {
+	VB_NONE = 0,
+	VB_REDUCED = 1,
+	VB_NORMAL = 2,
+	VB_VERY_REDUCED = 64,
+};
+
 /** Settings related to the difficulty of the game */
 struct DifficultySettings {
 	uint8_t  competitor_start_time;                 ///< Unused value, used to load old savegames.

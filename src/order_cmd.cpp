@@ -3198,7 +3198,7 @@ void CheckOrders(const Vehicle *v)
 
 		if (message == INVALID_STRING_ID && !has_depot_order && v->type != VEH_AIRCRAFT) {
 			if (_settings_client.gui.no_depot_order_warn == 1 ||
-					(_settings_client.gui.no_depot_order_warn == 2 && _settings_game.difficulty.vehicle_breakdowns != 0)) {
+					(_settings_client.gui.no_depot_order_warn == 2 && _settings_game.difficulty.vehicle_breakdowns != VB_NONE)) {
 				message = STR_NEWS_VEHICLE_NO_DEPOT_ORDER;
 			}
 		}

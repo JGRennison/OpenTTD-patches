@@ -354,13 +354,7 @@ public:
 
 		assert(select_proc == DDSP_BUILD_OBJECT);
 
-		if (!_settings_game.construction.freeform_edges) {
-			/* When end_tile is MP_VOID, the error tile will not be visible to the
-			 * user. This happens when terraforming at the southern border. */
-			if (TileX(end_tile) == Map::MaxX()) end_tile += TileDiffXY(-1, 0);
-			if (TileY(end_tile) == Map::MaxY()) end_tile += TileDiffXY(0, -1);
-		}
-		Command<CMD_BUILD_OBJECT_AREA>::Post(STR_ERROR_CAN_T_PURCHASE_THIS_LAND, CommandCallback::PlaySound_CONSTRUCTION_OTHER,
+		Command<CMD_BUILD_OBJECT_AREA>::Post(STR_ERROR_CAN_T_BUILD_OBJECT, CommandCallback::PlaySound_CONSTRUCTION_OTHER,
 				end_tile, start_tile, ObjectClass::Get(_object_gui.sel_class)->GetSpec(_object_gui.sel_type)->Index(), _object_gui.sel_view, _ctrl_pressed);
 	}
 

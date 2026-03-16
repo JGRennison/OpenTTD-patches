@@ -328,7 +328,7 @@ CommandCost CmdTerraformLand(DoCommandFlags flags, TileIndex tile, Slope slope, 
  * @param flags for this command type
  * @param tile end tile of area-drag
  * @param start_tile start tile of area drag
- * @param diagonal Whether to use the Orthogonal (false) or Diagonal (true) iterator.
+ * @param diagonal Whether to use the Diagonal or Orthogonal tile iterator.
  * @param LevelMode Mode of leveling \c LevelMode.
  * @return the cost of this operation or an error
  */
