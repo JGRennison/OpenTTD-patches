@@ -139,6 +139,7 @@ extern void ShowOSErrorBox(std::string_view buf, bool system);
 [[noreturn]] extern void DoOSAbort();
 extern std::string _config_file;
 extern uint64_t _station_tile_cache_hash;
+extern uint32_t _engine_seed;
 
 bool _save_config = false;
 bool _request_newgrf_scan = false;
@@ -461,6 +462,7 @@ static void ShutdownGame()
 	_extra_aspects = 0;
 	_aspect_cfg_hash = 0;
 	_station_tile_cache_hash = 0;
+	_engine_seed = 0;
 	InitGRFGlobalVars();
 	_loadgame_DBGL_data.clear();
 	_loadgame_DBGC_data.clear();

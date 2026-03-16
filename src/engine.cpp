@@ -42,6 +42,7 @@ EnginePool _engine_pool("Engine");
 INSTANTIATE_POOL_METHODS(Engine)
 
 EngineOverrideManager _engine_mngr;
+uint32_t _engine_seed = 0;
 
 /**
  * Year that engine aging stops. Engines will not reduce in reliability
@@ -874,10 +875,13 @@ void StartupEngines()
 		no_introduce_after_date = CalTime::ConvertYMDToDate(_settings_game.vehicle.no_introduce_vehicles_after, 0, 1) - 1;
 	}
 
-	uint32_t seed = Random();
+	/* If the engine seed is not already set, set it now. */
+	while (_engine_seed == 0) {
+		_engine_seed = Random();
+	}
 
 	for (Engine *e : Engine::Iterate()) {
-		StartupOneEngine(e, aging_ymd, expire_stop_ymd, seed, no_introduce_after_date);
+		StartupOneEngine(e, aging_ymd, expire_stop_ymd, _engine_seed, no_introduce_after_date);
 	}
 	for (Engine *e : Engine::Iterate()) {
 		CalcEngineReliability(e, false);

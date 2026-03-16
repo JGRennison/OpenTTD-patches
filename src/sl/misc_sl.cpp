@@ -32,6 +32,7 @@ extern TileIndex _aux_tileloop_tile;
 extern uint16_t _disaster_delay;
 extern uint8_t _trees_tick_ctr;
 extern uint64_t _aspect_cfg_hash;
+extern uint32_t _engine_seed;
 
 /* Keep track of current game position */
 int _saved_scrollpos_x;
@@ -126,6 +127,7 @@ static const NamedSaveLoad _date_desc[] = {
 	NSLT("calendar_sub_date_fract",     SLEG_CONDVAR_X(CalTime::Detail::now.sub_date_fract,     SLE_UINT16,                   SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VARIABLE_DAY_LENGTH, 5))),
 	NSLT("economy_years_elapsed",       SLEG_CONDVAR_X(EconTime::Detail::years_elapsed,          SLE_INT32,                   SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VARIABLE_DAY_LENGTH, 6))),
 	NSLT("period_display_offset",       SLEG_CONDVAR_X(EconTime::Detail::period_display_offset,  SLE_INT32,                   SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_VARIABLE_DAY_LENGTH, 6))),
+	NSLT("engine_seed",                 SLEG_VAR(_engine_seed,                                  SLE_UINT32)),
 };
 
 static const NamedSaveLoad _date_check_desc[] = {

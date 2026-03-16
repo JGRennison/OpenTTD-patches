@@ -295,6 +295,8 @@ static bool ConResetEngines(std::span<std::string_view> argv)
 		return true;
 	}
 
+	extern uint32_t _engine_seed;
+	_engine_seed = 0; // Reset engine seed to re-randomise engine values.
 	StartupEngines();
 	return true;
 }
