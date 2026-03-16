@@ -556,19 +556,7 @@ public:
 
 	bool StopFoundAtVehiclePosition() const;
 
-	/**
-	 * Check if this vehicle can lead a train.
-	 * @return \c true iff this vehicle can lead a train.
-	 */
-	inline bool CanLeadTrain() const
-	{
-		/* This might be an articulated engine. */
-		if (this->IsArticulatedPart()) {
-			return this->GetFirstEnginePart()->IsEngine();
-		}
-
-		return this->IsEngine() || this->IsRearDualheaded();
-	}
+	bool CanLeadTrain() const;
 
 	/**
 	 * Set the movement direction of this vehicle chain.

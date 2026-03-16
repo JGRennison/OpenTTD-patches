@@ -8035,3 +8035,20 @@ bool Train::StopFoundAtVehiclePosition() const
 	orders.AdvanceOrdersFromVehiclePosition(lookahead_state);
 	return HasBit(lookahead_state.flags, CTTLASF_STOP_FOUND);
 }
+
+/**
+ * Check if this vehicle can lead a train.
+ * @return \c true iff this vehicle can lead a train.
+ */
+bool Train::CanLeadTrain() const
+{
+	/* NewGRFs can allow unpowered wagons to lead trains. */
+	if (this->GetEngine()->info.extra_flags.Test(ExtraEngineFlag::HasCab)) return true;
+
+	/* This might be an articulated engine. */
+	if (this->IsArticulatedPart()) {
+		return this->GetFirstEnginePart()->IsEngine();
+	}
+
+	return this->IsEngine() || this->IsRearDualheaded();
+}
