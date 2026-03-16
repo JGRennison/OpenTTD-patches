@@ -1986,7 +1986,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 	}
 	int platform_length_left = 0;
 	if (pull_through_mode) {
-		platform_length_left = st->GetPlatformLength(station_tile, ReverseDiagDir(DirToDiagDir(station_vehicle->direction))) * TILE_SIZE - GetTileMarginInFrontOfTrain(Train::From(station_vehicle));
+		platform_length_left = st->GetPlatformLength(station_tile, ReverseDiagDir(DirToDiagDir(station_vehicle->GetMovingDirection()))) * TILE_SIZE - GetTileMarginInFrontOfTrain(Train::From(station_vehicle));
 	} else if (front->type == VEH_TRAIN) {
 		platform_length_left = st->GetPlatformLength(station_tile) * TILE_SIZE - front->GetGroundVehicleCache()->cached_total_length;
 	}
@@ -2045,7 +2045,8 @@ static void LoadUnloadVehicle(Vehicle *front)
 
 	uint artic_part = 0; // Articulated part we are currently trying to load. (not counting parts without capacity)
 	bool suppress_artic_load = false;
-	for (Vehicle *v = front; v != nullptr; v = v->Next()) {
+	Vehicle *moving_front = front->GetMovingFront();
+	for (Vehicle *v = moving_front; v != nullptr; v = v->GetMovingNext()) {
 		if (pull_through_mode && Train::From(v)->flags.Test(VehicleRailFlag::BeyondPlatformEnd)) {
 			if (v->cargo_cap != 0) {
 				if (v->cargo.StoredCount() >= v->cargo_cap) {
@@ -2054,16 +2055,17 @@ static void LoadUnloadVehicle(Vehicle *front)
 			}
 			continue;
 		}
-		if (pull_through_mode && !v->IsArticulatedPart()) {
-			int length = Train::From(v)->gcache.cached_veh_length;
-			Vehicle *u = v;
-			while (u->HasArticulatedPart()) {
-				u = u->GetNextArticulatedPart();
-				length += Train::From(u)->gcache.cached_veh_length;
-			}
-			if (v != station_vehicle && !Train::From(v->Previous())->flags.Test(VehicleRailFlag::BeyondPlatformEnd) && length > platform_length_left) {
-				for (Vehicle *skip = v; skip != nullptr; skip = skip->Next()) {
-					Train::From(skip)->flags.Set(VehicleRailFlag::NotYetInPlatform);
+		if (pull_through_mode && Train::From(v)->IsMovingUnitStart()) {
+			Train *t = Train::From(v);
+			int length = 0;
+			Train *u = t;
+			do {
+				length += u->gcache.cached_veh_length;
+				u = u->GetMovingNext();
+			} while (u != nullptr && !u->IsMovingUnitStart());
+			if (v != station_vehicle && !t->GetMovingPrev()->flags.Test(VehicleRailFlag::BeyondPlatformEnd) && length > platform_length_left) {
+				for (Train *skip = t; skip != nullptr; skip = skip->GetMovingNext()) {
+					skip->flags.Set(VehicleRailFlag::NotYetInPlatform);
 					if (skip->vehicle_flags.Test(VehicleFlag::CargoUnloading)) {
 						unload_payment_not_yet_in_station = true;
 						load_unload_not_yet_in_station = true;
@@ -2082,7 +2084,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 			}
 			platform_length_left -= length;
 		}
-		if (v == front || !v->IsArticulatedPart()) {
+		if (v == moving_front || (v->type == VEH_TRAIN ? Train::From(v)->IsMovingUnitStart() : !v->IsArticulatedPart())) {
 			artic_part = 0;
 			suppress_artic_load = false;
 		}

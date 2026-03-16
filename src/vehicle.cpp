@@ -405,7 +405,7 @@ uint Vehicle::Crash(bool)
 	InvalidateVehicleListWindows(this->type);
 	SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
 	SetWindowDirty(WC_VEHICLE_DETAILS, this->index);
-	SetWindowDirty(WC_VEHICLE_DEPOT, this->tile.base());
+	SetWindowDirty(WC_VEHICLE_DEPOT, this->GetMovingFront()->tile.base());
 
 	delete this->cargo_payment;
 	assert(this->cargo_payment == nullptr); // cleared by ~CargoPayment
@@ -2943,8 +2943,10 @@ GetNewVehiclePosResult GetNewVehiclePos(const Vehicle *v)
 		-1, 0, 1, 1, 1, 0,-1,-1, /* y */
 	};
 
-	int x = v->x_pos + _delta_coord[v->direction];
-	int y = v->y_pos + _delta_coord[v->direction + 8];
+	Direction dir = v->GetMovingDirection();
+
+	int x = v->x_pos + _delta_coord[dir];
+	int y = v->y_pos + _delta_coord[dir + 8];
 
 	GetNewVehiclePosResult gp;
 	gp.x = x;
@@ -2974,7 +2976,7 @@ Direction GetDirectionTowards(const Vehicle *v, int x, int y)
 		i++;
 	}
 
-	Direction dir = v->direction;
+	Direction dir = v->GetMovingDirection();
 
 	DirDiff dirdiff = DirDifference(_new_direction_table[i], dir);
 	if (dirdiff == DIRDIFF_SAME) return dir;
@@ -3404,7 +3406,10 @@ static void VehicleIncreaseStats(const Vehicle *front)
 void Vehicle::BeginLoading()
 {
 	if (this->type == VEH_TRAIN) {
-		assert_tile(IsTileType(Train::From(this)->GetStationLoadingVehicle()->tile, TileType::Station), Train::From(this)->GetStationLoadingVehicle()->tile);
+#ifdef WITH_ASSERT
+		[[maybe_unused]] TileIndex station_tile = Train::From(this)->GetStationLoadingVehicle()->tile;
+		assert_tile(IsTileType(station_tile, TileType::Station), station_tile);
+#endif
 	} else {
 		assert_tile(IsTileType(this->tile, TileType::Station) || this->type == VEH_SHIP, this->tile);
 	}
@@ -4320,6 +4325,8 @@ void Vehicle::ShowVisualEffect(uint max_speed) const
 
 	if (this->type == VEH_TRAIN) {
 		const Train *t = Train::From(this);
+		const Train *moving_front = t->GetMovingFront();
+		TileIndex front_tile = moving_front->tile;
 		/* For trains, do not show any smoke when:
 		 * - the train is reversing
 		 * - the train is exceeding the max speed
@@ -4328,7 +4335,7 @@ void Vehicle::ShowVisualEffect(uint max_speed) const
 		 */
 		if (t->flags.Test(VehicleRailFlag::Reversing) ||
 				t->cur_speed > max_speed ||
-				(HasStationTileRail(t->tile) && t->IsFrontEngine() && t->current_order.ShouldStopAtStation(t, GetStationIndex(t->tile), IsRailWaypoint(t->tile)) &&
+				(HasStationTileRail(front_tile) && t->IsFrontEngine() && t->current_order.ShouldStopAtStation(t, GetStationIndex(front_tile), IsRailWaypoint(front_tile)) &&
 				t->cur_speed >= max_speed) ||
 				(t->reverse_distance >= 1 && (int)t->cur_speed >= ReversingDistanceTargetSpeed(t))) {
 			return;
@@ -4600,6 +4607,7 @@ void DumpVehicleFlagsGeneric(const Vehicle *v, T dump, U dump_header)
 	dump('L', "PathfinderLost",             v->vehicle_flags.Test(VehicleFlag::PathfinderLost));
 	dump('c', "ServiceIntervalIsCustom",    v->vehicle_flags.Test(VehicleFlag::ServiceIntervalIsCustom));
 	dump('p', "ServiceIntervalIsPercent",   v->vehicle_flags.Test(VehicleFlag::ServiceIntervalIsPercent));
+	dump('B', "DrivingBackwards",           v->vehicle_flags.Test(VehicleFlag::DrivingBackwards));
 	dump('z', "SeparationActive",           v->vehicle_flags.Test(VehicleFlag::SeparationActive));
 	dump('D', "ScheduledDispatch",          v->vehicle_flags.Test(VehicleFlag::ScheduledDispatch));
 	dump('x', "LastLoadStationSeparate",    v->vehicle_flags.Test(VehicleFlag::LastLoadStationSeparate));

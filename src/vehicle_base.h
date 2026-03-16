@@ -440,6 +440,48 @@ public:
 	virtual void UpdateDeltaXY() {}
 
 	/**
+	 * Is this vehicle moving backwards?
+	 * @return \c true iff the vehicle is moving backwards.
+	 */
+	bool IsDrivingBackwards() const { return this->vehicle_flags.Test(VehicleFlag::DrivingBackwards); }
+
+	/**
+	 * Is this vehicle the moving front of the vehicle chain?
+	 * @return \c true iff this vehicle is the moving front of the vehicle chain.
+	 */
+	bool IsMovingFront() const { return this->First()->IsPrimaryVehicle() && (this->IsDrivingBackwards() ? this->Next() : this->Previous()) == nullptr; }
+
+	/**
+	 * Get the moving front of the vehicle chain.
+	 * @return The vehicle which is at the front of the vehicle chain, relative to its current movement.
+	 */
+	Vehicle *GetMovingFront() const { return this->IsDrivingBackwards() ? this->Last() : this->First(); }
+
+	/**
+	 * Get the moving back of the vehicle chain.
+	 * @return The vehicle which is at the back of the vehicle chain, relative to its current movement.
+	 */
+	Vehicle *GetMovingBack() const { return this->IsDrivingBackwards() ? this->First() : this->Last(); }
+
+	/**
+	 * Get the next vehicle in the vehicle chain, relative to its current movement.
+	 * @return The next vehicle of the vehicle chain, relative to its current movement.
+	 */
+	Vehicle *GetMovingNext() const { return this->IsDrivingBackwards() ? this->Previous() : this->Next(); }
+
+	/**
+	 * Get the previous vehicle in the vehicle chain, relative to its current movement.
+	 * @return The previous vehicle of the vehicle chain, relative to its current movement.
+	 */
+	Vehicle *GetMovingPrev() const { return this->IsDrivingBackwards() ? this->Next() : this->Previous(); }
+
+	/**
+	 * Get the moving direction of this vehicle chain.
+	 * @return The direction that the vehicle chain is currently moving.
+	 */
+	Direction GetMovingDirection() const { return this->IsDrivingBackwards() ? ReverseDir(this->direction) : this->direction; }
+
+	/**
 	 * Determines the effective direction-specific vehicle movement speed.
 	 *
 	 * This method belongs to the old vehicle movement method:
@@ -719,13 +761,7 @@ public:
 	 * Get the last vehicle of this vehicle chain.
 	 * @return the last vehicle of the chain.
 	 */
-	inline Vehicle *Last() { return this->last; }
-
-	/**
-	 * Get the last vehicle of this vehicle chain.
-	 * @return the last vehicle of the chain.
-	 */
-	inline const Vehicle *Last() const { return this->last; }
+	inline Vehicle *Last() const { return this->last; }
 
 	/**
 	 * Get the next vehicle in the tile hash chain.
@@ -1348,6 +1384,79 @@ struct SpecializedVehicle : public Base {
 	inline SpecializedVehicle(VehicleID index) : Base(index, Type)
 	{
 		this->sprite_seq.count = 1;
+	}
+
+	/** @copydoc Vehicle::IsDrivingBackwards() */
+	inline bool IsDrivingBackwards() const
+	{
+		if constexpr (EXPECTED_TYPE == VEH_TRAIN) {
+			return this->Vehicle::IsDrivingBackwards();
+		} else {
+			return false;
+		}
+	}
+
+	/** @copydoc Vehicle::IsMovingFront() */
+	inline bool IsMovingFront() const
+	{
+		if constexpr (EXPECTED_TYPE == VEH_TRAIN) {
+			return this->Vehicle::IsMovingFront();
+		} else {
+			return static_cast<T *>(this)->IsPrimaryVehicle();
+		}
+	}
+
+	/** @copydoc Vehicle::GetMovingFront() */
+	inline T *GetMovingFront() const
+	{
+		if constexpr (EXPECTED_TYPE == VEH_TRAIN) {
+			return (T *)this->Vehicle::GetMovingFront();
+		} else {
+			return this->First();
+		}
+	}
+
+	/** @copydoc Vehicle::GetMovingBack() */
+	inline T *GetMovingBack() const
+	{
+		if constexpr (EXPECTED_TYPE == VEH_TRAIN) {
+			return (T *)this->Vehicle::GetMovingBack();
+		} else {
+			return this->Last();
+		}
+	}
+
+	/** @copydoc Vehicle::GetMovingNext() */
+	inline T *GetMovingNext() const
+	{
+		if constexpr (EXPECTED_TYPE == VEH_TRAIN) {
+			return (T *)this->Vehicle::GetMovingNext();
+		} else {
+			return this->Next();
+		}
+	}
+
+	/** @copydoc Vehicle::GetMovingPrev() */
+	inline T *GetMovingPrev() const
+	{
+		if constexpr (EXPECTED_TYPE == VEH_TRAIN) {
+			return (T *)this->Vehicle::GetMovingPrev();
+		} else {
+			return this->Previous();
+		}
+	}
+
+	/**
+	 * Get the moving direction of this vehicle chain.
+	 * @return The direction that the vehicle chain is currently moving.
+	 */
+	inline Direction GetMovingDirection() const
+	{
+		if constexpr (EXPECTED_TYPE == VEH_TRAIN) {
+			return this->Vehicle::GetMovingDirection();
+		} else {
+			return this->direction;
+		}
 	}
 
 	/**

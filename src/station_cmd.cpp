@@ -1458,9 +1458,10 @@ CommandCost FindJoiningWaypoint(StationID existing_waypoint, StationID waypoint_
  */
 void FreeTrainStationPlatformReservation(const Train *v)
 {
-	if (IsRailStationTile(v->tile)) SetRailStationPlatformReservation(v->tile, TrackdirToExitdir(v->GetVehicleTrackdir()), false);
-	v = v->Last();
-	if (IsRailStationTile(v->tile)) SetRailStationPlatformReservation(v->tile, TrackdirToExitdir(ReverseTrackdir(v->GetVehicleTrackdir())), false);
+	Train *moving_front = v->GetMovingFront();
+	Train *moving_back = v->GetMovingBack();
+	if (IsRailStationTile(moving_front->tile)) SetRailStationPlatformReservation(moving_front->tile, TrackdirToExitdir(moving_front->GetVehicleTrackdir()), false);
+	if (IsRailStationTile(moving_back->tile)) SetRailStationPlatformReservation(moving_back->tile, TrackdirToExitdir(ReverseTrackdir(moving_back->GetVehicleTrackdir())), false);
 }
 
 /**
@@ -1479,10 +1480,11 @@ static void FreeTrainReservation(Train *v)
  */
 static void RestoreTrainReservation(Train *v)
 {
-	if (IsRailStationTile(v->tile)) SetRailStationPlatformReservation(v->tile, TrackdirToExitdir(v->GetVehicleTrackdir()), true);
+	Train *moving_front = v->GetMovingFront();
+	Train *moving_back = v->GetMovingBack();
+	if (IsRailStationTile(moving_front->tile)) SetRailStationPlatformReservation(moving_front->tile, TrackdirToExitdir(moving_front->GetVehicleTrackdir()), true);
 	TryPathReserve(v, true, true);
-	v = v->Last();
-	if (IsRailStationTile(v->tile)) SetRailStationPlatformReservation(v->tile, TrackdirToExitdir(ReverseTrackdir(v->GetVehicleTrackdir())), true);
+	if (IsRailStationTile(moving_back->tile)) SetRailStationPlatformReservation(moving_back->tile, TrackdirToExitdir(ReverseTrackdir(moving_back->GetVehicleTrackdir())), true);
 }
 
 /**
@@ -4033,33 +4035,36 @@ static bool ClickTile_Station(TileIndex tile)
 static VehicleEnterTileStates VehicleEnterTile_Station(Vehicle *v, TileIndex tile, int x, int y)
 {
 	if (v->type == VEH_TRAIN) {
+		Train *t = Train::From(v);
+		Train *consist = t->First();
 		StationID station_id = GetStationIndex(tile);
-		if (v->current_order.IsType(OT_GOTO_WAYPOINT) && v->current_order.GetDestination() == station_id && v->current_order.GetWaypointFlags().Test(OrderWaypointFlag::Reverse)) {
-			Train *t = Train::From(v);
-			// reverse at waypoint
+		if (consist->current_order.IsType(OT_GOTO_WAYPOINT) && consist->current_order.GetDestination() == station_id && consist->current_order.GetWaypointFlags().Test(OrderWaypointFlag::Reverse)) {
+			/* Reverse at waypoint. */
 			if (t->reverse_distance == 0) {
-				t->reverse_distance = t->gcache.cached_total_length;
-				if (t->current_order.IsWaitTimetabled()) {
-					t->DeleteUnreachedImplicitOrders();
-					UpdateVehicleTimetable(t, true);
-					t->last_station_visited = station_id;
-					SetWindowDirty(WC_VEHICLE_VIEW, t->index);
-					t->current_order.MakeWaiting();
-					t->current_order.SetNonStopType(ONSF_NO_STOP_AT_ANY_STATION);
+				t->reverse_distance = consist->gcache.cached_total_length;
+				if (consist->current_order.IsWaitTimetabled()) {
+					consist->DeleteUnreachedImplicitOrders();
+					UpdateVehicleTimetable(consist, true);
+					consist->last_station_visited = station_id;
+					SetWindowDirty(WC_VEHICLE_VIEW, consist->index);
+					consist->current_order.MakeWaiting();
+					consist->current_order.SetNonStopType(ONSF_NO_STOP_AT_ANY_STATION);
 					return {};
 				}
 			}
 		}
-		if (Train::From(v)->flags.Test(VehicleRailFlag::BeyondPlatformEnd)) return {};
-		Train *front = Train::From(v)->First();
-		if (!front->IsFrontEngine()) return {};
-		if (!(v == front || Train::From(v)->Previous()->flags.Test(VehicleRailFlag::BeyondPlatformEnd))) return {};
+		if (t->flags.Test(VehicleRailFlag::BeyondPlatformEnd)) return {};
+		if (!consist->IsFrontEngine()) return {};
+		{
+			const Train *prev = t->GetMovingPrev();
+			if (!(prev == nullptr || prev->flags.Test(VehicleRailFlag::BeyondPlatformEnd))) return {};
+		}
 		if (!HasStationTileRail(tile)) return {};
-		if (!front->current_order.ShouldStopAtStation(front, station_id, IsRailWaypoint(tile))) return {};
+		if (!consist->current_order.ShouldStopAtStation(consist, station_id, IsRailWaypoint(tile))) return {};
 
 		int station_ahead;
 		int station_length;
-		int stop = GetTrainStopLocation(station_id, tile, Train::From(v), true, &station_ahead, &station_length);
+		int stop = GetTrainStopLocation(station_id, tile, t, true, &station_ahead, &station_length);
 
 		/* Stop whenever that amount of station ahead + the distance from the
 		 * begin of the platform to the stop location is longer than the length
@@ -4067,7 +4072,7 @@ static VehicleEnterTileStates VehicleEnterTile_Station(Vehicle *v, TileIndex til
 		 * vehicle is on, so we need to subtract that. */
 		if (stop + station_ahead - (int)TILE_SIZE >= station_length) return {};
 
-		DiagDirection dir = DirToDiagDir(v->direction);
+		DiagDirection dir = DirToDiagDir(v->GetMovingDirection());
 
 		x &= 0xF;
 		y &= 0xF;
@@ -4078,29 +4083,29 @@ static VehicleEnterTileStates VehicleEnterTile_Station(Vehicle *v, TileIndex til
 			stop &= TILE_SIZE - 1;
 
 			if (x == stop) {
-				if (front->UsingRealisticBraking() && front->cur_speed > 15 && !(front->lookahead != nullptr && front->lookahead->flags.Test(TrainReservationLookAheadFlag::ApplyAdvisory))) {
+				if (consist->UsingRealisticBraking() && consist->cur_speed > 15 && !(consist->lookahead != nullptr && consist->lookahead->flags.Test(TrainReservationLookAheadFlag::ApplyAdvisory))) {
 					/* Travelling too fast, do not stop and report overshoot to player */
-					if (front->owner == _local_company) {
+					if (consist->owner == _local_company) {
 						EncodedString msg = GetEncodedString(STR_NEWS_TRAIN_OVERSHOT_STATION,
-								front->index,
+								consist->index,
 								IsRailWaypointTile(tile) ? STR_WAYPOINT_NAME : STR_STATION_NAME,
 								station_id);
 						AddNewsItem(std::move(msg), NewsType::Advice, NewsStyle::Small, {NewsFlag::InColour, NewsFlag::VehicleParam0}, v->index, station_id);
 					}
-					for (Train *u = front; u != nullptr; u = u->Next()) {
+					for (Train *u = consist; u != nullptr; u = u->Next()) {
 						u->flags.Reset(VehicleRailFlag::BeyondPlatformEnd);
 					}
 					return {};
 				}
 				return VehicleEnterTileState::EnteredStation; // enter station
 			} else if (x < stop) {
-				if (front->UsingRealisticBraking() && front->cur_speed > 30) {
+				if (consist->UsingRealisticBraking() && consist->cur_speed > 30) {
 					/* Travelling too fast, take no action */
 					return {};
 				}
-				front->vehstatus.Set(VehState::TrainSlowing);
+				consist->vehstatus.Set(VehState::TrainSlowing);
 				uint16_t spd = std::max(0, (stop - x) * 20 - 15);
-				if (spd < front->cur_speed) front->cur_speed = spd;
+				if (spd < consist->cur_speed) consist->cur_speed = spd;
 			}
 		}
 	} else if (v->type == VEH_ROAD) {

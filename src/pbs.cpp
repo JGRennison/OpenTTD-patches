@@ -354,12 +354,12 @@ static int LookaheadTileHeightForChunnel(int length, int offset)
 	return 0;
 }
 
-static uint16_t ApplyTunnelBridgeLookaheadSignalSpeedRestriction(TileIndex tile, Trackdir trackdir, const Train *v,
+static uint16_t ApplyTunnelBridgeLookaheadSignalSpeedRestriction(TileIndex tile, Trackdir trackdir, const Train *consist,
 		uint16_t initial_speed_restriction, TrainReservationLookAhead *lookahead, int offset, int16_t z)
 {
 	uint16_t speed_restriction = initial_speed_restriction;
 
-	if (v != nullptr && IsTunnelBridgeRestrictedSignal(tile)) {
+	if (consist != nullptr && IsTunnelBridgeRestrictedSignal(tile)) {
 		if (trackdir == INVALID_TRACKDIR) {
 			trackdir = GetTunnelBridgeExitTrackdir(tile);
 		}
@@ -367,7 +367,7 @@ static uint16_t ApplyTunnelBridgeLookaheadSignalSpeedRestriction(TileIndex tile,
 		if (prog != nullptr && prog->actions_used_flags & TRPAUF_SPEED_RESTRICTION) {
 			TraceRestrictProgramResult out;
 			TraceRestrictProgramInput input(tile, trackdir, nullptr, nullptr);
-			prog->Execute(v, input, out);
+			prog->Execute(consist, input, out);
 			if (out.flags & TRPRF_SPEED_RESTRICTION_SET) {
 				int duration;
 				if (TrackdirEntersTunnelBridge(tile, trackdir)) {
@@ -387,11 +387,11 @@ static uint16_t ApplyTunnelBridgeLookaheadSignalSpeedRestriction(TileIndex tile,
 	return speed_restriction;
 }
 
-static uint16_t GetTrainSpeedLimitForRailtype(const Train *v, RailType rt, TileIndex tile, Track track)
+static uint16_t GetTrainSpeedLimitForRailtype(const Train *consist, RailType rt, TileIndex tile, Track track)
 {
 	uint16_t speed = GetRailTypeInfo(rt)->max_speed;
-	if (v->tcache.cached_tflags & TCF_SPD_RAILTYPE) {
-		for (const Train *u = v; u != nullptr; u = u->Next()) {
+	if (consist->tcache.cached_tflags & TCF_SPD_RAILTYPE) {
+		for (const Train *u = consist; u != nullptr; u = u->Next()) {
 			if (u->GetEngine()->callbacks_used & SGCU_CB36_SPEED_RAILTYPE) {
 				const TileIndex prev_tile = u->tile;
 				const TrackBits prev_track = u->track;
@@ -407,7 +407,7 @@ static uint16_t GetTrainSpeedLimitForRailtype(const Train *v, RailType rt, TileI
 	return speed;
 }
 
-static void AddSignalToLookAhead(const Train *v, TrainReservationLookAhead *lookahead, uint16_t signal_speed, uint16_t signal_flags, TileIndex signal_tile, uint16_t signal_track, int offset, int16_t z_pos)
+static void AddSignalToLookAhead(TrainReservationLookAhead *lookahead, uint16_t signal_speed, uint16_t signal_flags, TileIndex signal_tile, uint16_t signal_track, int offset, int16_t z_pos)
 {
 	lookahead->AddSignal(signal_speed, offset, z_pos, signal_flags);
 	if (_settings_game.vehicle.train_speed_adaptation) {
@@ -605,7 +605,7 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 					const uint16_t entrance_signal_flags = ((tunnel != nullptr) ? tunnel->GetSignalStyle(tile) : GetBridgeSignalStyle(tile)) << 8;
 
 					/* Entrance signal */
-					AddSignalToLookAhead(v, lookahead, signal_speed, entrance_signal_flags, tile, TrackdirToTrack(trackdir), 0, z);
+					AddSignalToLookAhead(lookahead, signal_speed, entrance_signal_flags, tile, TrackdirToTrack(trackdir), 0, z);
 
 					update_z(tile, trackdir, false);
 
@@ -620,7 +620,7 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 					for (int i = 0; i < signals; i++) {
 						offset += TILE_SIZE * spacing;
 						const int signal_z = chunnel ? LookaheadTileHeightForChunnel(length, i * spacing) : z;
-						AddSignalToLookAhead(v, lookahead, signal_speed, entrance_signal_flags, tile, 0x100 + i, offset, signal_z);
+						AddSignalToLookAhead(lookahead, signal_speed, entrance_signal_flags, tile, 0x100 + i, offset, signal_z);
 					}
 
 					/* Exit signal */
@@ -640,7 +640,7 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 						SetBit(exit_signal_flags, TRSLAI_COMBINED);
 						lookahead->flags.Set(TrainReservationLookAheadFlag::TunnelBridgeCombinedDefer);
 					}
-					AddSignalToLookAhead(v, lookahead, signal_speed, exit_signal_flags, end, FindFirstTrack(GetAcrossTunnelBridgeTrackBits(end)), end_offset, z);
+					AddSignalToLookAhead(lookahead, signal_speed, exit_signal_flags, end, FindFirstTrack(GetAcrossTunnelBridgeTrackBits(end)), end_offset, z);
 
 					lookahead->SetNextExtendPositionIfUnset();
 				} else {
@@ -695,7 +695,7 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 						SetBit(signal_flags, TRSLAI_COMBINED);
 						UpdateLookaheadCombinedNormalShuntSignalDeferred(tile, trackdir, lookahead->RealEndPosition());
 					}
-					AddSignalToLookAhead(v, lookahead, signal_speed, signal_flags, tile, TrackdirToTrack(trackdir), 0, z);
+					AddSignalToLookAhead(lookahead, signal_speed, signal_flags, tile, TrackdirToTrack(trackdir), 0, z);
 					lookahead->SetNextExtendPositionIfUnset();
 				}
 			}
@@ -931,8 +931,10 @@ PBSTileInfo FollowTrainReservation(const Train *v, Vehicle **train_on_res, Follo
 			}
 		}
 	} else {
-		tile = v->tile;
-		trackdir = v->GetVehicleTrackdir();
+		const Train *moving_front = v->GetMovingFront();
+
+		tile = moving_front->tile;
+		trackdir = moving_front->GetVehicleTrackdir();
 	}
 
 	if (IsRailDepotTile(tile) && !GetDepotReservationTrackBits(tile)) return PBSTileInfo(tile, trackdir, false);
@@ -986,32 +988,33 @@ void ApplyAvailableFreeTunnelBridgeTiles(TrainReservationLookAhead *lookahead, i
 	}
 }
 
-void FillLookAheadCurveDataFromTrainPosition(Train *t)
+static void FillLookAheadCurveDataFromTrainPosition(Train *moving_front, TrainReservationLookAhead &lookahead)
 {
-	TileIndex tile = TileVirtXY(t->x_pos, t->y_pos);
-	Direction dir = t->direction;
-	int32_t current_pos = t->lookahead->reservation_end_position + 4 - ((dir & 1) ? 16 : 8);
-	for (Train *u = t->Next(); u != nullptr; u = u->Next()) {
+	TileIndex tile = TileVirtXY(moving_front->x_pos, moving_front->y_pos);
+	Direction dir = moving_front->direction;
+	int32_t current_pos = lookahead.reservation_end_position + 4 - ((dir & 1) ? 16 : 8);
+	for (Train *u = moving_front->GetMovingNext(); u != nullptr; u = u->GetMovingNext()) {
 		TileIndex cur_tile = TileVirtXY(u->x_pos, u->y_pos);
 		if (cur_tile == tile) continue;
 		tile = cur_tile;
-		if (u->direction != dir) {
-			DirDiff dirdiff = DirDifference(u->direction, dir);
-			t->lookahead->curves.push_front({ current_pos, dirdiff });
-			dir = u->direction;
+		Direction u_dir = u->GetMovingDirection();
+		if (u_dir != dir) {
+			DirDiff dirdiff = DirDifference(u_dir, dir);
+			lookahead.curves.push_front({ current_pos, dirdiff });
+			dir = u_dir;
 		}
 		current_pos -= ((dir & 1) ? 16 : 8);
 	}
 }
 
-static int ScanTrainPositionForLookAheadStation(Train *t, TileIndex start_tile)
+static int ScanTrainPositionForLookAheadStation(Train *moving_front, TileIndex start_tile)
 {
 	StationID prev = StationID::Invalid();
 	int offset = 0;
 	int start_offset_tiles = 0;
 	TileIndex cur_tile = start_tile;
-	for (const Train *u = t; u != nullptr; u = u->Next()) {
-		if (u != t) {
+	for (const Train *u = moving_front; u != nullptr; u = u->GetMovingNext()) {
+		if (u != moving_front) {
 			TileIndex u_tile = TileVirtXY(u->x_pos, u->y_pos);
 			if (u_tile != cur_tile) {
 				offset += (IsDiagonalTrackdir(u->GetVehicleTrackdir()) ? 16 : 8);
@@ -1033,23 +1036,25 @@ static int ScanTrainPositionForLookAheadStation(Train *t, TileIndex start_tile)
 				uint forward_length = BaseStation::GetByTile(tile)->GetPlatformLength(tile, forward_dir);
 				uint reverse_length = BaseStation::GetByTile(tile)->GetPlatformLength(tile, ReverseDiagDir(forward_dir));
 
-				if (u == t) {
+				TrainReservationLookAhead &lookahead = *(moving_front->First()->lookahead);
+
+				if (u == moving_front) {
 					for (uint i = 1; i < forward_length; i++) {
 						/* Check for mid platform rail type change */
 						TileIndex new_tile = tile + (i * diff);
 						RailType new_rt = GetRailTypeByTrack(new_tile, TrackdirToTrack(trackdir));
 						if (new_rt != rt) {
-							uint16_t rail_speed = GetTrainSpeedLimitForRailtype(t, new_rt, new_tile, TrackdirToTrack(trackdir));
-							if (rail_speed > 0) t->lookahead->AddTrackSpeedLimit(rail_speed, (i - 1) * TILE_SIZE, 4, z);
+							uint16_t rail_speed = GetTrainSpeedLimitForRailtype(moving_front->First(), new_rt, new_tile, TrackdirToTrack(trackdir));
+							if (rail_speed > 0) lookahead.AddTrackSpeedLimit(rail_speed, (i - 1) * TILE_SIZE, 4, z);
 							rt = new_rt;
 						}
 					}
 					start_offset_tiles = forward_length - 1;
 				}
 
-				t->lookahead->AddStation(forward_length - 1, current, z);
-				t->lookahead->items.back().start -= offset + (reverse_length * TILE_SIZE);
-				t->lookahead->items.back().end -= offset;
+				lookahead.AddStation(forward_length - 1, current, z);
+				lookahead.items.back().start -= offset + (reverse_length * TILE_SIZE);
+				lookahead.items.back().end -= offset;
 
 				prev = current;
 			}
@@ -1061,70 +1066,73 @@ static int ScanTrainPositionForLookAheadStation(Train *t, TileIndex start_tile)
 	return start_offset_tiles;
 }
 
-void TryCreateLookAheadForTrainInTunnelBridge(Train *t)
+static void TryCreateLookAheadForTrainInTunnelBridge(Train *consist, Train *moving_front)
 {
-	if (IsTunnelBridgeSignalSimulationExitOnly(t->tile)) return;
-	DiagDirection tb_dir = GetTunnelBridgeDirection(t->tile);
-	if (DirToDiagDirAlongAxis(t->direction, DiagDirToAxis(tb_dir)) == tb_dir) {
-		/* going in the right direction, allocate a new lookahead */
-		t->lookahead.reset(new TrainReservationLookAhead());
-		t->lookahead->reservation_end_tile = t->tile;
-		t->lookahead->reservation_end_trackdir = GetTunnelBridgeEntranceTrackdir(t->tile);
-		t->lookahead->reservation_end_z = t->z_pos;
-		t->lookahead->current_position = 0;
-		t->lookahead->next_extend_position = 0;
-		t->lookahead->tunnel_bridge_reserved_tiles = DistanceManhattan(t->tile, TileVirtXY(t->x_pos, t->y_pos));
-		t->lookahead->reservation_end_position = GetTileMarginInFrontOfTrain(t);
-		t->lookahead->flags = {};
-		t->lookahead->speed_restriction = t->speed_restriction;
-		t->lookahead->cached_zpos = t->CalculateOverallZPos();
-		t->lookahead->zpos_refresh_remaining = t->GetZPosCacheUpdateInterval();
-		if (IsTunnel(t->tile) && Tunnel::GetByTile(t->tile)->is_chunnel) t->lookahead->flags.Set(TrainReservationLookAheadFlag::Chunnel);
+	if (IsTunnelBridgeSignalSimulationExitOnly(moving_front->tile)) return;
 
-		if (IsTunnelBridgeSignalSimulationEntrance(t->tile)) {
-			const uint16_t bridge_speed = IsBridge(t->tile) ? GetBridgeSpec(GetBridgeType(t->tile))->speed : 0;
-			const TileIndex end = GetOtherTunnelBridgeEnd(t->tile);
-			const int length = GetTunnelBridgeLength(t->tile, end);
-			const int spacing = GetTunnelBridgeSignalSimulationSpacing(t->tile);
+	const TileIndex tile = moving_front->tile;
+	const DiagDirection tb_dir = GetTunnelBridgeDirection(tile);
+	if (DirToDiagDirAlongAxis(moving_front->GetMovingDirection(), DiagDirToAxis(tb_dir)) == tb_dir) {
+		/* Going in the right direction, allocate a new lookahead. */
+		consist->lookahead.reset(new TrainReservationLookAhead());
+		TrainReservationLookAhead &lookahead = *(consist->lookahead);
+		lookahead.reservation_end_tile = tile;
+		lookahead.reservation_end_trackdir = GetTunnelBridgeEntranceTrackdir(tile);
+		lookahead.reservation_end_z = moving_front->z_pos;
+		lookahead.current_position = 0;
+		lookahead.next_extend_position = 0;
+		lookahead.tunnel_bridge_reserved_tiles = DistanceManhattan(tile, TileVirtXY(moving_front->x_pos, moving_front->y_pos));
+		lookahead.reservation_end_position = GetTileMarginInFrontOfTrain(moving_front);
+		lookahead.flags = {};
+		lookahead.speed_restriction = consist->speed_restriction;
+		lookahead.cached_zpos = consist->CalculateOverallZPos();
+		lookahead.zpos_refresh_remaining = consist->GetZPosCacheUpdateInterval();
+		if (IsTunnel(tile) && Tunnel::GetByTile(tile)->is_chunnel) lookahead.flags.Set(TrainReservationLookAheadFlag::Chunnel);
+
+		if (IsTunnelBridgeSignalSimulationEntrance(tile)) {
+			const uint16_t bridge_speed = IsBridge(tile) ? GetBridgeSpec(GetBridgeType(tile))->speed : 0;
+			const TileIndex end = GetOtherTunnelBridgeEnd(tile);
+			const int length = GetTunnelBridgeLength(tile, end);
+			const int spacing = GetTunnelBridgeSignalSimulationSpacing(tile);
 			const int signals = length / spacing;
 
-			const RailType rt = GetRailTypeByTrack(t->tile, TrackdirToTrack(t->lookahead->reservation_end_trackdir));
+			const RailType rt = GetRailTypeByTrack(tile, TrackdirToTrack(lookahead.reservation_end_trackdir));
 			uint16_t signal_speed = GetRailTypeInfo(rt)->max_speed;
-			if (signal_speed == 0 || (t->speed_restriction != 0 && t->speed_restriction < signal_speed)) signal_speed = t->speed_restriction;
+			if (signal_speed == 0 || (consist->speed_restriction != 0 && consist->speed_restriction < signal_speed)) signal_speed = consist->speed_restriction;
 			if (signal_speed == 0 || (bridge_speed != 0 && bridge_speed < signal_speed)) signal_speed = bridge_speed;
 
-			int z = IsBridge(t->tile) ? GetBridgeHeight(t->tile) : GetTilePixelZ(t->tile);
+			int z = IsBridge(tile) ? GetBridgeHeight(tile) : GetTilePixelZ(tile);
 
-			const uint16_t signal_flags = GetTunnelBridgeSignalStyle(t->tile) << 8;
+			const uint16_t signal_flags = GetTunnelBridgeSignalStyle(tile) << 8;
 
 			/* Middle signals */
 			int offset = -(int)TILE_SIZE;
 			for (int i = 0; i < signals; i++) {
 				offset += TILE_SIZE * spacing;
-				const int signal_z = t->lookahead->flags.Test(TrainReservationLookAheadFlag::Chunnel) ? LookaheadTileHeightForChunnel(length, i * spacing) : z;
-				AddSignalToLookAhead(t, t->lookahead.get(), signal_speed, signal_flags, t->tile, 0x100 + i, offset, signal_z);
+				const int signal_z = lookahead.flags.Test(TrainReservationLookAheadFlag::Chunnel) ? LookaheadTileHeightForChunnel(length, i * spacing) : z;
+				AddSignalToLookAhead(&lookahead, signal_speed, signal_flags, tile, 0x100 + i, offset, signal_z);
 			}
 
 			/* Exit signal */
 			const int end_offset = TILE_SIZE * length;
 
-			uint16_t exit_speed_restriction = ApplyTunnelBridgeLookaheadSignalSpeedRestriction(end, INVALID_TRACKDIR, t, t->speed_restriction, t->lookahead.get(), end_offset, z);
-			if (exit_speed_restriction != t->speed_restriction) {
+			uint16_t exit_speed_restriction = ApplyTunnelBridgeLookaheadSignalSpeedRestriction(end, INVALID_TRACKDIR, consist, consist->speed_restriction, &lookahead, end_offset, z);
+			if (exit_speed_restriction != consist->speed_restriction) {
 				signal_speed = GetRailTypeInfo(rt)->max_speed;
 				if (signal_speed == 0 || (exit_speed_restriction != 0 && exit_speed_restriction < signal_speed)) signal_speed = exit_speed_restriction;
 				if (signal_speed == 0 || (bridge_speed != 0 && bridge_speed < signal_speed)) signal_speed = bridge_speed;
 			}
 
-			AddSignalToLookAhead(t, t->lookahead.get(), signal_speed, signal_flags, end, FindFirstTrack(GetAcrossTunnelBridgeTrackBits(end)), end_offset, z);
+			AddSignalToLookAhead(&lookahead, signal_speed, signal_flags, end, FindFirstTrack(GetAcrossTunnelBridgeTrackBits(end)), end_offset, z);
 
-			t->lookahead->SetNextExtendPositionIfUnset();
+			lookahead.SetNextExtendPositionIfUnset();
 		}
 
-		FillLookAheadCurveDataFromTrainPosition(t);
-		TileIndex end = GetOtherTunnelBridgeEnd(t->tile);
-		int raw_free_tiles = GetAvailableFreeTilesInSignalledTunnelBridgeWithStartOffset(t->tile, end, t->lookahead->tunnel_bridge_reserved_tiles + 1);
-		ApplyAvailableFreeTunnelBridgeTiles(t->lookahead.get(), raw_free_tiles, t->tile, end);
-		ScanTrainPositionForLookAheadStation(t, TileVirtXY(t->x_pos, t->y_pos));
+		FillLookAheadCurveDataFromTrainPosition(moving_front, lookahead);
+		TileIndex end = GetOtherTunnelBridgeEnd(tile);
+		int raw_free_tiles = GetAvailableFreeTilesInSignalledTunnelBridgeWithStartOffset(tile, end, lookahead.tunnel_bridge_reserved_tiles + 1);
+		ApplyAvailableFreeTunnelBridgeTiles(&lookahead, raw_free_tiles, tile, end);
+		ScanTrainPositionForLookAheadStation(moving_front, TileVirtXY(moving_front->x_pos, moving_front->y_pos));
 	}
 }
 
@@ -1199,58 +1207,63 @@ void SetTrainReservationLookaheadEnd(Train *v)
 
 void FillTrainReservationLookAhead(Train *v)
 {
-	TileIndex tile;
-	Trackdir  trackdir;
-
-	if (v->lookahead == nullptr && (v->track & TRACK_BIT_WORMHOLE)) {
-		TryCreateLookAheadForTrainInTunnelBridge(v);
-		if (v->lookahead == nullptr) return;
+	Train *moving_front = nullptr;
+	if (v->lookahead == nullptr) {
+		moving_front = v->GetMovingFront();
+		if (moving_front->track & TRACK_BIT_WORMHOLE) {
+			TryCreateLookAheadForTrainInTunnelBridge(v, moving_front);
+			if (v->lookahead == nullptr) return;
+		}
 	}
 
 	int32_t old_reservation_end_position = 0;
 
-	if (v->lookahead == nullptr) {
+	TileIndex tile;
+	Trackdir  trackdir;
+	TrainReservationLookAhead *lookahead = v->lookahead.get();
+	if (lookahead == nullptr) {
 		v->lookahead.reset(new TrainReservationLookAhead());
-		v->lookahead->current_position = 0;
-		v->lookahead->next_extend_position = 0;
+		lookahead = v->lookahead.get();
+		lookahead->current_position = 0;
+		lookahead->next_extend_position = 0;
 
 		/* Special case, if called from TrainController,
 		 * v->tile, v->track and v->direction can be updated to the new tile,
 		 * but v->x_pos and v->y_pos can still use the coordinates on the old tile,
 		 * GetTileMarginInFrontOfTrain could erroneously return -5 if the old and
 		 * new directions don't match. */
-		v->lookahead->reservation_end_position = std::max(GetTileMarginInFrontOfTrain(v), -4);
+		lookahead->reservation_end_position = std::max(GetTileMarginInFrontOfTrain(moving_front), -4);
 
-		v->lookahead->tunnel_bridge_reserved_tiles = 0;
-		v->lookahead->flags = {};
-		v->lookahead->speed_restriction = v->speed_restriction;
-		v->lookahead->cached_zpos = v->CalculateOverallZPos();
-		v->lookahead->zpos_refresh_remaining = v->GetZPosCacheUpdateInterval();
-		FillLookAheadCurveDataFromTrainPosition(v);
-		tile = v->tile;
-		trackdir = v->GetVehicleTrackdir();
-		TileIndex virt_tile = TileVirtXY(v->x_pos, v->y_pos);
+		lookahead->tunnel_bridge_reserved_tiles = 0;
+		lookahead->flags = {};
+		lookahead->speed_restriction = v->speed_restriction;
+		lookahead->cached_zpos = v->CalculateOverallZPos();
+		lookahead->zpos_refresh_remaining = v->GetZPosCacheUpdateInterval();
+		FillLookAheadCurveDataFromTrainPosition(moving_front, *lookahead);
+		tile = moving_front->tile;
+		trackdir = moving_front->GetVehicleTrackdir();
+		TileIndex virt_tile = TileVirtXY(moving_front->x_pos, moving_front->y_pos);
 		if (tile != virt_tile) {
-			v->lookahead->reservation_end_position += (IsDiagonalDirection(v->direction) ? 16 : 8);
+			lookahead->reservation_end_position += (IsDiagonalDirection(moving_front->direction) ? 16 : 8);
 		}
-		int station_offset_tiles = ScanTrainPositionForLookAheadStation(v, tile);
+		int station_offset_tiles = ScanTrainPositionForLookAheadStation(moving_front, tile);
 		if (station_offset_tiles > 0) {
 			TileIndexDiff diff = TileOffsByDiagDir(TrackdirToExitdir(trackdir));
 			tile += station_offset_tiles * diff;
-			v->lookahead->reservation_end_position += station_offset_tiles * TILE_SIZE;
+			lookahead->reservation_end_position += station_offset_tiles * TILE_SIZE;
 		}
 	} else {
-		old_reservation_end_position = v->lookahead->reservation_end_position;
-		tile = v->lookahead->reservation_end_tile;
-		trackdir = v->lookahead->reservation_end_trackdir;
+		old_reservation_end_position = lookahead->reservation_end_position;
+		tile = lookahead->reservation_end_tile;
+		trackdir = lookahead->reservation_end_trackdir;
 		if (IsTunnelBridgeSignalSimulationEntranceTile(tile) && TrackdirEntersTunnelBridge(tile, trackdir)) {
 			TileIndex end = GetOtherTunnelBridgeEnd(tile);
 			int raw_free_tiles;
-			if (v->lookahead->flags.Test(TrainReservationLookAheadFlag::TunnelBridgeExitFree)) {
+			if (lookahead->flags.Test(TrainReservationLookAheadFlag::TunnelBridgeExitFree)) {
 				raw_free_tiles = INT_MAX;
 			} else {
-				raw_free_tiles = GetAvailableFreeTilesInSignalledTunnelBridgeWithStartOffset(tile, end, v->lookahead->tunnel_bridge_reserved_tiles + 1);
-				ApplyAvailableFreeTunnelBridgeTiles(v->lookahead.get(), raw_free_tiles, tile, end);
+				raw_free_tiles = GetAvailableFreeTilesInSignalledTunnelBridgeWithStartOffset(tile, end, lookahead->tunnel_bridge_reserved_tiles + 1);
+				ApplyAvailableFreeTunnelBridgeTiles(lookahead, raw_free_tiles, tile, end);
 			}
 			if (!(HasAcrossTunnelBridgeReservation(end) && GetTunnelBridgeExitSignalState(end) == SIGNAL_STATE_GREEN && raw_free_tiles == INT_MAX)) {
 				/* do not attempt to follow through a signalled tunnel/bridge if it is not empty or the far end is not reserved */
@@ -1258,15 +1271,15 @@ void FillTrainReservationLookAhead(Train *v)
 				SetTrainReservationLookaheadEnd(v);
 				return;
 			}
-			if (v->lookahead->flags.Test(TrainReservationLookAheadFlag::TunnelBridgeCombinedDefer) && IsTunnelBridgeSignalSimulationExitTile(end)) {
-				for (auto iter = v->lookahead->items.rbegin(); iter != v->lookahead->items.rend(); ++iter) {
+			if (lookahead->flags.Test(TrainReservationLookAheadFlag::TunnelBridgeCombinedDefer) && IsTunnelBridgeSignalSimulationExitTile(end)) {
+				for (auto iter = lookahead->items.rbegin(); iter != lookahead->items.rend(); ++iter) {
 					const TrainReservationLookAheadItem &item = *iter;
 					if (item.type == TRLIT_SIGNAL && HasBit(item.data_aux, TRSLAI_COMBINED)) {
-						UpdateLookaheadCombinedNormalShuntSignalDeferred(end, GetTunnelBridgeExitTrackdir(end), v->lookahead->reservation_end_position);
+						UpdateLookaheadCombinedNormalShuntSignalDeferred(end, GetTunnelBridgeExitTrackdir(end), lookahead->reservation_end_position);
 						break;
 					}
 				}
-				v->lookahead->flags.Reset(TrainReservationLookAheadFlag::TunnelBridgeCombinedDefer);
+				lookahead->flags.Reset(TrainReservationLookAheadFlag::TunnelBridgeCombinedDefer);
 			}
 		}
 	}
@@ -1278,12 +1291,12 @@ void FillTrainReservationLookAhead(Train *v)
 	}
 
 	FollowReservationFlags flags = FRF_NONE;
-	if (v->lookahead->flags.Test(TrainReservationLookAheadFlag::TunnelBridgeExitFree)) flags |= FRF_TB_EXIT_FREE;
-	PBSTileInfo res = FollowReservation(v->owner, v->GetIndirectCompatibleRailTypes(), tile, trackdir, flags, v, v->lookahead.get());
+	if (lookahead->flags.Test(TrainReservationLookAheadFlag::TunnelBridgeExitFree)) flags |= FRF_TB_EXIT_FREE;
+	PBSTileInfo res = FollowReservation(v->owner, v->GetIndirectCompatibleRailTypes(), tile, trackdir, flags, v, lookahead);
 
 	if (IsTunnelBridgeWithSignalSimulation(res.tile) && TrackdirEntersTunnelBridge(res.tile, res.trackdir)) {
-		v->lookahead->flags.Set(TrainReservationLookAheadFlag::Chunnel, IsTunnel(res.tile) && Tunnel::GetByTile(res.tile)->is_chunnel);
-		if (v->lookahead->current_position < v->lookahead->reservation_end_position - ((int)TILE_SIZE * (1 + v->lookahead->tunnel_bridge_reserved_tiles))) {
+		lookahead->flags.Set(TrainReservationLookAheadFlag::Chunnel, IsTunnel(res.tile) && Tunnel::GetByTile(res.tile)->is_chunnel);
+		if (lookahead->current_position < lookahead->reservation_end_position - ((int)TILE_SIZE * (1 + lookahead->tunnel_bridge_reserved_tiles))) {
 			/* Vehicle is not itself in this tunnel/bridge, scan how much is available */
 			TileIndex end = INVALID_TILE;
 			int free_tiles;
@@ -1293,26 +1306,26 @@ void FillTrainReservationLookAhead(Train *v)
 			} else {
 				free_tiles = -1;
 			}
-			ApplyAvailableFreeTunnelBridgeTiles(v->lookahead.get(), free_tiles, res.tile, end);
+			ApplyAvailableFreeTunnelBridgeTiles(lookahead, free_tiles, res.tile, end);
 		}
 	} else {
-		v->lookahead->flags.Reset(TrainReservationLookAheadFlag::TunnelBridgeExitFree);
-		v->lookahead->flags.Reset(TrainReservationLookAheadFlag::Chunnel);
-		if (v->lookahead->tunnel_bridge_reserved_tiles != 0) {
-			v->lookahead->reservation_end_position -= (v->lookahead->tunnel_bridge_reserved_tiles * (int)TILE_SIZE);
-			v->lookahead->tunnel_bridge_reserved_tiles = 0;
+		lookahead->flags.Reset(TrainReservationLookAheadFlag::TunnelBridgeExitFree);
+		lookahead->flags.Reset(TrainReservationLookAheadFlag::Chunnel);
+		if (lookahead->tunnel_bridge_reserved_tiles != 0) {
+			lookahead->reservation_end_position -= (lookahead->tunnel_bridge_reserved_tiles * (int)TILE_SIZE);
+			lookahead->tunnel_bridge_reserved_tiles = 0;
 		}
 	}
 
-	v->lookahead->reservation_end_tile = res.tile;
-	v->lookahead->reservation_end_trackdir = res.trackdir;
+	lookahead->reservation_end_tile = res.tile;
+	lookahead->reservation_end_trackdir = res.trackdir;
 
 	FlushDeferredDetermineCombineNormalShuntMode(v);
 	SetTrainReservationLookaheadEnd(v);
 
-	if (_settings_game.vehicle.train_speed_adaptation && v->signal_speed_restriction > 0 && v->lookahead->reservation_end_position > old_reservation_end_position) {
-		for (const TrainReservationLookAheadItem &item : v->lookahead->items) {
-			if (item.type == TRLIT_SPEED_ADAPTATION && item.end + 1 >= old_reservation_end_position && item.end + 1 < v->lookahead->reservation_end_position) {
+	if (_settings_game.vehicle.train_speed_adaptation && v->signal_speed_restriction > 0 && lookahead->reservation_end_position > old_reservation_end_position) {
+		for (const TrainReservationLookAheadItem &item : lookahead->items) {
+			if (item.type == TRLIT_SPEED_ADAPTATION && item.end + 1 >= old_reservation_end_position && item.end + 1 < lookahead->reservation_end_position) {
 				uint16_t signal_speed = GetLowestSpeedTrainAdaptationSpeedAtSignal(TileIndex{item.data_id}, item.data_aux);
 
 				if (signal_speed == 0) {
@@ -1428,14 +1441,15 @@ TileIndex VehiclePosTraceRestrictPreviousSignalCallback(const Train *v, const vo
 		tile = v->lookahead->reservation_end_tile;
 		trackdir = v->lookahead->reservation_end_trackdir;
 	} else {
-		if (IsRailDepotTile(v->tile)) {
-			return v->tile;
+		const Train *moving_front = v->GetMovingFront();
+		if (IsRailDepotTile(moving_front->tile)) {
+			return moving_front->tile;
 		}
-		if (v->track & TRACK_BIT_WORMHOLE && IsTileType(v->tile, TileType::TunnelBridge) && IsTunnelBridgeSignalSimulationExit(v->tile) && IsTunnelBridgeEffectivelyPBS(v->tile)) {
-			return v->tile;
+		if (moving_front->track & TRACK_BIT_WORMHOLE && IsTileType(moving_front->tile, TileType::TunnelBridge) && IsTunnelBridgeSignalSimulationExit(moving_front->tile) && IsTunnelBridgeEffectivelyPBS(moving_front->tile)) {
+			return moving_front->tile;
 		}
-		tile = v->tile;
-		trackdir = v->GetVehicleTrackdir();
+		tile = moving_front->tile;
+		trackdir = moving_front->GetVehicleTrackdir();
 	}
 
 	// scan forwards from vehicle position, for the case that train is waiting at/approaching PBS signal
@@ -1479,7 +1493,8 @@ TileIndex VehiclePosTraceRestrictPreviousSignalCallback(const Train *v, const vo
 bool TrainReservationPassesThroughTile(const Train *v, TileIndex search_tile)
 {
 	bool found = false;
-	FollowReservationEnumerate(v->owner, v->GetIndirectCompatibleRailTypes(), v->tile, v->GetVehicleTrackdir(), FRF_NONE, [&](TileIndex tile, Trackdir trackdir) -> bool {
+	const Train *moving_front = v->GetMovingFront();
+	FollowReservationEnumerate(v->owner, v->GetIndirectCompatibleRailTypes(), moving_front->tile, moving_front->GetVehicleTrackdir(), FRF_NONE, [&](TileIndex tile, Trackdir trackdir) -> bool {
 		if (tile == search_tile) {
 			found = true;
 			return true;

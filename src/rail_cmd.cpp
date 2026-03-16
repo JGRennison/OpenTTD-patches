@@ -674,7 +674,8 @@ static inline bool ValParamTrackOrientation(Track track)
 static void ReReserveTrainPath(Train *v)
 {
 	const bool consider_stopped = (v->vehstatus.Test(VehState::Stopped) && v->cur_speed == 0) || v->current_order.IsAnyLoadingType();
-	const bool at_safe_waiting_position = IsSafeWaitingPosition(v, v->tile, v->GetVehicleTrackdir(), true, _settings_game.pf.forbid_90_deg);
+	const Train *moving_front = v->GetMovingFront();
+	const bool at_safe_waiting_position = IsSafeWaitingPosition(v, moving_front->tile, moving_front->GetVehicleTrackdir(), true, _settings_game.pf.forbid_90_deg);
 
 	/* Don't extend the train's path if it's stopped or loading, and at a safe position. */
 	if (consider_stopped && at_safe_waiting_position) return;
@@ -4706,77 +4707,90 @@ static VehicleEnterTileStates VehicleEnterTile_Rail(Vehicle *u, TileIndex tile, 
 
 	Train *v = Train::From(u);
 
-	auto abort_load_through = [&](bool leave_station) {
-		if (_local_company == v->owner) {
-			EncodedString msg = GetEncodedString(STR_VEHICLE_LOAD_THROUGH_ABORTED_DEPOT, v->index, v->current_order.GetDestination().ToStationID());
+	auto abort_load_through = [](Train *consist, bool leave_station) {
+		if (_local_company == consist->owner) {
+			EncodedString msg = GetEncodedString(STR_VEHICLE_LOAD_THROUGH_ABORTED_DEPOT, consist->index, consist->current_order.GetDestination().ToStationID());
 			AddNewsItem(std::move(msg), NewsType::Advice, NewsStyle::Small, {NewsFlag::InColour, NewsFlag::VehicleParam0},
-					v->index, v->current_order.GetDestination().ToStationID());
+					consist->index, consist->current_order.GetDestination().ToStationID());
 		}
 		if (leave_station) {
-			v->LeaveStation();
+			consist->LeaveStation();
 			/* Only advance to next order if we are loading at the current one */
-			const Order *order = v->GetOrder(v->cur_implicit_order_index);
-			if (order != nullptr && order->IsType(OT_GOTO_STATION) && order->GetDestination() == v->last_station_visited) {
-				v->IncrementImplicitOrderIndex();
+			const Order *order = consist->GetOrder(consist->cur_implicit_order_index);
+			if (order != nullptr && order->IsType(OT_GOTO_STATION) && order->GetDestination() == consist->last_station_visited) {
+				consist->IncrementImplicitOrderIndex();
 			}
 		} else {
-			for (Train *u = v; u != nullptr; u = u->Next()) {
+			for (Train *u = consist; u != nullptr; u = u->Next()) {
 				u->flags.Reset(VehicleRailFlag::BeyondPlatformEnd);
 			}
 		}
 	};
 
-	if (v->IsFrontEngine() && v->current_order.IsType(OT_LOADING_ADVANCE)) abort_load_through(true);
+	if (v->GetMovingPrev() == nullptr && v->current_order.IsType(OT_LOADING_ADVANCE)) abort_load_through(v->First(), true);
 
 	/* Depot direction. */
-	DiagDirection dir = GetRailDepotDirection(tile);
+	const DiagDirection dir = GetRailDepotDirection(tile);
 
-	/* Calculate the point where the following wagon should be activated. */
-	int length = v->CalcNextVehicleOffset();
+	const uint8_t fract_coord = (x & 0xF) + ((y & 0xF) << 4);
 
-	uint8_t fract_coord_leave =
-		((_fractcoords_enter[dir] & 0x0F) + // x
-			(length + 1) * _deltacoord_leaveoffset[dir]) +
-		(((_fractcoords_enter[dir] >> 4) +  // y
-			((length + 1) * _deltacoord_leaveoffset[dir + 4])) << 4);
+	/* Make sure a train is not entering the tile from behind. */
+	if (_fractcoords_behind[dir] == fract_coord) return VehicleEnterTileState::CannotEnter;
 
-	uint8_t fract_coord = (x & 0xF) + ((y & 0xF) << 4);
+	/* Leaving depot? */
+	if (v->GetMovingDirection() == DiagDirToDir(dir)) {
+		/* Calculate the point where the following wagon should be activated. */
+		int length = v->CalcNextVehicleOffset();
 
-	if (_fractcoords_behind[dir] == fract_coord) {
-		/* make sure a train is not entering the tile from behind */
-		return VehicleEnterTileState::CannotEnter;
-	} else if (_fractcoords_enter[dir] == fract_coord) {
-		if (DiagDirToDir(ReverseDiagDir(dir)) == v->direction) {
-			/* enter the depot */
+		uint8_t fract_coord_leave =
+			((_fractcoords_enter[dir] & 0x0F) + // x
+				(length + 1) * _deltacoord_leaveoffset[dir]) +
+			(((_fractcoords_enter[dir] >> 4) +  // y
+				((length + 1) * _deltacoord_leaveoffset[dir + 4])) << 4);
 
-			if (v->IsFrontEngine()) {
-				if (v->current_order.IsType(OT_LOADING_ADVANCE)) {
-					abort_load_through(true);
-				} else if (v->flags.Test(VehicleRailFlag::BeyondPlatformEnd)) {
-					abort_load_through(false);
-				}
-				v->flags.Set(VehicleRailFlag::ConsistSpeedReduction);
-			}
-
-			v->track = TRACK_BIT_DEPOT,
-			v->vehstatus.Set(VehState::Hidden); // hide it
-			v->UpdateIsDrawn();
-			v->direction = ReverseDir(v->direction);
-			if (v->Next() == nullptr) VehicleEnterDepot(v->First());
-			v->tile = tile;
-
-			InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile.base());
-			return VehicleEnterTileState::EnteredWormhole;
-		}
-	} else if (fract_coord_leave == fract_coord) {
-		if (DiagDirToDir(dir) == v->direction) {
-			/* leave the depot? */
-			if ((v = v->Next()) != nullptr) {
+		if (fract_coord_leave == fract_coord) {
+			/* Leave the depot. */
+			if ((v = v->GetMovingNext()) != nullptr) {
 				v->vehstatus.Reset(VehState::Hidden);
 				v->track = (DiagDirToAxis(dir) == AXIS_X ? TRACK_BIT_X : TRACK_BIT_Y);
 				v->UpdateIsDrawn();
 			}
 		}
+	} else if (_fractcoords_enter[dir] == fract_coord) {
+		/* Entering depot. */
+		if (v->GetMovingPrev() == nullptr) {
+			Train *consist = v->First();
+			if (consist->current_order.IsType(OT_LOADING_ADVANCE)) {
+				abort_load_through(consist, true);
+			} else if (consist->flags.Test(VehicleRailFlag::BeyondPlatformEnd)) {
+				abort_load_through(consist, false);
+			}
+			consist->flags.Set(VehicleRailFlag::ConsistSpeedReduction);
+		}
+
+		v->track = TRACK_BIT_DEPOT,
+		v->vehstatus.Set(VehState::Hidden); // hide it
+		v->UpdateIsDrawn();
+		if (v->GetMovingNext() == nullptr) {
+			Train *consist = v->First();
+			if (consist->vehicle_flags.Test(VehicleFlag::DrivingBackwards)) {
+				/* Trains always drive forwards out of a depot.
+				 * This allows a player to easily reset a confused train,
+				 * and matches the behaviour of the \c VehicleRailFlag::Reversed variable. */
+				for (Train *u = consist; u != nullptr; u = u->Next()) {
+					u->vehicle_flags.Reset(VehicleFlag::DrivingBackwards);
+				}
+			} else {
+				for (Train *u = consist; u != nullptr; u = u->Next()) {
+					u->direction = ReverseDir(u->direction);
+				}
+			}
+			VehicleEnterDepot(consist);
+		}
+		v->tile = tile;
+
+		InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile.base());
+		return VehicleEnterTileState::EnteredWormhole;
 	}
 
 	return {};

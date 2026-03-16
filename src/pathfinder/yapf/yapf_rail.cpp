@@ -791,24 +791,25 @@ Track YapfTrainChooseTrack(const Train *v, TileIndex tile, DiagDirection enterdi
 
 bool YapfTrainCheckReverse(const Train *v)
 {
-	const Train *last_veh = v->Last();
+	const Train *moving_front = v->GetMovingFront();
+	const Train *moving_back = v->GetMovingBack();
 
 	/* get trackdirs of both ends */
-	Trackdir td = v->GetVehicleTrackdir();
-	Trackdir td_rev = ReverseTrackdir(last_veh->GetVehicleTrackdir());
+	Trackdir td = moving_front->GetVehicleTrackdir();
+	Trackdir td_rev = ReverseTrackdir(moving_back->GetVehicleTrackdir());
 
 	/* tiles where front and back are */
-	TileIndex tile = v->tile;
-	TileIndex tile_rev = last_veh->tile;
+	TileIndex tile = moving_front->tile;
+	TileIndex tile_rev = moving_back->tile;
 
 	int reverse_penalty = 0;
 
-	if (v->track & TRACK_BIT_WORMHOLE) {
+	if (moving_front->track & TRACK_BIT_WORMHOLE) {
 		/* front in tunnel / on bridge */
 		DiagDirection dir_into_wormhole = GetTunnelBridgeDirection(tile);
 
 		/* Current position of the train in the wormhole */
-		TileIndex cur_tile = TileVirtXY(v->x_pos, v->y_pos);
+		TileIndex cur_tile = TileVirtXY(moving_front->x_pos, moving_front->y_pos);
 
 		/* Add distance to drive in the wormhole as penalty for the forward path, i.e. bonus for the reverse path
 		 * Note: Negative penalties are ok for the start tile. */
@@ -819,12 +820,12 @@ bool YapfTrainCheckReverse(const Train *v)
 		}
 	}
 
-	if (last_veh->track & TRACK_BIT_WORMHOLE) {
+	if (moving_back->track & TRACK_BIT_WORMHOLE) {
 		/* back in tunnel / on bridge */
 		DiagDirection dir_into_wormhole = GetTunnelBridgeDirection(tile_rev);
 
 		/* Current position of the last wagon in the wormhole */
-		TileIndex cur_tile = TileVirtXY(last_veh->x_pos, last_veh->y_pos);
+		TileIndex cur_tile = TileVirtXY(moving_back->x_pos, moving_back->y_pos);
 
 		/* Add distance to drive in the wormhole as penalty for the revere path. */
 		if (TrackdirToExitdir(td_rev) == dir_into_wormhole) {
@@ -862,11 +863,11 @@ bool YapfTrainCheckDepotReverse(const Train *v, TileIndex forward_depot, TileInd
 
 FindDepotData YapfTrainFindNearestDepot(const Train *v, int max_penalty)
 {
-	const Train *last_veh = v->Last();
+	const Train *moving_back = v->GetMovingBack();
 
 	PBSTileInfo origin = FollowTrainReservation(v, nullptr, FollowTrainReservationFlag::OkayUnused);
-	TileIndex last_tile = last_veh->tile;
-	Trackdir td_rev = ReverseTrackdir(last_veh->GetVehicleTrackdir());
+	TileIndex last_tile = moving_back->tile;
+	Trackdir td_rev = ReverseTrackdir(moving_back->GetVehicleTrackdir());
 
 	return _settings_game.pf.forbid_90_deg
 		? CYapfAnyDepotRailNo90::stFindNearestDepotTwoWay(v, origin.tile, origin.trackdir, last_tile, td_rev, max_penalty, YAPF_INFINITE_PENALTY)

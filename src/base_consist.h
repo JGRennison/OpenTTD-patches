@@ -42,6 +42,7 @@ enum class VehicleFlag : uint8_t {
 	PathfinderLost              = 7, ///< Vehicle's pathfinder is lost.
 	ServiceIntervalIsCustom     = 8, ///< Service interval is custom.
 	ServiceIntervalIsPercent    = 9, ///< Service interval is percent.
+	DrivingBackwards            = 10, ///< Vehicle is driving backwards.
 	/* gap, above are common with upstream */
 	SeparationActive            = 11, ///< Whether timetable auto-separation is currently active.
 	ScheduledDispatch           = 12, ///< Whether the vehicle should follow a timetabled dispatching schedule.
