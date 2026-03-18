@@ -119,6 +119,7 @@ enum TrainCacheFlags : uint8_t {
 	TCF_RL_BRAKING        = 0x02,  ///< Train realistic braking (movement physics) in effect for this vehicle
 	TCF_SPD_RAILTYPE      = 0x04,  ///< Train speed varies depending on railtype
 	TCF_MOVING_UNIT_START = 0x08,  ///< Start of an articulated unit in the movement direction
+	TCF_NO_DRIVING_CAB    = 0x10,  ///< No driving cab in forward direction, restricted speed
 
 	TCF_ACCEL_TYPE_MASK   = 0xC0,  ///< Acceleration type: 0 - 2 for corresponding value, 3 for mixed
 };

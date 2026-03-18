@@ -239,10 +239,12 @@ class NIHVehicle : public NIHelper {
 		}
 		if (v->type == VEH_TRAIN) {
 			const Train *t = Train::From(v);
-			output.Print("  T cache: tilt: {}, speed varies by railtype: {}, curve speed mod: {}, engines: {}, moving unit start: {}",
+			output.Print("  T cache: tilt: {}, speed varies by railtype: {}, curve speed mod: {}, engines: {}",
 					(t->tcache.cached_tflags & TCF_TILT) ? 1 : 0, (t->tcache.cached_tflags & TCF_SPD_RAILTYPE) ? 1 : 0,
-					t->tcache.cached_curve_speed_mod, t->tcache.cached_num_engines,
-					(t->tcache.cached_tflags & TCF_MOVING_UNIT_START) ? 1 : 0);
+					t->tcache.cached_curve_speed_mod, t->tcache.cached_num_engines);
+			output.Print("  T cache: moving unit start: {}, no driving cab: {}",
+					(t->tcache.cached_tflags & TCF_MOVING_UNIT_START) ? 1 : 0,
+					(t->tcache.cached_tflags & TCF_NO_DRIVING_CAB) ? 1 : 0);
 			output.Print("  T cache: RL braking: {}, decel: {}, uncapped decel: {}, centre mass: {}, braking length: {}",
 					(t->UsingRealisticBraking()) ? 1 : 0, t->tcache.cached_deceleration, t->tcache.cached_uncapped_decel, t->tcache.cached_centre_mass, t->tcache.cached_braking_length);
 			output.Print("  T cache: veh weight: {}, user data: {}, curve speed: {}, cached accel type: {}",

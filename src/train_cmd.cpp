@@ -429,6 +429,10 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 	this->tcache.cached_curve_speed_mod = min_curve_speed_mod;
 	this->tcache.cached_max_curve_speed = this->GetCurveSpeedLimit();
 
+	if (driving_backwards && !this->Last()->CanLeadTrain()) {
+		this->tcache.cached_tflags |= TCF_NO_DRIVING_CAB;
+	}
+
 	extern std::array<RailTypes, 3> _railtypes_acceleration_type_masks;
 	uint8_t accel_type = 3;
 	for (uint8_t i = 0; i < 3; i++) {
@@ -1103,6 +1107,12 @@ Train::MaxSpeedInfo Train::GetCurrentMaxSpeedInfoInternal(bool update_state) con
 			std::min<int>(this->tcache.cached_max_curve_speed, this->gcache.cached_max_track_speed);
 
 	if (this->current_order.IsType(OT_LOADING_ADVANCE)) max_speed = std::min<int>(max_speed, _settings_game.vehicle.through_load_speed_limit);
+
+	/* If the train is going backwards, without a leading cab, restrict its speed. */
+	if (this->tcache.cached_tflags & TCF_NO_DRIVING_CAB) {
+		constexpr int BACKWARDS_NO_CAB_SPEED_LIMIT = 32;
+		max_speed = std::min<int>(max_speed, BACKWARDS_NO_CAB_SPEED_LIMIT);
+	}
 
 	int advisory_max_speed = max_speed;
 
@@ -3093,7 +3103,7 @@ static void ReverseTrainDirection(Train *consist)
 	TileIndex crossing = TrainApproachingCrossingTile(moving_front);
 
 	/* Check if we should back up or flip the train. */
-	if (consist->vehicle_flags.Test(VehicleFlag::DrivingBackwards) || consist->Last()->CanLeadTrain()) {
+	if (consist->vehicle_flags.Test(VehicleFlag::DrivingBackwards) || _settings_game.difficulty.train_flip_reverse_allowed == TrainFlipReversingAllowed::None || consist->Last()->CanLeadTrain()) {
 		/* The train will back up. */
 		for (Train *u = consist; u != nullptr; u = u->Next()) {
 			u->vehicle_flags.Flip(VehicleFlag::DrivingBackwards);
@@ -4911,7 +4921,7 @@ TryPathReserveResultFlags TryPathReserveWithResultFlags(Train *consist, bool mar
 static bool CheckReverseTrain(const Train *consist)
 {
 	const Train *moving_front = consist->GetMovingFront();
-	if (_settings_game.difficulty.line_reverse_mode != 0 ||
+	if (_settings_game.difficulty.train_flip_reverse_allowed == TrainFlipReversingAllowed::EndOfLineOnly ||
 			moving_front->track == TRACK_BIT_DEPOT) {
 		return false;
 	}
