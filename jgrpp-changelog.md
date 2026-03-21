@@ -2,6 +2,15 @@
 
 * * *
 
+### v0.71.1 (2026-03-21)
+* Fix text/colour for vehicle lifetime profit and capcities of multi-cargo ships.
+* Fix not being able to change the else if/or if type of some routing restriction conditionals.
+* Engine dates:
+  * Allow changing engine date/lifetime settings in network games.
+  * Remove need to use reset_engines console command after changing engine date/lifetime settings.
+  * Add setting to disable vehicle introduction date randomisation.
+* Bump trunk base from commit 27c5f9a5cdee5c2586a9688a7eca23975008abf4 to commit b41e23270d5fb4386e44193139d41d5955f866cf.
+
 ### v0.71.0 (2026-03-13)
 * Fix undrawn gap between vertical half-tile foundations of different railtypes.
 * Fix map edge selectors not being enabled in the map generation window for some setting values.
