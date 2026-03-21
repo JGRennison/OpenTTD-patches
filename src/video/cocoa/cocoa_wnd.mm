@@ -143,7 +143,6 @@ static std::vector<char32_t> NSStringToUTF32(NSString *s)
 	return unicode_str;
 }
 
-#ifdef HAVE_TOUCHBAR_SUPPORT
 static void CGDataFreeCallback(void *, const void *data, size_t)
 {
 	delete[] (const uint32_t *)data;
@@ -174,7 +173,6 @@ static NSImage *NSImageFromSprite(SpriteID sprite_id, ZoomLevel zoom)
 
 	return [ [ [ NSImage alloc ] initWithCGImage:bitmap.get() size:NSZeroSize ] autorelease ];
 }
-#endif /* HAVE_TOUCHBAR_SUPPORT */
 
 
 /**
