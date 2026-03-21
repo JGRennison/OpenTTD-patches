@@ -1116,7 +1116,7 @@ STR_GAME_OPTIONS_BASE_GRF_TOOLTIP                               :Kullanılacak t
 STR_GAME_OPTIONS_BASE_GRF_DESCRIPTION_TOOLTIP                   :Temel grafik setiyle ilgili ilave bilgiler
 
 STR_GAME_OPTIONS_BASE_SFX                                       :Temel ses kümesi
-STR_GAME_OPTIONS_BASE_SFX_TOOLTIP                               :Kullanılacak temel ses kümesini seçin (oyun içinde değiştirlemez sadece ana menüde değiştirebilinir)
+STR_GAME_OPTIONS_BASE_SFX_TOOLTIP                               :Kullanılacak temel ses kümesini seçin
 STR_GAME_OPTIONS_BASE_SFX_DESCRIPTION_TOOLTIP                   :Temel ses kümesiyle ilgili ilave bilgiler
 
 STR_GAME_OPTIONS_BASE_MUSIC                                     :Temel müzik kümesi
@@ -2070,7 +2070,7 @@ STR_CONFIG_SETTING_ZOOM_LVL_OUT_4X                              :4x
 STR_CONFIG_SETTING_ZOOM_LVL_OUT_8X                              :8x
 
 STR_CONFIG_SETTING_SPRITE_ZOOM_MIN                              :Kullanılacak en yüksek çözünürlüklü sprite'lar: {STRING}
-STR_CONFIG_SETTING_SPRITE_ZOOM_MIN_HELPTEXT                     :Sprite'lar için kullanılacak maksimum çözünürlüğü sınırlar. Sprite çözünürlüğünü sınırlamak, mevcut olunca bile yüksek çözünürlüklü grafikleri kullanmaktan kaçınacaktır. Bu, yüksek çözünürlüklü grafikleri içeren ve içermeyen GRF dosyalarının bir karşımı kullanılırken oyun görünümünü bir arada tutmaya yardımcı olabilir
+STR_CONFIG_SETTING_SPRITE_ZOOM_MIN_HELPTEXT                     :Sprite'lar için kullanılacak maksimum çözünürlüğü sınırlar. Sprite çözünürlüğünü sınırlamak, mevcut olunca bile yüksek çözünürlüklü grafikleri kullanmaktan kaçınacaktır. Bu, yüksek çözünürlüklü grafikleri içeren ve içermeyen NewGRF dosyalarının bir karşımı kullanılırken oyun görünümünü bir arada tutmaya yardımcı olabilir
 ###length 3
 STR_CONFIG_SETTING_SPRITE_ZOOM_LVL_MIN                          :4x
 STR_CONFIG_SETTING_SPRITE_ZOOM_LVL_IN_2X                        :2x
@@ -2852,20 +2852,38 @@ STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Önizleme resim
 STR_PICKER_PREVIEW_EXPAND                                       :+
 STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Önizleme resimlerinin yüksekliğini arttır. En yükseğe çekmek için Ctrl + Sol Tık yapın
 
+STR_PICKER_DEFAULT_COLLECTION                                   :Öntanımlı koleksiyon
+STR_PICKER_SELECT_COLLECTION_TOOLTIP                            :Koleksiyon seç
+STR_PICKER_COLLECTION_ADD                                       :Ekle
+STR_PICKER_COLLECTION_ADD_TOOLTIP                               :Koleksiyon oluştur
+STR_PICKER_COLLECTION_RENAME                                    :Yeniden adlandır
+STR_PICKER_COLLECTION_RENAME_TOOLTIP                            :Koleksiyonu yeniden adlandır
+STR_PICKER_COLLECTION_DELETE                                    :Sil
+STR_PICKER_COLLECTION_DELETE_TOOLTIP                            :Koleksiyonu siler
 
+STR_PICKER_COLLECTION_RENAME_QUERY                              :Bu koleksiyonu yeniden adlandır
+STR_PICKER_COLLECTION_DELETE_QUERY                              :Koleksiyonu sil
+STR_PICKER_COLLECTION_DELETE_QUERY_TEXT                         :{YELLOW}Bu koleksiyonu silmek istediğinizden emin misiniz?
+STR_PICKER_COLLECTION_DELETE_QUERY_DISABLED_TEXT                :{YELLOW}Bu koleksiyonu silmek istediğinizden emin misiniz? İçinde etkinleştirilmemiş NewGRF'lerden öğeler var!
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Görüntülenecek istasyon sınıfını seçin
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :İnşa edilecek istasyon türünü seçin. Kayıtlı öğelerde ekleme çıkarma için Ctrl+Tıklayabilirsiniz
+STR_PICKER_STATION_COLLECTION_TOOLTIP                           :Görüntülenecek istasyon koleksiyonunu seçin
 STR_PICKER_WAYPOINT_CLASS_TOOLTIP                               :Görüntülenecek bir yol noktası türünü seçin
 STR_PICKER_WAYPOINT_TYPE_TOOLTIP                                :İnşa edilecek yerimini seçin. Kayıtlı öğelerde ekleme çıkarma için Ctrl+Tıklayabilirsiniz
+STR_PICKER_WAYPOINT_COLLECTION_TOOLTIP                          :Görüntülenecek yerimi koleksiyonunu seçin
 STR_PICKER_ROADSTOP_BUS_CLASS_TOOLTIP                           :Görüntülenecek otobüs istasyonunu seçin
 STR_PICKER_ROADSTOP_BUS_TYPE_TOOLTIP                            :İnşa edilecek otobüs istasyonunu seçin. Kayıtlı öğelerde ekleme çıkarma için Ctrl+Tıklayabilirsiniz
+STR_PICKER_ROADSTOP_BUS_COLLECTION_TOOLTIP                      :Görüntülenecek otobüs durağı koleksiyonunu seçin
 STR_PICKER_ROADSTOP_TRUCK_CLASS_TOOLTIP                         :Görüntülenecek bir kamyon istasyonu türünü seçin
 STR_PICKER_ROADSTOP_TRUCK_TYPE_TOOLTIP                          :İnşa edilecek bir tür kamyon istasyonu seçin. Kaydedilen öğelerde eklemek veya kaldırmak istiyorsanız Ctrl+Tık ile yapabilirsiniz.
+STR_PICKER_ROADSTOP_TRUCK_COLLECTION_TOOLTIP                    :Görüntülenecek kamyon istasyonu koleksiyonu seçin
 STR_PICKER_OBJECT_CLASS_TOOLTIP                                 :Görüntülenecek öğe sınıfını seçin
 STR_PICKER_OBJECT_TYPE_TOOLTIP                                  :İnşa edilecek nesne türünü seçin. Kayıtlı öğelerde ekleme çıkarma için Ctrl+tıklayabilirsiniz. Ctrl+Tıkla+Sürükle yaparak köşeden köşeye seçim yapabilirsiniz. Shift'e basarak sadece fiyat önizlemesi yapabilirsiniz
+STR_PICKER_OBJECT_COLLECTION_TOOLTIP                            :Görüntülenecek nesne koleksiyonunu seçin
 STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :Görüntülemek için bir şehir bölgesi seçin
 STR_PICKER_HOUSE_TYPE_TOOLTIP                                   :Bir konut türü seçin. Kaydedilmiş öğelere eklemek veya kaldırmak için Ctrl+Tıklayın
+STR_PICKER_HOUSE_COLLECTION_TOOLTIP                             :Görüntülenecek ev koleksiyonunu seçin
 
 STR_HOUSE_PICKER_CAPTION                                        :Ev Seçimi
 STR_HOUSE_PICKER_NAME                                           :{BLACK}İsim: {GOLD}{STRING}
@@ -3627,7 +3645,7 @@ STR_NEWGRF_ERROR_INVALID_PARAMETER                              :{1:STRING} içi
 STR_NEWGRF_ERROR_LOAD_BEFORE                                    :{1:STRING} önce, {2:STRING} ondan sonra yüklenmeli
 STR_NEWGRF_ERROR_LOAD_AFTER                                     :Önce {1:STRING}, sonra {2:STRING} yüklenmeli.
 STR_NEWGRF_ERROR_OTTD_VERSION_NUMBER                            :{1:STRING} OpenTTD {2:STRING} veya daha yüksek bir sürüm gerektirir
-STR_NEWGRF_ERROR_AFTER_TRANSLATED_FILE                          :GRF dosyası çeviri için yapılmış
+STR_NEWGRF_ERROR_AFTER_TRANSLATED_FILE                          :NewGRF dosyası çeviri için yapılmış
 STR_NEWGRF_ERROR_TOO_MANY_NEWGRFS_LOADED                        :Çok fazla NewGRF yüklendi
 STR_NEWGRF_ERROR_STATIC_GRF_CAUSES_DESYNC                       :{1:STRING} adlı NewGRF'yi {2:STRING} ile birlikte kullanmak senkronizasyon sorunu oluşturabilir
 STR_NEWGRF_ERROR_UNEXPECTED_SPRITE                              :Beklenmedik nesne (nesne {3:NUM})
@@ -3636,7 +3654,7 @@ STR_NEWGRF_ERROR_INVALID_ID                                     :Geçersiz ID ku
 STR_NEWGRF_ERROR_CORRUPT_SPRITE                                 :{YELLOW}{STRING} bozuk bir nesne içeriyor. Tüm bozuk nesneler kırmızı bir soru işareti (?) olarak görünecektir
 STR_NEWGRF_ERROR_MULTIPLE_ACTION_8                              :Birden çok Action 8 girişi içeriyor (nesne {3:NUM})
 STR_NEWGRF_ERROR_READ_BOUNDS                                    :Pseudo-nesne bitiminden sonrasını okudu (nesne {3:NUM})
-STR_NEWGRF_ERROR_GRM_FAILED                                     :İstenen GRF kaynakları mevcut değil (nesne {3:NUM})
+STR_NEWGRF_ERROR_GRM_FAILED                                     :İstenen NewGRF kaynakları mevcut değil (nesne {3:NUM})
 STR_NEWGRF_ERROR_FORCEFULLY_DISABLED                            :{1:STRING} {STRING} tarafından deaktive edildi
 STR_NEWGRF_ERROR_INVALID_SPRITE_LAYOUT                          :Geçersiz/bilinmeyen nesne yerleşim biçimi (nesne {3:NUM})
 STR_NEWGRF_ERROR_LIST_PROPERTY_TOO_LONG                         :Özellik değeri listesinde çok fazla öğe (sprite {3:NUM}, özellik {4:HEX})
@@ -3647,12 +3665,12 @@ STR_NEWGRF_POPUP_CAUTION_CAPTION                                :{WHITE}Uyarı!
 STR_NEWGRF_CONFIRMATION_TEXT                                    :{YELLOW}Çalışan bir oyunu değiştirmek üzeresiniz. Bu OpenTTD'yi çökertebilir veya oyunun durumunu bozabilir. Bu konular hakkında sorun bildirmeyiniz.{}Bundan kesinlikle emin misiniz?
 
 STR_NEWGRF_DUPLICATE_GRFID                                      :{WHITE}Dosya eklenemiyor: GRF ID çakışması
-STR_NEWGRF_COMPATIBLE_LOADED                                    :{ORANGE}Eşleşen dosya bulunamadı (uyumlu GRF yüklendi)
+STR_NEWGRF_COMPATIBLE_LOADED                                    :{ORANGE}Eşleşen dosya bulunamadı (uyumlu NewGRF yüklendi)
 STR_NEWGRF_TOO_MANY_NEWGRFS                                     :{WHITE}Dosya eklenemiyor: NewGRF dosya limitine ulaşıldı
 
 STR_NEWGRF_COMPATIBLE_LOAD_WARNING                              :{WHITE}Eksik dosyalar için uyumlu GRF(ler) yüklendi
 STR_NEWGRF_DISABLED_WARNING                                     :{WHITE}Eksik GRF dosyaları etkisizleştirildi
-STR_NEWGRF_UNPAUSE_WARNING_TITLE                                :{YELLOW}Eksik GRF dosyası
+STR_NEWGRF_UNPAUSE_WARNING_TITLE                                :{YELLOW}Eksik NewGRF dosyası
 STR_NEWGRF_UNPAUSE_WARNING                                      :{WHITE}Devam ettırme OpenTTD'yi çökertebilir. Takip eden çökmeler için hata rapor etmeyiniz.{}Gerçekten devam ettirmek istiyor musunuz?
 
 # NewGRF status
@@ -4366,8 +4384,15 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}Garajda
 
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Araç üreticisinden mesaj
+STR_ENGINE_PREVIEW_CAPTION_COUNT                                :{WHITE}Araç üreticisinden mesaj ({COMMA} / {COMMA})
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Yeni bir {STRING} tasarladık - bizim için bunu bir yıl denemeyi kabul ediyor musunuz?
 
+STR_ENGINE_PREVIEW_PREVIOUS                                     :Önceki
+STR_ENGINE_PREVIEW_PREVIOUS_TOOLTIP                             :Önceki yeni araca atlamak için tıklayın
+STR_ENGINE_PREVIEW_NEXT                                         :Sonraki
+STR_ENGINE_PREVIEW_NEXT_TOOLTIP                                 :Sonraki yeni araca atlamak için tıklayın
+STR_ENGINE_PREVIEW_ENGINE_LIST                                  :{COMMA}: {ENGINE}
+STR_ENGINE_PREVIEW_ENGINE_LIST_TOOLTIP                          :Yeni araca atlamak için tıklayın
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :lokomotif
 STR_ENGINE_PREVIEW_ELRAIL_LOCOMOTIVE                            :Elektrikli demiryolu lokomotifi
@@ -4713,6 +4738,7 @@ STR_ORDERS_SKIP_BUTTON                                          :{BLACK}Atla
 STR_ORDERS_SKIP_TOOLTIP                                         :{BLACK}Şimdiki talimatı atla ve sonrakine geç. Ctrl + Sol Tık ile seçili talimata atlayın.
 
 STR_ORDERS_DELETE_BUTTON                                        :{BLACK}Sil
+STR_ORDERS_DELETE_ALL_BUTTON                                    :{BLACK}Tümünü Sil
 STR_ORDERS_DELETE_TOOLTIP                                       :{BLACK}Seçili talimatı sil
 STR_ORDERS_DELETE_ALL_TOOLTIP                                   :{BLACK}Tüm talimatları sil
 STR_ORDERS_STOP_SHARING_BUTTON                                  :{BLACK}Paylaşmaktan vazgeç
@@ -5984,7 +6010,8 @@ STR_LORRY                                                       :{BLACK}{LORRY}
 STR_PLANE                                                       :{BLACK}{PLANE}
 STR_SHIP                                                        :{BLACK}{SHIP}
 
-STR_TOOLBAR_RAILTYPE_VELOCITY                                   :{STRING} ({VELOCITY})
+STR_TOOLBAR_RAILTYPE_VELOCITY                                   :{STRING} {YELLOW}({VELOCITY})
+STR_TOOLBAR_ROADTYPE_VELOCITY                                   :{STRING} {YELLOW}({VELOCITY})
 
 STR_BADGE_NAME_LIST                                             :{STRING}: {GOLD}{STRING}
 STR_BADGE_CONFIG_MENU_TOOLTIP                                   :Rozet ayarlarını aç
