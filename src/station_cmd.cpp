@@ -1581,7 +1581,7 @@ CommandCost CmdBuildRailStation(DoCommandFlags flags, TileIndex tile_org, RailTy
 			for (uint j = 0; j < plat_len; j++) {
 				CommandCost ret = IsRailStationBridgeAboveOk(tile, statspec, StationType::Rail, *check_layout_ptr++);
 				if (ret.Failed()) {
-					return CommandCost::DualErrorMessage(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST, ret.GetErrorMessage());
+					return ret.GetErrorMessage() == INVALID_STRING_ID ? CommandCost(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST) : ret;
 				}
 				tile += tile_delta;
 			}

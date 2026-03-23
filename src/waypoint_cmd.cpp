@@ -244,7 +244,7 @@ CommandCost CmdBuildRailWaypoint(DoCommandFlags flags, TileIndex start_tile, Axi
 		if (ret.Failed()) return ret;
 		ret = IsRailStationBridgeAboveOk(tile, spec, StationType::RailWaypoint, layout_ptr[i]);
 		if (ret.Failed()) {
-			return CommandCost::DualErrorMessage(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST, ret.GetErrorMessage());
+			return ret.GetErrorMessage() == INVALID_STRING_ID ? CommandCost(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST) : ret;
 		}
 	}
 
