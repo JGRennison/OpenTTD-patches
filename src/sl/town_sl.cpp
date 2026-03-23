@@ -243,6 +243,62 @@ struct TownSuppliedStructHandler final : public TypedSaveLoadStructHandler<TownS
 	}
 };
 
+struct TownAcceptedHistoryStructHandler final : public TypedSaveLoadStructHandler<TownAcceptedHistoryStructHandler, Town::AcceptedCargo> {
+	NamedSaveLoadTable GetDescription() const override
+	{
+		static const NamedSaveLoad _supplied_history_desc[] = {
+			NSL("accepted", SLE_VAR(Town::AcceptedHistory, accepted, SLE_UINT32)),
+		};
+		return _supplied_history_desc;
+	}
+
+	void Save(Town::AcceptedCargo *p) const override
+	{
+		SlSetStructListLength(p->history.size());
+
+		for (auto &h : p->history) {
+			SlObject(&h, this->GetLoadDescription());
+		}
+	}
+
+	void Load(Town::AcceptedCargo *p) const override
+	{
+		size_t len = SlGetStructListLength(p->history.size());
+
+		for (auto &h : p->history) {
+			if (--len > p->history.size()) break; // unsigned so wraps after hitting zero.
+			SlObject(&h, this->GetLoadDescription());
+		}
+	}
+};
+
+struct TownAcceptedStructHandler final : public TypedSaveLoadStructHandler<TownAcceptedStructHandler, Town> {
+	NamedSaveLoadTable GetDescription() const override
+	{
+		static const NamedSaveLoad _supplied_desc[] = {
+			NSL("cargo", SLE_VAR(Town::AcceptedCargo, cargo, SLE_UINT8)),
+			NSLT_STRUCTLIST<TownAcceptedHistoryStructHandler>("history"),
+		};
+		return _supplied_desc;
+	}
+
+	void Save(Town *t) const override
+	{
+		SlSetStructListLength(t->accepted.size());
+		for (Town::AcceptedCargo &p : t->accepted) {
+			SlObjectSaveFiltered(&p, this->GetLoadDescription());
+		}
+	}
+
+	void Load(Town *t) const override
+	{
+		t->accepted.resize(SlGetStructListLength(NUM_CARGO));
+		for (Town::AcceptedCargo &p : t->accepted) {
+			SlObjectLoadFiltered(&p, this->GetLoadDescription());
+		}
+	}
+};
+
 struct TownReceivedStructHandler final : public TypedSaveLoadStructHandler<TownReceivedStructHandler, Town> {
 	NamedSaveLoadTable GetDescription() const override
 	{
@@ -401,6 +457,7 @@ static const NamedSaveLoad _town_desc[] = {
 
 	NSLT_STRUCTLIST<TownOldSuppliedStructHandler>("supplied", SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TOWN_SUPPLY_HISTORY, 0, 0)),
 	NSLT_STRUCTLIST<TownSuppliedStructHandler>("supplied", SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_TOWN_SUPPLY_HISTORY, 1)),
+	NSLT_STRUCTLIST<TownAcceptedStructHandler>("accepted"),
 	NSLT_STRUCTLIST<TownReceivedStructHandler>("received"),
 	NSLT_STRUCT<TownSettingsOverrideStructHandler>("setting_overrides"),
 };

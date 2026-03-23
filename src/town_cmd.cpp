@@ -4678,6 +4678,11 @@ CommandCost CheckforTownRating(DoCommandFlags flags, Town *t, TownRatingCheckTyp
 	return CommandCost();
 }
 
+/**
+ * Sum history for town supplied cargo.
+ * @param history History to be summed.
+ * @return Summary data.
+ */
 template <>
 Town::SuppliedHistory SumHistory(std::span<const Town::SuppliedHistory> history)
 {
@@ -4685,6 +4690,19 @@ Town::SuppliedHistory SumHistory(std::span<const Town::SuppliedHistory> history)
 	uint32_t transported = std::accumulate(std::begin(history), std::end(history), 0, [](uint32_t r, const auto &s) { return r + s.transported; });
 	uint32_t count = static_cast<uint32_t>(std::size(history));
 	return {.production = production / count, .transported = transported / count};
+}
+
+/**
+ * Sum history for town accepted cargo.
+ * @param history History to be summed.
+ * @return Summary data.
+ */
+template <>
+Town::AcceptedHistory SumHistory(std::span<const Town::AcceptedHistory> history)
+{
+	uint64_t accepted = std::accumulate(std::begin(history), std::end(history), 0, [](uint64_t r, const auto &s) { return r + s.accepted; });
+	auto count = std::size(history);
+	return {.accepted = ClampTo<uint32_t>(accepted / count)};
 }
 
 void TownsMonthlyLoop()
@@ -4707,6 +4725,7 @@ void TownsMonthlyLoop()
 
 		/* Update cargo statistics. */
 		for (auto &s : t->supplied) RotateHistory(s.history, t->valid_history, HISTORY_YEAR, EconTime::CurMonth());
+		for (auto &a : t->accepted) RotateHistory(a.history, t->valid_history, HISTORY_YEAR, EconTime::CurMonth());
 		for (auto &received : t->received) received.NewMonth();
 
 		UpdateTownGrowth(t);
