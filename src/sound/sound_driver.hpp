@@ -12,6 +12,11 @@
 
 #include "../driver.h"
 
+#include <memory>
+#include <mutex>
+
+extern std::mutex _sound_driver_mutex;
+
 /** Base for all sound drivers. */
 class SoundDriver : public Driver {
 public:
@@ -29,11 +34,18 @@ public:
 		return true;
 	}
 
+	static std::unique_ptr<SoundDriver> ExtractDriver()
+	{
+		return std::unique_ptr<SoundDriver>(static_cast<SoundDriver *>(DriverFactoryBase::GetActiveDriver(Driver::DT_SOUND).release()));
+	}
+
 	/**
 	 * Get the currently active instance of the sound driver.
 	 */
 	static SoundDriver *GetInstance()
 	{
+		std::unique_lock<std::mutex> lock(_sound_driver_mutex);
+
 		return static_cast<SoundDriver *>(DriverFactoryBase::GetActiveDriver(Driver::DT_SOUND).get());
 	}
 };

@@ -151,6 +151,10 @@ std::mutex _music_driver_mutex;
 static std::string _music_driver_params;
 static std::atomic<bool> _music_inited;
 
+std::mutex _sound_driver_mutex;
+static std::string _sound_driver_params;
+static std::atomic<bool> _sound_inited;
+
 /**
  * Error handling for fatal user errors.
  * @param str the string to print.
@@ -1005,10 +1009,17 @@ int openttd_main(std::span<char * const> arguments)
 	}
 
 	if (sounddriver.empty() && !_ini_sounddriver.empty()) sounddriver = _ini_sounddriver;
-	DriverFactoryBase::SelectDriver(sounddriver, Driver::DT_SOUND);
-
+	_sound_driver_params = std::move(sounddriver);
 	if (musicdriver.empty() && !_ini_musicdriver.empty()) musicdriver = _ini_musicdriver;
 	_music_driver_params = std::move(musicdriver);
+
+	if (_sound_driver_params.empty() && BaseSounds::GetUsedSet()->name == "NoSound" && _music_driver_params.empty() && BaseMusic::GetUsedSet()->name == "NoMusic") {
+		Debug(driver, 1, "Deferring loading of sound driver until a sound or music set is loaded");
+		DriverFactoryBase::SelectDriver("null", Driver::DT_SOUND);
+	} else {
+		InitSoundDriver();
+	}
+
 	if (_music_driver_params.empty() && BaseMusic::GetUsedSet()->name == "NoMusic") {
 		Debug(driver, 1, "Deferring loading of music driver until a music set is loaded");
 		DriverFactoryBase::SelectDriver("null", Driver::DT_MUSIC);
@@ -1046,6 +1057,20 @@ void InitMusicDriver(bool init_volume)
 	}
 
 	if (init_volume) MusicDriver::GetInstance()->SetVolume(_settings_client.music.music_vol);
+}
+
+void InitSoundDriver()
+{
+	if (_sound_inited.exchange(true)) return;
+
+	{
+		std::unique_lock<std::mutex> lock(_sound_driver_mutex);
+
+		static std::unique_ptr<SoundDriver> old_driver;
+		old_driver = SoundDriver::ExtractDriver();
+
+		DriverFactoryBase::SelectDriver(_sound_driver_params, Driver::DT_SOUND);
+	}
 }
 
 void HandleExitGameRequest()

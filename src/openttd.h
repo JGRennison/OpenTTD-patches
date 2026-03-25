@@ -95,6 +95,7 @@ void AskExitToGameMenu();
 int openttd_main(std::span<char * const> arguments);
 void StateGameLoop();
 void HandleExitGameRequest();
+void InitSoundDriver();
 void InitMusicDriver(bool init_volume);
 
 void SwitchToMode(SwitchMode new_mode);

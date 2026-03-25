@@ -169,6 +169,7 @@ void ChangeSoundSet(int index)
 	if (BaseSounds::GetIndexOfUsedSet() == index) return;
 
 	auto set = BaseSounds::GetSet(index);
+	if (set->name != "NoSound") InitSoundDriver();
 	BaseSounds::ini_set = set->name;
 	BaseSounds::SetSet(set);
 
