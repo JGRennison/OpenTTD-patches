@@ -230,6 +230,13 @@ void CrashLog::LogConfiguration(format_target_ctrl &buffer) const
 			default: return "-";
 		};
 	};
+	const Blitter *blitter = BlitterFactory::GetCurrentBlitter();
+	const GraphicsSet *gfx_set = BaseGraphics::GetUsedSet();
+	const MusicDriver *music_driver = MusicDriver::GetInstance();
+	const MusicSet *music_set = BaseMusic::GetUsedSet();
+	const SoundDriver *sound_driver = SoundDriver::GetInstance();
+	const SoundsSet *sounds_set = BaseSounds::GetUsedSet();
+	const VideoDriver *video_driver = VideoDriver::GetInstance();
 	buffer.format(
 			"Configuration:\n"
 			" Blitter:      {}\n"
@@ -241,18 +248,18 @@ void CrashLog::LogConfiguration(format_target_ctrl &buffer) const
 			" Sound driver: {}\n"
 			" Sound set:    {} ({})\n"
 			" Video driver: {}\n",
-			BlitterFactory::GetCurrentBlitter() == nullptr ? (std::string_view)"none" : BlitterFactory::GetCurrentBlitter()->GetName(),
-			BaseGraphics::GetUsedSet() == nullptr ? (std::string_view)"none" : BaseGraphics::GetUsedSet()->name,
-			BaseGraphics::GetUsedSet() == nullptr ? BaseSetVersionPrinter{} : BaseGraphics::GetUsedSet()->FormatVersion(),
+			blitter == nullptr ? (std::string_view)"none" : blitter->GetName(),
+			gfx_set == nullptr ? (std::string_view)"none" : gfx_set->name,
+			gfx_set == nullptr ? BaseSetVersionPrinter{} : gfx_set->FormatVersion(),
 			_current_language == nullptr ? (std::string_view)"none" : StrLastPathSegment(_current_language->file.c_str()),
-			MusicDriver::GetInstance() == nullptr ? "none" : MusicDriver::GetInstance()->GetName(),
-			BaseMusic::GetUsedSet() == nullptr ? (std::string_view)"none" : BaseMusic::GetUsedSet()->name,
-			BaseMusic::GetUsedSet() == nullptr ? BaseSetVersionPrinter{} : BaseMusic::GetUsedSet()->FormatVersion(),
+			music_driver == nullptr ? "none" : music_driver->GetName(),
+			music_set == nullptr ? (std::string_view)"none" : music_set->name,
+			music_set == nullptr ? BaseSetVersionPrinter{} : music_set->FormatVersion(),
 			_networking ? (_network_server ? "server" : "client") : "no",
-			SoundDriver::GetInstance() == nullptr ? "none" : SoundDriver::GetInstance()->GetName(),
-			BaseSounds::GetUsedSet() == nullptr ? (std::string_view)"none" : BaseSounds::GetUsedSet()->name,
-			BaseSounds::GetUsedSet() == nullptr ? BaseSetVersionPrinter{} : BaseSounds::GetUsedSet()->FormatVersion(),
-			VideoDriver::GetInstance() == nullptr ? "none" : VideoDriver::GetInstance()->GetInfoString()
+			sound_driver == nullptr ? "none" : sound_driver->GetName(),
+			sounds_set == nullptr ? (std::string_view)"none" : sounds_set->name,
+			sounds_set == nullptr ? BaseSetVersionPrinter{} : sounds_set->FormatVersion(),
+			video_driver == nullptr ? "none" : video_driver->GetInfoString()
 	);
 	buffer.format(" Game mode:    {}", mode_name());
 	if (_switch_mode != SM_NONE) buffer.format(", SM: {}", _switch_mode);
