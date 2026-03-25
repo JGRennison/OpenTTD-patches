@@ -32,7 +32,7 @@
 class Blitter_32bppSSE2_Anim : public Blitter_32bppAnim {
 public:
 	void PaletteAnimate(const Palette &palette) override;
-	const char *GetName() override { return "32bpp-sse2-anim"; }
+	const char *GetName() const override { return "32bpp-sse2-anim"; }
 };
 
 /** Factory for the partially 32bpp blitter with animation. */

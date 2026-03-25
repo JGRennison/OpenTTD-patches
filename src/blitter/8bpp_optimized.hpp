@@ -25,7 +25,7 @@ public:
 	void Draw(Blitter::BlitterParams *bp, BlitterMode mode, ZoomLevel zoom) override;
 	Sprite *Encode(SpriteType sprite_type, const SpriteLoader::SpriteCollection &sprite, SpriteAllocator &allocator) override;
 
-	const char *GetName() override { return "8bpp-optimized"; }
+	const char *GetName() const override { return "8bpp-optimized"; }
 };
 
 /** Factory for the 8bpp blitter optimised for speed. */

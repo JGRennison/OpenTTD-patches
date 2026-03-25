@@ -85,7 +85,7 @@ public:
 		return Blitter_32bppSSE_Base::Encode(sprite_type, sprite, allocator);
 	}
 
-	const char *GetName() override { return "32bpp-sse2"; }
+	const char *GetName() const override { return "32bpp-sse2"; }
 };
 
 /** Factory for the SSE2 32 bpp blitter (without palette animation). */

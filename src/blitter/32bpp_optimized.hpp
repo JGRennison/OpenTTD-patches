@@ -30,7 +30,7 @@ public:
 	void Draw(Blitter::BlitterParams *bp, BlitterMode mode, ZoomLevel zoom) override;
 	Sprite *Encode(SpriteType sprite_type, const SpriteLoader::SpriteCollection &sprite, SpriteAllocator &allocator) override;
 
-	const char *GetName() override { return "32bpp-optimized"; }
+	const char *GetName() const override { return "32bpp-optimized"; }
 
 	template <BlitterMode mode, bool Tpal_to_rgb = false> void Draw(const Blitter::BlitterParams *bp, ZoomLevel zoom);
 

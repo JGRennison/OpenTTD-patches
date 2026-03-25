@@ -33,7 +33,7 @@ public:
 	void Draw(Blitter::BlitterParams *bp, BlitterMode mode, ZoomLevel zoom) override;
 	template <BlitterMode mode, Blitter_32bppSSE_Base::ReadMode read_mode, Blitter_32bppSSE_Base::BlockType bt_last, bool translucent>
 	void Draw(const Blitter::BlitterParams *bp, ZoomLevel zoom);
-	const char *GetName() override { return "32bpp-ssse3"; }
+	const char *GetName() const override { return "32bpp-ssse3"; }
 };
 
 /** Factory for the SSSE3 32 bpp blitter (without palette animation). */

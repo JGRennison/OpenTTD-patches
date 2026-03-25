@@ -41,7 +41,7 @@ public:
 	void PaletteAnimate(const Palette &palette) override { };
 	Blitter::PaletteAnimation UsePaletteAnimation() override { return Blitter::PaletteAnimation::None; };
 
-	const char *GetName() override { return "null"; }
+	const char *GetName() const override { return "null"; }
 };
 
 /** Factory for the blitter that does nothing. */

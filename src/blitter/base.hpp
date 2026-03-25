@@ -281,7 +281,7 @@ public:
 	/**
 	 * Get the name of the blitter, the same as the Factory-instance returns.
 	 */
-	virtual const char *GetName() = 0;
+	virtual const char *GetName() const = 0;
 
 	/**
 	 * Post resize event

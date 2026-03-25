@@ -20,7 +20,7 @@ public:
 	void Draw(Blitter::BlitterParams *bp, BlitterMode mode, ZoomLevel zoom) override;
 	Sprite *Encode(SpriteType sprite_type, const SpriteLoader::SpriteCollection &sprite, SpriteAllocator &allocator) override;
 
-	const char *GetName() override { return "8bpp-simple"; }
+	const char *GetName() const override { return "8bpp-simple"; }
 };
 
 /** Factory for the most trivial 8bpp blitter. */
