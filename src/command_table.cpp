@@ -823,12 +823,12 @@ struct PayloadOpsBuilder {
 	}
 };
 
-template<typename T>
+template <typename T>
 const CommandPayloadBase::Operations CommandPayloadSerialisable<T>::operations = PayloadOpsBuilder::Build<T>();
 
 template <typename Parent, typename... T>
 const CommandPayloadBase::Operations TupleCmdData<Parent, T...>::operations = PayloadOpsBuilder::Build<TupleCmdData<Parent, T...>::RealParent>();
 
 /* This isn't directly referenced in the command table, so ensure it is instantiated here. */
-template<>
+template <>
 const CommandPayloadBase::Operations CommandPayloadSerialisable<TraceRestrictFollowUpCmdData>::operations = PayloadOpsBuilder::Build<TraceRestrictFollowUpCmdData>();

@@ -14,7 +14,7 @@
 #include <limits>
 #include <type_traits>
 
-template<typename T>
+template <typename T>
 concept BitsetTypeAsBase = T::bitset_as_base || false;
 
 /**

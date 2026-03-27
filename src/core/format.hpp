@@ -31,13 +31,13 @@
 #include <type_traits>
 
 namespace format_detail {
-	template<typename T>
+	template <typename T>
 	concept FmtAsBase = T::fmt_as_base || false;
 
-	template<typename T>
+	template <typename T>
 	concept FmtAsBaseHex = T::fmt_as_base_hex || false;
 
-	template<typename T>
+	template <typename T>
 	concept FmtAsTileIndex = T::fmt_as_tile_index || false;
 };
 
@@ -138,7 +138,7 @@ namespace format_detail {
 		return to_underlying(arg);
 	}
 
-	template<class T>
+	template <class T>
 	constexpr T &unmove_helper(T &&t)
 	{
 		/* Cast to lvalue, as this is required by fmt::make_format_args.
@@ -289,7 +289,7 @@ public:
 };
 
 namespace format_detail {
-	template<typename T>
+	template <typename T>
 	concept FmtUsingFormatValueMethod = requires(const T &a) {
 		{ a.fmt_format_value(std::declval<format_target &>()) };
 	};

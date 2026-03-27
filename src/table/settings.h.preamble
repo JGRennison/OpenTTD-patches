@@ -76,7 +76,7 @@ static void InvalidateSettingsWindows(int32_t new_value)
  * on the appropriate macro.
  */
 
-template<typename T>
+template <typename T>
 concept STUnwrapAsBase = T::serialisation_as_base || false;
 
 template <typename T>

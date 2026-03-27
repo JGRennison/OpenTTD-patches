@@ -119,7 +119,7 @@
 
 namespace btree {
 
-template<typename T>
+template <typename T>
 concept btree_integer_type_hint = T::integer_type_hint || false;
 
 // Inside a btree method, if we just call swap(), it will choose the

@@ -40,7 +40,7 @@ namespace TupleCmdDataDetail {
 		}
 	}
 
-	template<typename T, size_t I, size_t N, size_t... integers>
+	template <typename T, size_t I, size_t N, size_t... integers>
 	struct NonStringTypeIndexSequenceHelper {
 		using type = std::conditional_t<
 				CommandPayloadStringType<std::remove_cvref_t<std::tuple_element_t<I, T>>>,
@@ -48,12 +48,12 @@ namespace TupleCmdDataDetail {
 				typename NonStringTypeIndexSequenceHelper<T, I + 1, N, integers..., I>::type>;
 	};
 
-	template<typename T, size_t N, size_t... integers>
+	template <typename T, size_t N, size_t... integers>
 	struct NonStringTypeIndexSequenceHelper<T, N, N, integers...> {
 		using type = std::integer_sequence<size_t, integers...>;
 	};
 
-	template<typename T>
+	template <typename T>
 	using NonStringTypeIndexSequence = NonStringTypeIndexSequenceHelper<T, 0, std::tuple_size_v<T>>::type;
 
 	template <auto fmt_str, typename T, size_t... Tindices>

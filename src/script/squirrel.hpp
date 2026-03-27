@@ -27,7 +27,7 @@ enum class ScriptType : uint8_t {
 	GS, ///< The script is for Game scripts.
 };
 
-template<typename T>
+template <typename T>
 concept SquirrelStackValueAsBase = T::script_stack_value_as_base || false;
 
 class ScriptAllocator {

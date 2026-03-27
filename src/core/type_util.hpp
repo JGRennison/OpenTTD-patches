@@ -26,30 +26,30 @@ private:
 
 namespace TypeUtil {
 #if !HAS_BUILTIN(__type_pack_element)
-	template<size_t I, typename... T>
+	template <size_t I, typename... T>
 	struct TypeIndexer;
 
-	template<typename T0, typename... More>
+	template <typename T0, typename... More>
 	struct TypeIndexer<0, T0, More...> {
 		using type = T0;
 	};
 
-	template<typename T0, typename T1, typename... More>
+	template <typename T0, typename T1, typename... More>
 	struct TypeIndexer<1, T0, T1, More...> {
 		using type = T1;
 	};
 
-	template<typename T0, typename T1, typename T2, typename... More>
+	template <typename T0, typename T1, typename T2, typename... More>
 	struct TypeIndexer<2, T0, T1, T2, More...> {
 		using type = T2;
 	};
 
-	template<typename T0, typename T1, typename T2, typename T3, typename... More>
+	template <typename T0, typename T1, typename T2, typename T3, typename... More>
 	struct TypeIndexer<3, T0, T1, T2, T3, More...> {
 		using type = T3;
 	};
 
-	template<size_t N, typename T0, typename T1, typename T2, typename T3, typename... More>
+	template <size_t N, typename T0, typename T1, typename T2, typename T3, typename... More>
 	requires (N >= 4)
 	struct TypeIndexer<N, T0, T1, T2, T3, More...> : public TypeIndexer<N - 4, More...> {};
 #endif
