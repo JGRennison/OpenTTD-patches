@@ -1601,7 +1601,7 @@ STR_CONFIG_SETTING_LAND_GENERATOR_HELPTEXT                      :Sākotnējais �
 STR_CONFIG_SETTING_LAND_GENERATOR_ORIGINAL                      :Sākotnējais
 STR_CONFIG_SETTING_LAND_GENERATOR_TERRA_GENESIS                 :TerraGenesis
 
-STR_CONFIG_SETTING_TERRAIN_TYPE                                 :Reljefa veids: {STRING}
+STR_CONFIG_SETTING_TERRAIN_TYPE                                 :Maksimālā augstuma iepriekšiestatījums: {STRING}
 STR_CONFIG_SETTING_TERRAIN_TYPE_HELPTEXT                        :Izvēlieties ainavas pauguru un kalnu augstumu
 
 STR_CONFIG_SETTING_INDUSTRY_DENSITY                             :Industriju blīvums: {STRING}
@@ -1628,6 +1628,14 @@ STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_SMOOTH             :Ļoti gluda
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_SMOOTH                  :Gluda
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_ROUGH                   :Nelīdzena
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_ROUGH              :Ļoti nelīdzena
+
+STR_CONFIG_SETTING_AVERAGE_HEIGHT                               :Vidējais augums: {STRING}
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_HELPTEXT                      :Izvēlieties vidējo zemes augstumu. “Automātiski” izmanto noklusējuma vērtību, pamatojoties uz izvēlēto klimatu: “Zemienes” subtropu klimatam, “Normāls” mērenajam un rotaļu klimatam, un “Plateaus” subarktiskajam klimatam.
+###length 4
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_AUTO                          :Automātiska
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_LOWLANDS                      :Zemienes
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_NORMAL                        :Normāls
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_PLATEAUS                      :Plato
 
 STR_CONFIG_SETTING_VARIETY                                      :Dažādības sadalījums: {STRING}
 STR_CONFIG_SETTING_VARIETY_HELPTEXT                             :Izvēlieties, vai kartē ir gan kalni, gan līdzenas vietas. Jo augstāka atšķirība, jo lielākas atšķirības kalnu un līdzenu apgabalu augstumā
@@ -3413,7 +3421,8 @@ STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Tuksneš
 STR_MAPGEN_DESERT_COVERAGE_UP_TOOLTIP                           :{BLACK}Palielināt tuksneša pārklājumu par desmit procentiem
 STR_MAPGEN_DESERT_COVERAGE_DOWN_TOOLTIP                         :{BLACK}Samazināt tuksneša pārklājumu par desmit procentiem
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
-STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Apvidus reljefs:
+STR_MAPGEN_TERRAIN_TYPE                                         :Maksimālais augstums:
+STR_MAPGEN_AVERAGE_HEIGHT                                       :{BLACK}Vidējais augums:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Jūras līmenis:
 STR_MAPGEN_SEA_LEVEL_TOOLTIP                                    :{BLACK}Izvēlieties jūras līmeni
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Upes:
@@ -6020,4 +6029,3 @@ STR_BADGE_CONFIG_FILTERS                                        :{WHITE}Emblēmu
 STR_BADGE_CONFIG_PREVIEW                                        :Priekšskatīt attēlu
 STR_BADGE_CONFIG_NAME                                           :Nosaukums
 STR_BADGE_FILTER_ANY_LABEL                                      :Jebkurš {STRING}
-STR_BADGE_FILTER_IS_LABEL                                       :{STRING} ir {STRING}

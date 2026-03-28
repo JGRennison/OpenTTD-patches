@@ -1764,6 +1764,8 @@ STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_SMOOTH                  :плавно
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_ROUGH                   :грубо
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_ROUGH              :дуже грубо
 
+###length 4
+
 STR_CONFIG_SETTING_VARIETY                                      :Розподіл різноманітності: {STRING}
 STR_CONFIG_SETTING_VARIETY_HELPTEXT                             :Оберіть наявність на мапі гір і рівнин. Чим більша різноманітність, тим більша відмінність у висотах між гірськими і пласкими ділянками
 
@@ -6175,4 +6177,3 @@ STR_BADGE_CONFIG_FILTERS                                        :{WHITE}Філь
 STR_BADGE_CONFIG_PREVIEW                                        :Попередній перегляд
 STR_BADGE_CONFIG_NAME                                           :Назва
 STR_BADGE_FILTER_ANY_LABEL                                      :Заголовок: {STRING}
-STR_BADGE_FILTER_IS_LABEL                                       :{STRING} це {STRING}

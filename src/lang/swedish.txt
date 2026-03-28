@@ -1599,7 +1599,7 @@ STR_CONFIG_SETTING_LAND_GENERATOR_HELPTEXT                      :Den ursprunglig
 STR_CONFIG_SETTING_LAND_GENERATOR_ORIGINAL                      :Original
 STR_CONFIG_SETTING_LAND_GENERATOR_TERRA_GENESIS                 :TerraGenesis
 
-STR_CONFIG_SETTING_TERRAIN_TYPE                                 :Terrängtyp: {STRING}
+STR_CONFIG_SETTING_TERRAIN_TYPE                                 :Maxhöjd förval: {STRING}
 STR_CONFIG_SETTING_TERRAIN_TYPE_HELPTEXT                        :Välj höjden på kullar och berg i landskapet
 
 STR_CONFIG_SETTING_INDUSTRY_DENSITY                             :Industritäthet: {STRING}
@@ -1626,6 +1626,14 @@ STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_SMOOTH             :Väldigt lätt
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_SMOOTH                  :Lätt
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_ROUGH                   :Svår
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_ROUGH              :Väldigt svår
+
+STR_CONFIG_SETTING_AVERAGE_HEIGHT                               :Medelhöjd: {STRING}
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_HELPTEXT                      :Välj medelhöjd på landnivå. "Automatisk" använder standardhöjd för klimatet: "Lågland" i subtropiskt, "Normalt" i tempererat/leksaksland och "Platåer" i subarktiskt.
+###length 4
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_AUTO                          :Automatiskt
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_LOWLANDS                      :Lågland
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_NORMAL                        :Normalt
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_PLATEAUS                      :Platåer
 
 STR_CONFIG_SETTING_VARIETY                                      :Varierad distribution: {STRING}
 STR_CONFIG_SETTING_VARIETY_HELPTEXT                             :Välj om kartan ska innehålla både berg och flacka områden. Ju större variation desto större höjdskillnad mellan bergiga och flacka områden
@@ -3408,7 +3416,8 @@ STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Ökentä
 STR_MAPGEN_DESERT_COVERAGE_UP_TOOLTIP                           :{BLACK}Öka ökentäckning med tio procent
 STR_MAPGEN_DESERT_COVERAGE_DOWN_TOOLTIP                         :{BLACK}Minska ökentäckning med tio procent
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
-STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Terrängtyp:
+STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Maxhöjd:
+STR_MAPGEN_AVERAGE_HEIGHT                                       :{BLACK}Medelhöjd:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Havsnivå
 STR_MAPGEN_SEA_LEVEL_TOOLTIP                                    :{BLACK}Välj havsnivån
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Flod:
@@ -6010,4 +6019,3 @@ STR_BADGE_CONFIG_FILTERS                                        :{WHITE}Märkesf
 STR_BADGE_CONFIG_PREVIEW                                        :Förhandsvisning
 STR_BADGE_CONFIG_NAME                                           :Namn
 STR_BADGE_FILTER_ANY_LABEL                                      :Någon {STRING}
-STR_BADGE_FILTER_IS_LABEL                                       :{STRING} är {STRING}

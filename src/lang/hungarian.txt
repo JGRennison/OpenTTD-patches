@@ -1663,7 +1663,7 @@ STR_CONFIG_SETTING_LAND_GENERATOR_HELPTEXT                      :Az eredeti tér
 STR_CONFIG_SETTING_LAND_GENERATOR_ORIGINAL                      :Eredeti
 STR_CONFIG_SETTING_LAND_GENERATOR_TERRA_GENESIS                 :TerraGenesis
 
-STR_CONFIG_SETTING_TERRAIN_TYPE                                 :Tereptípus: {STRING}
+STR_CONFIG_SETTING_TERRAIN_TYPE                                 :Előre beállított maximális magasság: {STRING}
 STR_CONFIG_SETTING_TERRAIN_TYPE_HELPTEXT                        :A dombok és hegyek magasságának beállítása
 
 STR_CONFIG_SETTING_INDUSTRY_DENSITY                             :Gazdasági épületek száma: {STRING}
@@ -1690,6 +1690,14 @@ STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_SMOOTH             :Nagyon sima
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_SMOOTH                  :Sima
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_ROUGH                   :Durva
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_ROUGH              :Nagyon durva
+
+STR_CONFIG_SETTING_AVERAGE_HEIGHT                               :Átlagos magasság: {STRING}
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_HELPTEXT                      :Válassza ki a terület átlagos magasságát. Az 'Automatikus' beállítás az alapértelmezett értéket használja a kiválasztott éghajlat alapján: 'Síkság' a szubtrópusi éghajlatra, 'Normál' a mérsékelt éghajlatra és a Toyland-re, valamint 'Fennsík' a szubarktikus éghajlatra.
+###length 4
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_AUTO                          :Automatikus
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_LOWLANDS                      :Síkság
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_NORMAL                        :Normál
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_PLATEAUS                      :Fennsík
 
 STR_CONFIG_SETTING_VARIETY                                      :Változatosság eloszlása: {STRING}
 STR_CONFIG_SETTING_VARIETY_HELPTEXT                             :Bekapcsolása esetén a térképen lesznek hegyvidékes és sík területek is. Nagyobb változatosság esetén nagyobb lesz a magasságkülönbség a sík és hegyvidékes területek között
@@ -3472,7 +3480,8 @@ STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Sivatag 
 STR_MAPGEN_DESERT_COVERAGE_UP_TOOLTIP                           :{BLACK}A sivatag kiterjedésének növelése 10%-kal
 STR_MAPGEN_DESERT_COVERAGE_DOWN_TOOLTIP                         :{BLACK}A sivatag kiterjedésének csökkentése 10%-kal
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
-STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Tereptípus:
+STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Maximális magasság:
+STR_MAPGEN_AVERAGE_HEIGHT                                       :{BLACK}Áltagos magasság:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Tengerszint:
 STR_MAPGEN_SEA_LEVEL_TOOLTIP                                    :{BLACK}Tengerszint kiválasztása
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Folyók:
@@ -6115,4 +6124,3 @@ STR_BADGE_CONFIG_FILTERS                                        :{WHITE}Jelvény
 STR_BADGE_CONFIG_PREVIEW                                        :Előnézet kép
 STR_BADGE_CONFIG_NAME                                           :Név
 STR_BADGE_FILTER_ANY_LABEL                                      :Bármelyik {STRING}
-STR_BADGE_FILTER_IS_LABEL                                       :{STRING} {STRING}

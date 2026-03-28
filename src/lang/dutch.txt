@@ -1627,6 +1627,8 @@ STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_SMOOTH                  :Glad
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_ROUGH                   :Ruig
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_ROUGH              :Erg ruig
 
+###length 4
+
 STR_CONFIG_SETTING_VARIETY                                      :Variëteit distributie: {STRING}
 STR_CONFIG_SETTING_VARIETY_HELPTEXT                             :Kies of de kaart zowel bergachtige als vlakke gebieden bevat. Hoe groter de variatie, hoe meer verschillen in hoogte tussen bergachtige en vlakke gebieden
 
@@ -5983,4 +5985,3 @@ STR_BADGE_CONFIG_FILTERS                                        :{WHITE}Badgefil
 STR_BADGE_CONFIG_PREVIEW                                        :Voorbeeld
 STR_BADGE_CONFIG_NAME                                           :Naam
 STR_BADGE_FILTER_ANY_LABEL                                      :Willekeurige {STRING}
-STR_BADGE_FILTER_IS_LABEL                                       :{STRING} is {STRING}

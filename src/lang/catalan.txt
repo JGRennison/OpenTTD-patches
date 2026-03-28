@@ -1600,7 +1600,7 @@ STR_CONFIG_SETTING_LAND_GENERATOR_HELPTEXT                      :L'algorisme gen
 STR_CONFIG_SETTING_LAND_GENERATOR_ORIGINAL                      :Original
 STR_CONFIG_SETTING_LAND_GENERATOR_TERRA_GENESIS                 :TerraGenesis
 
-STR_CONFIG_SETTING_TERRAIN_TYPE                                 :Tipus de terreny: {STRING}
+STR_CONFIG_SETTING_TERRAIN_TYPE                                 :Perfil d'altitud màxima: {STRING}
 STR_CONFIG_SETTING_TERRAIN_TYPE_HELPTEXT                        :Escolliu l'altura dels turons i muntanyes del paisatge.
 
 STR_CONFIG_SETTING_INDUSTRY_DENSITY                             :Densitat d'indústries: {STRING}
@@ -1627,6 +1627,14 @@ STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_SMOOTH             :Molt suau
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_SMOOTH                  :Suau
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_ROUGH                   :Escarpat
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_ROUGH              :Molt escarpat
+
+STR_CONFIG_SETTING_AVERAGE_HEIGHT                               :Altitud mitjana: {STRING}
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_HELPTEXT                      :Escolliu l'altitud mitjana del terreny. «Automàtica» fa servir el valor per defecte segons el clima escollit, «Terres baixes» per a clima subtropical, «Normal» per a clima temperat i paisatge de joguines, i «Planes» per al clima subàrtic.
+###length 4
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_AUTO                          :Automàtica
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_LOWLANDS                      :Terres baixes
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_NORMAL                        :Normal
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_PLATEAUS                      :Planes
 
 STR_CONFIG_SETTING_VARIETY                                      :Varietat: {STRING}
 STR_CONFIG_SETTING_VARIETY_HELPTEXT                             :Trieu si el mapa ha de contenir muntanyes o àrees planes. Com més varietat, més diferències hi haurà entre l'elevació de les àrees muntanyoses i planes.
@@ -3409,7 +3417,8 @@ STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Proporci
 STR_MAPGEN_DESERT_COVERAGE_UP_TOOLTIP                           :{BLACK}Augmenta un 10 % la proporció de terreny desèrtic
 STR_MAPGEN_DESERT_COVERAGE_DOWN_TOOLTIP                         :{BLACK}Redueix un 10 % la proporció de terreny desèrtic
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}{NBSP}%
-STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Tipus de terreny:
+STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Altitud màxima:
+STR_MAPGEN_AVERAGE_HEIGHT                                       :{BLACK}Altitud mitjana:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Nivell de mar:
 STR_MAPGEN_SEA_LEVEL_TOOLTIP                                    :{BLACK}Seleccioneu el nivell de la mar
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Quantitat de rius:
@@ -4738,6 +4747,7 @@ STR_ORDERS_SKIP_BUTTON                                          :{BLACK}Salta
 STR_ORDERS_SKIP_TOOLTIP                                         :{BLACK}Salta l'ordre actual, i comença la següent. Amb Ctrl+clic, es salta a l'ordre seleccionada.
 
 STR_ORDERS_DELETE_BUTTON                                        :{BLACK}Esborra
+STR_ORDERS_DELETE_ALL_BUTTON                                    :{BLACK}Esborra-les totes
 STR_ORDERS_DELETE_TOOLTIP                                       :{BLACK}Esborra l'ordre seleccionada
 STR_ORDERS_DELETE_ALL_TOOLTIP                                   :{BLACK}Esborra totes les ordres
 STR_ORDERS_STOP_SHARING_BUTTON                                  :{BLACK}Deixa de compartir
@@ -6010,4 +6020,3 @@ STR_BADGE_CONFIG_FILTERS                                        :{WHITE}Filtres 
 STR_BADGE_CONFIG_PREVIEW                                        :Imatge de previsualització
 STR_BADGE_CONFIG_NAME                                           :Nom
 STR_BADGE_FILTER_ANY_LABEL                                      :Qualsevol {STRING}
-STR_BADGE_FILTER_IS_LABEL                                       :{STRING} és {STRING}

@@ -1600,7 +1600,7 @@ STR_CONFIG_SETTING_LAND_GENERATOR_HELPTEXT                      :Le générateur
 STR_CONFIG_SETTING_LAND_GENERATOR_ORIGINAL                      :Original
 STR_CONFIG_SETTING_LAND_GENERATOR_TERRA_GENESIS                 :TerraGenesis
 
-STR_CONFIG_SETTING_TERRAIN_TYPE                                 :Type de terrain{NBSP}: {STRING}
+STR_CONFIG_SETTING_TERRAIN_TYPE                                 :Altitude maximum{NBSP}: {STRING}
 STR_CONFIG_SETTING_TERRAIN_TYPE_HELPTEXT                        :Chosir la hauteur des collines et montagnes du paysage
 
 STR_CONFIG_SETTING_INDUSTRY_DENSITY                             :Densité des industries{NBSP}: {STRING}
@@ -1627,6 +1627,14 @@ STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_SMOOTH             :Très lisse
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_SMOOTH                  :Lisse
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_ROUGH                   :Rugueux
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_ROUGH              :Très rugueux
+
+STR_CONFIG_SETTING_AVERAGE_HEIGHT                               :Altitude moyenne{NBSP}: {STRING}
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_HELPTEXT                      :Choisir l'altitude moyenne du terrain. 'Automatique' utilise le défaut basé sur le climat sélectionné{NBSP}: 'Plaines' pour Tropical, 'Normal' pour Tempéré et Monde des jouets, et 'Plateaux' pour Arctique.
+###length 4
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_AUTO                          :Automatique
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_LOWLANDS                      :Plaines
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_NORMAL                        :Normale
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_PLATEAUS                      :Plateaux
 
 STR_CONFIG_SETTING_VARIETY                                      :Distribution de variété{NBSP}: {STRING}
 STR_CONFIG_SETTING_VARIETY_HELPTEXT                             :Contrôle si la carte contient à la fois des montagnes et des plaines. Plus la valeur est élevée, plus la différence d'élévation entre le plateau montagneux et les plaines sera importante
@@ -3409,7 +3417,8 @@ STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Couvertu
 STR_MAPGEN_DESERT_COVERAGE_UP_TOOLTIP                           :{BLACK}Augmenter la couverture du désert de dix pour cent
 STR_MAPGEN_DESERT_COVERAGE_DOWN_TOOLTIP                         :{BLACK}Diminuer la couverture du désert de dix pour cent
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
-STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Type de terrain{NBSP}:
+STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Altitude maximum{NBSP}:
+STR_MAPGEN_AVERAGE_HEIGHT                                       :{BLACK}Altitude moyenne{NBSP}:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Niveau de la mer{NBSP}:
 STR_MAPGEN_SEA_LEVEL_TOOLTIP                                    :{BLACK}Sélectionner le niveau de l'eau
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Nb. de rivières{NBSP}:
@@ -6010,4 +6019,3 @@ STR_BADGE_CONFIG_FILTERS                                        :{WHITE}Filtres 
 STR_BADGE_CONFIG_PREVIEW                                        :Aperçu du véhicule
 STR_BADGE_CONFIG_NAME                                           :Nom
 STR_BADGE_FILTER_ANY_LABEL                                      :Tous {STRING}
-STR_BADGE_FILTER_IS_LABEL                                       :{STRING} est {STRING}

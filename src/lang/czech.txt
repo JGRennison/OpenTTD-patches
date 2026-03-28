@@ -1686,7 +1686,7 @@ STR_CONFIG_SETTING_LAND_GENERATOR_HELPTEXT                      :Originální ge
 STR_CONFIG_SETTING_LAND_GENERATOR_ORIGINAL                      :původní
 STR_CONFIG_SETTING_LAND_GENERATOR_TERRA_GENESIS                 :TerraGenesis
 
-STR_CONFIG_SETTING_TERRAIN_TYPE                                 :Druh terénu: {STRING}
+STR_CONFIG_SETTING_TERRAIN_TYPE                                 :Výchozí maximální výška terénu: {STRING}
 STR_CONFIG_SETTING_TERRAIN_TYPE_HELPTEXT                        :Zvol výšku hor a kopců v terénu
 
 STR_CONFIG_SETTING_INDUSTRY_DENSITY                             :Množství průmyslu: {STRING}
@@ -1713,6 +1713,14 @@ STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_SMOOTH             :velmi rovná
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_SMOOTH                  :rovná
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_ROUGH                   :členitá
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_ROUGH              :velmi členitá
+
+STR_CONFIG_SETTING_AVERAGE_HEIGHT                               :Průměrná výška: {STRING}
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_HELPTEXT                      :Vyber průměrnou výšku terénu. Volba 'automaticky' nastaví výchozí výšku na základě klimatu: 'nížiny' pro subtropické klima, 'střední polohy' pro mírné klima a zemi hraček a 'náhorní plošiny' pro klima subarktické.
+###length 4
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_AUTO                          :automaticky
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_LOWLANDS                      :nížiny
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_NORMAL                        :střední polohy
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_PLATEAUS                      :náhorní plošiny
 
 STR_CONFIG_SETTING_VARIETY                                      :Rozmanitost umisťování: {STRING}
 STR_CONFIG_SETTING_VARIETY_HELPTEXT                             :Vyberte, zda mapa obsahuje jak hory, tak i rovinaté oblasti. Čím vyšší je rozmanitost, tím více rozdílů v nadmořské výšce mezi horskými a rovinatými oblastmi.
@@ -3483,7 +3491,8 @@ STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Pokrytí
 STR_MAPGEN_DESERT_COVERAGE_UP_TOOLTIP                           :{BLACK}Zvětšit pokrytí pouštěmi o deset procent
 STR_MAPGEN_DESERT_COVERAGE_DOWN_TOOLTIP                         :{BLACK}Zmenšit pokrytí pouštěmi o deset procent
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
-STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Typ krajiny:
+STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Maximální výška:
+STR_MAPGEN_AVERAGE_HEIGHT                                       :{BLACK}Průměrná výška:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Četnost jezer:
 STR_MAPGEN_SEA_LEVEL_TOOLTIP                                    :{BLACK}Zvol úroveň moře
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Řeky:
@@ -6203,4 +6212,3 @@ STR_BADGE_CONFIG_FILTERS                                        :{WHITE}Filtr od
 STR_BADGE_CONFIG_PREVIEW                                        :Náhled obrázku
 STR_BADGE_CONFIG_NAME                                           :Jméno
 STR_BADGE_FILTER_ANY_LABEL                                      :{G 0 Jakýkoliv Jakákoliv Jakékoliv Jacíkoliv Jakékoliv Jakékoliv Jakékoliv} {STRING}
-STR_BADGE_FILTER_IS_LABEL                                       :{STRING} je {STRING}

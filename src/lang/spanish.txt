@@ -1628,6 +1628,14 @@ STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_SMOOTH                  :Llano
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_ROUGH                   :Irregular
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_ROUGH              :Muy Irregular
 
+STR_CONFIG_SETTING_AVERAGE_HEIGHT                               :Altura promedio: {STRING}
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_HELPTEXT                      :Elige la altura promedio de la tierra. 'Automático' usa la altura promedio según el clima seleccionado: 'Pampa' para Subtropical, 'Normal' para Templado y Tierra de los Juguetes, y 'Meseta' para Subártico.
+###length 4
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_AUTO                          :Automático
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_LOWLANDS                      :Pampa
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_NORMAL                        :Normal
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_PLATEAUS                      :Meseta
+
 STR_CONFIG_SETTING_VARIETY                                      :Variedad: {STRING}
 STR_CONFIG_SETTING_VARIETY_HELPTEXT                             :Permite controlar si el mapa contendrá tanto zonas montañosas como planas. Cuanta más variedad, más diferencia de altura habrá entre las zonas montañosas y las planas
 
@@ -2806,8 +2814,8 @@ STR_RAIL_TOOLBAR_ELRAIL_CONSTRUCTION_CAPTION                    :Construcción F
 STR_RAIL_TOOLBAR_MONORAIL_CONSTRUCTION_CAPTION                  :Construcción de Monorraíl
 STR_RAIL_TOOLBAR_MAGLEV_CONSTRUCTION_CAPTION                    :Construcción de Maglev
 
-STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_TRACK                   :{BLACK}Construye tramos de ferrocarril. Ctrl+clic retira tramos de ferrocarril. Con Mayús sólo muestra una estimación del coste
-STR_RAIL_TOOLBAR_TOOLTIP_BUILD_AUTORAIL                         :{BLACK}Construye tramos de ferrocarril usando el modo Autorraíl. Ctrl+clic retira tramos de ferrocarril. Con Mayús sólo muestra una estimación del coste
+STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_TRACK                   :{BLACK}Construye vías de ferrocarril. Ctrl+clic retira vías de ferrocarril. Con Mayús sólo muestra una estimación del coste
+STR_RAIL_TOOLBAR_TOOLTIP_BUILD_AUTORAIL                         :{BLACK}Construye vías de ferrocarril usando el modo Autorraíl. Ctrl+clic retira vías de ferrocarril. Con Mayús sólo muestra una estimación del coste
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_TRAIN_DEPOT_FOR_BUILDING         :{BLACK}Construye un depósito de trenes (para comprar y dar mantenimiento a trenes). Mayús permite mostrar una estimación del precio
 STR_RAIL_TOOLBAR_TOOLTIP_CONVERT_RAIL_TO_WAYPOINT               :{BLACK}Construye puntos de ruta sobre la vía del ferrocarril. Ctrl+clic para seleccionar otro punto de ruta al que unirlo. Con Mayús sólo muestra una estimación del coste
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_RAILROAD_STATION                 :{BLACK}Construye estaciones de ferrocarril. Ctrl+clic para seleccionar otra estación a la que unirla. Con Mayús sólo muestra una estimación del coste
@@ -2852,20 +2860,36 @@ STR_PICKER_PREVIEW_SHRINK_TOOLTIP                               :Reduce la altur
 STR_PICKER_PREVIEW_EXPAND                                       :+
 STR_PICKER_PREVIEW_EXPAND_TOOLTIP                               :Incrementa la altura de las imágenes de previsualización. Ctrl+clic para aumentar al máximo
 
+STR_PICKER_SELECT_COLLECTION_TOOLTIP                            :Seleccionar una colección
+STR_PICKER_COLLECTION_ADD                                       :Añadir
+STR_PICKER_COLLECTION_ADD_TOOLTIP                               :Crear una nueva colección
+STR_PICKER_COLLECTION_RENAME                                    :Renombrar
+STR_PICKER_COLLECTION_RENAME_TOOLTIP                            :Renombrar una colección
+STR_PICKER_COLLECTION_DELETE                                    :Eliminar
+STR_PICKER_COLLECTION_DELETE_TOOLTIP                            :Eliminar una colección
 
+STR_PICKER_COLLECTION_RENAME_QUERY                              :Renombrar esta colección
+STR_PICKER_COLLECTION_DELETE_QUERY                              :Eliminar colección
+STR_PICKER_COLLECTION_DELETE_QUERY_TEXT                         :{YELLOW}¿Estás seguro de que quieres eliminar esta colección?
+STR_PICKER_COLLECTION_DELETE_QUERY_DISABLED_TEXT                :{YELLOW}¿Estás seguro de que quieres borrar esta colección? ¡Hay elementos de NewGRFs deshabilitados en ella!
 
 STR_PICKER_STATION_CLASS_TOOLTIP                                :Selecciona una clase de estación para mostrar
 STR_PICKER_STATION_TYPE_TOOLTIP                                 :Selecciona un tipo de estación para construir. Ctrl+clic para añadir o eliminar en elementos guardados
+STR_PICKER_STATION_COLLECTION_TOOLTIP                           :Selecciona una colección de estaciones para mostrar
 STR_PICKER_WAYPOINT_CLASS_TOOLTIP                               :Selecciona una clase de punto de ruta para mostrar
 STR_PICKER_WAYPOINT_TYPE_TOOLTIP                                :Selecciona un tipo de punto de ruta para construir. Ctrl+clic para añadir o eliminar en elementos guardados
+STR_PICKER_WAYPOINT_COLLECTION_TOOLTIP                          :Selecciona una colección de puntos de ruta para mostrar
 STR_PICKER_ROADSTOP_BUS_CLASS_TOOLTIP                           :Selecciona una clase de estación de autobús para mostrar
 STR_PICKER_ROADSTOP_BUS_TYPE_TOOLTIP                            :Selecciona un tipo de estación de autobús para construir. Ctrl+clic para añadir o eliminar en elementos guardados
+STR_PICKER_ROADSTOP_BUS_COLLECTION_TOOLTIP                      :Selecciona una colección de estaciones de autobuses para mostrar
 STR_PICKER_ROADSTOP_TRUCK_CLASS_TOOLTIP                         :Selecciona una clase de estación de camiones para mostrar
 STR_PICKER_ROADSTOP_TRUCK_TYPE_TOOLTIP                          :Selecciona un tipo de estación de camiones para construir. Ctrl+clic para añadir o eliminar en elementos guardados
 STR_PICKER_OBJECT_CLASS_TOOLTIP                                 :Selecciona una clase de objeto para mostrar
 STR_PICKER_OBJECT_TYPE_TOOLTIP                                  :Selecciona un tipo de objeto para colocar. Ctrl+clic para añadir o eliminar en elementos guardados. Ctrl+clic+arrastrar permite seleccionar un área diagonalmente. Con Mayús sólo muestra una estimación del coste
+STR_PICKER_OBJECT_COLLECTION_TOOLTIP                            :Selecciona una colección de objetos para mostrar
 STR_PICKER_HOUSE_CLASS_TOOLTIP                                  :Selecciona una zona urbana a mostrar
 STR_PICKER_HOUSE_TYPE_TOOLTIP                                   :Selecciona un tipo de edificio para construir. Ctrl+clic para añadir o eliminar en elementos guardados
+STR_PICKER_HOUSE_COLLECTION_TOOLTIP                             :Selecciona una colección de casas para mostrar
 
 STR_HOUSE_PICKER_CAPTION                                        :Selección de Edificios
 STR_HOUSE_PICKER_NAME                                           :{BLACK}Nombre: {GOLD}{STRING}
@@ -3391,7 +3415,8 @@ STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Extensi�
 STR_MAPGEN_DESERT_COVERAGE_UP_TOOLTIP                           :{BLACK}Incrementar la extensión del desierto en un diez por ciento
 STR_MAPGEN_DESERT_COVERAGE_DOWN_TOOLTIP                         :{BLACK}Reducir la extensión del desierto en un diez por ciento
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
-STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Tipo de terreno
+STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Altura máxima:
+STR_MAPGEN_AVERAGE_HEIGHT                                       :{BLACK}Altura promedio:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Nivel del mar:
 STR_MAPGEN_SEA_LEVEL_TOOLTIP                                    :{BLACK}Selecciona el nivel del mar
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Ríos:
@@ -4366,8 +4391,15 @@ STR_DEPOT_SELL_CONFIRMATION_TEXT                                :{YELLOW}Estás 
 
 # Engine preview window
 STR_ENGINE_PREVIEW_CAPTION                                      :{WHITE}Mensaje del fabricante de vehículos
+STR_ENGINE_PREVIEW_CAPTION_COUNT                                :{WHITE}Mensaje del fabricante de vehículos ({COMMA} de {COMMA})
 STR_ENGINE_PREVIEW_MESSAGE                                      :{GOLD}Hemos diseñado un{G "" a "" a} nuev{G o a o a} {STRING} - ¿estaría interesado en el uso exclusivo de este vehículo durante un año, para que podamos ver cómo funciona antes de ponerlo a disposición del público?
 
+STR_ENGINE_PREVIEW_PREVIOUS                                     :Anterior
+STR_ENGINE_PREVIEW_PREVIOUS_TOOLTIP                             :Clica para volver al anterior vehículo nuevo
+STR_ENGINE_PREVIEW_NEXT                                         :Siguiente
+STR_ENGINE_PREVIEW_NEXT_TOOLTIP                                 :Clica para volver al siguiente vehículo nuevo
+STR_ENGINE_PREVIEW_ENGINE_LIST                                  :{COMMA}: {ENGINE}
+STR_ENGINE_PREVIEW_ENGINE_LIST_TOOLTIP                          :Clica para ir a un vehículo nuevo
 
 STR_ENGINE_PREVIEW_RAILROAD_LOCOMOTIVE                          :{G=f}locomotora
 STR_ENGINE_PREVIEW_ELRAIL_LOCOMOTIVE                            :Locomotora de ferrocarril eléctrico
@@ -5984,4 +6016,3 @@ STR_BADGE_CONFIG_FILTERS                                        :{WHITE}Filtros 
 STR_BADGE_CONFIG_PREVIEW                                        :Vista previa de imagen
 STR_BADGE_CONFIG_NAME                                           :Nombre
 STR_BADGE_FILTER_ANY_LABEL                                      :Cualquier {STRING}
-STR_BADGE_FILTER_IS_LABEL                                       :{STRING} es {STRING}

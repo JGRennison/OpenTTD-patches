@@ -651,8 +651,9 @@ STR_GRAPH_INDUSTRY_RANGE_DELIVERED                              :Toimitettu
 STR_GRAPH_INDUSTRY_RANGE_WAITING                                :Odottava
 
 STR_GRAPH_TOWN_CARGO_CAPTION                                    :{WHITE}{TOWN} – rahtihistoria
-STR_GRAPH_TOWN_RANGE_PRODUCED                                   :Tarjonta
+STR_GRAPH_TOWN_RANGE_PRODUCED                                   :Tuotettu
 STR_GRAPH_TOWN_RANGE_TRANSPORTED                                :Kuljetettu
+STR_GRAPH_TOWN_RANGE_DELIVERED                                  :Toimitettu
 
 STR_GRAPH_PERFORMANCE_DETAIL_TOOLTIP                            :{BLACK}Näytä tarkat suorituskykyarviot
 
@@ -1599,7 +1600,7 @@ STR_CONFIG_SETTING_LAND_GENERATOR_HELPTEXT                      :Alkuperäinen m
 STR_CONFIG_SETTING_LAND_GENERATOR_ORIGINAL                      :Alkuperäinen
 STR_CONFIG_SETTING_LAND_GENERATOR_TERRA_GENESIS                 :TerraGenesis
 
-STR_CONFIG_SETTING_TERRAIN_TYPE                                 :Maaston tyyppi: {STRING}
+STR_CONFIG_SETTING_TERRAIN_TYPE                                 :Enimmäiskorkeuden esiasetus: {STRING}
 STR_CONFIG_SETTING_TERRAIN_TYPE_HELPTEXT                        :Valitse maiseman mäkien ja vuorten korkeus
 
 STR_CONFIG_SETTING_INDUSTRY_DENSITY                             :Teollisuuden määrä: {STRING}
@@ -1626,6 +1627,14 @@ STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_SMOOTH             :Erittäin tasai
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_SMOOTH                  :Tasainen
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_ROUGH                   :Epätasainen
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_ROUGH              :Erittäin epätasainen
+
+STR_CONFIG_SETTING_AVERAGE_HEIGHT                               :Keskimääräinen korkeus: {STRING}
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_HELPTEXT                      :Valitse maaston keskimääräinen korkeus. ”Automaattinen” käyttää valitun maastotyypin oletusta: ”alangot” subtrooppiselle, ”normaali” lauhkealle ja lelumaalle, ”ylängöt” pohjoiselle
+###length 4
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_AUTO                          :Automaattinen
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_LOWLANDS                      :Alangot
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_NORMAL                        :Normaali
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_PLATEAUS                      :Ylängöt
 
 STR_CONFIG_SETTING_VARIETY                                      :Maaston vaihtelu: {STRING}
 STR_CONFIG_SETTING_VARIETY_HELPTEXT                             :Valitse, onko kartalla sekä vuoristoisia että tasaisia alueita. Mitä suurempi on vaihtelu, sitä suurempia ovat korkeuserot vuoristoisten ja tasaisten alueiden välillä
@@ -3408,7 +3417,8 @@ STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Aavikon 
 STR_MAPGEN_DESERT_COVERAGE_UP_TOOLTIP                           :{BLACK}Kasvata aavikon peittoa 10 prosentilla
 STR_MAPGEN_DESERT_COVERAGE_DOWN_TOOLTIP                         :{BLACK}Vähennä aavikon peittoa 10 prosentilla
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}{NBSP}%
-STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Maaston tyyppi:
+STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Enimmäiskorkeus:
+STR_MAPGEN_AVERAGE_HEIGHT                                       :{BLACK}Keskikorkeus:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Merenpinta:
 STR_MAPGEN_SEA_LEVEL_TOOLTIP                                    :{BLACK}Valitse merenpinnan taso
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Joet:
@@ -6010,4 +6020,3 @@ STR_BADGE_CONFIG_FILTERS                                        :{WHITE}Tunnussu
 STR_BADGE_CONFIG_PREVIEW                                        :Esikatselu
 STR_BADGE_CONFIG_NAME                                           :Nimi
 STR_BADGE_FILTER_ANY_LABEL                                      :Mikä tahansa {STRING}
-STR_BADGE_FILTER_IS_LABEL                                       :{STRING} on {STRING}

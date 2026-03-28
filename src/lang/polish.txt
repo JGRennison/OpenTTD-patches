@@ -1025,13 +1025,14 @@ STR_GRAPH_CARGO_PAYMENT_CARGO                                   :{TINY_FONT}{BLA
 
 STR_GRAPH_INDUSTRY_CAPTION                                      :{WHITE}{INDUSTRY} - Historia Ładunków
 STR_GRAPH_INDUSTRY_RANGE_PRODUCED                               :Wyprodukowany
-STR_GRAPH_INDUSTRY_RANGE_TRANSPORTED                            :Przetransportowany
+STR_GRAPH_INDUSTRY_RANGE_TRANSPORTED                            :Zabrany
 STR_GRAPH_INDUSTRY_RANGE_DELIVERED                              :Dostarczony
 STR_GRAPH_INDUSTRY_RANGE_WAITING                                :Oczekujący
 
 STR_GRAPH_TOWN_CARGO_CAPTION                                    :{WHITE}{TOWN} - Historia Ładunków
-STR_GRAPH_TOWN_RANGE_PRODUCED                                   :Dostępny
-STR_GRAPH_TOWN_RANGE_TRANSPORTED                                :Przetransportowany
+STR_GRAPH_TOWN_RANGE_PRODUCED                                   :Wyprodukowany
+STR_GRAPH_TOWN_RANGE_TRANSPORTED                                :Zabrany
+STR_GRAPH_TOWN_RANGE_DELIVERED                                  :Dostarczony
 
 STR_GRAPH_PERFORMANCE_DETAIL_TOOLTIP                            :{BLACK}Pokaż szczegóły oceny wydajności
 
@@ -1979,7 +1980,7 @@ STR_CONFIG_SETTING_LAND_GENERATOR_HELPTEXT                      :Oryginalny gene
 STR_CONFIG_SETTING_LAND_GENERATOR_ORIGINAL                      :Oryginalny
 STR_CONFIG_SETTING_LAND_GENERATOR_TERRA_GENESIS                 :TerraGenesis
 
-STR_CONFIG_SETTING_TERRAIN_TYPE                                 :Typ terenu: {STRING}
+STR_CONFIG_SETTING_TERRAIN_TYPE                                 :Maksymalna wysokość: {STRING}
 STR_CONFIG_SETTING_TERRAIN_TYPE_HELPTEXT                        :Wybierz wysokość wzgórz i gór w krajobrazie
 
 STR_CONFIG_SETTING_INDUSTRY_DENSITY                             :Liczba przedsiębiorstw: {STRING}
@@ -2006,6 +2007,14 @@ STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_SMOOTH             :Bardzo łagodny
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_SMOOTH                  :Łagodny
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_ROUGH                   :Pofałdowany
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_ROUGH              :Bardzo pofałdowany
+
+STR_CONFIG_SETTING_AVERAGE_HEIGHT                               :Średnia wysokość: {STRING}
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_HELPTEXT                      :Wybierz średnią wysokość terenu. Opcja „Automatyczna” użyje domyślnej wartości dla wybranego klimatu: „Niziny” dla tropikalnego, „Normalna” dla umiarkowanego i zabawkowego oraz „Płaskowyże” dla arktycznego
+###length 4
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_AUTO                          :Automatyczna
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_LOWLANDS                      :Niziny
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_NORMAL                        :Normalna
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_PLATEAUS                      :Płaskowyże
 
 STR_CONFIG_SETTING_VARIETY                                      :Różnorodność terenu: {STRING}
 STR_CONFIG_SETTING_VARIETY_HELPTEXT                             :Wybierz, czy mapa ma zawierać zarówno obszary górskie, jak i płaskie. Im większa różnorodność, tym większe różnice wysokości między obszarami górskimi i płaskimi
@@ -3788,7 +3797,8 @@ STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Pokrycie
 STR_MAPGEN_DESERT_COVERAGE_UP_TOOLTIP                           :{BLACK}Zwiększ pokrycie pustynią o 10%
 STR_MAPGEN_DESERT_COVERAGE_DOWN_TOOLTIP                         :{BLACK}Zmniejsz pokrycie pustynią o 10%
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
-STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Typ terenu:
+STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Maksymalna wysokość:
+STR_MAPGEN_AVERAGE_HEIGHT                                       :{BLACK}Średnia wysokość:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Poziom morza:
 STR_MAPGEN_SEA_LEVEL_TOOLTIP                                    :{BLACK}Określ wysokość poziomu morza
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Liczba rzek:
@@ -6451,4 +6461,3 @@ STR_BADGE_CONFIG_FILTERS                                        :{WHITE}Filtry Z
 STR_BADGE_CONFIG_PREVIEW                                        :Podgląd Obrazka
 STR_BADGE_CONFIG_NAME                                           :Nazwa
 STR_BADGE_FILTER_ANY_LABEL                                      :Wszystkie {STRING}
-STR_BADGE_FILTER_IS_LABEL                                       :{STRING} to {STRING}

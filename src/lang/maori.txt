@@ -1599,7 +1599,7 @@ STR_CONFIG_SETTING_LAND_GENERATOR_HELPTEXT                      :Ka whakamahi te
 STR_CONFIG_SETTING_LAND_GENERATOR_ORIGINAL                      :Taketake
 STR_CONFIG_SETTING_LAND_GENERATOR_TERRA_GENESIS                 :TerraGenesis
 
-STR_CONFIG_SETTING_TERRAIN_TYPE                                 :Momo whenua: {STRING}
+STR_CONFIG_SETTING_TERRAIN_TYPE                                 :Tatūkē teitei mōrahi: {STRING}
 STR_CONFIG_SETTING_TERRAIN_TYPE_HELPTEXT                        :Kōwhiria te teitei o ngā puke me ngā maunga i te whenua
 
 STR_CONFIG_SETTING_INDUSTRY_DENSITY                             :Apiapi ahumahi: {STRING}
@@ -1626,6 +1626,14 @@ STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_SMOOTH             :Maheni rawa
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_SMOOTH                  :Maheni
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_ROUGH                   :Tuarangaranga
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_ROUGH              :Tuarangaranga rawa
+
+STR_CONFIG_SETTING_AVERAGE_HEIGHT                               :Teitei toharite: {STRING}
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_HELPTEXT                      :Kōwhiria te teitei toharite o te whenua. “Aunoa”: ka whakamahia te taunoa mō te taiao kua tīpakona: 'Raorao' mō te taiao wera, “Māori” mō te taiao hātai me te taiao taonga tākaro, “Mānia tairanga” mō te taiao makariri.
+###length 4
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_AUTO                          :Aunoa
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_LOWLANDS                      :Raorao
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_NORMAL                        :Māori
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_PLATEAUS                      :Mānia tairanga
 
 STR_CONFIG_SETTING_VARIETY                                      :Tuari matatini: {STRING}
 STR_CONFIG_SETTING_VARIETY_HELPTEXT                             :Kōwhiri mehemea he maunga, he wāhi papatahi hoki kei te mahere. Ka nui ake te matatini, ka nui ake ngā rerekētanga i te teitei i waenganui o ngā maunga me ngā wāhi papatahi
@@ -3407,7 +3415,8 @@ STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Horahang
 STR_MAPGEN_DESERT_COVERAGE_UP_TOOLTIP                           :{BLACK}Whakarahia te horahanga onepū mā te tekau ōrau
 STR_MAPGEN_DESERT_COVERAGE_DOWN_TOOLTIP                         :{BLACK}Whakapakutia te horahanga onepū mā te tekau ōrau
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
-STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Momo whenua:
+STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Teitei mōrahi:
+STR_MAPGEN_AVERAGE_HEIGHT                                       :{BLACK}Teitei toharite:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Pae moana:
 STR_MAPGEN_SEA_LEVEL_TOOLTIP                                    :{BLACK}Tīpakona te pae moana
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Awa:
@@ -6008,4 +6017,3 @@ STR_BADGE_CONFIG_FILTERS                                        :{WHITE}Tātari 
 STR_BADGE_CONFIG_PREVIEW                                        :Tiro takamuatia te ata
 STR_BADGE_CONFIG_NAME                                           :Ingoa
 STR_BADGE_FILTER_ANY_LABEL                                      :{STRING} katoa
-STR_BADGE_FILTER_IS_LABEL                                       :Ko {1:STRING} te {0:STRING}

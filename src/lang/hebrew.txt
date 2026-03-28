@@ -1483,6 +1483,8 @@ STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_SMOOTH                  :חלק
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_ROUGH                   :מחוספס
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_ROUGH              :מחוספס מאוד
 
+###length 4
+
 STR_CONFIG_SETTING_VARIETY                                      :הפצה מגוונת: {STRING}
 STR_CONFIG_SETTING_VARIETY_HELPTEXT                             :(עבור בורא הקרקע בלבד) בחר האם המפה תכיל גם הרים וגם אזורים שטוחים. מכיוון שכך המפה שטוחה יותר, יש לקבוע את ההגדרות הנוספות להררי
 
@@ -5438,4 +5440,3 @@ STR_BADGE_CONFIG_FILTERS                                        :מסנני תג
 STR_BADGE_CONFIG_PREVIEW                                        :תצוגה מקדימה של התמונה
 STR_BADGE_CONFIG_NAME                                           :שם
 STR_BADGE_FILTER_ANY_LABEL                                      :כל {STRING}
-STR_BADGE_FILTER_IS_LABEL                                       :{STRING} הוא {STRING}

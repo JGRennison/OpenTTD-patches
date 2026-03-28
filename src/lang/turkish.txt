@@ -1600,7 +1600,7 @@ STR_CONFIG_SETTING_LAND_GENERATOR_HELPTEXT                      :Özgün oluştu
 STR_CONFIG_SETTING_LAND_GENERATOR_ORIGINAL                      :Özgün
 STR_CONFIG_SETTING_LAND_GENERATOR_TERRA_GENESIS                 :TerraGenesis
 
-STR_CONFIG_SETTING_TERRAIN_TYPE                                 :Zemin türü: {STRING}
+STR_CONFIG_SETTING_TERRAIN_TYPE                                 :Azami yükseklik ayarı: {STRING}
 STR_CONFIG_SETTING_TERRAIN_TYPE_HELPTEXT                        :Oyun haritasındaki tepelerin ve dağların yüksekliğini seçin
 
 STR_CONFIG_SETTING_INDUSTRY_DENSITY                             :Endüstri yoğunluğu: {STRING}
@@ -1627,6 +1627,14 @@ STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_SMOOTH             :Pürüzsüz
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_SMOOTH                  :Düzgün
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_ROUGH                   :Engebeli
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_ROUGH              :Çok Engebeli
+
+STR_CONFIG_SETTING_AVERAGE_HEIGHT                               :Ortalama yükseklik: {STRING}
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_HELPTEXT                      :Arazinin ortalama yüksekliğini seçin. 'Otomatik', seçilen iklime göre öntanımlı olanı seçer: Tropik için 'Ovalar', Ilıman ve Oyuncak için 'Normal', Soğuk için 'Platolar'.
+###length 4
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_AUTO                          :Otomatik
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_LOWLANDS                      :Ovalar
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_NORMAL                        :Normal
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_PLATEAUS                      :Platolar
 
 STR_CONFIG_SETTING_VARIETY                                      :Çeşitlilik dağılımı: {STRING}
 STR_CONFIG_SETTING_VARIETY_HELPTEXT                             :Haritanın hem dağları hem de düzlükleri içerip içermediğini seçin. Çeşitlilik arttıkça dağlık ve düzlükler arasındaki yükseklik farkı da artar
@@ -3409,7 +3417,8 @@ STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Çöl ö
 STR_MAPGEN_DESERT_COVERAGE_UP_TOOLTIP                           :{BLACK}Çöl örtüsünü yüzde on arttır
 STR_MAPGEN_DESERT_COVERAGE_DOWN_TOOLTIP                         :{BLACK}Çöl örtüsünü yüzde on azalt
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}%{NUM}
-STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Arazi türü:
+STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Azami yükseklik:
+STR_MAPGEN_AVERAGE_HEIGHT                                       :{BLACK}Ortalama yükseklik:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Deniz seviyesi:
 STR_MAPGEN_SEA_LEVEL_TOOLTIP                                    :{BLACK}Deniz seviyesini seç
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Nehirler:
@@ -6021,4 +6030,3 @@ STR_BADGE_CONFIG_FILTERS                                        :{WHITE}Rozet Fi
 STR_BADGE_CONFIG_PREVIEW                                        :Önizleme Resmi
 STR_BADGE_CONFIG_NAME                                           :İsim
 STR_BADGE_FILTER_ANY_LABEL                                      :Her {STRING}
-STR_BADGE_FILTER_IS_LABEL                                       :{STRING} eşittir {STRING}

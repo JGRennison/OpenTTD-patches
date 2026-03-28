@@ -653,8 +653,9 @@ STR_GRAPH_INDUSTRY_RANGE_DELIVERED                              :Levert
 STR_GRAPH_INDUSTRY_RANGE_WAITING                                :Venter
 
 STR_GRAPH_TOWN_CARGO_CAPTION                                    :{WHITE}{TOWN} - Varehistorikk
-STR_GRAPH_TOWN_RANGE_PRODUCED                                   :Leveranse
+STR_GRAPH_TOWN_RANGE_PRODUCED                                   :Produsert
 STR_GRAPH_TOWN_RANGE_TRANSPORTED                                :Transportert
+STR_GRAPH_TOWN_RANGE_DELIVERED                                  :Levert
 
 STR_GRAPH_PERFORMANCE_DETAIL_TOOLTIP                            :{BLACK}Vis detaljerte prestasjonsmålinger
 
@@ -1601,7 +1602,7 @@ STR_CONFIG_SETTING_LAND_GENERATOR_HELPTEXT                      :Den opprinnelig
 STR_CONFIG_SETTING_LAND_GENERATOR_ORIGINAL                      :Orginal
 STR_CONFIG_SETTING_LAND_GENERATOR_TERRA_GENESIS                 :TerraGenesis
 
-STR_CONFIG_SETTING_TERRAIN_TYPE                                 :Terrengtype: {STRING}
+STR_CONFIG_SETTING_TERRAIN_TYPE                                 :Valgt maksimal høyde: {STRING}
 STR_CONFIG_SETTING_TERRAIN_TYPE_HELPTEXT                        :Velg høyden til bakker og fjell i landskapet
 
 STR_CONFIG_SETTING_INDUSTRY_DENSITY                             :Industritetthet: {STRING}
@@ -1628,6 +1629,14 @@ STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_SMOOTH             :Veldig jevnt
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_SMOOTH                  :Jevnt
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_ROUGH                   :Ulendt
 STR_CONFIG_SETTING_ROUGHNESS_OF_TERRAIN_VERY_ROUGH              :Veldig ulendt
+
+STR_CONFIG_SETTING_AVERAGE_HEIGHT                               :Gjennomsnittshøyde: {STRING}
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_HELPTEXT                      :Velg gjennomsnittshøyde for land. 'Automatisk' er basert på valgt klima: 'Lavland' for subtropisk, 'Normal' for temperert og leketøyland, og 'Platå' for subarktisk.
+###length 4
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_AUTO                          :Automatisk
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_LOWLANDS                      :Lavland
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_NORMAL                        :Normal
+STR_CONFIG_SETTING_AVERAGE_HEIGHT_PLATEAUS                      :Platå
 
 STR_CONFIG_SETTING_VARIETY                                      :Variasjonsspredning: {STRING}
 STR_CONFIG_SETTING_VARIETY_HELPTEXT                             :Velg om kartet inneholder både fjellrike og flate områder. Jo høyere variasjon, dess større forskjeller i høyde mellom fjellrike og flate områder
@@ -3410,7 +3419,8 @@ STR_MAPGEN_DESERT_COVERAGE                                      :{BLACK}Ørkende
 STR_MAPGEN_DESERT_COVERAGE_UP_TOOLTIP                           :{BLACK}Øk ørkendekningen med ti prosent
 STR_MAPGEN_DESERT_COVERAGE_DOWN_TOOLTIP                         :{BLACK}Reduser ørkendekning med 10 prosent
 STR_MAPGEN_DESERT_COVERAGE_TEXT                                 :{BLACK}{NUM}%
-STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Terrengtype:
+STR_MAPGEN_TERRAIN_TYPE                                         :{BLACK}Maksimal høyde:
+STR_MAPGEN_AVERAGE_HEIGHT                                       :{BLACK}Gjennomsnittshøyde:
 STR_MAPGEN_SEA_LEVEL                                            :{BLACK}Havnivå:
 STR_MAPGEN_SEA_LEVEL_TOOLTIP                                    :{BLACK}Velg havnivået
 STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Elver:
@@ -4739,6 +4749,7 @@ STR_ORDERS_SKIP_BUTTON                                          :{BLACK}Hopp ove
 STR_ORDERS_SKIP_TOOLTIP                                         :{BLACK}Hopp over den nåværende ordren og begynn på neste. Ctrl+klikk for å hoppe fram til valgte ordre
 
 STR_ORDERS_DELETE_BUTTON                                        :{BLACK}Slett
+STR_ORDERS_DELETE_ALL_BUTTON                                    :{BLACK}Slett alle
 STR_ORDERS_DELETE_TOOLTIP                                       :{BLACK}Slett den merkede ordren
 STR_ORDERS_DELETE_ALL_TOOLTIP                                   :{BLACK}Slett alle ordre
 STR_ORDERS_STOP_SHARING_BUTTON                                  :{BLACK}Stopp deling
@@ -6000,7 +6011,8 @@ STR_LORRY                                                       :{BLACK}{LORRY}
 STR_PLANE                                                       :{BLACK}{PLANE}
 STR_SHIP                                                        :{BLACK}{SHIP}
 
-STR_TOOLBAR_RAILTYPE_VELOCITY                                   :{STRING} ({VELOCITY})
+STR_TOOLBAR_RAILTYPE_VELOCITY                                   :{STRING} {YELLOW}({VELOCITY})
+STR_TOOLBAR_ROADTYPE_VELOCITY                                   :{STRING} {YELLOW}({VELOCITY})
 
 STR_BADGE_NAME_LIST                                             :{STRING}: {GOLD}{STRING}
 STR_BADGE_CONFIG_MENU_TOOLTIP                                   :Åpne merkeinnstillinger
@@ -6010,4 +6022,3 @@ STR_BADGE_CONFIG_FILTERS                                        :{WHITE}Merkefil
 STR_BADGE_CONFIG_PREVIEW                                        :Forhåndsvis bilde
 STR_BADGE_CONFIG_NAME                                           :Navn
 STR_BADGE_FILTER_ANY_LABEL                                      :Vilkårlig {STRING}
-STR_BADGE_FILTER_IS_LABEL                                       :{STRING} er {STRING}
