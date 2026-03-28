@@ -2719,7 +2719,6 @@ void VehicleEnterDepot(Vehicle *v)
 			break;
 		default: NOT_REACHED();
 	}
-	SetWindowDirty(WC_VEHICLE_VIEW, v->index);
 	DirtyVehicleListWindowForVehicle(v);
 
 	if (v->type != VEH_TRAIN) {
@@ -2745,8 +2744,6 @@ void VehicleEnterDepot(Vehicle *v)
 	InvalidateWindowData(WC_VEHICLE_VIEW, v->index);
 
 	if (v->current_order.IsType(OT_GOTO_DEPOT)) {
-		SetWindowDirty(WC_VEHICLE_VIEW, v->index);
-
 		const Order *real_order = v->GetOrder(v->cur_real_order_index);
 
 		/* Test whether we are heading for this depot. If not, do nothing.

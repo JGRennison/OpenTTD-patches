@@ -3240,7 +3240,7 @@ CommandCost CmdReverseTrainDirection(DoCommandFlags flags, VehicleID veh_id, boo
 
 			/* We cancel any 'skip signal at dangers' here */
 			v->force_proceed = TFP_NONE;
-			SetWindowDirty(WC_VEHICLE_VIEW, v->index);
+			InvalidateWindowData(WC_VEHICLE_VIEW, v->index);
 
 			if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL && v->cur_speed != 0) {
 				v->flags.Flip(VehicleRailFlag::Reversing);
@@ -3298,7 +3298,7 @@ CommandCost CmdForceTrainProceed(DoCommandFlags flags, VehicleID veh_id)
 
 	if (flags.Test(DoCommandFlag::Execute)) {
 		t->force_proceed = DetermineNextTrainForceProceeding(t);
-		SetWindowDirty(WC_VEHICLE_VIEW, t->index);
+		InvalidateWindowData(WC_VEHICLE_VIEW, t->index);
 
 		/* Unbunching data is no longer valid. */
 		t->ResetDepotUnbunching();
@@ -4951,7 +4951,7 @@ static void TrainEnterStation(Train *v, StationID station)
 	}
 
 	v->force_proceed = TFP_NONE;
-	SetWindowDirty(WC_VEHICLE_VIEW, v->index);
+	InvalidateWindowData(WC_VEHICLE_VIEW, v->index);
 
 	v->BeginLoading();
 
@@ -5731,7 +5731,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 							/* However, we do not want to be stopped by PBS signals
 							 * entered via the back. */
 							v->force_proceed = (v->force_proceed == TFP_SIGNAL) ? TFP_STUCK : TFP_NONE;
-							SetWindowDirty(WC_VEHICLE_VIEW, v->index);
+							InvalidateWindowData(WC_VEHICLE_VIEW, v->index);
 						}
 					}
 
@@ -6810,7 +6810,7 @@ static bool TrainLocoHandler(Train *v, bool mode)
 	if (v->cur_speed == 0 && v->vehstatus.Test(VehState::Stopped)) {
 		/* If we manually stopped, we're not force-proceeding anymore. */
 		v->force_proceed = TFP_NONE;
-		SetWindowDirty(WC_VEHICLE_VIEW, v->index);
+		InvalidateWindowData(WC_VEHICLE_VIEW, v->index);
 	}
 
 	int adv_spd = v->GetAdvanceDistance();
