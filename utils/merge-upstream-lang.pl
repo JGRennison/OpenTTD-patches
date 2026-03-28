@@ -83,12 +83,12 @@ welsh.txt
 );
 
 my $ref = "master";
-my $commit;
+my $nocommit;
 
 Getopt::Long::Configure("no_auto_abbrev", "bundling");
 GetOptions (
 	"ref|r=s"      => \$ref,
-	"commit|c"     => \$commit,
+	"no-commit|n"  => \$nocommit,
 ) or die("Invalid options");
 
 my $upstream_commit;
@@ -223,6 +223,6 @@ for my $lang (@langs) {
 	write_file($lang, @lines);
 }
 
-if ($commit) {
+if (!$nocommit) {
 	system(qw(git commit -m), "Merge translations up to $upstream_commit", '--author=translators <translators@openttd.org>', '--', @langs);
 }
