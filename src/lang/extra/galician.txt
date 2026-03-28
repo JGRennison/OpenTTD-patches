@@ -358,9 +358,6 @@ STR_CONFIG_SETTING_RIVER_MIN_LENGTH_HELPTEXT                    :Lonxitude míni
 STR_CONFIG_SETTING_RIVER_ROUTE_RANDOM                           :Aleatoriedade das rutas dos ríos: {STRING}
 STR_CONFIG_SETTING_RIVER_ROUTE_RANDOM_HELPTEXT                  :Escolle como de aleatoria é a ruta dun río.
 
-STR_CONFIG_SETTING_RIVERS_TOP_OF_HILL                           :Os ríos requiren que a súa orixe sexa no cumio das montañas: {STRING}
-STR_CONFIG_SETTING_RIVERS_TOP_OF_HILL_HELPTEXT                  :Escolle se os ríos requiren que as súas orixen sexan no cumio das montañas.
-
 STR_CONFIG_SETTING_RIVER_TROPICS_WIDTH                          :Ancho dos trópicos arredor dos ríos: {STRING}
 STR_CONFIG_SETTING_RIVER_TROPICS_WIDTH_HELPTEXT                 :Controla o ancho da zona de trópico que hai arredor dos ríos nas paisaxes sub-tropicais.
 

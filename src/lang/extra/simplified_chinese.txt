@@ -358,9 +358,6 @@ STR_CONFIG_SETTING_RIVER_MIN_LENGTH_HELPTEXT                    :河流的最短
 STR_CONFIG_SETTING_RIVER_ROUTE_RANDOM                           :河流路径随机性：{STRING}
 STR_CONFIG_SETTING_RIVER_ROUTE_RANDOM_HELPTEXT                  :更改河流路径的随机性
 
-STR_CONFIG_SETTING_RIVERS_TOP_OF_HILL                           :从丘陵顶部水源处开始生成河流：{STRING}
-STR_CONFIG_SETTING_RIVERS_TOP_OF_HILL_HELPTEXT                  :选择河流是否从山顶开始生成
-
 STR_CONFIG_SETTING_RIVER_TROPICS_WIDTH                          :河岸湿润区域宽度：{STRING}
 STR_CONFIG_SETTING_RIVER_TROPICS_WIDTH_HELPTEXT                 :控制在亚热带景观中围绕河流两岸生成的湿润区域的宽度{}本设置调整河流两岸的总宽度
 

@@ -1129,7 +1129,6 @@ SettingsContainer &GetSettingsTree()
 				rivers->Add(new SettingEntry("game_creation.amount_of_rivers"));
 				rivers->Add(new SettingEntry("game_creation.min_river_length"));
 				rivers->Add(new SettingEntry("game_creation.river_route_random"));
-				rivers->Add(new SettingEntry("game_creation.rivers_top_of_hill"));
 				rivers->Add(new SettingEntry("game_creation.river_tropics_width"));
 				rivers->Add(new SettingEntry("game_creation.lake_tropics_width"));
 				rivers->Add(new SettingEntry("game_creation.coast_tropics_width"));

@@ -601,7 +601,6 @@ struct GameCreationSettings {
 	uint8_t  min_river_length;               ///< the minimum river length
 	uint8_t  river_route_random;             ///< the amount of randomicity for the route finding
 	uint8_t  amount_of_rivers;               ///< the amount of rivers
-	bool     rivers_top_of_hill;             ///< do rivers require starting near the tops of hills?
 	uint8_t  river_tropics_width;            ///< the configured width of tropics around rivers
 	uint8_t  lake_tropics_width;             ///< the configured width of tropics around lakes
 	uint8_t  coast_tropics_width;            ///< the configured width of tropics around coasts

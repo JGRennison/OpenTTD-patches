@@ -280,9 +280,6 @@ STR_CONFIG_SETTING_RIVER_MIN_LENGTH_HELPTEXT                    :Minimální dé
 STR_CONFIG_SETTING_RIVER_ROUTE_RANDOM                           :Náhodnost říčního toku: {STRING}
 STR_CONFIG_SETTING_RIVER_ROUTE_RANDOM_HELPTEXT                  :Vyber, jak moc budou trasy říčních koryt náhodné
 
-STR_CONFIG_SETTING_RIVERS_TOP_OF_HILL                           :Prameny řek na vrcholech kopců: {STRING}
-STR_CONFIG_SETTING_RIVERS_TOP_OF_HILL_HELPTEXT                  :Je-li zapnuto, řeky si budou vynucovat, aby jejich prameny ležely vysoko v kopcích či horách
-
 STR_CONFIG_SETTING_RIVER_TROPICS_WIDTH                          :Šířka zeleně podél řek: {STRING}
 STR_CONFIG_SETTING_RIVER_TROPICS_WIDTH_HELPTEXT                 :Vymezuje šířku úrodné oblasti, která obklopuje řeky v subtropické krajině.{}To je celková šířka oblasti na každé straně řeky.
 

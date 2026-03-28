@@ -251,9 +251,6 @@ STR_CONFIG_SETTING_RIVER_MIN_LENGTH_HELPTEXT                    :Minimale Länge
 STR_CONFIG_SETTING_RIVER_ROUTE_RANDOM                           :Zufälligkeit von Flussläufen: {STRING}
 STR_CONFIG_SETTING_RIVER_ROUTE_RANDOM_HELPTEXT                  :Wähle, wie zufällig die Flussläufe aussehen sollen.
 
-STR_CONFIG_SETTING_RIVERS_TOP_OF_HILL                           :Flussläufe sollen von höhreren zu niedrigeren Höhenstufen verlaufen: {STRING}
-STR_CONFIG_SETTING_RIVERS_TOP_OF_HILL_HELPTEXT                  :Legt fest, ob die Quellen von Flüssen in den Bergen liegen sollen.
-
 STR_CONFIG_SETTING_RIVER_TROPICS_WIDTH                          :Breite des tropischen Geländes um Flussläufe herum: {STRING}
 STR_CONFIG_SETTING_RIVER_TROPICS_WIDTH_HELPTEXT                 :Legt die Breite des tropischen Geländes fest, das Flüsse umgibt.{}This is the total width of the zone on both sides of the river.
 
