@@ -1360,6 +1360,7 @@ STR_MAPGEN_RAINFOREST_LINE_DOWN                                 :{BLACK}Move the
 STR_MAPGEN_TOO_MANY_TILES_MESSAGE                               :{YELLOW}Too many tiles in map. Maximum number of tiles is {NUM}, you have selected {NUM}
 STR_MAPGEN_SNOW_LINE_QUERY_CAPT                                 :{WHITE}Change snow line height
 STR_MAPGEN_RAINFOREST_LINE_QUERY_CAPT                           :{WHITE}Change rainforest line height
+STR_MAPGEN_BORDER_WATER_EDGES                                   :Water Edges
 
 STR_GENERATION_PUBLIC_ROADS_GENERATION                          :{BLACK}Public roads generation
 
