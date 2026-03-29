@@ -262,7 +262,7 @@ Money Ship::GetRunningCost() const
 {
 	const Engine *e = this->GetEngine();
 	uint cost_factor = GetVehicleProperty(this, PROP_SHIP_RUNNING_COST_FACTOR, e->VehInfo<ShipVehicleInfo>().running_cost);
-	Money cost = GetPrice(PR_RUNNING_SHIP, cost_factor, e->GetGRF());
+	Money cost = GetPrice(Price::RunningShip, cost_factor, e->GetGRF());
 
 	if (this->cur_speed == 0) {
 		if (this->IsInDepot()) {

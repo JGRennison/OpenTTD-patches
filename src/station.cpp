@@ -756,7 +756,7 @@ StationRect& StationRect::operator = (const Rect &src)
 Money StationMaintenanceCost(uint32_t num)
 {
 	/* 7 bits scaling. 23 is roughly equivalent to the polynomial maint cost at 500 pieces. */
-	return (_price[PR_INFRASTRUCTURE_STATION] * num * GetMaintenanceCostScale(num, 23)) >> 7;
+	return (_price[Price::InfrastructureStation] * num * GetMaintenanceCostScale(num, 23)) >> 7;
 }
 
 /**
@@ -770,7 +770,7 @@ Money AirportMaintenanceCost(Owner owner)
 
 	for (const Station *st : Station::Iterate()) {
 		if (st->owner == owner && st->facilities.Test(StationFacility::Airport)) {
-			total_cost += _price[PR_INFRASTRUCTURE_AIRPORT] * st->airport.GetSpec()->maintenance_cost;
+			total_cost += _price[Price::InfrastructureAirport] * st->airport.GetSpec()->maintenance_cost;
 		}
 	}
 	/* 3 bits fraction for the maintenance cost factor. */

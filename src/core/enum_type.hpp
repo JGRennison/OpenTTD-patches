@@ -234,4 +234,36 @@ public:
 	static constexpr size_t DecayValueType(const typename BaseClass::ValueType &value) { return to_underlying(value); }
 };
 
+/**
+ * List of policies which can be applied to EnumClassIndexContainer.
+ */
+enum class EnumClassIndexContainerPolicy {
+	AllowInteger, ///< Allow integer (size_t) indexing.
+};
+
+/**
+ * A sort-of mixin that implements 'at(pos)' and 'operator[](pos)' only for a specific enum class.
+ * This to prevent having to call 'to_underlying()' for many container accesses, whilst preventing accidental use of the wrong index type.
+ * @tparam Container A base container.
+ * @tparam Index The enum class to use for indexing.
+ * @tparam Policies Optional policies to apply.
+ */
+template <typename Container, typename Index, EnumClassIndexContainerPolicy... Policies>
+class EnumClassIndexContainer : public Container {
+	static constexpr bool INTEGER_ALLOWED = ((Policies == EnumClassIndexContainerPolicy::AllowInteger) || ...);
+
+public:
+	Container::reference at(size_t pos) { static_assert(INTEGER_ALLOWED); return this->Container::at(pos); }
+	Container::reference at(const Index &pos) { return this->Container::at(to_underlying(pos)); }
+
+	Container::const_reference at(size_t pos) const { static_assert(INTEGER_ALLOWED); return this->Container::at(pos); }
+	Container::const_reference at(const Index &pos) const { return this->Container::at(to_underlying(pos)); }
+
+	Container::reference operator[](size_t pos) { static_assert(INTEGER_ALLOWED); return this->Container::operator[](pos); }
+	Container::reference operator[](const Index &pos) { return this->Container::operator[](to_underlying(pos)); }
+
+	Container::const_reference operator[](size_t pos) const { static_assert(INTEGER_ALLOWED); return this->Container::operator[](pos); }
+	Container::const_reference operator[](const Index &pos) const { return this->Container::operator[](to_underlying(pos)); }
+};
+
 #endif /* ENUM_TYPE_HPP */

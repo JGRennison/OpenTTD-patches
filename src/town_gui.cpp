@@ -298,7 +298,7 @@ public:
 					str = STR_LOCAL_AUTHORITY_ACTION_TOOLTIP_BRIBE;
 					break;
 			}
-			text = GetString(str, _price[PR_TOWN_ACTION] * GetTownActionCost(static_cast<TownAction>(action_index)) >> 8);
+			text = GetString(str, _price[Price::TownAction] * GetTownActionCost(static_cast<TownAction>(action_index)) >> 8);
 		}
 
 		return { text, colour };

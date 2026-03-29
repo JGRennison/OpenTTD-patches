@@ -23,7 +23,7 @@
 struct Train;
 
 /** Rail vehicle flags. */
-enum VehicleRailFlag : uint8_t {
+enum class VehicleRailFlag : uint8_t {
 	Reversing                 = 0,  ///< Train is slowing down to reverse.
 	WaitingRestriction        = 1,  ///< Train is waiting due to a routing restriction, only valid when VehicleRailFlag::Stuck is also set.
 	/* gap, was VRF_HAVE_SLOT */

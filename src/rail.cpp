@@ -315,7 +315,7 @@ Money RailMaintenanceCost(RailType railtype, uint32_t num, uint32_t total_num)
 {
 	dbg_assert(railtype < RAILTYPE_END);
 	/* 4 bits fraction for the multiplier and 7 bits scaling. 72 is roughly equivalent to the polynomial maintenance cost at 5000 pieces. */
-	return (_price[PR_INFRASTRUCTURE_RAIL] * GetRailTypeInfo(railtype)->maintenance_multiplier * num * GetMaintenanceCostScale(total_num, 72)) >> 11;
+	return (_price[Price::InfrastructureRail] * GetRailTypeInfo(railtype)->maintenance_multiplier * num * GetMaintenanceCostScale(total_num, 72)) >> 11;
 }
 
 /**
@@ -326,5 +326,5 @@ Money RailMaintenanceCost(RailType railtype, uint32_t num, uint32_t total_num)
 Money SignalMaintenanceCost(uint32_t num)
 {
 	/* 1 bit fraction for the multiplier and 7 bits scaling. 33 is roughly equivalent to the polynomial maintenance cost at 1000 pieces. */
-	return (_price[PR_INFRASTRUCTURE_RAIL] * 15 * num * GetMaintenanceCostScale(num, 33)) >> 8;
+	return (_price[Price::InfrastructureRail] * 15 * num * GetMaintenanceCostScale(num, 33)) >> 8;
 }

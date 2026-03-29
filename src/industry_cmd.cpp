@@ -3034,7 +3034,7 @@ static void ChangeIndustryProduction(Industry *i, bool monthly)
 		}
 	} else {
 		if (monthly == original_economy) return;
-		if (!original_economy && _settings_game.economy.type == ET_FROZEN) return;
+		if (!original_economy && _settings_game.economy.type == EconomyType::Frozen) return;
 		if (indspec->life_type == INDUSTRYLIFE_BLACK_HOLE) return;
 	}
 
@@ -3051,7 +3051,7 @@ static void ChangeIndustryProduction(Industry *i, bool monthly)
 					div = 1; // Decrease production
 				}
 			}
-		} else if (_settings_game.economy.type == ET_SMOOTH) {
+		} else if (_settings_game.economy.type == EconomyType::Smooth) {
 			closeit = !i->ctlflags.Any({IndustryControlFlag::NoClosure, IndustryControlFlag::NoProductionDecrease});
 			for (auto &p : i->Produced()) {
 				if (!IsValidCargoType(p.cargo)) continue;
@@ -3323,7 +3323,7 @@ Money IndustrySpec::GetConstructionCost() const
 {
 	/* Building raw industries like secondary uses different price base */
 	return (_price[(_settings_game.construction.raw_industry_construction == 1 && this->IsRawIndustry()) ?
-			PR_BUILD_INDUSTRY_RAW : PR_BUILD_INDUSTRY] * this->cost_multiplier) >> 8;
+			Price::BuildIndustryRaw : Price::BuildIndustry] * this->cost_multiplier) >> 8;
 }
 
 /**
@@ -3334,7 +3334,7 @@ Money IndustrySpec::GetConstructionCost() const
  */
 Money IndustrySpec::GetRemovalCost() const
 {
-	return (_price[PR_CLEAR_INDUSTRY] * this->removal_cost_multiplier) >> 8;
+	return (_price[Price::ClearIndustry] * this->removal_cost_multiplier) >> 8;
 }
 
 /**
@@ -3343,7 +3343,7 @@ Money IndustrySpec::GetRemovalCost() const
  */
 bool IndustrySpec::UsesOriginalEconomy() const
 {
-	return _settings_game.economy.type == ET_ORIGINAL ||
+	return _settings_game.economy.type == EconomyType::Original ||
 		this->callback_mask.Any({
 			IndustryCallbackMask::Production256Ticks,
 			IndustryCallbackMask::ProductionCargoArrival, // production callbacks
@@ -3371,10 +3371,10 @@ static CommandCost TerraformTile_Industry(TileIndex tile, DoCommandFlags flags, 
 			if (itspec->callback_mask.Test(IndustryTileCallbackMask::Autoslope)) {
 				/* If the callback fails, allow autoslope. */
 				uint16_t res = GetIndustryTileCallback(CBID_INDTILE_AUTOSLOPE, 0, 0, gfx, Industry::GetByTile(tile), tile);
-				if (res == CALLBACK_FAILED || !ConvertBooleanCallback(itspec->grf_prop.grffile, CBID_INDTILE_AUTOSLOPE, res)) return CommandCost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_FOUNDATION]);
+				if (res == CALLBACK_FAILED || !ConvertBooleanCallback(itspec->grf_prop.grffile, CBID_INDTILE_AUTOSLOPE, res)) return CommandCost(EXPENSES_CONSTRUCTION, _price[Price::BuildFoundation]);
 			} else {
 				/* allow autoslope */
-				return CommandCost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_FOUNDATION]);
+				return CommandCost(EXPENSES_CONSTRUCTION, _price[Price::BuildFoundation]);
 			}
 		}
 	}

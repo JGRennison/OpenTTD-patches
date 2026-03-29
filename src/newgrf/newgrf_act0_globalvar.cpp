@@ -143,8 +143,8 @@ static ChangeInfoResult GlobalVarChangeInfo(uint first, uint last, int prop, con
 			case 0x08: { // Cost base factor
 				int factor = buf.ReadByte();
 
-				if (id < PR_END) {
-					_cur_gps.grffile->price_base_multipliers[id] = std::min<int>(factor - 8, MAX_PRICE_MODIFIER);
+				if (id < to_underlying(Price::End)) {
+					_cur_gps.grffile->price_base_multipliers[static_cast<Price>(id)] = std::min<int>(factor - 8, MAX_PRICE_MODIFIER);
 				} else {
 					GrfMsg(1, "GlobalVarChangeInfo: Price {} out of range, ignoring", id);
 				}

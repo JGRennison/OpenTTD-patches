@@ -282,7 +282,7 @@ void Town::FillCachedName() const
  */
 Money HouseSpec::GetRemovalCost() const
 {
-	return (_price[PR_CLEAR_HOUSE] * this->removal_cost) >> 8;
+	return (_price[Price::ClearHouse] * this->removal_cost) >> 8;
 }
 
 static bool TryBuildTownHouse(Town *t, TileIndex tile, TownExpandModes modes);
@@ -1183,7 +1183,7 @@ static bool TerraformTownTile(TileIndex tile, Slope edges, int dir)
 	assert(tile < Map::Size());
 
 	CommandCost r = Command<CMD_TERRAFORM_LAND>::Do({DoCommandFlag::Auto, DoCommandFlag::NoWater}, tile, edges, dir);
-	if (r.Failed() || r.GetCost() >= (_price[PR_TERRAFORM] + 2) * 8) return false;
+	if (r.Failed() || r.GetCost() >= (_price[Price::Terraform] + 2) * 8) return false;
 	Command<CMD_TERRAFORM_LAND>::Do({DoCommandFlag::Auto, DoCommandFlag::NoWater, DoCommandFlag::Execute}, tile, edges, dir);
 	return true;
 }
@@ -2444,7 +2444,7 @@ CommandCost CmdFoundTown(DoCommandFlags flags, TileIndex tile, TownSize size, bo
 	/* multidimensional arrays have to have defined length of non-first dimension */
 	static_assert(lengthof(price_mult[0]) == 4);
 
-	CommandCost cost(EXPENSES_OTHER, _price[PR_BUILD_TOWN]);
+	CommandCost cost(EXPENSES_OTHER, _price[Price::BuildTown]);
 	uint8_t mult = price_mult[city][size];
 
 	cost.MultiplyCost(mult);
@@ -4097,7 +4097,7 @@ TownActions GetMaskOfTownActions(CompanyID cid, const Town *t)
 	if (cid != COMPANY_SPECTATOR && !(_settings_game.economy.bribe && t->unwanted[cid])) {
 
 		/* Things worth more than this are not shown */
-		Money avail = GetAvailableMoney(cid) + _price[PR_STATION_VALUE] * 200;
+		Money avail = GetAvailableMoney(cid) + _price[Price::StationValue] * 200;
 
 		/* Check the action bits for validity and
 		 * if they are valid add them */
@@ -4127,7 +4127,7 @@ TownActions GetMaskOfTownActions(CompanyID cid, const Town *t)
 			/* Is the company not able to build a statue ? */
 			if (cur == TownAction::BuildStatue && t->statues.Test(cid)) continue;
 
-			if (avail >= GetTownActionCost(cur) * _price[PR_TOWN_ACTION] >> 8) {
+			if (avail >= GetTownActionCost(cur) * _price[Price::TownAction] >> 8) {
 				buttons.Set(cur);
 			}
 		}
@@ -4152,7 +4152,7 @@ CommandCost CmdDoTownAction(DoCommandFlags flags, TownID town_id, TownAction act
 
 	if (!GetMaskOfTownActions(_current_company, t).Test(action)) return CMD_ERROR;
 
-	CommandCost cost(EXPENSES_OTHER, _price[PR_TOWN_ACTION] * GetTownActionCost(action) >> 8);
+	CommandCost cost(EXPENSES_OTHER, _price[Price::TownAction] * GetTownActionCost(action) >> 8);
 
 	CommandCost ret = _town_action_proc[to_underlying(action)](t, flags);
 	if (ret.Failed()) return ret;
@@ -4766,7 +4766,7 @@ static CommandCost TerraformTile_Town(TileIndex tile, DoCommandFlags flags, int 
 				if (res != CALLBACK_FAILED && ConvertBooleanCallback(hs->grf_prop.grffile, CBID_HOUSE_AUTOSLOPE, res)) allow_terraform = false;
 			}
 
-			if (allow_terraform) return CommandCost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_FOUNDATION]);
+			if (allow_terraform) return CommandCost(EXPENSES_CONSTRUCTION, _price[Price::BuildFoundation]);
 		}
 	}
 

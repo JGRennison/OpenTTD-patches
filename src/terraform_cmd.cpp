@@ -137,7 +137,7 @@ static CommandCost TerraformTileHeight(TerraformerState *ts, TileIndex tile, int
 	CommandCost total_cost(EXPENSES_CONSTRUCTION);
 
 	/* Increment cost */
-	total_cost.AddCost(_price[PR_TERRAFORM]);
+	total_cost.AddCost(_price[Price::Terraform]);
 
 	/* Recurse to neighboured corners if height difference is larger than 1 */
 	for (DiagDirection dir = DIAGDIR_BEGIN; dir < DIAGDIR_END; dir++) {

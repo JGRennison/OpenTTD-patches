@@ -130,7 +130,7 @@ CommandCost CmdBuildShipDepot(DoCommandFlags flags, TileIndex tile, Axis axis)
 
 	WaterClass wc1 = GetWaterClass(tile);
 	WaterClass wc2 = GetWaterClass(tile2);
-	CommandCost cost = CommandCost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_DEPOT_SHIP]);
+	CommandCost cost = CommandCost(EXPENSES_CONSTRUCTION, _price[Price::BuildDepotShip]);
 
 	bool add_cost = !IsWaterTile(tile);
 	CommandCost ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags | DoCommandFlag::Auto | DoCommandFlag::AllowRemoveWater, tile);
@@ -306,7 +306,7 @@ static CommandCost RemoveShipDepot(TileIndex tile, DoCommandFlags flags)
 		MakeWaterKeepingClass(tile2, GetTileOwner(tile2));
 	}
 
-	return CommandCost(EXPENSES_CONSTRUCTION, _price[PR_CLEAR_DEPOT_SHIP]);
+	return CommandCost(EXPENSES_CONSTRUCTION, _price[Price::ClearDepotShip]);
 }
 
 CommandCost IsLockBridgeAboveOK(TileIndex tile, LockPart lock_part, DiagDirection dir,
@@ -354,7 +354,7 @@ static CommandCost DoBuildLock(TileIndex tile, DiagDirection dir, DoCommandFlags
 		ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile - delta);
 		if (ret.Failed()) return ret;
 		cost.AddCost(ret.GetCost());
-		cost.AddCost(_price[PR_BUILD_CANAL]);
+		cost.AddCost(_price[Price::BuildCanal]);
 	}
 	if (!IsTileFlat(tile - delta)) {
 		return CommandCost(STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION);
@@ -366,7 +366,7 @@ static CommandCost DoBuildLock(TileIndex tile, DiagDirection dir, DoCommandFlags
 		ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile + delta);
 		if (ret.Failed()) return ret;
 		cost.AddCost(ret.GetCost());
-		cost.AddCost(_price[PR_BUILD_CANAL]);
+		cost.AddCost(_price[Price::BuildCanal]);
 	}
 	if (!IsTileFlat(tile + delta)) {
 		return CommandCost(STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION);
@@ -417,7 +417,7 @@ static CommandCost DoBuildLock(TileIndex tile, DiagDirection dir, DoCommandFlags
 		InvalidateWaterRegion(tile - delta);
 		InvalidateWaterRegion(tile + delta);
 	}
-	cost.AddCost(_price[PR_BUILD_LOCK]);
+	cost.AddCost(_price[Price::BuildLock]);
 
 	return cost;
 }
@@ -464,7 +464,7 @@ static CommandCost RemoveLock(TileIndex tile, DoCommandFlags flags)
 		MarkCanalsAndRiversAroundDirty(tile + delta);
 	}
 
-	return CommandCost(EXPENSES_CONSTRUCTION, _price[PR_CLEAR_LOCK]);
+	return CommandCost(EXPENSES_CONSTRUCTION, _price[Price::ClearLock]);
 }
 
 /**
@@ -572,9 +572,9 @@ CommandCost CmdBuildCanal(DoCommandFlags flags, TileIndex tile, TileIndex start_
 			CheckForDockingTile(current_tile);
 		}
 
-		cost.AddCost(_price[PR_BUILD_CANAL]);
+		cost.AddCost(_price[Price::BuildCanal]);
 		if (wc == WaterClass::River) {
-			cost.AddCost(_price[PR_BUILD_CANAL] * 3);
+			cost.AddCost(_price[Price::BuildCanal] * 3);
 		}
 	}
 
@@ -593,7 +593,7 @@ CommandCost CmdBuildCanal(DoCommandFlags flags, TileIndex tile, TileIndex start_
 Money CanalMaintenanceCost(uint32_t num)
 {
 	/* 6 bits scaling. 11 is roughly equivalent to the polynomial maint cost at 100 pieces. */
-	return (_price[PR_INFRASTRUCTURE_WATER] * num * GetMaintenanceCostScale(num, 11)) >> 6;
+	return (_price[Price::InfrastructureWater] * num * GetMaintenanceCostScale(num, 11)) >> 6;
 }
 
 
@@ -610,7 +610,7 @@ static CommandCost ClearTile_Water(TileIndex tile, DoCommandFlags flags)
 				return CommandCost(STR_ERROR_CAN_T_BUILD_ON_WATER);
 			}
 
-			Money base_cost = IsCanal(tile) ? _price[PR_CLEAR_CANAL] : _price[PR_CLEAR_WATER];
+			Money base_cost = IsCanal(tile) ? _price[Price::ClearCanal] : _price[Price::ClearWater];
 			/* Make sure freeform edges are allowed or it's not an edge tile. */
 			if (!_settings_game.construction.freeform_edges && (!IsInsideMM(TileX(tile), 1, Map::MaxX() - 1) ||
 					!IsInsideMM(TileY(tile), 1, Map::MaxY() - 1))) {
@@ -651,9 +651,9 @@ static CommandCost ClearTile_Water(TileIndex tile, DoCommandFlags flags)
 
 			if (IsSlopeWithOneCornerRaised(slope)) {
 				if (_game_mode != GM_EDITOR && !_settings_game.construction.enable_remove_water && !flags.Test(DoCommandFlag::AllowRemoveWater)) return CommandCost(STR_ERROR_CAN_T_BUILD_ON_WATER);
-				ret = CommandCost(EXPENSES_CONSTRUCTION, _price[PR_CLEAR_WATER]);
+				ret = CommandCost(EXPENSES_CONSTRUCTION, _price[Price::ClearWater]);
 			} else {
-				ret = CommandCost(EXPENSES_CONSTRUCTION, _price[PR_CLEAR_ROUGH]);
+				ret = CommandCost(EXPENSES_CONSTRUCTION, _price[Price::ClearRough]);
 			}
 			if (flags.Test(DoCommandFlag::Execute)) {
 				bool remove = IsDockingTile(tile);

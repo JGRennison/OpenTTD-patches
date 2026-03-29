@@ -717,7 +717,7 @@ struct CmdPlantTreeHelper {
 					if (this->c != nullptr) this->c->tree_limit -= to_plant << 16;
 				}
 				/* 2x as expensive to add more trees to an existing tile */
-				this->cost.AddCost((_price[PR_BUILD_TREES] * 2) * to_plant);
+				this->cost.AddCost((_price[Price::BuildTrees] * 2) * to_plant);
 				break;
 			}
 
@@ -813,8 +813,8 @@ struct CmdPlantTreeHelper {
 				}
 
 				/* Add the cost for the first tree, then extra for every tree after the first. */
-				this->cost.AddCost(_price[PR_BUILD_TREES]);
-				this->cost.AddCost((_price[PR_BUILD_TREES] * 2) * (to_plant - 1));
+				this->cost.AddCost(_price[Price::BuildTrees]);
+				this->cost.AddCost((_price[Price::BuildTrees] * 2) * (to_plant - 1));
 				break;
 			}
 
@@ -1138,7 +1138,7 @@ static CommandCost ClearTile_Trees(TileIndex tile, DoCommandFlags flags)
 		_tree_placer_memory.erase(tile);
 	}
 
-	return CommandCost(EXPENSES_CONSTRUCTION, num * _price[PR_CLEAR_TREES]);
+	return CommandCost(EXPENSES_CONSTRUCTION, num * _price[Price::ClearTrees]);
 }
 
 static void GetTileDesc_Trees(TileIndex tile, TileDesc &td)

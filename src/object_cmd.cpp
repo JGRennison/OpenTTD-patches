@@ -778,7 +778,7 @@ static CommandCost ClearTile_Object(TileIndex tile, DoCommandFlags flags)
 	}
 
 	if (IsTileOnWater(tile) && IsSlopeWithOneCornerRaised(GetTileSlope(tile))) {
-		cost.AddCost(_price[PR_CLEAR_WATER]);
+		cost.AddCost(_price[Price::ClearWater]);
 	}
 
 	switch (type) {
@@ -1265,12 +1265,12 @@ static CommandCost TerraformTile_Object(TileIndex tile, DoCommandFlags flags, in
 				uint16_t res = GetObjectCallback(CBID_OBJECT_AUTOSLOPE, 0, 0, spec, Object::GetByTile(tile), tile);
 				if (res == CALLBACK_FAILED || !ConvertBooleanCallback(spec->grf_prop.grffile, CBID_OBJECT_AUTOSLOPE, res)) {
 					pre_success_checks();
-					return CommandCost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_FOUNDATION]);
+					return CommandCost(EXPENSES_CONSTRUCTION, _price[Price::BuildFoundation]);
 				}
 			} else if (spec->IsEnabled()) {
 				/* allow autoslope */
 				pre_success_checks();
-				return CommandCost(EXPENSES_CONSTRUCTION, _price[PR_BUILD_FOUNDATION]);
+				return CommandCost(EXPENSES_CONSTRUCTION, _price[Price::BuildFoundation]);
 			}
 		}
 	}
