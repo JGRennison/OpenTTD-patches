@@ -1655,7 +1655,7 @@ int SmallMapWindow::GetPositionOnLegend(Point pt)
 /* virtual */ void SmallMapWindow::OnMouseWheel(int wheel, WidgetID widget)
 {
 	if (widget != WID_SM_MAP) return;
-	if (_settings_client.gui.scrollwheel_scrolling != SWS_OFF) {
+	if (_settings_client.gui.scrollwheel_scrolling != ScrollWheelScrolling::Off) {
 		const NWidgetBase *wid = this->GetWidget<NWidgetBase>(WID_SM_MAP);
 		int cursor_x = _cursor.pos.x - this->left - wid->pos_x;
 		int cursor_y = _cursor.pos.y - this->top  - wid->pos_y;
@@ -1721,7 +1721,7 @@ uint SmallMapWindow::PausedAdjustRefreshTimeDelta(uint delta_ms) const
 
 /* virtual */ void SmallMapWindow::OnScroll(Point delta)
 {
-	if (_settings_client.gui.scroll_mode == VSM_VIEWPORT_RMB_FIXED || _settings_client.gui.scroll_mode == VSM_MAP_RMB_FIXED) _cursor.fix_at = true;
+	if (_settings_client.gui.scroll_mode == ViewportScrollMode::ViewportRMBFixed || _settings_client.gui.scroll_mode == ViewportScrollMode::MapRMBFixed) _cursor.fix_at = true;
 
 	this->scroll_x -= delta.x;
 	this->scroll_y -= delta.y;

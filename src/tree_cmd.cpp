@@ -58,7 +58,7 @@ static const uint16_t EDITOR_TREE_DIV = 5;                   ///< Game editor tr
 
 static bool IsTreeDisallowedByArcticPerfectMode(TileIndex tile)
 {
-	return (_settings_game.game_creation.tree_placer == TP_PERFECT) &&
+	return (_settings_game.game_creation.tree_placer == TreePlacer::Perfect) &&
 			(_settings_game.game_creation.landscape == LandscapeType::Arctic) &&
 			(GetTileZ(tile) > (HighestTreePlacementSnowLine() + _settings_game.construction.trees_around_snow_line_range));
 }
@@ -515,8 +515,10 @@ void PlaceTreesRandomly()
 
 		if (CanPlantTreesOnTile(tile, true)) {
 			PlaceTree(tile, r);
-			if (_settings_game.game_creation.tree_placer != TP_IMPROVED &&
-				_settings_game.game_creation.tree_placer != TP_PERFECT) continue;
+			if (_settings_game.game_creation.tree_placer != TreePlacer::Improved &&
+					_settings_game.game_creation.tree_placer != TreePlacer::Perfect) {
+				continue;
+			}
 
 			/* Place a number of trees based on the tile height.
 			 *  This gives a cool effect of multiple trees close together.
@@ -646,13 +648,18 @@ void GenerateTrees()
 {
 	uint i, total;
 
-	if (_settings_game.game_creation.tree_placer == TP_NONE) return;
+	if (_settings_game.game_creation.tree_placer == TreePlacer::None) return;
 
 	switch (_settings_game.game_creation.tree_placer) {
-		case TP_ORIGINAL: i = _settings_game.game_creation.landscape == LandscapeType::Arctic ? 15 : 6; break;
-		case TP_IMPROVED:
-		case TP_PERFECT: i = _settings_game.game_creation.landscape == LandscapeType::Arctic ?  4 : 2; break;
-		default: NOT_REACHED();
+		case TreePlacer::Original:
+			i = _settings_game.game_creation.landscape == LandscapeType::Arctic ? 15 : 6;
+			break;
+		case TreePlacer::Improved:
+		case TreePlacer::Perfect:
+			i = _settings_game.game_creation.landscape == LandscapeType::Arctic ?  4 : 2;
+			break;
+		default:
+			NOT_REACHED();
 	}
 
 	total = Map::ScaleBySize(DEFAULT_TREE_STEPS);
@@ -660,13 +667,13 @@ void GenerateTrees()
 	total *= i;
 	uint num_groups = (_settings_game.game_creation.landscape != LandscapeType::Toyland) ? Map::ScaleBySize(GB(Random(), 0, 5) + 25) : 0;
 
-	if (_settings_game.game_creation.tree_placer != TP_PERFECT) {
+	if (_settings_game.game_creation.tree_placer != TreePlacer::Perfect) {
 		total += num_groups * DEFAULT_TREE_STEPS;
 	}
 
 	SetGeneratingWorldProgress(GWP_TREE, total);
 
-	if (_settings_game.game_creation.tree_placer != TP_PERFECT) {
+	if (_settings_game.game_creation.tree_placer != TreePlacer::Perfect) {
 		if (num_groups != 0) PlaceTreeGroups(num_groups);
 	}
 
@@ -1303,7 +1310,7 @@ static void TileLoop_Trees(TileIndex tile)
 						break;
 
 					case 1: { // add a tree
-						if (_settings_game.game_creation.tree_placer == TP_PERFECT) {
+						if (_settings_game.game_creation.tree_placer == TreePlacer::Perfect) {
 							if ((GetTreeCount(tile) < 4) && ((GetTreeType(tile) == TREE_CACTUS) || ((int)GetTreeCount(tile) < MaxTreeCount(tile)))) {
 								AddTreeCount(tile, 1);
 								SetTreeGrowth(tile, TreeGrowthStage::Growing1);
@@ -1320,7 +1327,7 @@ static void TileLoop_Trees(TileIndex tile)
 					case 2: { // add a neighbouring tree
 						if (!TreesOnTileCanSpread(tile)) break;
 
-						if (_settings_game.game_creation.tree_placer == TP_PERFECT &&
+						if (_settings_game.game_creation.tree_placer == TreePlacer::Perfect &&
 							((_settings_game.game_creation.landscape != LandscapeType::Tropic && GetTileZ(tile) <= GetSparseTreeRange()) ||
 								(GetTreeType(tile) == TREE_CACTUS) ||
 								(_settings_game.game_creation.landscape == LandscapeType::Arctic && GetTileZ(tile) >= HighestTreePlacementSnowLine() + _settings_game.construction.trees_around_snow_line_range / 3))) {

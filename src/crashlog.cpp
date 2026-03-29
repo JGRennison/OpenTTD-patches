@@ -904,7 +904,7 @@ void CrashLog::CloseCrashLogFile(const char *end)
 void CrashLog::SendSurvey() const
 {
 	if (_game_mode == GM_NORMAL) {
-		_survey.Transmit(NetworkSurveyHandler::Reason::CRASH, true);
+		_survey.Transmit(NetworkSurveyHandler::Reason::Crash, true);
 	}
 }
 

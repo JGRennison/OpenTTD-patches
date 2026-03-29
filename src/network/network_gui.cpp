@@ -2324,7 +2324,7 @@ struct NetworkAskRelayWindow : public Window {
 				break;
 
 			case WID_NAR_YES_ALWAYS:
-				_settings_client.network.use_relay_service = URS_ALLOW;
+				_settings_client.network.use_relay_service = UseRelayService::Allow;
 				_network_coordinator_client.StartTurnConnection(this->token);
 				this->Close(NRWCD_HANDLED);
 				break;
@@ -2415,12 +2415,12 @@ struct NetworkAskSurveyWindow : public Window {
 				break;
 
 			case WID_NAS_NO:
-				_settings_client.network.participate_survey = PS_NO;
+				_settings_client.network.participate_survey = ParticipateSurvey::No;
 				this->Close();
 				break;
 
 			case WID_NAS_YES:
-				_settings_client.network.participate_survey = PS_YES;
+				_settings_client.network.participate_survey = ParticipateSurvey::Yes;
 				this->Close();
 				break;
 		}
@@ -2476,7 +2476,7 @@ struct SurveyResultTextfileWindow : public TextfileWindow {
 	{
 		this->ConstructWindow();
 
-		auto result = _survey.CreatePayload(NetworkSurveyHandler::Reason::PREVIEW, true);
+		auto result = _survey.CreatePayload(NetworkSurveyHandler::Reason::Preview, true);
 		this->LoadText(result);
 		this->InvalidateData();
 	}

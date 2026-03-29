@@ -304,7 +304,7 @@ EconTime::Date EconTime::ConvertYMDToDate(EconTime::Year year, EconTime::Month m
 bool CalTime::IsCalendarFrozen(bool newgame)
 {
 	GameSettings &settings = (newgame) ? _settings_newgame : _settings_game;
-	return settings.economy.timekeeping_units == TKU_WALLCLOCK && settings.economy.minutes_per_calendar_year == CalTime::FROZEN_MINUTES_PER_YEAR;
+	return settings.economy.timekeeping_units == TimekeepingUnits::Wallclock && settings.economy.minutes_per_calendar_year == CalTime::FROZEN_MINUTES_PER_YEAR;
 }
 
 CalTime::Day CalTime::NumberOfDaysInMonth(Year year, Month month)
@@ -328,9 +328,9 @@ CalTime::Day CalTime::NumberOfDaysInMonth(Year year, Month month)
 
 bool EconTime::UsingWallclockUnits(bool newgame)
 {
-	if (newgame) return (_settings_newgame.economy.timekeeping_units == TKU_WALLCLOCK);
+	if (newgame) return (_settings_newgame.economy.timekeeping_units == TimekeepingUnits::Wallclock);
 
-	return (_settings_game.economy.timekeeping_units == TKU_WALLCLOCK);
+	return (_settings_game.economy.timekeeping_units == TimekeepingUnits::Wallclock);
 }
 
 /** Functions used by the IncreaseDate function */
@@ -474,7 +474,7 @@ void IncreaseCalendarDate()
 	if (CalTime::IsCalendarFrozen()) return;
 
 	/* If we are using a non-default calendar progression speed, we need to check the sub_date_fract before updating date_fract. */
-	if (_settings_game.economy.timekeeping_units == TKU_WALLCLOCK && _settings_game.economy.minutes_per_calendar_year != CalTime::DEF_MINUTES_PER_YEAR) {
+	if (_settings_game.economy.timekeeping_units == TimekeepingUnits::Wallclock && _settings_game.economy.minutes_per_calendar_year != CalTime::DEF_MINUTES_PER_YEAR) {
 		CalTime::Detail::now.sub_date_fract += DAY_TICKS;
 
 		/* Check if we are ready to increment date_fract */

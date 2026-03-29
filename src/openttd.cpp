@@ -1079,7 +1079,7 @@ void HandleExitGameRequest()
 		_exit_game = true;
 	} else if (_settings_client.gui.autosave_on_exit) {
 		DoExitSave();
-		_survey.Transmit(NetworkSurveyHandler::Reason::EXIT, true);
+		_survey.Transmit(NetworkSurveyHandler::Reason::Exit, true);
 		_exit_game = true;
 	} else {
 		AskExitGame();
@@ -1355,7 +1355,7 @@ void SwitchToMode(SwitchMode new_mode)
 	if (new_mode != SM_SAVE_GAME) ChangeAutosaveFrequency(true);
 
 	/* Transmit the survey if we were in normal-mode and not saving. It always means we leaving the current game. */
-	if (_game_mode == GM_NORMAL && new_mode != SM_SAVE_GAME) _survey.Transmit(NetworkSurveyHandler::Reason::LEAVE);
+	if (_game_mode == GM_NORMAL && new_mode != SM_SAVE_GAME) _survey.Transmit(NetworkSurveyHandler::Reason::Leave);
 
 	/* Keep track when we last switch mode. Used for survey, to know how long someone was in a game. */
 	if (new_mode != SM_SAVE_GAME) {
@@ -1466,7 +1466,7 @@ void SwitchToMode(SwitchMode new_mode)
 				ShowErrorMessage(GetEncodedString(STR_WARNING_FALLBACK_SOUNDSET), {}, WL_CRITICAL);
 				BaseSounds::ini_set = BaseSounds::GetUsedSet()->name;
 			}
-			if (_settings_client.network.participate_survey == PS_ASK) {
+			if (_settings_client.network.participate_survey == ParticipateSurvey::Ask) {
 				/* No matter how often you go back to the main menu, only ask the first time. */
 				static bool asked_once = false;
 				if (!asked_once) {
@@ -1604,7 +1604,7 @@ void StateGameLoop()
 
 		RunAuxiliaryTileLoop();
 		if (DateDetail::_tick_skip_counter < DayLengthFactor()) {
-			if (_settings_game.economy.timekeeping_units == TKU_WALLCLOCK && !(_game_mode == GM_MENU || _game_mode == GM_BOOTSTRAP)) {
+			if (_settings_game.economy.timekeeping_units == TimekeepingUnits::Wallclock && !(_game_mode == GM_MENU || _game_mode == GM_BOOTSTRAP)) {
 				IncreaseCalendarDate();
 			}
 			AnimateAnimatedTiles();

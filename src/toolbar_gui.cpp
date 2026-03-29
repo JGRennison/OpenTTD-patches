@@ -518,7 +518,7 @@ static CallBackFunction ToolbarTownClick(Window *w)
 	DropDownList list;
 	list.push_back(MakeDropDownListStringItem(STR_TOWN_MENU_TOWN_DIRECTORY, TME_SHOW_DIRECTORY));
 	if (_settings_game.economy.found_town != TF_FORBIDDEN) list.push_back(MakeDropDownListStringItem(STR_TOWN_MENU_FOUND_TOWN, TME_SHOW_FOUND_TOWN));
-	if (_settings_game.economy.place_houses != PH_FORBIDDEN) list.push_back(MakeDropDownListStringItem(STR_SCENEDIT_TOWN_MENU_PACE_HOUSE, TME_SHOW_PLACE_HOUSES));
+	if (_settings_game.economy.place_houses != PlaceHouses::Forbidden) list.push_back(MakeDropDownListStringItem(STR_SCENEDIT_TOWN_MENU_PACE_HOUSE, TME_SHOW_PLACE_HOUSES));
 
 	PopupMainToolbarMenu(w, WID_TN_TOWNS, std::move(list), 0);
 
@@ -539,7 +539,7 @@ static CallBackFunction MenuClickTown(int index)
 			if (_settings_game.economy.found_town != TF_FORBIDDEN) ShowFoundTownWindow();
 			break;
 		case TME_SHOW_PLACE_HOUSES: // Setting could be changed when the dropdown was open
-			if (_settings_game.economy.place_houses != PH_FORBIDDEN) ShowBuildHousePicker(nullptr);
+			if (_settings_game.economy.place_houses != PlaceHouses::Forbidden) ShowBuildHousePicker(nullptr);
 			break;
 	}
 	return CBF_NONE;
@@ -1207,7 +1207,7 @@ static void UsePickerTool(TileIndex tile)
 		}
 
 		case MP_HOUSE: {
-			if (_game_mode == GM_EDITOR || _settings_game.economy.place_houses != PH_FORBIDDEN) {
+			if (_game_mode == GM_EDITOR || _settings_game.economy.place_houses != PlaceHouses::Forbidden) {
 				ShowBuildHousePickerAndSelect(tile);
 			}
 			break;

@@ -1146,9 +1146,9 @@ static CommandCost PreInsertOrderCheck(Vehicle *v, const Order &new_order, CmdIn
 
 			/* Check if we're allowed to have a new unbunching order. */
 			if ((new_order.GetDepotActionType() & ODATFB_UNBUNCH)) {
-				if (v->HasFullLoadOrder()) return CommandCost::DualErrorMessage(STR_ERROR_CAN_T_ADD_ORDER, STR_ERROR_UNBUNCHING_NO_UNBUNCHING_FULL_LOAD);
-				if (!insert_flags.Test(CmdInsertOrderIntlFlag::AllowDuplicateUnbunch) && !insert_flags.Test(CmdInsertOrderIntlFlag::NoUnbunchChecks) && v->HasUnbunchingOrder()) return CommandCost::DualErrorMessage(STR_ERROR_CAN_T_ADD_ORDER, STR_ERROR_UNBUNCHING_ONLY_ONE_ALLOWED);
-				if (v->HasConditionalOrder()) return CommandCost::DualErrorMessage(STR_ERROR_CAN_T_ADD_ORDER, STR_ERROR_UNBUNCHING_NO_UNBUNCHING_CONDITIONAL);
+				if (v->HasFullLoadOrder()) return CommandCost(STR_ERROR_UNBUNCHING_NO_UNBUNCHING_FULL_LOAD);
+				if (!insert_flags.Test(CmdInsertOrderIntlFlag::AllowDuplicateUnbunch) && !insert_flags.Test(CmdInsertOrderIntlFlag::NoUnbunchChecks) && v->HasUnbunchingOrder()) return CommandCost(STR_ERROR_UNBUNCHING_ONLY_ONE_ALLOWED);
+				if (v->HasConditionalOrder()) return CommandCost(STR_ERROR_UNBUNCHING_NO_UNBUNCHING_CONDITIONAL);
 			}
 			break;
 		}
@@ -3198,7 +3198,7 @@ void CheckOrders(const Vehicle *v)
 
 		if (message == INVALID_STRING_ID && !has_depot_order && v->type != VEH_AIRCRAFT) {
 			if (_settings_client.gui.no_depot_order_warn == 1 ||
-					(_settings_client.gui.no_depot_order_warn == 2 && _settings_game.difficulty.vehicle_breakdowns != VB_NONE)) {
+					(_settings_client.gui.no_depot_order_warn == 2 && _settings_game.difficulty.vehicle_breakdowns != VehicleBreakdowns::None)) {
 				message = STR_NEWS_VEHICLE_NO_DEPOT_ORDER;
 			}
 		}

@@ -13,10 +13,11 @@
 #include <memory>
 #include <vector>
 
+/** Source of loaded sound data. */
 enum class SoundSource : uint8_t {
-	BasesetOldFormat,
-	BasesetNewFormat,
-	NewGRF,
+	BasesetOldFormat, ///< The TTD format with certain internal bugs (incorrect frequency, WAV without headers, ...).
+	BasesetNewFormat, ///< New format with Opus and WAV files.
+	NewGRF, ///< Contained within a NewGRF.
 };
 
 struct SoundEntry {

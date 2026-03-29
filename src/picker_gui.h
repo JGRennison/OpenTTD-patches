@@ -226,6 +226,7 @@ public:
 		PFM_SAVED = 2, ///< Show saved types.
 	};
 
+	/** The things of a picker that can be invalidated. */
 	enum class PickerInvalidation : uint8_t {
 		Class, ///< Refresh the class list.
 		Type, ///< Refresh the type list.

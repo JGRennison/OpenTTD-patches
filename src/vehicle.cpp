@@ -282,7 +282,7 @@ bool Vehicle::NeedsServicing() const
 	/* If we're servicing anyway, because we have not disabled servicing when
 	 * there are no breakdowns or we are playing with breakdowns, bail out. */
 	if (needs_service && (!_settings_game.order.no_servicing_if_no_breakdowns ||
-			_settings_game.difficulty.vehicle_breakdowns != VB_NONE)) {
+			_settings_game.difficulty.vehicle_breakdowns != VehicleBreakdowns::None)) {
 		return true;
 	}
 
@@ -2285,10 +2285,10 @@ void CheckVehicleBreakdown(Vehicle *v)
 	if (_game_mode == GM_MENU) return;
 
 	/* If both breakdowns and automatic servicing are disabled, we don't decrease reliability or break down. */
-	if (_settings_game.difficulty.vehicle_breakdowns == VB_NONE && _settings_game.order.no_servicing_if_no_breakdowns) return;
+	if (_settings_game.difficulty.vehicle_breakdowns == VehicleBreakdowns::None && _settings_game.order.no_servicing_if_no_breakdowns) return;
 
 	/* With Reduced breakdowns, vehicles (un)loading at stations don't lose reliability. */
-	if (_settings_game.difficulty.vehicle_breakdowns != VB_NORMAL && v->current_order.IsType(OT_LOADING)) return;
+	if (_settings_game.difficulty.vehicle_breakdowns != VehicleBreakdowns::Normal && v->current_order.IsType(OT_LOADING)) return;
 
 	/* Decrease reliability. */
 	const int rel_old = v->reliability;
@@ -2299,7 +2299,7 @@ void CheckVehicleBreakdown(Vehicle *v)
 
 	/* Some vehicles lose reliability but won't break down. */
 	/* Breakdowns are disabled. */
-	if (_settings_game.difficulty.vehicle_breakdowns == VB_NONE) return;
+	if (_settings_game.difficulty.vehicle_breakdowns == VehicleBreakdowns::None) return;
 	/* The vehicle is already broken down. */
 	if (v->breakdown_ctr != 0) return;
 	/* The vehicle is stopped or going very slow. */
@@ -2341,7 +2341,7 @@ void CheckVehicleBreakdown(Vehicle *v)
 	 * their impact will be significantly less.
 	 */
 	uint32_t r1 = Random();
-	uint32_t breakdown_scaling_x2 = (_settings_game.difficulty.vehicle_breakdowns == VB_VERY_REDUCED) ? 1 : (_settings_game.difficulty.vehicle_breakdowns * 2);
+	uint32_t breakdown_scaling_x2 = (_settings_game.difficulty.vehicle_breakdowns == VehicleBreakdowns::VeryReduced) ? 1 : (to_underlying(_settings_game.difficulty.vehicle_breakdowns) * 2);
 	if ((uint32_t) (0xffff - v->reliability) * breakdown_scaling_x2 * chance > GB(r1, 0, 24) * 10 * 2) {
 		uint32_t r2 = Random();
 		v->breakdown_ctr = GB(r1, 24, 6) + 0xF;

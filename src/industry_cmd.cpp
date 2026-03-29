@@ -2397,7 +2397,7 @@ static uint32_t GetScaledIndustryGenerationProbability(IndustryType it, std::opt
 
 	uint32_t chance = ind_spc->appear_creation[to_underlying(_settings_game.game_creation.landscape)];
 	if (!ind_spc->enabled || ind_spc->layouts.empty() ||
-			(_game_mode != GM_EDITOR && _settings_game.difficulty.industry_density == ID_FUND_ONLY) ||
+			(_game_mode != GM_EDITOR && _settings_game.difficulty.industry_density == IndustryDensity::FundedOnly) ||
 			(_settings_game.economy.spawn_primary_industry_only && !ind_spc->IsRawIndustry()) ||
 			(chance = GetIndustryProbabilityCallback(it, IACT_MAPGENERATION, chance)) == 0) {
 		*force_at_least_one = false;
@@ -2421,7 +2421,7 @@ static uint32_t GetScaledIndustryGenerationProbability(IndustryType it, std::opt
  */
 static uint16_t GetIndustryGamePlayProbability(IndustryType it, uint8_t *min_number)
 {
-	if (_settings_game.difficulty.industry_density == ID_FUND_ONLY) {
+	if (_settings_game.difficulty.industry_density == IndustryDensity::FundedOnly) {
 		*min_number = 0;
 		return 0;
 	}
@@ -2461,10 +2461,12 @@ static uint GetNumberOfIndustries()
 		0,    // custom
 	};
 
-	assert(lengthof(numof_industry_table) == ID_END);
-	uint difficulty = (_game_mode != GM_EDITOR) ? _settings_game.difficulty.industry_density : (uint)ID_VERY_LOW;
-	if (difficulty == ID_CUSTOM) return std::min<uint>(IndustryPool::MAX_SIZE, _settings_game.game_creation.custom_industry_number);
-	return std::min<uint>(IndustryPool::MAX_SIZE, Map::ScaleBySize(numof_industry_table[difficulty]));
+	assert(lengthof(numof_industry_table) == to_underlying(IndustryDensity::End));
+	IndustryDensity density = (_game_mode != GM_EDITOR) ? _settings_game.difficulty.industry_density : IndustryDensity::VeryLow;
+
+	if (density == IndustryDensity::Custom) return std::min<uint>(IndustryPool::MAX_SIZE, _settings_game.game_creation.custom_industry_number);
+
+	return std::min<uint>(IndustryPool::MAX_SIZE, Map::ScaleBySize(numof_industry_table[to_underlying(density)]));
 }
 
 /**
@@ -2539,7 +2541,7 @@ void IndustryBuildData::Reset()
 void IndustryBuildData::MonthlyLoop()
 {
 	static const int NEWINDS_PER_MONTH = 0x38000 / (10 * 12); // lower 16 bits is a float fraction, 3.5 industries per decade, divided by 10 * 12 months.
-	if (_settings_game.difficulty.industry_density == ID_FUND_ONLY) return; // 'no industries' setting.
+	if (_settings_game.difficulty.industry_density == IndustryDensity::FundedOnly) return; // 'no industries' setting.
 
 	/* To prevent running out of unused industries for the player to connect,
 	 * add a fraction of new industries each month, but only if the manager can keep up. */
@@ -2580,7 +2582,7 @@ static IndustryGenerationProbabilities GetScaledProbabilities(bool water)
  */
 void GenerateIndustries()
 {
-	if (_game_mode != GM_EDITOR && _settings_game.difficulty.industry_density == ID_FUND_ONLY) return; // No industries in the game.
+	if (_game_mode != GM_EDITOR && _settings_game.difficulty.industry_density == IndustryDensity::FundedOnly) return; // No industries in the game.
 
 	/* Get the probabilities for all industries. This is done first as we need the total of
 	 * both land and water for scaling later. */
@@ -2596,7 +2598,7 @@ void GenerateIndustries()
 		if (lprob.total + wprob.total > 0) total_amount = p.total * GetNumberOfIndustries() / (lprob.total + wprob.total);
 
 		/* Scale land-based industries to the land proportion, unless the player has set a custom industry count. */
-		if (!water && _settings_game.difficulty.industry_density != ID_CUSTOM) total_amount = Map::ScaleByLandProportion(total_amount);
+		if (!water && _settings_game.difficulty.industry_density != IndustryDensity::Custom) total_amount = Map::ScaleByLandProportion(total_amount);
 
 		/* Ensure that forced industries are generated even if the scaled amounts are too low. */
 		if (p.total == 0 || total_amount < p.num_forced) {

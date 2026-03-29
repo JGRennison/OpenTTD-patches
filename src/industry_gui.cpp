@@ -1181,7 +1181,7 @@ public:
 	void OnMouseWheel(int wheel, WidgetID widget) override
 	{
 		if (widget != WID_IV_VIEWPORT) return;
-		if (_settings_client.gui.scrollwheel_scrolling != SWS_OFF) {
+		if (_settings_client.gui.scrollwheel_scrolling != ScrollWheelScrolling::Off) {
 			DoZoomInOutWindow(wheel < 0 ? ZOOM_IN : ZOOM_OUT, this);
 		}
 	}
@@ -1398,6 +1398,7 @@ protected:
 	StringFilter string_filter{}; ///< Filter for industries
 	QueryString industry_editbox; ///< Filter editbox
 
+	/** Ways to sort industries. */
 	enum class SorterType : uint8_t {
 		ByName,        ///< Sorter type to sort by name
 		ByType,        ///< Sorter type to sort by type

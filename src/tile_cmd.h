@@ -18,6 +18,7 @@
 #include "track_func.h"
 #include "tile_map.h"
 
+/** Flags to describe several special states upon entering a tile. */
 enum class VehicleEnterTileState : uint8_t {
 	EnteredStation, ///< The vehicle entered a station
 	EnteredWormhole, ///< The vehicle either entered a bridge, tunnel or depot tile (this includes the last tile of the bridge/tunnel)

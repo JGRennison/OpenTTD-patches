@@ -18,6 +18,7 @@
 
 enum SaveToConfigFlags : uint32_t;
 
+/** Flags describing the behaviour of a setting. */
 enum class SettingFlag : uint8_t {
 	GuiZeroIsSpecial,        ///< A value of zero is possible and has a custom string (the one after "strval").
 	GuiDropdown,             ///< The value represents a limited number of string-options (internally integer) presented as dropdown.
@@ -106,6 +107,11 @@ typedef int64_t OnXrefValueConvert(int64_t val); ///< callback prototype for xre
 struct SettingDescEnumEntry {
 	int32_t val;
 	StringID str;
+
+	SettingDescEnumEntry(int32_t val, StringID str) : val(val), str(str) {}
+
+	template <typename T> requires is_scoped_enum_v<T>
+	SettingDescEnumEntry(T val, StringID str) : val(to_underlying(val)), str(str) {}
 };
 
 /** Properties of config file settings. */
