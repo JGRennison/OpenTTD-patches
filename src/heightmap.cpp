@@ -469,8 +469,8 @@ void FixSlopes()
 	}
 
 	extern bool CheckMapEdgesAreWater(bool allow_non_flat_void);
-	if (_settings_game.construction.map_edge_mode != 0 && !CheckMapEdgesAreWater(false)) {
-		_settings_game.construction.map_edge_mode = 0;
+	if (_settings_game.construction.map_edge_mode != MapEdgeMode::Normal && !CheckMapEdgesAreWater(false)) {
+		_settings_game.construction.map_edge_mode = MapEdgeMode::Normal;
 	}
 }
 

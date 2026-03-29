@@ -4541,7 +4541,7 @@ bool AfterLoadGame()
 	}
 
 	if (!IsSavegameVersionBefore(SLV_ENGINE_MULTI_RAILTYPE)) {
-		_settings_game.construction.map_edge_mode = _settings_game.construction.freeform_edges ? 0 : 2;
+		_settings_game.construction.map_edge_mode = _settings_game.construction.freeform_edges ? MapEdgeMode::Normal : MapEdgeMode::InfiniteWater;
 	}
 
 	if (SlXvIsFeatureMissing(XSLFI_SIGNAL_STATE_FIX, 1) && SlXvIsFeaturePresent(XSLFI_EXTRA_SIGNAL_TYPES)) {

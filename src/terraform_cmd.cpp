@@ -215,7 +215,7 @@ CommandCost CmdTerraformLand(DoCommandFlags flags, TileIndex tile, Slope slope, 
 			/* MP_VOID tiles can be terraformed but as tunnels and bridges
 			 * cannot go under / over these tiles they don't need checking. */
 			if (IsTileType(t, MP_VOID)) {
-				if (_settings_game.construction.map_edge_mode != 0) {
+				if (_settings_game.construction.map_edge_mode != MapEdgeMode::Normal) {
 					CommandCost err(STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP);
 					err.SetTile(t);
 					return err;

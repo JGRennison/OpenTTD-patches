@@ -231,6 +231,12 @@ enum SelectedPlanLineDrawMode : uint8_t {
 	SPLDM_LAST = SPLDM_RED_HIGHLIGHT,
 };
 
+enum class MapEdgeMode : uint8_t {
+	Normal = 0,
+	WaterEdges,
+	InfiniteWater,
+};
+
 /** Settings related to time display. This may be loaded from the savegame and/or overridden by the client. */
 struct TimeSettings {
 	bool   time_in_minutes;                  ///< whether to use the hh:mm conversion when printing dates
@@ -640,7 +646,7 @@ struct ConstructionSettings {
 	uint8_t  industry_platform;              ///< the amount of flat land around an industry
 	bool     freeform_edges;                 ///< allow terraforming the tiles at the map edges
 	bool     flood_from_edges;               ///< whether water floods from map edges
-	uint8_t  map_edge_mode;                  ///< map edge mode
+	MapEdgeMode map_edge_mode;               ///< map edge mode
 	uint8_t  extra_tree_placement;           ///< (dis)allow building extra trees in-game
 	uint8_t  trees_around_snow_line_range;   ///< range around snowline for mixed and arctic forest.
 	bool     trees_around_snow_line_enabled; ///< enable mixed and arctic forest around snowline, and no trees above snowline

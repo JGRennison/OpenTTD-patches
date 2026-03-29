@@ -1955,7 +1955,7 @@ static void ViewportAddLandscape()
 				 * so we need to loop over more rows to possibly find one. */
 				if ((tilecoord.x <= 0 || tilecoord.y <= 0) && min_visible_height < potential_bridge_height + MAX_TILE_EXTENT_TOP) last_row = false;
 
-				if (_settings_game.construction.map_edge_mode == 2 && _cur_ti.tileh == SLOPE_FLAT && _cur_ti.z == 0 && min_visible_height <= 0) {
+				if (_settings_game.construction.map_edge_mode == MapEdgeMode::InfiniteWater && _cur_ti.tileh == SLOPE_FLAT && _cur_ti.z == 0 && min_visible_height <= 0) {
 					last_row = false;
 					AddTileSpriteToDraw(SPR_FLAT_WATER_TILE, PAL_NONE, _cur_ti.x, _cur_ti.y, _cur_ti.z);
 					continue;
@@ -3667,7 +3667,7 @@ static inline TileIndex ViewportMapGetMostSignificantTileType(const Viewport * c
 
 static uint32_t ViewportMapVoidColour()
 {
-	return (_settings_game.construction.map_edge_mode == 2) ? _vp_map_water_colour[SLOPE_FLAT] : 0;
+	return (_settings_game.construction.map_edge_mode == MapEdgeMode::InfiniteWater) ? _vp_map_water_colour[SLOPE_FLAT] : 0;
 }
 
 /** Get the colour of a tile, can be 32bpp RGB or 8bpp palette index. */
