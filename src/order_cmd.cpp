@@ -1200,7 +1200,7 @@ static CommandCost PreInsertOrderCheck(Vehicle *v, const Order &new_order, CmdIn
 			if (!insert_flags.Test(CmdInsertOrderIntlFlag::NoUnbunchChecks) && v->HasUnbunchingOrder()) return CommandCost(STR_ERROR_UNBUNCHING_NO_CONDITIONAL);
 
 			OrderConditionComparator occ = new_order.GetConditionComparator();
-			if (occ >= OCC_END) return CMD_ERROR;
+			if (occ >= OrderConditionComparator::End) return CMD_ERROR;
 			switch (new_order.GetConditionVariable()) {
 				case OCV_SLOT_OCCUPANCY:
 				case OCV_VEH_IN_SLOT: {
@@ -1212,10 +1212,10 @@ static CommandCost PreInsertOrderCheck(Vehicle *v, const Order &new_order, CmdIn
 						if (!trslot->IsUsableByOwner(v->owner)) return CMD_ERROR;
 					}
 					switch (occ) {
-						case OCC_IS_TRUE:
-						case OCC_IS_FALSE:
-						case OCC_EQUALS:
-						case OCC_NOT_EQUALS:
+						case OrderConditionComparator::IsTrue:
+						case OrderConditionComparator::IsFalse:
+						case OrderConditionComparator::Equal:
+						case OrderConditionComparator::NotEqual:
 							break;
 
 						default:
@@ -1232,8 +1232,8 @@ static CommandCost PreInsertOrderCheck(Vehicle *v, const Order &new_order, CmdIn
 						if (!sg->CompanyCanReferenceSlotGroup(v->owner)) return CMD_ERROR;
 					}
 					switch (occ) {
-						case OCC_IS_TRUE:
-						case OCC_IS_FALSE:
+						case OrderConditionComparator::IsTrue:
+						case OrderConditionComparator::IsFalse:
 							break;
 
 						default:
@@ -1245,13 +1245,13 @@ static CommandCost PreInsertOrderCheck(Vehicle *v, const Order &new_order, CmdIn
 				case OCV_CARGO_LOAD_PERCENTAGE:
 					if (!CargoSpec::Get(new_order.GetConditionValue())->IsValid()) return CMD_ERROR;
 					if (new_order.GetXData() > 100) return CMD_ERROR;
-					if (occ == OCC_IS_TRUE || occ == OCC_IS_FALSE) return CMD_ERROR;
+					if (occ == OrderConditionComparator::IsTrue || occ == OrderConditionComparator::IsFalse) return CMD_ERROR;
 					break;
 
 				case OCV_CARGO_WAITING_AMOUNT:
 				case OCV_CARGO_WAITING_AMOUNT_PERCENTAGE:
 					if (!CargoSpec::Get(new_order.GetConditionValue())->IsValid()) return CMD_ERROR;
-					if (occ == OCC_IS_TRUE || occ == OCC_IS_FALSE) return CMD_ERROR;
+					if (occ == OrderConditionComparator::IsTrue || occ == OrderConditionComparator::IsFalse) return CMD_ERROR;
 					break;
 
 				case OCV_CARGO_WAITING:
@@ -1260,28 +1260,28 @@ static CommandCost PreInsertOrderCheck(Vehicle *v, const Order &new_order, CmdIn
 					/* FALL THROUGH */
 
 				case OCV_REQUIRES_SERVICE:
-					if (occ != OCC_IS_TRUE && occ != OCC_IS_FALSE) return CMD_ERROR;
+					if (occ != OrderConditionComparator::IsTrue && occ != OrderConditionComparator::IsFalse) return CMD_ERROR;
 					break;
 
 				case OCV_UNCONDITIONALLY:
-					if (occ != OCC_EQUALS) return CMD_ERROR;
+					if (occ != OrderConditionComparator::Equal) return CMD_ERROR;
 					if (new_order.GetConditionValue() != 0) return CMD_ERROR;
 					break;
 
 				case OCV_FREE_PLATFORMS:
 					if (v->type != VEH_TRAIN) return CMD_ERROR;
-					if (occ == OCC_IS_TRUE || occ == OCC_IS_FALSE) return CMD_ERROR;
+					if (occ == OrderConditionComparator::IsTrue || occ == OrderConditionComparator::IsFalse) return CMD_ERROR;
 					break;
 
 				case OCV_DISPATCH_SLOT: {
-					if (occ != OCC_IS_TRUE && occ != OCC_IS_FALSE) return CMD_ERROR;
+					if (occ != OrderConditionComparator::IsTrue && occ != OrderConditionComparator::IsFalse) return CMD_ERROR;
 					uint submode = GB(new_order.GetConditionValue(), ODCB_SRC_START, ODCB_SRC_COUNT);
 					if (submode < ODCS_BEGIN || submode >= ODCS_END) return CMD_ERROR;
 					break;
 				}
 
 				case OCV_PERCENT:
-					if (occ != OCC_EQUALS) return CMD_ERROR;
+					if (occ != OrderConditionComparator::Equal) return CMD_ERROR;
 					[[fallthrough]];
 				case OCV_LOAD_PERCENTAGE:
 				case OCV_RELIABILITY:
@@ -1289,7 +1289,7 @@ static CommandCost PreInsertOrderCheck(Vehicle *v, const Order &new_order, CmdIn
 					[[fallthrough]];
 
 				default:
-					if (occ == OCC_IS_TRUE || occ == OCC_IS_FALSE) return CMD_ERROR;
+					if (occ == OrderConditionComparator::IsTrue || occ == OrderConditionComparator::IsFalse) return CMD_ERROR;
 					break;
 			}
 			break;
@@ -2059,8 +2059,9 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 			if (data >= OCV_END) return CMD_ERROR;
 			break;
 
-		case MOF_COND_COMPARATOR:
-			if (data >= OCC_END) return CMD_ERROR;
+		case MOF_COND_COMPARATOR: {
+			OrderConditionComparator occ = static_cast<OrderConditionComparator>(data);
+			if (occ >= OrderConditionComparator::End) return CMD_ERROR;
 			switch (order->GetConditionVariable()) {
 				case OCV_UNCONDITIONALLY:
 				case OCV_PERCENT:
@@ -2070,36 +2071,37 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 				case OCV_CARGO_ACCEPTANCE:
 				case OCV_CARGO_WAITING:
 				case OCV_DISPATCH_SLOT:
-					if (data != OCC_IS_TRUE && data != OCC_IS_FALSE) return CMD_ERROR;
+					if (occ != OrderConditionComparator::IsTrue && occ != OrderConditionComparator::IsFalse) return CMD_ERROR;
 					break;
 
 				case OCV_SLOT_OCCUPANCY:
-					if (data != OCC_IS_TRUE && data != OCC_IS_FALSE && data != OCC_EQUALS && data != OCC_NOT_EQUALS) return CMD_ERROR;
+					if (occ != OrderConditionComparator::IsTrue && occ != OrderConditionComparator::IsFalse && occ != OrderConditionComparator::Equal && occ != OrderConditionComparator::NotEqual) return CMD_ERROR;
 					break;
 
 				case OCV_VEH_IN_SLOT: {
-					if (data != OCC_IS_TRUE && data != OCC_IS_FALSE && data != OCC_EQUALS && data != OCC_NOT_EQUALS) return CMD_ERROR;
+					if (occ != OrderConditionComparator::IsTrue && occ != OrderConditionComparator::IsFalse && occ != OrderConditionComparator::Equal && occ != OrderConditionComparator::NotEqual) return CMD_ERROR;
 					const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(order->GetXData());
 					if (slot != nullptr && slot->vehicle_type != v->type) return CMD_ERROR;
 					break;
 				}
 
 				case OCV_VEH_IN_SLOT_GROUP: {
-					if (data != OCC_IS_TRUE && data != OCC_IS_FALSE) return CMD_ERROR;
+					if (occ != OrderConditionComparator::IsTrue && occ != OrderConditionComparator::IsFalse) return CMD_ERROR;
 					const TraceRestrictSlotGroup *sg = TraceRestrictSlotGroup::GetIfValid(order->GetXData());
 					if (sg != nullptr && sg->vehicle_type != v->type) return CMD_ERROR;
 					break;
 				}
 
 				case OCV_TIMETABLE:
-					if (data == OCC_IS_TRUE || data == OCC_IS_FALSE || data == OCC_EQUALS || data == OCC_NOT_EQUALS) return CMD_ERROR;
+					if (occ == OrderConditionComparator::IsTrue || occ == OrderConditionComparator::IsFalse || occ == OrderConditionComparator::Equal || occ == OrderConditionComparator::NotEqual) return CMD_ERROR;
 					break;
 
 				default:
-					if (data == OCC_IS_TRUE || data == OCC_IS_FALSE) return CMD_ERROR;
+					if (occ == OrderConditionComparator::IsTrue || occ == OrderConditionComparator::IsFalse) return CMD_ERROR;
 					break;
 			}
 			break;
+		}
 
 		case MOF_COND_VALUE:
 			switch (order->GetConditionVariable()) {
@@ -2407,7 +2409,7 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 				OrderConditionComparator occ = order->GetConditionComparator();
 				switch (new_condition) {
 					case OCV_UNCONDITIONALLY:
-						order->SetConditionComparator(OCC_EQUALS);
+						order->SetConditionComparator(OrderConditionComparator::Equal);
 						order->SetConditionValue(0);
 						break;
 
@@ -2418,19 +2420,19 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 						} else if (order->GetConditionVariable() == OCV_VEH_IN_SLOT && order->GetXData() != INVALID_TRACE_RESTRICT_SLOT_ID && TraceRestrictSlot::Get(order->GetXData())->vehicle_type != v->type) {
 							order->GetXDataRef() = INVALID_TRACE_RESTRICT_SLOT_ID.base();
 						}
-						if (old_condition != order->GetConditionVariable()) order->SetConditionComparator(OCC_IS_TRUE);
+						if (old_condition != order->GetConditionVariable()) order->SetConditionComparator(OrderConditionComparator::IsTrue);
 						break;
 
 					case OCV_VEH_IN_SLOT_GROUP:
 						if (!old_var_was_slot_group) {
 							order->GetXDataRef() = INVALID_TRACE_RESTRICT_SLOT_GROUP.base();
 						}
-						if (old_condition != order->GetConditionVariable()) order->SetConditionComparator(OCC_IS_TRUE);
+						if (old_condition != order->GetConditionVariable()) order->SetConditionComparator(OrderConditionComparator::IsTrue);
 						break;
 
 					case OCV_COUNTER_VALUE:
 						if (!old_var_was_counter) order->GetXDataRef() = INVALID_TRACE_RESTRICT_COUNTER_ID.base() << 16;
-						if (occ == OCC_IS_TRUE || occ == OCC_IS_FALSE) order->SetConditionComparator(OCC_EQUALS);
+						if (occ == OrderConditionComparator::IsTrue || occ == OrderConditionComparator::IsFalse) order->SetConditionComparator(OrderConditionComparator::Equal);
 						break;
 
 					case OCV_TIME_DATE:
@@ -2438,7 +2440,7 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 							order->SetConditionValue(0);
 							order->GetXDataRef() = 0;
 						}
-						if (occ == OCC_IS_TRUE || occ == OCC_IS_FALSE) order->SetConditionComparator(OCC_EQUALS);
+						if (occ == OrderConditionComparator::IsTrue || occ == OrderConditionComparator::IsFalse) order->SetConditionComparator(OrderConditionComparator::Equal);
 						break;
 
 					case OCV_TIMETABLE:
@@ -2446,18 +2448,18 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 							order->SetConditionValue(0);
 							order->GetXDataRef() = 0;
 						}
-						if (occ == OCC_IS_TRUE || occ == OCC_IS_FALSE || occ == OCC_EQUALS || occ == OCC_NOT_EQUALS) order->SetConditionComparator(OCC_LESS_THAN);
+						if (occ == OrderConditionComparator::IsTrue || occ == OrderConditionComparator::IsFalse || occ == OrderConditionComparator::Equal || occ == OrderConditionComparator::NotEqual) order->SetConditionComparator(OrderConditionComparator::LessThan);
 						break;
 
 					case OCV_CARGO_ACCEPTANCE:
 					case OCV_CARGO_WAITING:
 						if (!old_var_was_cargo) order->SetConditionValue((uint16_t) GetFirstValidCargo());
-						if (occ != OCC_IS_TRUE && occ != OCC_IS_FALSE) order->SetConditionComparator(OCC_IS_TRUE);
+						if (occ != OrderConditionComparator::IsTrue && occ != OrderConditionComparator::IsFalse) order->SetConditionComparator(OrderConditionComparator::IsTrue);
 						break;
 					case OCV_CARGO_LOAD_PERCENTAGE:
 						if (!old_var_was_cargo) order->SetConditionValue((uint16_t) GetFirstValidCargo());
 						order->GetXDataRef() = 0;
-						order->SetConditionComparator(OCC_EQUALS);
+						order->SetConditionComparator(OrderConditionComparator::Equal);
 						break;
 					case OCV_CARGO_WAITING_AMOUNT:
 					case OCV_CARGO_WAITING_AMOUNT_PERCENTAGE:
@@ -2465,21 +2467,21 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 						if (!ConditionVariableTestsCargoWaitingAmount(old_condition)) order->ClearConditionViaStation();
 						order->SetXDataLow(0);
 						order->SetXData2High(0);
-						order->SetConditionComparator(OCC_EQUALS);
+						order->SetConditionComparator(OrderConditionComparator::Equal);
 						break;
 					case OCV_REQUIRES_SERVICE:
 						if (old_var_was_cargo || old_var_was_slot) order->SetConditionValue(0);
-						if (occ != OCC_IS_TRUE && occ != OCC_IS_FALSE) order->SetConditionComparator(OCC_IS_TRUE);
+						if (occ != OrderConditionComparator::IsTrue && occ != OrderConditionComparator::IsFalse) order->SetConditionComparator(OrderConditionComparator::IsTrue);
 						order->SetConditionValue(0);
 						break;
 					case OCV_DISPATCH_SLOT:
-						if (occ != OCC_IS_TRUE && occ != OCC_IS_FALSE) order->SetConditionComparator(OCC_IS_TRUE);
+						if (occ != OrderConditionComparator::IsTrue && occ != OrderConditionComparator::IsFalse) order->SetConditionComparator(OrderConditionComparator::IsTrue);
 						order->SetConditionValue(ODCS_VEH << ODCB_SRC_START);
 						order->GetXDataRef() = UINT16_MAX;
 						break;
 
 					case OCV_PERCENT:
-						order->SetConditionComparator(OCC_EQUALS);
+						order->SetConditionComparator(OrderConditionComparator::Equal);
 						/* FALL THROUGH */
 					case OCV_LOAD_PERCENTAGE:
 					case OCV_RELIABILITY:
@@ -2488,7 +2490,7 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 
 					default:
 						if (old_var_was_cargo || old_var_was_slot || old_var_was_counter || old_var_was_time || old_var_was_tt) order->SetConditionValue(0);
-						if (occ == OCC_IS_TRUE || occ == OCC_IS_FALSE) order->SetConditionComparator(OCC_EQUALS);
+						if (occ == OrderConditionComparator::IsTrue || occ == OrderConditionComparator::IsFalse) order->SetConditionComparator(OrderConditionComparator::Equal);
 						break;
 				}
 				break;
@@ -2510,8 +2512,8 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 					case OCV_VEH_IN_SLOT:
 						order->GetXDataRef() = data;
 						if (data != INVALID_TRACE_RESTRICT_SLOT_ID && TraceRestrictSlot::Get(data)->vehicle_type != v->type) {
-							if (order->GetConditionComparator() == OCC_EQUALS) order->SetConditionComparator(OCC_IS_TRUE);
-							if (order->GetConditionComparator() == OCC_NOT_EQUALS) order->SetConditionComparator(OCC_IS_FALSE);
+							if (order->GetConditionComparator() == OrderConditionComparator::Equal) order->SetConditionComparator(OrderConditionComparator::IsTrue);
+							if (order->GetConditionComparator() == OrderConditionComparator::NotEqual) order->SetConditionComparator(OrderConditionComparator::IsFalse);
 						}
 						break;
 
@@ -3452,14 +3454,14 @@ static bool CheckForValidOrders(const Vehicle *v)
 bool OrderConditionCompare(OrderConditionComparator occ, int variable, int value)
 {
 	switch (occ) {
-		case OCC_EQUALS:      return variable == value;
-		case OCC_NOT_EQUALS:  return variable != value;
-		case OCC_LESS_THAN:   return variable <  value;
-		case OCC_LESS_EQUALS: return variable <= value;
-		case OCC_MORE_THAN:   return variable >  value;
-		case OCC_MORE_EQUALS: return variable >= value;
-		case OCC_IS_TRUE:     return variable != 0;
-		case OCC_IS_FALSE:    return variable == 0;
+		case OrderConditionComparator::Equal:      return variable == value;
+		case OrderConditionComparator::NotEqual:  return variable != value;
+		case OrderConditionComparator::LessThan:   return variable <  value;
+		case OrderConditionComparator::LessThanOrEqual: return variable <= value;
+		case OrderConditionComparator::MoreThan:   return variable >  value;
+		case OrderConditionComparator::MoreThanOrEqual: return variable >= value;
+		case OrderConditionComparator::IsTrue:     return variable != 0;
+		case OrderConditionComparator::IsFalse:    return variable == 0;
 		default: NOT_REACHED();
 	}
 }
@@ -3681,7 +3683,7 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, Pro
 	OrderConditionComparator occ = order->GetConditionComparator();
 	uint16_t value = order->GetConditionValue();
 
-	// OrderConditionCompare ignores the last parameter for occ == OCC_IS_TRUE or occ == OCC_IS_FALSE.
+	// OrderConditionCompare ignores the last parameter for occ == OrderConditionComparator::IsTrue or occ == OrderConditionComparator::IsFalse.
 	switch (order->GetConditionVariable()) {
 		case OCV_LOAD_PERCENTAGE:    skip_order = OrderConditionCompare(occ, CalcPercentVehicleFilled(v, nullptr), value); break;
 		case OCV_CARGO_LOAD_PERCENTAGE: skip_order = OrderConditionCompare(occ, CalcPercentVehicleFilledOfCargo(v, (CargoType)value), order->GetXData()); break;
@@ -3767,8 +3769,8 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, Pro
 					count += _pco_deferred_slot_membership.GetSlotOccupancyDelta(slot_id);
 				}
 				bool result;
-				if (occ == OCC_EQUALS || occ == OCC_NOT_EQUALS) {
-					occ = (occ == OCC_EQUALS) ? OCC_IS_TRUE : OCC_IS_FALSE;
+				if (occ == OrderConditionComparator::Equal || occ == OrderConditionComparator::NotEqual) {
+					occ = (occ == OrderConditionComparator::Equal) ? OrderConditionComparator::IsTrue : OrderConditionComparator::IsFalse;
 					result = (count == 0);
 				} else {
 					result = (count >= slot->max_occupancy);
@@ -3781,9 +3783,9 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, Pro
 			TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(order->GetXData());
 			if (slot != nullptr) {
 				bool acquire = false;
-				if (occ == OCC_EQUALS || occ == OCC_NOT_EQUALS) {
+				if (occ == OrderConditionComparator::Equal || occ == OrderConditionComparator::NotEqual) {
 					acquire = true;
-					occ = (occ == OCC_EQUALS) ? OCC_IS_TRUE : OCC_IS_FALSE;
+					occ = (occ == OrderConditionComparator::Equal) ? OrderConditionComparator::IsTrue : OrderConditionComparator::IsFalse;
 				}
 				bool occupant = ExecuteVehicleInSlotOrderCondition(v, slot, mode, acquire);
 				skip_order = OrderConditionCompare(occ, occupant, value);

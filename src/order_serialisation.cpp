@@ -685,7 +685,7 @@ private:
 	template <typename T, typename F>
 	bool ParserFuncWrapper(std::string_view field, std::optional<T> default_val, JsonOrderImportErrorType error_type, F exec)
 	{
-		static_assert(std::is_same_v<T, std::string> || std::is_convertible_v<T, int> || std::is_base_of_v<PoolIDBase, T>, "data is either a string or it's convertible to int");
+		static_assert(std::is_same_v<T, std::string> || std::is_convertible_v<T, int> || std::is_base_of_v<PoolIDBase, T> || is_scoped_enum_v<T>, "data is either a string or it's convertible to int");
 
 		T val;
 		bool default_used = false;
@@ -835,6 +835,8 @@ public:
 					this->ModifyOrder(mof, 0, cargo, val, oid);
 				} else if constexpr (std::is_base_of_v<PoolIDBase, T>) {
 					this->ModifyOrder(mof, val.base(), cargo, {}, oid);
+				} else if constexpr (is_scoped_enum_v<T>) {
+					this->ModifyOrder(mof, to_underlying(val), cargo, {}, oid);
 				} else {
 					this->ModifyOrder(mof, val, cargo, {}, oid);
 				}

@@ -157,15 +157,15 @@ NLOHMANN_JSON_SERIALIZE_ENUM(OrderConditionVariable, {
 })
 
 NLOHMANN_JSON_SERIALIZE_ENUM(OrderConditionComparator, {
-	{OCC_END, nullptr},
-	{OCC_EQUALS, "=="},
-	{OCC_NOT_EQUALS, "!="},
-	{OCC_LESS_THAN, "<"},
-	{OCC_LESS_EQUALS, "<="},
-	{OCC_MORE_THAN, ">"},
-	{OCC_MORE_EQUALS, ">="},
-	{OCC_IS_TRUE, "true"},
-	{OCC_IS_FALSE, "false"}
+	{OrderConditionComparator::End, nullptr},
+	{OrderConditionComparator::Equal, "=="},
+	{OrderConditionComparator::NotEqual, "!="},
+	{OrderConditionComparator::LessThan, "<"},
+	{OrderConditionComparator::LessThanOrEqual, "<="},
+	{OrderConditionComparator::MoreThan, ">"},
+	{OrderConditionComparator::MoreThanOrEqual, ">="},
+	{OrderConditionComparator::IsTrue, "true"},
+	{OrderConditionComparator::IsFalse, "false"}
 })
 
 NLOHMANN_JSON_SERIALIZE_ENUM(OrderSlotSubType, {

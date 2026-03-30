@@ -1001,16 +1001,16 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 						order->GetConditionSkipToOrder() + 1,
 						str,
 						value,
-						STR_ORDER_CONDITIONAL_COMPARATOR_HAS + order->GetConditionComparator(),
+						STR_ORDER_CONDITIONAL_COMPARATOR_HAS + to_underlying(order->GetConditionComparator()),
 						order->GetConditionValue());
 			} else if (ocv == OCV_SLOT_OCCUPANCY) {
 				StringID comparator;
 				switch (order->GetConditionComparator()) {
-					case OCC_IS_TRUE:
-					case OCC_IS_FALSE:
-					case OCC_EQUALS:
-					case OCC_NOT_EQUALS: {
-						comparator = _order_conditional_condition_occupancy[order->GetConditionComparator()];
+					case OrderConditionComparator::IsTrue:
+					case OrderConditionComparator::IsFalse:
+					case OrderConditionComparator::Equal:
+					case OrderConditionComparator::NotEqual: {
+						comparator = _order_conditional_condition_occupancy[to_underlying(order->GetConditionComparator())];
 						break;
 					}
 					default:
@@ -1030,12 +1030,12 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 			} else if (ocv == OCV_VEH_IN_SLOT) {
 				StringID comparator;
 				switch (order->GetConditionComparator()) {
-					case OCC_IS_TRUE:
-					case OCC_IS_FALSE:
-					case OCC_EQUALS:
-					case OCC_NOT_EQUALS: {
+					case OrderConditionComparator::IsTrue:
+					case OrderConditionComparator::IsFalse:
+					case OrderConditionComparator::Equal:
+					case OrderConditionComparator::NotEqual: {
 						const StringID *strs = v->type == VEH_TRAIN ? _order_conditional_condition_is_in_slot : _order_conditional_condition_is_in_slot_non_train;
-						comparator = strs[order->GetConditionComparator()];
+						comparator = strs[to_underlying(order->GetConditionComparator())];
 						break;
 					}
 					default:
@@ -1055,10 +1055,10 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 			} else if (ocv == OCV_VEH_IN_SLOT_GROUP) {
 				StringID comparator;
 				switch (order->GetConditionComparator()) {
-					case OCC_IS_TRUE:
-					case OCC_IS_FALSE: {
+					case OrderConditionComparator::IsTrue:
+					case OrderConditionComparator::IsFalse: {
 						const StringID *strs = v->type == VEH_TRAIN ? _order_conditional_condition_is_in_slot : _order_conditional_condition_is_in_slot_non_train;
-						comparator = strs[order->GetConditionComparator()];
+						comparator = strs[to_underlying(order->GetConditionComparator())];
 						break;
 					}
 					default:
@@ -1081,7 +1081,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 				AppendStringInPlace(line, STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE_DISPLAY,
 						order->GetConditionSkipToOrder() + 1,
 						CargoSpec::Get(order->GetConditionValue())->name,
-						STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + order->GetConditionComparator(),
+						STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + to_underlying(order->GetConditionComparator()),
 						order->GetXData());
 			} else if (ocv == OCV_CARGO_WAITING_AMOUNT || ocv == OCV_CARGO_WAITING_AMOUNT_PERCENTAGE) {
 				const bool percent_mode = (ocv == OCV_CARGO_WAITING_AMOUNT_PERCENTAGE);
@@ -1106,7 +1106,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 				StringID substr;
 				if (!order->HasConditionViaStation()) {
 					substr = percent_mode ? STR_ORDER_CONDITIONAL_CARGO_WAITING_GENERAL_DISPLAY : STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_DISPLAY;
-					tmp_params[4] = STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + order->GetConditionComparator();
+					tmp_params[4] = STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + to_underlying(order->GetConditionComparator());
 					output_condition_value(5);
 				} else {
 					substr = percent_mode ? STR_ORDER_CONDITIONAL_CARGO_WAITING_GENERAL_VIA_DISPLAY : STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_VIA_DISPLAY;
@@ -1117,7 +1117,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 						tmp_params[4] = STR_STATION_NAME;
 						tmp_params[5] = via_st->index;
 					}
-					tmp_params[6] = STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + order->GetConditionComparator();
+					tmp_params[6] = STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + to_underlying(order->GetConditionComparator());
 					output_condition_value(7);
 				}
 				AppendStringWithArgsInPlace(line, substr, tmp_params);
@@ -1126,26 +1126,26 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 					AppendStringInPlace(line, STR_ORDER_CONDITIONAL_COUNTER,
 							order->GetConditionSkipToOrder() + 1,
 							order->GetXDataHigh(),
-							STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + order->GetConditionComparator(),
+							STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + to_underlying(order->GetConditionComparator()),
 							order->GetXDataLow());
 				} else {
 					AppendStringInPlace(line, STR_ORDER_CONDITIONAL_INVALID_COUNTER,
 							order->GetConditionSkipToOrder() + 1,
 							STR_TRACE_RESTRICT_VARIABLE_UNDEFINED,
-							STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + order->GetConditionComparator(),
+							STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + to_underlying(order->GetConditionComparator()),
 							order->GetXDataLow());
 				}
 			} else if (ocv == OCV_TIME_DATE) {
 				AppendStringInPlace(line, (order->GetConditionValue() == TRTDVF_HOUR_MINUTE) ? STR_ORDER_CONDITIONAL_TIME_HHMM : STR_ORDER_CONDITIONAL_NUM,
 						order->GetConditionSkipToOrder() + 1,
 						STR_TRACE_RESTRICT_TIME_MINUTE_ITEM + order->GetConditionValue(),
-						STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + order->GetConditionComparator(),
+						STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + to_underlying(order->GetConditionComparator()),
 						order->GetXData());
 			} else if (ocv == OCV_TIMETABLE) {
 				AppendStringInPlace(line, STR_ORDER_CONDITIONAL_TIMETABLE,
 						order->GetConditionSkipToOrder() + 1,
 						STR_TRACE_RESTRICT_TIMETABLE_LATENESS + order->GetConditionValue(),
-						STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + order->GetConditionComparator(),
+						STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + to_underlying(order->GetConditionComparator()),
 						order->GetXData());
 			} else if (ocv == OCV_DISPATCH_SLOT) {
 				const DispatchSchedule *selected_schedule = nullptr;
@@ -1172,12 +1172,12 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 				StringID cond_str;
 				switch ((OrderDispatchConditionModes)GB(value, ODCB_MODE_START, ODCB_MODE_COUNT)) {
 					case ODCM_FIRST_LAST:
-						cond_str = STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_FIRST + ((order->GetConditionComparator() == OCC_IS_FALSE) ? 1 : 0) +
+						cond_str = STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_FIRST + ((order->GetConditionComparator() == OrderConditionComparator::IsFalse) ? 1 : 0) +
 								(HasBit(value, ODFLCB_LAST_SLOT) ? 2 : 0);
 						break;
 
 					case OCDM_TAG: {
-						StringID str = (order->GetConditionComparator() == OCC_IS_FALSE) ? STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DOESNT_HAVE_TAG : STR_ORDER_CONDITIONAL_DISPATCH_SLOT_HAS_TAG;
+						StringID str = (order->GetConditionComparator() == OrderConditionComparator::IsFalse) ? STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DOESNT_HAVE_TAG : STR_ORDER_CONDITIONAL_DISPATCH_SLOT_HAS_TAG;
 						uint tag_id = GB(value, ODFLCB_TAG_START, ODFLCB_TAG_COUNT);
 						std::string_view name;
 						if (selected_schedule != nullptr) {
@@ -1191,7 +1191,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 
 					case OCDM_ROUTE_ID: {
 						uint16_t route_id = order->GetXData2Low();
-						uint stroffset = (order->GetConditionComparator() == OCC_IS_FALSE) ? 1 : 0;
+						uint stroffset = (order->GetConditionComparator() == OrderConditionComparator::IsFalse) ? 1 : 0;
 						if (route_id == 0) {
 							cond_str = STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_DEF_ROUTE + stroffset;
 						} else {
@@ -1222,7 +1222,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 						order->GetConditionSkipToOrder() + 1,
 						str,
 						value,
-						STR_ORDER_CONDITIONAL_COMPARATOR_ACCEPTS + order->GetConditionComparator() - OCC_IS_TRUE,
+						STR_ORDER_CONDITIONAL_COMPARATOR_ACCEPTS + to_underlying(order->GetConditionComparator()) - to_underlying(OrderConditionComparator::IsTrue),
 						CargoSpec::Get(order->GetConditionValue())->name);
 			} else if (ocv == OCV_CARGO_WAITING) {
 				auto [str, value] = get_station_params();
@@ -1230,7 +1230,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 						order->GetConditionSkipToOrder() + 1,
 						str,
 						value,
-						STR_ORDER_CONDITIONAL_COMPARATOR_HAS + order->GetConditionComparator() - OCC_IS_TRUE,
+						STR_ORDER_CONDITIONAL_COMPARATOR_HAS + to_underlying(order->GetConditionComparator()) - to_underlying(OrderConditionComparator::IsTrue),
 						CargoSpec::Get(order->GetConditionValue())->name);
 			} else {
 				OrderConditionComparator occ = order->GetConditionComparator();
@@ -1238,10 +1238,10 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 				if (ocv == OCV_MAX_SPEED) {
 					value = ConvertSpeedToDisplaySpeed(value, v->type);
 				}
-				AppendStringInPlace(line, (occ == OCC_IS_TRUE || occ == OCC_IS_FALSE) ? STR_ORDER_CONDITIONAL_TRUE_FALSE : STR_ORDER_CONDITIONAL_NUM,
+				AppendStringInPlace(line, (occ == OrderConditionComparator::IsTrue || occ == OrderConditionComparator::IsFalse) ? STR_ORDER_CONDITIONAL_TRUE_FALSE : STR_ORDER_CONDITIONAL_NUM,
 						order->GetConditionSkipToOrder() + 1,
 						(ocv == OCV_FREE_PLATFORMS) ? STR_ORDER_CONDITIONAL_NEXT_STATION : OrderStringForVariable(v, ocv),
-						STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + occ,
+						STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + to_underlying(occ),
 						value);
 			}
 
@@ -2503,7 +2503,7 @@ public:
 
 					/* Set the strings for the dropdown boxes. */
 					this->GetWidget<NWidgetCore>(WID_O_COND_VARIABLE)->SetString(OrderStringForVariable(this->vehicle, ocv));
-					this->GetWidget<NWidgetCore>(WID_O_COND_COMPARATOR)->SetString(GetComparatorStrings(this->vehicle, order)[order->GetConditionComparator()]);
+					this->GetWidget<NWidgetCore>(WID_O_COND_COMPARATOR)->SetString(GetComparatorStrings(this->vehicle, order)[to_underlying(order->GetConditionComparator())]);
 					this->GetWidget<NWidgetCore>(WID_O_COND_VALUE)->SetString((ocv == OCV_TIME_DATE && order->GetConditionValue() == TRTDVF_HOUR_MINUTE) ? STR_JUST_TIME_HHMM : STR_JUST_COMMA);
 					this->SetWidgetDisabledState(WID_O_COND_COMPARATOR, ocv == OCV_UNCONDITIONALLY || ocv == OCV_PERCENT);
 					this->SetWidgetDisabledState(WID_O_COND_VALUE, ocv == OCV_REQUIRES_SERVICE || ocv == OCV_UNCONDITIONALLY);
@@ -3420,8 +3420,8 @@ public:
 				if (o->GetConditionVariable() == OCV_DISPATCH_SLOT) {
 					DropDownList list;
 
-					const int true_cond = ((int)OCC_IS_TRUE) << 16;
-					const int false_cond = ((int)OCC_IS_FALSE) << 16;
+					const int true_cond = ((int)OrderConditionComparator::IsTrue) << 16;
+					const int false_cond = ((int)OrderConditionComparator::IsFalse) << 16;
 					int first_last_value = 0;
 					SB(first_last_value, ODCB_MODE_START, ODCB_MODE_COUNT, ODCM_FIRST_LAST);
 					list.push_back(MakeDropDownListStringItem(STR_ORDER_CONDITIONAL_COMPARATOR_DISPATCH_SLOT_IS_FIRST, true_cond | first_last_value, false));
@@ -3485,7 +3485,7 @@ public:
 						mask = 0xC0;
 						break;
 				}
-				ShowDropDownMenu(this, GetComparatorStrings(this->vehicle, o), o->GetConditionComparator(), WID_O_COND_COMPARATOR, 0, mask, 0, DDSF_SHARED);
+				ShowDropDownMenu(this, GetComparatorStrings(this->vehicle, o), to_underlying(o->GetConditionComparator()), WID_O_COND_COMPARATOR, 0, mask, 0, DDSF_SHARED);
 				break;
 			}
 

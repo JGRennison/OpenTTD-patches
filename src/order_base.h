@@ -444,7 +444,7 @@ public:
 	/** What variable do we have to compare? */
 	inline OrderConditionVariable GetConditionVariable() const { return static_cast<OrderConditionVariable>(GB(this->dest.value, 11, 5)); }
 	/** What is the comparator to use? */
-	inline OrderConditionComparator GetConditionComparator() const { return (OrderConditionComparator)GB(this->type, 5, 3); }
+	inline OrderConditionComparator GetConditionComparator() const { return static_cast<OrderConditionComparator>(GB(this->type, 5, 3)); }
 	/** Get the order to skip to. */
 	inline VehicleOrderID GetConditionSkipToOrder() const { return this->flags; }
 	/** Get the value to base the skip on. */
@@ -517,7 +517,7 @@ public:
 	/** Set variable we have to compare. */
 	inline void SetConditionVariable(OrderConditionVariable condition_variable) { SB(this->dest.value, 11, 5, condition_variable); }
 	/** Set the comparator to use. */
-	inline void SetConditionComparator(OrderConditionComparator condition_comparator) { SB(this->type, 5, 3, condition_comparator); }
+	inline void SetConditionComparator(OrderConditionComparator condition_comparator) { SB(this->type, 5, 3, to_underlying(condition_comparator)); }
 	/** Get the order to skip to. */
 	inline void SetConditionSkipToOrder(VehicleOrderID order_id) { this->flags = order_id; }
 	/** Set the value to base the skip on. */

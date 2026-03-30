@@ -107,14 +107,14 @@ public:
 	 */
 	enum CompareFunction {
 		/* Note: these values represent part of the in-game OrderConditionComparator enum */
-		CF_EQUALS        = ::OCC_EQUALS,       ///< Skip if both values are equal
-		CF_NOT_EQUALS    = ::OCC_NOT_EQUALS,   ///< Skip if both values are not equal
-		CF_LESS_THAN     = ::OCC_LESS_THAN,    ///< Skip if the value is less than the limit
-		CF_LESS_EQUALS   = ::OCC_LESS_EQUALS,  ///< Skip if the value is less or equal to the limit
-		CF_MORE_THAN     = ::OCC_MORE_THAN,    ///< Skip if the value is more than the limit
-		CF_MORE_EQUALS   = ::OCC_MORE_EQUALS,  ///< Skip if the value is more or equal to the limit
-		CF_IS_TRUE       = ::OCC_IS_TRUE,      ///< Skip if the variable is true
-		CF_IS_FALSE      = ::OCC_IS_FALSE,     ///< Skip if the variable is false
+		CF_EQUALS        = to_underlying(::OrderConditionComparator::Equal),           ///< Skip if both values are equal
+		CF_NOT_EQUALS    = to_underlying(::OrderConditionComparator::NotEqual),        ///< Skip if both values are not equal
+		CF_LESS_THAN     = to_underlying(::OrderConditionComparator::LessThan),        ///< Skip if the value is less than the limit
+		CF_LESS_EQUALS   = to_underlying(::OrderConditionComparator::LessThanOrEqual), ///< Skip if the value is less or equal to the limit
+		CF_MORE_THAN     = to_underlying(::OrderConditionComparator::MoreThan),        ///< Skip if the value is more than the limit
+		CF_MORE_EQUALS   = to_underlying(::OrderConditionComparator::MoreThanOrEqual), ///< Skip if the value is more or equal to the limit
+		CF_IS_TRUE       = to_underlying(::OrderConditionComparator::IsTrue),          ///< Skip if the variable is true
+		CF_IS_FALSE      = to_underlying(::OrderConditionComparator::IsFalse),         ///< Skip if the variable is false
 
 		/* Custom added value, only valid for this API */
 		CF_INVALID       = -1,                 ///< Invalid compare function, do not use.

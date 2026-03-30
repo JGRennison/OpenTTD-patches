@@ -251,16 +251,16 @@ inline bool ConditionVariableTestsCargoWaitingAmount(OrderConditionVariable ocv)
 /**
  * Comparator for the skip reasoning.
  */
-enum OrderConditionComparator : uint8_t {
-	OCC_EQUALS,      ///< Skip if both values are equal
-	OCC_NOT_EQUALS,  ///< Skip if both values are not equal
-	OCC_LESS_THAN,   ///< Skip if the value is less than the limit
-	OCC_LESS_EQUALS, ///< Skip if the value is less or equal to the limit
-	OCC_MORE_THAN,   ///< Skip if the value is more than the limit
-	OCC_MORE_EQUALS, ///< Skip if the value is more or equal to the limit
-	OCC_IS_TRUE,     ///< Skip if the variable is true
-	OCC_IS_FALSE,    ///< Skip if the variable is false
-	OCC_END
+enum class OrderConditionComparator : uint8_t {
+	Equal           = 0, ///< Skip if both values are equal
+	NotEqual        = 1, ///< Skip if both values are not equal
+	LessThan        = 2, ///< Skip if the value is less than the limit
+	LessThanOrEqual = 3, ///< Skip if the value is less or equal to the limit
+	MoreThan        = 4, ///< Skip if the value is more than the limit
+	MoreThanOrEqual = 5, ///< Skip if the value is more or equal to the limit
+	IsTrue          = 6, ///< Skip if the variable is true
+	IsFalse         = 7, ///< Skip if the variable is false
+	End
 };
 
 
