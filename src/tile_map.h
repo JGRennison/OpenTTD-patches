@@ -102,7 +102,7 @@ inline uint TilePixelHeightOutsideMap(int x, int y)
 #ifdef _DEBUG
 	dbg_assert_tile(tile < Map::Size(), tile);
 #endif
-	return (TileType)GB(_m[tile].type, 4, 4);
+	return TileType(GB(_m[tile].type, 4, TILE_TYPE_BITS));
 }
 
 /**
@@ -126,13 +126,13 @@ inline bool IsInnerTile(TileIndex tile)
  * Set the type of a tile
  *
  * This functions sets the type of a tile. If the type
- * MP_VOID is selected the tile must be at the south-west or
+ * TileType::Void is selected the tile must be at the south-west or
  * south-east edges of the map and vice versa.
  *
  * @param tile The tile to save the new type
  * @param type The type to save
  * @pre tile < Map::Size()
- * @pre type MP_VOID <=> tile is on the south-east or south-west edge.
+ * @pre type TileType::Void <=> tile is on the south-east or south-west edge.
  */
 inline void SetTileType(TileIndex tile, TileType type)
 {
@@ -140,8 +140,8 @@ inline void SetTileType(TileIndex tile, TileType type)
 	/* VOID tiles (and no others) are exactly allowed at the lower left and right
 	 * edges of the map. If _settings_game.construction.freeform_edges is true,
 	 * the upper edges of the map are also VOID tiles. */
-	dbg_assert_tile(IsInnerTile(tile) == (type != MP_VOID), tile);
-	SB(_m[tile].type, 4, 4, type);
+	dbg_assert_tile(IsInnerTile(tile) == (type != TileType::Void), tile);
+	SB(_m[tile].type, 4, TILE_TYPE_BITS, to_underlying(type));
 }
 
 /**
@@ -162,29 +162,29 @@ inline void SetTileType(TileIndex tile, TileType type)
  * Checks if a tile is valid
  *
  * @param tile The tile to check
- * @return True if the tile is on the map and not one of MP_VOID.
+ * @return True if the tile is on the map and not one of TileType::Void.
  */
 inline bool IsValidTile(TileIndex tile)
 {
-	return tile < Map::Size() && !IsTileType(tile, MP_VOID);
+	return tile < Map::Size() && !IsTileType(tile, TileType::Void);
 }
 
 /**
  * Returns the owner of a tile
  *
  * This function returns the owner of a tile. This cannot used
- * for tiles which type is one of MP_HOUSE, MP_VOID and MP_INDUSTRY
+ * for tiles which type is one of TileType::House, TileType::Void and TileType::Industry
  * as no company owned any of these buildings.
  *
  * @param tile The tile to check
  * @return The owner of the tile
  * @pre IsValidTile(tile)
- * @pre The type of the tile must not be MP_HOUSE and MP_INDUSTRY
+ * @pre The type of the tile must not be TileType::House and TileType::Industry
  */
 inline Owner GetTileOwner(TileIndex tile)
 {
 	dbg_assert_tile(IsValidTile(tile), tile);
-	dbg_assert_tile(!IsTileType(tile, MP_HOUSE) && !IsTileType(tile, MP_INDUSTRY), tile);
+	dbg_assert_tile(!IsTileType(tile, TileType::House) && !IsTileType(tile, TileType::Industry), tile);
 
 	return (Owner)GB(_m[tile].m1, 0, 5);
 }
@@ -193,17 +193,17 @@ inline Owner GetTileOwner(TileIndex tile)
  * Sets the owner of a tile
  *
  * This function sets the owner status of a tile. Note that you cannot
- * set a owner for tiles of type MP_HOUSE, MP_VOID and MP_INDUSTRY.
+ * set a owner for tiles of type TileType::House, TileType::Void and TileType::Industry.
  *
  * @param tile The tile to change the owner status.
  * @param owner The new owner.
  * @pre IsValidTile(tile)
- * @pre The type of the tile must not be MP_HOUSE and MP_INDUSTRY
+ * @pre The type of the tile must not be TileType::House and TileType::Industry
  */
 inline void SetTileOwner(TileIndex tile, Owner owner)
 {
 	dbg_assert_tile(IsValidTile(tile), tile);
-	dbg_assert_tile(!IsTileType(tile, MP_HOUSE) && !IsTileType(tile, MP_INDUSTRY), tile);
+	dbg_assert_tile(!IsTileType(tile, TileType::House) && !IsTileType(tile, TileType::Industry), tile);
 
 	SB(_m[tile].m1, 0, 5, owner.base());
 }
@@ -229,7 +229,7 @@ inline bool IsTileOwner(TileIndex tile, Owner owner)
 inline void SetTropicZone(TileIndex tile, TropicZone type)
 {
 	dbg_assert_tile(tile < Map::Size(), tile);
-	dbg_assert_tile(!IsTileType(tile, MP_VOID) || type == TROPICZONE_NORMAL, tile);
+	dbg_assert_tile(!IsTileType(tile, TileType::Void) || type == TROPICZONE_NORMAL, tile);
 	SB(_m[tile].type, 0, 2, type);
 }
 
@@ -248,12 +248,12 @@ inline TropicZone GetTropicZone(TileIndex tile)
 /**
  * Get the current animation frame
  * @param t the tile
- * @pre IsTileType(t, MP_HOUSE) || IsTileType(t, MP_OBJECT) || IsTileType(t, MP_INDUSTRY) || IsTileType(t, MP_STATION)
+ * @pre IsTileType(t, TileType::House) || IsTileType(t, TileType::Object) || IsTileType(t, TileType::Industry) || IsTileType(t, TileType::Station)
  * @return frame number
  */
 inline uint8_t GetAnimationFrame(TileIndex t)
 {
-	dbg_assert_tile(IsTileType(t, MP_HOUSE) || IsTileType(t, MP_OBJECT) || IsTileType(t, MP_INDUSTRY) || IsTileType(t, MP_STATION), t);
+	dbg_assert_tile(IsTileType(t, TileType::House) || IsTileType(t, TileType::Object) || IsTileType(t, TileType::Industry) || IsTileType(t, TileType::Station), t);
 	return _me[t].m7;
 }
 
@@ -261,11 +261,11 @@ inline uint8_t GetAnimationFrame(TileIndex t)
  * Set a new animation frame
  * @param t the tile
  * @param frame the new frame number
- * @pre IsTileType(t, MP_HOUSE) || IsTileType(t, MP_OBJECT) || IsTileType(t, MP_INDUSTRY) || IsTileType(t, MP_STATION)
+ * @pre IsTileType(t, TileType::House) || IsTileType(t, TileType::Object) || IsTileType(t, TileType::Industry) || IsTileType(t, TileType::Station)
  */
 inline void SetAnimationFrame(TileIndex t, uint8_t frame)
 {
-	dbg_assert_tile(IsTileType(t, MP_HOUSE) || IsTileType(t, MP_OBJECT) || IsTileType(t, MP_INDUSTRY) || IsTileType(t, MP_STATION), t);
+	dbg_assert_tile(IsTileType(t, TileType::House) || IsTileType(t, TileType::Object) || IsTileType(t, TileType::Industry) || IsTileType(t, TileType::Station), t);
 	_me[t].m7 = frame;
 }
 

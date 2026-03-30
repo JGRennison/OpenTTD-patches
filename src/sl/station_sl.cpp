@@ -104,7 +104,7 @@ void MoveBuoysToWaypoints()
 		if (train) {
 			/* When we make a rail waypoint of the station, convert the map as well. */
 			for (TileIndex t : train_st) {
-				if (!IsTileType(t, MP_STATION) || GetStationIndex(t) != index) continue;
+				if (!IsTileType(t, TileType::Station) || GetStationIndex(t) != index) continue;
 
 				SB(_me[t].m6, 3, 3, to_underlying(StationType::RailWaypoint));
 				wp->rect.BeforeAddTile(t, StationRect::ADD_FORCE);

@@ -45,19 +45,19 @@ static void UpdateAnimatedTileSpeed(TileIndex tile, AnimatedTileInfo &info)
 	extern uint8_t GetNewObjectTileAnimationSpeed(TileIndex tile);
 
 	switch (GetTileType(tile)) {
-		case MP_HOUSE:
+		case TileType::House:
 			info.speed = GetAnimatedTileSpeed_Town(tile);
 			break;
 
-		case MP_STATION:
+		case TileType::Station:
 			info.speed = GetAnimatedTileSpeed_Station(tile);
 			break;
 
-		case MP_INDUSTRY:
+		case TileType::Industry:
 			info.speed = GetAnimatedTileSpeed_Industry(tile);
 			break;
 
-		case MP_OBJECT:
+		case TileType::Object:
 			info.speed = GetNewObjectTileAnimationSpeed(tile);
 			break;
 
@@ -120,19 +120,19 @@ void AnimateAnimatedTiles()
 		if (iter->second.speed <= max_speed) {
 			const TileIndex curr = iter->first;
 			switch (GetTileType(curr)) {
-				case MP_HOUSE:
+				case TileType::House:
 					AnimateTile_Town(curr);
 					break;
 
-				case MP_STATION:
+				case TileType::Station:
 					AnimateTile_Station(curr);
 					break;
 
-				case MP_INDUSTRY:
+				case TileType::Industry:
 					AnimateTile_Industry(curr);
 					break;
 
-				case MP_OBJECT:
+				case TileType::Object:
 					AnimateTile_Object(curr);
 					break;
 

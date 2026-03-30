@@ -170,7 +170,7 @@ void CcRailDepot(const CommandCost &result, TileIndex tile, RailType railtype, D
 
 	tile += TileOffsByDiagDir(dir);
 
-	if (IsTileType(tile, MP_RAILWAY)) {
+	if (IsTileType(tile, TileType::Railway)) {
 		PlaceExtraDepotRail(tile, _place_depot_extra_dir[dir], _place_depot_extra_track[dir]);
 
 		/* Don't place the rail straight out of the depot of there is another depot across from it. */
@@ -2410,8 +2410,8 @@ static void SetDefaultRailGui()
 			/* Find the most used rail type */
 			std::array<uint, RAILTYPE_END> count{};
 			for (TileIndex t(0); t < Map::Size(); t++) {
-				if (IsTileType(t, MP_RAILWAY) || IsLevelCrossingTile(t) || HasStationTileRail(t) ||
-						(IsTileType(t, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL)) {
+				if (IsTileType(t, TileType::Railway) || IsLevelCrossingTile(t) || HasStationTileRail(t) ||
+						(IsTileType(t, TileType::TunnelBridge) && GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL)) {
 					count[GetRailType(t)]++;
 				}
 			}
@@ -2625,7 +2625,7 @@ void ShowBuildRailToolbarWithPickTile(RailType railtype, TileIndex tile)
 
 		Track track = FindFirstTrack(trackbits);
 		if (track != INVALID_TRACK) {
-			if (IsTileType(tile, MP_RAILWAY) && HasTrack(tile, track) && HasSignalOnTrack(tile, track)) {
+			if (IsTileType(tile, TileType::Railway) && HasTrack(tile, track) && HasSignalOnTrack(tile, track)) {
 				OpenBuildSignalWindow(w, GetSignalVariant(tile, track), GetSignalType(tile, track), GetSignalStyle(tile, track));
 			}
 			if (IsRailTunnelBridgeTile(tile) && IsTunnelBridgeWithSignalSimulation(tile) && HasTrack(GetTunnelBridgeTrackBits(tile), track)) {

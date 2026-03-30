@@ -336,23 +336,23 @@ void ConvertRailTypes()
 
 	for (TileIndex t(0); t < Map::Size(); t++) {
 		switch (GetTileType(t)) {
-			case MP_RAILWAY:
+			case TileType::Railway:
 				convert(t);
 				break;
 
-			case MP_ROAD:
+			case TileType::Road:
 				if (IsLevelCrossing(t)) {
 					convert(t);
 				}
 				break;
 
-			case MP_STATION:
+			case TileType::Station:
 				if (HasStationRail(t)) {
 					convert(t);
 				}
 				break;
 
-			case MP_TUNNELBRIDGE:
+			case TileType::TunnelBridge:
 				if (GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL) {
 					convert(t);
 				}

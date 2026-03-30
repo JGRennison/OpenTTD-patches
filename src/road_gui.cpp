@@ -1832,7 +1832,7 @@ static void SetDefaultRoadGui()
 			std::array<uint, ROADTYPE_END> tram_count = {};
 			for (TileIndex t(0); t < Map::Size(); t++) {
 				if (MayHaveRoad(t)) {
-					if (IsTileType(t, MP_STATION) && !IsAnyRoadStop(t)) continue;
+					if (IsTileType(t, TileType::Station) && !IsAnyRoadStop(t)) continue;
 					RoadType road_type = GetRoadTypeRoad(t);
 					if (road_type != INVALID_ROADTYPE) road_count[road_type]++;
 					RoadType tram_type = GetRoadTypeTram(t);

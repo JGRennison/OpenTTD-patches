@@ -27,19 +27,19 @@
 RailType GetTileRailType(TileIndex tile)
 {
 	switch (GetTileType(tile)) {
-		case MP_RAILWAY:
+		case TileType::Railway:
 			return GetRailType(tile);
 
-		case MP_ROAD:
+		case TileType::Road:
 			/* rail/road crossing */
 			if (IsLevelCrossing(tile)) return GetRailType(tile);
 			break;
 
-		case MP_STATION:
+		case TileType::Station:
 			if (HasStationRail(tile)) return GetRailType(tile);
 			break;
 
-		case MP_TUNNELBRIDGE:
+		case TileType::TunnelBridge:
 			if (GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL) return GetRailType(tile);
 			break;
 

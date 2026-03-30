@@ -340,10 +340,10 @@ void HandleSharingCompanyDeletion(Owner owner)
 	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && _settings_game.economy.infrastructure_sharing[VEH_TRAIN]) {
 		for (TileIndex t(0); t < Map::Size(); t++) {
 			switch (GetTileType(t)) {
-				case MP_RAILWAY:
-				case MP_ROAD:
-				case MP_STATION:
-				case MP_TUNNELBRIDGE:
+				case TileType::Railway:
+				case TileType::Road:
+				case TileType::Station:
+				case TileType::TunnelBridge:
 					if (GetTileOwner(t) == owner) {
 						TrackBits bits = GetReservedTrackbits(t);
 						if (bits != TRACK_BIT_NONE) {
@@ -387,7 +387,7 @@ void UpdateAllBlockSignals(Owner owner)
 	};
 	TileIndex tile(0);
 	do {
-		if (IsTileType(tile, MP_RAILWAY) && HasSignals(tile)) {
+		if (IsTileType(tile, TileType::Railway) && HasSignals(tile)) {
 			Owner track_owner = GetTileOwner(tile);
 			if (check_owner(track_owner)) continue;
 			TrackBits bits = GetTrackBits(tile);

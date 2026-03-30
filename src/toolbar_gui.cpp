@@ -1129,16 +1129,16 @@ static void ShowBuildRoadToolbarFromTile(TileIndex tile)
 static void UsePickerTool(TileIndex tile)
 {
 	switch (GetTileType(tile)) {
-		case MP_RAILWAY:
+		case TileType::Railway:
 			ShowBuildRailToolbarFromTile(tile);
 			break;
 
-		case MP_ROAD: {
+		case TileType::Road: {
 			ShowBuildRoadToolbarFromTile(tile);
 			break;
 		}
 
-		case MP_STATION: {
+		case TileType::Station: {
 			StationType station_type = GetStationType(tile);
 			switch (station_type) {
 				case StationType::Rail:
@@ -1163,7 +1163,7 @@ static void UsePickerTool(TileIndex tile)
 			break;
 		}
 
-		case MP_TUNNELBRIDGE:
+		case TileType::TunnelBridge:
 			switch (GetTunnelBridgeTransportType(tile)) {
 				case TRANSPORT_RAIL:
 					ShowBuildRailToolbarFromTile(tile);
@@ -1182,7 +1182,7 @@ static void UsePickerTool(TileIndex tile)
 			}
 			break;
 
-		case MP_WATER:
+		case TileType::Water:
 			/* Handle canals, rivers, and locks by opening the waterways toolbar.
 			 * Rivers only work if river building is enabled or in scenario editor. */
 			if (IsLock(tile) || IsCanal(tile)) {
@@ -1196,17 +1196,17 @@ static void UsePickerTool(TileIndex tile)
 			/* Sea & coast tiles are ignored*/
 			break;
 
-		case MP_OBJECT: {
+		case TileType::Object: {
 			ShowBuildObjectPickerAndSelect(ObjectSpec::GetByTile(tile));
 			break;
 		}
 
-		case MP_INDUSTRY: {
+		case TileType::Industry: {
 			ShowBuildIndustryWindowForIndustryType(GetIndustryType(tile));
 			break;
 		}
 
-		case MP_HOUSE: {
+		case TileType::House: {
 			if (_game_mode == GM_EDITOR || _settings_game.economy.place_houses != PlaceHouses::Forbidden) {
 				ShowBuildHousePickerAndSelect(tile);
 			}

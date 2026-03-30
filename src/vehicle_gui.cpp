@@ -2763,7 +2763,7 @@ public:
 			return;
 		}
 
-		if (IsTileType(tile, MP_STATION)) {
+		if (IsTileType(tile, TileType::Station)) {
 			if (this->vli.type != VL_STATION_LIST) return;
 			if (BaseStation::Get(this->vli.index)->facilities.Test(StationFacility::Waypoint)) return;
 

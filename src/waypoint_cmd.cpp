@@ -109,7 +109,7 @@ Axis GetAxisForNewWaypoint(TileIndex tile)
 	if (IsRailWaypointTile(tile)) return GetRailStationAxis(tile);
 
 	/* Non-plain rail type, no valid axis for waypoints. */
-	if (!IsTileType(tile, MP_RAILWAY) || GetRailTileType(tile) != RailTileType::Normal) return INVALID_AXIS;
+	if (!IsTileType(tile, TileType::Railway) || GetRailTileType(tile) != RailTileType::Normal) return INVALID_AXIS;
 
 	switch (GetTrackBits(tile)) {
 		case TRACK_BIT_X: return AXIS_X;
@@ -154,7 +154,7 @@ static CommandCost IsValidTileForWaypoint(TileIndex tile, Axis axis, StationID *
 	/* if waypoint is set, then we have special handling to allow building on top of already existing waypoints.
 	 * so waypoint points to StationID::Invalid() if we can build on any waypoint.
 	 * Or it points to a waypoint if we're only allowed to build on exactly that waypoint. */
-	if (waypoint != nullptr && IsTileType(tile, MP_STATION)) {
+	if (waypoint != nullptr && IsTileType(tile, TileType::Station)) {
 		if (!IsRailWaypoint(tile)) {
 			return ClearTile_Station(tile, DoCommandFlag::Auto); // get error message
 		} else {
@@ -306,7 +306,7 @@ CommandCost CmdBuildRailWaypoint(DoCommandFlags flags, TileIndex start_tile, Axi
 			TileIndex tile = start_tile + i * offset;
 			uint8_t old_specindex = HasStationTileRail(tile) ? GetCustomStationSpecIndex(tile) : 0;
 			if (!HasStationTileRail(tile)) c->infrastructure.station++;
-			bool reserved = IsTileType(tile, MP_RAILWAY) ?
+			bool reserved = IsTileType(tile, TileType::Railway) ?
 					HasBit(GetRailReservationTrackBits(tile), AxisToTrack(axis)) :
 					HasStationReservation(tile);
 			MakeRailWaypoint(tile, wp->owner, wp->index, axis, layout_ptr[i], GetRailType(tile));
@@ -451,7 +451,7 @@ CommandCost CmdBuildRoadWaypoint(DoCommandFlags flags, TileIndex start_tile, Axi
 			}
 
 			extern CommandCost RemoveRoadStop(TileIndex tile, DoCommandFlags flags, int replacement_spec_index);
-			if (IsTileType(cur_tile, MP_STATION) && IsAnyRoadStop(cur_tile)) {
+			if (IsTileType(cur_tile, TileType::Station) && IsAnyRoadStop(cur_tile)) {
 				RemoveRoadStop(cur_tile, flags, map_spec_index);
 			}
 

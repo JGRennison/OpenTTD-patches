@@ -703,7 +703,7 @@ CommandCost CmdBuildSingleRail(DoCommandFlags flags, TileIndex tile, RailType ra
 	TrackBits trackbit = TrackToTrackBits(track);
 
 	switch (GetTileType(tile)) {
-		case MP_RAILWAY: {
+		case TileType::Railway: {
 			CommandCost ret = CheckTileOwnership(tile);
 			if (ret.Failed()) return ret;
 
@@ -767,7 +767,7 @@ CommandCost CmdBuildSingleRail(DoCommandFlags flags, TileIndex tile, RailType ra
 			break;
 		}
 
-		case MP_TUNNELBRIDGE: {
+		case TileType::TunnelBridge: {
 			CommandCost ret = CheckTileOwnership(tile);
 			if (ret.Failed()) return ret;
 
@@ -830,7 +830,7 @@ CommandCost CmdBuildSingleRail(DoCommandFlags flags, TileIndex tile, RailType ra
 			break;
 		}
 
-		case MP_ROAD: {
+		case TileType::Road: {
 			/* Level crossings may only be built on these slopes */
 			if (!HasBit(VALID_LEVEL_CROSSING_SLOPES, tileh)) return CommandCost(STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION);
 
@@ -909,7 +909,7 @@ CommandCost CmdBuildSingleRail(DoCommandFlags flags, TileIndex tile, RailType ra
 
 		default: {
 			/* Will there be flat water on the lower halftile? */
-			bool water_ground = (IsTileType(tile, MP_WATER) || (IsTileType(tile, MP_OBJECT) && WouldObjectLeaveWaterBehind(tile))) && IsSlopeWithOneCornerRaised(tileh);
+			bool water_ground = (IsTileType(tile, TileType::Water) || (IsTileType(tile, TileType::Object) && WouldObjectLeaveWaterBehind(tile))) && IsSlopeWithOneCornerRaised(tileh);
 
 			CommandCost ret = CheckRailSlope(tileh, trackbit, TRACK_BIT_NONE, tile);
 			if (ret.Failed()) return ret;
@@ -976,7 +976,7 @@ CommandCost CmdRemoveSingleRail(DoCommandFlags flags, TileIndex tile, Track trac
 	Train *v = nullptr;
 
 	switch (GetTileType(tile)) {
-		case MP_ROAD: {
+		case TileType::Road: {
 			if (!IsLevelCrossing(tile) || GetCrossingRailBits(tile) != trackbit) return CommandCost(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK);
 
 			if (_current_company != OWNER_WATER) {
@@ -1013,7 +1013,7 @@ CommandCost CmdRemoveSingleRail(DoCommandFlags flags, TileIndex tile, Track trac
 			break;
 		}
 
-		case MP_RAILWAY: {
+		case TileType::Railway: {
 			TrackBits present;
 			/* There are no rails present at depots. */
 			if (!IsPlainRail(tile)) return CommandCost(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK);
@@ -1092,7 +1092,7 @@ CommandCost CmdRemoveSingleRail(DoCommandFlags flags, TileIndex tile, Track trac
 			break;
 		}
 
-		case MP_TUNNELBRIDGE: {
+		case TileType::TunnelBridge: {
 			CommandCost ret = CheckTileOwnership(tile);
 			if (ret.Failed()) return ret;
 
@@ -1493,7 +1493,7 @@ CommandCost CmdBuildSingleSignal(DoCommandFlags flags, TileIndex tile, Track tra
 	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC && IsSignalTypeUnsuitableForRealisticBraking(sigtype)) return CMD_ERROR;
 
 	/* You can only build signals on plain rail tiles or tunnel/bridges, and the selected track must exist */
-	if (IsTileType(tile, MP_TUNNELBRIDGE)) {
+	if (IsTileType(tile, TileType::TunnelBridge)) {
 		if (GetTunnelBridgeTransportType(tile) != TRANSPORT_RAIL) return CMD_ERROR;
 		if (!ValParamTrackOrientation(track) || !IsTrackAcrossTunnelBridge(tile, track)) {
 			return CommandCost(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK);
@@ -1518,7 +1518,7 @@ CommandCost CmdBuildSingleSignal(DoCommandFlags flags, TileIndex tile, Track tra
 
 	CommandCost cost;
 	/* handle signals simulation on tunnel/bridge. */
-	if (IsTileType(tile, MP_TUNNELBRIDGE)) {
+	if (IsTileType(tile, TileType::TunnelBridge)) {
 		if (signal_spacing == 0) return CommandCost(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK);
 		signal_spacing = Clamp<uint8_t>(signal_spacing, 1, 16);
 
@@ -2028,7 +2028,7 @@ static bool CheckSignalAutoFill(TileIndex &tile, Trackdir &trackdir, int &signal
 	if (trackdirbits != TRACKDIR_BIT_NONE) return false;
 
 	switch (GetTileType(tile)) {
-		case MP_RAILWAY:
+		case TileType::Railway:
 			if (IsRailDepot(tile)) return false;
 			if (!remove && HasSignalOnTrack(tile, TrackdirToTrack(trackdir))) return false;
 			signal_ctr++;
@@ -2039,12 +2039,12 @@ static bool CheckSignalAutoFill(TileIndex &tile, Trackdir &trackdir, int &signal
 			}
 			return true;
 
-		case MP_ROAD:
+		case TileType::Road:
 			if (!IsLevelCrossing(tile)) return false;
 			signal_ctr += 2;
 			return true;
 
-		case MP_TUNNELBRIDGE: {
+		case TileType::TunnelBridge: {
 			if (GetTunnelBridgeTransportType(tile) != TRANSPORT_RAIL) return false;
 			if (!remove && IsTunnelBridgeWithSignalSimulation(tile) && HasTrack(GetAcrossTunnelBridgeTrackBits(tile), TrackdirToTrack(trackdir))) return false;
 			TileIndex orig_tile = tile; // backup old value
@@ -2073,7 +2073,7 @@ static bool CheckSignalAutoFill(TileIndex &tile, Trackdir &trackdir, int &signal
 			return true;
 		}
 
-		case MP_STATION: {
+		case TileType::Station: {
 			if (!allow_station) return false;
 			signal_ctr += 2;
 			return true;
@@ -2204,7 +2204,7 @@ static CommandCost CmdSignalTrackHelper(DoCommandFlags flags, TileIndex tile, Ti
 			ret = Command<CMD_BUILD_SINGLE_SIGNAL>::Do(do_flags, tile, TrackdirToTrack(trackdir), params.sigtype, params.sigvar, params.signal_style,
 					Clamp<uint8_t>(signal_density / 2, 1, 16), build_flags, SCG_CURRENT_GROUP, 0, signals);
 		}
-		if (!test_only && ret.Succeeded() && IsTileType(tile, MP_TUNNELBRIDGE) && GetTunnelBridgeDirection(tile) == TrackdirToExitdir(trackdir)) {
+		if (!test_only && ret.Succeeded() && IsTileType(tile, TileType::TunnelBridge) && GetTunnelBridgeDirection(tile) == TrackdirToExitdir(trackdir)) {
 			/* Blacklist far end of tunnel if we just actioned the near end */
 			tunnel_bridge_blacklist.push_back(GetOtherTunnelBridgeEnd(tile));
 		}
@@ -2213,7 +2213,7 @@ static CommandCost CmdSignalTrackHelper(DoCommandFlags flags, TileIndex tile, Ti
 
 	for (;;) {
 		bool tile_ok = true;
-		if (IsTileType(tile, MP_TUNNELBRIDGE)) {
+		if (IsTileType(tile, TileType::TunnelBridge)) {
 			if (container_unordered_remove(tunnel_bridge_blacklist, tile) > 0) {
 				/* This tile is blacklisted, skip tile and remove from blacklist.
 				 * Mark last used counter as current tile.
@@ -2227,7 +2227,7 @@ static CommandCost CmdSignalTrackHelper(DoCommandFlags flags, TileIndex tile, Ti
 		/* only build/remove signals with the specified density */
 		bool skipped_tunnel_bridge = false;
 		auto check_skip_tunnel_bridge = [&]() -> bool {
-			skipped_tunnel_bridge = IsTileType(tile, MP_TUNNELBRIDGE);
+			skipped_tunnel_bridge = IsTileType(tile, TileType::TunnelBridge);
 			return skipped_tunnel_bridge;
 		};
 		if (tile_ok && (remove || HasFlag(drag_flags, SignalDragFlags::MinimiseGaps) || signal_ctr % signal_density == 0 || check_skip_tunnel_bridge())) {
@@ -2323,7 +2323,7 @@ CommandCost CmdRemoveSingleSignal(DoCommandFlags flags, TileIndex tile, Track tr
 {
 	Money cost = _price[Price::ClearSignals];
 
-	if (IsTileType(tile, MP_TUNNELBRIDGE)) {
+	if (IsTileType(tile, TileType::TunnelBridge)) {
 		if (GetTunnelBridgeTransportType(tile) != TRANSPORT_RAIL) return CommandCost(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK);
 		if (!ValParamTrackOrientation(track) || !IsTrackAcrossTunnelBridge(tile, track)) {
 			return CommandCost(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK);
@@ -2521,19 +2521,19 @@ CommandCost CmdConvertRail(DoCommandFlags flags, TileIndex tile, TileIndex area_
 
 		/* Check if there is any track on tile */
 		switch (tt) {
-			case MP_RAILWAY:
+			case TileType::Railway:
 				break;
-			case MP_STATION:
+			case TileType::Station:
 				if (!HasStationRail(tile)) continue;
 				break;
-			case MP_ROAD:
+			case TileType::Road:
 				if (!IsLevelCrossing(tile)) continue;
 				if (RailNoLevelCrossings(totype)) {
 					error.MakeError(STR_ERROR_CROSSING_DISALLOWED_RAIL);
 					continue;
 				}
 				break;
-			case MP_TUNNELBRIDGE:
+			case TileType::TunnelBridge:
 				if (GetTunnelBridgeTransportType(tile) != TRANSPORT_RAIL) continue;
 				break;
 			default: continue;
@@ -2596,7 +2596,7 @@ CommandCost CmdConvertRail(DoCommandFlags flags, TileIndex tile, TileIndex area_
 
 		/* Vehicle on the tile when not converting Rail <-> ElRail
 		 * Tunnels and bridges have special check later */
-		if (tt != MP_TUNNELBRIDGE) {
+		if (tt != TileType::TunnelBridge) {
 			if (!IsCompatibleRail(type, totype) || !IsCompatibleRail(secondary_type, totype)) {
 				CommandCost ret = IsPlainRailTile(tile) ? EnsureNoIncompatibleRailtypeTrainOnTrackBits(tile, GetTrackBits(tile), totype) : EnsureNoIncompatibleRailtypeTrainOnGround(tile, totype);
 				if (ret.Failed()) {
@@ -2638,7 +2638,8 @@ CommandCost CmdConvertRail(DoCommandFlags flags, TileIndex tile, TileIndex area_
 		}
 
 		switch (tt) {
-			case MP_RAILWAY:
+			default: NOT_REACHED();
+			case TileType::Railway:
 				switch (GetRailTileType(tile)) {
 					case RailTileType::Depot:
 						if (flags.Test(DoCommandFlag::Execute)) {
@@ -2669,7 +2670,7 @@ CommandCost CmdConvertRail(DoCommandFlags flags, TileIndex tile, TileIndex area_
 				}
 				break;
 
-			case MP_TUNNELBRIDGE: {
+			case TileType::TunnelBridge: {
 				TileIndex endtile = GetOtherTunnelBridgeEnd(tile);
 
 				/* If both ends of tunnel/bridge are in the range, do not try to convert twice -
@@ -2737,9 +2738,10 @@ CommandCost CmdConvertRail(DoCommandFlags flags, TileIndex tile, TileIndex area_
 				break;
 			}
 
-			default: // MP_STATION, MP_ROAD
+			case TileType::Station:
+			case TileType::Road:
 				if (flags.Test(DoCommandFlag::Execute)) {
-					Track track = ((tt == MP_STATION) ? GetRailStationTrack(tile) : GetCrossingRailTrack(tile));
+					Track track = ((tt == TileType::Station) ? GetRailStationTrack(tile) : GetCrossingRailTrack(tile));
 					YapfNotifyTrackLayoutChange(tile, track);
 				}
 
@@ -2810,7 +2812,7 @@ CommandCost CmdConvertRailTrack(DoCommandFlags flags, TileIndex end_tile, TileIn
 
 		/* Check if our track piece matches any track on tile */
 		switch (tt) {
-			case MP_RAILWAY:
+			case TileType::Railway:
 				if (IsPlainRail(tile)) {
 					if (!HasTrack(tile, track)) continue;
 					all_track_bits = GetTrackBits(tile);
@@ -2821,11 +2823,11 @@ CommandCost CmdConvertRailTrack(DoCommandFlags flags, TileIndex end_tile, TileIn
 					continue;
 				}
 				break;
-			case MP_STATION:
+			case TileType::Station:
 				if (!HasStationRail(tile) || GetRailStationTrack(tile) != track) continue;
 				all_track_bits = GetRailStationTrackBits(tile);
 				break;
-			case MP_ROAD:
+			case TileType::Road:
 				if (!IsLevelCrossing(tile) || GetCrossingRailTrack(tile) != track) continue;
 				if (RailNoLevelCrossings(totype)) {
 					error.MakeError(STR_ERROR_CROSSING_DISALLOWED_RAIL);
@@ -2833,7 +2835,7 @@ CommandCost CmdConvertRailTrack(DoCommandFlags flags, TileIndex end_tile, TileIn
 				}
 				all_track_bits = GetCrossingRailBits(tile);
 				break;
-			case MP_TUNNELBRIDGE:
+			case TileType::TunnelBridge:
 				if (GetTunnelBridgeTransportType(tile) != TRANSPORT_RAIL || !HasBit(GetTunnelBridgeTrackBits(tile), track)) continue;
 				all_track_bits = GetTunnelBridgeTrackBits(tile);
 				break;
@@ -2897,7 +2899,7 @@ CommandCost CmdConvertRailTrack(DoCommandFlags flags, TileIndex end_tile, TileIn
 
 		/* Vehicle on the tile when not converting Rail <-> ElRail
 		 * Tunnels and bridges have special check later */
-		if (tt != MP_TUNNELBRIDGE) {
+		if (tt != TileType::TunnelBridge) {
 			if (!IsCompatibleRail(type, totype)) {
 				CommandCost ret = IsPlainRailTile(tile) ? EnsureNoIncompatibleRailtypeTrainOnTrackBits(tile, track_bits, totype) : EnsureNoIncompatibleRailtypeTrainOnGround(tile, totype);
 				if (ret.Failed()) {
@@ -2942,7 +2944,7 @@ CommandCost CmdConvertRailTrack(DoCommandFlags flags, TileIndex end_tile, TileIn
 		}
 
 		switch (tt) {
-			case MP_RAILWAY:
+			case TileType::Railway:
 				switch (GetRailTileType(tile)) {
 					case RailTileType::Depot:
 						if (flags.Test(DoCommandFlag::Execute)) {
@@ -2968,7 +2970,7 @@ CommandCost CmdConvertRailTrack(DoCommandFlags flags, TileIndex end_tile, TileIn
 				}
 				break;
 
-			case MP_TUNNELBRIDGE: {
+			case TileType::TunnelBridge: {
 				TileIndex endtile = GetOtherTunnelBridgeEnd(tile);
 
 				const bool across = (GetAcrossTunnelBridgeTrackBits(tile) & track_bits) != TRACK_BIT_NONE;
@@ -3047,7 +3049,7 @@ CommandCost CmdConvertRailTrack(DoCommandFlags flags, TileIndex end_tile, TileIn
 				break;
 			}
 
-			default: // MP_STATION, MP_ROAD
+			default: // TileType::Station, TileType::Road
 				if (flags.Test(DoCommandFlag::Execute)) {
 					YapfNotifyTrackLayoutChange(tile, track);
 				}
@@ -3617,7 +3619,7 @@ static inline void DrawTrackSprite(SpriteID sprite, PaletteID pal, const TileInf
 }
 
 static RailGroundType GetRailOrBridgeGroundType(TileInfo *ti) {
-	if (IsTileType(ti->tile, MP_TUNNELBRIDGE)) {
+	if (IsTileType(ti->tile, TileType::TunnelBridge)) {
 		return GetTunnelBridgeGroundType(ti->tile);
 	} else {
 		return GetRailGroundType(ti->tile);
@@ -3952,7 +3954,7 @@ void DrawTrackBits(TileInfo *ti, TrackBits track, RailType rt, RailGroundType rg
 
 void DrawTrackBits(TileInfo *ti, TrackBits track)
 {
-	const bool is_bridge = IsTileType(ti->tile, MP_TUNNELBRIDGE);
+	const bool is_bridge = IsTileType(ti->tile, TileType::TunnelBridge);
 	RailGroundType rgt = GetRailOrBridgeGroundType(ti);
 	Foundation f = is_bridge ? FOUNDATION_LEVELED : GetRailFoundation(ti->tileh, track);
 	Corner halftile_corner = CORNER_INVALID;
@@ -3972,7 +3974,7 @@ void DrawTrackBits(TileInfo *ti, TrackBits track)
 	if (rt2 == INVALID_RAILTYPE || rt1 == rt2) {
 		DrawTrackBits(ti, track, rt1, rgt, is_bridge, halftile_corner, CORNER_INVALID);
 	} else {
-		const bool is_bridge = IsTileType(ti->tile, MP_TUNNELBRIDGE);
+		const bool is_bridge = IsTileType(ti->tile, TileType::TunnelBridge);
 		TrackBits primary_track = track & (is_bridge ? GetAcrossBridgePossibleTrackBits(ti->tile) : TRACK_BIT_RT_1);
 		TrackBits secondary_track = track ^ primary_track;
 		assert((primary_track & (TRACK_BIT_HORZ | TRACK_BIT_VERT)) == primary_track);
@@ -4237,8 +4239,8 @@ RailGroundType RailTrackToFence(TileIndex tile, TrackBits rail)
 		TileIndex tile2 = tile + TileOffsByDiagDir(d);
 
 		/* Show fences if it's a house, industry, object, road, tunnelbridge or not owned by us. */
-		if (!IsValidTile(tile2) || IsTileType(tile2, MP_HOUSE) || IsTileType(tile2, MP_INDUSTRY) ||
-				IsTileType(tile2, MP_ROAD) || (IsTileType(tile2, MP_OBJECT) && !IsObjectType(tile2, OBJECT_OWNED_LAND)) || IsTileType(tile2, MP_TUNNELBRIDGE) || !IsTileOwner(tile2, owner)) {
+		if (!IsValidTile(tile2) || IsTileType(tile2, TileType::House) || IsTileType(tile2, TileType::Industry) ||
+				IsTileType(tile2, TileType::Road) || (IsTileType(tile2, TileType::Object) && !IsObjectType(tile2, OBJECT_OWNED_LAND)) || IsTileType(tile2, TileType::TunnelBridge) || !IsTileOwner(tile2, owner)) {
 			fences.Set(d);
 		}
 	}

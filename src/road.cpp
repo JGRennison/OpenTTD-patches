@@ -51,7 +51,7 @@ uint32_t _road_layout_change_counter = 0;
  */
 static bool IsPossibleCrossing(const TileIndex tile, Axis ax)
 {
-	return (IsTileType(tile, MP_RAILWAY) &&
+	return (IsTileType(tile, TileType::Railway) &&
 		GetRailTileType(tile) == RailTileType::Normal &&
 		GetTrackBits(tile) == (ax == AXIS_X ? TRACK_BIT_Y : TRACK_BIT_X) &&
 		std::get<0>(GetFoundationSlope(tile)) == SLOPE_FLAT);
@@ -81,14 +81,14 @@ RoadBits CleanUpRoadBits(const TileIndex tile, RoadBits org_rb)
 			if (IsValidTile(neighbour_tile)) {
 				switch (GetTileType(neighbour_tile)) {
 					/* Always connective ones */
-					case MP_CLEAR: case MP_TREES:
+					case TileType::Clear: case TileType::Trees:
 						connective = true;
 						break;
 
 					/* The conditionally connective ones */
-					case MP_TUNNELBRIDGE:
-					case MP_STATION:
-					case MP_ROAD:
+					case TileType::TunnelBridge:
+					case TileType::Station:
+					case TileType::Road:
 						if (IsNormalRoadTile(neighbour_tile)) {
 							/* Always connective */
 							connective = true;
@@ -100,7 +100,7 @@ RoadBits CleanUpRoadBits(const TileIndex tile, RoadBits org_rb)
 						}
 						break;
 
-					case MP_RAILWAY: {
+					case TileType::Railway: {
 						if (IsPossibleCrossing(neighbour_tile, DiagDirToAxis(dir))) {
 							/* Check far side of crossing */
 							neighbour_tile = TileAddByDiagDir(neighbour_tile, dir);
@@ -109,7 +109,7 @@ RoadBits CleanUpRoadBits(const TileIndex tile, RoadBits org_rb)
 						break;
 					}
 
-					case MP_WATER:
+					case TileType::Water:
 						/* Check for real water tile */
 						connective = !IsWater(neighbour_tile);
 						break;
@@ -366,7 +366,7 @@ static TileIndex BuildTunnel(PathNode *current, TileIndex end_tile = INVALID_TIL
 		if (GetTileSlope(start_tile) != ComplementSlope(GetTileSlope(end_tile))) return INVALID_TILE;
 		if (AreTilesAdjacent(start_tile, end_tile)) return INVALID_TILE;
 		if (!IsValidTile(end_tile)) return INVALID_TILE;
-		if (!IsTileType(end_tile, MP_CLEAR) && !IsTileType(end_tile, MP_TREES)) return INVALID_TILE;
+		if (!IsTileType(end_tile, TileType::Clear) && !IsTileType(end_tile, TileType::Trees)) return INVALID_TILE;
 	}
 
 	assert(!build_tunnel || (IsValidTile(end_tile) && GetTileSlope(start_tile) == ComplementSlope(GetTileSlope(end_tile))));
@@ -378,7 +378,7 @@ static TileIndex BuildTunnel(PathNode *current, TileIndex end_tile = INVALID_TIL
 	cur_company.Restore();
 
 	assert(!build_tunnel || build_tunnel_cmd.Succeeded());
-	assert(!build_tunnel || (IsTileType(start_tile, MP_TUNNELBRIDGE) && IsTileType(end_tile, MP_TUNNELBRIDGE)));
+	assert(!build_tunnel || (IsTileType(start_tile, TileType::TunnelBridge) && IsTileType(end_tile, TileType::TunnelBridge)));
 
 	if (!build_tunnel_cmd.Succeeded()) return INVALID_TILE;
 
@@ -410,7 +410,7 @@ static TileIndex BuildBridge(const TileIndex start_tile, const TileIndex end_til
 	cur_company.Restore();
 
 	assert(!build_bridge || build_bridge_cmd.Succeeded());
-	assert(!build_bridge || (IsTileType(start_tile, MP_TUNNELBRIDGE) && IsTileType(end_tile, MP_TUNNELBRIDGE)));
+	assert(!build_bridge || (IsTileType(start_tile, TileType::TunnelBridge) && IsTileType(end_tile, TileType::TunnelBridge)));
 
 	if (!build_bridge_cmd.Succeeded()) return INVALID_TILE;
 
@@ -423,7 +423,7 @@ static TileIndex DryRunBuildBridge(const TileIndex start_tile)
 
 	const auto [start_slope, start_z] = GetTileSlopeZ(start_tile);
 	TileIndex tile = start_tile + TileOffsByDiagDir(direction);
-	const bool is_over_water = IsValidTile(tile) && IsTileType(tile, MP_WATER) && IsSea(tile);
+	const bool is_over_water = IsValidTile(tile) && IsTileType(tile, TileType::Water) && IsSea(tile);
 	uint bridge_length = 0;
 	const uint bridge_length_limit = std::min<uint>(_settings_game.construction.max_bridge_length, is_over_water ? 20 : 10);
 
@@ -448,7 +448,7 @@ static TileIndex DryRunBuildBridge(const TileIndex start_tile)
 	}
 
 	if (!IsValidTile(end_tile)) return INVALID_TILE;
-	if (!IsTileType(end_tile, MP_CLEAR) && !IsTileType(end_tile, MP_TREES) && !IsCoastTile(end_tile)) return INVALID_TILE;
+	if (!IsTileType(end_tile, TileType::Clear) && !IsTileType(end_tile, TileType::Trees) && !IsCoastTile(end_tile)) return INVALID_TILE;
 
 	return BuildBridge(start_tile, end_tile, false);
 }
@@ -475,7 +475,7 @@ static TileIndex BuildRiverBridge(PathNode *current, const DiagDirection road_di
 			if (start_tile_z >= (tile_z + _settings_game.construction.max_bridge_height)) break;
 			if (tile_z > start_tile_z) break;
 
-			if ((IsTileType(tile, MP_CLEAR) || IsTileType(tile, MP_TREES) || IsCoastTile(tile)) && IsSufficientlyFlatSlope(GetTileSlope(tile))) {
+			if ((IsTileType(tile, TileType::Clear) || IsTileType(tile, TileType::Trees) || IsCoastTile(tile)) && IsSufficientlyFlatSlope(GetTileSlope(tile))) {
 				end_tile = tile;
 				break;
 			}
@@ -484,7 +484,7 @@ static TileIndex BuildRiverBridge(PathNode *current, const DiagDirection road_di
 		}
 
 		if (!IsValidTile(end_tile)) return INVALID_TILE;
-		if (!IsTileType(end_tile, MP_CLEAR) && !IsTileType(end_tile, MP_TREES) && !IsCoastTile(end_tile)) return INVALID_TILE;
+		if (!IsTileType(end_tile, TileType::Clear) && !IsTileType(end_tile, TileType::Trees) && !IsCoastTile(end_tile)) return INVALID_TILE;
 	}
 
 	assert(!build_bridge || IsValidTile(end_tile));
@@ -507,7 +507,7 @@ static TileIndex BuildRiverBridge(PathNode *current, const DiagDirection road_di
 	cur_company.Restore();
 
 	assert(!build_bridge || build_bridge_cmd.Succeeded());
-	assert(!build_bridge || (IsTileType(start_tile, MP_TUNNELBRIDGE) && IsTileType(end_tile, MP_TUNNELBRIDGE)));
+	assert(!build_bridge || (IsTileType(start_tile, TileType::TunnelBridge) && IsTileType(end_tile, TileType::TunnelBridge)));
 
 	if (!build_bridge_cmd.Succeeded()) return INVALID_TILE;
 
@@ -520,7 +520,7 @@ static bool IsValidNeighbourOfPreviousTile(const TileIndex tile, const TileIndex
 
 	const auto forward_direction = DiagdirBetweenTiles(previous_tile, tile);
 
-	if (IsTileType(tile, MP_TUNNELBRIDGE)) {
+	if (IsTileType(tile, TileType::TunnelBridge)) {
 		if (GetOtherTunnelBridgeEnd(tile) == previous_tile) return true;
 
 		const auto tunnel_direction = GetTunnelBridgeDirection(tile);
@@ -528,7 +528,7 @@ static bool IsValidNeighbourOfPreviousTile(const TileIndex tile, const TileIndex
 		return (tunnel_direction == forward_direction);
 	}
 
-	if (!IsTileType(tile, MP_CLEAR) && !IsTileType(tile, MP_TREES) && !IsTileType(tile, MP_ROAD) && !IsCoastTile(tile)) return false;
+	if (!IsTileType(tile, TileType::Clear) && !IsTileType(tile, TileType::Trees) && !IsTileType(tile, TileType::Road) && !IsCoastTile(tile)) return false;
 
 	struct slope_desc {
 		int tile_z;
@@ -700,7 +700,7 @@ static void PublicRoad_GetNeighbours(AyStar *aystar, OpenListNode *current)
 			aystar->neighbours[aystar->num_neighbours].direction = INVALID_TRACKDIR;
 			aystar->num_neighbours++;
 		}
-	} else if (IsTileType(current_tile, MP_TUNNELBRIDGE)) {
+	} else if (IsTileType(current_tile, TileType::TunnelBridge)) {
 		// Handle existing tunnels and bridges
 		const auto tunnel_bridge_end = GetOtherTunnelBridgeEnd(current_tile);
 		aystar->neighbours[aystar->num_neighbours].tile = tunnel_bridge_end;
@@ -786,7 +786,7 @@ static void PublicRoad_FoundEndNode(AyStar *aystar, OpenListNode *current)
 	for (PathNode *path = &current->path; path != nullptr; path = path->parent) {
 		const TileIndex tile = path->node.tile;
 
-		if (IsTileType(tile, MP_TUNNELBRIDGE)) {
+		if (IsTileType(tile, TileType::TunnelBridge)) {
 			// Just follow the path; infrastructure is already in place.
 			continue;
 		}
@@ -860,7 +860,7 @@ static int32_t PublicRoad_CalculateG(AyStar *, AyStarNode *current, OpenListNode
 
 	const int32_t distance = DistanceManhattan(parent->path.node.tile, current->tile);
 
-	if (IsTileType(current->tile, MP_ROAD) || IsTileType(current->tile, MP_TUNNELBRIDGE)) {
+	if (IsTileType(current->tile, TileType::Road) || IsTileType(current->tile, TileType::TunnelBridge)) {
 		cost += distance * BASE_COST_PER_TILE;
 	} else {
 		cost += distance * COST_FOR_NEW_ROAD;

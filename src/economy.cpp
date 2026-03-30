@@ -2016,7 +2016,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 	/* We have not waited enough time till the next round of loading/unloading */
 	if (front->load_unload_ticks != 0) return;
 
-	if (front->type == VEH_TRAIN && (!IsTileType(station_tile, MP_STATION) || GetStationIndex(station_tile) != st->index)) {
+	if (front->type == VEH_TRAIN && (!IsTileType(station_tile, TileType::Station) || GetStationIndex(station_tile) != st->index)) {
 		/* The train reversed in the station. Take the "easy" way
 		 * out and let the train just leave as it always did. */
 		front->vehicle_flags.Set(VehicleFlag::LoadingFinished);

@@ -1459,10 +1459,10 @@ static Order GetOrderCmdFromTile(const Vehicle *v, TileIndex tile)
 	}
 
 	/* check for station or industry with neutral station */
-	if (IsTileType(tile, MP_STATION) || IsTileType(tile, MP_INDUSTRY)) {
+	if (IsTileType(tile, TileType::Station) || IsTileType(tile, TileType::Industry)) {
 		const Station *st = nullptr;
 
-		if (IsTileType(tile, MP_STATION)) {
+		if (IsTileType(tile, TileType::Station)) {
 			st = Station::GetByTile(tile);
 		} else {
 			const Industry *in = Industry::GetByTile(tile);
@@ -4036,10 +4036,10 @@ public:
 				if (!_settings_client.gui.quick_goto) ResetObjectToPlace();
 			}
 		} else if (this->goto_type == OPOS_COND_VIA || this->goto_type == OPOS_COND_STATION) {
-			if (IsTileType(tile, MP_STATION) || IsTileType(tile, MP_INDUSTRY)) {
+			if (IsTileType(tile, TileType::Station) || IsTileType(tile, TileType::Industry)) {
 				const Station *st = nullptr;
 
-				if (IsTileType(tile, MP_STATION)) {
+				if (IsTileType(tile, TileType::Station)) {
 					st = Station::GetByTile(tile);
 				} else {
 					const Industry *in = Industry::GetByTile(tile);
@@ -4052,10 +4052,10 @@ public:
 				}
 			}
 		} else if (this->goto_type == OPOS_DEPARTURE_VIA) {
-			if (IsTileType(tile, MP_STATION) || IsTileType(tile, MP_INDUSTRY)) {
+			if (IsTileType(tile, TileType::Station) || IsTileType(tile, TileType::Industry)) {
 				const BaseStation *st = nullptr;
 
-				if (IsTileType(tile, MP_STATION)) {
+				if (IsTileType(tile, TileType::Station)) {
 					st = BaseStation::GetByTile(tile);
 				} else {
 					const Industry *in = Industry::GetByTile(tile);

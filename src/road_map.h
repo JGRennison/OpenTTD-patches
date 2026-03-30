@@ -32,14 +32,14 @@ enum class RoadTileType : uint8_t {
 inline bool MayHaveRoad(TileIndex t)
 {
 	switch (GetTileType(t)) {
-		case MP_ROAD:
+		case TileType::Road:
 			return true;
 
-		case MP_STATION: {
+		case TileType::Station: {
 			return GB(_me[t].m6, 3, 4) == 2 || GB(_me[t].m6, 3, 4) == 3 || GB(_me[t].m6, 3, 4) == 8; // IsAnyRoadStop
 		}
 
-		case MP_TUNNELBRIDGE:
+		case TileType::TunnelBridge:
 			return GB(_m[t].m5, 2, 2) == 1;
 
 		default:
@@ -55,9 +55,9 @@ inline bool MayHaveRoad(TileIndex t)
 inline bool MayTileTypeHaveRoad(TileType type)
 {
 	switch (type) {
-		case MP_ROAD:
-		case MP_STATION:
-		case MP_TUNNELBRIDGE:
+		case TileType::Road:
+		case TileType::Station:
+		case TileType::TunnelBridge:
 			return true;
 
 		default:
@@ -68,19 +68,19 @@ inline bool MayTileTypeHaveRoad(TileType type)
 /**
  * Get the type of the road tile.
  * @param t Tile to query.
- * @pre IsTileType(t, MP_ROAD)
+ * @pre IsTileType(t, TileType::Road)
  * @return The road tile type.
  */
 [[debug_inline]] inline static RoadTileType GetRoadTileType(TileIndex t)
 {
-	dbg_assert_tile(IsTileType(t, MP_ROAD), t);
+	dbg_assert_tile(IsTileType(t, TileType::Road), t);
 	return static_cast<RoadTileType>(GB(_m[t].m5, 6, 2));
 }
 
 /**
  * Return whether a tile is a normal road.
  * @param t Tile to query.
- * @pre IsTileType(t, MP_ROAD)
+ * @pre IsTileType(t, TileType::Road)
  * @return True if normal road.
  */
 [[debug_inline]] inline static bool IsNormalRoad(TileIndex t)
@@ -95,13 +95,13 @@ inline bool MayTileTypeHaveRoad(TileType type)
  */
 [[debug_inline]] inline static bool IsNormalRoadTile(TileIndex t)
 {
-	return IsTileType(t, MP_ROAD) && IsNormalRoad(t);
+	return IsTileType(t, TileType::Road) && IsNormalRoad(t);
 }
 
 /**
  * Return whether a tile is a level crossing.
  * @param t Tile to query.
- * @pre IsTileType(t, MP_ROAD)
+ * @pre IsTileType(t, TileType::Road)
  * @return True if level crossing.
  */
 inline bool IsLevelCrossing(TileIndex t)
@@ -116,13 +116,13 @@ inline bool IsLevelCrossing(TileIndex t)
  */
 inline bool IsLevelCrossingTile(TileIndex t)
 {
-	return IsTileType(t, MP_ROAD) && IsLevelCrossing(t);
+	return IsTileType(t, TileType::Road) && IsLevelCrossing(t);
 }
 
 /**
  * Return whether a tile is a road depot.
  * @param t Tile to query.
- * @pre IsTileType(t, MP_ROAD)
+ * @pre IsTileType(t, TileType::Road)
  * @return True if road depot.
  */
 [[debug_inline]] inline static bool IsRoadDepot(TileIndex t)
@@ -137,7 +137,7 @@ inline bool IsLevelCrossingTile(TileIndex t)
  */
 [[debug_inline]] inline static bool IsRoadDepotTile(TileIndex t)
 {
-	return IsTileType(t, MP_ROAD) && IsRoadDepot(t);
+	return IsTileType(t, TileType::Road) && IsRoadDepot(t);
 }
 
 /**
@@ -311,7 +311,7 @@ inline bool IsRoadOwner(TileIndex t, RoadTramType rtt, Owner o)
 /**
  * Checks if given tile has town owned road
  * @param t tile to check
- * @pre IsTileType(t, MP_ROAD)
+ * @pre IsTileType(t, TileType::Road)
  * @return true iff tile has road and the road is owned by a town
  */
 inline bool HasTownOwnedRoad(TileIndex t)
@@ -711,7 +711,7 @@ inline void SetRoadTypes(TileIndex t, RoadType road_rt, RoadType tram_rt)
  */
 inline void MakeRoadNormal(TileIndex t, RoadBits bits, RoadType road_rt, RoadType tram_rt, TownID town, Owner road, Owner tram)
 {
-	SetTileType(t, MP_ROAD);
+	SetTileType(t, TileType::Road);
 	SetTileOwner(t, road);
 	_m[t].m2 = town.base();
 	_m[t].m3 = (tram_rt != INVALID_ROADTYPE ? bits : 0);
@@ -737,7 +737,7 @@ inline void MakeRoadNormal(TileIndex t, RoadBits bits, RoadType road_rt, RoadTyp
  */
 inline void MakeRoadCrossing(TileIndex t, Owner road, Owner tram, Owner rail, Axis roaddir, RailType rat, RoadType road_rt, RoadType tram_rt, TownID town)
 {
-	SetTileType(t, MP_ROAD);
+	SetTileType(t, TileType::Road);
 	SetTileOwner(t, rail);
 	_m[t].m2 = town.base();
 	_m[t].m3 = 0;
@@ -760,7 +760,7 @@ inline void MakeRoadCrossing(TileIndex t, Owner road, Owner tram, Owner rail, Ax
  */
 inline void MakeRoadDepot(TileIndex t, Owner owner, DepotID did, DiagDirection dir, RoadType rt)
 {
-	SetTileType(t, MP_ROAD);
+	SetTileType(t, TileType::Road);
 	SetTileOwner(t, owner);
 	_m[t].m2 = did.base();
 	_m[t].m3 = 0;

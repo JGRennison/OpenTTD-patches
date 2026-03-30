@@ -361,7 +361,7 @@ static SigInfo ExploreSegment(Owner owner)
 		DiagDirection exitdir = enterdir == INVALID_DIAGDIR ? INVALID_DIAGDIR : ReverseDiagDir(enterdir); // expected new exit direction (for straight line)
 
 		switch (GetTileType(tile)) {
-			case MP_RAILWAY: {
+			case TileType::Railway: {
 				if (!IsOneSignalBlock(owner, GetTileOwner(tile))) continue;
 
 				if (IsRailDepot(tile)) {
@@ -476,7 +476,7 @@ static SigInfo ExploreSegment(Owner owner)
 				continue; // continue the while() loop
 				}
 
-			case MP_STATION:
+			case TileType::Station:
 				if (!HasStationRail(tile)) continue;
 				if (!IsOneSignalBlock(owner, GetTileOwner(tile))) continue;
 				if (DiagDirToAxis(enterdir) != GetRailStationAxis(tile)) continue; // different axis
@@ -486,7 +486,7 @@ static SigInfo ExploreSegment(Owner owner)
 				tile += TileOffsByDiagDir(exitdir);
 				break;
 
-			case MP_ROAD:
+			case TileType::Road:
 				if (!IsLevelCrossing(tile)) continue;
 				if (!IsOneSignalBlock(owner, GetTileOwner(tile))) continue;
 				if (DiagDirToAxis(enterdir) == GetCrossingRoadAxis(tile)) continue; // different axis
@@ -496,7 +496,7 @@ static SigInfo ExploreSegment(Owner owner)
 				tile += TileOffsByDiagDir(exitdir);
 				break;
 
-			case MP_TUNNELBRIDGE: {
+			case TileType::TunnelBridge: {
 				if (!IsOneSignalBlock(owner, GetTileOwner(tile))) continue;
 				if (GetTunnelBridgeTransportType(tile) != TRANSPORT_RAIL) continue;
 				DiagDirection tunnel_bridge_dir = GetTunnelBridgeDirection(tile);
@@ -664,7 +664,7 @@ uint8_t GetForwardAspectFollowingTrack(TileIndex tile, Trackdir trackdir)
 	DiagDirection exitdir = TrackdirToExitdir(trackdir);
 	DiagDirection enterdir = ReverseDiagDir(exitdir);
 	bool wormhole = false;
-	if (IsTileType(tile, MP_TUNNELBRIDGE) && TrackdirEntersTunnelBridge(tile, trackdir)) {
+	if (IsTileType(tile, TileType::TunnelBridge) && TrackdirEntersTunnelBridge(tile, trackdir)) {
 		TileIndex other = GetOtherTunnelBridgeEnd(tile);
 		if (IsTunnelBridgeWithSignalSimulation(tile)) {
 			return GetSignalledTunnelBridgeEntranceForwardAspect(tile, other);
@@ -676,7 +676,7 @@ uint8_t GetForwardAspectFollowingTrack(TileIndex tile, Trackdir trackdir)
 	}
 	while (true) {
 		switch (GetTileType(tile)) {
-			case MP_RAILWAY: {
+			case TileType::Railway: {
 				if (!IsOneSignalBlock(owner, GetTileOwner(tile))) return 0;
 
 				if (IsRailDepot(tile)) {
@@ -718,7 +718,7 @@ uint8_t GetForwardAspectFollowingTrack(TileIndex tile, Trackdir trackdir)
 				break;
 			}
 
-			case MP_STATION:
+			case TileType::Station:
 				if (!HasStationRail(tile)) return 0;
 				if (!IsOneSignalBlock(owner, GetTileOwner(tile))) return 0;
 				if (DiagDirToAxis(enterdir) != GetRailStationAxis(tile)) return 0; // different axis
@@ -727,7 +727,7 @@ uint8_t GetForwardAspectFollowingTrack(TileIndex tile, Trackdir trackdir)
 				tile += TileOffsByDiagDir(exitdir);
 				break;
 
-			case MP_ROAD:
+			case TileType::Road:
 				if (!IsLevelCrossing(tile)) return 0;
 				if (!IsOneSignalBlock(owner, GetTileOwner(tile))) return 0;
 				if (DiagDirToAxis(enterdir) == GetCrossingRoadAxis(tile)) return 0; // different axis
@@ -735,7 +735,7 @@ uint8_t GetForwardAspectFollowingTrack(TileIndex tile, Trackdir trackdir)
 				tile += TileOffsByDiagDir(exitdir);
 				break;
 
-			case MP_TUNNELBRIDGE: {
+			case TileType::TunnelBridge: {
 				if (!IsOneSignalBlock(owner, GetTileOwner(tile))) return 0;
 				if (GetTunnelBridgeTransportType(tile) != TRANSPORT_RAIL) return 0;
 				if ((enterdir == GetTunnelBridgeDirection(tile)) != wormhole) return 0;
@@ -838,7 +838,7 @@ static void UpdateSignalsAroundSegment(SigInfo info)
 	};
 
 	while (_tbuset.Get(&tile, &trackdir)) {
-		if (IsTileType(tile, MP_TUNNELBRIDGE) && IsTunnelBridgeSignalSimulationExit(tile)) {
+		if (IsTileType(tile, TileType::TunnelBridge) && IsTunnelBridgeSignalSimulationExit(tile)) {
 			Trackdir exit_td = GetTunnelBridgeExitTrackdir(tile);
 			if (HasAcrossTunnelBridgeReservation(tile)) {
 				if (_extra_aspects > 0 && GetTunnelBridgeExitSignalState(tile) == SIGNAL_STATE_GREEN && !IsTunnelBridgeSpecialExitSignalAspect(tile)) {
@@ -1003,7 +1003,7 @@ static void UpdateSignalsAroundSegment(SigInfo info)
 	}
 
 	while (_tbpset.Get(&tile, &trackdir)) {
-		if (IsTileType(tile, MP_TUNNELBRIDGE)) {
+		if (IsTileType(tile, TileType::TunnelBridge)) {
 			uint8_t aspect = GetForwardAspectAndIncrement(info, tile, trackdir, IsTunnelBridgeCombinedNormalShuntSignalStyle(tile));
 			uint8_t old_aspect = GetTunnelBridgeExitSignalAspect(tile);
 			if (aspect != old_aspect) {
@@ -1057,13 +1057,13 @@ static SigSegState UpdateSignalsInBuffer(Owner owner)
 		assert(_tbuset.IsEmpty());
 		assert(_tbdset.IsEmpty());
 
-		/* After updating signal, data stored are always MP_RAILWAY with signals.
+		/* After updating signal, data stored are always TileType::Railway with signals.
 		 * Other situations happen when data are from outside functions -
 		 * modification of railbits (including both rail building and removal),
 		 * train entering/leaving block, train leaving depot...
 		 */
 		switch (GetTileType(tile)) {
-			case MP_TUNNELBRIDGE: {
+			case TileType::TunnelBridge: {
 				/* 'optimization assert' - do not try to update signals when it is not needed */
 				assert_tile(GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL, tile);
 				if (IsTunnel(tile)) assert(dir == INVALID_DIAGDIR || dir == ReverseDiagDir(GetTunnelBridgeDirection(tile)));
@@ -1081,7 +1081,7 @@ static SigSegState UpdateSignalsInBuffer(Owner owner)
 			}
 				[[fallthrough]];
 
-			case MP_RAILWAY:
+			case TileType::Railway:
 				if (IsRailDepotTile(tile)) {
 					/* 'optimization assert' do not try to update signals in other cases */
 					assert(dir == INVALID_DIAGDIR || dir == GetRailDepotDirection(tile));
@@ -1090,8 +1090,8 @@ static SigSegState UpdateSignalsInBuffer(Owner owner)
 				}
 				[[fallthrough]];
 
-			case MP_STATION:
-			case MP_ROAD:
+			case TileType::Station:
+			case TileType::Road:
 				if ((TrackdirBitsToTrackBits(GetTileTrackdirBits(tile, TRANSPORT_RAIL, 0)) & _enterdir_to_trackbits[dir]) != TRACK_BIT_NONE) {
 					/* only add to set when there is some 'interesting' track */
 					_tbdset.Add(tile, dir);
@@ -1192,7 +1192,7 @@ void AddTrackToSignalBuffer(TileIndex tile, Track track, Owner owner)
 
 	_last_owner = owner;
 
-	DiagDirection wormhole_dir = IsTileType(tile, MP_TUNNELBRIDGE) ? GetTunnelBridgeDirection(tile) : INVALID_DIAGDIR;
+	DiagDirection wormhole_dir = IsTileType(tile, TileType::TunnelBridge) ? GetTunnelBridgeDirection(tile) : INVALID_DIAGDIR;
 
 	auto add_dir = [&](DiagDirection dir) {
 		_globset.Add(tile, dir == wormhole_dir ? INVALID_DIAGDIR : dir);
@@ -1341,7 +1341,7 @@ void CheckRemoveSignal(TileIndex tile, Track track)
 uint8_t GetSignalAspectGeneric(TileIndex tile, Trackdir trackdir, bool check_non_inc_style)
 {
 	switch (GetTileType(tile)) {
-		case MP_RAILWAY:
+		case TileType::Railway:
 			if (HasSignalOnTrackdir(tile, trackdir) && GetSignalStateByTrackdir(tile, trackdir) == SIGNAL_STATE_GREEN) {
 				uint8_t aspect = GetSignalAspect(tile, TrackdirToTrack(trackdir));
 				if (check_non_inc_style) AdjustSignalAspectIfNonIncStyle(tile, TrackdirToTrack(trackdir), aspect);
@@ -1349,7 +1349,7 @@ uint8_t GetSignalAspectGeneric(TileIndex tile, Trackdir trackdir, bool check_non
 			}
 			break;
 
-		case MP_TUNNELBRIDGE:
+		case TileType::TunnelBridge:
 			if (IsTunnelBridgeSignalSimulationEntrance(tile) && TrackdirEntersTunnelBridge(tile, trackdir)) {
 				return (GetTunnelBridgeEntranceSignalState(tile) == SIGNAL_STATE_GREEN) ? GetTunnelBridgeEntranceSignalAspect(tile) : 0;
 			}
@@ -1367,7 +1367,7 @@ uint8_t GetSignalAspectGeneric(TileIndex tile, Trackdir trackdir, bool check_non
 
 void AdjustSignalAspectIfNonIncStyleIntl(TileIndex tile, Track track, uint8_t &aspect)
 {
-	if (IsTileType(tile, MP_RAILWAY)) {
+	if (IsTileType(tile, TileType::Railway)) {
 		uint8_t style = GetSignalStyle(tile, track);
 		if (HasBit(_signal_style_masks.combined_normal_shunt, style)) {
 			aspect--;
@@ -1402,7 +1402,7 @@ void PropagateAspectChange(TileIndex tile, Trackdir trackdir, uint8_t aspect)
 	DiagDirection exitdir = TrackdirToExitdir(ReverseTrackdir(trackdir));
 	DiagDirection enterdir = ReverseDiagDir(exitdir);
 	bool wormhole = false;
-	if (IsTileType(tile, MP_TUNNELBRIDGE) && TrackdirExitsTunnelBridge(tile, trackdir)) {
+	if (IsTileType(tile, TileType::TunnelBridge) && TrackdirExitsTunnelBridge(tile, trackdir)) {
 		TileIndex other = GetOtherTunnelBridgeEnd(tile);
 		if (IsBridge(tile)) RefreshBridgeOnExitAspectChange(other, tile);
 		aspect = ClampAspect(GetSignalledTunnelBridgeEntranceForwardAspect(other, tile) + 1);
@@ -1413,7 +1413,7 @@ void PropagateAspectChange(TileIndex tile, Trackdir trackdir, uint8_t aspect)
 	}
 	while (true) {
 		switch (GetTileType(tile)) {
-			case MP_RAILWAY: {
+			case TileType::Railway: {
 				if (!IsOneSignalBlock(owner, GetTileOwner(tile))) return;
 
 				if (IsRailDepot(tile)) {
@@ -1466,7 +1466,7 @@ void PropagateAspectChange(TileIndex tile, Trackdir trackdir, uint8_t aspect)
 				break;
 			}
 
-			case MP_STATION:
+			case TileType::Station:
 				if (!HasStationRail(tile)) return;
 				if (!IsOneSignalBlock(owner, GetTileOwner(tile))) return;
 				if (DiagDirToAxis(enterdir) != GetRailStationAxis(tile)) return; // different axis
@@ -1475,7 +1475,7 @@ void PropagateAspectChange(TileIndex tile, Trackdir trackdir, uint8_t aspect)
 				tile += TileOffsByDiagDir(exitdir);
 				break;
 
-			case MP_ROAD:
+			case TileType::Road:
 				if (!IsLevelCrossing(tile)) return;
 				if (!IsOneSignalBlock(owner, GetTileOwner(tile))) return;
 				if (DiagDirToAxis(enterdir) == GetCrossingRoadAxis(tile)) return; // different axis
@@ -1483,7 +1483,7 @@ void PropagateAspectChange(TileIndex tile, Trackdir trackdir, uint8_t aspect)
 				tile += TileOffsByDiagDir(exitdir);
 				break;
 
-			case MP_TUNNELBRIDGE: {
+			case TileType::TunnelBridge: {
 				if (!IsOneSignalBlock(owner, GetTileOwner(tile))) return;
 				if (GetTunnelBridgeTransportType(tile) != TRANSPORT_RAIL) return;
 				if ((enterdir == GetTunnelBridgeDirection(tile)) != wormhole) return;
@@ -1619,7 +1619,7 @@ void FlushDeferredAspectUpdates()
 		TileIndex tile = iter->first;
 		Trackdir trackdir = iter->second;
 		switch (GetTileType(tile)) {
-			case MP_RAILWAY:
+			case TileType::Railway:
 				if (HasSignalOnTrackdir(tile, trackdir) && GetSignalStateByTrackdir(tile, trackdir) == SIGNAL_STATE_GREEN && GetSignalAspect(tile, TrackdirToTrack(trackdir)) == 0) {
 					uint8_t aspect = GetForwardAspectFollowingTrackAndIncrement(tile, trackdir, IsRailCombinedNormalShuntSignalStyle(tile, TrackdirToTrack(trackdir)));
 					SetSignalAspect(tile, TrackdirToTrack(trackdir), aspect);
@@ -1627,7 +1627,7 @@ void FlushDeferredAspectUpdates()
 				}
 				break;
 
-			case MP_TUNNELBRIDGE:
+			case TileType::TunnelBridge:
 				if (IsTunnelBridgeSignalSimulationEntrance(tile) && TrackdirEntersTunnelBridge(tile, trackdir) &&
 						GetTunnelBridgeEntranceSignalState(tile) == SIGNAL_STATE_GREEN && GetTunnelBridgeEntranceSignalAspect(tile) == 0) {
 					uint8_t aspect = GetForwardAspectFollowingTrackAndIncrement(tile, trackdir);
@@ -1651,7 +1651,7 @@ void FlushDeferredAspectUpdates()
 
 static void SetCombinedNormalShuntModeSignalToShunt(TileIndex tile, Trackdir trackdir)
 {
-	if (IsTileType(tile, MP_TUNNELBRIDGE)) {
+	if (IsTileType(tile, TileType::TunnelBridge)) {
 		SetTunnelBridgeExitSignalAspect(tile, 1);
 	} else {
 		SetSignalAspect(tile, TrackdirToTrack(trackdir), 1);
@@ -1716,7 +1716,7 @@ void DetermineCombineNormalShuntModeWithLookahead(Train *v, TileIndex tile, Trac
 				}
 			}
 
-			if (IsTileType(v->lookahead->reservation_end_tile, MP_TUNNELBRIDGE)) return;
+			if (IsTileType(v->lookahead->reservation_end_tile, TileType::TunnelBridge)) return;
 
 			if (IsRailDepotTile(v->lookahead->reservation_end_tile)) {
 				/* shunt mode */
@@ -1735,7 +1735,7 @@ void DetermineCombineNormalShuntModeWithLookahead(Train *v, TileIndex tile, Trac
 				TileIndex new_tile = ft.new_tile;
 				Trackdir new_trackdir = FindFirstTrackdir(ft.new_td_bits);
 
-				if (!(IsTileType(new_tile, MP_RAILWAY) && HasSignalOnTrackdir(new_tile, new_trackdir) && !IsNoEntrySignal(new_tile, TrackdirToTrack(new_trackdir)) &&
+				if (!(IsTileType(new_tile, TileType::Railway) && HasSignalOnTrackdir(new_tile, new_trackdir) && !IsNoEntrySignal(new_tile, TrackdirToTrack(new_trackdir)) &&
 						HasBit(_signal_style_masks.next_only, GetSignalStyle(new_tile, TrackdirToTrack(new_trackdir))))) {
 					/* Didn't find a shunt signal at the end of the reservation */
 					return;
@@ -1751,7 +1751,7 @@ void DetermineCombineNormalShuntModeWithLookahead(Train *v, TileIndex tile, Trac
 					}
 					if (IsTunnelBridgeWithSignalSimulation(t)) return;
 
-					if (IsTileType(t, MP_RAILWAY) && HasSignalOnTrackdir(t, td)) {
+					if (IsTileType(t, TileType::Railway) && HasSignalOnTrackdir(t, td)) {
 						/* Found first signal on exit from bay where reservation ends */
 						if (HasBit(_signal_style_masks.next_only, GetSignalStyle(t, TrackdirToTrack(td)))) {
 							/* Shunt signal, use shunt route */
@@ -1798,7 +1798,7 @@ void FlushDeferredDetermineCombineNormalShuntMode(Train *v)
 void UpdateAllSignalAspects()
 {
 	for (TileIndex tile(0); tile != Map::Size(); ++tile) {
-		if (IsTileType(tile, MP_RAILWAY) && HasSignals(tile)) {
+		if (IsTileType(tile, TileType::Railway) && HasSignals(tile)) {
 			TrackBits bits = GetTrackBits(tile);
 			do {
 				Track track = RemoveFirstTrack(&bits);
@@ -1855,7 +1855,7 @@ static bool RemapNewSignalStyles(const std::array<NewSignalStyleMapping, MAX_NEW
 
 		const uint32_t map_size = Map::Size();
 		for (TileIndex t(0); t < map_size; t++) {
-			if (IsTileType(t, MP_RAILWAY) && HasSignals(t)) {
+			if (IsTileType(t, TileType::Railway) && HasSignals(t)) {
 				for (Track track : { TRACK_LOWER, TRACK_UPPER }) {
 					uint8_t old_style = GetSignalStyle(t, track);
 					if (old_style > 0) usage_table[old_style - 1] = true;
@@ -1913,7 +1913,7 @@ static bool RemapNewSignalStyles(const std::array<NewSignalStyleMapping, MAX_NEW
 	if (do_remap) {
 		const uint32_t map_size = Map::Size();
 		for (TileIndex t(0); t < map_size; t++) {
-			if (IsTileType(t, MP_RAILWAY) && HasSignals(t)) {
+			if (IsTileType(t, TileType::Railway) && HasSignals(t)) {
 				for (Track track : { TRACK_LOWER, TRACK_UPPER }) {
 					uint8_t old_style = GetSignalStyle(t, track);
 					uint8_t new_style = remap_table[old_style];
@@ -2109,7 +2109,7 @@ void UpdateAllSignalReserveThroughBits()
 {
 	TileIndex tile(0);
 	do {
-		if (IsTileType(tile, MP_RAILWAY) && HasSignals(tile)) {
+		if (IsTileType(tile, TileType::Railway) && HasSignals(tile)) {
 			TrackBits bits = GetTrackBits(tile);
 			do {
 				Track track = RemoveFirstTrack(&bits);
@@ -2123,7 +2123,7 @@ void UpdateAllSignalReserveThroughBits()
 
 void UpdateSignalSpecialPropagationFlag(TileIndex tile, Track track, const struct TraceRestrictProgram *prog, bool update_signal)
 {
-	if (IsTileType(tile, MP_RAILWAY)) {
+	if (IsTileType(tile, TileType::Railway)) {
 		UpdateRailSignalSpecialPropagationFlag(tile, track, prog, update_signal);
 	} else {
 		UpdateTunnelBridgeSignalSpecialPropagationFlag(tile, track, prog, update_signal);
@@ -2168,7 +2168,7 @@ void UpdateAllSignalsSpecialPropagationFlag()
 {
 	TileIndex tile(0);
 	do {
-		if (IsTileType(tile, MP_RAILWAY) && HasSignals(tile)) {
+		if (IsTileType(tile, TileType::Railway) && HasSignals(tile)) {
 			TrackBits bits = GetTrackBits(tile);
 			do {
 				Track track = RemoveFirstTrack(&bits);

@@ -25,7 +25,7 @@ ObjectType GetObjectType(TileIndex t);
  * Check whether the object on a tile is of a specific type.
  * @param t Tile to test.
  * @param type Type to test.
- * @pre IsTileType(t, MP_OBJECT)
+ * @pre IsTileType(t, TileType::Object)
  * @return True if type matches.
  */
 inline bool IsObjectType(TileIndex t, ObjectType type)
@@ -41,42 +41,42 @@ inline bool IsObjectType(TileIndex t, ObjectType type)
  */
 inline bool IsObjectTypeTile(TileIndex t, ObjectType type)
 {
-	return IsTileType(t, MP_OBJECT) && GetObjectType(t) == type;
+	return IsTileType(t, TileType::Object) && GetObjectType(t) == type;
 }
 
 /**
  * Get the index of which object this tile is attached to.
  * @param t the tile
- * @pre IsTileType(t, MP_OBJECT)
+ * @pre IsTileType(t, TileType::Object)
  * @return The ObjectID of the object.
  */
 inline ObjectID GetObjectIndex(TileIndex t)
 {
-	dbg_assert_tile(IsTileType(t, MP_OBJECT), t);
+	dbg_assert_tile(IsTileType(t, TileType::Object), t);
 	return ObjectID(_m[t].m2 | _m[t].m5 << 16);
 }
 
 /**
  * Get the random bits of this tile.
  * @param t The tile to get the bits for.
- * @pre IsTileType(t, MP_OBJECT)
+ * @pre IsTileType(t, TileType::Object)
  * @return The random bits.
  */
 inline uint8_t GetObjectRandomBits(TileIndex t)
 {
-	dbg_assert_tile(IsTileType(t, MP_OBJECT), t);
+	dbg_assert_tile(IsTileType(t, TileType::Object), t);
 	return _m[t].m3;
 }
 
 /**
  * Get the ground type of this tile.
  * @param t The tile to get the ground type of.
- * @pre IsTileType(t, MP_OBJECT)
+ * @pre IsTileType(t, TileType::Object)
  * @return The ground type.
  */
 inline ObjectGround GetObjectGroundType(TileIndex t)
 {
-	dbg_assert_tile(IsTileType(t, MP_OBJECT), t);
+	dbg_assert_tile(IsTileType(t, TileType::Object), t);
 	return (ObjectGround)GB(_m[t].m4, 2, 2);
 }
 
@@ -84,12 +84,12 @@ inline ObjectGround GetObjectGroundType(TileIndex t)
  * Get the ground density of this tile.
  * Only meaningful for some ground types.
  * @param t The tile to get the density of.
- * @pre IsTileType(t, MP_OBJECT)
+ * @pre IsTileType(t, TileType::Object)
  * @return the density
  */
 inline uint GetObjectGroundDensity(TileIndex t)
 {
-	dbg_assert_tile(IsTileType(t, MP_OBJECT), t);
+	dbg_assert_tile(IsTileType(t, TileType::Object), t);
 	return GB(_m[t].m4, 0, 2);
 }
 
@@ -98,23 +98,23 @@ inline uint GetObjectGroundDensity(TileIndex t)
  * Only meaningful for some ground types.
  * @param t The tile to set the density of.
  * @param d the new density
- * @pre IsTileType(t, MP_OBJECT)
+ * @pre IsTileType(t, TileType::Object)
  */
 inline void SetObjectGroundDensity(TileIndex t, uint d)
 {
-	dbg_assert_tile(IsTileType(t, MP_OBJECT), t);
+	dbg_assert_tile(IsTileType(t, TileType::Object), t);
 	SB(_m[t].m4, 0, 2, d);
 }
 
 /**
  * Get the counter used to advance to the next ground density type.
  * @param t The tile to get the counter of.
- * @pre IsTileType(t, MP_OBJECT)
+ * @pre IsTileType(t, TileType::Object)
  * @return The value of the counter
  */
 inline uint GetObjectGroundCounter(TileIndex t)
 {
-	dbg_assert_tile(IsTileType(t, MP_OBJECT), t);
+	dbg_assert_tile(IsTileType(t, TileType::Object), t);
 	return GB(_m[t].m4, 5, 3);
 }
 
@@ -122,11 +122,11 @@ inline uint GetObjectGroundCounter(TileIndex t)
  * Increments the counter used to advance to the next ground density type.
  * @param t the tile to increment the counter of
  * @param c the amount to increment the counter with
- * @pre IsTileType(t, MP_OBJECT)
+ * @pre IsTileType(t, TileType::Object)
  */
 inline void AddObjectGroundCounter(TileIndex t, int c)
 {
-	dbg_assert_tile(IsTileType(t, MP_OBJECT), t);
+	dbg_assert_tile(IsTileType(t, TileType::Object), t);
 	_m[t].m4 += c << 5;
 }
 
@@ -134,11 +134,11 @@ inline void AddObjectGroundCounter(TileIndex t, int c)
  * Sets the counter used to advance to the next ground density type.
  * @param t The tile to set the counter of.
  * @param c The amount to set the counter to.
- * @pre IsTileType(t, MP_OBJECT)
+ * @pre IsTileType(t, TileType::Object)
  */
 inline void SetObjectGroundCounter(TileIndex t, uint c)
 {
-	dbg_assert_tile(IsTileType(t, MP_OBJECT), t);
+	dbg_assert_tile(IsTileType(t, TileType::Object), t);
 	SB(_m[t].m4, 5, 3, c);
 }
 
@@ -148,35 +148,35 @@ inline void SetObjectGroundCounter(TileIndex t, uint c)
  * @param t       the tile to set the ground type and density for
  * @param type    the new ground type of the tile
  * @param density the density of the ground tile
- * @pre IsTileType(t, MP_OBJECT)
+ * @pre IsTileType(t, TileType::Object)
  */
 inline void SetObjectGroundTypeDensity(TileIndex t, ObjectGround type, uint density)
 {
-	dbg_assert_tile(IsTileType(t, MP_OBJECT), t);
+	dbg_assert_tile(IsTileType(t, TileType::Object), t);
 	_m[t].m4 = 0 << 5 | type << 2 | density;
 }
 
 inline ObjectEffectiveFoundationType GetObjectEffectiveFoundationType(TileIndex t)
 {
-	dbg_assert_tile(IsTileType(t, MP_OBJECT), t);
+	dbg_assert_tile(IsTileType(t, TileType::Object), t);
 	return (ObjectEffectiveFoundationType)GB(_me[t].m6, 0, 2);
 }
 
 inline void SetObjectEffectiveFoundationType(TileIndex t, ObjectEffectiveFoundationType foundation_type)
 {
-	dbg_assert_tile(IsTileType(t, MP_OBJECT), t);
+	dbg_assert_tile(IsTileType(t, TileType::Object), t);
 	SB(_me[t].m6, 0, 2, foundation_type);
 }
 
 inline bool GetObjectHasViewportMapViewOverride(TileIndex t)
 {
-	dbg_assert_tile(IsTileType(t, MP_OBJECT), t);
+	dbg_assert_tile(IsTileType(t, TileType::Object), t);
 	return HasBit(_m[t].m4, 4);
 }
 
 inline void SetObjectHasViewportMapViewOverride(TileIndex t, bool map_view_override)
 {
-	dbg_assert_tile(IsTileType(t, MP_OBJECT), t);
+	dbg_assert_tile(IsTileType(t, TileType::Object), t);
 	AssignBit(_m[t].m4, 4, map_view_override);
 }
 
@@ -190,7 +190,7 @@ inline void SetObjectHasViewportMapViewOverride(TileIndex t, bool map_view_overr
  */
 inline void MakeObject(TileIndex t, Owner o, ObjectID index, WaterClass wc, uint8_t random)
 {
-	SetTileType(t, MP_OBJECT);
+	SetTileType(t, TileType::Object);
 	SetTileOwner(t, o);
 	SetWaterClass(t, wc);
 	_m[t].m2 = index.base();

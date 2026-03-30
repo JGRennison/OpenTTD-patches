@@ -322,31 +322,31 @@ void ShowTooltipForTile(Window *w, const TileIndex tile)
 	extern void ShowIndustryTooltip(Window *w, const TileIndex tile);
 
 	switch (GetTileType(tile)) {
-		case MP_ROAD:
+		case TileType::Road:
 			if (IsRoadDepot(tile)) {
 				ShowDepotTooltip(w, tile);
 				return;
 			}
 			/* FALL THROUGH */
-		case MP_HOUSE: {
+		case TileType::House: {
 			ShowTownNameTooltip(w, tile);
 			break;
 		}
-		case MP_INDUSTRY: {
+		case TileType::Industry: {
 			ShowIndustryTooltip(w, tile);
 			break;
 		}
-		case MP_RAILWAY: {
+		case TileType::Railway: {
 			if (!IsRailDepot(tile)) return;
 			ShowDepotTooltip(w, tile);
 			break;
 		}
-		case MP_WATER: {
+		case TileType::Water: {
 			if (!IsShipDepot(tile)) return;
 			ShowDepotTooltip(w, tile);
 			break;
 		}
-		case MP_STATION: {
+		case TileType::Station: {
 			if (IsHangar(tile)) {
 				ShowDepotTooltip(w, tile);
 			} else if (IsBuoy(tile) || IsRailWaypoint(tile) || IsRoadWaypoint(tile)) {

@@ -143,7 +143,7 @@ static CommandCost TerraformTileHeight(TerraformerState *ts, TileIndex tile, int
 	for (DiagDirection dir = DIAGDIR_BEGIN; dir < DIAGDIR_END; dir++) {
 		TileIndex neighbour_tile = AddTileIndexDiffCWrap(tile, TileIndexDiffCByDiagDir(dir));
 
-		/* Not using IsValidTile as we want to also change MP_VOID tiles, which IsValidTile excludes. */
+		/* Not using IsValidTile as we want to also change TileType::Void tiles, which IsValidTile excludes. */
 		if (neighbour_tile == INVALID_TILE) continue;
 
 		/* Get TileHeight of neighboured tile as of current terraform progress */
@@ -212,9 +212,9 @@ CommandCost CmdTerraformLand(DoCommandFlags flags, TileIndex tile, Slope slope, 
 	for (int pass = 0; pass < 2; pass++) {
 		for (const auto &t : ts.dirty_tiles) {
 			assert(t < Map::Size());
-			/* MP_VOID tiles can be terraformed but as tunnels and bridges
+			/* TileType::Void tiles can be terraformed but as tunnels and bridges
 			 * cannot go under / over these tiles they don't need checking. */
-			if (IsTileType(t, MP_VOID)) {
+			if (IsTileType(t, TileType::Void)) {
 				if (_settings_game.construction.map_edge_mode != MapEdgeMode::Normal) {
 					CommandCost err(STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP);
 					err.SetTile(t);

@@ -625,12 +625,12 @@ CommandCost EnsureNoVehicleOnGround(TileIndex tile)
 		return CommandCost();
 	}
 
-	if (IsTileType(tile, MP_RAILWAY) || IsLevelCrossingTile(tile) || HasStationTileRail(tile) || IsRailTunnelBridgeTile(tile)) {
+	if (IsTileType(tile, TileType::Railway) || IsLevelCrossingTile(tile) || HasStationTileRail(tile) || IsRailTunnelBridgeTile(tile)) {
 		if (GetFirstVehicleOnTile(tile, VEH_TRAIN) != nullptr) {
 			return CommandCost(STR_ERROR_TRAIN_IN_THE_WAY);
 		}
 	}
-	if (IsTileType(tile, MP_ROAD) || IsAnyRoadStopTile(tile) || (IsTileType(tile, MP_TUNNELBRIDGE) && GetTunnelBridgeTransportType(tile) == TRANSPORT_ROAD)) {
+	if (IsTileType(tile, TileType::Road) || IsAnyRoadStopTile(tile) || (IsTileType(tile, TileType::TunnelBridge) && GetTunnelBridgeTransportType(tile) == TRANSPORT_ROAD)) {
 		if (GetFirstVehicleOnTile(tile, VEH_ROAD) != nullptr) {
 			return CommandCost(STR_ERROR_ROAD_VEHICLE_IN_THE_WAY);
 		}
@@ -3390,14 +3390,14 @@ static void VehicleIncreaseStats(const Vehicle *front)
 
 /**
  * Prepare everything to begin the loading when arriving at a station.
- * @pre IsTileType(this->tile, MP_STATION) || this->type == VEH_SHIP.
+ * @pre IsTileType(this->tile, TileType::Station) || this->type == VEH_SHIP.
  */
 void Vehicle::BeginLoading()
 {
 	if (this->type == VEH_TRAIN) {
-		assert_tile(IsTileType(Train::From(this)->GetStationLoadingVehicle()->tile, MP_STATION), Train::From(this)->GetStationLoadingVehicle()->tile);
+		assert_tile(IsTileType(Train::From(this)->GetStationLoadingVehicle()->tile, TileType::Station), Train::From(this)->GetStationLoadingVehicle()->tile);
 	} else {
-		assert_tile(IsTileType(this->tile, MP_STATION) || this->type == VEH_SHIP, this->tile);
+		assert_tile(IsTileType(this->tile, TileType::Station) || this->type == VEH_SHIP, this->tile);
 	}
 
 	bool no_load_prepare = false;

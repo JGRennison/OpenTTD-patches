@@ -11,6 +11,7 @@
 #define SMALLMAP_COLOURS_H
 
 #include "palette_func.h"
+#include "tile_type.h"
 #include "core/endian_func.hpp"
 
 #define MKCOLOUR(x)         TO_LE32(x)
@@ -42,41 +43,41 @@ struct AndOr {
 	uint32_t mand;
 };
 
-inline uint32_t ApplyMask(uint32_t colour, const AndOr *mask)
+inline uint32_t ApplyMask(uint32_t colour, const AndOr &mask)
 {
-	return (colour & mask->mand) | mask->mor;
+	return (colour & mask.mand) | mask.mor;
 }
 
 /** Colour masks for "Contour" and "Routes" modes. */
-static const AndOr _smallmap_contours_andor[] = {
-	{MKCOLOUR_0000               , MKCOLOUR_FFFF}, // MP_CLEAR
-	{MKCOLOUR_0XX0(PC_GREY      ), MKCOLOUR_F00F}, // MP_RAILWAY
-	{MKCOLOUR_0XX0(PC_BLACK     ), MKCOLOUR_F00F}, // MP_ROAD
-	{MKCOLOUR_0XX0(PC_DARK_RED  ), MKCOLOUR_F00F}, // MP_HOUSE
-	{MKCOLOUR_0000               , MKCOLOUR_FFFF}, // MP_TREES
-	{MKCOLOUR_XXXX(PC_LIGHT_BLUE), MKCOLOUR_0000}, // MP_STATION
-	{MKCOLOUR_XXXX(PC_WATER     ), MKCOLOUR_0000}, // MP_WATER
-	{MKCOLOUR_0000               , MKCOLOUR_FFFF}, // MP_VOID
-	{MKCOLOUR_XXXX(PC_DARK_RED  ), MKCOLOUR_0000}, // MP_INDUSTRY
-	{MKCOLOUR_0000               , MKCOLOUR_FFFF}, // MP_TUNNELBRIDGE
-	{MKCOLOUR_0XX0(PC_DARK_RED  ), MKCOLOUR_F00F}, // MP_OBJECT
-	{MKCOLOUR_0XX0(PC_GREY      ), MKCOLOUR_F00F},
+static const EnumClassIndexContainer<std::array<AndOr, to_underlying(TileType::End) + 1>, TileType> _smallmap_contours_andor = {
+	AndOr{MKCOLOUR_0000               , MKCOLOUR_FFFF}, // TileType::Clear
+	AndOr{MKCOLOUR_0XX0(PC_GREY      ), MKCOLOUR_F00F}, // TileType::Railway
+	AndOr{MKCOLOUR_0XX0(PC_BLACK     ), MKCOLOUR_F00F}, // TileType::Road
+	AndOr{MKCOLOUR_0XX0(PC_DARK_RED  ), MKCOLOUR_F00F}, // TileType::House
+	AndOr{MKCOLOUR_0000               , MKCOLOUR_FFFF}, // TileType::Trees
+	AndOr{MKCOLOUR_XXXX(PC_LIGHT_BLUE), MKCOLOUR_0000}, // TileType::Station
+	AndOr{MKCOLOUR_XXXX(PC_WATER     ), MKCOLOUR_0000}, // TileType::Water
+	AndOr{MKCOLOUR_0000               , MKCOLOUR_FFFF}, // TileType::Void
+	AndOr{MKCOLOUR_XXXX(PC_DARK_RED  ), MKCOLOUR_0000}, // TileType::Industry
+	AndOr{MKCOLOUR_0000               , MKCOLOUR_FFFF}, // TileType::TunnelBridge
+	AndOr{MKCOLOUR_0XX0(PC_DARK_RED  ), MKCOLOUR_F00F}, // TileType::Object
+	AndOr{MKCOLOUR_0XX0(PC_GREY      ), MKCOLOUR_F00F},
 };
 
 /** Colour masks for "Vehicles", "Industry", and "Vegetation" modes. */
-static const AndOr _smallmap_vehicles_andor[] = {
-	{MKCOLOUR_0000               , MKCOLOUR_FFFF}, // MP_CLEAR
-	{MKCOLOUR_0XX0(PC_BLACK     ), MKCOLOUR_F00F}, // MP_RAILWAY
-	{MKCOLOUR_0XX0(PC_BLACK     ), MKCOLOUR_F00F}, // MP_ROAD
-	{MKCOLOUR_0XX0(PC_DARK_RED  ), MKCOLOUR_F00F}, // MP_HOUSE
-	{MKCOLOUR_0000               , MKCOLOUR_FFFF}, // MP_TREES
-	{MKCOLOUR_0XX0(PC_BLACK     ), MKCOLOUR_F00F}, // MP_STATION
-	{MKCOLOUR_XXXX(PC_WATER     ), MKCOLOUR_0000}, // MP_WATER
-	{MKCOLOUR_0000               , MKCOLOUR_FFFF}, // MP_VOID
-	{MKCOLOUR_XXXX(PC_DARK_RED  ), MKCOLOUR_0000}, // MP_INDUSTRY
-	{MKCOLOUR_0000               , MKCOLOUR_FFFF}, // MP_TUNNELBRIDGE
-	{MKCOLOUR_0XX0(PC_DARK_RED  ), MKCOLOUR_F00F}, // MP_OBJECT
-	{MKCOLOUR_0XX0(PC_BLACK     ), MKCOLOUR_F00F},
+static const EnumClassIndexContainer<std::array<AndOr, to_underlying(TileType::End) + 1>, TileType> _smallmap_vehicles_andor = {
+	AndOr{MKCOLOUR_0000               , MKCOLOUR_FFFF}, // TileType::Clear
+	AndOr{MKCOLOUR_0XX0(PC_BLACK     ), MKCOLOUR_F00F}, // TileType::Railway
+	AndOr{MKCOLOUR_0XX0(PC_BLACK     ), MKCOLOUR_F00F}, // TileType::Road
+	AndOr{MKCOLOUR_0XX0(PC_DARK_RED  ), MKCOLOUR_F00F}, // TileType::House
+	AndOr{MKCOLOUR_0000               , MKCOLOUR_FFFF}, // TileType::Trees
+	AndOr{MKCOLOUR_0XX0(PC_BLACK     ), MKCOLOUR_F00F}, // TileType::Station
+	AndOr{MKCOLOUR_XXXX(PC_WATER     ), MKCOLOUR_0000}, // TileType::Water
+	AndOr{MKCOLOUR_0000               , MKCOLOUR_FFFF}, // TileType::Void
+	AndOr{MKCOLOUR_XXXX(PC_DARK_RED  ), MKCOLOUR_0000}, // TileType::Industry
+	AndOr{MKCOLOUR_0000               , MKCOLOUR_FFFF}, // TileType::TunnelBridge
+	AndOr{MKCOLOUR_0XX0(PC_DARK_RED  ), MKCOLOUR_F00F}, // TileType::Object
+	AndOr{MKCOLOUR_0XX0(PC_BLACK     ), MKCOLOUR_F00F},
 };
 
 static const uint32_t _vegetation_clear_bits[] = {

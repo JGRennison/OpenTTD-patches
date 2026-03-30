@@ -449,7 +449,7 @@ void ShowBuildDocksToolbarFromTile(TileIndex tile)
 	}
 	if (w == nullptr) return;
 
-	if (IsTileType(tile, MP_STATION)) {
+	if (IsTileType(tile, TileType::Station)) {
 		StationType station_type = GetStationType(tile);
 		switch (station_type) {
 			case StationType::Dock:
@@ -469,7 +469,7 @@ void ShowBuildDocksToolbarFromTile(TileIndex tile)
 		}
 	}
 
-	/* For MP_WATER tiles (canals, rivers, locks) and MP_TUNNELBRIDGE (aqueducts),
+	/* For TileType::Water tiles (canals, rivers, locks) and TileType::TunnelBridge (aqueducts),
 	 * just open the toolbar without selecting a specific tool. */
 }
 

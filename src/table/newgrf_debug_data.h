@@ -1440,7 +1440,7 @@ class NIHSignals : public NIHelper {
 			if (IsTunnel(tile)) ctx.ctx_flags |= CSSCF_TUNNEL;
 			style = GetTunnelBridgeSignalStyle(tile);
 			z = GetTunnelBridgeSignalZ(tile, !IsTunnelBridgeSignalSimulationEntrance(tile));
-		} else if (IsTileType(tile, MP_RAILWAY) && HasSignals(tile)) {
+		} else if (IsTileType(tile, TileType::Railway) && HasSignals(tile)) {
 			TrackBits bits = GetTrackBits(tile);
 			do {
 				Track track = RemoveFirstTrack(&bits);
@@ -1463,7 +1463,7 @@ class NIHSignals : public NIHelper {
 	{
 		TileIndex tile{index};
 		output.Print("Debug Info:");
-		if (IsTileType(tile, MP_RAILWAY) && HasSignals(tile)) {
+		if (IsTileType(tile, TileType::Railway) && HasSignals(tile)) {
 			output.Print("Signals:");
 			DumpTileSignalsInfo(TileIndex{tile}, output);
 		}
@@ -1500,7 +1500,7 @@ class NIHSignals : public NIHelper {
 
 	/* virtual */ void FillOptionsDropDown(uint index, DropDownList &list) const override
 	{
-		list.push_back(MakeDropDownListStringItem(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE, 0, !IsTileType(TileIndex{index}, MP_RAILWAY)));
+		list.push_back(MakeDropDownListStringItem(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_RAIL_TYPE, 0, !IsTileType(TileIndex{index}, TileType::Railway)));
 	}
 
 	/* virtual */ void OnOptionsDropdownSelect(uint index, int selected) const override
@@ -1751,11 +1751,11 @@ class NIHRailType : public NIHelper {
 			writeRailType(secondary);
 		}
 
-		if (IsTileType(tile, MP_RAILWAY) && HasSignals(tile)) {
+		if (IsTileType(tile, TileType::Railway) && HasSignals(tile)) {
 			output.Print("Signals:");
 			DumpTileSignalsInfo(tile, output);
 		}
-		if (IsTileType(tile, MP_RAILWAY) && IsRailDepot(tile)) {
+		if (IsTileType(tile, TileType::Railway) && IsRailDepot(tile)) {
 			output.Print("Depot: reserved: {}", HasDepotReservation(tile));
 		}
 	}
@@ -1775,7 +1775,7 @@ class NIHRailType : public NIHelper {
 	{
 		TileIndex tile{index};
 		list.push_back(MakeDropDownListStringItem(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_ROAD_TYPE, 0, !IsLevelCrossingTile(tile)));
-		list.push_back(MakeDropDownListStringItem(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_SIGNALS, 1, !(IsTileType(tile, MP_RAILWAY) && HasSignals(tile))));
+		list.push_back(MakeDropDownListStringItem(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT_SIGNALS, 1, !(IsTileType(tile, TileType::Railway) && HasSignals(tile))));
 	}
 
 	/* virtual */ void OnOptionsDropdownSelect(uint index, int selected) const override
@@ -2502,7 +2502,7 @@ class NIHNewLandscape : public NIHelper {
 	uint Resolve(uint index, uint var, uint param, GetVariableExtra &extra) const override
 	{
 		TileIndex tile{index};
-		if (!IsTileType(tile, MP_CLEAR)) return 0;
+		if (!IsTileType(tile, TileType::Clear)) return 0;
 
 		TileInfo ti;
 		ti.x = TileX(tile);

@@ -484,7 +484,7 @@ uint GetClosestWaterDistance(TileIndex tile, bool water)
 
 			/* each side of this square has length 'dist' */
 			for (uint a = 0; a < dist; a++) {
-				/* MP_VOID tiles are not checked (interval is [min; max) for IsInsideMM())*/
+				/* TileType::Void tiles are not checked (interval is [min; max) for IsInsideMM())*/
 				if (IsInsideMM(x, min_xy, max_x) && IsInsideMM(y, min_xy, max_y)) {
 					TileIndex t = TileXY(x, y);
 					if (HasTileWaterGround(t) == water) return dist;
@@ -498,7 +498,7 @@ uint GetClosestWaterDistance(TileIndex tile, bool water)
 	if (!water) {
 		/* no land found - is this a water-only map? */
 		for (TileIndex t(0); t < Map::Size(); t++) {
-			if (!IsTileType(t, MP_VOID) && !IsTileType(t, MP_WATER)) return 0x1FF;
+			if (!IsTileType(t, TileType::Void) && !IsTileType(t, TileType::Water)) return 0x1FF;
 		}
 	}
 
@@ -506,17 +506,17 @@ uint GetClosestWaterDistance(TileIndex tile, bool water)
 }
 
 static const char *tile_type_names[16] = {
-	"MP_CLEAR",
-	"MP_RAILWAY",
-	"MP_ROAD",
-	"MP_HOUSE",
-	"MP_TREES",
-	"MP_STATION",
-	"MP_WATER",
-	"MP_VOID",
-	"MP_INDUSTRY",
-	"MP_TUNNELBRIDGE",
-	"MP_OBJECT",
+	"Clear",
+	"Railway",
+	"Road",
+	"House",
+	"Trees",
+	"Station",
+	"Water",
+	"Void",
+	"Industry",
+	"TunnelBridge",
+	"Object",
 	"INVALID_B",
 	"INVALID_C",
 	"INVALID_D",
@@ -576,9 +576,9 @@ void DumpMapStats(format_target &buffer)
 	}
 
 	for (TileIndex t(0); t < Map::Size(); t++) {
-		tile_types[GetTileType(t)]++;
+		tile_types[to_underlying(GetTileType(t))]++;
 
-		if (IsTileType(t, MP_RAILWAY)) {
+		if (IsTileType(t, TileType::Railway)) {
 			if (GetRailTileType(t) == RailTileType::Signals) {
 				if (IsRestrictedSignal(t)) restricted_signals++;
 				if (HasSignalOnTrack(t, TRACK_LOWER) && GetSignalType(t, TRACK_LOWER) == SIGTYPE_PROG) prog_signals++;
@@ -598,7 +598,7 @@ void DumpMapStats(format_target &buffer)
 
 		if (IsNormalRoadTile(t) && HasRoadWorks(t)) road_works++;
 
-		if (IsTileType(t, MP_TUNNELBRIDGE)) {
+		if (IsTileType(t, TileType::TunnelBridge)) {
 			uint bucket = 0;
 			if (IsBridge(t)) bucket |= TBB_BRIDGE;
 			if (IsTunnelBridgeWithSignalSimulation(t)) {

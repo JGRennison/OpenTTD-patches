@@ -338,13 +338,13 @@ uint32_t GetTerrainType(TileIndex tile, TileContext context)
 		case LandscapeType::Arctic: {
 			bool has_snow;
 			switch (GetTileType(tile)) {
-				case MP_CLEAR:
+				case TileType::Clear:
 					/* During map generation the snowstate may not be valid yet, as the tileloop may not have run yet. */
 					if (_generating_world) goto genworld;
 					has_snow = IsSnowTile(tile) && GetClearDensity(tile) >= 2;
 					break;
 
-				case MP_RAILWAY: {
+				case TileType::Railway: {
 					/* During map generation the snowstate may not be valid yet, as the tileloop may not have run yet. */
 					if (_generating_world) goto genworld; // we do not care about foundations here
 					RailGroundType ground = GetRailGroundType(tile);
@@ -352,13 +352,13 @@ uint32_t GetTerrainType(TileIndex tile, TileContext context)
 					break;
 				}
 
-				case MP_ROAD:
+				case TileType::Road:
 					/* During map generation the snowstate may not be valid yet, as the tileloop may not have run yet. */
 					if (_generating_world) goto genworld; // we do not care about foundations here
 					has_snow = IsOnSnowOrDesert(tile);
 					break;
 
-				case MP_TREES: {
+				case TileType::Trees: {
 					/* During map generation the snowstate may not be valid yet, as the tileloop may not have run yet. */
 					if (_generating_world) goto genworld;
 					TreeGround ground = GetTreeGround(tile);
@@ -366,7 +366,7 @@ uint32_t GetTerrainType(TileIndex tile, TileContext context)
 					break;
 				}
 
-				case MP_TUNNELBRIDGE:
+				case TileType::TunnelBridge:
 					if (context == TCX_ON_BRIDGE) {
 						has_snow = (GetBridgeHeight(tile) > GetSnowLine());
 					} else {
@@ -376,16 +376,16 @@ uint32_t GetTerrainType(TileIndex tile, TileContext context)
 					}
 					break;
 
-				case MP_STATION:
-				case MP_HOUSE:
-				case MP_INDUSTRY:
-				case MP_OBJECT:
+				case TileType::Station:
+				case TileType::House:
+				case TileType::Industry:
+				case TileType::Object:
 					/* These tiles usually have a levelling foundation. So use max Z */
 					has_snow = IsTileMaxZAbove(tile, GetSnowLine());
 					break;
 
-				case MP_VOID:
-				case MP_WATER:
+				case TileType::Void:
+				case TileType::Water:
 				genworld:
 					has_snow = IsTileZAbove(tile, GetSnowLine());
 					break;
@@ -432,21 +432,21 @@ TileIndex GetNearbyTile(uint8_t parameter, TileIndex tile, bool signed_offsets, 
 uint32_t GetNearbyTileInformation(TileIndex tile, bool grf_version8, uint32_t mask)
 {
 	uint32_t result = 0;
-	TileType tile_type = MP_CLEAR;
+	TileType tile_type = TileType::Clear;
 	if (mask & 0xFF000200) {
 		tile_type = GetTileType(tile);
 
 		/* Fake tile type for trees on shore */
-		if (IsTileType(tile, MP_TREES) && GetTreeGround(tile) == TREE_GROUND_SHORE) tile_type = MP_WATER;
+		if (IsTileType(tile, TileType::Trees) && GetTreeGround(tile) == TREE_GROUND_SHORE) tile_type = TileType::Water;
 
 		/* Fake tile type for road waypoints */
-		if (IsRoadWaypointTile(tile)) tile_type = MP_ROAD;
+		if (IsRoadWaypointTile(tile)) tile_type = TileType::Road;
 
-		result |= tile_type << 24;
+		result |= to_underlying(tile_type) << 24;
 	}
 	if (mask & 0xFE00) {
 		/* Return 0 if the tile is a land tile */
-		uint8_t terrain_type = (HasTileWaterClass(tile) ? (to_underlying(GetWaterClass(tile)) + 1) & 3 : 0) << 5 | GetTerrainType(tile) << 2 | (tile_type == MP_WATER ? 1 : 0) << 1;
+		uint8_t terrain_type = (HasTileWaterClass(tile) ? (to_underlying(GetWaterClass(tile)) + 1) & 3 : 0) << 5 | GetTerrainType(tile) << 2 | (tile_type == TileType::Water ? 1 : 0) << 1;
 		result |= terrain_type << 8;
 	}
 	if (mask & 0xFF00FF) {

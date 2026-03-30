@@ -17,23 +17,24 @@
 #include "linkgraph/linkgraph_gui.h"
 #include "widgets/smallmap_widget.h"
 #include "guitimer_func.h"
+#include "tile_type.h"
 #include <vector>
 
 static const int NUM_NO_COMPANY_ENTRIES = 4; ///< Number of entries in the owner legend that are not companies.
 
 /** Mapping of tile type to importance of the tile (higher number means more interesting to show). */
-static const uint8_t _tiletype_importance[] = {
-	2, // MP_CLEAR
-	8, // MP_RAILWAY
-	7, // MP_ROAD
-	5, // MP_HOUSE
-	2, // MP_TREES
-	9, // MP_STATION
-	2, // MP_WATER
-	1, // MP_VOID
-	6, // MP_INDUSTRY
-	8, // MP_TUNNELBRIDGE
-	2, // MP_OBJECT
+static const EnumClassIndexContainer<std::array<uint8_t, to_underlying(TileType::End) + 1>, TileType> _tiletype_importance = {
+	2, // TileType::Clear
+	8, // TileType::Railway
+	7, // TileType::Road
+	5, // TileType::House
+	2, // TileType::Trees
+	9, // TileType::Station
+	2, // TileType::Water
+	1, // TileType::Void
+	6, // TileType::Industry
+	8, // TileType::TunnelBridge
+	2, // TileType::Object
 	0,
 };
 

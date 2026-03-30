@@ -71,7 +71,7 @@ struct Map {
 	}
 
 	/**
-	 * Gets the maximum X coordinate within the map, including MP_VOID
+	 * Gets the maximum X coordinate within the map, including TileType::Void
 	 * @return the maximum X coordinate
 	 */
 	static inline uint MaxX()
@@ -80,7 +80,7 @@ struct Map {
 	}
 
 	/**
-	 * Gets the maximum Y coordinate within the map, including MP_VOID
+	 * Gets the maximum Y coordinate within the map, including TileType::Void
 	 * @return the maximum Y coordinate
 	 */
 	static inline uint MaxY()

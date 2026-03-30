@@ -96,11 +96,11 @@ static void GenerateRockyArea(TileIndex end, TileIndex start)
 
 	for (TileIndex tile : ta) {
 		switch (GetTileType(tile)) {
-			case MP_TREES:
+			case TileType::Trees:
 				if (GetTreeGround(tile) == TREE_GROUND_SHORE) continue;
 				[[fallthrough]];
 
-			case MP_CLEAR:
+			case TileType::Clear:
 				MakeClear(tile, CLEAR_ROCKS, 3);
 				break;
 
@@ -122,7 +122,7 @@ static bool IsQueryConfirmIndustryOrRailStationInArea(TileIndex start_tile, Tile
 	OrthogonalOrDiagonalTileIterator tile_iterator(end_tile, start_tile, diagonal);
 	for (; *tile_iterator != INVALID_TILE; ++tile_iterator) {
 		TileIndex tile = *tile_iterator;
-		if (_cheats.magic_bulldozer.value && IsTileType(tile, MP_INDUSTRY)) {
+		if (_cheats.magic_bulldozer.value && IsTileType(tile, TileType::Industry)) {
 			return true;
 		}
 		if (_settings_client.gui.demolish_confirm_mode == DCM_INDUSTRY_RAIL_STATION && IsRailStationTile(tile)) {

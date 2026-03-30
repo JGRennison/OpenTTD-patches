@@ -199,7 +199,7 @@ public:
 
 	void OnPlaceObject(Point pt, TileIndex tile) override
 	{
-		if (IsTileType(tile, MP_STATION)) {
+		if (IsTileType(tile, TileType::Station)) {
 			Command<CMD_EXCHANGE_WAYPOINT_NAMES>::Post(STR_ERROR_CAN_T_EXCHANGE_WAYPOINT_NAMES, this->window_number, GetStationIndex(tile));
 			ResetObjectToPlace();
 		}

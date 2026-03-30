@@ -1672,28 +1672,28 @@ const TraceRestrictProgram *_viewport_highlight_tracerestrict_program; ///< Curr
 static TileHighlightType GetTileHighlightType(TileIndex t)
 {
 	if (_viewport_highlight_station != nullptr) {
-		if (IsTileType(t, MP_STATION) && GetStationIndex(t) == _viewport_highlight_station->index) return THT_LIGHT_BLUE;
+		if (IsTileType(t, TileType::Station) && GetStationIndex(t) == _viewport_highlight_station->index) return THT_LIGHT_BLUE;
 		if (_viewport_highlight_station->TileIsInCatchment(t)) return THT_BLUE;
 	}
 
 	if (_viewport_highlight_station_rect != nullptr) {
-		if (IsTileType(t, MP_STATION) && GetStationIndex(t) == _viewport_highlight_station_rect->index) return THT_WHITE;
+		if (IsTileType(t, TileType::Station) && GetStationIndex(t) == _viewport_highlight_station_rect->index) return THT_WHITE;
 		const StationRect *r = &_viewport_highlight_station_rect->rect;
 		if (r->PtInExtendedRect(TileX(t), TileY(t))) return THT_BLUE;
 	}
 
 	if (_viewport_highlight_waypoint != nullptr) {
-		if (IsTileType(t, MP_STATION) && GetStationIndex(t) == _viewport_highlight_waypoint->index) return THT_LIGHT_BLUE;
+		if (IsTileType(t, TileType::Station) && GetStationIndex(t) == _viewport_highlight_waypoint->index) return THT_LIGHT_BLUE;
 	}
 
 	if (_viewport_highlight_waypoint_rect != nullptr) {
-		if (IsTileType(t, MP_STATION) && GetStationIndex(t) == _viewport_highlight_waypoint_rect->index) return THT_WHITE;
+		if (IsTileType(t, TileType::Station) && GetStationIndex(t) == _viewport_highlight_waypoint_rect->index) return THT_WHITE;
 		const StationRect *r = &_viewport_highlight_waypoint_rect->rect;
 		if (r->PtInExtendedRect(TileX(t), TileY(t))) return THT_BLUE;
 	}
 
 	if (_viewport_highlight_town != nullptr) {
-		if (IsTileType(t, MP_HOUSE)) {
+		if (IsTileType(t, TileType::House)) {
 			if (GetTownIndex(t) == _viewport_highlight_town->index) {
 				TileHighlightType type = THT_RED;
 				for (const Station *st : _viewport_highlight_town->stations_near) {
@@ -1702,7 +1702,7 @@ static TileHighlightType GetTileHighlightType(TileIndex t)
 				}
 				return type;
 			}
-		} else if (IsTileType(t, MP_STATION)) {
+		} else if (IsTileType(t, TileType::Station)) {
 			for (const Station *st : _viewport_highlight_town->stations_near) {
 				if (st->owner != _current_company) continue;
 				if (GetStationIndex(t) == st->index) return THT_WHITE;
@@ -1747,7 +1747,7 @@ static void HighlightTownLocalAuthorityTiles(const TileInfo *ti)
 	if (_town_local_authority_kdtree.Count() == 0) return;
 
 	/* Tile belongs to town regardless of distance from town. */
-	if (GetTileType(ti->tile) == MP_HOUSE) {
+	if (GetTileType(ti->tile) == TileType::House) {
 		if (!Town::GetByTile(ti->tile)->show_zone) return;
 
 		DrawTileSelectionRect(ti, PALETTE_CRASH);
@@ -1913,10 +1913,10 @@ static void ViewportAddLandscape()
 				tile_type = GetTileType(_cur_ti.tile);
 			} else {
 				_cur_ti.tile = INVALID_TILE;
-				tile_type = MP_VOID;
+				tile_type = TileType::Void;
 			}
 
-			if (tile_type != MP_VOID) {
+			if (tile_type != TileType::Void) {
 				/* We are inside the map => paint landscape. */
 				std::tie(_cur_ti.tileh, _cur_ti.z) = GetTilePixelSlope(_cur_ti.tile);
 			} else {
@@ -1936,7 +1936,7 @@ static void ViewportAddLandscape()
 			int min_visible_height = viewport_y - (_vdd->dpi.top + _vdd->dpi.height);
 			bool tile_visible = min_visible_height <= 0;
 
-			if (tile_type != MP_VOID) {
+			if (tile_type != TileType::Void) {
 				/* Is tile with buildings visible? */
 				if (min_visible_height < MAX_TILE_EXTENT_TOP) tile_visible = true;
 
@@ -3244,7 +3244,7 @@ static bool ViewportMapGetColourVegetationCustomObject(uint32_t &colour, const T
 			colour = _vp_map_water_colour[slope_index];
 			return true;
 		}
-		uint32_t mask = ApplyMask(MKCOLOUR_XXXX(GREY_SCALE(3)), &_smallmap_vehicles_andor[MP_WATER]);
+		uint32_t mask = ApplyMask(MKCOLOUR_XXXX(GREY_SCALE(3)), _smallmap_vehicles_andor[TileType::Water]);
 		colour = COLOUR_FROM_INDEX(mask).p;
 		return false;
 	};
@@ -3304,7 +3304,7 @@ static bool ViewportMapGetColourVegetationCustomObject(uint32_t &colour, const T
 			return true;
 		}
 		case OVMT_HOUSE: {
-			uint32_t mask = ApplyMask(MKCOLOUR_XXXX(GREY_SCALE(3)), &_smallmap_vehicles_andor[MP_HOUSE]);
+			uint32_t mask = ApplyMask(MKCOLOUR_XXXX(GREY_SCALE(3)), _smallmap_vehicles_andor[TileType::House]);
 			colour = COLOUR_FROM_INDEX(mask).p;
 			return false;
 		}
@@ -3322,12 +3322,12 @@ static inline uint32_t ViewportMapGetColourVegetation(const TileIndex tile, Tile
 	PixelColour colour;
 
 	auto set_default_colour = [&](TileType ttype) {
-		uint32_t mask = ApplyMask(MKCOLOUR_XXXX(GREY_SCALE(3)), &_smallmap_vehicles_andor[ttype]);
+		uint32_t mask = ApplyMask(MKCOLOUR_XXXX(GREY_SCALE(3)), _smallmap_vehicles_andor[ttype]);
 		colour = COLOUR_FROM_INDEX(mask);
 	};
 
 	switch (t) {
-		case MP_CLEAR: {
+		case TileType::Clear: {
 			Slope slope = show_slope ? (Slope) (GetTileSlope(tile) & SLOPE_ELEVATED) : SLOPE_FLAT;
 			uint multi;
 			ClearGround cg = IsSnowTile(tile) ? CLEAR_SNOW : GetClearGround(tile);
@@ -3340,7 +3340,7 @@ static inline uint32_t ViewportMapGetColourVegetation(const TileIndex tile, Tile
 			return _vp_map_vegetation_clear_colours[slope][cg][multi];
 		}
 
-		case MP_INDUSTRY:
+		case TileType::Industry:
 			if (IsTileForestIndustry(tile)) {
 				colour = ((colour_index & 1) != 0) ? PC_GREEN : PixelColour{0x7B};
 			} else {
@@ -3348,7 +3348,7 @@ static inline uint32_t ViewportMapGetColourVegetation(const TileIndex tile, Tile
 			}
 			break;
 
-		case MP_TREES: {
+		case TileType::Trees: {
 			const TreeGround tg = GetTreeGround(tile);
 			const uint td = GetTreeDensity(tile);
 			const uint tc = GetTreeCount(tile);
@@ -3356,8 +3356,8 @@ static inline uint32_t ViewportMapGetColourVegetation(const TileIndex tile, Tile
 			return ViewportMapGetColourVegetationTree<is_32bpp>(tile, tg, td, tc, colour_index, slope);
 		}
 
-		case MP_OBJECT: {
-			set_default_colour(MP_OBJECT);
+		case TileType::Object: {
+			set_default_colour(TileType::Object);
 			if (GetObjectHasViewportMapViewOverride(tile)) {
 				uint32_t custom_colour;
 				if (ViewportMapGetColourVegetationCustomObject(custom_colour, tile, colour_index, is_32bpp, show_slope)) return custom_colour;
@@ -3365,17 +3365,17 @@ static inline uint32_t ViewportMapGetColourVegetation(const TileIndex tile, Tile
 			break;
 		}
 
-		case MP_WATER:
+		case TileType::Water:
 			if (is_32bpp) {
 				uint8_t slope_index = 0;
-				if (show_slope && IsTileType(tile, MP_WATER) && GetWaterTileType(tile) != WaterTileType::Coast) slope_index = GetSlopeIndex(tile);
+				if (show_slope && IsTileType(tile, TileType::Water) && GetWaterTileType(tile) != WaterTileType::Coast) slope_index = GetSlopeIndex(tile);
 				return _vp_map_water_colour[slope_index];
 			}
 			set_default_colour(t);
 			break;
 
 		default:
-			uint32_t mask = ApplyMask(MKCOLOUR_XXXX(GREY_SCALE(3)), &_smallmap_vehicles_andor[t]);
+			uint32_t mask = ApplyMask(MKCOLOUR_XXXX(GREY_SCALE(3)), _smallmap_vehicles_andor[t]);
 			colour = COLOUR_FROM_INDEX(mask);
 			set_default_colour(t);
 			break;
@@ -3396,16 +3396,16 @@ static inline uint32_t ViewportMapGetColourIndustries(const TileIndex tile, cons
 	extern uint _industry_to_list_pos[NUM_INDUSTRYTYPES];
 
 	TileType t2 = t;
-	if (t == MP_INDUSTRY) {
+	if (t == TileType::Industry) {
 		/* If industry is allowed to be seen, use its colour on the map. */
 		const IndustryType it = Industry::GetByTile(tile)->type;
 		if (_legend_from_industries[_industry_to_list_pos[it]].show_on_map)
 			return IS32(GetIndustrySpec(it)->map_colour);
 		/* Otherwise, return the colour which will make it disappear. */
-		t2 = IsTileOnWater(tile) ? MP_WATER : MP_CLEAR;
+		t2 = IsTileOnWater(tile) ? TileType::Water : TileType::Clear;
 	}
 
-	if (t == MP_OBJECT && GetObjectHasViewportMapViewOverride(tile)) {
+	if (t == TileType::Object && GetObjectHasViewportMapViewOverride(tile)) {
 		ObjectViewportMapType vmtype = OVMT_DEFAULT;
 		const ObjectSpec *spec = ObjectSpec::GetByTile(tile);
 		if (spec->ctrl_flags.Test(ObjectCtrlFlag::ViewportMapTypeSet)) vmtype = spec->vport_map_type;
@@ -3419,32 +3419,32 @@ static inline uint32_t ViewportMapGetColourIndustries(const TileIndex tile, cons
 				break;
 
 			case OVMT_TREES:
-				t2 = MP_TREES;
+				t2 = TileType::Trees;
 				break;
 
 			case OVMT_HOUSE:
-				t2 = MP_HOUSE;
+				t2 = TileType::House;
 				break;
 
 			case OVMT_WATER:
-				t2 = MP_WATER;
+				t2 = TileType::Water;
 				break;
 
 			default:
-				t2 = MP_CLEAR;
+				t2 = TileType::Clear;
 				break;
 		}
 	}
 
-	if (is_32bpp && t2 == MP_WATER) {
+	if (is_32bpp && t2 == TileType::Water) {
 		uint8_t slope_index = 0;
-		if (show_slope && t != MP_INDUSTRY && IsTileType(tile, MP_WATER) && GetWaterTileType(tile) != WaterTileType::Coast) slope_index = GetSlopeIndex(tile); ///< Ignore industry on water not shown on map.
+		if (show_slope && t != TileType::Industry && IsTileType(tile, TileType::Water) && GetWaterTileType(tile) != WaterTileType::Coast) slope_index = GetSlopeIndex(tile); ///< Ignore industry on water not shown on map.
 		return _vp_map_water_colour[slope_index];
 	}
 
 	const int h = TileHeight(tile);
 	const SmallMapColourScheme * const cs = &_heightmap_schemes[_settings_client.gui.smallmap_land_colour];
-	const uint32_t colours = ApplyMask(_settings_client.gui.show_height_on_viewport_map ? cs->height_colours[h] : cs->default_colour, &_smallmap_vehicles_andor[t2]);
+	const uint32_t colours = ApplyMask(_settings_client.gui.show_height_on_viewport_map ? cs->height_colours[h] : cs->default_colour, _smallmap_vehicles_andor[t2]);
 	PixelColour colour = COLOUR_FROM_INDEX(colours);
 
 	if (show_slope) colour = SlopifyColour(tile, colour);
@@ -3459,19 +3459,19 @@ static inline uint32_t ViewportMapGetColourOwner(const TileIndex tile, TileType 
 	extern TypedIndexContainer<std::array<uint32_t, MAX_COMPANIES>, CompanyID> _company_to_list_pos;
 
 	switch (t) {
-		case MP_INDUSTRY: return IS32(PC_DARK_GREY);
-		case MP_HOUSE:    return IS32(colour_index & 1 ? PC_DARK_RED : GREY_SCALE(3));
+		case TileType::Industry: return IS32(PC_DARK_GREY);
+		case TileType::House:    return IS32(colour_index & 1 ? PC_DARK_RED : GREY_SCALE(3));
 		default:          break;
 	}
 
 	const Owner o = GetTileOwner(tile);
-	if (o == OWNER_NONE && t == MP_ROAD) {
+	if (o == OWNER_NONE && t == TileType::Road) {
 		return IS32(colour_index & 1 ? PC_BLACK : GREY_SCALE(3));
 	} else if ((o < MAX_COMPANIES && !_legend_land_owners[_company_to_list_pos[o]].show_on_map) || o == OWNER_NONE || o == OWNER_WATER) {
-		if (t == MP_WATER) {
+		if (t == TileType::Water) {
 			if (is_32bpp) {
 				uint8_t slope_index = 0;
-				if (show_slope && IsTileType(tile, MP_WATER) && GetWaterTileType(tile) != WaterTileType::Coast) slope_index = GetSlopeIndex(tile);
+				if (show_slope && IsTileType(tile, TileType::Water) && GetWaterTileType(tile) != WaterTileType::Coast) slope_index = GetSlopeIndex(tile);
 				return _vp_map_water_colour[slope_index];
 			} else {
 				return PC_WATER.p;
@@ -3484,13 +3484,13 @@ static inline uint32_t ViewportMapGetColourOwner(const TileIndex tile, TileType 
 		return IS32(colour);
 
 	} else if (o == OWNER_TOWN) {
-		return IS32(t == MP_ROAD ? (colour_index & 1 ? PC_BLACK : GREY_SCALE(3)) : PC_DARK_RED);
+		return IS32(t == TileType::Road ? (colour_index & 1 ? PC_BLACK : GREY_SCALE(3)) : PC_DARK_RED);
 	}
 
 	/* Train stations are sometimes hard to spot.
 	 * So we give the player a hint by mixing his colour with black. */
 	uint32_t colour = _legend_land_owners[_company_to_list_pos[o]].colour.p;
-	if (t != MP_STATION) {
+	if (t != TileType::Station) {
 		if (show_slope) colour = SlopifyColour(tile, colour);
 	} else {
 		if (GetStationType(tile) == StationType::Rail) colour = colour_index & 1 ? colour : PC_BLACK.p;
@@ -3505,22 +3505,22 @@ static inline uint32_t ViewportMapGetColourRoutes(const TileIndex tile, TileType
 	PixelColour colour;
 
 	switch (t) {
-		case MP_WATER:
+		case TileType::Water:
 			if (is_32bpp) {
 				uint8_t slope_index = 0;
-				if (show_slope && IsTileType(tile, MP_WATER) && GetWaterTileType(tile) != WaterTileType::Coast) slope_index = GetSlopeIndex(tile);
+				if (show_slope && IsTileType(tile, TileType::Water) && GetWaterTileType(tile) != WaterTileType::Coast) slope_index = GetSlopeIndex(tile);
 				return _vp_map_water_colour[slope_index];
 			} else {
 				return PC_WATER.p;
 			}
 
-		case MP_INDUSTRY:
+		case TileType::Industry:
 			return IS32(PC_DARK_GREY);
 
-		case MP_HOUSE:
+		case TileType::House:
 			return IS32(colour_index & 1 ? PC_DARK_RED : GREY_SCALE(3));
 
-		case MP_OBJECT: {
+		case TileType::Object: {
 			ObjectViewportMapType vmtype = OVMT_DEFAULT;
 			if (GetObjectHasViewportMapViewOverride(tile)) {
 				const ObjectSpec *spec = ObjectSpec::GetByTile(tile);
@@ -3552,7 +3552,7 @@ static inline uint32_t ViewportMapGetColourRoutes(const TileIndex tile, TileType
 			break;
 		}
 
-		case MP_STATION:
+		case TileType::Station:
 			switch (GetStationType(tile)) {
 				case StationType::Rail:    return IS32(PC_VERY_DARK_BROWN);
 				case StationType::Airport: return IS32(PC_RED);
@@ -3562,12 +3562,12 @@ static inline uint32_t ViewportMapGetColourRoutes(const TileIndex tile, TileType
 				default:                   return IS32(0xFF);
 			}
 
-		case MP_RAILWAY: {
+		case TileType::Railway: {
 			colour = GetRailTypeInfo(GetRailType(tile))->map_colour;
 			break;
 		}
 
-		case MP_ROAD: {
+		case TileType::Road: {
 			const RoadTypeInfo *rti = nullptr;
 			if (GetRoadTypeRoad(tile) != INVALID_ROADTYPE) {
 				rti = GetRoadTypeInfo(GetRoadTypeRoad(tile));
@@ -3613,7 +3613,7 @@ static inline TileIndex ViewportMapGetMostSignificantTileType(const Viewport * c
 	if (vp->zoom <= ZoomLevel::Out32x) {
 		const TileType ttype = GetTileType(from_tile);
 		/* Store bridges and tunnels. */
-		if (ttype != MP_TUNNELBRIDGE) {
+		if (ttype != TileType::TunnelBridge) {
 			*tile_type = ttype;
 			if (IsBridgeAbove(from_tile)) ViewportMapStoreBridgeAboveTile(vp, from_tile);
 		} else {
@@ -3621,9 +3621,9 @@ static inline TileIndex ViewportMapGetMostSignificantTileType(const Viewport * c
 				ViewportMapStoreBridge(vp, from_tile);
 			}
 			switch (GetTunnelBridgeTransportType(from_tile)) {
-				case TRANSPORT_RAIL:  *tile_type = MP_RAILWAY; break;
-				case TRANSPORT_ROAD:  *tile_type = MP_ROAD;    break;
-				case TRANSPORT_WATER: *tile_type = MP_WATER;   break;
+				case TRANSPORT_RAIL:  *tile_type = TileType::Railway; break;
+				case TRANSPORT_ROAD:  *tile_type = TileType::Road;    break;
+				case TRANSPORT_WATER: *tile_type = TileType::Water;   break;
 				default:              NOT_REACHED();           break;
 			}
 		}
@@ -3644,21 +3644,21 @@ static inline TileIndex ViewportMapGetMostSignificantTileType(const Viewport * c
 			importance = tile_importance;
 			result = tile;
 		}
-		if (ttype != MP_TUNNELBRIDGE && IsBridgeAbove(tile)) {
+		if (ttype != TileType::TunnelBridge && IsBridgeAbove(tile)) {
 			ViewportMapStoreBridgeAboveTile(vp, tile);
 		}
 	}
 
 	/* Store bridges and tunnels. */
 	*tile_type = GetTileType(result);
-	if (*tile_type == MP_TUNNELBRIDGE) {
+	if (*tile_type == TileType::TunnelBridge) {
 		if (IsBridge(result)) {
 			ViewportMapStoreBridge(vp, result);
 		}
 		switch (GetTunnelBridgeTransportType(result)) {
-			case TRANSPORT_RAIL: *tile_type = MP_RAILWAY; break;
-			case TRANSPORT_ROAD: *tile_type = MP_ROAD;    break;
-			default:             *tile_type = MP_WATER;   break;
+			case TRANSPORT_RAIL: *tile_type = TileType::Railway; break;
+			case TRANSPORT_ROAD: *tile_type = TileType::Road;    break;
+			default:             *tile_type = TileType::Water;   break;
 		}
 	}
 
@@ -3695,9 +3695,9 @@ uint32_t ViewportMapGetColour(const Viewport * const vp, int x, int y, const uin
 		tile = TileVirtXY(x + approx_z, y + approx_z);
 		if (tile >= Map::Size()) return ViewportMapVoidColour();
 	}
-	TileType tile_type = MP_VOID;
+	TileType tile_type = TileType::Void;
 	tile = ViewportMapGetMostSignificantTileType(vp, tile, &tile_type);
-	if (tile_type == MP_VOID) return ViewportMapVoidColour();
+	if (tile_type == TileType::Void) return ViewportMapVoidColour();
 
 	/* Return the colours. */
 	switch (vp->map_type) {
@@ -3849,7 +3849,7 @@ static void ViewportMapDrawBridgeTunnel(Viewport * const vp, const TunnelBridgeT
 	if (vp->map_type == VPMT_OWNER && _settings_client.gui.use_owner_colour_for_tunnelbridge && o < MAX_COMPANIES) {
 		colour = _legend_land_owners[_company_to_list_pos[o]].colour;
 		colour = PixelColour{is_tunnel ? _darken_colour[colour.p] : _lighten_colour[colour.p]};
-	} else if (vp->map_type == VPMT_ROUTES && IsTileType(tile, MP_TUNNELBRIDGE)) {
+	} else if (vp->map_type == VPMT_ROUTES && IsTileType(tile, TileType::TunnelBridge)) {
 		switch (GetTunnelBridgeTransportType(tile)) {
 			case TRANSPORT_WATER:
 				colour = PC_WATER;

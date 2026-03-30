@@ -1354,9 +1354,9 @@ void TraceRestrictNotifySignalRemoval(TileIndex tile, Track track);
 inline bool IsRestrictedSignalTile(TileIndex t)
 {
 	switch (GetTileType(t)) {
-		case MP_RAILWAY:
+		case TileType::Railway:
 			return IsRestrictedSignal(t);
-		case MP_TUNNELBRIDGE:
+		case TileType::TunnelBridge:
 			return IsTunnelBridgeRestrictedSignal(t);
 		default:
 			return false;

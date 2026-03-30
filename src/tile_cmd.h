@@ -10,6 +10,7 @@
 #ifndef TILE_CMD_H
 #define TILE_CMD_H
 
+#include "core/enum_type.hpp"
 #include "core/geometry_type.hpp"
 #include "command_type.h"
 #include "vehicle_type.h"
@@ -165,7 +166,7 @@ struct TileTypeProcs {
 	TerraformTileProc *terraform_tile_proc;        ///< Called when a terraforming operation is about to take place
 };
 
-extern const TileTypeProcs * const _tile_type_procs[16];
+extern const EnumClassIndexContainer<std::array<const TileTypeProcs *, to_underlying(TileType::MaxSize)>, TileType> _tile_type_procs;
 
 enum TileTrackStatusSubMode {
 	TTSSM_ROAD_RTT_MASK       =    0xFF,

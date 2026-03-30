@@ -62,10 +62,10 @@ CallAtTargetID CallAtTargetID::FromTile(TileIndex tile)
 	if (IsDepotTile(tile)) {
 		return CallAtTargetID(DEPOT_TAG | GetDepotDestinationIndex(tile).base());
 	}
-	if (IsTileType(tile, MP_STATION)) {
+	if (IsTileType(tile, TileType::Station)) {
 		return CallAtTargetID::FromStation(GetStationIndex(tile));
 	}
-	if (IsTileType(tile, MP_INDUSTRY)) {
+	if (IsTileType(tile, TileType::Industry)) {
 		const Industry *in = Industry::GetByTile(tile);
 		if (in->neutral_station != nullptr) {
 			return CallAtTargetID::FromStation(in->neutral_station->index);

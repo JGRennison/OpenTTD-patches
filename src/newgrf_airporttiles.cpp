@@ -113,7 +113,7 @@ StationGfx GetTranslatedAirportTileID(StationGfx gfx)
 static uint32_t GetNearbyAirportTileInformation(uint8_t parameter, TileIndex tile, StationID index, bool grf_version8, uint32_t mask)
 {
 	if (parameter != 0) tile = GetNearbyTile(parameter, tile); // only perform if it is required
-	bool is_same_airport = (IsTileType(tile, MP_STATION) && IsAirport(tile) && GetStationIndex(tile) == index);
+	bool is_same_airport = (IsTileType(tile, TileType::Station) && IsAirport(tile) && GetStationIndex(tile) == index);
 
 	uint32_t result = (is_same_airport ? 1 : 0) << 8;
 	if (mask & ~0x100) result |= GetNearbyTileInformation(tile, grf_version8, mask);

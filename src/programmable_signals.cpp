@@ -278,7 +278,7 @@ SignalStateCondition::SignalStateCondition(SignalReference this_sig, TileIndex s
 
 bool SignalStateCondition::IsSignalValid() const
 {
-	return IsValidTile(this->sig_tile) && IsTileType(this->sig_tile, MP_RAILWAY) && HasSignalOnTrackdir(this->sig_tile, this->sig_track);
+	return IsValidTile(this->sig_tile) && IsTileType(this->sig_tile, TileType::Railway) && HasSignalOnTrackdir(this->sig_tile, this->sig_track);
 }
 
 bool SignalStateCondition::CheckSignalValid()

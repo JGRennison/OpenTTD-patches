@@ -70,18 +70,24 @@ extern const TileTypeProcs
  * @ingroup TileCallbackGroup
  * @see TileType
  */
-const TileTypeProcs * const _tile_type_procs[16] = {
-	&_tile_type_clear_procs,        ///< Callback functions for MP_CLEAR tiles
-	&_tile_type_rail_procs,         ///< Callback functions for MP_RAILWAY tiles
-	&_tile_type_road_procs,         ///< Callback functions for MP_ROAD tiles
-	&_tile_type_town_procs,         ///< Callback functions for MP_HOUSE tiles
-	&_tile_type_trees_procs,        ///< Callback functions for MP_TREES tiles
-	&_tile_type_station_procs,      ///< Callback functions for MP_STATION tiles
-	&_tile_type_water_procs,        ///< Callback functions for MP_WATER tiles
-	&_tile_type_void_procs,         ///< Callback functions for MP_VOID tiles
-	&_tile_type_industry_procs,     ///< Callback functions for MP_INDUSTRY tiles
-	&_tile_type_tunnelbridge_procs, ///< Callback functions for MP_TUNNELBRIDGE tiles
-	&_tile_type_object_procs,       ///< Callback functions for MP_OBJECT tiles
+const EnumClassIndexContainer<std::array<const TileTypeProcs *, to_underlying(TileType::MaxSize)>, TileType> _tile_type_procs = {
+	&_tile_type_clear_procs, // Callback functions for TileType::Clear tiles
+	&_tile_type_rail_procs, // Callback functions for TileType::Railway tiles
+	&_tile_type_road_procs, // Callback functions for TileType::Road tiles
+	&_tile_type_town_procs, // Callback functions for TileType::House tiles
+	&_tile_type_trees_procs, // Callback functions for TileType::Trees tiles
+	&_tile_type_station_procs, // Callback functions for TileType::Station tiles
+	&_tile_type_water_procs, // Callback functions for TileType::Water tiles
+	&_tile_type_void_procs, // Callback functions for TileType::Void tiles
+	&_tile_type_industry_procs, // Callback functions for TileType::Industry tiles
+	&_tile_type_tunnelbridge_procs, // Callback functions for TileType::TunnelBridge tiles
+	&_tile_type_object_procs, // Callback functions for TileType::Object tiles
+	/* Explicitly initialize invalid elements to make sure that they are nullptr. */
+	nullptr,
+	nullptr,
+	nullptr,
+	nullptr,
+	nullptr,
 };
 
 /** landscape slope => sprite */
@@ -262,7 +268,7 @@ int GetSlopePixelZOutsideMap(int x, int y)
 	if (IsInsideBS(x, 0, Map::SizeX() * TILE_SIZE) && IsInsideBS(y, 0, Map::SizeY() * TILE_SIZE)) {
 		return GetSlopePixelZ(x, y, false);
 	} else {
-		return _tile_type_procs[MP_VOID]->get_slope_z_proc(INVALID_TILE, x, y, false);
+		return _tile_type_procs[TileType::Void]->get_slope_z_proc(INVALID_TILE, x, y, false);
 	}
 }
 
@@ -996,7 +1002,7 @@ static void CreateDesertOrRainForest(uint desert_tropic_line)
 		if (!IsValidTile(tile)) continue;
 
 		bool ok = DesertOrRainforestProcessTiles(desert_rainforest_data, tile, [&](TileIndex t) -> bool {
-			return (t != INVALID_TILE && (TileHeight(t) >= desert_tropic_line || IsTileType(t, MP_WATER)));
+			return (t != INVALID_TILE && (TileHeight(t) >= desert_tropic_line || IsTileType(t, TileType::Water)));
 		});
 		if (ok) {
 			SetTropicZone(tile, TROPICZONE_DESERT);
@@ -1015,7 +1021,7 @@ static void CreateDesertOrRainForest(uint desert_tropic_line)
 		if (!IsValidTile(tile)) continue;
 
 		bool ok = DesertOrRainforestProcessTiles(desert_rainforest_data, tile, [&](TileIndex t) -> bool {
-			return (t != INVALID_TILE && IsTileType(t, MP_CLEAR) && IsClearGround(t, CLEAR_DESERT));
+			return (t != INVALID_TILE && IsTileType(t, TileType::Clear) && IsClearGround(t, CLEAR_DESERT));
 		});
 		if (ok) {
 			SetTropicZone(tile, TROPICZONE_RAINFOREST);
@@ -1196,7 +1202,7 @@ static void MakeWetlands(TileIndex centre, uint height, uint river_length)
 		if (Chance16(1, 3)) {
 			/* This tile is water. */
 			MakeRiverAndModifyDesertZoneAround(tile);
-		} else if (IsTileType(tile, MP_CLEAR)) {
+		} else if (IsTileType(tile, TileType::Clear)) {
 			/* This tile is ground, which we always make rough. */
 			SetClearGroundDensity(tile, CLEAR_ROUGH, 3);
 			/* Maybe place trees? */

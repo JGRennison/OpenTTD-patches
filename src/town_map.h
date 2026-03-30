@@ -16,12 +16,12 @@
 /**
  * Get the index of which town this house/street is attached to.
  * @param t the tile
- * @pre IsTileType(t, MP_HOUSE) or IsTileType(t, MP_ROAD) but not a road depot
+ * @pre IsTileType(t, TileType::House) or IsTileType(t, TileType::Road) but not a road depot
  * @return TownID
  */
 inline TownID GetTownIndex(TileIndex t)
 {
-	dbg_assert_tile(IsTileType(t, MP_HOUSE) || (IsTileType(t, MP_ROAD) && !IsRoadDepot(t)), t);
+	dbg_assert_tile(IsTileType(t, TileType::House) || (IsTileType(t, TileType::Road) && !IsRoadDepot(t)), t);
 	return static_cast<TownID>(_m[t].m2);
 }
 
@@ -29,11 +29,11 @@ inline TownID GetTownIndex(TileIndex t)
  * Set the town index for a road or house tile.
  * @param t the tile
  * @param index the index of the town
- * @pre IsTileType(t, MP_HOUSE) or IsTileType(t, MP_ROAD) but not a road depot
+ * @pre IsTileType(t, TileType::House) or IsTileType(t, TileType::Road) but not a road depot
  */
 inline void SetTownIndex(TileIndex t, TownID index)
 {
-	dbg_assert_tile(IsTileType(t, MP_HOUSE) || (IsTileType(t, MP_ROAD) && !IsRoadDepot(t)), t);
+	dbg_assert_tile(IsTileType(t, TileType::House) || (IsTileType(t, TileType::Road) && !IsRoadDepot(t)), t);
 	_m[t].m2 = index.base();
 }
 
@@ -41,19 +41,19 @@ inline void SetTownIndex(TileIndex t, TownID index)
  * Get the type of this house, which is an index into the house spec array
  * without doing any NewGRF related translations.
  * @param t the tile
- * @pre IsTileType(t, MP_HOUSE)
+ * @pre IsTileType(t, TileType::House)
  * @return house type
  */
 inline HouseID GetCleanHouseType(TileIndex t)
 {
-	dbg_assert_tile(IsTileType(t, MP_HOUSE), t);
+	dbg_assert_tile(IsTileType(t, TileType::House), t);
 	return GB(_me[t].m8, 0, 12);
 }
 
 /**
  * Get the type of this house, which is an index into the house spec array
  * @param t the tile
- * @pre IsTileType(t, MP_HOUSE)
+ * @pre IsTileType(t, TileType::House)
  * @return house type
  */
 inline HouseID GetHouseType(TileIndex t)
@@ -65,11 +65,11 @@ inline HouseID GetHouseType(TileIndex t)
  * Set the house type.
  * @param t the tile
  * @param house_id the new house type
- * @pre IsTileType(t, MP_HOUSE)
+ * @pre IsTileType(t, TileType::House)
  */
 inline void SetHouseType(TileIndex t, HouseID house_id)
 {
-	dbg_assert_tile(IsTileType(t, MP_HOUSE), t);
+	dbg_assert_tile(IsTileType(t, TileType::House), t);
 	SB(_me[t].m8, 0, 12, house_id);
 }
 
@@ -80,7 +80,7 @@ inline void SetHouseType(TileIndex t, HouseID house_id)
  */
 inline bool IsHouseProtected(TileIndex t)
 {
-	dbg_assert_tile(IsTileType(t, MP_HOUSE), t);
+	dbg_assert_tile(IsTileType(t, TileType::House), t);
 	return HasBit(_m[t].m3, 5);
 }
 
@@ -91,7 +91,7 @@ inline bool IsHouseProtected(TileIndex t)
  */
 inline void SetHouseProtected(TileIndex t, bool house_protected)
 {
-	dbg_assert_tile(IsTileType(t, MP_HOUSE), t);
+	dbg_assert_tile(IsTileType(t, TileType::House), t);
 	AssignBit(_m[t].m3, 5, house_protected);
 }
 
@@ -165,7 +165,7 @@ inline void SetLiftPosition(TileIndex t, uint8_t pos)
  */
 inline bool IsHouseCompleted(TileIndex t)
 {
-	dbg_assert_tile(IsTileType(t, MP_HOUSE), t);
+	dbg_assert_tile(IsTileType(t, TileType::House), t);
 	return HasBit(_m[t].m3, 7);
 }
 
@@ -176,7 +176,7 @@ inline bool IsHouseCompleted(TileIndex t)
  */
 inline void SetHouseCompleted(TileIndex t, bool status)
 {
-	dbg_assert_tile(IsTileType(t, MP_HOUSE), t);
+	dbg_assert_tile(IsTileType(t, TileType::House), t);
 	SB(_m[t].m3, 7, 1, !!status);
 }
 
@@ -198,24 +198,24 @@ inline void SetHouseCompleted(TileIndex t, bool status)
  * fool the system by returning the TOWN_HOUSE_COMPLETE (3),
  * thus showing a beautiful complete house.
  * @param t the tile of the house to get the building stage of
- * @pre IsTileType(t, MP_HOUSE)
+ * @pre IsTileType(t, TileType::House)
  * @return the building stage of the house
  */
 inline uint8_t GetHouseBuildingStage(TileIndex t)
 {
-	dbg_assert_tile(IsTileType(t, MP_HOUSE), t);
+	dbg_assert_tile(IsTileType(t, TileType::House), t);
 	return IsHouseCompleted(t) ? (uint8_t)TOWN_HOUSE_COMPLETED : GB(_m[t].m5, 3, 2);
 }
 
 /**
  * Gets the construction stage of a house
  * @param t the tile of the house to get the construction stage of
- * @pre IsTileType(t, MP_HOUSE)
+ * @pre IsTileType(t, TileType::House)
  * @return the construction stage of the house
  */
 inline uint8_t GetHouseConstructionTick(TileIndex t)
 {
-	dbg_assert_tile(IsTileType(t, MP_HOUSE), t);
+	dbg_assert_tile(IsTileType(t, TileType::House), t);
 	return IsHouseCompleted(t) ? 0 : GB(_m[t].m5, 0, 3);
 }
 
@@ -224,11 +224,11 @@ inline uint8_t GetHouseConstructionTick(TileIndex t)
  * It is working with the whole counter + stage 5 bits, making it
  * easier to work:  the wraparound is automatic.
  * @param t the tile of the house to increment the construction stage of
- * @pre IsTileType(t, MP_HOUSE)
+ * @pre IsTileType(t, TileType::House)
  */
 inline void IncHouseConstructionTick(TileIndex t)
 {
-	dbg_assert_tile(IsTileType(t, MP_HOUSE), t);
+	dbg_assert_tile(IsTileType(t, TileType::House), t);
 	AB(_m[t].m5, 0, 5, 1);
 
 	if (GB(_m[t].m5, 3, 2) == TOWN_HOUSE_COMPLETED) {
@@ -242,34 +242,34 @@ inline void IncHouseConstructionTick(TileIndex t)
  * Sets the age of the house to zero.
  * Needs to be called after the house is completed. During construction stages the map space is used otherwise.
  * @param t the tile of this house
- * @pre IsTileType(t, MP_HOUSE) && IsHouseCompleted(t)
+ * @pre IsTileType(t, TileType::House) && IsHouseCompleted(t)
  */
 inline void ResetHouseAge(TileIndex t)
 {
-	dbg_assert_tile(IsTileType(t, MP_HOUSE) && IsHouseCompleted(t), t);
+	dbg_assert_tile(IsTileType(t, TileType::House) && IsHouseCompleted(t), t);
 	_m[t].m5 = 0;
 }
 
 /**
  * Increments the age of the house.
  * @param t the tile of this house
- * @pre IsTileType(t, MP_HOUSE)
+ * @pre IsTileType(t, TileType::House)
  */
 inline void IncrementHouseAge(TileIndex t)
 {
-	dbg_assert_tile(IsTileType(t, MP_HOUSE), t);
+	dbg_assert_tile(IsTileType(t, TileType::House), t);
 	if (IsHouseCompleted(t) && _m[t].m5 < 0xFF) _m[t].m5++;
 }
 
 /**
  * Get the age of the house
  * @param t the tile of this house
- * @pre IsTileType(t, MP_HOUSE)
+ * @pre IsTileType(t, TileType::House)
  * @return year
  */
 inline CalTime::Year GetHouseAge(TileIndex t)
 {
-	dbg_assert_tile(IsTileType(t, MP_HOUSE), t);
+	dbg_assert_tile(IsTileType(t, TileType::House), t);
 	return CalTime::Year{IsHouseCompleted(t) ? _m[t].m5 : 0};
 }
 
@@ -278,11 +278,11 @@ inline CalTime::Year GetHouseAge(TileIndex t)
  * This is required for newgrf house
  * @param t      the tile of this house
  * @param random the new random bits
- * @pre IsTileType(t, MP_HOUSE)
+ * @pre IsTileType(t, TileType::House)
  */
 inline void SetHouseRandomBits(TileIndex t, uint8_t random)
 {
-	dbg_assert_tile(IsTileType(t, MP_HOUSE), t);
+	dbg_assert_tile(IsTileType(t, TileType::House), t);
 	_m[t].m1 = random;
 }
 
@@ -290,12 +290,12 @@ inline void SetHouseRandomBits(TileIndex t, uint8_t random)
  * Get the random bits for this house.
  * This is required for newgrf house
  * @param t the tile of this house
- * @pre IsTileType(t, MP_HOUSE)
+ * @pre IsTileType(t, TileType::House)
  * @return random bits
  */
 inline uint8_t GetHouseRandomBits(TileIndex t)
 {
-	dbg_assert_tile(IsTileType(t, MP_HOUSE), t);
+	dbg_assert_tile(IsTileType(t, TileType::House), t);
 	return _m[t].m1;
 }
 
@@ -304,11 +304,11 @@ inline uint8_t GetHouseRandomBits(TileIndex t)
  * This is required for newgrf house
  * @param t        the tile of this house
  * @param triggers the activated triggers
- * @pre IsTileType(t, MP_HOUSE)
+ * @pre IsTileType(t, TileType::House)
  */
 inline void SetHouseRandomTriggers(TileIndex t, HouseRandomTriggers triggers)
 {
-	dbg_assert_tile(IsTileType(t, MP_HOUSE), t);
+	dbg_assert_tile(IsTileType(t, TileType::House), t);
 	SB(_m[t].m3, 0, 5, triggers.base());
 }
 
@@ -316,24 +316,24 @@ inline void SetHouseRandomTriggers(TileIndex t, HouseRandomTriggers triggers)
  * Get the already activated triggers bits for this house.
  * This is required for newgrf house
  * @param t the tile of this house
- * @pre IsTileType(t, MP_HOUSE)
+ * @pre IsTileType(t, TileType::House)
  * @return triggers
  */
 inline HouseRandomTriggers GetHouseRandomTriggers(TileIndex t)
 {
-	dbg_assert_tile(IsTileType(t, MP_HOUSE), t);
+	dbg_assert_tile(IsTileType(t, TileType::House), t);
 	return static_cast<HouseRandomTriggers>(GB(_m[t].m3, 0, 5));
 }
 
 /**
  * Get the amount of time remaining before the tile loop processes this tile.
  * @param t the house tile
- * @pre IsTileType(t, MP_HOUSE)
+ * @pre IsTileType(t, TileType::House)
  * @return time remaining
  */
 inline uint8_t GetHouseProcessingTime(TileIndex t)
 {
-	dbg_assert_tile(IsTileType(t, MP_HOUSE), t);
+	dbg_assert_tile(IsTileType(t, TileType::House), t);
 	return GB(_me[t].m6, 2, 6);
 }
 
@@ -341,22 +341,22 @@ inline uint8_t GetHouseProcessingTime(TileIndex t)
  * Set the amount of time remaining before the tile loop processes this tile.
  * @param t the house tile
  * @param time the time to be set
- * @pre IsTileType(t, MP_HOUSE)
+ * @pre IsTileType(t, TileType::House)
  */
 inline void SetHouseProcessingTime(TileIndex t, uint8_t time)
 {
-	dbg_assert_tile(IsTileType(t, MP_HOUSE), t);
+	dbg_assert_tile(IsTileType(t, TileType::House), t);
 	SB(_me[t].m6, 2, 6, time);
 }
 
 /**
  * Decrease the amount of time remaining before the tile loop processes this tile.
  * @param t the house tile
- * @pre IsTileType(t, MP_HOUSE)
+ * @pre IsTileType(t, TileType::House)
  */
 inline void DecHouseProcessingTime(TileIndex t)
 {
-	dbg_assert_tile(IsTileType(t, MP_HOUSE), t);
+	dbg_assert_tile(IsTileType(t, TileType::House), t);
 	_me[t].m6 -= 1 << 2;
 }
 
@@ -369,13 +369,13 @@ inline void DecHouseProcessingTime(TileIndex t)
  * @param type of house.  Index into house specs array
  * @param random_bits required for newgrf houses
  * @param house_protected Whether the house is protected from the town upgrading it.
- * @pre IsTileType(t, MP_CLEAR)
+ * @pre IsTileType(t, TileType::Clear)
  */
 inline void MakeHouseTile(TileIndex t, TownID tid, uint8_t counter, uint8_t stage, HouseID type, uint8_t random_bits, bool house_protected)
 {
-	dbg_assert_tile(IsTileType(t, MP_CLEAR), t);
+	dbg_assert_tile(IsTileType(t, TileType::Clear), t);
 
-	SetTileType(t, MP_HOUSE);
+	SetTileType(t, TileType::House);
 	_m[t].m1 = random_bits;
 	_m[t].m2 = tid.base();
 	_m[t].m3 = 0;

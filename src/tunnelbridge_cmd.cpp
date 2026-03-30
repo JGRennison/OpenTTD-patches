@@ -549,7 +549,7 @@ CommandCost CmdBuildBridge(DoCommandFlags flags, TileIndex tile_end, TileIndex t
 
 		TileIndexDiff delta = (direction == AXIS_X ? TileDiffXY(1, 0) : TileDiffXY(0, 1));
 		for (TileIndex tile = tile_start + delta; tile != tile_end; tile += delta) {
-			if (IsTileType(tile, MP_STATION)) {
+			if (IsTileType(tile, TileType::Station)) {
 				const StationType station_type = GetStationType(tile);
 				switch (station_type) {
 					case StationType::Rail:
@@ -598,7 +598,7 @@ CommandCost CmdBuildBridge(DoCommandFlags flags, TileIndex tile_end, TileIndex t
 				}
 			}
 
-			if (IsTileType(tile, MP_WATER) && IsLock(tile)) {
+			if (IsTileType(tile, TileType::Water) && IsLock(tile)) {
 				CommandCost ret = IsLockBridgeAboveOK(tile, (LockPart)GetLockPart(tile), GetLockDirection(tile), tile_start, tile_end, z_start + 1, bridge_type, transport_type);
 				if (ret.Failed()) {
 					if (ret.GetErrorMessage() != INVALID_STRING_ID) return ret;
@@ -660,7 +660,7 @@ CommandCost CmdBuildBridge(DoCommandFlags flags, TileIndex tile_end, TileIndex t
 			}
 
 			switch (GetTileType(tile)) {
-				case MP_WATER:
+				case TileType::Water:
 					if (IsLock(tile)) {
 						CommandCost ret = IsLockBridgeAboveOK(tile, (LockPart)GetLockPart(tile), GetLockDirection(tile), tile_start, tile_end, z_start + 1, bridge_type, transport_type);
 						if (ret.Failed()) {
@@ -672,21 +672,21 @@ CommandCost CmdBuildBridge(DoCommandFlags flags, TileIndex tile_end, TileIndex t
 					}
 					break;
 
-				case MP_RAILWAY:
+				case TileType::Railway:
 					if (!IsPlainRail(tile)) goto not_valid_below;
 					break;
 
-				case MP_ROAD:
+				case TileType::Road:
 					if (IsRoadDepot(tile)) goto not_valid_below;
 					break;
 
-				case MP_TUNNELBRIDGE:
+				case TileType::TunnelBridge:
 					if (IsTunnel(tile)) break;
 					if (direction == DiagDirToAxis(GetTunnelBridgeDirection(tile))) goto not_valid_below;
 					if (z_start < GetBridgeHeight(tile)) goto not_valid_below;
 					break;
 
-				case MP_OBJECT: {
+				case TileType::Object: {
 					if (_settings_game.construction.allow_grf_objects_under_bridges && GetObjectType(tile) >= NEW_OBJECT_OFFSET) break;
 					const ObjectSpec *spec = ObjectSpec::GetByTile(tile);
 					if (!spec->flags.Test(ObjectFlag::AllowUnderBridge)) goto not_valid_below;
@@ -694,7 +694,7 @@ CommandCost CmdBuildBridge(DoCommandFlags flags, TileIndex tile_end, TileIndex t
 					break;
 				}
 
-				case MP_STATION: {
+				case TileType::Station: {
 					const StationType station_type = GetStationType(tile);
 					switch (station_type) {
 						case StationType::Airport:
@@ -741,7 +741,7 @@ CommandCost CmdBuildBridge(DoCommandFlags flags, TileIndex tile_end, TileIndex t
 					break;
 				}
 
-				case MP_CLEAR:
+				case TileType::Clear:
 					break;
 
 				default:
@@ -968,12 +968,12 @@ static inline CommandCost CanBuildChunnel(TileIndex tile, DiagDirection directio
 					if (direction == DIAGDIR_NW && (end_tileh & SLOPE_NW) == SLOPE_NW) break;
 
 					/* No drilling under oil rigs.*/
-					if ((IsTileType(tile, MP_STATION) && IsOilRig(tile)) ||
-							(IsTileType(tile, MP_INDUSTRY)               &&
+					if ((IsTileType(tile, TileType::Station) && IsOilRig(tile)) ||
+							(IsTileType(tile, TileType::Industry)               &&
 							GetIndustryGfx(tile) >= GFX_OILRIG_1         &&
 							GetIndustryGfx(tile) <= GFX_OILRIG_5)) return CommandCost(STR_ERROR_NO_DRILLING_ABOVE_CHUNNEL);
 
-					if (IsTileType(tile, MP_WATER) && IsSea(tile)) crossed_sea = true;
+					if (IsTileType(tile, TileType::Water) && IsSea(tile)) crossed_sea = true;
 					if (!_cheats.crossing_tunnels.value && IsTunnelInWay(tile, start_z)) return CommandCost(STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY);
 
 					tile += delta;

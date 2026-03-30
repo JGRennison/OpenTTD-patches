@@ -499,7 +499,7 @@ static bool CheckTrainBrakingModelChange(int32_t &new_value)
 {
 	if (new_value == TBM_REALISTIC && (_game_mode == GM_NORMAL || _game_mode == GM_EDITOR)) {
 		for (TileIndex t(0); t < Map::Size(); t++) {
-			if (IsTileType(t, MP_RAILWAY) && GetRailTileType(t) == RailTileType::Signals) {
+			if (IsTileType(t, TileType::Railway) && GetRailTileType(t) == RailTileType::Signals) {
 				uint signals = GetPresentSignals(t);
 				if ((signals & 0x3) & ((signals & 0x3) - 1) || (signals & 0xC) & ((signals & 0xC) - 1)) {
 					/* Signals in both directions */
@@ -535,7 +535,7 @@ static void TrainBrakingModelChanged(int32_t new_value)
 	}
 	if (new_value == TBM_REALISTIC && (_game_mode == GM_NORMAL || _game_mode == GM_EDITOR)) {
 		for (TileIndex t(0); t < Map::Size(); t++) {
-			if (IsTileType(t, MP_RAILWAY) && GetRailTileType(t) == RailTileType::Signals) {
+			if (IsTileType(t, TileType::Railway) && GetRailTileType(t) == RailTileType::Signals) {
 				TrackBits bits = GetTrackBits(t);
 				do {
 					Track track = RemoveFirstTrack(&bits);
@@ -998,7 +998,7 @@ static bool CheckFreeformEdges(int32_t &new_value)
 			}
 		}
 		for (uint i = 1; i < Map::MaxX(); i++) {
-			if (!IsTileType(TileXY(i, Map::MaxY() - 1), MP_WATER) || TileHeight(TileXY(1, Map::MaxY())) != 0) {
+			if (!IsTileType(TileXY(i, Map::MaxY() - 1), TileType::Water) || TileHeight(TileXY(1, Map::MaxY())) != 0) {
 				ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_EDGES_NOT_WATER), {}, WL_ERROR);
 				return false;
 			}
@@ -1010,7 +1010,7 @@ static bool CheckFreeformEdges(int32_t &new_value)
 			}
 		}
 		for (uint i = 1; i < Map::MaxY(); i++) {
-			if (!IsTileType(TileXY(Map::MaxX() - 1, i), MP_WATER) || TileHeight(TileXY(Map::MaxX(), i)) != 0) {
+			if (!IsTileType(TileXY(Map::MaxX() - 1, i), TileType::Water) || TileHeight(TileXY(Map::MaxX(), i)) != 0) {
 				ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_EDGES_NOT_WATER), {}, WL_ERROR);
 				return false;
 			}
@@ -1050,7 +1050,7 @@ bool CheckMapEdgesAreWater(bool allow_non_flat_void)
 		Slope slope;
 		std::tie(slope, h) = GetTilePixelSlopeOutsideMap(x, y);
 		if (slope == SLOPE_FLAT && h == 0) return true;
-		if (allow_non_flat_void && h == 0 && (slope & inner_edge) == 0 && IsTileType(TileXY(x, y), MP_VOID)) return true;
+		if (allow_non_flat_void && h == 0 && (slope & inner_edge) == 0 && IsTileType(TileXY(x, y), TileType::Void)) return true;
 		return false;
 	};
 	check_tile(        0,         0, SLOPE_S);

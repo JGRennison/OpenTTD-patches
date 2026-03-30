@@ -221,7 +221,7 @@ struct CYapfRailNode : CYapfNodeT<CYapfNodeKeyTrackDir, CYapfRailNode> {
 		EndSegmentReasons esr = this->segment->end_segment_reason;
 		if (!esr.Test(EndSegmentReason::DeadEnd) || esr.Test(EndSegmentReason::DeadEndEol)) {
 			length += IsDiagonalTrackdir(cur_td) ? TILE_SIZE : (TILE_SIZE / 2);
-			if (IsTileType(cur, MP_TUNNELBRIDGE) && IsTunnelBridgeSignalSimulationEntrance(cur) && TrackdirEntersTunnelBridge(cur, cur_td)) {
+			if (IsTileType(cur, TileType::TunnelBridge) && IsTunnelBridgeSignalSimulationEntrance(cur) && TrackdirEntersTunnelBridge(cur, cur_td)) {
 				length += TILE_SIZE * GetTunnelBridgeLength(cur, GetOtherTunnelBridgeEnd(cur));
 			}
 		}

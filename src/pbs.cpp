@@ -31,20 +31,20 @@
 TrackBits GetReservedTrackbits(TileIndex t)
 {
 	switch (GetTileType(t)) {
-		case MP_RAILWAY:
+		case TileType::Railway:
 			if (IsRailDepot(t)) return GetDepotReservationTrackBits(t);
 			if (IsPlainRail(t)) return GetRailReservationTrackBits(t);
 			break;
 
-		case MP_ROAD:
+		case TileType::Road:
 			if (IsLevelCrossing(t)) return GetCrossingReservationTrackBits(t);
 			break;
 
-		case MP_STATION:
+		case TileType::Station:
 			if (HasStationRail(t)) return GetStationReservationTrackBits(t);
 			break;
 
-		case MP_TUNNELBRIDGE:
+		case TileType::TunnelBridge:
 			if (GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL) return GetTunnelBridgeReservationTrackBits(t);
 			break;
 
@@ -114,7 +114,7 @@ bool TryReserveRailTrack(TileIndex tile, Track track, bool trigger_stations)
 			"{:X}, {:X}, {:X}", TrackdirBitsToTrackBits(GetTileTrackdirBits(tile, TRANSPORT_RAIL, 0)), track, TrackToTrackBits(track));
 
 	switch (GetTileType(tile)) {
-		case MP_RAILWAY:
+		case TileType::Railway:
 			if (IsPlainRail(tile)) {
 				bool changed = TryReserveTrack(tile, track);
 				if (changed && _settings_client.gui.show_track_reservation) MarkTileGroundDirtyByTile(tile, VMDF_NOT_MAP_MODE);
@@ -129,7 +129,7 @@ bool TryReserveRailTrack(TileIndex tile, Track track, bool trigger_stations)
 			}
 			break;
 
-		case MP_ROAD:
+		case TileType::Road:
 			if (IsLevelCrossing(tile) && !HasCrossingReservation(tile)) {
 				if (_settings_game.vehicle.safer_crossings) {
 					if (IsCrossingOccupiedByRoadVehicle(tile)) return false;
@@ -150,7 +150,7 @@ bool TryReserveRailTrack(TileIndex tile, Track track, bool trigger_stations)
 			}
 			break;
 
-		case MP_STATION:
+		case TileType::Station:
 			if (HasStationRail(tile) && !HasStationReservation(tile)) {
 				SetRailStationReservation(tile, true);
 				if (trigger_stations) {
@@ -163,7 +163,7 @@ bool TryReserveRailTrack(TileIndex tile, Track track, bool trigger_stations)
 			}
 			break;
 
-		case MP_TUNNELBRIDGE:
+		case TileType::TunnelBridge:
 			if (GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL) {
 				if (IsTunnel(tile) && !HasTunnelReservation(tile)) {
 					SetTunnelReservation(tile, true);
@@ -208,7 +208,7 @@ void UnreserveRailTrack(TileIndex tile, Track t)
 	assert_msg_tile(TrackdirBitsToTrackBits(GetTileTrackdirBits(tile, TRANSPORT_RAIL, 0)) & TrackToTrackBits(t), tile, "track: {:X}", t);
 
 	switch (GetTileType(tile)) {
-		case MP_RAILWAY:
+		case TileType::Railway:
 			if (IsRailDepot(tile)) {
 				SetDepotReservation(tile, false);
 				MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
@@ -220,7 +220,7 @@ void UnreserveRailTrack(TileIndex tile, Track t)
 			}
 			break;
 
-		case MP_ROAD:
+		case TileType::Road:
 			if (IsLevelCrossing(tile)) {
 				SetCrossingReservation(tile, false);
 				UpdateLevelCrossing(tile);
@@ -228,14 +228,14 @@ void UnreserveRailTrack(TileIndex tile, Track t)
 			}
 			break;
 
-		case MP_STATION:
+		case TileType::Station:
 			if (HasStationRail(tile)) {
 				SetRailStationReservation(tile, false);
 				MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 			}
 			break;
 
-		case MP_TUNNELBRIDGE:
+		case TileType::TunnelBridge:
 			if (GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL) {
 				if (IsTunnel(tile)) {
 					SetTunnelReservation(tile, false);
@@ -574,7 +574,7 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 				check_rail_type(tile, trackdir, 0);
 			}
 			check_direction(TrackdirToDirection(trackdir), ft.tiles_skipped * TILE_SIZE, tile);
-			if (IsTileType(tile, MP_TUNNELBRIDGE) && TrackdirEntersTunnelBridge(tile, trackdir)) {
+			if (IsTileType(tile, TileType::TunnelBridge) && TrackdirEntersTunnelBridge(tile, trackdir)) {
 				uint16_t bridge_speed = 0;
 				if (IsBridge(tile)) {
 					bridge_speed = GetBridgeSpec(GetBridgeType(tile))->speed;
@@ -643,7 +643,7 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 				}
 			}
 
-			if (IsTileType(tile, MP_RAILWAY) && HasSignalOnTrack(tile, TrackdirToTrack(trackdir))) {
+			if (IsTileType(tile, TileType::Railway) && HasSignalOnTrack(tile, TrackdirToTrack(trackdir))) {
 				TraceRestrictProgramActionsUsedFlags au_flags;
 				if (HasSignalOnTrackdir(tile, trackdir)) {
 					/* Passing through a signal from the front side */
@@ -714,7 +714,7 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 			break;
 		}
 		/* Non-pbs signal? Reservation can't continue. */
-		if (IsTileType(tile, MP_RAILWAY) && HasSignalOnTrackdir(tile, trackdir) && !IsPbsSignal(GetSignalType(tile, TrackdirToTrack(trackdir)))) break;
+		if (IsTileType(tile, TileType::Railway) && HasSignalOnTrackdir(tile, trackdir) && !IsPbsSignal(GetSignalType(tile, TrackdirToTrack(trackdir)))) break;
 	}
 
 	if (lookahead != nullptr) lookahead->reservation_end_z = z;
@@ -820,7 +820,7 @@ static void FollowReservationEnumerate(Owner o, RailTypes rts, TileIndex tile, T
 			break;
 		}
 		/* Non-pbs signal? Reservation can't continue. */
-		if (IsTileType(tile, MP_RAILWAY) && HasSignalOnTrackdir(tile, trackdir) && !IsPbsSignal(GetSignalType(tile, TrackdirToTrack(trackdir)))) break;
+		if (IsTileType(tile, TileType::Railway) && HasSignalOnTrackdir(tile, trackdir) && !IsPbsSignal(GetSignalType(tile, TrackdirToTrack(trackdir)))) break;
 	}
 }
 
@@ -850,7 +850,7 @@ static void CheckTrainsOnTrack(FindTrainOnTrackInfo &info, TileIndex tile)
 			/* Do not find trains inside signalled bridge/tunnels.
 			 * Trains on the ramp/entrance itself are found though.
 			 */
-			if (IsTileType(info.res.tile, MP_TUNNELBRIDGE) && IsTunnelBridgeWithSignalSimulation(info.res.tile) && info.res.tile != TileVirtXY(t->x_pos, t->y_pos)) {
+			if (IsTileType(info.res.tile, TileType::TunnelBridge) && IsTunnelBridgeWithSignalSimulation(info.res.tile) && info.res.tile != TileVirtXY(t->x_pos, t->y_pos)) {
 				continue;
 			}
 		}
@@ -942,7 +942,7 @@ PBSTileInfo FollowTrainReservation(const Train *v, Vehicle **train_on_res, Follo
 				if (ftoti.best != nullptr) *train_on_res = ftoti.best->First();
 			}
 		}
-		if (*train_on_res == nullptr && IsTileType(ftoti.res.tile, MP_TUNNELBRIDGE) && IsTrackAcrossTunnelBridge(ftoti.res.tile, TrackdirToTrack(ftoti.res.trackdir)) && !IsTunnelBridgeWithSignalSimulation(ftoti.res.tile)) {
+		if (*train_on_res == nullptr && IsTileType(ftoti.res.tile, TileType::TunnelBridge) && IsTrackAcrossTunnelBridge(ftoti.res.tile, TrackdirToTrack(ftoti.res.trackdir)) && !IsTunnelBridgeWithSignalSimulation(ftoti.res.tile)) {
 			/* The target tile is a bridge/tunnel, also check the other end tile. */
 			CheckTrainsOnTrack(ftoti, GetOtherTunnelBridgeEnd(ftoti.res.tile));
 			if (ftoti.best != nullptr) *train_on_res = ftoti.best->First();
@@ -1354,7 +1354,7 @@ Train *GetTrainForReservation(TileIndex tile, Track track)
 			}
 		}
 
-		if (IsTileType(ftoti.res.tile, MP_TUNNELBRIDGE) && IsTrackAcrossTunnelBridge(ftoti.res.tile, TrackdirToTrack(ftoti.res.trackdir))) {
+		if (IsTileType(ftoti.res.tile, TileType::TunnelBridge) && IsTrackAcrossTunnelBridge(ftoti.res.tile, TrackdirToTrack(ftoti.res.trackdir))) {
 			if (IsTunnelBridgeWithSignalSimulation(ftoti.res.tile)) {
 				/* Special case for signalled bridges/tunnels: find best train on bridge/tunnel if exit reserved. */
 				if (IsTunnelBridgeSignalSimulationExit(ftoti.res.tile) && !(IsTunnelBridgeEffectivelyPBS(ftoti.res.tile) && GetTunnelBridgeExitSignalState(ftoti.res.tile) == SIGNAL_STATE_RED)) {
@@ -1419,7 +1419,7 @@ TileIndex VehiclePosTraceRestrictPreviousSignalCallback(const Train *v, const vo
 		if (IsRailDepotTile(v->tile)) {
 			return v->tile;
 		}
-		if (v->track & TRACK_BIT_WORMHOLE && IsTileType(v->tile, MP_TUNNELBRIDGE) && IsTunnelBridgeSignalSimulationExit(v->tile) && IsTunnelBridgeEffectivelyPBS(v->tile)) {
+		if (v->track & TRACK_BIT_WORMHOLE && IsTileType(v->tile, TileType::TunnelBridge) && IsTunnelBridgeSignalSimulationExit(v->tile) && IsTunnelBridgeEffectivelyPBS(v->tile)) {
 			return v->tile;
 		}
 		tile = v->tile;
@@ -1431,7 +1431,7 @@ TileIndex VehiclePosTraceRestrictPreviousSignalCallback(const Train *v, const vo
 	CFollowTrackRail ft(v);
 
 	for (;;) {
-		if (IsTileType(tile, MP_RAILWAY) && HasSignalOnTrackdir(tile, trackdir)) {
+		if (IsTileType(tile, TileType::Railway) && HasSignalOnTrackdir(tile, trackdir)) {
 			if (HasPbsSignalOnTrackdir(tile, trackdir)) {
 				// found PBS signal
 				return tile;
@@ -1441,7 +1441,7 @@ TileIndex VehiclePosTraceRestrictPreviousSignalCallback(const Train *v, const vo
 			}
 		}
 
-		if (IsTileType(tile, MP_TUNNELBRIDGE) && IsTunnelBridgeSignalSimulationExit(tile) && IsTunnelBridgeEffectivelyPBS(tile) && TrackdirExitsTunnelBridge(tile, trackdir)) {
+		if (IsTileType(tile, TileType::TunnelBridge) && IsTunnelBridgeSignalSimulationExit(tile) && IsTunnelBridgeEffectivelyPBS(tile) && TrackdirExitsTunnelBridge(tile, trackdir)) {
 			return tile;
 		}
 
@@ -1491,7 +1491,7 @@ bool IsSafeWaitingPosition(const Train *v, TileIndex tile, Trackdir trackdir, bo
 {
 	if (IsRailDepotTile(tile)) return true;
 
-	if (IsTileType(tile, MP_RAILWAY)) {
+	if (IsTileType(tile, TileType::Railway)) {
 		/* For non-pbs signals, stop on the signal tile. */
 		if (HasSignalOnTrackdir(tile, trackdir) && !IsPbsSignal(GetSignalType(tile, TrackdirToTrack(trackdir)))) return true;
 	}
@@ -1534,7 +1534,7 @@ bool IsSafeWaitingPosition(const Train *v, TileIndex tile, Trackdir trackdir, bo
 			return true;
 		}
 		/* One-way PBS signal against us? Safe if end-of-line is allowed. */
-		if (IsTileType(ft.new_tile, MP_RAILWAY) && HasSignalOnTrackdir(ft.new_tile, ReverseTrackdir(td)) &&
+		if (IsTileType(ft.new_tile, TileType::Railway) && HasSignalOnTrackdir(ft.new_tile, ReverseTrackdir(td)) &&
 				GetSignalType(ft.new_tile, TrackdirToTrack(td)) == SIGTYPE_PBS_ONEWAY) {
 			return include_line_end;
 		}
@@ -1615,7 +1615,7 @@ bool IsWaitingPositionFree(const Train *v, TileIndex tile, Trackdir trackdir, bo
 		return true;
 	};
 
-	if (IsTileType(tile, MP_RAILWAY) && HasSignalOnTrackdir(tile, trackdir) && !IsPbsSignal(GetSignalType(tile, track))) {
+	if (IsTileType(tile, TileType::Railway) && HasSignalOnTrackdir(tile, trackdir) && !IsPbsSignal(GetSignalType(tile, track))) {
 		return pbs_res_end_wait_test(tile, trackdir, false);
 	}
 

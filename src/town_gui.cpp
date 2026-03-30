@@ -2369,7 +2369,7 @@ void ShowBuildHousePicker(Window *parent)
 
 void ShowBuildHousePickerAndSelect(TileIndex tile)
 {
-	assert_tile(IsTileType(tile, MP_HOUSE), tile);
+	assert_tile(IsTileType(tile, TileType::House), tile);
 
 	HouseID house = GetHouseType(tile);
 	GetHouseNorthPart(house);

@@ -4285,7 +4285,7 @@ static bool ConFindNonRealisticBrakingSignal(std::span<std::string_view> argv)
 	}
 
 	for (TileIndex t(0); t < Map::Size(); t++) {
-		if (IsTileType(t, MP_RAILWAY) && GetRailTileType(t) == RailTileType::Signals) {
+		if (IsTileType(t, TileType::Railway) && GetRailTileType(t) == RailTileType::Signals) {
 			uint signals = GetPresentSignals(t);
 			if ((signals & 0x3) & ((signals & 0x3) - 1) || (signals & 0xC) & ((signals & 0xC) - 1)) {
 				/* Signals in both directions */

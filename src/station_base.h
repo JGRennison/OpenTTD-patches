@@ -1037,7 +1037,7 @@ void ForAllStationsAroundTiles(const TileArea &ta, Func func)
 	max_c += _settings_game.station.catchment_increase;
 	TileArea ta_ext = TileArea(ta).Expand(max_c);
 	for (TileIndex tile : ta_ext) {
-		if (IsTileType(tile, MP_STATION)) seen_stations.insert(GetStationIndex(tile));
+		if (IsTileType(tile, TileType::Station)) seen_stations.insert(GetStationIndex(tile));
 	}
 
 	for (StationID stationid : seen_stations) {

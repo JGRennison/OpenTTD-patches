@@ -580,11 +580,11 @@ void TraceRestrictProgram::Execute(const Train *v, const TraceRestrictProgramInp
 								break;
 
 							case TRDTSV_FRONT:
-								direction_match = (IsTileType(input.tile, MP_RAILWAY) && HasSignalOnTrackdir(input.tile, input.trackdir)) || IsTileType(input.tile, MP_TUNNELBRIDGE);
+								direction_match = (IsTileType(input.tile, TileType::Railway) && HasSignalOnTrackdir(input.tile, input.trackdir)) || IsTileType(input.tile, TileType::TunnelBridge);
 								break;
 
 							case TRDTSV_BACK:
-								direction_match = IsTileType(input.tile, MP_RAILWAY) && !HasSignalOnTrackdir(input.tile, input.trackdir);
+								direction_match = IsTileType(input.tile, TileType::Railway) && !HasSignalOnTrackdir(input.tile, input.trackdir);
 								break;
 
 							case TRDTSV_TUNBRIDGE_ENTER:
@@ -2082,11 +2082,11 @@ void TraceRestrictSetIsSignalRestrictedBit(TileIndex t)
 
 	/* If iterators are the same, there are no mappings for this tile */
 	switch (GetTileType(t)) {
-		case MP_RAILWAY:
+		case TileType::Railway:
 			SetRestrictedSignal(t, found);
 			break;
 
-		case MP_TUNNELBRIDGE:
+		case TileType::TunnelBridge:
 			SetTunnelBridgeRestrictedSignal(t, found);
 			break;
 
@@ -2150,7 +2150,7 @@ bool TraceRestrictRemoveProgramMapping(TraceRestrictRefId ref)
 			TraceRestrictRemoveProgramMapping(prog->GetReferences()[0]);
 		}
 
-		if (update_reserve_through && IsTileType(tile, MP_RAILWAY)) {
+		if (update_reserve_through && IsTileType(tile, TileType::Railway)) {
 			UpdateSignalReserveThroughBit(tile, track, true);
 		}
 		if (update_special_propagation) {
@@ -2168,7 +2168,7 @@ void TraceRestrictCheckRefreshSignals(const TraceRestrictProgram *prog, size_t o
 		for (TraceRestrictRefId ref : prog->GetReferences()) {
 			TileIndex tile = GetTraceRestrictRefIdTileIndex(ref);
 			Track track = GetTraceRestrictRefIdTrack(ref);
-			if (IsTileType(tile, MP_RAILWAY)) UpdateSignalReserveThroughBit(tile, track, true);
+			if (IsTileType(tile, TileType::Railway)) UpdateSignalReserveThroughBit(tile, track, true);
 		}
 	}
 
@@ -2196,7 +2196,7 @@ void TraceRestrictCheckRefreshSingleSignal(const TraceRestrictProgram *prog, Tra
 	if (((old_actions_used_flags ^ prog->actions_used_flags) & TRPAUF_RESERVE_THROUGH_ALWAYS)) {
 		TileIndex tile = GetTraceRestrictRefIdTileIndex(ref);
 		Track track = GetTraceRestrictRefIdTrack(ref);
-		if (IsTileType(tile, MP_RAILWAY)) UpdateSignalReserveThroughBit(tile, track, true);
+		if (IsTileType(tile, TileType::Railway)) UpdateSignalReserveThroughBit(tile, track, true);
 	}
 
 	if (((old_actions_used_flags ^ prog->actions_used_flags) & TRPAUF_SPECIAL_ASPECT_PROPAGATION_FLAG_MASK)) {
@@ -2272,7 +2272,7 @@ static CommandCost TraceRestrictCheckTileIsUsable(TileIndex tile, Track track, b
 {
 	/* Check that there actually is a signal here */
 	switch (GetTileType(tile)) {
-		case MP_RAILWAY:
+		case TileType::Railway:
 			if (!IsPlainRailTile(tile) || !HasTrack(tile, track)) {
 				return CommandCost(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK);
 			}
@@ -2281,7 +2281,7 @@ static CommandCost TraceRestrictCheckTileIsUsable(TileIndex tile, Track track, b
 			}
 			break;
 
-		case MP_TUNNELBRIDGE:
+		case TileType::TunnelBridge:
 			if (!IsRailTunnelBridgeTile(tile) || !HasBit(GetTunnelBridgeTrackBits(tile), track)) {
 				return CommandCost(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK);
 			}

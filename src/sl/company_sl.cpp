@@ -45,7 +45,7 @@ void AfterLoadCompanyStats()
 	Company *c;
 	for (TileIndex tile(0); tile < Map::Size(); ++tile) {
 		switch (GetTileType(tile)) {
-			case MP_RAILWAY:
+			case TileType::Railway:
 				c = Company::GetIfValid(GetTileOwner(tile));
 				if (c != nullptr) {
 					uint pieces = 1;
@@ -64,7 +64,7 @@ void AfterLoadCompanyStats()
 				}
 				break;
 
-			case MP_ROAD: {
+			case TileType::Road: {
 				if (IsLevelCrossing(tile)) {
 					c = Company::GetIfValid(GetTileOwner(tile));
 					if (c != nullptr) c->infrastructure.rail[GetRailType(tile)] += LEVELCROSSING_TRACKBIT_FACTOR;
@@ -81,7 +81,7 @@ void AfterLoadCompanyStats()
 				break;
 			}
 
-			case MP_STATION:
+			case TileType::Station:
 				c = Company::GetIfValid(GetTileOwner(tile));
 				if (c != nullptr && GetStationType(tile) != StationType::Airport && !IsBuoy(tile)) c->infrastructure.station++;
 
@@ -116,7 +116,7 @@ void AfterLoadCompanyStats()
 				}
 				break;
 
-			case MP_WATER:
+			case TileType::Water:
 				if (IsShipDepot(tile) || IsLock(tile)) {
 					c = Company::GetIfValid(GetTileOwner(tile));
 					if (c != nullptr) {
@@ -130,14 +130,14 @@ void AfterLoadCompanyStats()
 				}
 				[[fallthrough]];
 
-			case MP_OBJECT:
+			case TileType::Object:
 				if (GetWaterClass(tile) == WaterClass::Canal) {
 					c = Company::GetIfValid(GetTileOwner(tile));
 					if (c != nullptr) c->infrastructure.water++;
 				}
 				break;
 
-			case MP_TUNNELBRIDGE: {
+			case TileType::TunnelBridge: {
 				/* Only count the tunnel/bridge if we're on the western end tile. */
 				if (GetTunnelBridgeDirection(tile) < DIAGDIR_SW) {
 					TileIndex other_end = GetOtherTunnelBridgeEnd(tile);

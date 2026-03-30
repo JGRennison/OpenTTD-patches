@@ -566,14 +566,14 @@ static Owner GetMinimapOwner(TileIndex tile)
 {
 	Owner o;
 
-	if (IsTileType(tile, MP_VOID)) {
+	if (IsTileType(tile, TileType::Void)) {
 		return OWNER_END;
 	} else {
 		switch (GetTileType(tile)) {
-		case MP_INDUSTRY: o = OWNER_DEITY;        break;
-		case MP_HOUSE:    o = OWNER_TOWN;         break;
+		case TileType::Industry: o = OWNER_DEITY;        break;
+		case TileType::House:    o = OWNER_TOWN;         break;
 		default:          o = GetTileOwner(tile); break;
-			/* FIXME: For MP_ROAD there are multiple owners.
+			/* FIXME: For TileType::Road there are multiple owners.
 			 * GetTileOwner returns the rail owner (level crossing) resp. the owner of ROADTYPE_ROAD (normal road),
 			 * even if there are no ROADTYPE_ROAD bits on the tile.
 			 */
@@ -593,7 +593,7 @@ static PixelColour GetTopographyValue(TileIndex tile)
 {
 	const auto tile_type = GetTileType(tile);
 
-	if (tile_type == MP_STATION) {
+	if (tile_type == TileType::Station) {
 		switch (GetStationType(tile)) {
 			case StationType::Rail:
 				return PC_GREY;
@@ -621,17 +621,17 @@ static PixelColour GetTopographyValue(TileIndex tile)
 	}
 
 	switch (tile_type) {
-		case MP_TUNNELBRIDGE:
+		case TileType::TunnelBridge:
 			return PC_DARK_GREY;
-		case MP_RAILWAY:
+		case TileType::Railway:
 			return PC_GREY;
-		case MP_ROAD:
+		case TileType::Road:
 			return PC_BLACK;
-		case MP_HOUSE:
+		case TileType::House:
 			return PixelColour{0xB5};
-		case MP_WATER:
+		case TileType::Water:
 			return PC_WATER;
-		case MP_INDUSTRY:
+		case TileType::Industry:
 			return PixelColour{0xA2};
 		default: {
 			const auto tile_z = GetTileZ(tile);
@@ -688,7 +688,7 @@ static PixelColour GetIndustryValue(TileIndex tile)
 {
 	const auto tile_type = GetTileType(tile);
 
-	if (tile_type == MP_STATION) {
+	if (tile_type == TileType::Station) {
 		switch (GetStationType(tile)) {
 			case StationType::Rail:
 				return PC_DARK_GREY;
@@ -716,17 +716,17 @@ static PixelColour GetIndustryValue(TileIndex tile)
 	}
 
 	switch (tile_type) {
-		case MP_TUNNELBRIDGE:
+		case TileType::TunnelBridge:
 			return GREY_SCALE(12);
-		case MP_RAILWAY:
+		case TileType::Railway:
 			return PC_DARK_GREY;
-		case MP_ROAD:
+		case TileType::Road:
 			return PC_GREY;
-		case MP_HOUSE:
+		case TileType::House:
 			return GREY_SCALE(4);
-		case MP_WATER:
+		case TileType::Water:
 			return PixelColour{0x12};
-		case MP_INDUSTRY: {
+		case TileType::Industry: {
 			const IndustryType industry_type = Industry::GetByTile(tile)->type;
 
 			return GetIndustrySpec(industry_type)->map_colour;

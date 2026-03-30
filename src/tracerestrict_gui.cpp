@@ -3099,7 +3099,7 @@ public:
 			return;
 		}
 
-		if (IsTileType(source_tile, MP_RAILWAY)) {
+		if (IsTileType(source_tile, TileType::Railway)) {
 			if (!HasTrack(source_tile, source_track)) {
 				ShowErrorMessage(GetEncodedString(error_message), GetEncodedString(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK), WL_INFO);
 				return;
@@ -3162,7 +3162,7 @@ public:
 			if (stations_only) return;
 			item.SetValue(GetStationIndex(tile));
 			item.SetAuxField(TROCAF_WAYPOINT);
-		} else if (IsTileType(tile, MP_STATION)) {
+		} else if (IsTileType(tile, TileType::Station)) {
 			StationID st_index = GetStationIndex(tile);
 			const Station *st = Station::Get(st_index);
 			if (st->facilities.Test(StationFacility::Train)) {
@@ -3199,7 +3199,7 @@ public:
 
 		if (IsRailDepotTile(tile)) {
 			/* OK */
-		} else if (IsTileType(tile, MP_TUNNELBRIDGE) && IsTunnelBridgeWithSignalSimulation(tile)) {
+		} else if (IsTileType(tile, TileType::TunnelBridge) && IsTunnelBridgeWithSignalSimulation(tile)) {
 			/* OK */
 		} else {
 			if (!IsPlainRailTile(tile)) {
