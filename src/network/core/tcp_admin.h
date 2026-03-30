@@ -492,10 +492,8 @@ protected:
 	 * uint32_t  ID of the client sending the command.
 	 * uint8_t   ID of the company (0..MAX_COMPANIES-1).
 	 * uint16_t  ID of the command.
-	 * uint32_t  P1 (variable data passed to the command).
-	 * uint32_t  P2 (variable data passed to the command).
-	 * uint32_t  Tile where this is taking place.
-	 * string    Text passed to the command.
+	 * `<var>` Command specific buffer with encoded parameters of variable length.
+	 *         The content differs per command and can change without notification.
 	 * uint32_t  Frame of execution.
 	 * @param p The packet that was just received.
 	 * @return The state the network should have.
