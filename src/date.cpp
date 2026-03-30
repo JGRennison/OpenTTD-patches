@@ -514,14 +514,14 @@ void IncreaseCalendarDate()
 	/* yes, call various yearly loops */
 	if (new_year) OnNewCalendarYear();
 
-	uint calendar_triggers = 0;
-	SetBit(calendar_triggers, TimerGameCalendar::DAY);
-	if ((CalTime::CurDate().base() % 7) == 3) SetBit(calendar_triggers, TimerGameCalendar::WEEK);
+	TimerGameCalendar::TElapsed calendar_triggers{};
+	calendar_triggers.Set(TimerGameCalendar::Trigger::Day);
+	if ((CalTime::CurDate().base() % 7) == 3) calendar_triggers.Set(TimerGameCalendar::Trigger::Week);
 	if (new_month) {
-		SetBit(calendar_triggers, TimerGameCalendar::MONTH);
-		if ((CalTime::CurMonth() % 3) == 0) SetBit(calendar_triggers, TimerGameCalendar::QUARTER);
+		calendar_triggers.Set(TimerGameCalendar::Trigger::Month);
+		if ((CalTime::CurMonth() % 3) == 0) calendar_triggers.Set(TimerGameCalendar::Trigger::Quarter);
 	}
-	if (new_year) SetBit(calendar_triggers, TimerGameCalendar::YEAR);
+	if (new_year) calendar_triggers.Set(TimerGameCalendar::Trigger::Year);
 	TimerManager<TimerGameCalendar>::Elapsed(calendar_triggers);
 
 	RecordSyncEvent(NSRE_CALDATE_INC);

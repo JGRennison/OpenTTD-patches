@@ -42,6 +42,7 @@
 #include "newgrf_generic.h"
 #include "industry.h"
 #include "pathfinder/water_regions.h"
+#include "town_type.h"
 #include "object_base.h"
 #include "object_map.h"
 #include "newgrf_object.h"
@@ -632,6 +633,15 @@ static CommandCost ClearTile_Water(TileIndex tile, DoCommandFlags flags)
 					Company::Get(owner)->infrastructure.water--;
 					DirtyCompanyInfrastructureWindows(owner);
 				}
+
+				/* Handle local authority impact */
+				if (IsRiver(tile)) {
+					if (Company::IsValidID(_current_company)) {
+						Town *town = ClosestTownFromTile(tile, _settings_game.economy.dist_local_authority);
+						if (town != nullptr) ChangeTownRating(town, RATING_WATER_RIVER_DOWN_STEP, RATING_WATER_MINIMUM, flags);
+					}
+				}
+
 				bool remove = IsDockingTile(tile);
 				DoClearSquare(tile);
 				MarkCanalsAndRiversAroundDirty(tile);

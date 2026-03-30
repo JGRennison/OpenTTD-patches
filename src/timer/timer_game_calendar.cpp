@@ -27,7 +27,7 @@
 template <>
 void IntervalTimer<TimerGameCalendar>::Elapsed(TimerGameCalendar::TElapsed triggers)
 {
-	if (HasBit(triggers, this->period.trigger)) {
+	if (triggers.Test(this->period.trigger)) {
 		this->callback(1);
 	}
 }
@@ -37,7 +37,7 @@ void TimeoutTimer<TimerGameCalendar>::Elapsed(TimerGameCalendar::TElapsed trigge
 {
 	if (this->fired) return;
 
-	if (HasBit(triggers, this->period.trigger)) {
+	if (triggers.Test(this->period.trigger)) {
 		this->callback();
 		this->fired = true;
 	}
@@ -55,7 +55,7 @@ void TimerManager<TimerGameCalendar>::Elapsed(TimerGameCalendar::TElapsed trigge
 template <>
 void TimerManager<TimerGameCalendar>::Validate(TimerGameCalendar::TPeriod period)
 {
-	if (period.priority == TimerGameCalendar::Priority::NONE) return;
+	if (period.priority == TimerGameCalendar::Priority::None) return;
 
 	/* Validate we didn't make a developer error and scheduled more than one
 	 * entry on the same priority/trigger. There can only be one timer on

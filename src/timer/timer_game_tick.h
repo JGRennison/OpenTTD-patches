@@ -21,12 +21,14 @@
  */
 class TimerGameTick {
 public:
-	enum Priority : uint8_t {
-		NONE, ///< These timers can be executed in any order; the order is not relevant.
+	/** Different levels of priority to run the timers in. */
+	enum class Priority : uint8_t {
+		None, ///< These timers can be executed in any order; the order is not relevant.
 
 		/* For all other priorities, the order is important.
 		 * For safety, you can only setup a single timer on a single priority. */
-		COMPETITOR_TIMEOUT,
+
+		CompetitorTimeout, ///< Considering starting a new competitor/AI.
 	};
 
 	struct TPeriod {

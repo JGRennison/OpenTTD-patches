@@ -11,6 +11,7 @@
 #define TIMER_GAME_CALENDAR_H
 
 #include "timer_game_common.h"
+#include "../core/enum_type.hpp"
 
 /**
  * Timer for calendar days / months / years.
@@ -23,6 +24,8 @@
  *   so we follow a previous decision to tie inflation to original TTD game years.
  */
 class TimerGameCalendar : public TimerGame<struct Calendar> {
+public:
+	using TElapsed = EnumBitSet<Trigger, uint8_t>;
 };
 
 #endif /* TIMER_GAME_CALENDAR_H */
