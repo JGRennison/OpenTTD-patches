@@ -79,7 +79,7 @@ static void GenerateDesertArea(TileIndex end, TileIndex start)
 	TileArea ta(start, end);
 	for (TileIndex tile : ta) {
 		SetTropicZone(tile, (_ctrl_pressed) ? TROPICZONE_NORMAL : TROPICZONE_DESERT);
-		Command<CMD_LANDSCAPE_CLEAR>::Post(tile);
+		Command<Commands::LandscapeClear>::Post(tile);
 		MarkTileDirtyByTile(tile);
 	}
 	old_generating_world.Restore();
@@ -134,7 +134,7 @@ static bool IsQueryConfirmIndustryOrRailStationInArea(TileIndex start_tile, Tile
 	return false;
 }
 
-static CommandContainer<CMD_CLEAR_AREA> _demolish_area_command;
+static CommandContainer<Commands::ClearArea> _demolish_area_command;
 
 static void DemolishAreaConfirmationCallback(Window *, bool confirmed) {
 	if (confirmed) {
@@ -155,8 +155,8 @@ bool GUIPlaceProcDragXY(ViewportDragDropSelectionProcess proc, TileIndex start_t
 {
 	switch (proc) {
 		case DDSP_DEMOLISH_AREA: {
-			_demolish_area_command = CommandContainer<CMD_CLEAR_AREA>(STR_ERROR_CAN_T_CLEAR_THIS_AREA, end_tile,
-					CmdPayload<CMD_CLEAR_AREA>::Make(start_tile, _ctrl_pressed), CommandCallback::PlaySound_EXPLOSION);
+			_demolish_area_command = CommandContainer<Commands::ClearArea>(STR_ERROR_CAN_T_CLEAR_THIS_AREA, end_tile,
+					CmdPayload<Commands::ClearArea>::Make(start_tile, _ctrl_pressed), CommandCallback::PlaySound_EXPLOSION);
 
 			if (!_shift_pressed && IsQueryConfirmIndustryOrRailStationInArea(start_tile, end_tile, _ctrl_pressed)) {
 				ShowQuery(GetEncodedString(STR_QUERY_CLEAR_AREA_CAPTION), GetEncodedString(STR_CLEAR_AREA_CONFIRMATION_TEXT), nullptr, DemolishAreaConfirmationCallback);
@@ -166,13 +166,13 @@ bool GUIPlaceProcDragXY(ViewportDragDropSelectionProcess proc, TileIndex start_t
 			break;
 		}
 		case DDSP_RAISE_AND_LEVEL_AREA:
-			Command<CMD_LEVEL_LAND>::Post(STR_ERROR_CAN_T_RAISE_LAND_HERE, CommandCallback::Terraform, end_tile, start_tile, _ctrl_pressed, LM_RAISE);
+			Command<Commands::LevelLand>::Post(STR_ERROR_CAN_T_RAISE_LAND_HERE, CommandCallback::Terraform, end_tile, start_tile, _ctrl_pressed, LM_RAISE);
 			break;
 		case DDSP_LOWER_AND_LEVEL_AREA:
-			Command<CMD_LEVEL_LAND>::Post(STR_ERROR_CAN_T_RAISE_LAND_HERE, CommandCallback::Terraform, end_tile, start_tile, _ctrl_pressed, LM_LOWER);
+			Command<Commands::LevelLand>::Post(STR_ERROR_CAN_T_RAISE_LAND_HERE, CommandCallback::Terraform, end_tile, start_tile, _ctrl_pressed, LM_LOWER);
 			break;
 		case DDSP_LEVEL_AREA:
-			Command<CMD_LEVEL_LAND>::Post(STR_ERROR_CAN_T_RAISE_LAND_HERE, CommandCallback::Terraform, end_tile, start_tile, _ctrl_pressed, LM_LEVEL);
+			Command<Commands::LevelLand>::Post(STR_ERROR_CAN_T_RAISE_LAND_HERE, CommandCallback::Terraform, end_tile, start_tile, _ctrl_pressed, LM_LEVEL);
 			break;
 		case DDSP_CREATE_ROCKS:
 			GenerateRockyArea(end_tile, start_tile);
@@ -181,7 +181,7 @@ bool GUIPlaceProcDragXY(ViewportDragDropSelectionProcess proc, TileIndex start_t
 			GenerateDesertArea(end_tile, start_tile);
 			break;
 		case DDSP_BUY_LAND:
-			Command<CMD_PURCHASE_LAND_AREA>::Post(STR_ERROR_CAN_T_PURCHASE_THIS_LAND, CommandCallback::PlaySound_CONSTRUCTION_RAIL, end_tile, start_tile, _ctrl_pressed);
+			Command<Commands::PurchaseLandArea>::Post(STR_ERROR_CAN_T_PURCHASE_THIS_LAND, CommandCallback::PlaySound_CONSTRUCTION_RAIL, end_tile, start_tile, _ctrl_pressed);
 			break;
 		default:
 			return false;
@@ -298,7 +298,7 @@ struct TerraformToolbarWindow : Window {
 				switch (_settings_game.construction.purchase_land_permitted) {
 					case 0:
 					case 1:
-						Command<CMD_BUILD_OBJECT>::Post(STR_ERROR_CAN_T_PURCHASE_THIS_LAND, CommandCallback::PlaySound_CONSTRUCTION_RAIL, tile, OBJECT_OWNED_LAND, 0);
+						Command<Commands::BuildObject>::Post(STR_ERROR_CAN_T_PURCHASE_THIS_LAND, CommandCallback::PlaySound_CONSTRUCTION_RAIL, tile, OBJECT_OWNED_LAND, 0);
 						break;
 
 					case 2:
@@ -469,7 +469,7 @@ static void CommonRaiseLowerBigLand(TileIndex tile, int mode)
 		StringID msg =
 			mode ? STR_ERROR_CAN_T_RAISE_LAND_HERE : STR_ERROR_CAN_T_LOWER_LAND_HERE;
 
-		Command<CMD_TERRAFORM_LAND>::Post(msg, CommandCallback::Terraform, tile, SLOPE_N, mode);
+		Command<Commands::TerraformLand>::Post(msg, CommandCallback::Terraform, tile, SLOPE_N, mode);
 	} else {
 		assert(_terraform_size != 0);
 		TileArea ta(tile, _terraform_size, _terraform_size);
@@ -496,7 +496,7 @@ static void CommonRaiseLowerBigLand(TileIndex tile, int mode)
 
 		for (TileIndex tile2 : ta) {
 			if (TileHeight(tile2) == h) {
-				Command<CMD_TERRAFORM_LAND>::Post(tile2, SLOPE_N, mode);
+				Command<Commands::TerraformLand>::Post(tile2, SLOPE_N, mode);
 			}
 		}
 	}
@@ -739,7 +739,7 @@ static void ResetLandscapeConfirmationCallback(Window *, bool confirmed)
 		/* Delete all station signs */
 		for (BaseStation *st : BaseStation::Iterate()) {
 			/* There can be buoys, remove them */
-			if (IsBuoyTile(st->xy)) Command<CMD_LANDSCAPE_CLEAR>::Do({DoCommandFlag::Execute, DoCommandFlag::Bankrupt}, st->xy);
+			if (IsBuoyTile(st->xy)) Command<Commands::LandscapeClear>::Do({DoCommandFlag::Execute, DoCommandFlag::Bankrupt}, st->xy);
 			if (!st->IsInUse()) delete st;
 		}
 

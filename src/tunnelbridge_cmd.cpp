@@ -557,7 +557,7 @@ CommandCost CmdBuildBridge(DoCommandFlags flags, TileIndex tile_end, TileIndex t
 						CommandCost ret = IsRailStationBridgeAboveOk(tile, GetStationSpec(tile), station_type, GetStationGfx(tile), tile_start, tile_end, z_start + 1, bridge_type, transport_type);
 						if (ret.Failed()) {
 							if (ret.GetErrorMessage() != INVALID_STRING_ID) return ret;
-							ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
+							ret = Command<Commands::LandscapeClear>::Do(flags, tile);
 							if (ret.Failed()) return ret;
 						}
 						break;
@@ -570,7 +570,7 @@ CommandCost CmdBuildBridge(DoCommandFlags flags, TileIndex tile_end, TileIndex t
 								tile_start, tile_end, z_start + 1, bridge_type, transport_type);
 						if (ret.Failed()) {
 							if (ret.GetErrorMessage() != INVALID_STRING_ID) return ret;
-							ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
+							ret = Command<Commands::LandscapeClear>::Do(flags, tile);
 							if (ret.Failed()) return ret;
 						}
 						break;
@@ -584,14 +584,14 @@ CommandCost CmdBuildBridge(DoCommandFlags flags, TileIndex tile_end, TileIndex t
 						CommandCost ret = IsDockBridgeAboveOK(tile, tile_start, tile_end, z_start + 1, bridge_type, transport_type);
 						if (ret.Failed()) {
 							if (ret.GetErrorMessage() != INVALID_STRING_ID) return ret;
-							ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
+							ret = Command<Commands::LandscapeClear>::Do(flags, tile);
 							if (ret.Failed()) return ret;
 						}
 						break;
 					}
 
 					default: {
-						CommandCost ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
+						CommandCost ret = Command<Commands::LandscapeClear>::Do(flags, tile);
 						if (ret.Failed()) return ret;
 						break;
 					}
@@ -602,7 +602,7 @@ CommandCost CmdBuildBridge(DoCommandFlags flags, TileIndex tile_end, TileIndex t
 				CommandCost ret = IsLockBridgeAboveOK(tile, (LockPart)GetLockPart(tile), GetLockDirection(tile), tile_start, tile_end, z_start + 1, bridge_type, transport_type);
 				if (ret.Failed()) {
 					if (ret.GetErrorMessage() != INVALID_STRING_ID) return ret;
-					ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
+					ret = Command<Commands::LandscapeClear>::Do(flags, tile);
 					if (ret.Failed()) return ret;
 				}
 			}
@@ -615,7 +615,7 @@ CommandCost CmdBuildBridge(DoCommandFlags flags, TileIndex tile_end, TileIndex t
 		bool allow_on_slopes = (_settings_game.construction.build_on_slopes && transport_type != TRANSPORT_WATER);
 
 		/* Try and clear the start landscape */
-		CommandCost ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile_start);
+		CommandCost ret = Command<Commands::LandscapeClear>::Do(flags, tile_start);
 		if (ret.Failed()) return ret;
 		cost = ret;
 
@@ -623,7 +623,7 @@ CommandCost CmdBuildBridge(DoCommandFlags flags, TileIndex tile_end, TileIndex t
 		cost.AddCost(terraform_cost_north.GetCost());
 
 		/* Try and clear the end landscape */
-		ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile_end);
+		ret = Command<Commands::LandscapeClear>::Do(flags, tile_end);
 		if (ret.Failed()) return ret;
 		cost.AddCost(ret.GetCost());
 
@@ -747,7 +747,7 @@ CommandCost CmdBuildBridge(DoCommandFlags flags, TileIndex tile_end, TileIndex t
 				default:
 	not_valid_below:;
 					/* try and clear the middle landscape */
-					ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
+					ret = Command<Commands::LandscapeClear>::Do(flags, tile);
 					if (ret.Failed()) return ret;
 					cost.AddCost(ret.GetCost());
 					break;
@@ -1048,7 +1048,7 @@ CommandCost CmdBuildTunnel(DoCommandFlags flags, TileIndex start_tile, Transport
 
 	if (HasTileWaterGround(start_tile)) return CommandCost(STR_ERROR_CAN_T_BUILD_ON_WATER);
 
-	CommandCost ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags, start_tile);
+	CommandCost ret = Command<Commands::LandscapeClear>::Do(flags, start_tile);
 	if (ret.Failed()) return ret;
 
 	/* XXX - do NOT change 'ret' in the loop, as it is used as the price
@@ -1123,7 +1123,7 @@ CommandCost CmdBuildTunnel(DoCommandFlags flags, TileIndex start_tile, Transport
 	if (HasTileWaterGround(end_tile)) return CommandCost(STR_ERROR_CAN_T_BUILD_ON_WATER);
 
 	/* Clear the tile in any case */
-	ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags, end_tile);
+	ret = Command<Commands::LandscapeClear>::Do(flags, end_tile);
 	if (ret.Failed()) return CommandCost(STR_ERROR_UNABLE_TO_EXCAVATE_LAND);
 	cost.AddCost(ret.GetCost());
 
@@ -1140,12 +1140,12 @@ CommandCost CmdBuildTunnel(DoCommandFlags flags, TileIndex start_tile, Transport
 		TileIndex old_first_tile = coa->first_tile;
 		coa->first_tile = INVALID_TILE;
 
-		/* CMD_TERRAFORM_LAND may append further items to _cleared_object_areas,
+		/* Commands::TerraformLand may append further items to _cleared_object_areas,
 		 * however it will never erase or re-order existing items.
 		 * _cleared_object_areas is a value-type self-resizing vector, therefore appending items
 		 * may result in a backing-store re-allocation, which would invalidate the coa pointer.
 		 * The index of the coa pointer into the _cleared_object_areas vector remains valid,
-		 * and can be used safely after the CMD_TERRAFORM_LAND operation.
+		 * and can be used safely after the Commands::TerraformLand operation.
 		 * Deliberately clear the coa pointer to avoid leaving dangling pointers which could
 		 * inadvertently be dereferenced.
 		 */
@@ -1155,7 +1155,7 @@ CommandCost CmdBuildTunnel(DoCommandFlags flags, TileIndex start_tile, Transport
 		assert(coa_index < UINT_MAX); // more than 2**32 cleared areas would be a bug in itself
 		coa = nullptr;
 
-		ret = Command<CMD_TERRAFORM_LAND>::Do(flags, end_tile, end_tileh & start_tileh, false);
+		ret = Command<Commands::TerraformLand>::Do(flags, end_tile, end_tileh & start_tileh, false);
 		_cleared_object_areas[(uint)coa_index].first_tile = old_first_tile;
 		if (ret.Failed()) return CommandCost(STR_ERROR_UNABLE_TO_EXCAVATE_LAND);
 		cost.AddCost(ret.GetCost());
@@ -3222,7 +3222,7 @@ static void ChangeTileOwner_TunnelBridge(TileIndex tile, Owner old_owner, Owner 
 		if (tt == TRANSPORT_RAIL) {
 			/* Since all of our vehicles have been removed, it is safe to remove the rail
 			 * bridge / tunnel. */
-			[[maybe_unused]] CommandCost ret = Command<CMD_LANDSCAPE_CLEAR>::Do({DoCommandFlag::Execute, DoCommandFlag::Bankrupt}, tile);
+			[[maybe_unused]] CommandCost ret = Command<Commands::LandscapeClear>::Do({DoCommandFlag::Execute, DoCommandFlag::Bankrupt}, tile);
 			assert(ret.Succeeded());
 		} else {
 			/* In any other case, we can safely reassign the ownership to OWNER_NONE. */
@@ -3499,7 +3499,7 @@ static CommandCost TerraformTile_TunnelBridge(TileIndex tile, DoCommandFlags fla
 			const Slope normalised_tileh_new = IsSteepSlope(tileh_new) ? SlopeWithOneCornerRaised(GetHighestSlopeCorner(tileh_new)) : tileh_new;
 
 			if ((_invalid_tileh_slopes_road[0][normalised_tileh_new & SLOPE_ELEVATED] & (pieces & ~entrance_piece)) != ROAD_NONE) {
-				return Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
+				return Command<Commands::LandscapeClear>::Do(flags, tile);
 			}
 		}
 		if (IsRailCustomBridgeHeadTile(tile)) {
@@ -3509,7 +3509,7 @@ static CommandCost TerraformTile_TunnelBridge(TileIndex tile, DoCommandFlags fla
 			const Slope normalised_tileh_new = IsSteepSlope(tileh_new) ? SlopeWithOneCornerRaised(GetHighestSlopeCorner(tileh_new)) : tileh_new;
 
 			if (!IsValidFlatRailBridgeHeadTrackBits(normalised_tileh_new, direction, GetCustomBridgeHeadTrackBits(tile))) {
-				return Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
+				return Command<Commands::LandscapeClear>::Do(flags, tile);
 			}
 		}
 
@@ -3526,7 +3526,7 @@ static CommandCost TerraformTile_TunnelBridge(TileIndex tile, DoCommandFlags fla
 		if (res.Succeeded() && (z_old == z_new) && (tileh_old == tileh_new)) return CommandCost(EXPENSES_CONSTRUCTION, _price[Price::BuildFoundation]);
 	}
 
-	return Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
+	return Command<Commands::LandscapeClear>::Do(flags, tile);
 }
 
 extern const TileTypeProcs _tile_type_tunnelbridge_procs = {

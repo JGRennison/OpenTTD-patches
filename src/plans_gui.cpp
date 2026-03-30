@@ -283,7 +283,7 @@ public:
 	{
 		switch (widget) {
 			case WID_PLN_NEW:
-				Command<CMD_ADD_PLAN>::Post(STR_ERROR_CAN_T_DO_THIS, CommandCallback::AddPlan);
+				Command<Commands::AddPlan>::Post(STR_ERROR_CAN_T_DO_THIS, CommandCallback::AddPlan);
 				break;
 			case WID_PLN_ADD_LINES:
 				if (_current_plan != nullptr) HandlePlacePushButton(this, widget, SPR_CURSOR_MOUSE, HT_POINT | HT_MAP);
@@ -291,9 +291,9 @@ public:
 			case WID_PLN_DELETE:
 				if (this->selected != INT_MAX) {
 					if (this->list[this->selected].is_plan) {
-						Command<CMD_REMOVE_PLAN>::Post(STR_ERROR_CAN_T_DO_THIS, this->list[this->selected].plan_id);
+						Command<Commands::RemovePlan>::Post(STR_ERROR_CAN_T_DO_THIS, this->list[this->selected].plan_id);
 					} else {
-						Command<CMD_REMOVE_PLAN_LINE>::Post(STR_ERROR_CAN_T_DO_THIS, this->list[this->selected].plan_id, this->list[this->selected].line_id);
+						Command<Commands::RemovePlanLine>::Post(STR_ERROR_CAN_T_DO_THIS, this->list[this->selected].plan_id, this->list[this->selected].line_id);
 					}
 				}
 				break;
@@ -315,7 +315,7 @@ public:
 
 			case WID_PLN_TAKE_OWNERSHIP: {
 				if (_current_plan != nullptr && !IsNonAdminNetworkClient()) {
-					Command<CMD_ACQUIRE_UNOWNED_PLAN>::Post(STR_ERROR_CAN_T_DO_THIS, this->list[this->selected].plan_id);
+					Command<Commands::AcquireUnownedPlan>::Post(STR_ERROR_CAN_T_DO_THIS, this->list[this->selected].plan_id);
 				}
 				break;
 			}
@@ -329,7 +329,7 @@ public:
 			}
 			case WID_PLN_VISIBILITY:
 				if (_current_plan != nullptr) {
-					Command<CMD_CHANGE_PLAN_VISIBILITY>::Post(STR_ERROR_CAN_T_DO_THIS, _current_plan->index, !_current_plan->visible_by_all);
+					Command<Commands::ChangePlanVisibility>::Post(STR_ERROR_CAN_T_DO_THIS, _current_plan->index, !_current_plan->visible_by_all);
 				}
 				break;
 			case WID_PLN_COLOUR: {
@@ -425,7 +425,7 @@ public:
 		switch (widget) {
 			case WID_PLN_COLOUR:
 				if (_current_plan != nullptr && index < COLOUR_END) {
-					Command<CMD_CHANGE_PLAN_COLOUR>::Post(STR_ERROR_CAN_T_DO_THIS, _current_plan->index, (Colours)index);
+					Command<Commands::ChangePlanColour>::Post(STR_ERROR_CAN_T_DO_THIS, _current_plan->index, (Colours)index);
 				}
 				break;
 
@@ -443,7 +443,7 @@ public:
 	{
 		if (_current_plan == nullptr || !str.has_value()) return;
 
-		Command<CMD_RENAME_PLAN>::Post(STR_ERROR_CAN_T_RENAME_PLAN, _current_plan->index, *str);
+		Command<Commands::RenamePlan>::Post(STR_ERROR_CAN_T_RENAME_PLAN, _current_plan->index, *str);
 	}
 
 	bool AllPlansHidden() const

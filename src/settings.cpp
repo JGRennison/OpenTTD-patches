@@ -1949,7 +1949,7 @@ bool SetSettingValue(const IntSettingDesc *sd, int32_t value, bool force_newgame
 	const IntSettingDesc *setting = sd->AsIntSetting();
 	if (setting->flags.Test(SettingFlag::PerCompany)) {
 		if (Company::IsValidID(_local_company) && _game_mode != GM_MENU) {
-			return Command<CMD_CHANGE_COMPANY_SETTING>::Post(setting->name, value);
+			return Command<Commands::ChangeCompanySetting>::Post(setting->name, value);
 		} else if (setting->flags.Test(SettingFlag::NoNewgame)) {
 			return false;
 		}
@@ -1979,7 +1979,7 @@ bool SetSettingValue(const IntSettingDesc *sd, int32_t value, bool force_newgame
 
 	/* send non-company-based settings over the network */
 	if (!IsNonAdminNetworkClient()) {
-		return Command<CMD_CHANGE_SETTING>::Post(setting->name, value);
+		return Command<Commands::ChangeSetting>::Post(setting->name, value);
 	}
 	return false;
 }
@@ -2012,7 +2012,7 @@ void SyncCompanySettings()
 		uint32_t old_value = (uint32_t)sd->AsIntSetting()->Read(old_object);
 		uint32_t new_value = (uint32_t)sd->AsIntSetting()->Read(new_object);
 		if (old_value != new_value) {
-			NetworkSendCommand<CMD_CHANGE_COMPANY_SETTING>({}, ChangeSettingCmdData::Make(sd->name, new_value), (StringID)0, CommandCallback::None, 0, _local_company);
+			NetworkSendCommand<Commands::ChangeCompanySetting>({}, ChangeSettingCmdData::Make(sd->name, new_value), (StringID)0, CommandCallback::None, 0, _local_company);
 		}
 	}
 }

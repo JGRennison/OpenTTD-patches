@@ -820,7 +820,7 @@ bool ScriptInstance::DoCommandCallback(const CommandCost &result, Commands cmd, 
 		ScriptObject::SetLastCommandResultData(result.GetResultDataWithType());
 	}
 
-	ScriptObject::SetLastCommand(CMD_END, INVALID_TILE, 0);
+	ScriptObject::SetLastCommand(Commands::End, INVALID_TILE, 0);
 
 	return true;
 }

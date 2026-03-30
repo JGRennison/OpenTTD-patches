@@ -60,7 +60,7 @@ private:
 	ScriptErrorType last_error{};          ///< The last error of the command.
 	bool last_command_res = true;          ///< The last result of the command.
 
-	Commands last_cmd = CMD_END;           ///< The last cmd passed to a command.
+	Commands last_cmd = Commands::End;     ///< The last cmd passed to a command.
 	TileIndex last_tile = INVALID_TILE;    ///< The last tile passed to a command.
 	CallbackParameter last_cb_param{};     ///< The last callback parameter passed to a command.
 

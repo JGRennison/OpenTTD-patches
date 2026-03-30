@@ -2180,7 +2180,7 @@ struct StationViewWindow : public Window {
 				break;
 
 			case WID_SV_CLOSE_AIRPORT:
-				Command<CMD_OPEN_CLOSE_AIRPORT>::Post(this->window_number);
+				Command<Commands::OpenCloseAirport>::Post(this->window_number);
 				break;
 
 			case WID_SV_TRAINS:   // Show list of scheduled trains to this station
@@ -2234,7 +2234,7 @@ struct StationViewWindow : public Window {
 					const GoodsEntry *ge = &st->goods[cs->Index()];
 					if (!ge->HasRating() && ge->IsSupplyAllowed()) continue;
 					if (row == 1) {
-						Command<CMD_SET_STATION_CARGO_ALLOWED_SUPPLY>::Post(STR_ERROR_CAN_T_DO_THIS, this->window_number, cs->Index(), !ge->IsSupplyAllowed());
+						Command<Commands::SetStationCargoAllowedSupply>::Post(STR_ERROR_CAN_T_DO_THIS, this->window_number, cs->Index(), !ge->IsSupplyAllowed());
 					}
 					row--;
 				}
@@ -2246,7 +2246,7 @@ struct StationViewWindow : public Window {
 	void OnPlaceObject(Point pt, TileIndex tile) override
 	{
 		if (IsTileType(tile, TileType::Station)) {
-			Command<CMD_EXCHANGE_STATION_NAMES>::Post(STR_ERROR_CAN_T_EXCHANGE_STATION_NAMES, this->window_number, GetStationIndex(tile));
+			Command<Commands::ExchangeStationNames>::Post(STR_ERROR_CAN_T_EXCHANGE_STATION_NAMES, this->window_number, GetStationIndex(tile));
 			ResetObjectToPlace();
 		}
 	}
@@ -2366,7 +2366,7 @@ struct StationViewWindow : public Window {
 	{
 		if (!str.has_value()) return;
 
-		Command<CMD_RENAME_STATION>::Post(STR_ERROR_CAN_T_RENAME_STATION, this->window_number, _ctrl_pressed, *str);
+		Command<Commands::RenameStation>::Post(STR_ERROR_CAN_T_RENAME_STATION, this->window_number, _ctrl_pressed, *str);
 	}
 
 	void OnResize() override

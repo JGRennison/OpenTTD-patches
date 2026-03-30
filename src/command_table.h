@@ -34,6 +34,6 @@ struct CommandInfo {
 	CommandIntlFlags intl_flags;                      ///< Internal flags
 };
 
-extern const std::array<CommandInfo, to_underlying(CMD_END)> _command_proc_table;
+extern const EnumClassIndexContainer<std::array<CommandInfo, to_underlying(Commands::End)>, Commands> _command_proc_table;
 
 #endif /* COMMAND_TABLE_H */

@@ -480,7 +480,7 @@ static void ChangeTileOwner_Clear(TileIndex, Owner, Owner)
 
 static CommandCost TerraformTile_Clear(TileIndex tile, DoCommandFlags flags, int, Slope)
 {
-	return Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
+	return Command<Commands::LandscapeClear>::Do(flags, tile);
 }
 
 extern const TileTypeProcs _tile_type_clear_procs = {

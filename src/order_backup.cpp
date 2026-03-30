@@ -73,7 +73,7 @@ void OrderBackup::DoRestore(Vehicle *v)
 {
 	/* If we had shared orders, recover that */
 	if (this->clone != nullptr) {
-		Command<CMD_CLONE_ORDER>::Do(DoCommandFlag::Execute, CO_SHARE, v->index, this->clone->index);
+		Command<Commands::CloneOrder>::Do(DoCommandFlag::Execute, CO_SHARE, v->index, this->clone->index);
 	} else if (!this->orders.empty() && OrderList::CanAllocateItem()) {
 		v->orders = OrderList::Create(std::move(this->orders), v);
 		this->orders.clear();
@@ -95,7 +95,7 @@ void OrderBackup::DoRestore(Vehicle *v)
 	if (v->cur_timetable_order_index >= v->GetNumOrders()) v->cur_timetable_order_index = INVALID_VEH_ORDER_ID;
 
 	/* Restore vehicle group */
-	Command<CMD_ADD_VEHICLE_GROUP>::Do(DoCommandFlag::Execute, this->group, v->index, false);
+	Command<Commands::AddVehicleToGroup>::Do(DoCommandFlag::Execute, this->group, v->index, false);
 }
 
 /**
@@ -174,7 +174,7 @@ CommandCost CmdClearOrderBackup(DoCommandFlags flags, TileIndex tile, ClientID u
 		/* If it's not a backup of us, ignore it. */
 		if (ob->user != user) continue;
 
-		Command<CMD_CLEAR_ORDER_BACKUP>::Post({}, static_cast<ClientID>(user));
+		Command<Commands::ClearOrderBackup>::Post({}, static_cast<ClientID>(user));
 		return;
 	}
 }
@@ -203,7 +203,7 @@ CommandCost CmdClearOrderBackup(DoCommandFlags flags, TileIndex tile, ClientID u
 			/* We need to circumvent the "prevention" from this command being executed
 			 * while the game is paused, so use the internal method. Nor do we want
 			 * this command to get its cost estimated when shift is pressed. */
-			DoCommandPInternal(CMD_CLEAR_ORDER_BACKUP, ob->tile, CmdPayload<CMD_CLEAR_ORDER_BACKUP>::Make(static_cast<ClientID>(user)), (StringID)0, CommandCallback::None, 0, DCIF_NONE, false);
+			DoCommandPInternal(Commands::ClearOrderBackup, ob->tile, CmdPayload<Commands::ClearOrderBackup>::Make(static_cast<ClientID>(user)), (StringID)0, CommandCallback::None, 0, DCIF_NONE, false);
 		} else {
 			/* The command came from the game logic, i.e. the clearing of a tile.
 			 * In that case we have no need to actually sync this, just do it. */

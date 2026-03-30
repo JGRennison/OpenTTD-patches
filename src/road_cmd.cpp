@@ -674,7 +674,7 @@ static CommandCost RemoveRoad(TileIndex tile, DoCommandFlags flags, RoadBits pie
 				HasBridgeFlatRamp(GetTileSlope(tile), DiagDirToAxis(GetTunnelBridgeDirection(tile)));
 
 		/* If it's the last roadtype, just clear the whole tile */
-		if (!custom_bridge_head && GetRoadType(tile, OtherRoadTramType(rtt)) == INVALID_ROADTYPE) return Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
+		if (!custom_bridge_head && GetRoadType(tile, OtherRoadTramType(rtt)) == INVALID_ROADTYPE) return Command<Commands::LandscapeClear>::Do(flags, tile);
 
 		CommandCost cost(EXPENSES_CONSTRUCTION);
 		if (IsTileType(tile, TileType::TunnelBridge)) {
@@ -707,7 +707,7 @@ static CommandCost RemoveRoad(TileIndex tile, DoCommandFlags flags, RoadBits pie
 				pieces_count += middle_len * 2;
 				if (custom_bridge_head && ((GetCustomBridgeHeadRoadBits(tile, OtherRoadTramType(rtt)) & entrance_piece) == ROAD_NONE)) {
 					/* can't leave no entrance pieces for any road type */
-					return Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
+					return Command<Commands::LandscapeClear>::Do(flags, tile);
 				}
 			}
 			pieces_count += CountBits(pieces & existing);
@@ -1432,7 +1432,7 @@ do_clear:;
 	}
 
 	if (need_to_clear) {
-		CommandCost ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
+		CommandCost ret = Command<Commands::LandscapeClear>::Do(flags, tile);
 		if (ret.Failed()) return ret;
 		cost.AddCost(ret.GetCost());
 	}
@@ -1478,7 +1478,7 @@ do_clear:;
 				if (HasPowerOnRoad(rt, existing_rt)) {
 					rt = existing_rt;
 				} else if (HasPowerOnRoad(existing_rt, rt)) {
-					CommandCost ret = Command<CMD_CONVERT_ROAD>::Do(flags, tile, tile, rt, false);
+					CommandCost ret = Command<Commands::ConvertRoad>::Do(flags, tile, tile, rt, false);
 					if (ret.Failed()) return ret;
 					cost.AddCost(ret.GetCost());
 				} else {
@@ -1653,7 +1653,7 @@ CommandCost CmdBuildLongRoad(DoCommandFlags flags, TileIndex end_tile, TileIndex
 			if (tile == start_tile && start_half) bits &= DiagDirToRoadBits(dir);
 		}
 
-		CommandCost ret = Command<CMD_BUILD_ROAD>::Do(flags, tile, bits, rt, drd, TownID::Invalid(), is_ai ? BuildRoadFlags::NoCustomBridgeHeads : BuildRoadFlags::None);
+		CommandCost ret = Command<Commands::BuildRoad>::Do(flags, tile, bits, rt, drd, TownID::Invalid(), is_ai ? BuildRoadFlags::NoCustomBridgeHeads : BuildRoadFlags::None);
 		if (ret.Failed()) {
 			last_error = std::move(ret);
 			if (last_error.GetErrorMessage() != STR_ERROR_ALREADY_BUILT) {
@@ -1735,7 +1735,7 @@ CommandCost CmdRemoveLongRoad(DoCommandFlags flags, TileIndex end_tile, TileInde
 				if (flags.Test(DoCommandFlag::Execute)) {
 					money_spent += ret.GetCost();
 					if (money_spent > 0 && money_spent > money_available) {
-						cost.SetAdditionalCashRequired(Command<CMD_REMOVE_LONG_ROAD>::Do(DoCommandFlags{flags}.Reset(DoCommandFlag::Execute), end_tile, start_tile, rt, axis, start_half, end_half).GetCost());
+						cost.SetAdditionalCashRequired(Command<Commands::RemoveRoadLong>::Do(DoCommandFlags{flags}.Reset(DoCommandFlag::Execute), end_tile, start_tile, rt, axis, start_half, end_half).GetCost());
 						return cost;
 					}
 					RemoveRoad(tile, flags, bits, rtt, false);
@@ -1787,7 +1787,7 @@ CommandCost CmdBuildRoadDepot(DoCommandFlags flags, TileIndex tile, RoadType rt,
 		cost.AddCost(_price[Price::BuildFoundation]);
 	}
 
-	cost.AddCost(Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile));
+	cost.AddCost(Command<Commands::LandscapeClear>::Do(flags, tile));
 	if (cost.Failed()) return cost;
 
 	if (IsBridgeAbove(tile)) return CommandCost(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
@@ -1877,7 +1877,7 @@ static CommandCost ClearTile_Road(TileIndex tile, DoCommandFlags flags)
 			}
 
 			if (flags.Test(DoCommandFlag::Execute)) {
-				Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
+				Command<Commands::LandscapeClear>::Do(flags, tile);
 			}
 			return ret;
 		}
@@ -2988,7 +2988,7 @@ static void ChangeTileOwner_Road(TileIndex tile, Owner old_owner, Owner new_owne
 	if (IsRoadDepot(tile)) {
 		if (GetTileOwner(tile) == old_owner) {
 			if (new_owner == INVALID_OWNER) {
-				Command<CMD_LANDSCAPE_CLEAR>::Do({DoCommandFlag::Execute, DoCommandFlag::Bankrupt}, tile);
+				Command<Commands::LandscapeClear>::Do({DoCommandFlag::Execute, DoCommandFlag::Bankrupt}, tile);
 			} else {
 				/* A road depot has two road bits. No need to dirty windows here, we'll redraw the whole screen anyway. */
 				RoadType rt = GetRoadTypeRoad(tile);
@@ -3025,7 +3025,7 @@ static void ChangeTileOwner_Road(TileIndex tile, Owner old_owner, Owner new_owne
 	if (IsLevelCrossing(tile)) {
 		if (GetTileOwner(tile) == old_owner) {
 			if (new_owner == INVALID_OWNER) {
-				Command<CMD_REMOVE_SINGLE_RAIL>::Do({DoCommandFlag::Execute, DoCommandFlag::Bankrupt}, tile, GetCrossingRailTrack(tile));
+				Command<Commands::RemoveRail>::Do({DoCommandFlag::Execute, DoCommandFlag::Bankrupt}, tile, GetCrossingRailTrack(tile));
 			} else {
 				/* Update infrastructure counts. No need to dirty windows here, we'll redraw the whole screen anyway. */
 				Company::Get(old_owner)->infrastructure.rail[GetRailType(tile)] -= LEVELCROSSING_TRACKBIT_FACTOR;
@@ -3073,7 +3073,7 @@ static CommandCost TerraformTile_Road(TileIndex tile, DoCommandFlags flags, int 
 		}
 	}
 
-	return Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
+	return Command<Commands::LandscapeClear>::Do(flags, tile);
 }
 
 /**

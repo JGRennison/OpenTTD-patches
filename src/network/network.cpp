@@ -522,7 +522,7 @@ static void CheckPauseHelper(bool pause, PauseMode pm)
 {
 	if (pause == _pause_mode.Test(pm)) return;
 
-	Command<CMD_PAUSE>::Post(pm, pause);
+	Command<Commands::Pause>::Post(pm, pause);
 }
 
 /**
@@ -1390,8 +1390,8 @@ void NetworkGameLoop()
 				cp.reset(new CommandPacket());
 				cp->command_container.tile = {};
 				cp->company = COMPANY_SPECTATOR;
-				cp->command_container.cmd = CMD_PAUSE;
-				cp->command_container.payload = CmdPayload<CMD_PAUSE>::Make(PauseMode::Normal, true).Clone();
+				cp->command_container.cmd = Commands::Pause;
+				cp->command_container.payload = CmdPayload<Commands::Pause>::Make(PauseMode::Normal, true).Clone();
 				_ddc_fastforward = false;
 			} else if (strncmp(p, "sync: ", 6) == 0) {
 				int ret = sscanf(p + 6, "date{%x; %x; %x}; %x; %x", &next_date.edit_base(), &next_date_fract, &next_tick_skip_counter, &sync_state[0], &sync_state[1]);

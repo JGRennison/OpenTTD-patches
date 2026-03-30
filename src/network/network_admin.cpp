@@ -577,7 +577,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::SendCmdNames()
 {
 	auto p = std::make_unique<Packet>(this, ADMIN_PACKET_SERVER_CMD_NAMES);
 
-	for (uint i = 0; i < CMD_END; i++) {
+	for (uint i = 0; i < to_underlying(Commands::End); i++) {
 		std::string_view cmdname = GetCommandName(static_cast<Commands>(i));
 
 		/* Should COMPAT_MTU be exceeded, start a new packet
@@ -613,7 +613,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::SendCmdLogging(ClientID clien
 
 	p->Send_uint32(client_id);
 	p->Send_uint8 (cp.company);
-	p->Send_uint16(cp.command_container.cmd);
+	p->Send_uint16(to_underlying(cp.command_container.cmd));
 
 	size_t payload_pos = p->GetSendOffset();
 	p->Send_uint16(0);

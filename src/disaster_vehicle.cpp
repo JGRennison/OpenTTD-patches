@@ -69,7 +69,7 @@ static void DisasterClearSquare(TileIndex tile)
 		case TileType::Railway:
 			if (Company::IsHumanID(GetTileOwner(tile)) && !IsRailDepot(tile)) {
 				Backup<CompanyID> cur_company(_current_company, OWNER_WATER, FILE_LINE);
-				Command<CMD_LANDSCAPE_CLEAR>::Do(DoCommandFlag::Execute, tile);
+				Command<Commands::LandscapeClear>::Do(DoCommandFlag::Execute, tile);
 				cur_company.Restore();
 
 				/* update signals in buffer */
@@ -79,7 +79,7 @@ static void DisasterClearSquare(TileIndex tile)
 
 		case TileType::House: {
 			Backup<CompanyID> cur_company(_current_company, OWNER_NONE, FILE_LINE);
-			Command<CMD_LANDSCAPE_CLEAR>::Do(DoCommandFlag::Execute, tile);
+			Command<Commands::LandscapeClear>::Do(DoCommandFlag::Execute, tile);
 			cur_company.Restore();
 			break;
 		}

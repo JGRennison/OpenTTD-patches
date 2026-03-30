@@ -123,7 +123,7 @@ static void TrainDepotMoveVehicle(const Vehicle *wagon, VehicleID sel, const Veh
 
 	VehicleID target = (wagon == nullptr) ? VehicleID::Invalid() : wagon->index;
 	MoveRailVehicleFlags move_flags = (_ctrl_pressed ? MoveRailVehicleFlags::MoveChain : MoveRailVehicleFlags::None);
-	Command<CMD_MOVE_VIRTUAL_RAIL_VEHICLE>::Post(STR_ERROR_CAN_T_MOVE_VEHICLE, CommandCallback::VirtualTrainWagonsMoved, v->index, target, move_flags);
+	Command<Commands::MoveVirtualRailVehicle>::Post(STR_ERROR_CAN_T_MOVE_VEHICLE, CommandCallback::VirtualTrainWagonsMoved, v->index, target, move_flags);
 }
 
 class TemplateCreateWindow : public Window {
@@ -159,7 +159,7 @@ public:
 		this->sell_hovered = false;
 
 		if (to_edit != nullptr) {
-			Command<CMD_VIRTUAL_TRAIN_FROM_TEMPLATE>::Post(STR_TMPL_CANT_CREATE, CommandCallback::SetVirtualTrain, to_edit->index, INVALID_CLIENT_ID);
+			Command<Commands::VirtualTrainFromTemplate>::Post(STR_TMPL_CANT_CREATE, CommandCallback::SetVirtualTrain, to_edit->index, INVALID_CLIENT_ID);
 		}
 
 		this->resize.step_height = 1;
@@ -170,7 +170,7 @@ public:
 	void Close(int data = 0) override
 	{
 		if (this->virtual_train != nullptr) {
-			Command<CMD_DELETE_VIRTUAL_TRAIN>::Post(this->virtual_train->index);
+			Command<Commands::DeleteVirtualTrain>::Post(this->virtual_train->index);
 			this->virtual_train = nullptr;
 		}
 
@@ -184,7 +184,7 @@ public:
 	void SetVirtualTrain(Train *train)
 	{
 		if (this->virtual_train != nullptr) {
-			Command<CMD_DELETE_VIRTUAL_TRAIN>::Post(this->virtual_train->index);
+			Command<Commands::DeleteVirtualTrain>::Post(this->virtual_train->index);
 		}
 
 		this->virtual_train = train;
@@ -241,9 +241,9 @@ public:
 			}
 			case TCW_OK: {
 				if (this->virtual_train != nullptr) {
-					Command<CMD_REPLACE_TEMPLATE>::Post(STR_ERROR_CAN_T_DO_THIS, this->template_index, this->virtual_train->index);
+					Command<Commands::ReplaceTemplate>::Post(STR_ERROR_CAN_T_DO_THIS, this->template_index, this->virtual_train->index);
 				} else if (this->template_index != INVALID_TEMPLATE) {
-					Command<CMD_DELETE_TEMPLATE_VEHICLE>::Post(this->template_index);
+					Command<Commands::DeleteTemplateVehicle>::Post(this->template_index);
 				}
 				this->Close();
 				break;
@@ -265,12 +265,12 @@ public:
 	{
 		// throw away the current virtual train
 		if (this->virtual_train != nullptr) {
-			Command<CMD_DELETE_VIRTUAL_TRAIN>::Post(this->virtual_train->index);
+			Command<Commands::DeleteVirtualTrain>::Post(this->virtual_train->index);
 			this->virtual_train = nullptr;
 		}
 
 		// create a new one
-		Command<CMD_VIRTUAL_TRAIN_FROM_TRAIN>::Post(STR_TMPL_CANT_CREATE, CommandCallback::SetVirtualTrain, v->index, INVALID_CLIENT_ID);
+		Command<Commands::VirtualTrainFromTrain>::Post(STR_TMPL_CANT_CREATE, CommandCallback::SetVirtualTrain, v->index, INVALID_CLIENT_ID);
 		this->ToggleWidgetLoweredState(TCW_CLONE);
 		ResetObjectToPlace();
 		this->SetDirty();
@@ -467,7 +467,7 @@ public:
 
 				if (this->GetVehicleFromDepotWndPt(pt.x - nwi->pos_x, pt.y - nwi->pos_y, &v, &gdvp) == MODE_DRAG_VEHICLE && sel != VehicleID::Invalid()) {
 					if (gdvp.wagon != nullptr && gdvp.wagon->index == sel && _ctrl_pressed) {
-						Command<CMD_REVERSE_TRAIN_DIRECTION>::Post(STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE, CommandCallback::VirtualTrainWagonsMoved, Vehicle::Get(sel)->tile, Vehicle::Get(sel)->index, true);
+						Command<Commands::ReverseTrainDirection>::Post(STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE, CommandCallback::VirtualTrainWagonsMoved, Vehicle::Get(sel)->tile, Vehicle::Get(sel)->index, true);
 					} else if (gdvp.wagon == nullptr || gdvp.wagon->index != sel) {
 						this->vehicle_over = VehicleID::Invalid();
 						TrainDepotMoveVehicle(gdvp.wagon, sel, gdvp.head);
@@ -492,7 +492,7 @@ public:
 				}
 
 				SellVehicleFlags sell_flags = _ctrl_pressed ? SellVehicleFlags::SellChain : SellVehicleFlags::None;
-				Command<CMD_SELL_VIRTUAL_VEHICLE>::Post(STR_ERROR_CAN_T_SELL_TRAIN, CommandCallback::DeleteVirtualTrain, this->sel, sell_flags, INVALID_CLIENT_ID);
+				Command<Commands::SellVirtualVehicle>::Post(STR_ERROR_CAN_T_SELL_TRAIN, CommandCallback::DeleteVirtualTrain, this->sel, sell_flags, INVALID_CLIENT_ID);
 
 				this->sel = VehicleID::Invalid();
 

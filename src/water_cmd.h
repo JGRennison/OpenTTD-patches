@@ -13,8 +13,8 @@
 #include "command_type.h"
 #include "water_map.h"
 
-DEF_CMD_TUPLE(CMD_BUILD_SHIP_DEPOT, CmdBuildShipDepot,             CMD_AUTO, CommandType::LandscapeConstruction, CmdDataT<Axis>)
-DEF_CMD_TUPLE(CMD_BUILD_CANAL,      CmdBuildCanal,     CMD_DEITY | CMD_AUTO, CommandType::LandscapeConstruction, CmdDataT<TileIndex, WaterClass, bool>)
-DEF_CMD_TUPLE(CMD_BUILD_LOCK,       CmdBuildLock,                  CMD_AUTO, CommandType::LandscapeConstruction, CmdDataT<>)
+DEF_CMD_TUPLE(Commands::BuildShipDepot, CmdBuildShipDepot,             CMD_AUTO, CommandType::LandscapeConstruction, CmdDataT<Axis>)
+DEF_CMD_TUPLE(Commands::BuildCanal,     CmdBuildCanal,     CMD_DEITY | CMD_AUTO, CommandType::LandscapeConstruction, CmdDataT<TileIndex, WaterClass, bool>)
+DEF_CMD_TUPLE(Commands::BuildLock,      CmdBuildLock,                  CMD_AUTO, CommandType::LandscapeConstruction, CmdDataT<>)
 
 #endif /* WATER_CMD_H */

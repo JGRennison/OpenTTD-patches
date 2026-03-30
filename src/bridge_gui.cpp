@@ -122,7 +122,7 @@ private:
 			case TRANSPORT_ROAD: _last_roadbridge_type = type; break;
 			default: break;
 		}
-		Command<CMD_BUILD_BRIDGE>::Post(STR_ERROR_CAN_T_BUILD_BRIDGE_HERE, CommandCallback::BuildBridge,
+		Command<Commands::BuildBridge>::Post(STR_ERROR_CAN_T_BUILD_BRIDGE_HERE, CommandCallback::BuildBridge,
 					this->end_tile, this->start_tile, this->transport_type, type, this->road_rail_type, BuildBridgeFlags::None);
 	}
 
@@ -380,14 +380,14 @@ void ShowBuildBridgeWindow(TileIndex start, TileIndex end, TransportType transpo
 		default: break; // water ways and air routes don't have bridge types
 	}
 	if (_ctrl_pressed && CheckBridgeAvailability(last_bridge_type, bridge_len).Succeeded()) {
-		Command<CMD_BUILD_BRIDGE>::Post(STR_ERROR_CAN_T_BUILD_BRIDGE_HERE, CommandCallback::BuildBridge, end, start, transport_type, last_bridge_type, road_rail_type, BuildBridgeFlags::None);
+		Command<Commands::BuildBridge>::Post(STR_ERROR_CAN_T_BUILD_BRIDGE_HERE, CommandCallback::BuildBridge, end, start, transport_type, last_bridge_type, road_rail_type, BuildBridgeFlags::None);
 		return;
 	}
 
 	/* only query bridge building possibility once, result is the same for all bridges,
 	 * unless the result is bridge too low for station or pillars obstruct station, in which case it is bridge-type dependent.
 	 * returns CMD_ERROR on failure, and price on success */
-	CommandCost ret = Command<CMD_BUILD_BRIDGE>::Do(CommandFlagsToDCFlags(GetCommandFlags<CMD_BUILD_BRIDGE>()).Set(DoCommandFlag::QueryCost), end, start, transport_type, 0, road_rail_type, BuildBridgeFlags::None);
+	CommandCost ret = Command<Commands::BuildBridge>::Do(CommandFlagsToDCFlags(GetCommandFlags<Commands::BuildBridge>()).Set(DoCommandFlag::QueryCost), end, start, transport_type, 0, road_rail_type, BuildBridgeFlags::None);
 
 	const bool query_per_bridge_type = ret.Failed() && (ret.GetErrorMessage() == STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_STATION || ret.GetErrorMessage() == STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_LOCKS);
 
@@ -426,7 +426,7 @@ void ShowBuildBridgeWindow(TileIndex start, TileIndex end, TransportType transpo
 			CommandCost type_check = CheckBridgeAvailability(brd_type, bridge_len);
 			if (type_check.Succeeded()) {
 				/* Re-check bridge building possibility if initial bridge building query indicated a bridge type dependent failure */
-				if (query_per_bridge_type && Command<CMD_BUILD_BRIDGE>::Do(CommandFlagsToDCFlags(GetCommandFlags<CMD_BUILD_BRIDGE>()).Set(DoCommandFlag::QueryCost), end, start, transport_type, brd_type, road_rail_type, BuildBridgeFlags::None).Failed()) continue;
+				if (query_per_bridge_type && Command<Commands::BuildBridge>::Do(CommandFlagsToDCFlags(GetCommandFlags<Commands::BuildBridge>()).Set(DoCommandFlag::QueryCost), end, start, transport_type, brd_type, road_rail_type, BuildBridgeFlags::None).Failed()) continue;
 				/* bridge is accepted, add to list */
 				BuildBridgeData &item = bl.emplace_back();
 				item.index = brd_type;

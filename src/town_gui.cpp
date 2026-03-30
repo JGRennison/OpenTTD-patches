@@ -458,7 +458,7 @@ public:
 			}
 
 			case WID_TA_EXECUTE:
-				Command<CMD_DO_TOWN_ACTION>::Post(STR_ERROR_CAN_T_DO_THIS, this->town->xy, static_cast<TownID>(this->window_number), static_cast<TownAction>(this->sel_index));
+				Command<Commands::TownAction>::Post(STR_ERROR_CAN_T_DO_THIS, this->town->xy, static_cast<TownID>(this->window_number), static_cast<TownAction>(this->sel_index));
 				break;
 
 			case WID_TA_SETTING: {
@@ -518,11 +518,11 @@ public:
 		switch (widget) {
 			case WID_TA_SETTING: {
 				if (index < 0) break;
-				auto payload = CmdPayload<CMD_TOWN_SETTING_OVERRIDE>::Make(this->window_number, static_cast<TownSettingOverrideFlags>(this->sel_index - 0x100), index > 0, (index > 0) ? index - 1 : 0);
+				auto payload = CmdPayload<Commands::TownSettingOverride>::Make(this->window_number, static_cast<TownSettingOverrideFlags>(this->sel_index - 0x100), index > 0, (index > 0) ? index - 1 : 0);
 				if (IsNonAdminNetworkClient()) {
-					DoCommandP<CMD_TOWN_SETTING_OVERRIDE_NON_ADMIN>(payload, STR_ERROR_CAN_T_DO_THIS);
+					DoCommandP<Commands::TownSettingOverrideNonAdmin>(payload, STR_ERROR_CAN_T_DO_THIS);
 				} else {
-					DoCommandP<CMD_TOWN_SETTING_OVERRIDE>(payload, STR_ERROR_CAN_T_DO_THIS);
+					DoCommandP<Commands::TownSettingOverride>(payload, STR_ERROR_CAN_T_DO_THIS);
 				}
 				break;
 			}
@@ -715,19 +715,19 @@ public:
 				break;
 
 			case WID_TV_EXPAND: // expand town - only available on Scenario editor
-				Command<CMD_EXPAND_TOWN>::Post(STR_ERROR_CAN_T_EXPAND_TOWN, static_cast<TownID>(this->window_number), 0, {TownExpandMode::Buildings, TownExpandMode::Roads});
+				Command<Commands::ExpandTown>::Post(STR_ERROR_CAN_T_EXPAND_TOWN, static_cast<TownID>(this->window_number), 0, {TownExpandMode::Buildings, TownExpandMode::Roads});
 				break;
 
 			case WID_TV_EXPAND_BUILDINGS: // expand buildings of town - only available on Scenario editor
-				Command<CMD_EXPAND_TOWN>::Post(STR_ERROR_CAN_T_EXPAND_TOWN, static_cast<TownID>(this->window_number), 0, {TownExpandMode::Buildings});
+				Command<Commands::ExpandTown>::Post(STR_ERROR_CAN_T_EXPAND_TOWN, static_cast<TownID>(this->window_number), 0, {TownExpandMode::Buildings});
 				break;
 
 			case WID_TV_EXPAND_ROADS: // expand roads of town - only available on Scenario editor
-				Command<CMD_EXPAND_TOWN>::Post(STR_ERROR_CAN_T_EXPAND_TOWN, static_cast<TownID>(this->window_number), 0, {TownExpandMode::Roads});
+				Command<Commands::ExpandTown>::Post(STR_ERROR_CAN_T_EXPAND_TOWN, static_cast<TownID>(this->window_number), 0, {TownExpandMode::Roads});
 				break;
 
 			case WID_TV_DELETE: // delete town - only available on Scenario editor
-				Command<CMD_DELETE_TOWN>::Post(STR_ERROR_TOWN_CAN_T_DELETE, static_cast<TownID>(this->window_number));
+				Command<Commands::DeleteTown>::Post(STR_ERROR_TOWN_CAN_T_DELETE, static_cast<TownID>(this->window_number));
 				break;
 
 			case WID_TV_GRAPH: {
@@ -822,9 +822,9 @@ public:
 		if (!str.has_value()) return;
 
 		if (IsNonAdminNetworkClient()) {
-			Command<CMD_RENAME_TOWN_NON_ADMIN>::Post(STR_ERROR_CAN_T_RENAME_TOWN, static_cast<TownID>(this->window_number), *str);
+			Command<Commands::RenameTownNonAdmin>::Post(STR_ERROR_CAN_T_RENAME_TOWN, static_cast<TownID>(this->window_number), *str);
 		} else {
-			Command<CMD_RENAME_TOWN>::Post(STR_ERROR_CAN_T_RENAME_TOWN, static_cast<TownID>(this->window_number), *str);
+			Command<Commands::RenameTown>::Post(STR_ERROR_CAN_T_RENAME_TOWN, static_cast<TownID>(this->window_number), *str);
 		}
 	}
 
@@ -1536,7 +1536,7 @@ public:
 			if (original_name != this->townname_editbox.text.GetText()) name = this->townname_editbox.text.GetText();
 		}
 
-		bool success = Command<CMD_FOUND_TOWN>::Post(errstr, cc,
+		bool success = Command<Commands::FoundTown>::Post(errstr, cc,
 				tile, this->town_size, this->city, this->town_layout, random, townnameparts, std::move(name));
 
 		/* Rerandomise name, if success and no cost-estimation. */
@@ -1570,7 +1570,7 @@ public:
 
 			case WID_TF_EXPAND_ALL_TOWNS:
 				for (Town *t : Town::Iterate()) {
-					Command<CMD_EXPAND_TOWN>::Do(DoCommandFlag::Execute, t->index, 0, FoundTownWindow::expand_modes);
+					Command<Commands::ExpandTown>::Do(DoCommandFlag::Execute, t->index, 0, FoundTownWindow::expand_modes);
 				}
 				break;
 
@@ -1666,10 +1666,10 @@ void ShowFoundTownWindow()
  */
 struct SelectTownWindow : Window {
 	TownList towns{};                        ///< list of towns
-	CommandContainer<CMD_PLACE_HOUSE> cmd{}; ///< command to build the house
+	CommandContainer<Commands::PlaceHouse> cmd{}; ///< command to build the house
 	Scrollbar *vscroll = nullptr;            ///< scrollbar for the town list
 
-	SelectTownWindow(WindowDesc &desc, const CommandContainer<CMD_PLACE_HOUSE> &cmd) : Window(desc), cmd(cmd)
+	SelectTownWindow(WindowDesc &desc, const CommandContainer<Commands::PlaceHouse> &cmd) : Window(desc), cmd(cmd)
 	{
 		std::vector<std::pair<uint, TownID>> town_set;
 		constexpr uint MAX_TOWN_COUNT = 16;
@@ -1775,7 +1775,7 @@ static WindowDesc _select_town_desc(__FILE__, __LINE__,
 	_nested_select_town_widgets
 );
 
-static void ShowSelectTownWindow(const CommandContainer<CMD_PLACE_HOUSE> &cmd)
+static void ShowSelectTownWindow(const CommandContainer<Commands::PlaceHouse> &cmd)
 {
 	CloseWindowByClass(WC_SELECT_TOWN);
 	new SelectTownWindow(_select_town_desc, cmd);
@@ -2272,8 +2272,8 @@ struct BuildHouseWindow : public PickerWindow {
 
 	void PlaceSingleHouse(const HouseSpec *spec, TileIndex tile)
 	{
-		CommandContainer<CMD_PLACE_HOUSE> cmd_container(STR_ERROR_CAN_T_BUILD_HOUSE, tile,
-				CmdPayload<CMD_PLACE_HOUSE>::Make(spec->Index(), BuildHouseWindow::house_protected, TownID::Invalid(), BuildHouseWindow::replace), CommandCallback::PlaySound_CONSTRUCTION_OTHER);
+		CommandContainer<Commands::PlaceHouse> cmd_container(STR_ERROR_CAN_T_BUILD_HOUSE, tile,
+				CmdPayload<Commands::PlaceHouse>::Make(spec->Index(), BuildHouseWindow::house_protected, TownID::Invalid(), BuildHouseWindow::replace), CommandCallback::PlaySound_CONSTRUCTION_OTHER);
 		if (_ctrl_pressed) {
 			ShowSelectTownWindow(cmd_container);
 		} else {
@@ -2312,7 +2312,7 @@ struct BuildHouseWindow : public PickerWindow {
 			}
 			this->PlaceSingleHouse(HouseSpec::Get(house_type), start_tile);
 		} else {
-			Command<CMD_PLACE_HOUSE_AREA>::Post(STR_ERROR_CAN_T_BUILD_HOUSE, CommandCallback::PlaySound_CONSTRUCTION_OTHER,
+			Command<Commands::PlaceHouseArea>::Post(STR_ERROR_CAN_T_BUILD_HOUSE, CommandCallback::PlaySound_CONSTRUCTION_OTHER,
 					end_tile, start_tile, house_types, BuildHouseWindow::house_protected, TownID::Invalid(), BuildHouseWindow::replace, _ctrl_pressed);
 		}
 	}

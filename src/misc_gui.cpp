@@ -189,7 +189,7 @@ public:
 		Company *c = Company::GetIfValid(_local_company);
 		if (c != nullptr) {
 			assert(_current_company == _local_company);
-			CommandCost costclear = Command<CMD_LANDSCAPE_CLEAR>::Do(DoCommandFlag::QueryCost, tile);
+			CommandCost costclear = Command<Commands::LandscapeClear>::Do(DoCommandFlag::QueryCost, tile);
 			if (costclear.Succeeded()) {
 				Money cost = costclear.GetCost();
 				StringID str;
@@ -1203,10 +1203,10 @@ public:
 			case WID_QS_MOVE: // Move name button
 				if (Station::IsExpected(Station::Get(this->parent->window_number))) {
 					/* this is a station */
-					Command<CMD_MOVE_STATION_NAME>::Post(STR_ERROR_CAN_T_MOVE_STATION_NAME, CommandCallback::MoveStationName, this->parent->window_number, tile);
+					Command<Commands::MoveStationName>::Post(STR_ERROR_CAN_T_MOVE_STATION_NAME, CommandCallback::MoveStationName, this->parent->window_number, tile);
 				} else {
 					/* this is a waypoint */
-					Command<CMD_MOVE_WAYPOINT_NAME>::Post(STR_ERROR_CAN_T_MOVE_WAYPOINT_NAME, CommandCallback::MoveWaypointName, this->parent->window_number, tile);
+					Command<Commands::MoveWaypointName>::Post(STR_ERROR_CAN_T_MOVE_WAYPOINT_NAME, CommandCallback::MoveWaypointName, this->parent->window_number, tile);
 				}
 				break;
 

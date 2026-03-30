@@ -14,6 +14,6 @@
 #include "cargo_type.h"
 #include "source_type.h"
 
-DEF_CMD_TUPLE_NT(CMD_CREATE_SUBSIDY, CmdCreateSubsidy, CMD_DEITY, CommandType::OtherManagement, CmdDataT<CargoType, Source, Source>)
+DEF_CMD_TUPLE_NT(Commands::CreateSubsidy, CmdCreateSubsidy, CMD_DEITY, CommandType::OtherManagement, CmdDataT<CargoType, Source, Source>)
 
 #endif /* SUBSIDY_CMD_H */

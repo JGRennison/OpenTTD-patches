@@ -415,7 +415,7 @@ public:
 				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size())) {
 					const TemplateVehicle *tv = this->templates[this->selected_template_index];
 
-					Command<CMD_CHANGE_TEMPLATE_FLAG>::Post(STR_ERROR_CAN_T_DO_THIS, tv->index, TemplateReplacementFlag::ReuseDepotVehicles, !tv->IsSetReuseDepotVehicles());
+					Command<Commands::ChangeTemplateFlag>::Post(STR_ERROR_CAN_T_DO_THIS, tv->index, TemplateReplacementFlag::ReuseDepotVehicles, !tv->IsSetReuseDepotVehicles());
 				}
 				break;
 			}
@@ -424,7 +424,7 @@ public:
 				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size())) {
 					const TemplateVehicle *tv = this->templates[this->selected_template_index];
 
-					Command<CMD_CHANGE_TEMPLATE_FLAG>::Post(STR_ERROR_CAN_T_DO_THIS, tv->index, TemplateReplacementFlag::KeepRemaining, !tv->IsSetKeepRemainingVehicles());
+					Command<Commands::ChangeTemplateFlag>::Post(STR_ERROR_CAN_T_DO_THIS, tv->index, TemplateReplacementFlag::KeepRemaining, !tv->IsSetKeepRemainingVehicles());
 				}
 				break;
 			}
@@ -434,7 +434,7 @@ public:
 				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size())) {
 					const TemplateVehicle *tv = this->templates[this->selected_template_index];
 
-					Command<CMD_CHANGE_TEMPLATE_FLAG>::Post(STR_ERROR_CAN_T_DO_THIS, tv->index, TemplateReplacementFlag::RefitAsTemplate, widget == TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REFIT_AS_TEMPLATE);
+					Command<Commands::ChangeTemplateFlag>::Post(STR_ERROR_CAN_T_DO_THIS, tv->index, TemplateReplacementFlag::RefitAsTemplate, widget == TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REFIT_AS_TEMPLATE);
 				}
 				break;
 			}
@@ -443,7 +443,7 @@ public:
 				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size())) {
 					const TemplateVehicle *tv = this->templates[this->selected_template_index];
 
-					Command<CMD_CHANGE_TEMPLATE_FLAG>::Post(STR_ERROR_CAN_T_DO_THIS, tv->index, TemplateReplacementFlag::ReplaceOldOnly, !tv->IsReplaceOldOnly());
+					Command<Commands::ChangeTemplateFlag>::Post(STR_ERROR_CAN_T_DO_THIS, tv->index, TemplateReplacementFlag::ReplaceOldOnly, !tv->IsReplaceOldOnly());
 				}
 				break;
 			}
@@ -480,7 +480,7 @@ public:
 			case TRW_WIDGET_TMPL_BUTTONS_DELETE:
 				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size()) && !this->edit_in_progress) {
 					TemplateID template_index = ((this->templates)[selected_template_index])->index;
-					bool succeeded = Command<CMD_DELETE_TEMPLATE_VEHICLE>::Post(template_index);
+					bool succeeded = Command<Commands::DeleteTemplateVehicle>::Post(template_index);
 					if (succeeded) {
 						this->templates.ForceRebuild();
 						selected_template_index = -1;
@@ -550,7 +550,7 @@ public:
 				if ((this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size()) && this->selected_group != GroupID::Invalid()) {
 					TemplateID tv_index = ((this->templates)[selected_template_index])->index;
 
-					Command<CMD_ISSUE_TEMPLATE_REPLACEMENT>::Post(STR_ERROR_CAN_T_DO_THIS, this->selected_group, tv_index);
+					Command<Commands::IssueTemplateReplacement>::Post(STR_ERROR_CAN_T_DO_THIS, this->selected_group, tv_index);
 					this->UpdateButtonState();
 				}
 				break;
@@ -558,7 +558,7 @@ public:
 
 			case TRW_WIDGET_STOP: {
 				if (this->selected_group != GroupID::Invalid()) {
-					Command<CMD_DELETE_TEMPLATE_REPLACEMENT>::Post(STR_ERROR_CAN_T_DO_THIS, this->selected_group);
+					Command<Commands::DeleteTemplateReplacement>::Post(STR_ERROR_CAN_T_DO_THIS, this->selected_group);
 					this->UpdateButtonState();
 				}
 				break;
@@ -579,7 +579,7 @@ public:
 
 	virtual bool OnVehicleSelect(const Vehicle *v) override
 	{
-		bool succeeded = Command<CMD_CLONE_TEMPLATE_FROM_TRAIN>::Post(STR_TMPL_CANT_CREATE, v->index);
+		bool succeeded = Command<Commands::CloneTemplateFromTrain>::Post(STR_TMPL_CANT_CREATE, v->index);
 
 		if (!succeeded)	return false;
 
@@ -639,7 +639,7 @@ public:
 	{
 		if (str.has_value() && (this->selected_template_index >= 0) && (this->selected_template_index < (int)this->templates.size()) && !this->edit_in_progress) {
 			const TemplateVehicle *tmp = this->templates[this->selected_template_index];
-			Command<CMD_RENAME_TEMPLATE>::Post(STR_TMPL_CANT_RENAME, tmp->index, *str);
+			Command<Commands::RenameTemplate>::Post(STR_TMPL_CANT_RENAME, tmp->index, *str);
 		}
 	}
 

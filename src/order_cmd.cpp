@@ -2310,10 +2310,10 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 					order->SetLoadType(OLF_LOAD_IF_POSSIBLE);
 					order->SetUnloadType(OUF_UNLOAD_IF_POSSIBLE);
 					if (order->IsWaitTimetabled() || order->GetWaitTime() > 0) {
-						Command<CMD_CHANGE_TIMETABLE>::Do(flags, v->index, sel_ord, MTF_WAIT_TIME, 0, MTCF_CLEAR_FIELD);
+						Command<Commands::ChangeTimetable>::Do(flags, v->index, sel_ord, MTF_WAIT_TIME, 0, MTCF_CLEAR_FIELD);
 					}
 					if (order->IsScheduledDispatchOrder(false)) {
-						Command<CMD_CHANGE_TIMETABLE>::Do(flags, v->index, sel_ord, MTF_ASSIGN_SCHEDULE, -1, MTCF_NONE);
+						Command<Commands::ChangeTimetable>::Do(flags, v->index, sel_ord, MTF_ASSIGN_SCHEDULE, -1, MTCF_NONE);
 					}
 				}
 				break;
@@ -2745,7 +2745,7 @@ static void CheckAdvanceVehicleOrdersAfterClone(Vehicle *v, DoCommandFlags flags
 	if (target_orders.empty()) return;
 
 	VehicleOrderID skip_to = target_orders[v->unitnumber % target_orders.size()];
-	Command<CMD_SKIP_TO_ORDER>::Do(flags, v->index, skip_to);
+	Command<Commands::SkipToOrder>::Do(flags, v->index, skip_to);
 }
 
 static bool ShouldResetOrderIndicesOnOrderCopy(const Vehicle *src, const Vehicle *dst)
@@ -4021,7 +4021,7 @@ bool UpdateOrderDest(Vehicle *v, const Order *order, int conditional_depth, bool
 					v->current_order.SetDestination(closest_depot.destination);
 
 					/* If there is no depot in front, reverse automatically (trains only) */
-					if (v->type == VEH_TRAIN && closest_depot.reverse) Command<CMD_REVERSE_TRAIN_DIRECTION>::Do(DoCommandFlag::Execute, v->index, false);
+					if (v->type == VEH_TRAIN && closest_depot.reverse) Command<Commands::ReverseTrainDirection>::Do(DoCommandFlag::Execute, v->index, false);
 
 					if (v->type == VEH_AIRCRAFT) {
 						Aircraft *a = Aircraft::From(v);
@@ -4349,7 +4349,7 @@ CommandCost CmdMassChangeOrder(DoCommandFlags flags, DestinationID from_dest, Ve
 						Order new_order(*order);
 						new_order.SetDestination(to_dest);
 						if (CmdInsertOrderIntl(flags, v, index + 1, new_order, {CmdInsertOrderIntlFlag::AllowLoadByCargoType, CmdInsertOrderIntlFlag::AllowDuplicateUnbunch}).Succeeded()) {
-							Command<CMD_DELETE_ORDER>::Do(flags, v->index, index);
+							Command<Commands::DeleteOrder>::Do(flags, v->index, index);
 						}
 					}
 					index++;
@@ -4674,7 +4674,7 @@ CommandCost CmdBulkOrder(DoCommandFlags flags, const BulkOrderCmdData &cmd_data)
 					bool enabled;
 					buf.Recv_generic_seq({}, enabled);
 					if (buf.error) return CMD_ERROR;
-					CmdSchDispatch(flags, cmd_data.veh, enabled);
+					CmdSchDispatchSetEnabled(flags, cmd_data.veh, enabled);
 					break;
 				}
 

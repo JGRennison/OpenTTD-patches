@@ -113,7 +113,7 @@ void CcPlaySound_CONSTRUCTION_RAIL(const CommandCost &result, TileIndex tile)
 	if (result.Succeeded() && _settings_client.sound.confirm) SndPlayTileFx(SND_20_CONSTRUCTION_RAIL, tile);
 }
 
-using RailTrackCommandContainer = std::variant<CommandContainer<CMD_BUILD_RAILROAD_TRACK>, CommandContainer<CMD_REMOVE_RAILROAD_TRACK>, CommandContainer<CMD_BUILD_SINGLE_RAIL>, CommandContainer<CMD_REMOVE_SINGLE_RAIL>>;
+using RailTrackCommandContainer = std::variant<CommandContainer<Commands::BuildRailLong>, CommandContainer<Commands::RemoveRailLong>, CommandContainer<Commands::BuildRail>, CommandContainer<Commands::RemoveRail>>;
 
 static BuildRailTrackFlags GetBaseBuildRailTrackFlags()
 {
@@ -123,11 +123,11 @@ static BuildRailTrackFlags GetBaseBuildRailTrackFlags()
 static RailTrackCommandContainer GenericPlaceRailCmd(TileIndex tile, Track track)
 {
 	if (_remove_button_clicked) {
-		return CommandContainer<CMD_REMOVE_SINGLE_RAIL>(STR_ERROR_CAN_T_REMOVE_RAILROAD_TRACK, tile,
-				CmdPayload<CMD_REMOVE_SINGLE_RAIL>::Make(track), CommandCallback::PlaySound_CONSTRUCTION_RAIL);
+		return CommandContainer<Commands::RemoveRail>(STR_ERROR_CAN_T_REMOVE_RAILROAD_TRACK, tile,
+				CmdPayload<Commands::RemoveRail>::Make(track), CommandCallback::PlaySound_CONSTRUCTION_RAIL);
 	} else {
-		return CommandContainer<CMD_BUILD_SINGLE_RAIL>(STR_ERROR_CAN_T_BUILD_RAILROAD_TRACK, tile,
-				CmdPayload<CMD_BUILD_SINGLE_RAIL>::Make(_cur_railtype, track, GetBaseBuildRailTrackFlags()), CommandCallback::PlaySound_CONSTRUCTION_RAIL);
+		return CommandContainer<Commands::BuildRail>(STR_ERROR_CAN_T_BUILD_RAILROAD_TRACK, tile,
+				CmdPayload<Commands::BuildRail>::Make(_cur_railtype, track, GetBaseBuildRailTrackFlags()), CommandCallback::PlaySound_CONSTRUCTION_RAIL);
 	}
 }
 
@@ -144,7 +144,7 @@ static void PlaceExtraDepotRail(TileIndex tile, DiagDirection dir, Track track)
 	if (GetRailTileType(tile) == RailTileType::Signals && !_settings_client.gui.auto_remove_signals) return;
 	if ((GetTrackBits(tile) & DiagdirReachesTracks(dir)) == 0) return;
 
-	Command<CMD_BUILD_SINGLE_RAIL>::Post(tile, _cur_railtype, track, GetBaseBuildRailTrackFlags());
+	Command<Commands::BuildRail>::Post(tile, _cur_railtype, track, GetBaseBuildRailTrackFlags());
 }
 
 /** Additional pieces of track to add at the entrance of a depot. */
@@ -201,7 +201,7 @@ static void PlaceRail_Waypoint(TileIndex tile)
 	} else {
 		/* Tile where we can't build rail waypoints. This is always going to fail,
 		 * but provides the user with a proper error message. */
-		Command<CMD_BUILD_RAIL_WAYPOINT>::Post(STR_ERROR_CAN_T_BUILD_RAIL_WAYPOINT , tile, AXIS_X, 1, 1, STAT_CLASS_WAYP, 0, StationID::Invalid(), false);
+		Command<Commands::BuildRailWaypoint>::Post(STR_ERROR_CAN_T_BUILD_RAIL_WAYPOINT , tile, AXIS_X, 1, 1, STAT_CLASS_WAYP, 0, StationID::Invalid(), false);
 	}
 }
 
@@ -239,9 +239,9 @@ static void PlaceRail_Station(TileIndex tile)
 
 		auto proc = [=](bool test, StationID to_join) -> bool {
 			if (test) {
-				return Command<CMD_BUILD_RAIL_STATION>::Do(CommandFlagsToDCFlags(GetCommandFlags<CMD_BUILD_RAIL_STATION>()), tile, rt, params.axis, numtracks, platlength, params.sel_class, params.sel_type, StationID::Invalid(), adjacent).Succeeded();
+				return Command<Commands::BuildRailStation>::Do(CommandFlagsToDCFlags(GetCommandFlags<Commands::BuildRailStation>()), tile, rt, params.axis, numtracks, platlength, params.sel_class, params.sel_type, StationID::Invalid(), adjacent).Succeeded();
 			} else {
-				return Command<CMD_BUILD_RAIL_STATION>::Post(STR_ERROR_CAN_T_BUILD_RAILROAD_STATION, CommandCallback::Station, tile, rt, params.axis, numtracks, platlength, params.sel_class, params.sel_type, to_join, adjacent);
+				return Command<Commands::BuildRailStation>::Post(STR_ERROR_CAN_T_BUILD_RAILROAD_STATION, CommandCallback::Station, tile, rt, params.axis, numtracks, platlength, params.sel_class, params.sel_type, to_join, adjacent);
 			}
 		};
 
@@ -276,7 +276,7 @@ static void GenericPlaceSignals(TileIndex tile)
 	Track track = FindFirstTrack(trackbits);
 
 	if (_remove_button_clicked) {
-		Command<CMD_REMOVE_SINGLE_SIGNAL>::Post(STR_ERROR_CAN_T_REMOVE_SIGNALS_FROM, CommandCallback::PlaySound_CONSTRUCTION_RAIL, tile, track, RemoveSignalFlags::None);
+		Command<Commands::RemoveSignal>::Post(STR_ERROR_CAN_T_REMOVE_SIGNALS_FROM, CommandCallback::PlaySound_CONSTRUCTION_RAIL, tile, track, RemoveSignalFlags::None);
 		return;
 	}
 
@@ -338,7 +338,7 @@ static void GenericPlaceSignals(TileIndex tile)
 	}
 
 	StringID err = (w != nullptr && _convert_signal_button) ? STR_ERROR_SIGNAL_CAN_T_CONVERT_SIGNALS_HERE : STR_ERROR_CAN_T_BUILD_SIGNALS_HERE;
-	Command<CMD_BUILD_SINGLE_SIGNAL>::Post(err, CommandCallback::PlaySound_CONSTRUCTION_RAIL, tile, track, sigtype, sigvar, signal_style,
+	Command<Commands::BuildSignal>::Post(err, CommandCallback::PlaySound_CONSTRUCTION_RAIL, tile, track, sigtype, sigvar, signal_style,
 			Clamp<uint8_t>(_settings_client.gui.drag_signals_density, 1, 16), build_flags, cycle_types, num_dir_cycle, 0);
 }
 
@@ -445,12 +445,12 @@ static void BuildRailClick_Remove(Window *w)
 static RailTrackCommandContainer DoRailroadTrackCmd(TileIndex start_tile, TileIndex end_tile, Track track)
 {
 	if (_remove_button_clicked) {
-		return CommandContainer<CMD_REMOVE_RAILROAD_TRACK>(STR_ERROR_CAN_T_REMOVE_RAILROAD_TRACK, end_tile,
-				CmdPayload<CMD_REMOVE_RAILROAD_TRACK>::Make(start_tile, track),
+		return CommandContainer<Commands::RemoveRailLong>(STR_ERROR_CAN_T_REMOVE_RAILROAD_TRACK, end_tile,
+				CmdPayload<Commands::RemoveRailLong>::Make(start_tile, track),
 				CommandCallback::PlaySound_CONSTRUCTION_RAIL);
 	} else {
-		return CommandContainer<CMD_BUILD_RAILROAD_TRACK>(STR_ERROR_CAN_T_BUILD_RAILROAD_TRACK, end_tile,
-				CmdPayload<CMD_BUILD_RAILROAD_TRACK>::Make(start_tile, _cur_railtype, track, GetBaseBuildRailTrackFlags(), false),
+		return CommandContainer<Commands::BuildRailLong>(STR_ERROR_CAN_T_BUILD_RAILROAD_TRACK, end_tile,
+				CmdPayload<Commands::BuildRailLong>::Make(start_tile, _cur_railtype, track, GetBaseBuildRailTrackFlags(), false),
 				CommandCallback::PlaySound_CONSTRUCTION_RAIL);
 	}
 }
@@ -520,10 +520,10 @@ static void HandleAutoSignalPlacement()
 	if (_remove_button_clicked) {
 		RemoveSignalFlags remove_flags{};
 		if (_ctrl_pressed && _settings_client.gui.drag_signals_stop_restricted_signal) remove_flags |= RemoveSignalFlags::NoRemoveRestricted;
-		Command<CMD_REMOVE_SIGNAL_TRACK>::Post(STR_ERROR_CAN_T_REMOVE_SIGNALS_FROM, CommandCallback::PlaySound_CONSTRUCTION_RAIL,
+		Command<Commands::RemoveSignalLong>::Post(STR_ERROR_CAN_T_REMOVE_SIGNALS_FROM, CommandCallback::PlaySound_CONSTRUCTION_RAIL,
 				start_tile, end_tile, track, drag_flags, remove_flags);
 	} else {
-		Command<CMD_BUILD_SIGNAL_TRACK>::Post(STR_ERROR_CAN_T_BUILD_SIGNALS_HERE, CommandCallback::PlaySound_CONSTRUCTION_RAIL,
+		Command<Commands::BuildSignalLong>::Post(STR_ERROR_CAN_T_BUILD_SIGNALS_HERE, CommandCallback::PlaySound_CONSTRUCTION_RAIL,
 				start_tile, end_tile, track, sigtype, sigvar, signal_style, false, drag_flags, _settings_client.gui.drag_signals_density);
 	}
 }
@@ -879,7 +879,7 @@ struct BuildRailToolbarWindow : Window {
 				break;
 
 			case WID_RAT_BUILD_DEPOT:
-				Command<CMD_BUILD_TRAIN_DEPOT>::Post(STR_ERROR_CAN_T_BUILD_TRAIN_DEPOT, CommandCallback::RailDepot, tile, _cur_railtype, _build_depot_direction);
+				Command<Commands::BuildRailDepot>::Post(STR_ERROR_CAN_T_BUILD_TRAIN_DEPOT, CommandCallback::RailDepot, tile, _cur_railtype, _build_depot_direction);
 				break;
 
 			case WID_RAT_BUILD_WAYPOINT:
@@ -899,7 +899,7 @@ struct BuildRailToolbarWindow : Window {
 				break;
 
 			case WID_RAT_BUILD_TUNNEL:
-				Command<CMD_BUILD_TUNNEL>::Post(STR_ERROR_CAN_T_BUILD_TUNNEL_HERE, CommandCallback::BuildRailTunnel, tile, TRANSPORT_RAIL, _cur_railtype);
+				Command<Commands::BuildTunnel>::Post(STR_ERROR_CAN_T_BUILD_TUNNEL_HERE, CommandCallback::BuildRailTunnel, tile, TRANSPORT_RAIL, _cur_railtype);
 				break;
 
 			case WID_RAT_CONVERT_RAIL:
@@ -950,12 +950,12 @@ struct BuildRailToolbarWindow : Window {
 					break;
 
 				case DDSP_CONVERT_RAIL:
-					Command<CMD_CONVERT_RAIL>::Post(STR_ERROR_CAN_T_CONVERT_RAIL, CommandCallback::PlaySound_CONSTRUCTION_RAIL, end_tile, start_tile, _cur_railtype, _ctrl_pressed);
+					Command<Commands::ConvertRail>::Post(STR_ERROR_CAN_T_CONVERT_RAIL, CommandCallback::PlaySound_CONSTRUCTION_RAIL, end_tile, start_tile, _cur_railtype, _ctrl_pressed);
 					break;
 
 				case DDSP_CONVERT_RAIL_TRACK: {
 					Track track = (Track)(_thd.drawstyle & HT_DIR_MASK); // 0..5
-					Command<CMD_CONVERT_RAIL_TRACK>::Post(STR_ERROR_CAN_T_CONVERT_RAIL, CommandCallback::PlaySound_CONSTRUCTION_RAIL, end_tile, (_thd.drawstyle & HT_RAIL) ? end_tile : start_tile, track, _cur_railtype);
+					Command<Commands::ConvertRailTrack>::Post(STR_ERROR_CAN_T_CONVERT_RAIL, CommandCallback::PlaySound_CONSTRUCTION_RAIL, end_tile, (_thd.drawstyle & HT_RAIL) ? end_tile : start_tile, track, _cur_railtype);
 					break;
 				}
 
@@ -965,7 +965,7 @@ struct BuildRailToolbarWindow : Window {
 						/* Station */
 						if (_remove_button_clicked) {
 							bool keep_rail = !_ctrl_pressed;
-							Command<CMD_REMOVE_FROM_RAIL_STATION>::Post(STR_ERROR_CAN_T_REMOVE_PART_OF_STATION, CommandCallback::PlaySound_CONSTRUCTION_RAIL, end_tile, start_tile, keep_rail);
+							Command<Commands::RemoveFromRailStation>::Post(STR_ERROR_CAN_T_REMOVE_PART_OF_STATION, CommandCallback::PlaySound_CONSTRUCTION_RAIL, end_tile, start_tile, keep_rail);
 						} else {
 							HandleStationPlacement(start_tile, end_tile);
 						}
@@ -973,7 +973,7 @@ struct BuildRailToolbarWindow : Window {
 						/* Waypoint */
 						if (_remove_button_clicked) {
 							bool keep_rail = !_ctrl_pressed;
-							Command<CMD_REMOVE_FROM_RAIL_WAYPOINT>::Post(STR_ERROR_CAN_T_REMOVE_RAIL_WAYPOINT, CommandCallback::PlaySound_CONSTRUCTION_RAIL, end_tile, start_tile, keep_rail);
+							Command<Commands::RemoveFromRailWaypoint>::Post(STR_ERROR_CAN_T_REMOVE_RAIL_WAYPOINT, CommandCallback::PlaySound_CONSTRUCTION_RAIL, end_tile, start_tile, keep_rail);
 						} else {
 							TileArea ta(start_tile, end_tile);
 							Axis axis = select_method == VPM_X_LIMITED ? AXIS_X : AXIS_Y;
@@ -981,9 +981,9 @@ struct BuildRailToolbarWindow : Window {
 
 							auto proc = [=](bool test, StationID to_join) -> bool {
 								if (test) {
-									return Command<CMD_BUILD_RAIL_WAYPOINT>::Do(CommandFlagsToDCFlags(GetCommandFlags<CMD_BUILD_RAIL_WAYPOINT>()), ta.tile, axis, ta.w, ta.h, _waypoint_gui.sel_class, _waypoint_gui.sel_type, StationID::Invalid(), adjacent).Succeeded();
+									return Command<Commands::BuildRailWaypoint>::Do(CommandFlagsToDCFlags(GetCommandFlags<Commands::BuildRailWaypoint>()), ta.tile, axis, ta.w, ta.h, _waypoint_gui.sel_class, _waypoint_gui.sel_type, StationID::Invalid(), adjacent).Succeeded();
 								} else {
-									return Command<CMD_BUILD_RAIL_WAYPOINT>::Post(STR_ERROR_CAN_T_BUILD_RAIL_WAYPOINT, CommandCallback::PlaySound_CONSTRUCTION_RAIL, ta.tile, axis, ta.w, ta.h, _waypoint_gui.sel_class, _waypoint_gui.sel_type, to_join, adjacent);
+									return Command<Commands::BuildRailWaypoint>::Post(STR_ERROR_CAN_T_BUILD_RAIL_WAYPOINT, CommandCallback::PlaySound_CONSTRUCTION_RAIL, ta.tile, axis, ta.w, ta.h, _waypoint_gui.sel_class, _waypoint_gui.sel_type, to_join, adjacent);
 								}
 							};
 
@@ -1014,7 +1014,7 @@ struct BuildRailToolbarWindow : Window {
 
 	void OnPlacePresize([[maybe_unused]] Point pt, TileIndex tile) override
 	{
-		Command<CMD_BUILD_TUNNEL>::Do(DoCommandFlag::Auto, tile, TRANSPORT_RAIL, _cur_railtype);
+		Command<Commands::BuildTunnel>::Do(DoCommandFlag::Auto, tile, TRANSPORT_RAIL, _cur_railtype);
 		VpSetPresizeRange(tile, _build_tunnel_endtile == 0 ? tile : _build_tunnel_endtile);
 	}
 
@@ -1162,9 +1162,9 @@ static void HandleStationPlacement(TileIndex start, TileIndex end)
 
 	auto proc = [=](bool test, StationID to_join) -> bool {
 		if (test) {
-			return Command<CMD_BUILD_RAIL_STATION>::Do(CommandFlagsToDCFlags(GetCommandFlags<CMD_BUILD_RAIL_STATION>()), ta.tile, rt, params.axis, numtracks, platlength, params.sel_class, params.sel_type, StationID::Invalid(), adjacent).Succeeded();
+			return Command<Commands::BuildRailStation>::Do(CommandFlagsToDCFlags(GetCommandFlags<Commands::BuildRailStation>()), ta.tile, rt, params.axis, numtracks, platlength, params.sel_class, params.sel_type, StationID::Invalid(), adjacent).Succeeded();
 		} else {
-			return Command<CMD_BUILD_RAIL_STATION>::Post(STR_ERROR_CAN_T_BUILD_RAILROAD_STATION, CommandCallback::Station, ta.tile, rt, params.axis, numtracks, platlength, params.sel_class, params.sel_type, to_join, adjacent);
+			return Command<Commands::BuildRailStation>::Post(STR_ERROR_CAN_T_BUILD_RAILROAD_STATION, CommandCallback::Station, ta.tile, rt, params.axis, numtracks, platlength, params.sel_class, params.sel_type, to_join, adjacent);
 		}
 	};
 

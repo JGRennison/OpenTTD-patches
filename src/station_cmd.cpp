@@ -1110,7 +1110,7 @@ static CommandCost CheckFlatLandRailStation(TileArea tile_area, DoCommandFlags f
 								affected_vehicles.push_back(v);
 							}
 						}
-						CommandCost ret = Command<CMD_REMOVE_SINGLE_RAIL>::Do(flags, tile_cur, track);
+						CommandCost ret = Command<Commands::RemoveRail>::Do(flags, tile_cur, track);
 						if (ret.Failed()) return ret;
 						cost.AddCost(ret.GetCost());
 						/* With DoCommandFlags{flags}.Reset(DoCommandFlag::Execute) CmdLandscapeClear would fail since the rail still exists */
@@ -1118,7 +1118,7 @@ static CommandCost CheckFlatLandRailStation(TileArea tile_area, DoCommandFlags f
 					}
 				}
 			}
-			ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile_cur);
+			ret = Command<Commands::LandscapeClear>::Do(flags, tile_cur);
 			if (ret.Failed()) return ret;
 			cost.AddCost(ret.GetCost());
 		}
@@ -1244,7 +1244,7 @@ CommandCost CheckFlatLandRoadStop(TileArea tile_area, const RoadStopSpec *spec, 
 			} else if (require_road) {
 				return CommandCost(STR_ERROR_THERE_IS_NO_ROAD);
 			} else {
-				ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags, cur_tile);
+				ret = Command<Commands::LandscapeClear>::Do(flags, cur_tile);
 				if (ret.Failed()) return ret;
 				cost.AddCost(ret.GetCost());
 				cost.AddCost(RoadBuildCost(rt) * 2);
@@ -1289,7 +1289,7 @@ static CommandCost CheckFlatLandAirport(AirportTileTableIterator tile_iter, DoCo
 				}
 			}
 		} else {
-			ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile_cur);
+			ret = Command<Commands::LandscapeClear>::Do(flags, tile_cur);
 			if (ret.Failed()) return ret;
 			cost.AddCost(ret.GetCost());
 		}
@@ -2052,7 +2052,7 @@ static CommandCost RemoveRailStation(TileIndex tile, DoCommandFlags flags)
 {
 	/* if there is flooding, remove platforms tile by tile */
 	if (_current_company == OWNER_WATER) {
-		return Command<CMD_REMOVE_FROM_RAIL_STATION>::Do(DoCommandFlag::Execute, tile, TileIndex{}, false);
+		return Command<Commands::RemoveFromRailStation>::Do(DoCommandFlag::Execute, tile, TileIndex{}, false);
 	}
 
 	Station *st = Station::GetByTile(tile);
@@ -2076,7 +2076,7 @@ static CommandCost RemoveRailWaypoint(TileIndex tile, DoCommandFlags flags)
 {
 	/* if there is flooding, remove waypoints tile by tile */
 	if (_current_company == OWNER_WATER) {
-		return Command<CMD_REMOVE_FROM_RAIL_WAYPOINT>::Do(DoCommandFlag::Execute, tile, TileIndex{}, false);
+		return Command<Commands::RemoveFromRailWaypoint>::Do(DoCommandFlag::Execute, tile, TileIndex{}, false);
 	}
 
 	return RemoveRailStation(Waypoint::GetByTile(tile), flags, _price[Price::ClearWaypointRail]);
@@ -3083,7 +3083,7 @@ CommandCost CmdBuildDock(DoCommandFlags flags, TileIndex tile, StationID station
 	}
 
 	CommandCost cost(EXPENSES_CONSTRUCTION, _price[Price::BuildStationDock]);
-	ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
+	ret = Command<Commands::LandscapeClear>::Do(flags, tile);
 	if (ret.Failed()) return ret;
 	cost.AddCost(ret.GetCost());
 
@@ -3102,7 +3102,7 @@ CommandCost CmdBuildDock(DoCommandFlags flags, TileIndex tile, StationID station
 	WaterClass wc = GetWaterClass(flat_tile);
 
 	bool add_cost = !IsWaterTile(flat_tile);
-	ret = Command<CMD_LANDSCAPE_CLEAR>::Do(flags | DoCommandFlag::AllowRemoveWater, flat_tile);
+	ret = Command<Commands::LandscapeClear>::Do(flags | DoCommandFlag::AllowRemoveWater, flat_tile);
 	if (ret.Failed()) return ret;
 	if (add_cost) cost.AddCost(ret.GetCost());
 
@@ -5281,15 +5281,15 @@ static void ChangeTileOwner_Station(TileIndex tile, Owner old_owner, Owner new_o
 		if (IsDriveThroughStopTile(tile)) {
 			/* Remove the drive-through road stop */
 			if (IsRoadWaypoint(tile)) {
-				Command<CMD_REMOVE_FROM_ROAD_WAYPOINT>::Do({DoCommandFlag::Execute, DoCommandFlag::Bankrupt}, tile, tile);
+				Command<Commands::RemoveFromRoadWaypoint>::Do({DoCommandFlag::Execute, DoCommandFlag::Bankrupt}, tile, tile);
 			} else {
-				Command<CMD_REMOVE_ROAD_STOP>::Do({DoCommandFlag::Execute, DoCommandFlag::Bankrupt}, tile, 1, 1, (GetStationType(tile) == StationType::Truck) ? RoadStopType::Truck : RoadStopType::Bus, false);
+				Command<Commands::RemoveRoadStop>::Do({DoCommandFlag::Execute, DoCommandFlag::Bankrupt}, tile, 1, 1, (GetStationType(tile) == StationType::Truck) ? RoadStopType::Truck : RoadStopType::Bus, false);
 			}
 			assert_tile(IsTileType(tile, TileType::Road), tile);
 			/* Change owner of tile and all roadtypes */
 			ChangeTileOwner(tile, old_owner, new_owner);
 		} else {
-			Command<CMD_LANDSCAPE_CLEAR>::Do({DoCommandFlag::Execute, DoCommandFlag::Bankrupt}, tile);
+			Command<Commands::LandscapeClear>::Do({DoCommandFlag::Execute, DoCommandFlag::Bankrupt}, tile);
 			/* Set tile owner of water under (now removed) buoy and dock to OWNER_NONE.
 			 * Update owner of buoy if it was not removed (was in orders).
 			 * Do not update when owned by OWNER_WATER (sea and rivers). */
@@ -5429,7 +5429,7 @@ static CommandCost TerraformTile_Station(TileIndex tile, DoCommandFlags flags, i
 			}
 		}
 	}
-	return Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
+	return Command<Commands::LandscapeClear>::Do(flags, tile);
 }
 
 FlowStat::iterator FlowStat::erase_item(FlowStat::iterator iter, uint flow_reduction)

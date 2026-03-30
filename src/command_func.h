@@ -161,7 +161,7 @@ void NetworkSendCommand(TileIndex tile, const CmdPayload<Tcmd> &payload, StringI
 	return NetworkSendCommandImplementation(Tcmd, tile, payload, error_msg, callback, callback_param, company);
 }
 
-inline bool IsValidCommand(Commands cmd) { return cmd < CMD_END; }
+inline bool IsValidCommand(Commands cmd) { return cmd < Commands::End; }
 CommandFlags GetCommandFlags(Commands cmd);
 std::string_view GetCommandName(Commands cmd);
 bool IsCommandAllowedWhilePaused(Commands cmd);

@@ -15,10 +15,10 @@
 #include "industry_type.h"
 #include "industry.h"
 
-DEF_CMD_TUPLE   (CMD_BUILD_INDUSTRY,           CmdBuildIndustry,                          CMD_DEITY, CommandType::LandscapeConstruction, CmdDataT<IndustryType, uint32_t, bool, uint32_t>)
-DEF_CMD_TUPLE_NT(CMD_INDUSTRY_SET_FLAGS,       CmdIndustrySetFlags,        CMD_STR_CTRL | CMD_DEITY, CommandType::OtherManagement,       CmdDataT<IndustryID, IndustryControlFlags>)
-DEF_CMD_TUPLE_NT(CMD_INDUSTRY_SET_EXCLUSIVITY, CmdIndustrySetExclusivity,  CMD_STR_CTRL | CMD_DEITY, CommandType::OtherManagement,       CmdDataT<IndustryID, Owner, bool>)
-DEF_CMD_TUPLE_NT(CMD_INDUSTRY_SET_TEXT,        CmdIndustrySetText,         CMD_STR_CTRL | CMD_DEITY, CommandType::OtherManagement,       CmdDataT<IndustryID, EncodedString>)
-DEF_CMD_TUPLE_NT(CMD_INDUSTRY_SET_PRODUCTION,  CmdIndustrySetProduction,                  CMD_DEITY, CommandType::OtherManagement,       CmdDataT<IndustryID, uint8_t, bool, EncodedString>)
+DEF_CMD_TUPLE   (Commands::BuildIndustry,          CmdBuildIndustry,                          CMD_DEITY, CommandType::LandscapeConstruction, CmdDataT<IndustryType, uint32_t, bool, uint32_t>)
+DEF_CMD_TUPLE_NT(Commands::IndustrySetFlags,       CmdIndustrySetFlags,        CMD_STR_CTRL | CMD_DEITY, CommandType::OtherManagement,       CmdDataT<IndustryID, IndustryControlFlags>)
+DEF_CMD_TUPLE_NT(Commands::IndustrySetExclusivity, CmdIndustrySetExclusivity,  CMD_STR_CTRL | CMD_DEITY, CommandType::OtherManagement,       CmdDataT<IndustryID, Owner, bool>)
+DEF_CMD_TUPLE_NT(Commands::IndustrySetText,        CmdIndustrySetText,         CMD_STR_CTRL | CMD_DEITY, CommandType::OtherManagement,       CmdDataT<IndustryID, EncodedString>)
+DEF_CMD_TUPLE_NT(Commands::IndustrySetProduction,  CmdIndustrySetProduction,                  CMD_DEITY, CommandType::OtherManagement,       CmdDataT<IndustryID, uint8_t, bool, EncodedString>)
 
 #endif /* INDUSTRY_CMD_H */

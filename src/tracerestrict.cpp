@@ -2260,9 +2260,9 @@ void TraceRestrictNotifySignalRemoval(TileIndex tile, Track track)
 	if (removed) InvalidateWindowClassesData(WC_TRACE_RESTRICT);
 }
 
-BaseCommandContainer<CMD_PROGRAM_TRACERESTRICT_SIGNAL> GetTraceRestrictCommandContainer(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value)
+BaseCommandContainer<Commands::ProgramTracerestrictSignal> GetTraceRestrictCommandContainer(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value)
 {
-	return BaseCommandContainer<CMD_PROGRAM_TRACERESTRICT_SIGNAL>((StringID)0, tile, TraceRestrictProgramSignalData::Make(track, type, offset, value, {}));
+	return BaseCommandContainer<Commands::ProgramTracerestrictSignal>((StringID)0, tile, TraceRestrictProgramSignalData::Make(track, type, offset, value, {}));
 }
 
 /**
@@ -4005,7 +4005,7 @@ CommandCost CmdDeleteTraceRestrictSlotGroup(DoCommandFlags flags, TraceRestrictS
 	/* Delete sub-groups */
 	for (const TraceRestrictSlotGroup *gp : TraceRestrictSlotGroup::Iterate()) {
 		if (gp->parent == slot_group->index) {
-			Command<CMD_DELETE_TRACERESTRICT_SLOT_GROUP>::Do(flags, gp->index);
+			Command<Commands::DeleteTracerestrictSlotGroup>::Do(flags, gp->index);
 		}
 	}
 
@@ -4268,34 +4268,34 @@ CommandCost TraceRestrictFollowUpCmdData::ExecuteWithValue(uint16_t value, DoCom
 	if (this->cmd.payload == nullptr) return CMD_ERROR;
 
 	switch (cmd.cmd) {
-		case CMD_PROGRAM_TRACERESTRICT_SIGNAL: {
-			using Payload = CmdPayload<CMD_PROGRAM_TRACERESTRICT_SIGNAL>;
+		case Commands::ProgramTracerestrictSignal: {
+			using Payload = CmdPayload<Commands::ProgramTracerestrictSignal>;
 			if (const Payload *src = this->cmd.payload->AsType<Payload>(); src != nullptr) {
 				Payload payload = *src;
 				TraceRestrictInstructionItemRef(payload.data).SetValue(value);
-				return DoCommand<CMD_PROGRAM_TRACERESTRICT_SIGNAL>(this->cmd.tile, payload, flags);
+				return DoCommand<Commands::ProgramTracerestrictSignal>(this->cmd.tile, payload, flags);
 			}
 			break;
 		}
 
-		case CMD_PROGPRESIG_MODIFY_INSTRUCTION: {
-			using Payload = CmdPayload<CMD_PROGPRESIG_MODIFY_INSTRUCTION>;
+		case Commands::ProgpresigModifyInstruction: {
+			using Payload = CmdPayload<Commands::ProgpresigModifyInstruction>;
 			if (const Payload *src = this->cmd.payload->AsType<Payload>(); src != nullptr) {
 				Payload payload = *src;
 				uint32_t &cmd_value = payload.GetValue<3>(); // Make sure that it is the expected type
 				cmd_value = value;
-				return DoCommand<CMD_PROGPRESIG_MODIFY_INSTRUCTION>(this->cmd.tile, payload, flags);
+				return DoCommand<Commands::ProgpresigModifyInstruction>(this->cmd.tile, payload, flags);
 			}
 			break;
 		}
 
-		case CMD_MODIFY_ORDER: {
-			using Payload = CmdPayload<CMD_MODIFY_ORDER>;
+		case Commands::ModifyOrder: {
+			using Payload = CmdPayload<Commands::ModifyOrder>;
 			if (const Payload *src = this->cmd.payload->AsType<Payload>(); src != nullptr) {
 				Payload payload = *src;
 				uint16_t &cmd_value = payload.GetValue<3>(); // Make sure that it is the expected type
 				cmd_value = value;
-				return DoCommand<CMD_MODIFY_ORDER>(this->cmd.tile, payload, flags);
+				return DoCommand<Commands::ModifyOrder>(this->cmd.tile, payload, flags);
 			}
 			break;
 		}

@@ -16,14 +16,14 @@
 enum StationClassID : uint16_t;
 enum RoadStopClassID : uint16_t;
 
-DEF_CMD_TUPLE   (CMD_BUILD_RAIL_WAYPOINT,              CmdBuildRailWaypoint,                     {}, CommandType::LandscapeConstruction, CmdDataT<Axis, uint8_t, uint8_t, StationClassID, uint16_t, StationID, bool>)
-DEF_CMD_TUPLE   (CMD_REMOVE_FROM_RAIL_WAYPOINT,        CmdRemoveFromRailWaypoint,                {}, CommandType::LandscapeConstruction, CmdDataT<TileIndex, bool>)
-DEF_CMD_TUPLE   (CMD_BUILD_ROAD_WAYPOINT,              CmdBuildRoadWaypoint,                     {}, CommandType::LandscapeConstruction, CmdDataT<Axis, uint8_t, uint8_t, RoadStopClassID, uint16_t, StationID, bool>)
-DEF_CMD_TUPLE   (CMD_REMOVE_FROM_ROAD_WAYPOINT,        CmdRemoveFromRoadWaypoint,                {}, CommandType::LandscapeConstruction, CmdDataT<TileIndex>)
-DEF_CMD_TUPLE   (CMD_BUILD_BUOY,                       CmdBuildBuoy,                       CMD_AUTO, CommandType::LandscapeConstruction, CmdDataT<>)
-DEF_CMD_TUPLE_NT(CMD_RENAME_WAYPOINT,                  CmdRenameWaypoint,                        {}, CommandType::OtherManagement,       CmdDataT<StationID, std::string>)
-DEF_CMD_TUPLE_NT(CMD_MOVE_WAYPOINT_NAME,               CmdMoveWaypointName,                      {}, CommandType::OtherManagement,       CmdDataT<StationID, TileIndex>)
-DEF_CMD_TUPLE_NT(CMD_SET_WAYPOINT_LABEL_HIDDEN,        CmdSetWaypointLabelHidden,                {}, CommandType::OtherManagement,       CmdDataT<StationID, bool>)
-DEF_CMD_TUPLE_NT(CMD_EXCHANGE_WAYPOINT_NAMES,          CmdExchangeWaypointNames,                 {}, CommandType::OtherManagement,       CmdDataT<StationID, StationID>)
+DEF_CMD_TUPLE   (Commands::BuildRailWaypoint,           CmdBuildRailWaypoint,                     {}, CommandType::LandscapeConstruction, CmdDataT<Axis, uint8_t, uint8_t, StationClassID, uint16_t, StationID, bool>)
+DEF_CMD_TUPLE   (Commands::RemoveFromRailWaypoint,      CmdRemoveFromRailWaypoint,                {}, CommandType::LandscapeConstruction, CmdDataT<TileIndex, bool>)
+DEF_CMD_TUPLE   (Commands::BuildRoadWaypoint,           CmdBuildRoadWaypoint,                     {}, CommandType::LandscapeConstruction, CmdDataT<Axis, uint8_t, uint8_t, RoadStopClassID, uint16_t, StationID, bool>)
+DEF_CMD_TUPLE   (Commands::RemoveFromRoadWaypoint,      CmdRemoveFromRoadWaypoint,                {}, CommandType::LandscapeConstruction, CmdDataT<TileIndex>)
+DEF_CMD_TUPLE   (Commands::BuildBuoy,                   CmdBuildBuoy,                       CMD_AUTO, CommandType::LandscapeConstruction, CmdDataT<>)
+DEF_CMD_TUPLE_NT(Commands::RenameWaypoint,              CmdRenameWaypoint,                        {}, CommandType::OtherManagement,       CmdDataT<StationID, std::string>)
+DEF_CMD_TUPLE_NT(Commands::MoveWaypointName,            CmdMoveWaypointName,                      {}, CommandType::OtherManagement,       CmdDataT<StationID, TileIndex>)
+DEF_CMD_TUPLE_NT(Commands::SetWaypointLabelHidden,      CmdSetWaypointLabelHidden,                {}, CommandType::OtherManagement,       CmdDataT<StationID, bool>)
+DEF_CMD_TUPLE_NT(Commands::ExchangeWaypointNames,       CmdExchangeWaypointNames,                 {}, CommandType::OtherManagement,       CmdDataT<StationID, StationID>)
 
 #endif /* WAYPOINT_CMD_H */

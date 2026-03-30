@@ -98,41 +98,41 @@ bool TestCommandPayload(const typename CmdPayload<Cmd>::Tuple &values, std::init
 
 TEST_CASE("CmdDataT simple tests")
 {
-	CHECK(CmdPayload<CMD_REMOVE_PLAN>::Make(PlanID{5}) == CmdPayload<CMD_REMOVE_PLAN>::Make(PlanID{5}));
-	CHECK(CmdPayload<CMD_REMOVE_PLAN>::Make(PlanID{5}) != CmdPayload<CMD_REMOVE_PLAN>::Make(PlanID{6}));
+	CHECK(CmdPayload<Commands::RemovePlan>::Make(PlanID{5}) == CmdPayload<Commands::RemovePlan>::Make(PlanID{5}));
+	CHECK(CmdPayload<Commands::RemovePlan>::Make(PlanID{5}) != CmdPayload<Commands::RemovePlan>::Make(PlanID{6}));
 
-	CHECK(TestCommandPayload<CMD_ADD_PLAN>({}, {}));
-	CHECK(TestCommandPayload<CMD_REMOVE_PLAN>({ PlanID{5} }, { 5, 0 }));
-	CHECK(TestCommandPayload<CMD_RENAME_PLAN>({ PlanID{6}, "abc" }, { 6, 0, 0x61, 0x62, 0x63, 0 }));
-	CHECK(TestCommandPayload<CMD_RENAME_PLAN>({ PlanID{6}, "abcdefabcdefabcdefabcdefabcdef" }, { 6, 0, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0 }));
-	CHECK(TestCommandPayload<CMD_CHANGE_PLAN_VISIBILITY>({ PlanID{7}, true }, { 7, 0, 1 }));
-	CHECK(TestCommandPayload<CMD_START_STOP_VEHICLE>({ VehicleID{8}, true }, { 8, 1 }));
-	CHECK(TestCommandPayload<CMD_MONEY_CHEAT>({ 0 }, { 0 }));
-	CHECK(TestCommandPayload<CMD_MONEY_CHEAT>({ -1 }, { 1 }));
-	CHECK(TestCommandPayload<CMD_MONEY_CHEAT>({ 1 }, { 2 }));
-	CHECK(TestCommandPayload<CMD_MONEY_CHEAT>({ 1000000 }, { 0xDE, 0x84, 0x80 }));
+	CHECK(TestCommandPayload<Commands::AddPlan>({}, {}));
+	CHECK(TestCommandPayload<Commands::RemovePlan>({ PlanID{5} }, { 5, 0 }));
+	CHECK(TestCommandPayload<Commands::RenamePlan>({ PlanID{6}, "abc" }, { 6, 0, 0x61, 0x62, 0x63, 0 }));
+	CHECK(TestCommandPayload<Commands::RenamePlan>({ PlanID{6}, "abcdefabcdefabcdefabcdefabcdef" }, { 6, 0, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0x61, 0x62, 0x63, 0x64, 0x65, 0x66, 0 }));
+	CHECK(TestCommandPayload<Commands::ChangePlanVisibility>({ PlanID{7}, true }, { 7, 0, 1 }));
+	CHECK(TestCommandPayload<Commands::StartStopVehicle>({ VehicleID{8}, true }, { 8, 1 }));
+	CHECK(TestCommandPayload<Commands::MoneyCheat>({ 0 }, { 0 }));
+	CHECK(TestCommandPayload<Commands::MoneyCheat>({ -1 }, { 1 }));
+	CHECK(TestCommandPayload<Commands::MoneyCheat>({ 1 }, { 2 }));
+	CHECK(TestCommandPayload<Commands::MoneyCheat>({ 1000000 }, { 0xDE, 0x84, 0x80 }));
 }
 
 TEST_CASE("TupleRefCmdData tests")
 {
 	CmdCompanyCtrlData payload = CmdCompanyCtrlData::Make(CCA_NEW_AI, CompanyID{2}, CompanyRemoveReason{3}, {}, CompanyID{5});
-	CHECK(TestGeneralCommandPayload<CMD_COMPANY_CTRL>(payload, PayloadChecker{{ 1, 2, 3, 0, 5 }}));
+	CHECK(TestGeneralCommandPayload<Commands::CompanyControl>(payload, PayloadChecker{{ 1, 2, 3, 0, 5 }}));
 
 	CmdCompanyCtrlData payload2 = payload;
-	SetPreCheckedCommandPayloadClientID(CMD_COMPANY_CTRL, payload2, ClientID{4});
+	SetPreCheckedCommandPayloadClientID(Commands::CompanyControl, payload2, ClientID{4});
 	CHECK(payload2 != payload);
-	CHECK(TestGeneralCommandPayload<CMD_COMPANY_CTRL>(payload2, PayloadChecker{{ 1, 2, 3, 4, 5 }}));
+	CHECK(TestGeneralCommandPayload<Commands::CompanyControl>(payload2, PayloadChecker{{ 1, 2, 3, 4, 5 }}));
 }
 
 TEST_CASE("Command string sanitise tests")
 {
-	auto non_string = CmdPayload<CMD_ADD_PLAN>::Make();
+	auto non_string = CmdPayload<Commands::AddPlan>::Make();
 	CHECK(non_string.GetOperations().sanitise_strings == nullptr);
 
-	auto simple_string = CmdPayload<CMD_RENAME_SIGN>::Make(SignID{1}, "ab_\x1F\x1E_cd", INVALID_COLOUR);
+	auto simple_string = CmdPayload<Commands::RenameSign>::Make(SignID{1}, "ab_\x1F\x1E_cd", INVALID_COLOUR);
 	simple_string.SanitiseStrings(StringValidationSetting::ReplaceWithQuestionMark);
 	CHECK(simple_string.GetValue<1>() == "ab_??_cd");
-	CHECK(simple_string == CmdPayload<CMD_RENAME_SIGN>::Make(SignID{1}, "ab_??_cd", INVALID_COLOUR));
+	CHECK(simple_string == CmdPayload<Commands::RenameSign>::Make(SignID{1}, "ab_??_cd", INVALID_COLOUR));
 }
 
 TEST_CASE("Command format debug summary")
@@ -146,14 +146,14 @@ TEST_CASE("Command format debug summary")
 		return buf;
 	};
 
-	CHECK(get_summary(CmdPayload<CMD_ADD_PLAN>::Make()) == "");
-	CHECK(get_summary(CmdPayload<CMD_RENAME_PLAN>::Make(PlanID{1}, "abc")) == "1");
-	CHECK(get_summary(CmdPayload<CMD_START_STOP_VEHICLE>::Make(VehicleID{2}, true)) == "2, true");
-	CHECK(get_summary(CmdPayload<CMD_CLEAR_AREA>::Make(TileIndex{0x405}, false)) == "405 (5 x 16), false");
-	CHECK(get_summary(CmdPayload<CMD_CHANGE_SETTING>::Make("setting_name", 1234)) == "setting_name, 1234");
-	CHECK(get_summary(CmdPayload<CMD_PROGRAM_TRACERESTRICT_SIGNAL>::Make(TRACK_Y, TRDCT_MODIFY_ITEM, 5, 0x12345678, "string")) == "track: 1, type: 1 (modify), offset: 5, data: 12345678");
-	CHECK(get_summary(CmdPayload<CMD_CUSTOM_NEWS_ITEM>::Make(NewsType{1}, CompanyID{2}, VehicleID{42}, GetEncodedRawString("test string"))) == "1, 2, (2: 42)");
-	CHECK(get_summary(CmdPayload<CMD_CUSTOM_NEWS_ITEM>::Make(NewsType{1}, CompanyID{2}, IndustryID{42}, GetEncodedRawString("test string"))) == "1, 2, (4: 42)");
+	CHECK(get_summary(CmdPayload<Commands::AddPlan>::Make()) == "");
+	CHECK(get_summary(CmdPayload<Commands::RenamePlan>::Make(PlanID{1}, "abc")) == "1");
+	CHECK(get_summary(CmdPayload<Commands::StartStopVehicle>::Make(VehicleID{2}, true)) == "2, true");
+	CHECK(get_summary(CmdPayload<Commands::ClearArea>::Make(TileIndex{0x405}, false)) == "405 (5 x 16), false");
+	CHECK(get_summary(CmdPayload<Commands::ChangeSetting>::Make("setting_name", 1234)) == "setting_name, 1234");
+	CHECK(get_summary(CmdPayload<Commands::ProgramTracerestrictSignal>::Make(TRACK_Y, TRDCT_MODIFY_ITEM, 5, 0x12345678, "string")) == "track: 1, type: 1 (modify), offset: 5, data: 12345678");
+	CHECK(get_summary(CmdPayload<Commands::CreateCustomNewsItem>::Make(NewsType{1}, CompanyID{2}, VehicleID{42}, GetEncodedRawString("test string"))) == "1, 2, (2: 42)");
+	CHECK(get_summary(CmdPayload<Commands::CreateCustomNewsItem>::Make(NewsType{1}, CompanyID{2}, IndustryID{42}, GetEncodedRawString("test string"))) == "1, 2, (4: 42)");
 
 	TraceRestrictCreateSlotCmdData data;
 	data.vehtype = VEH_TRAIN;

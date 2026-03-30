@@ -275,7 +275,7 @@ public:
 
 		TileIndex tile = TileVirtXY(pt.x, pt.y);
 
-		if (_pause_mode.Any() && !IsCommandAllowedWhilePaused(CMD_BULK_TREE) && !_shift_pressed) {
+		if (_pause_mode.Any() && !IsCommandAllowedWhilePaused(Commands::BulkTree) && !_shift_pressed) {
 			ShowErrorMessage(GetEncodedString(STR_ERROR_CAN_T_PLANT_TREE_HERE), GetEncodedString(STR_ERROR_NOT_ALLOWED_WHILE_PAUSED), WL_INFO, ::TileX(tile), ::TileY(tile));
 			ResetObjectToPlace();
 			return;
@@ -287,7 +287,7 @@ public:
 	{
 		if (this->mode == PM_NORMAL) {
 			if (pt.x != -1 && select_proc == DDSP_PLANT_TREES && this->trees_to_plant.Any()) {
-				Command<CMD_PLANT_TREE>::Post(STR_ERROR_CAN_T_PLANT_TREE_HERE, end_tile, start_tile, this->trees_to_plant, 1, _ctrl_pressed);
+				Command<Commands::PlantTree>::Post(STR_ERROR_CAN_T_PLANT_TREE_HERE, end_tile, start_tile, this->trees_to_plant, 1, _ctrl_pressed);
 			}
 		} else {
 			if (_game_mode != GM_EDITOR && pt.x != -1 && select_proc == DDSP_PLANT_TREES && this->trees_to_plant.Any()) {

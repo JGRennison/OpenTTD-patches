@@ -342,7 +342,7 @@ static CommandCost BuildReplacementVehicleRefitFailure(EngineID e, const Vehicle
 static CommandCost BuildReplacementMultiPartShipSimple(EngineID e, const Vehicle *old_veh, Vehicle **new_vehicle)
 {
 	/* Build the new vehicle */
-	CommandCost cost = Command<CMD_BUILD_VEHICLE>::Do({DoCommandFlag::Execute, DoCommandFlag::AutoReplace}, old_veh->tile, e, false, INVALID_CARGO, INVALID_CLIENT_ID);
+	CommandCost cost = Command<Commands::BuildVehicle>::Do({DoCommandFlag::Execute, DoCommandFlag::AutoReplace}, old_veh->tile, e, false, INVALID_CARGO, INVALID_CLIENT_ID);
 	if (cost.Failed()) return cost;
 
 	auto veh_id = cost.GetResultData<VehicleID>();
@@ -357,7 +357,7 @@ static CommandCost BuildReplacementMultiPartShipSimple(EngineID e, const Vehicle
 		if (old->cargo_type == INVALID_CARGO) continue;
 
 		uint8_t subtype = GetBestFittingSubType(old, v, old->cargo_type);
-		CommandCost refit_cost = Command<CMD_REFIT_VEHICLE>::Do(DoCommandFlag::Execute, v->index, old->cargo_type, subtype, false, false, 1);
+		CommandCost refit_cost = Command<Commands::RefitVehicle>::Do(DoCommandFlag::Execute, v->index, old->cargo_type, subtype, false, false, 1);
 		if (refit_cost.Succeeded()) cost.AddCost(refit_cost.GetCost());
 	}
 
@@ -410,7 +410,7 @@ static CommandCost BuildReplacementMultiPartShip(EngineID e, const Vehicle *old_
 				assert(old_cargo_vehs[c] != nullptr);
 
 				uint8_t subtype = GetBestFittingSubType(old_cargo_vehs[c], v, c);
-				CommandCost refit_cost = Command<CMD_REFIT_VEHICLE>::Do(DoCommandFlag::Execute, v->index, c, subtype, false, false, 1);
+				CommandCost refit_cost = Command<Commands::RefitVehicle>::Do(DoCommandFlag::Execute, v->index, c, subtype, false, false, 1);
 				if (refit_cost.Succeeded()) cost.AddCost(refit_cost.GetCost());
 			}
 		}
@@ -452,7 +452,7 @@ static CommandCost BuildReplacementMultiPartShip(EngineID e, const Vehicle *old_
 	if (new_vehicle == nullptr) return CommandCost(); // dry-run: success
 
 	/* Build the new vehicle */
-	CommandCost cost = Command<CMD_BUILD_VEHICLE>::Do({DoCommandFlag::Execute, DoCommandFlag::AutoReplace}, old_veh->tile, e, false, INVALID_CARGO, INVALID_CLIENT_ID);
+	CommandCost cost = Command<Commands::BuildVehicle>::Do({DoCommandFlag::Execute, DoCommandFlag::AutoReplace}, old_veh->tile, e, false, INVALID_CARGO, INVALID_CLIENT_ID);
 	if (cost.Failed()) return cost;
 
 	auto veh_id = cost.GetResultData<VehicleID>();
@@ -468,7 +468,7 @@ static CommandCost BuildReplacementMultiPartShip(EngineID e, const Vehicle *old_
 
 		assert(old_cargo_vehs[c] != nullptr);
 		uint8_t subtype = GetBestFittingSubType(old_cargo_vehs[c], v, c);
-		CommandCost refit_cost = Command<CMD_REFIT_VEHICLE>::Do(DoCommandFlag::Execute, v->index, c, subtype, false, false, 1);
+		CommandCost refit_cost = Command<Commands::RefitVehicle>::Do(DoCommandFlag::Execute, v->index, c, subtype, false, false, 1);
 		if (refit_cost.Succeeded()) cost.AddCost(refit_cost.GetCost());
 	}
 	return cost;
@@ -520,7 +520,7 @@ static CommandCost BuildReplacementVehicle(const Vehicle *old_veh, Vehicle **new
 	}
 
 	/* Build the new vehicle */
-	cost = Command<CMD_BUILD_VEHICLE>::Do({DoCommandFlag::Execute, DoCommandFlag::AutoReplace}, old_veh->tile, e, false, INVALID_CARGO, INVALID_CLIENT_ID);
+	cost = Command<Commands::BuildVehicle>::Do({DoCommandFlag::Execute, DoCommandFlag::AutoReplace}, old_veh->tile, e, false, INVALID_CARGO, INVALID_CLIENT_ID);
 	if (cost.Failed()) return cost;
 
 	auto veh_id = cost.GetResultData<VehicleID>();
@@ -533,7 +533,7 @@ static CommandCost BuildReplacementVehicle(const Vehicle *old_veh, Vehicle **new
 	if (refit_cargo != CARGO_NO_REFIT) {
 		uint8_t subtype = GetBestFittingSubType(old_veh, new_veh, refit_cargo);
 
-		cost.AddCost(Command<CMD_REFIT_VEHICLE>::Do(DoCommandFlag::Execute, new_veh->index, refit_cargo, subtype, false, false, 0));
+		cost.AddCost(Command<Commands::RefitVehicle>::Do(DoCommandFlag::Execute, new_veh->index, refit_cargo, subtype, false, false, 0));
 		assert(cost.Succeeded()); // This should be ensured by GetNewCargoTypeForReplace()
 	}
 
@@ -542,7 +542,7 @@ static CommandCost BuildReplacementVehicle(const Vehicle *old_veh, Vehicle **new
 		/* Only copy the reverse state if neither old or new vehicle implements reverse-on-build probability callback. */
 		if (!TestVehicleBuildProbability(old_veh, old_veh->engine_type, BuildProbabilityType::Reversed).has_value() &&
 			!TestVehicleBuildProbability(new_veh, new_veh->engine_type, BuildProbabilityType::Reversed).has_value()) {
-			Command<CMD_REVERSE_TRAIN_DIRECTION>::Do(DoCommandFlag::Execute, new_veh->index, true);
+			Command<Commands::ReverseTrainDirection>::Do(DoCommandFlag::Execute, new_veh->index, true);
 		}
 	}
 
@@ -570,7 +570,7 @@ static inline CommandCost CmdStartStopVehicle(const Vehicle *v, bool evaluate_ca
  */
 static inline CommandCost CmdMoveVehicle(const Vehicle *v, const Vehicle *after, DoCommandFlags flags, bool whole_chain)
 {
-	return Command<CMD_MOVE_RAIL_VEHICLE>::Do(flags | DoCommandFlag::NoCargoCapacityCheck, v->index, after != nullptr ? after->index : VehicleID::Invalid(), whole_chain ? MoveRailVehicleFlags::MoveChain : MoveRailVehicleFlags::None);
+	return Command<Commands::MoveRailVehicle>::Do(flags | DoCommandFlag::NoCargoCapacityCheck, v->index, after != nullptr ? after->index : VehicleID::Invalid(), whole_chain ? MoveRailVehicleFlags::MoveChain : MoveRailVehicleFlags::None);
 }
 
 /**
@@ -585,10 +585,10 @@ CommandCost CopyHeadSpecificThings(Vehicle *old_head, Vehicle *new_head, DoComma
 	CommandCost cost = CommandCost();
 
 	/* Share orders */
-	if (cost.Succeeded() && old_head != new_head) cost.AddCost(Command<CMD_CLONE_ORDER>::Do(DoCommandFlag::Execute, CO_SHARE, new_head->index, old_head->index));
+	if (cost.Succeeded() && old_head != new_head) cost.AddCost(Command<Commands::CloneOrder>::Do(DoCommandFlag::Execute, CO_SHARE, new_head->index, old_head->index));
 
 	/* Copy group membership */
-	if (cost.Succeeded() && old_head != new_head) cost.AddCost(Command<CMD_ADD_VEHICLE_GROUP>::Do(DoCommandFlag::Execute, old_head->group_id, new_head->index, false));
+	if (cost.Succeeded() && old_head != new_head) cost.AddCost(Command<Commands::AddVehicleToGroup>::Do(DoCommandFlag::Execute, old_head->group_id, new_head->index, false));
 
 	/* Perform start/stop check whether the new vehicle suits newgrf restrictions etc. */
 	if (start_stop_check && cost.Succeeded()) {
@@ -669,11 +669,11 @@ static CommandCost ReplaceFreeUnit(Vehicle **single_unit, DoCommandFlags flags, 
 		}
 
 		/* Sell the old vehicle */
-		cost.AddCost(Command<CMD_SELL_VEHICLE>::Do(flags, old_v->index, SellVehicleFlags::None, INVALID_CLIENT_ID));
+		cost.AddCost(Command<Commands::SellVehicle>::Do(flags, old_v->index, SellVehicleFlags::None, INVALID_CLIENT_ID));
 
 		/* If we are not in DoCommandFlag::Execute undo everything */
 		if (!flags.Test(DoCommandFlag::Execute)) {
-			Command<CMD_SELL_VEHICLE>::Do(DoCommandFlag::Execute, new_v->index, SellVehicleFlags::None, INVALID_CLIENT_ID);
+			Command<Commands::SellVehicle>::Do(DoCommandFlag::Execute, new_v->index, SellVehicleFlags::None, INVALID_CLIENT_ID);
 		}
 	}
 
@@ -807,7 +807,7 @@ static CommandCost ReplaceChain(Vehicle **chain, DoCommandFlags flags, bool wago
 					assert(RailVehInfo(wagon->engine_type)->railveh_type == RAILVEH_WAGON);
 
 					/* Sell wagon */
-					[[maybe_unused]] CommandCost ret = Command<CMD_SELL_VEHICLE>::Do(DoCommandFlag::Execute, wagon->index, SellVehicleFlags::None, INVALID_CLIENT_ID);
+					[[maybe_unused]] CommandCost ret = Command<Commands::SellVehicle>::Do(DoCommandFlag::Execute, wagon->index, SellVehicleFlags::None, INVALID_CLIENT_ID);
 					assert(ret.Succeeded());
 					it->new_veh = nullptr;
 
@@ -843,7 +843,7 @@ static CommandCost ReplaceChain(Vehicle **chain, DoCommandFlags flags, bool wago
 					/* Sell the vehicle.
 					 * Note: This might temporarily construct new trains, so use DoCommandFlag::AutoReplace to prevent
 					 *       it from failing due to engine limits. */
-					cost.AddCost(Command<CMD_SELL_VEHICLE>::Do(flags | DoCommandFlag::AutoReplace, w->index, SellVehicleFlags::None, INVALID_CLIENT_ID));
+					cost.AddCost(Command<Commands::SellVehicle>::Do(flags | DoCommandFlag::AutoReplace, w->index, SellVehicleFlags::None, INVALID_CLIENT_ID));
 				}
 
 				if (flags.Test(DoCommandFlag::Execute)) CheckCargoCapacity(new_head);
@@ -870,7 +870,7 @@ static CommandCost ReplaceChain(Vehicle **chain, DoCommandFlags flags, bool wago
 		if (!flags.Test(DoCommandFlag::Execute)) {
 			for (auto it = std::rbegin(replacements); it != std::rend(replacements); ++it) {
 				if (it->new_veh != nullptr) {
-					Command<CMD_SELL_VEHICLE>::Do(DoCommandFlag::Execute, it->new_veh->index, SellVehicleFlags::None, INVALID_CLIENT_ID);
+					Command<Commands::SellVehicle>::Do(DoCommandFlag::Execute, it->new_veh->index, SellVehicleFlags::None, INVALID_CLIENT_ID);
 					it->new_veh = nullptr;
 				}
 			}
@@ -897,12 +897,12 @@ static CommandCost ReplaceChain(Vehicle **chain, DoCommandFlags flags, bool wago
 				}
 
 				/* Sell the old vehicle */
-				cost.AddCost(Command<CMD_SELL_VEHICLE>::Do(flags, old_head->index, SellVehicleFlags::None, INVALID_CLIENT_ID));
+				cost.AddCost(Command<Commands::SellVehicle>::Do(flags, old_head->index, SellVehicleFlags::None, INVALID_CLIENT_ID));
 			}
 
 			/* If we are not in DoCommandFlag::Execute undo everything */
 			if (!flags.Test(DoCommandFlag::Execute)) {
-				Command<CMD_SELL_VEHICLE>::Do(DoCommandFlag::Execute, new_head->index, SellVehicleFlags::None, INVALID_CLIENT_ID);
+				Command<Commands::SellVehicle>::Do(DoCommandFlag::Execute, new_head->index, SellVehicleFlags::None, INVALID_CLIENT_ID);
 			}
 		}
 	}

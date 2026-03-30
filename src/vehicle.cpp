@@ -448,7 +448,7 @@ void ShowNewGrfVehicleError(EngineID engine, StringID part1, StringID part2, GRF
 		grfconfig->grf_bugs.Set(bug_type);
 		ShowErrorMessage(GetEncodedString(part1, grfconfig->GetName()),
 			GetEncodedString(part2, std::monostate{}, engine), WL_CRITICAL);
-		if (!_networking) Command<CMD_PAUSE>::Do(DoCommandFlag::Execute, critical ? PauseMode::Error : PauseMode::Normal, true);
+		if (!_networking) Command<Commands::Pause>::Do(DoCommandFlag::Execute, critical ? PauseMode::Error : PauseMode::Normal, true);
 	}
 
 	std::array<StringParameter, 2> params = { grfconfig->GetName(), engine };
@@ -1730,7 +1730,7 @@ void CallVehicleTicks()
 		int y = v->y_pos;
 		int z = v->z_pos;
 
-		CommandCost cost = Command<CMD_SELL_VEHICLE>::Do(DoCommandFlag::Execute, v->index, SellVehicleFlags::SellChain, INVALID_CLIENT_ID);
+		CommandCost cost = Command<Commands::SellVehicle>::Do(DoCommandFlag::Execute, v->index, SellVehicleFlags::SellChain, INVALID_CLIENT_ID);
 		v = nullptr;
 		if (!cost.Succeeded()) continue;
 
@@ -1766,13 +1766,13 @@ void CallVehicleTicks()
 		tmpl_cur_company.Change(t->owner);
 
 
-		CommandCost res = Command<CMD_TEMPLATE_REPLACE_VEHICLE>::Do(DoCommandFlag::Execute, t->index);
+		CommandCost res = Command<Commands::TemplateReplaceVehicle>::Do(DoCommandFlag::Execute, t->index);
 		if (auto result_v = res.GetResultData<VehicleID>(); result_v.has_value()) {
 			t = Train::Get(*result_v);
 		}
 		Company *c = Company::Get(_current_company);
 		SubtractMoneyFromCompany(c, CommandCost(EXPENSES_NEW_VEHICLES, (Money)c->settings.engine_renew_money));
-		CommandCost res2 = Command<CMD_AUTOREPLACE_VEHICLE>::Do(DoCommandFlag::Execute, t->index, true);
+		CommandCost res2 = Command<Commands::AutoreplaceVehicle>::Do(DoCommandFlag::Execute, t->index, true);
 		if (auto result_v = res2.GetResultData<VehicleID>(); result_v.has_value()) {
 			t = Train::Get(*result_v);
 		}
@@ -1820,7 +1820,7 @@ void CallVehicleTicks()
 
 		const Company *c = Company::Get(_current_company);
 		SubtractMoneyFromCompany(_current_company, CommandCost(EXPENSES_NEW_VEHICLES, (Money)c->settings.engine_renew_money));
-		CommandCost res = Command<CMD_AUTOREPLACE_VEHICLE>::Do(DoCommandFlag::Execute, v->index, false);
+		CommandCost res = Command<Commands::AutoreplaceVehicle>::Do(DoCommandFlag::Execute, v->index, false);
 		SubtractMoneyFromCompany(_current_company, CommandCost(EXPENSES_NEW_VEHICLES, -(Money)c->settings.engine_renew_money));
 
 		if (!IsLocalCompany()) continue;
@@ -1887,7 +1887,7 @@ void RemoveVirtualTrainsOfUser(uint32_t user)
 	for (const Train *front : _tick_train_front_cache) {
 		if (front->IsVirtual() && front->motion_counter == user) {
 			cur_company.Change(front->owner);
-			Command<CMD_DELETE_VIRTUAL_TRAIN>::Post(front->index);
+			Command<Commands::DeleteVirtualTrain>::Post(front->index);
 		}
 	}
 	cur_company.Restore();
@@ -2769,7 +2769,7 @@ void VehicleEnterDepot(Vehicle *v)
 
 		if (v->current_order.IsRefit()) {
 			Backup<CompanyID> cur_company(_current_company, v->owner, FILE_LINE);
-			CommandCost cost = Command<CMD_REFIT_VEHICLE>::Do(DoCommandFlag::Execute, v->index, v->current_order.GetRefitCargo(), 0xFF, false, false, 0);
+			CommandCost cost = Command<Commands::RefitVehicle>::Do(DoCommandFlag::Execute, v->index, v->current_order.GetRefitCargo(), 0xFF, false, false, 0);
 			cur_company.Restore();
 
 			if (cost.Failed()) {
@@ -3998,7 +3998,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlags flags, DepotCommandFlags command
 				int y = this->y_pos;
 				int z = this->z_pos;
 
-				CommandCost cost = Command<CMD_SELL_VEHICLE>::Do(flags, this->index, SellVehicleFlags::SellChain, INVALID_CLIENT_ID);
+				CommandCost cost = Command<Commands::SellVehicle>::Do(flags, this->index, SellVehicleFlags::SellChain, INVALID_CLIENT_ID);
 				if (cost.Succeeded()) {
 					if (IsLocalCompany()) {
 						if (cost.GetCost() != 0) {
@@ -4125,7 +4125,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlags flags, DepotCommandFlags command
 
 		/* If there is no depot in front and the train is not already reversing, reverse automatically (trains only) */
 		if (this->type == VEH_TRAIN && (closest_depot.reverse != Train::From(this)->flags.Test(VehicleRailFlag::Reversing))) {
-			Command<CMD_REVERSE_TRAIN_DIRECTION>::Do(DoCommandFlag::Execute, this->index, false);
+			Command<Commands::ReverseTrainDirection>::Do(DoCommandFlag::Execute, this->index, false);
 		}
 
 		if (this->type == VEH_AIRCRAFT) {

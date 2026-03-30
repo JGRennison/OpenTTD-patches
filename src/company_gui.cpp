@@ -513,7 +513,7 @@ struct CompanyFinancesWindow : Window {
 					this->query_widget = WID_CF_INCREASE_LOAN;
 					ShowQueryString(GetString(STR_JUST_INT, 0), STR_FINANCES_BORROW_QUERY_CAPT, 20, this, CS_NUMERAL, QueryStringFlag::AcceptUnchanged);
 				} else {
-					Command<CMD_INCREASE_LOAN>::Post(STR_ERROR_CAN_T_BORROW_ANY_MORE_MONEY, _ctrl_pressed ? LoanCommand::Max : LoanCommand::Interval, 0);
+					Command<Commands::IncreaseLoan>::Post(STR_ERROR_CAN_T_BORROW_ANY_MORE_MONEY, _ctrl_pressed ? LoanCommand::Max : LoanCommand::Interval, 0);
 				}
 				break;
 
@@ -522,7 +522,7 @@ struct CompanyFinancesWindow : Window {
 					this->query_widget = WID_CF_REPAY_LOAN;
 					ShowQueryString(GetString(STR_JUST_INT, 0), STR_FINANCES_REPAY_QUERY_CAPT, 20, this, CS_NUMERAL, QueryStringFlag::AcceptUnchanged);
 				} else {
-					Command<CMD_DECREASE_LOAN>::Post(STR_ERROR_CAN_T_REPAY_LOAN, _ctrl_pressed ? LoanCommand::Max : LoanCommand::Interval, 0);
+					Command<Commands::DecreaseLoan>::Post(STR_ERROR_CAN_T_REPAY_LOAN, _ctrl_pressed ? LoanCommand::Max : LoanCommand::Interval, 0);
 				}
 				break;
 
@@ -544,12 +544,12 @@ struct CompanyFinancesWindow : Window {
 			const Company *c = Company::Get((CompanyID)this->window_number);
 			Money amount = std::min<Money>(*llvalue / GetCurrency().rate, _economy.max_loan - c->current_loan);
 			amount = LOAN_INTERVAL * CeilDivT<Money>(amount, LOAN_INTERVAL);
-			Command<CMD_INCREASE_LOAN>::Post(STR_ERROR_CAN_T_BORROW_ANY_MORE_MONEY, LoanCommand::Amount, amount);
+			Command<Commands::IncreaseLoan>::Post(STR_ERROR_CAN_T_BORROW_ANY_MORE_MONEY, LoanCommand::Amount, amount);
 		} else if (this->query_widget == WID_CF_REPAY_LOAN) {
 			const Company *c = Company::Get((CompanyID)this->window_number);
 			Money amount = std::min<Money>(*llvalue / GetCurrency().rate, c->current_loan);
 			amount = LOAN_INTERVAL * CeilDivT<Money>(amount, LOAN_INTERVAL);
-			Command<CMD_DECREASE_LOAN>::Post(STR_ERROR_CAN_T_REPAY_LOAN, LoanCommand::Amount, amount);
+			Command<Commands::DecreaseLoan>::Post(STR_ERROR_CAN_T_REPAY_LOAN, LoanCommand::Amount, amount);
 		}
 	}
 
@@ -1051,12 +1051,12 @@ public:
 			for (LiveryScheme scheme = LS_DEFAULT; scheme < LS_END; scheme++) {
 				/* Changed colour for the selected scheme, or all visible schemes if CTRL is pressed. */
 				if (HasBit(this->sel, scheme) || (_ctrl_pressed && _livery_class[scheme] == this->livery_class && HasBit(_loaded_newgrf_features.used_liveries, scheme))) {
-					Command<CMD_SET_COMPANY_COLOUR>::Post(scheme, widget == WID_SCL_PRI_COL_DROPDOWN, colour);
+					Command<Commands::SetCompanyColour>::Post(scheme, widget == WID_SCL_PRI_COL_DROPDOWN, colour);
 				}
 			}
 		} else {
 			/* Setting group livery */
-			Command<CMD_SET_GROUP_LIVERY>::Post(static_cast<GroupID>(this->sel), widget == WID_SCL_PRI_COL_DROPDOWN, colour);
+			Command<Commands::SetGroupLivery>::Post(static_cast<GroupID>(this->sel), widget == WID_SCL_PRI_COL_DROPDOWN, colour);
 		}
 	}
 
@@ -1431,7 +1431,7 @@ public:
 
 			/* OK button */
 			case WID_SCMF_ACCEPT:
-				Command<CMD_SET_COMPANY_MANAGER_FACE>::Post(this->face.style, this->face.bits);
+				Command<Commands::SetCompanyManagerFace>::Post(this->face.style, this->face.bits);
 				[[fallthrough]];
 
 			/* Cancel button */
@@ -2449,11 +2449,11 @@ struct CompanyWindow : Window
 				break;
 
 			case WID_C_BUY_SHARE:
-				Command<CMD_BUY_SHARE_IN_COMPANY>::Post(STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS, (CompanyID)this->window_number);
+				Command<Commands::BuyShareInCompany>::Post(STR_ERROR_CAN_T_BUY_25_SHARE_IN_THIS, (CompanyID)this->window_number);
 				break;
 
 			case WID_C_SELL_SHARE:
-				Command<CMD_SELL_SHARE_IN_COMPANY>::Post(STR_ERROR_CAN_T_SELL_25_SHARE_IN, (CompanyID)this->window_number);
+				Command<Commands::SellShareInCompany>::Post(STR_ERROR_CAN_T_SELL_25_SHARE_IN, (CompanyID)this->window_number);
 				break;
 
 			case WID_C_HOSTILE_TAKEOVER:
@@ -2490,7 +2490,7 @@ struct CompanyWindow : Window
 
 	void OnPlaceObject([[maybe_unused]] Point pt, TileIndex tile) override
 	{
-		if (Command<CMD_BUILD_OBJECT>::Post(STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS, tile, OBJECT_HQ, 0) && !_shift_pressed) {
+		if (Command<Commands::BuildObject>::Post(STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS, tile, OBJECT_HQ, 0) && !_shift_pressed) {
 			ResetObjectToPlace();
 			this->RaiseButtons();
 		}
@@ -2515,16 +2515,16 @@ struct CompanyWindow : Window
 				auto value = ParseInteger<uint64_t>(*str, 10, true);
 				if (!value.has_value()) return;
 				Money money = *value / GetCurrency().rate;
-				Command<CMD_GIVE_MONEY>::Post(STR_ERROR_CAN_T_GIVE_MONEY, CommandCallback::GiveMoney, money, (CompanyID)this->window_number);
+				Command<Commands::GiveMoney>::Post(STR_ERROR_CAN_T_GIVE_MONEY, CommandCallback::GiveMoney, money, (CompanyID)this->window_number);
 				break;
 			}
 
 			case WID_C_PRESIDENT_NAME:
-				Command<CMD_RENAME_PRESIDENT>::Post(STR_ERROR_CAN_T_CHANGE_PRESIDENT, *str);
+				Command<Commands::RenamePresident>::Post(STR_ERROR_CAN_T_CHANGE_PRESIDENT, *str);
 				break;
 
 			case WID_C_COMPANY_NAME:
-				Command<CMD_RENAME_COMPANY>::Post(STR_ERROR_CAN_T_CHANGE_COMPANY_NAME, *str);
+				Command<Commands::RenameCompany>::Post(STR_ERROR_CAN_T_CHANGE_COMPANY_NAME, *str);
 				break;
 
 			case WID_C_COMPANY_JOIN:
@@ -2623,7 +2623,7 @@ struct BuyCompanyWindow : Window {
 	{
 		const Company *c = Company::GetIfValid((CompanyID)this->window_number);
 		if (!this->hostile_takeover && c != nullptr && c->bankrupt_asked.Test(this->owner) && _current_company == this->owner) {
-			EnqueueDoCommandP<CMD_DECLINE_BUY_COMPANY>({}, CmdPayload<CMD_DECLINE_BUY_COMPANY>::Make((CompanyID)this->window_number), (StringID)0);
+			EnqueueDoCommandP<Commands::DeclineBuyCompany>({}, CmdPayload<Commands::DeclineBuyCompany>::Make((CompanyID)this->window_number), (StringID)0);
 		}
 		this->Window::Close();
 	}
@@ -2678,7 +2678,7 @@ struct BuyCompanyWindow : Window {
 				break;
 
 			case WID_BC_YES:
-				Command<CMD_BUY_COMPANY>::Post(STR_ERROR_CAN_T_BUY_COMPANY, (CompanyID)this->window_number, this->hostile_takeover);
+				Command<Commands::BuyCompany>::Post(STR_ERROR_CAN_T_BUY_COMPANY, (CompanyID)this->window_number, this->hostile_takeover);
 				break;
 		}
 	}

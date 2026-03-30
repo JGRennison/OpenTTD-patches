@@ -670,7 +670,7 @@ CommandCost CmdClearArea(DoCommandFlags flags, TileIndex tile, TileIndex start_t
 	OrthogonalOrDiagonalTileIterator iter(tile, start_tile, diagonal);
 	for (; *iter != INVALID_TILE; ++iter) {
 		TileIndex t = *iter;
-		CommandCost ret = Command<CMD_LANDSCAPE_CLEAR>::Do(DoCommandFlags{flags}.Reset(DoCommandFlag::Execute), t);
+		CommandCost ret = Command<Commands::LandscapeClear>::Do(DoCommandFlags{flags}.Reset(DoCommandFlag::Execute), t);
 		if (ret.Failed()) {
 			last_error = std::move(ret);
 
@@ -686,7 +686,7 @@ CommandCost CmdClearArea(DoCommandFlags flags, TileIndex tile, TileIndex start_t
 				cost.SetAdditionalCashRequired(ret.GetCost());
 				return cost;
 			}
-			Command<CMD_LANDSCAPE_CLEAR>::Do(flags, t);
+			Command<Commands::LandscapeClear>::Do(flags, t);
 
 			/* draw explosion animation...
 			 * Disable explosions when game is paused. Looks silly and blocks the view. */
@@ -1432,9 +1432,9 @@ static bool FlowRiver(TileIndex spring, TileIndex begin, uint min_river_length)
 				} else {
 					/* Sea is too small, flatten it so the river keeps looking or forms a lake / wetland. */
 					for (TileIndex sea_tile : sea) {
-						Command<CMD_TERRAFORM_LAND>::Do(DoCommandFlag::Execute, sea_tile, SLOPE_ELEVATED, false);
+						Command<Commands::TerraformLand>::Do(DoCommandFlag::Execute, sea_tile, SLOPE_ELEVATED, false);
 						Slope slope = ComplementSlope(GetTileSlope(sea_tile));
-						Command<CMD_TERRAFORM_LAND>::Do(DoCommandFlag::Execute, sea_tile, slope, true);
+						Command<Commands::TerraformLand>::Do(DoCommandFlag::Execute, sea_tile, slope, true);
 					}
 				}
 			} else {

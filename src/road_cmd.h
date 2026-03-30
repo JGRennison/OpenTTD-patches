@@ -24,10 +24,10 @@ enum class BuildRoadFlags : uint8_t {
 };
 DECLARE_ENUM_AS_BIT_SET(BuildRoadFlags)
 
-DEF_CMD_TUPLE(CMD_BUILD_LONG_ROAD,  CmdBuildLongRoad,  CMD_DEITY | CMD_NO_WATER | CMD_AUTO, CommandType::LandscapeConstruction, CmdDataT<TileIndex, RoadType, Axis, DisallowedRoadDirections, bool, bool, bool>)
-DEF_CMD_TUPLE(CMD_REMOVE_LONG_ROAD, CmdRemoveLongRoad,              CMD_NO_TEST | CMD_AUTO, CommandType::LandscapeConstruction, CmdDataT<TileIndex, RoadType, Axis, bool, bool>) // towns may disallow removing road bits (as they are connected) in test, but in exec they're removed and thus removing is allowed.
-DEF_CMD_TUPLE(CMD_BUILD_ROAD,       CmdBuildRoad,      CMD_DEITY | CMD_NO_WATER | CMD_AUTO, CommandType::LandscapeConstruction, CmdDataT<RoadBits, RoadType, DisallowedRoadDirections, TownID, BuildRoadFlags>)
-DEF_CMD_TUPLE(CMD_BUILD_ROAD_DEPOT, CmdBuildRoadDepot,             CMD_NO_WATER | CMD_AUTO, CommandType::LandscapeConstruction, CmdDataT<RoadType, DiagDirection>)
-DEF_CMD_TUPLE(CMD_CONVERT_ROAD,     CmdConvertRoad,                                     {}, CommandType::LandscapeConstruction, CmdDataT<TileIndex, RoadType, bool>)
+DEF_CMD_TUPLE(Commands::BuildRoadLong,   CmdBuildLongRoad,  CMD_DEITY | CMD_NO_WATER | CMD_AUTO, CommandType::LandscapeConstruction, CmdDataT<TileIndex, RoadType, Axis, DisallowedRoadDirections, bool, bool, bool>)
+DEF_CMD_TUPLE(Commands::RemoveRoadLong,  CmdRemoveLongRoad,              CMD_NO_TEST | CMD_AUTO, CommandType::LandscapeConstruction, CmdDataT<TileIndex, RoadType, Axis, bool, bool>) // towns may disallow removing road bits (as they are connected) in test, but in exec they're removed and thus removing is allowed.
+DEF_CMD_TUPLE(Commands::BuildRoad,       CmdBuildRoad,      CMD_DEITY | CMD_NO_WATER | CMD_AUTO, CommandType::LandscapeConstruction, CmdDataT<RoadBits, RoadType, DisallowedRoadDirections, TownID, BuildRoadFlags>)
+DEF_CMD_TUPLE(Commands::BuildRoadDepot,  CmdBuildRoadDepot,             CMD_NO_WATER | CMD_AUTO, CommandType::LandscapeConstruction, CmdDataT<RoadType, DiagDirection>)
+DEF_CMD_TUPLE(Commands::ConvertRoad,     CmdConvertRoad,                                     {}, CommandType::LandscapeConstruction, CmdDataT<TileIndex, RoadType, bool>)
 
 #endif /* ROAD_CMD_H */

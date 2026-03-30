@@ -47,7 +47,7 @@ void CcBuildWagon(const CommandCost &result, TileIndex tile)
 	if (found != nullptr) {
 		found = found->Last();
 		/* put the new wagon at the end of the loco. */
-		Command<CMD_MOVE_RAIL_VEHICLE>::Post(found->tile, *veh_id, found->index, MoveRailVehicleFlags::None);
+		Command<Commands::MoveRailVehicle>::Post(found->tile, *veh_id, found->index, MoveRailVehicleFlags::None);
 		InvalidateVehicleListWindows(VEH_TRAIN);
 	}
 }

@@ -15,7 +15,7 @@
 #include "engine_type.h"
 #include "group_type.h"
 
-DEF_CMD_TUPLE_NT(CMD_AUTOREPLACE_VEHICLE, CmdAutoreplaceVehicle, {}, CommandType::VehicleManagement, CmdDataT<VehicleID, bool>)
-DEF_CMD_TUPLE_NT(CMD_SET_AUTOREPLACE,     CmdSetAutoReplace,     {}, CommandType::VehicleManagement, CmdDataT<GroupID, EngineID, EngineID, bool>)
+DEF_CMD_TUPLE_NT(Commands::AutoreplaceVehicle, CmdAutoreplaceVehicle, {}, CommandType::VehicleManagement, CmdDataT<VehicleID, bool>)
+DEF_CMD_TUPLE_NT(Commands::SetAutoreplace,     CmdSetAutoReplace,     {}, CommandType::VehicleManagement, CmdDataT<GroupID, EngineID, EngineID, bool>)
 
 #endif /* AUTOREPLACE_CMD_H */

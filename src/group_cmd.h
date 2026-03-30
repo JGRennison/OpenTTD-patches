@@ -24,14 +24,14 @@ enum class AlterGroupMode : uint8_t {
 	SetParent, ///< Change group parent.
 };
 
-DEF_CMD_TUPLE_NT(CMD_CREATE_GROUP,              CmdCreateGroup,             {}, CommandType::RouteManagement, CmdDataT<VehicleType, GroupID>)
-DEF_CMD_TUPLE_NT(CMD_DELETE_GROUP,              CmdDeleteGroup,             {}, CommandType::RouteManagement, CmdDataT<GroupID>)
-DEF_CMD_TUPLE_NT(CMD_ALTER_GROUP,               CmdAlterGroup,              {}, CommandType::OtherManagement, CmdDataT<AlterGroupMode, GroupID, GroupID, std::string>)
-DEF_CMD_TUPLE_NT(CMD_ADD_VEHICLE_GROUP,         CmdAddVehicleGroup,         {}, CommandType::RouteManagement, CmdDataT<GroupID, VehicleID, bool>)
-DEF_CMD_TUPLE_NT(CMD_ADD_SHARED_VEHICLE_GROUP,  CmdAddSharedVehicleGroup,   {}, CommandType::RouteManagement, CmdDataT<GroupID, VehicleType>)
-DEF_CMD_TUPLE_NT(CMD_REMOVE_ALL_VEHICLES_GROUP, CmdRemoveAllVehiclesGroup,  {}, CommandType::RouteManagement, CmdDataT<GroupID>)
-DEF_CMD_TUPLE_NT(CMD_SET_GROUP_FLAG,            CmdSetGroupFlag,            {}, CommandType::RouteManagement, CmdDataT<GroupID, GroupFlag, bool, bool>)
-DEF_CMD_TUPLE_NT(CMD_SET_GROUP_LIVERY,          CmdSetGroupLivery,          {}, CommandType::RouteManagement, CmdDataT<GroupID, bool, Colours>)
-DEF_CMD_TUPLE_NT(CMD_CREATE_GROUP_FROM_LIST,    CmdCreateGroupFromList,     {}, CommandType::OtherManagement, CmdDataT<VehicleListIdentifier, CargoType, std::string>)
+DEF_CMD_TUPLE_NT(Commands::CreateGroup,              CmdCreateGroup,             {}, CommandType::RouteManagement, CmdDataT<VehicleType, GroupID>)
+DEF_CMD_TUPLE_NT(Commands::DeleteGroup,              CmdDeleteGroup,             {}, CommandType::RouteManagement, CmdDataT<GroupID>)
+DEF_CMD_TUPLE_NT(Commands::AlterGroup,               CmdAlterGroup,              {}, CommandType::OtherManagement, CmdDataT<AlterGroupMode, GroupID, GroupID, std::string>)
+DEF_CMD_TUPLE_NT(Commands::AddVehicleToGroup,        CmdAddVehicleGroup,         {}, CommandType::RouteManagement, CmdDataT<GroupID, VehicleID, bool>)
+DEF_CMD_TUPLE_NT(Commands::AddSharedVehiclesToGroup, CmdAddSharedVehicleGroup,   {}, CommandType::RouteManagement, CmdDataT<GroupID, VehicleType>)
+DEF_CMD_TUPLE_NT(Commands::RemoveAllVehiclesGroup,   CmdRemoveAllVehiclesGroup,  {}, CommandType::RouteManagement, CmdDataT<GroupID>)
+DEF_CMD_TUPLE_NT(Commands::SetGroupFlag,             CmdSetGroupFlag,            {}, CommandType::RouteManagement, CmdDataT<GroupID, GroupFlag, bool, bool>)
+DEF_CMD_TUPLE_NT(Commands::SetGroupLivery,           CmdSetGroupLivery,          {}, CommandType::RouteManagement, CmdDataT<GroupID, bool, Colours>)
+DEF_CMD_TUPLE_NT(Commands::CreateGroupFromList,      CmdCreateGroupFromList,     {}, CommandType::OtherManagement, CmdDataT<VehicleListIdentifier, CargoType, std::string>)
 
 #endif /* GROUP_CMD_H */

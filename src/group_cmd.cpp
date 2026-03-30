@@ -588,12 +588,12 @@ CommandCost CmdDeleteGroup(DoCommandFlags flags, GroupID group_id)
 	GroupChangeDeferredUpdateScope updater(g->vehicle_type);
 
 	/* Remove all vehicles from the group */
-	Command<CMD_REMOVE_ALL_VEHICLES_GROUP>::Do(flags, group_id);
+	Command<Commands::RemoveAllVehiclesGroup>::Do(flags, group_id);
 
 	/* Delete sub-groups */
 	for (const Group *gp : Group::Iterate()) {
 		if (gp->parent == g->index) {
-			Command<CMD_DELETE_GROUP>::Do(flags, gp->index);
+			Command<Commands::DeleteGroup>::Do(flags, gp->index);
 		}
 	}
 
@@ -731,7 +731,7 @@ CommandCost CmdCreateGroupFromList(DoCommandFlags flags, VehicleListIdentifier v
 
 	GroupChangeDeferredUpdateScope updater(vli.vtype);
 
-	CommandCost ret = Command<CMD_CREATE_GROUP>::Do(flags, vli.vtype, GroupID::Invalid());
+	CommandCost ret = Command<Commands::CreateGroup>::Do(flags, vli.vtype, GroupID::Invalid());
 	if (ret.Failed()) return ret;
 
 	if (!name.empty()) {
@@ -928,7 +928,7 @@ CommandCost CmdAddSharedVehicleGroup(DoCommandFlags flags, GroupID id_g, Vehicle
 
 				/* For each shared vehicles add it to the group */
 				for (Vehicle *v2 = v->FirstShared(); v2 != nullptr; v2 = v2->NextShared()) {
-					if (v2->group_id != id_g) Command<CMD_ADD_VEHICLE_GROUP>::Do(flags, id_g, v2->index, false);
+					if (v2->group_id != id_g) Command<Commands::AddVehicleToGroup>::Do(flags, id_g, v2->index, false);
 				}
 			}
 		}

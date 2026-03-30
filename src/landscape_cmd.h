@@ -13,7 +13,7 @@
 #include "command_type.h"
 #include "tile_type.h"
 
-DEF_CMD_TUPLE(CMD_LANDSCAPE_CLEAR, CmdLandscapeClear,   CMD_DEITY, CommandType::LandscapeConstruction, CmdDataT<>)
-DEF_CMD_TUPLE(CMD_CLEAR_AREA,      CmdClearArea,      CMD_NO_TEST, CommandType::LandscapeConstruction, CmdDataT<TileIndex, bool>) // destroying multi-tile houses makes town rating differ between test and execution
+DEF_CMD_TUPLE(Commands::LandscapeClear, CmdLandscapeClear,   CMD_DEITY, CommandType::LandscapeConstruction, CmdDataT<>)
+DEF_CMD_TUPLE(Commands::ClearArea,      CmdClearArea,      CMD_NO_TEST, CommandType::LandscapeConstruction, CmdDataT<TileIndex, bool>) // destroying multi-tile houses makes town rating differ between test and execution
 
 #endif /* LANDSCAPE_CMD_H */

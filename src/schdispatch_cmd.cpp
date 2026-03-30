@@ -35,7 +35,7 @@
  * @param enable Whether to enable scheduled dispatch.
  * @return the cost of this operation or an error
  */
-CommandCost CmdSchDispatch(DoCommandFlags flags, VehicleID veh, bool enable)
+CommandCost CmdSchDispatchSetEnabled(DoCommandFlags flags, VehicleID veh, bool enable)
 {
 	Vehicle *v = Vehicle::GetIfValid(veh);
 	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;

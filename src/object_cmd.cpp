@@ -294,7 +294,7 @@ CommandCost CmdBuildObject(DoCommandFlags flags, TileIndex tile, ObjectType type
 	if (type == OBJECT_OWNED_LAND) {
 		if (_settings_game.construction.purchase_land_permitted == 0) return CommandCost(STR_PURCHASE_LAND_NOT_PERMITTED);
 		/* Owned land is special as it can be placed on any slope. */
-		cost.AddCost(Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile));
+		cost.AddCost(Command<Commands::LandscapeClear>::Do(flags, tile));
 	} else {
 		/* Check the surface to build on. At this time we can't actually execute the
 		 * the CLEAR_TILE commands since the newgrf callback later on can check
@@ -307,7 +307,7 @@ CommandCost CmdBuildObject(DoCommandFlags flags, TileIndex tile, ObjectType type
 				if (!IsWaterTile(t)) {
 					/* Normal water tiles don't have to be cleared. For all other tile types clear
 					 * the tile but leave the water. */
-					cost.AddCost(Command<CMD_LANDSCAPE_CLEAR>::Do(DoCommandFlags{flags}.Reset({DoCommandFlag::NoWater, DoCommandFlag::Execute}), t));
+					cost.AddCost(Command<Commands::LandscapeClear>::Do(DoCommandFlags{flags}.Reset({DoCommandFlag::NoWater, DoCommandFlag::Execute}), t));
 				} else {
 					/* Can't build on water owned by another company. */
 					Owner o = GetTileOwner(t);
@@ -325,7 +325,7 @@ CommandCost CmdBuildObject(DoCommandFlags flags, TileIndex tile, ObjectType type
 						IsTileType(t, TileType::Object) &&
 						IsTileOwner(t, _current_company) &&
 						IsObjectType(t, OBJECT_HQ))) {
-					cost.AddCost(Command<CMD_LANDSCAPE_CLEAR>::Do(DoCommandFlags{flags}.Reset(DoCommandFlag::Execute), t));
+					cost.AddCost(Command<Commands::LandscapeClear>::Do(DoCommandFlags{flags}.Reset(DoCommandFlag::Execute), t));
 				}
 			}
 		}
@@ -357,10 +357,10 @@ CommandCost CmdBuildObject(DoCommandFlags flags, TileIndex tile, ObjectType type
 			for (TileIndex t : ta) {
 				if (HasTileWaterGround(t)) {
 					if (!IsWaterTile(t)) {
-						Command<CMD_LANDSCAPE_CLEAR>::Do(DoCommandFlags{flags}.Reset(DoCommandFlag::NoWater), t);
+						Command<Commands::LandscapeClear>::Do(DoCommandFlags{flags}.Reset(DoCommandFlag::NoWater), t);
 					}
 				} else {
-					Command<CMD_LANDSCAPE_CLEAR>::Do(flags, t);
+					Command<Commands::LandscapeClear>::Do(flags, t);
 				}
 			}
 		}
@@ -476,7 +476,7 @@ CommandCost CmdPurchaseLandArea(DoCommandFlags flags, TileIndex tile, TileIndex 
 	OrthogonalOrDiagonalTileIterator iter(tile, start_tile, diagonal);
 	for (; *iter != INVALID_TILE; ++iter) {
 		TileIndex t = *iter;
-		CommandCost ret = Command<CMD_BUILD_OBJECT>::Do(DoCommandFlags{flags}.Reset(DoCommandFlag::Execute), t, OBJECT_OWNED_LAND, 0);
+		CommandCost ret = Command<Commands::BuildObject>::Do(DoCommandFlags{flags}.Reset(DoCommandFlag::Execute), t, OBJECT_OWNED_LAND, 0);
 		if (ret.Failed()) {
 			last_error = ret;
 
@@ -492,7 +492,7 @@ CommandCost CmdPurchaseLandArea(DoCommandFlags flags, TileIndex tile, TileIndex 
 				cost.SetAdditionalCashRequired(ret.GetCost());
 				return cost;
 			}
-			Command<CMD_BUILD_OBJECT>::Do(flags, t, OBJECT_OWNED_LAND, 0);
+			Command<Commands::BuildObject>::Do(flags, t, OBJECT_OWNED_LAND, 0);
 		} else {
 			/* When we're at the clearing limit we better bail (unneed) testing as well. */
 			if (ret.GetCost() != 0 && --limit <= 0) break;
@@ -535,7 +535,7 @@ CommandCost CmdBuildObjectArea(DoCommandFlags flags, TileIndex tile, TileIndex s
 	OrthogonalOrDiagonalTileIterator iter(tile, start_tile, diagonal);
 	for (; *iter != INVALID_TILE; ++iter) {
 		TileIndex t = *iter;
-		CommandCost ret = Command<CMD_BUILD_OBJECT>::Do(DoCommandFlags{flags}.Reset(DoCommandFlag::Execute), t, type, view);
+		CommandCost ret = Command<Commands::BuildObject>::Do(DoCommandFlags{flags}.Reset(DoCommandFlag::Execute), t, type, view);
 		if (ret.Failed()) {
 			last_error = std::move(ret);
 
@@ -551,7 +551,7 @@ CommandCost CmdBuildObjectArea(DoCommandFlags flags, TileIndex tile, TileIndex s
 				cost.SetAdditionalCashRequired(ret.GetCost());
 				return cost;
 			}
-			Command<CMD_BUILD_OBJECT>::Do(flags, t, type, view);
+			Command<Commands::BuildObject>::Do(flags, t, type, view);
 		} else {
 			/* When we're at the clearing limit we better bail (unneed) testing as well. */
 			if (ret.GetCost() != 0 && --limit <= 0) break;
@@ -1275,7 +1275,7 @@ static CommandCost TerraformTile_Object(TileIndex tile, DoCommandFlags flags, in
 		}
 	}
 
-	return Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
+	return Command<Commands::LandscapeClear>::Do(flags, tile);
 }
 
 extern const TileTypeProcs _tile_type_object_procs = {

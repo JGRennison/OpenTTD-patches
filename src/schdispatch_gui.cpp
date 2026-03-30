@@ -82,7 +82,7 @@ enum SchdispatchWidgets : WidgetID {
  */
 static void SetScheduleStartDateCallback(const Window *w, StateTicks date, void *callback_data)
 {
-	Command<CMD_SCH_DISPATCH_SET_START_DATE>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, w->window_number, static_cast<uint32_t>(reinterpret_cast<uintptr_t>(callback_data)), date);
+	Command<Commands::SchDispatchSetStartDate>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, w->window_number, static_cast<uint32_t>(reinterpret_cast<uintptr_t>(callback_data)), date);
 }
 
 /**
@@ -106,7 +106,7 @@ static void ScheduleAddIntl(VehicleID veh, uint schedule_index, StateTicks date,
 		extra_slots = std::min<uint>(extra_slots, UINT16_MAX);
 	}
 
-	Command<CMD_SCH_DISPATCH_ADD>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, veh, schedule_index, slot, offset, extra_slots, slot_flags, route_id);
+	Command<Commands::SchDispatchAdd>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, veh, schedule_index, slot, offset, extra_slots, slot_flags, route_id);
 }
 
 /**
@@ -180,7 +180,7 @@ void AddNewScheduledDispatchSchedule(VehicleID vindex)
 		duration = (EconTime::UsingWallclockUnits() ? EconTime::DAYS_IN_ECONOMY_WALLCLOCK_YEAR : DAYS_IN_YEAR) * DAY_TICKS;
 	}
 
-	Command<CMD_SCH_DISPATCH_ADD_NEW_SCHEDULE>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, CommandCallback::AddNewSchDispatchSchedule, vindex, start_tick, duration);
+	Command<Commands::SchDispatchAddNewSchedule>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, CommandCallback::AddNewSchDispatchSchedule, vindex, start_tick, duration);
 }
 
 struct SchdispatchWindow : GeneralVehicleWindow {
@@ -1147,7 +1147,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		}
 
 		if (is_header && this->remove_slot_mode) {
-			Command<CMD_SCH_DISPATCH_REMOVE>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, this->vehicle->index, this->schedule_index, slot->offset);
+			Command<Commands::SchDispatchRemove>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, this->vehicle->index, this->schedule_index, slot->offset);
 			return;
 		}
 
@@ -1203,7 +1203,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			case WID_SCHDISPATCH_ENABLED: {
 				bool enable = !v->vehicle_flags.Test(VehicleFlag::ScheduledDispatch);
 
-				Command<CMD_SCH_DISPATCH>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, v->index, enable);
+				Command<Commands::SchDispatchSetEnabled>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, v->index, enable);
 				if (enable && this->vehicle->orders != nullptr && this->vehicle->orders->GetScheduledDispatchScheduleCount() == 0) {
 					AddNewScheduledDispatchSchedule(v->index);
 				}
@@ -1416,14 +1416,14 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			case WID_SCHDISPATCH_MOVE_LEFT:
 				if (!this->IsScheduleSelected()) break;
 				if (this->schedule_index > 0) {
-					Command<CMD_SCH_DISPATCH_SWAP_SCHEDULES>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, CommandCallback::SwapSchDispatchSchedules, this->vehicle->index, this->schedule_index - 1, this->schedule_index);
+					Command<Commands::SchDispatchSwapSchedules>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, CommandCallback::SwapSchDispatchSchedules, this->vehicle->index, this->schedule_index - 1, this->schedule_index);
 				}
 				break;
 
 			case WID_SCHDISPATCH_MOVE_RIGHT:
 				if (!this->IsScheduleSelected()) break;
 				if (this->schedule_index < (int)(this->vehicle->orders->GetScheduledDispatchScheduleCount() - 1)) {
-					Command<CMD_SCH_DISPATCH_SWAP_SCHEDULES>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, CommandCallback::SwapSchDispatchSchedules, this->vehicle->index, this->schedule_index + 1, this->schedule_index);
+					Command<Commands::SchDispatchSwapSchedules>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, CommandCallback::SwapSchDispatchSchedules, this->vehicle->index, this->schedule_index + 1, this->schedule_index);
 				}
 				break;
 
@@ -1443,7 +1443,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		if (confirmed) {
 			SchdispatchWindow *w = (SchdispatchWindow*)win;
 			if (w->IsScheduleSelected()) {
-				Command<CMD_SCH_DISPATCH_CLEAR>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, w->vehicle->index, w->schedule_index);
+				Command<Commands::SchDispatchClear>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, w->vehicle->index, w->schedule_index);
 			}
 		}
 	}
@@ -1453,7 +1453,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		if (confirmed) {
 			SchdispatchWindow *w = (SchdispatchWindow*)win;
 			if (w->IsScheduleSelected()) {
-				Command<CMD_SCH_DISPATCH_REMOVE_SCHEDULE>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, w->vehicle->index, w->schedule_index);
+				Command<Commands::SchDispatchRemoveSchedule>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, w->vehicle->index, w->schedule_index);
 			}
 		}
 	}
@@ -1467,7 +1467,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				if (!this->IsScheduleSelected()) break;
 				switch((ManagementDropdown)index & 0xFFFF) {
 					case SCH_MD_RESET_LAST_DISPATCHED:
-						Command<CMD_SCH_DISPATCH_RESET_LAST_DISPATCH>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, this->vehicle->index, this->schedule_index);
+						Command<Commands::SchDispatchResetLastDispatch>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, this->vehicle->index, this->schedule_index);
 						break;
 
 					case SCH_MD_CLEAR_SCHEDULE: {
@@ -1484,7 +1484,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					}
 
 					case SCH_MD_DUPLICATE_SCHEDULE:
-						Command<CMD_SCH_DISPATCH_DUPLICATE_SCHEDULE>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, this->vehicle->index, this->schedule_index);
+						Command<Commands::SchDispatchDuplicateSchedule>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, this->vehicle->index, this->schedule_index);
 						break;
 
 					case SCH_MD_APPEND_VEHICLE_SCHEDULES: {
@@ -1497,7 +1497,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					}
 
 					case SCH_MD_REUSE_DEPARTURE_SLOTS: {
-						Command<CMD_SCH_DISPATCH_SET_REUSE_SLOTS>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, this->vehicle->index, this->schedule_index, !this->GetSelectedSchedule().GetScheduledDispatchReuseSlots());
+						Command<Commands::SchDispatchSetReuseSlots>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, this->vehicle->index, this->schedule_index, !this->GetSelectedSchedule().GetScheduledDispatchReuseSlots());
 						break;
 					}
 
@@ -1533,12 +1533,12 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					case 0: {
 						uint16_t mask = 1 << (index & 0xFF);
 						uint16_t values = HasBit(index, 8) ? mask : 0;
-						Command<CMD_SCH_DISPATCH_SET_SLOT_FLAGS>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, this->vehicle->index, this->schedule_index, this->GetSelectedSlotSet(), values, mask);
+						Command<Commands::SchDispatchSetSlotFlags>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, this->vehicle->index, this->schedule_index, this->GetSelectedSlotSet(), values, mask);
 						break;
 					}
 
 					case 1:
-						Command<CMD_SCH_DISPATCH_SET_SLOT_ROUTE>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, this->vehicle->index, this->schedule_index, this->GetSelectedSlotSet(), index & 0xFFFF);
+						Command<Commands::SchDispatchSetSlotRoute>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, this->vehicle->index, this->schedule_index, this->GetSelectedSlotSet(), index & 0xFFFF);
 						break;
 				}
 				break;
@@ -1569,7 +1569,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					uint minutes = (*try_value % 100) % 60;
 					uint hours = (*try_value / 100) % 24;
 					StateTicks start = _settings_time.FromTickMinutes(_settings_time.NowInTickMinutes().ToSameDayClockTime(hours, minutes));
-					Command<CMD_SCH_DISPATCH_SET_START_DATE>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, v->index, this->schedule_index, start);
+					Command<Commands::SchDispatchSetStartDate>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, v->index, this->schedule_index, start);
 				}
 				break;
 			}
@@ -1579,7 +1579,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				Ticks val = ParseTimetableDuration(*str);
 
 				if (val > 0) {
-					Command<CMD_SCH_DISPATCH_SET_DURATION>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, v->index, this->schedule_index, val);
+					Command<Commands::SchDispatchSetDuration>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, v->index, this->schedule_index, val);
 				}
 				break;
 			}
@@ -1589,14 +1589,14 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 				if (str->empty()) break;
 
-				Command<CMD_SCH_DISPATCH_SET_DELAY>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, v->index, this->schedule_index, ParseTimetableDuration(*str));
+				Command<Commands::SchDispatchSetDelay>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, v->index, this->schedule_index, ParseTimetableDuration(*str));
 				break;
 			}
 
 			case WID_SCHDISPATCH_RENAME: {
 				if (!this->IsScheduleSelected()) break;
 
-				Command<CMD_SCH_DISPATCH_RENAME_SCHEDULE>::Post(STR_ERROR_CAN_T_RENAME_SCHEDULE, v->index, this->schedule_index, *str);
+				Command<Commands::SchDispatchRenameSchedule>::Post(STR_ERROR_CAN_T_RENAME_SCHEDULE, v->index, this->schedule_index, *str);
 				break;
 			}
 
@@ -1606,9 +1606,9 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 				if (val != 0) {
 					if (!this->adjust_slot_set.slots.empty()) {
-						Command<CMD_SCH_DISPATCH_ADJUST_SLOT>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, CommandCallback::AdjustSchDispatchSlot, v->index, this->schedule_index, this->adjust_slot_set, val);
+						Command<Commands::SchDispatchAdjustSlot>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, CommandCallback::AdjustSchDispatchSlot, v->index, this->schedule_index, this->adjust_slot_set, val);
 					} else {
-						Command<CMD_SCH_DISPATCH_ADJUST>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, CommandCallback::AdjustSchDispatch, v->index, this->schedule_index, val);
+						Command<Commands::SchDispatchAdjust>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, CommandCallback::AdjustSchDispatch, v->index, this->schedule_index, val);
 					}
 				}
 				break;
@@ -1617,11 +1617,11 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			case WID_SCHDISPATCH_MANAGEMENT: {
 				switch (this->click_subaction & 0xFFFF) {
 					case SCH_MD_RENAME_TAG:
-						Command<CMD_SCH_DISPATCH_RENAME_TAG>::Post(STR_ERROR_CAN_T_RENAME_DEPARTURE_TAG, v->index, this->schedule_index, this->click_subaction >> 16, *str);
+						Command<Commands::SchDispatchRenameTag>::Post(STR_ERROR_CAN_T_RENAME_DEPARTURE_TAG, v->index, this->schedule_index, this->click_subaction >> 16, *str);
 						break;
 
 					case SCH_MD_EDIT_ROUTE:
-						Command<CMD_SCH_DISPATCH_EDIT_ROUTE>::Post(STR_ERROR_CAN_T_RENAME_DEPARTURE_ROUTE, v->index, this->schedule_index, this->click_subaction >> 16, *str);
+						Command<Commands::SchDispatchEditRoute>::Post(STR_ERROR_CAN_T_RENAME_DEPARTURE_ROUTE, v->index, this->schedule_index, this->click_subaction >> 16, *str);
 						break;
 				}
 				break;
@@ -1642,7 +1642,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 	{
 		if (v->orders == nullptr || v->orders->GetScheduledDispatchScheduleCount() == 0) return false;
 
-		Command<CMD_SCH_DISPATCH_APPEND_VEH_SCHEDULE>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, this->vehicle->index, v->index);
+		Command<Commands::SchDispatchAppendVehicleSchedule>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, this->vehicle->index, v->index);
 		ResetObjectToPlace();
 		return true;
 	}

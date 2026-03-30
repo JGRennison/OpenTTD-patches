@@ -20,7 +20,7 @@ enum class BuildBridgeFlags : uint8_t {
 };
 DECLARE_ENUM_AS_BIT_SET(BuildBridgeFlags)
 
-DEF_CMD_TUPLE(CMD_BUILD_BRIDGE, CmdBuildBridge, CMD_DEITY | CMD_NO_WATER | CMD_AUTO, CommandType::LandscapeConstruction, CmdDataT<TileIndex, TransportType, BridgeType, uint8_t, BuildBridgeFlags>)
-DEF_CMD_TUPLE(CMD_BUILD_TUNNEL, CmdBuildTunnel,                CMD_DEITY | CMD_AUTO, CommandType::LandscapeConstruction, CmdDataT<TransportType, uint8_t>)
+DEF_CMD_TUPLE(Commands::BuildBridge, CmdBuildBridge, CMD_DEITY | CMD_NO_WATER | CMD_AUTO, CommandType::LandscapeConstruction, CmdDataT<TileIndex, TransportType, BridgeType, uint8_t, BuildBridgeFlags>)
+DEF_CMD_TUPLE(Commands::BuildTunnel, CmdBuildTunnel,                CMD_DEITY | CMD_AUTO, CommandType::LandscapeConstruction, CmdDataT<TransportType, uint8_t>)
 
 #endif /* TUNNELBRIDGE_CMD_H */

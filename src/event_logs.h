@@ -18,7 +18,7 @@ enum GameEventFlags : uint32_t {
 	GEF_COMPANY_DELETE       = 1 << 0, ///< (d) A company has been deleted
 	GEF_COMPANY_MERGE        = 1 << 1, ///< (m) A company has been bought by another
 	GEF_RELOAD_NEWGRF        = 1 << 2, ///< (n) ReloadNewGRFData() has been called
-	GEF_TBTR_REPLACEMENT     = 1 << 3, ///< (t) CMD_TEMPLATE_REPLACE_VEHICLE has been called
+	GEF_TBTR_REPLACEMENT     = 1 << 3, ///< (t) Commands::TemplateReplaceVehicle has been called
 	GEF_DISASTER_VEH         = 1 << 4, ///< (D) A disaster vehicle exists or has been created
 	GEF_TRAIN_CRASH          = 1 << 5, ///< (c) A train crash has occurred
 	GEF_INDUSTRY_CREATE      = 1 << 6, ///< (i) An industry has been created (in game)

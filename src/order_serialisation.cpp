@@ -595,7 +595,7 @@ private:
 	void SendCmd()
 	{
 		if (!this->cmd_data.cmds.empty()) {
-			EnqueueDoCommandP<CMD_BULK_ORDER>(this->tile, this->cmd_data, (StringID)0);
+			EnqueueDoCommandP<Commands::BulkOrder>(this->tile, this->cmd_data, (StringID)0);
 			this->cmd_data.cmds.clear();
 		}
 	}
@@ -1419,7 +1419,7 @@ OrderImportErrors ImportJsonOrderList(const Vehicle *veh, std::string_view json_
 			}
 
 			if (have_schedule && veh->vehicle_flags.Test(VehicleFlag::TimetableSeparation)) {
-				Command<CMD_TIMETABLE_SEPARATION>::Post(veh->index, false);
+				Command<Commands::TimetableSeparation>::Post(veh->index, false);
 			}
 
 			uint schedule_index = schedule_insert_offset;

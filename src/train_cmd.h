@@ -21,9 +21,9 @@ enum class MoveRailVehicleFlags : uint8_t {
 };
 DECLARE_ENUM_AS_BIT_SET(MoveRailVehicleFlags)
 
-DEF_CMD_TUPLE_LT (CMD_MOVE_RAIL_VEHICLE,           CmdMoveRailVehicle,           {}, CommandType::VehicleConstruction, CmdDataT<VehicleID, VehicleID, MoveRailVehicleFlags>)
-DEF_CMD_TUPLE_LT (CMD_FORCE_TRAIN_PROCEED,         CmdForceTrainProceed,         {}, CommandType::VehicleManagement,   CmdDataT<VehicleID>)
-DEF_CMD_TUPLE_LT (CMD_REVERSE_TRAIN_DIRECTION,     CmdReverseTrainDirection,     {}, CommandType::VehicleManagement,   CmdDataT<VehicleID, bool>)
-DEF_CMD_TUPLE_LT (CMD_SET_TRAIN_SPEED_RESTRICTION, CmdSetTrainSpeedRestriction,  {}, CommandType::VehicleManagement,   CmdDataT<VehicleID, uint16_t>)
+DEF_CMD_TUPLE_LT (Commands::MoveRailVehicle,          CmdMoveRailVehicle,           {}, CommandType::VehicleConstruction, CmdDataT<VehicleID, VehicleID, MoveRailVehicleFlags>)
+DEF_CMD_TUPLE_LT (Commands::ForceTrainProceed,        CmdForceTrainProceed,         {}, CommandType::VehicleManagement,   CmdDataT<VehicleID>)
+DEF_CMD_TUPLE_LT (Commands::ReverseTrainDirection,    CmdReverseTrainDirection,     {}, CommandType::VehicleManagement,   CmdDataT<VehicleID, bool>)
+DEF_CMD_TUPLE_LT (Commands::SetTrainSpeedRestriction, CmdSetTrainSpeedRestriction,  {}, CommandType::VehicleManagement,   CmdDataT<VehicleID, uint16_t>)
 
 #endif /* TRAIN_CMD_H */

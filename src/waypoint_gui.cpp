@@ -192,7 +192,7 @@ public:
 				break;
 
 			case WID_W_TOGGLE_HIDDEN:
-				Command<CMD_SET_WAYPOINT_LABEL_HIDDEN>::Post(STR_ERROR_CAN_T_DO_THIS, this->window_number, !HasBit(this->wp->waypoint_flags, WPF_HIDE_LABEL));
+				Command<Commands::SetWaypointLabelHidden>::Post(STR_ERROR_CAN_T_DO_THIS, this->window_number, !HasBit(this->wp->waypoint_flags, WPF_HIDE_LABEL));
 				break;
 		}
 	}
@@ -200,7 +200,7 @@ public:
 	void OnPlaceObject(Point pt, TileIndex tile) override
 	{
 		if (IsTileType(tile, TileType::Station)) {
-			Command<CMD_EXCHANGE_WAYPOINT_NAMES>::Post(STR_ERROR_CAN_T_EXCHANGE_WAYPOINT_NAMES, this->window_number, GetStationIndex(tile));
+			Command<Commands::ExchangeWaypointNames>::Post(STR_ERROR_CAN_T_EXCHANGE_WAYPOINT_NAMES, this->window_number, GetStationIndex(tile));
 			ResetObjectToPlace();
 		}
 	}
@@ -262,7 +262,7 @@ public:
 	{
 		if (!str.has_value()) return;
 
-		Command<CMD_RENAME_WAYPOINT>::Post(STR_ERROR_CAN_T_CHANGE_WAYPOINT_NAME, this->window_number, *str);
+		Command<Commands::RenameWaypoint>::Post(STR_ERROR_CAN_T_CHANGE_WAYPOINT_NAME, this->window_number, *str);
 	}
 
 	bool IsNewGRFInspectable() const override

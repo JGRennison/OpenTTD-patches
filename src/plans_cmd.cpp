@@ -41,7 +41,7 @@ bool AddPlanLine(PlanID plan, std::vector<TileIndex> tiles)
 	PlanLineCmdData data;
 	data.plan = plan;
 	data.tiles = std::move(tiles);
-	return DoCommandP<CMD_ADD_PLAN_LINE>(data, STR_NULL);
+	return DoCommandP<Commands::AddPlanLine>(data, STR_NULL);
 }
 
 /**

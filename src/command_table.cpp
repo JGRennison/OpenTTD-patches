@@ -193,7 +193,7 @@ inline constexpr CommandInfo CommandFromTrait() noexcept
 
 template <typename T, T... i>
 inline constexpr auto MakeCommandsFromTraits(std::integer_sequence<T, i...>) noexcept {
-	return std::array<CommandInfo, sizeof...(i)>{{ CommandFromTrait<static_cast<Commands>(i)>()... }};
+	return EnumClassIndexContainer<std::array<CommandInfo, sizeof...(i)>, Commands>{{ CommandFromTrait<static_cast<Commands>(i)>()... }};
 }
 
 /**
@@ -201,7 +201,7 @@ inline constexpr auto MakeCommandsFromTraits(std::integer_sequence<T, i...>) noe
  *
  * This table contains the CommandInfo for all possible commands.
  */
-const std::array<CommandInfo, to_underlying(CMD_END)> _command_proc_table = MakeCommandsFromTraits(std::make_integer_sequence<std::underlying_type_t<Commands>, CMD_END>{});
+const EnumClassIndexContainer<std::array<CommandInfo, to_underlying(Commands::End)>, Commands> _command_proc_table = MakeCommandsFromTraits(std::make_integer_sequence<std::underlying_type_t<Commands>, to_underlying(Commands::End)>{});
 
 /**
  * Set client ID for this command payload using the field returned by Payload::GetClientIDField().
@@ -226,7 +226,7 @@ void SetPreCheckedCommandPayloadClientID(Commands cmd, CommandPayloadBase &paylo
 	auto cmd_loop = [&]<Tseq... Tindices>(std::integer_sequence<Tseq, Tindices...>) {
 		(cmd_check.template operator()<static_cast<Commands>(Tindices)>() || ...);
 	};
-	cmd_loop(std::make_integer_sequence<Tseq, static_cast<Tseq>(CMD_END)>{});
+	cmd_loop(std::make_integer_sequence<Tseq, static_cast<Tseq>(Commands::End)>{});
 }
 
 void TupleCmdDataDetail::FmtSimpleTupleArgs(format_target &output, size_t count, fmt::format_args args)

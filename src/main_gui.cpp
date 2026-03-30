@@ -372,9 +372,9 @@ struct MainWindow : Window
 			case GHK_MONEY: // Gimme money
 				/* You can only cheat for money in single player or when otherwise suitably authorised. */
 				if (!_networking || _settings_game.difficulty.money_cheat_in_multiplayer) {
-					Command<CMD_MONEY_CHEAT>::Post(10000000);
+					Command<Commands::MoneyCheat>::Post(10000000);
 				} else if (IsNetworkSettingsAdmin()) {
-					Command<CMD_MONEY_CHEAT_ADMIN>::Post(10000000);
+					Command<Commands::MoneyCheatAdmin>::Post(10000000);
 				}
 				break;
 

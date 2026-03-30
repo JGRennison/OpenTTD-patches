@@ -67,9 +67,9 @@ static int32_t _money_cheat_amount = 10000000;
 static int32_t ClickMoneyCheat(int32_t new_value, int32_t change_direction)
 {
 	if (IsNetworkSettingsAdmin()) {
-		Command<CMD_MONEY_CHEAT_ADMIN>::Post(Money(_money_cheat_amount) * change_direction);
+		Command<Commands::MoneyCheatAdmin>::Post(Money(_money_cheat_amount) * change_direction);
 	} else {
-		Command<CMD_MONEY_CHEAT>::Post(Money(_money_cheat_amount) * change_direction);
+		Command<Commands::MoneyCheat>::Post(Money(_money_cheat_amount) * change_direction);
 	}
 	return _money_cheat_amount;
 }
@@ -548,7 +548,7 @@ struct CheatWindow : Window {
 				uint64_t oldvalue = (uint64_t)ReadValue(ce->variable, SLE_UINT64);
 				uint64_t value = oldvalue + (uint64_t)(get_arrow_button_value() << 16);
 				value = Clamp<uint64_t>(value, 1 << 16, MAX_INFLATION);
-				Command<CMD_CHEAT_SETTING>::Post(cheat, static_cast<uint32_t>(value));
+				Command<Commands::CheatSetting>::Post(cheat, static_cast<uint32_t>(value));
 				if (value != oldvalue) register_arrow_button_clicked();
 				break;
 			}
@@ -570,7 +570,7 @@ struct CheatWindow : Window {
 
 		if (value != oldvalue) {
 			if (_networking || cheat == CHT_STATION_RATING || cheat == CHT_TOWN_RATING) {
-				if (btn != CHT_MONEY) Command<CMD_CHEAT_SETTING>::Post(cheat, static_cast<uint32_t>(value));
+				if (btn != CHT_MONEY) Command<Commands::CheatSetting>::Post(cheat, static_cast<uint32_t>(value));
 			} else {
 				WriteValue(ce->variable, ce->type, static_cast<int64_t>(value));
 			}
@@ -726,7 +726,7 @@ struct CheatWindow : Window {
 		if (ce->type == SLF_ALLOW_CONTROL) {
 			format_buffer_sized<64> tmp_buffer;
 			str_replace_wchar(tmp_buffer, *str, GetDecimalSeparatorChar(), '.');
-			Command<CMD_CHEAT_SETTING>::Post(clicked_cheat, (uint32_t)Clamp<uint64_t>(atof(tmp_buffer.c_str()) * 65536.0, 1 << 16, MAX_INFLATION));
+			Command<Commands::CheatSetting>::Post(clicked_cheat, (uint32_t)Clamp<uint64_t>(atof(tmp_buffer.c_str()) * 65536.0, 1 << 16, MAX_INFLATION));
 			return;
 		}
 		if (ce->mode == CNM_MONEY) {
@@ -736,9 +736,9 @@ struct CheatWindow : Window {
 			if (!_networking) *ce->been_used = true;
 			Money money = *llvalue / GetCurrency().rate;
 			if (IsNetworkSettingsAdmin()) {
-				Command<CMD_MONEY_CHEAT_ADMIN>::Post(money);
+				Command<Commands::MoneyCheatAdmin>::Post(money);
 			} else {
-				Command<CMD_MONEY_CHEAT>::Post(money);
+				Command<Commands::MoneyCheat>::Post(money);
 			}
 			return;
 		}

@@ -565,7 +565,7 @@ void RemoveAllTrees()
 
 	for (TileIndex tile(0); tile < Map::Size(); ++tile) {
 		if (GetTileType(tile) == TileType::Trees) {
-			Command<CMD_LANDSCAPE_CLEAR>::Post(STR_ERROR_CAN_T_CLEAR_THIS_AREA, CommandCallback::PlaySound_EXPLOSION, tile);
+			Command<Commands::LandscapeClear>::Post(STR_ERROR_CAN_T_CLEAR_THIS_AREA, CommandCallback::PlaySound_EXPLOSION, tile);
 		}
 	}
 }
@@ -767,7 +767,7 @@ struct CmdPlantTreeHelper {
 					switch (GetClearGround(tile)) {
 						case CLEAR_FIELDS:
 						case CLEAR_ROCKS: {
-							CommandCost ret = Command<CMD_LANDSCAPE_CLEAR>::Do(this->flags, tile);
+							CommandCost ret = Command<Commands::LandscapeClear>::Do(this->flags, tile);
 							if (ret.Failed()) {
 								this->msg = ret.GetErrorMessage();
 								return;
@@ -961,7 +961,7 @@ void SendSyncTrees(TileIndex cmd_tile)
 	BulkTreeCmdData cmd_data;
 	auto flush = [&]() {
 		if (!cmd_data.plant_tree_data.empty()) {
-			EnqueueDoCommandP<CMD_BULK_TREE>(cmd_tile, cmd_data, STR_ERROR_CAN_T_PLANT_TREE_HERE);
+			EnqueueDoCommandP<Commands::BulkTree>(cmd_tile, cmd_data, STR_ERROR_CAN_T_PLANT_TREE_HERE);
 			cmd_data.plant_tree_data.clear();
 		}
 	};
@@ -979,7 +979,7 @@ void SendSyncTrees(TileIndex cmd_tile)
 
 	if (_shift_pressed) {
 		/* Cost estimation mode */
-		DoCommandP<CMD_BULK_TREE>(cmd_tile, cmd_data, STR_ERROR_CAN_T_PLANT_TREE_HERE);
+		DoCommandP<Commands::BulkTree>(cmd_tile, cmd_data, STR_ERROR_CAN_T_PLANT_TREE_HERE);
 	} else {
 		flush();
 	}
@@ -1491,7 +1491,7 @@ void InitializeTrees()
 
 static CommandCost TerraformTile_Trees(TileIndex tile, DoCommandFlags flags, int, Slope)
 {
-	return Command<CMD_LANDSCAPE_CLEAR>::Do(flags, tile);
+	return Command<Commands::LandscapeClear>::Do(flags, tile);
 }
 
 

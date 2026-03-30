@@ -1265,34 +1265,34 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_COMMAND(Packet 
 	}
 
 	/**
-	 * Only CMD_COMPANY_CTRL is always allowed, for the rest, playas needs
+	 * Only Commands::CompanyControl is always allowed, for the rest, playas needs
 	 * to match the company in the packet. If it doesn't, the client has done
 	 * something pretty naughty (or a bug), and will be kicked
 	 */
 	CompanyCtrlAction cca = CCA_NEW;
-	if (cmd == CMD_COMPANY_CTRL) {
-		cca = static_cast<const CmdPayload<CMD_COMPANY_CTRL> &>(*cp.command_container.payload).cca;
+	if (cmd == Commands::CompanyControl) {
+		cca = static_cast<const CmdPayload<Commands::CompanyControl> &>(*cp.command_container.payload).cca;
 	}
-	if (!(cmd == CMD_COMPANY_CTRL && cca == CCA_NEW && ci->client_playas == COMPANY_NEW_COMPANY) && ci->client_playas != cp.company &&
+	if (!(cmd == Commands::CompanyControl && cca == CCA_NEW && ci->client_playas == COMPANY_NEW_COMPANY) && ci->client_playas != cp.company &&
 			!(GetCommandFlags(cmd).Any({CommandFlag::Server, CommandFlag::ServerNS}) && this->settings_authed)) {
 		IConsolePrint(CC_ERROR, "WARNING: client {} (IP: {}) tried to execute a command as company {}, kicking...",
 				ci->client_playas + 1, this->GetClientIP(), cp.company + 1);
 		return this->SendError(NETWORK_ERROR_COMPANY_MISMATCH);
 	}
 
-	if (cmd == CMD_COMPANY_CTRL) {
+	if (cmd == Commands::CompanyControl) {
 		if (cca != CCA_NEW || cp.company != COMPANY_SPECTATOR) {
 			return this->SendError(NETWORK_ERROR_CHEATER);
 		}
 
-		/* Check if we are full - else it's possible for spectators to send a CMD_COMPANY_CTRL and the company is created regardless of max_companies! */
+		/* Check if we are full - else it's possible for spectators to send a Commands::CompanyControl and the company is created regardless of max_companies! */
 		if (Company::GetNumItems() >= _settings_client.network.max_companies) {
 			NetworkServerSendChat(NETWORK_ACTION_SERVER_MESSAGE, DESTTYPE_CLIENT, ci->client_id, "cannot create new company, server full", CLIENT_ID_SERVER);
 			return NETWORK_RECV_STATUS_OKAY;
 		}
 	}
 
-	// Handling of CMD_COMPANY_ADD_ALLOW_LIST would go here
+	// Handling of Commands::CompanyAddAllowList would go here
 
 	if (GetCommandFlags(cmd).Test(CommandFlag::ClientID)) SetPreCheckedCommandPayloadClientID(cmd, *cp.command_container.payload, this->client_id);
 	cp.client_id = this->client_id;
@@ -1345,7 +1345,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_ERROR(Packet &p
 		_settings_client.network.sync_freq = std::min<uint16_t>(_settings_client.network.sync_freq, 16);
 
 		// have the server and all clients run some sanity checks
-		NetworkSendCommand<CMD_DESYNC_CHECK>({}, EmptyCmdData(), (StringID)0, CommandCallback::None, 0, _local_company);
+		NetworkSendCommand<Commands::DesyncCheck>({}, EmptyCmdData(), (StringID)0, CommandCallback::None, 0, _local_company);
 
 		SendPacketsState send_state = this->SendPackets(true);
 		if (send_state != SPS_CLOSED) {
@@ -1925,7 +1925,7 @@ static void NetworkAutoCleanCompanies()
 			/* Is the company empty for autoclean_unprotected-months, and is there no protection? */
 			if (_settings_client.network.autoclean_unprotected != 0 && c->months_empty > _settings_client.network.autoclean_unprotected && _network_company_states[c->index].password.empty()) {
 				/* Shut the company down */
-				Command<CMD_COMPANY_CTRL>::Post(CCA_DELETE, c->index, CRR_AUTOCLEAN, INVALID_CLIENT_ID, {});
+				Command<Commands::CompanyControl>::Post(CCA_DELETE, c->index, CRR_AUTOCLEAN, INVALID_CLIENT_ID, {});
 				IConsolePrint(CC_DEFAULT, "Auto-cleaned company #{} with no password", c->index + 1);
 			}
 			/* Is the company empty for autoclean_protected-months, and there is a protection? */
@@ -1939,7 +1939,7 @@ static void NetworkAutoCleanCompanies()
 			/* Is the company empty for autoclean_novehicles-months, and has no vehicles? */
 			if (_settings_client.network.autoclean_novehicles != 0 && c->months_empty > _settings_client.network.autoclean_novehicles && !has_vehicles.Test(c->index)) {
 				/* Shut the company down */
-				Command<CMD_COMPANY_CTRL>::Post(CCA_DELETE, c->index, CRR_AUTOCLEAN, INVALID_CLIENT_ID, {});
+				Command<Commands::CompanyControl>::Post(CCA_DELETE, c->index, CRR_AUTOCLEAN, INVALID_CLIENT_ID, {});
 				IConsolePrint(CC_DEFAULT, "Auto-cleaned company #{} with no vehicles", c->index + 1);
 			}
 		} else {
@@ -2547,8 +2547,8 @@ void NetworkServerNewCompany(const Company *c, NetworkClientInfo *ci)
 		/* ci is nullptr when replaying, or for AIs. In neither case there is a client. */
 		ci->client_playas = c->index;
 		NetworkUpdateClientInfo(ci->client_id);
-		// CMD_COMPANY_ADD_ALLOW_LIST would go here
-		NetworkSendCommand<CMD_RENAME_PRESIDENT>({}, CmdPayload<CMD_RENAME_PRESIDENT>::Make(ci->client_name), (StringID)0, CommandCallback::None, 0, c->index);
+		// Commands::CompanyAddAllowList would go here
+		NetworkSendCommand<Commands::RenamePresident>({}, CmdPayload<Commands::RenamePresident>::Make(ci->client_name), (StringID)0, CommandCallback::None, 0, c->index);
 	}
 
 	if (ci != nullptr) {
