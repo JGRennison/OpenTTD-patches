@@ -33,6 +33,7 @@
 #include "engine_override.h"
 #include "core/format.hpp"
 #include "3rdparty/fmt/ranges.h"
+#include "3rdparty/robin_hood/robin_hood.h"
 
 #include "safeguards.h"
 
@@ -1654,8 +1655,18 @@ void FillNewGRFVehicleCache(const Vehicle *v)
 
 void AnalyseEngineCallbacks()
 {
-	btree::btree_map<const SpriteGroup *, uint64_t> sg_cb36;
-	btree::btree_map<uint32_t, CargoTypes> cb_refit_cap_values;
+	robin_hood::unordered_map<const SpriteGroup *, uint64_t> sg_cb36;
+	std::vector<EngineRefitCapacityValue> cb_refit_cap_values;
+	auto set_cb_refit_cap_value = [&cb_refit_cap_values](uint32_t capacity, CargoTypes cargoes) {
+		for (EngineRefitCapacityValue &rcv : cb_refit_cap_values) {
+			if (rcv.capacity == capacity) {
+				rcv.cargoes |= cargoes;
+				return;
+			}
+		}
+		cb_refit_cap_values.emplace_back(cargoes, capacity);
+	};
+
 	for (Engine *e : Engine::Iterate()) {
 		sg_cb36.clear();
 		e->sprite_group_cb36_properties_used.clear();
@@ -1702,14 +1713,17 @@ void AnalyseEngineCallbacks()
 			}
 
 			if (refit_cap_no_var_47) {
-				cb_refit_cap_values[GetVehicleCallback(CBID_VEHICLE_REFIT_CAPACITY, 0, 0, e->index, nullptr)] = ALL_CARGOTYPES;
+				cb_refit_cap_values.emplace_back(ALL_CARGOTYPES, GetVehicleCallback(CBID_VEHICLE_REFIT_CAPACITY, 0, 0, e->index, nullptr));
 			} else {
 				const CargoType default_cb = e->info.cargo_type;
 				for (CargoType c = 0; c < NUM_CARGO; c++) {
 					e->info.cargo_type = c;
-					cb_refit_cap_values[GetVehicleCallback(CBID_VEHICLE_REFIT_CAPACITY, 0, 0, e->index, nullptr)] |= (static_cast<CargoTypes>(1) << c);
+					set_cb_refit_cap_value(GetVehicleCallback(CBID_VEHICLE_REFIT_CAPACITY, 0, 0, e->index, nullptr), static_cast<CargoTypes>(1) << c);
 				}
 				e->info.cargo_type = default_cb;
+				std::sort(cb_refit_cap_values.begin(), cb_refit_cap_values.end(), [](const EngineRefitCapacityValue &a, const EngineRefitCapacityValue &b) -> bool {
+					return a.capacity < b.capacity;
+				});
 			}
 
 			if (purchase_sg_ptr != nullptr) {
@@ -1719,9 +1733,9 @@ void AnalyseEngineCallbacks()
 			bool all_ok = true;
 			uint index = 0;
 			e->refit_capacity_values.reset(MallocT<EngineRefitCapacityValue>(cb_refit_cap_values.size()));
-			for (const auto &iter : cb_refit_cap_values) {
-				if (iter.first == CALLBACK_FAILED) all_ok = false;
-				e->refit_capacity_values.get()[index] = { iter.second, iter.first };
+			for (const EngineRefitCapacityValue &rcv : cb_refit_cap_values) {
+				if (rcv.capacity == CALLBACK_FAILED) all_ok = false;
+				e->refit_capacity_values.get()[index] = rcv;
 				index++;
 			}
 			if (all_ok) e->callbacks_used |= SGCU_REFIT_CB_ALL_CARGOES;
