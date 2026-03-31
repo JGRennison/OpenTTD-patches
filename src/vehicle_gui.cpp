@@ -52,6 +52,7 @@
 #include "schdispatch.h"
 #include "order_cmd.h"
 #include "vehicle_cmd.h"
+#include "sound_func.h"
 #include "core/string_consumer.hpp"
 
 #include <vector>
@@ -4107,6 +4108,14 @@ public:
 		}
 	}
 
+	void UpdateDepotButton()
+	{
+		/* Lower the Send To Depot button when clicking it would cause the
+		 * vehicle to NOT go to the depot. */
+		const Vehicle *v = Vehicle::Get(this->window_number);
+		this->SetWidgetLoweredState(WID_VV_GOTO_DEPOT, this->depot_select_active || (v->current_order.IsType(OT_GOTO_DEPOT) && (v->current_order.GetDepotActionType() & ODATFB_HALT)));
+	}
+
 	/** Update buttons state to match shown vehicle. */
 	void UpdateButtons()
 	{
@@ -4119,6 +4128,8 @@ public:
 		this->SetWidgetDisabledState(WID_VV_GOTO_DEPOT, !is_localcompany);
 		this->SetWidgetDisabledState(WID_VV_REFIT, !refittable_and_stopped_in_depot || !is_localcompany);
 		this->SetWidgetDisabledState(WID_VV_CLONE, !is_localcompany);
+
+		this->UpdateDepotButton();
 
 		if (v->type == VEH_TRAIN) {
 			this->SetWidgetLoweredState(WID_VV_FORCE_PROCEED, Train::From(v)->force_proceed == TFP_SIGNAL);
@@ -4452,9 +4463,15 @@ public:
 
 			case WID_VV_GOTO_DEPOT: // goto hangar
 				if (_shift_pressed) {
-					if (HandlePlacePushButton(this, WID_VV_GOTO_DEPOT, ANIMCURSOR_PICKSTATION, HT_RECT)) {
+					SndClickBeep();
+					if (!this->depot_select_active) {
+						SetObjectToPlaceWnd(ANIMCURSOR_PICKSTATION, PAL_NONE, HT_RECT, this);
 						this->depot_select_ctrl_pressed = _ctrl_pressed;
 						this->depot_select_active = true;
+						this->UpdateDepotButton();
+						this->SetWidgetDirty(WID_VV_GOTO_DEPOT);
+					} else {
+						ResetObjectToPlace();
 					}
 				} else if (_ctrl_pressed && _settings_client.gui.show_depot_sell_gui && v->current_order.IsType(OT_GOTO_DEPOT)) {
 					OrderDepotActionFlags flags = v->current_order.GetDepotActionType() & (ODATFB_HALT | ODATFB_SELL);
@@ -4571,7 +4588,7 @@ public:
 	virtual void OnTimeout() override
 	{
 		if (!this->depot_select_active) {
-			this->RaiseWidget(WID_VV_GOTO_DEPOT);
+			this->UpdateDepotButton();
 			this->SetWidgetDirty(WID_VV_GOTO_DEPOT);
 		}
 	}
@@ -4584,14 +4601,14 @@ public:
 			if (v->type == VEH_TRAIN && !Train::From(v)->compatible_railtypes.Test(GetRailType(tile))) return;
 			Command<Commands::SendVehicleToDepot>::Post(GetCmdSendToDepotMsg(v), v->index, this->depot_select_ctrl_pressed ? DepotCommandFlags{DepotCommandFlag::Specific, DepotCommandFlag::Service} : DepotCommandFlags{DepotCommandFlag::Specific}, tile);
 			ResetObjectToPlace();
-			this->RaiseButtons();
+			this->UpdateButtons();
 		}
 	}
 
 	virtual void OnPlaceObjectAbort() override
 	{
 		this->depot_select_active = false;
-		this->RaiseWidget(WID_VV_GOTO_DEPOT);
+		this->UpdateDepotButton();
 		this->SetWidgetDirty(WID_VV_GOTO_DEPOT);
 	}
 

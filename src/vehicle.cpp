@@ -4050,7 +4050,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlags flags, DepotCommandFlags command
 				if (this->vehicle_flags.Test(VehicleFlag::TimetableSeparation)) this->vehicle_flags.Reset(VehicleFlag::TimetableStarted);
 
 				this->current_order.MakeDummy();
-				SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
+				InvalidateWindowData(WC_VEHICLE_VIEW, this->index);
 			}
 
 			/* prevent any attempt to update timetable for current order, as actual travel time will be incorrect due to depot command */
@@ -4079,7 +4079,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlags flags, DepotCommandFlags command
 				this->current_order.SetDepotActionType(command.Test(DepotCommandFlag::Sell) ? ODATFB_HALT | ODATFB_SELL : (command.Test(DepotCommandFlag::Service) ? ODATF_SERVICE_ONLY : ODATFB_HALT));
 				this->ClearSeparation();
 				if (this->vehicle_flags.Test(VehicleFlag::TimetableSeparation)) this->vehicle_flags.Reset(VehicleFlag::TimetableStarted);
-				SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
+				InvalidateWindowData(WC_VEHICLE_VIEW, this->index);
 			}
 			return CommandCost();
 		}
@@ -4133,7 +4133,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlags flags, DepotCommandFlags command
 		if (command.Test(DepotCommandFlag::Specific)) {
 			this->current_order.SetDepotExtraFlags(ODEFB_SPECIFIC);
 		}
-		SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
+		InvalidateWindowData(WC_VEHICLE_VIEW, this->index);
 
 		/* Prevent any attempt to update timetable for current order, as actual travel time will be incorrect due to depot command. */
 		this->cur_timetable_order_index = INVALID_VEH_ORDER_ID;
