@@ -9,6 +9,7 @@
 
 #include "stdafx.h"
 #include "core/alloc_type.hpp"
+#include "core/enum_type.hpp"
 #include "core/string_consumer.hpp"
 #include "fileio_func.h"
 #include "spriteloader/spriteloader.hpp"
@@ -16,7 +17,7 @@
 #include "fios.h"
 #include "string_func.h"
 #include "tar_type.h"
-#include "3rdparty/cpp-btree/btree_set.h"
+#include "3rdparty/robin_hood/robin_hood.h"
 #ifdef _WIN32
 #include <windows.h>
 #elif defined(__HAIKU__)
@@ -90,8 +91,13 @@ static void FillValidSearchPaths(bool only_local_path)
 	_valid_searchpaths.clear();
 	_valid_searchpaths_excluding_cwd.clear();
 
-	btree::btree_set<std::string_view> seen{};
-	btree::btree_set<std::string_view> seen_excluding_cwd{};
+	enum class SeenFlag : uint8_t {
+		Seen,
+		SeenExcludingCwd,
+	};
+	using SeenFlags = EnumBitSet<SeenFlag, uint8_t>;
+	robin_hood::unordered_map<std::string_view, SeenFlags> seen{};
+
 	for (Searchpath sp = SP_FIRST_DIR; sp < NUM_SEARCHPATHS; sp++) {
 		if (only_local_path) {
 			switch (sp) {
@@ -106,12 +112,13 @@ static void FillValidSearchPaths(bool only_local_path)
 		}
 
 		if (IsValidSearchPath(sp)) {
-			if (seen.count(_searchpaths[sp]) == 0) {
-				seen.insert(_searchpaths[sp]);
+			SeenFlags &seen_flags = seen[_searchpaths[sp]];
+			if (!seen_flags.Test(SeenFlag::Seen)) {
+				seen_flags.Set(SeenFlag::Seen);
 				_valid_searchpaths.emplace_back(sp);
 			}
-			if (sp != SP_WORKING_DIR && seen_excluding_cwd.count(_searchpaths[sp]) == 0) {
-				seen_excluding_cwd.insert(_searchpaths[sp]);
+			if (sp != SP_WORKING_DIR && !seen_flags.Test(SeenFlag::SeenExcludingCwd)) {
+				seen_flags.Set(SeenFlag::SeenExcludingCwd);
 				_valid_searchpaths_excluding_cwd.emplace_back(sp);
 			}
 		}
