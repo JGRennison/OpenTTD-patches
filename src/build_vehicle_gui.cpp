@@ -2361,13 +2361,10 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		return ES_HANDLED;
 	}
 
-	static HotkeyList hotkeys;
+	static inline HotkeyList hotkeys{"buildvehicle", {
+		Hotkey('F', "focus_filter_box", BVHK_FOCUS_FILTER_BOX),
+	}};
 };
-
-static Hotkey buildvehicle_hotkeys[] = {
-	Hotkey('F', "focus_filter_box", BVHK_FOCUS_FILTER_BOX),
-};
-HotkeyList BuildVehicleWindow::hotkeys("buildvehicle", buildvehicle_hotkeys);
 
 static EngList_SortTypeFunction * const  _sorter_loco[12] = {
 	/* Locomotives */

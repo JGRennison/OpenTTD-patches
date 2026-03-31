@@ -845,8 +845,62 @@ struct BuildRoadToolbarWindow : Window {
 		if (_game_mode == GM_NORMAL && this->IsWidgetLowered(WID_ROT_BUILD_WAYPOINT)) CheckRedrawRoadWaypointCoverage(this);
 	}
 
-	static HotkeyList road_hotkeys;
-	static HotkeyList tram_hotkeys;
+	/**
+	 * Handler for global hotkeys of the BuildRoadToolbarWindow.
+	 * @param hotkey Hotkey
+	 * @param last_build Last build road type
+	 * @return ES_HANDLED if hotkey was accepted.
+	 */
+	static EventState RoadTramToolbarGlobalHotkeys(int hotkey, RoadType last_build, RoadTramType rtt)
+	{
+		Window *w = CreateRoadTramToolbarForRoadType(last_build, rtt);
+
+		if (w == nullptr) return ES_NOT_HANDLED;
+		return w->OnHotkey(hotkey);
+	}
+
+	static EventState RoadToolbarGlobalHotkeys(int hotkey)
+	{
+		extern RoadType _last_built_roadtype;
+		return RoadTramToolbarGlobalHotkeys(hotkey, _last_built_roadtype, RTT_ROAD);
+	}
+
+	static EventState TramToolbarGlobalHotkeys(int hotkey)
+	{
+		extern RoadType _last_built_tramtype;
+		return RoadTramToolbarGlobalHotkeys(hotkey, _last_built_tramtype, RTT_TRAM);
+	}
+
+	static inline HotkeyList road_hotkeys{"roadtoolbar", {
+		Hotkey('1', "build_x", WID_ROT_ROAD_X),
+		Hotkey('2', "build_y", WID_ROT_ROAD_Y),
+		Hotkey('3', "autoroad", WID_ROT_AUTOROAD),
+		Hotkey('4', "demolish", WID_ROT_DEMOLISH),
+		Hotkey('5', "depot", WID_ROT_DEPOT),
+		Hotkey('6', "bus_station", WID_ROT_BUS_STATION),
+		Hotkey('7', "truck_station", WID_ROT_TRUCK_STATION),
+		Hotkey('8', "oneway", WID_ROT_ONE_WAY),
+		Hotkey('B', "bridge", WID_ROT_BUILD_BRIDGE),
+		Hotkey('T', "tunnel", WID_ROT_BUILD_TUNNEL),
+		Hotkey('R', "remove", WID_ROT_REMOVE),
+		Hotkey('C', "convert", WID_ROT_CONVERT_ROAD),
+		Hotkey('9', "waypoint", WID_ROT_BUILD_WAYPOINT),
+	}, RoadToolbarGlobalHotkeys};
+
+	static inline HotkeyList tram_hotkeys{"tramtoolbar", {
+		Hotkey('1', "build_x", WID_ROT_ROAD_X),
+		Hotkey('2', "build_y", WID_ROT_ROAD_Y),
+		Hotkey('3', "autoroad", WID_ROT_AUTOROAD),
+		Hotkey('4', "demolish", WID_ROT_DEMOLISH),
+		Hotkey('5', "depot", WID_ROT_DEPOT),
+		Hotkey('6', "bus_station", WID_ROT_BUS_STATION),
+		Hotkey('7', "truck_station", WID_ROT_TRUCK_STATION),
+		Hotkey('B', "bridge", WID_ROT_BUILD_BRIDGE),
+		Hotkey('T', "tunnel", WID_ROT_BUILD_TUNNEL),
+		Hotkey('R', "remove", WID_ROT_REMOVE),
+		Hotkey('C', "convert", WID_ROT_CONVERT_ROAD),
+		Hotkey('9', "waypoint", WID_ROT_BUILD_WAYPOINT),
+	}, TramToolbarGlobalHotkeys};
 };
 
 Window *CreateRoadTramToolbarForRoadType(RoadType roadtype, RoadTramType rtt)
@@ -867,66 +921,6 @@ Window *CreateRoadTramToolbarForRoadType(RoadType roadtype, RoadTramType rtt)
 	}
 	return w;
 }
-
-/**
- * Handler for global hotkeys of the BuildRoadToolbarWindow.
- * @param hotkey Hotkey
- * @param last_build Last build road type
- * @return ES_HANDLED if hotkey was accepted.
- */
-static EventState RoadTramToolbarGlobalHotkeys(int hotkey, RoadType last_build, RoadTramType rtt)
-{
-	Window *w = CreateRoadTramToolbarForRoadType(last_build, rtt);
-
-	if (w == nullptr) return ES_NOT_HANDLED;
-	return w->OnHotkey(hotkey);
-}
-
-static EventState RoadToolbarGlobalHotkeys(int hotkey)
-{
-	extern RoadType _last_built_roadtype;
-	return RoadTramToolbarGlobalHotkeys(hotkey, _last_built_roadtype, RTT_ROAD);
-}
-
-static EventState TramToolbarGlobalHotkeys(int hotkey)
-{
-	extern RoadType _last_built_tramtype;
-	return RoadTramToolbarGlobalHotkeys(hotkey, _last_built_tramtype, RTT_TRAM);
-}
-
-static Hotkey roadtoolbar_hotkeys[] = {
-	Hotkey('1', "build_x", WID_ROT_ROAD_X),
-	Hotkey('2', "build_y", WID_ROT_ROAD_Y),
-	Hotkey('3', "autoroad", WID_ROT_AUTOROAD),
-	Hotkey('4', "demolish", WID_ROT_DEMOLISH),
-	Hotkey('5', "depot", WID_ROT_DEPOT),
-	Hotkey('6', "bus_station", WID_ROT_BUS_STATION),
-	Hotkey('7', "truck_station", WID_ROT_TRUCK_STATION),
-	Hotkey('8', "oneway", WID_ROT_ONE_WAY),
-	Hotkey('B', "bridge", WID_ROT_BUILD_BRIDGE),
-	Hotkey('T', "tunnel", WID_ROT_BUILD_TUNNEL),
-	Hotkey('R', "remove", WID_ROT_REMOVE),
-	Hotkey('C', "convert", WID_ROT_CONVERT_ROAD),
-	Hotkey('9', "waypoint", WID_ROT_BUILD_WAYPOINT),
-};
-HotkeyList BuildRoadToolbarWindow::road_hotkeys("roadtoolbar", roadtoolbar_hotkeys, RoadToolbarGlobalHotkeys);
-
-static Hotkey tramtoolbar_hotkeys[] = {
-	Hotkey('1', "build_x", WID_ROT_ROAD_X),
-	Hotkey('2', "build_y", WID_ROT_ROAD_Y),
-	Hotkey('3', "autoroad", WID_ROT_AUTOROAD),
-	Hotkey('4', "demolish", WID_ROT_DEMOLISH),
-	Hotkey('5', "depot", WID_ROT_DEPOT),
-	Hotkey('6', "bus_station", WID_ROT_BUS_STATION),
-	Hotkey('7', "truck_station", WID_ROT_TRUCK_STATION),
-	Hotkey('B', "bridge", WID_ROT_BUILD_BRIDGE),
-	Hotkey('T', "tunnel", WID_ROT_BUILD_TUNNEL),
-	Hotkey('R', "remove", WID_ROT_REMOVE),
-	Hotkey('C', "convert", WID_ROT_CONVERT_ROAD),
-	Hotkey('9', "waypoint", WID_ROT_BUILD_WAYPOINT),
-};
-HotkeyList BuildRoadToolbarWindow::tram_hotkeys("tramtoolbar", tramtoolbar_hotkeys, TramToolbarGlobalHotkeys);
-
 
 static constexpr std::initializer_list<NWidgetPart> _nested_build_road_widgets = {
 	NWidget(NWID_HORIZONTAL),

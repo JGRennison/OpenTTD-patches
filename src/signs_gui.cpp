@@ -318,26 +318,23 @@ struct SignListWindow : Window, SignList {
 		}
 	}
 
-	static HotkeyList hotkeys;
-};
+	/**
+	 * Handler for global hotkeys of the SignListWindow.
+	 * @param hotkey Hotkey
+	 * @return ES_HANDLED if hotkey was accepted.
+	 */
+	static EventState SignListGlobalHotkeys(int hotkey)
+	{
+		if (_game_mode == GM_MENU) return ES_NOT_HANDLED;
+		Window *w = ShowSignList();
+		if (w == nullptr) return ES_NOT_HANDLED;
+		return w->OnHotkey(hotkey);
+	}
 
-/**
- * Handler for global hotkeys of the SignListWindow.
- * @param hotkey Hotkey
- * @return ES_HANDLED if hotkey was accepted.
- */
-static EventState SignListGlobalHotkeys(int hotkey)
-{
-	if (_game_mode == GM_MENU) return ES_NOT_HANDLED;
-	Window *w = ShowSignList();
-	if (w == nullptr) return ES_NOT_HANDLED;
-	return w->OnHotkey(hotkey);
-}
-
-static Hotkey signlist_hotkeys[] = {
-	Hotkey('F', "focus_filter_box", WID_SIL_FILTER_TEXT),
+	static inline HotkeyList hotkeys{"signlist", {
+		Hotkey('F', "focus_filter_box", WID_SIL_FILTER_TEXT),
+	}, SignListGlobalHotkeys};
 };
-HotkeyList SignListWindow::hotkeys("signlist", signlist_hotkeys, SignListGlobalHotkeys);
 
 static constexpr std::initializer_list<NWidgetPart> _nested_sign_list_widgets = {
 	NWidget(NWID_HORIZONTAL),

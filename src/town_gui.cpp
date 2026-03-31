@@ -1327,13 +1327,10 @@ public:
 		}
 	}
 
-	static HotkeyList hotkeys;
+	static inline HotkeyList hotkeys {"towndirectory", {
+		Hotkey('F', "focus_filter_box", WID_TD_FILTER),
+	}};
 };
-
-static Hotkey towndirectory_hotkeys[] = {
-	Hotkey('F', "focus_filter_box", WID_TD_FILTER),
-};
-HotkeyList TownDirectoryWindow::hotkeys("towndirectory", towndirectory_hotkeys);
 
 Listing TownDirectoryWindow::last_sorting = {false, 0};
 

@@ -1030,47 +1030,40 @@ struct BuildRailToolbarWindow : Window {
 		if (this->IsWidgetLowered(WID_RAT_BUILD_WAYPOINT)) CheckRedrawRailWaypointCoverage(this);
 	}
 
-	static HotkeyList hotkeys;
+	/**
+	 * Handler for global hotkeys of the BuildRailToolbarWindow.
+	 * @param hotkey Hotkey
+	 * @return ES_HANDLED if hotkey was accepted.
+	 */
+	static EventState RailToolbarGlobalHotkeys(int hotkey)
+	{
+		if (_game_mode != GM_NORMAL) return ES_NOT_HANDLED;
+		extern RailType _last_built_railtype;
+		Window *w = ShowBuildRailToolbar(_last_built_railtype);
+		if (w == nullptr) return ES_NOT_HANDLED;
+		return w->OnHotkey(hotkey);
+	}
+
+	static inline HotkeyList hotkeys{"railtoolbar", {
+		Hotkey('1', "build_ns", WID_RAT_BUILD_NS),
+		Hotkey('2', "build_x", WID_RAT_BUILD_X),
+		Hotkey('3', "build_ew", WID_RAT_BUILD_EW),
+		Hotkey('4', "build_y", WID_RAT_BUILD_Y),
+		Hotkey({'5', 'A' | WKC_GLOBAL_HOTKEY}, "autorail", WID_RAT_AUTORAIL),
+		Hotkey({'Y', 'A' | WKC_CTRL | WKC_GLOBAL_HOTKEY}, "polyrail", HOTKEY_POLYRAIL),
+		Hotkey({'Y' | WKC_CTRL, 'A' | WKC_CTRL | WKC_SHIFT | WKC_GLOBAL_HOTKEY}, "new_polyrail", HOTKEY_NEW_POLYRAIL),
+		Hotkey('6', "demolish", WID_RAT_DEMOLISH),
+		Hotkey('7', "depot", WID_RAT_BUILD_DEPOT),
+		Hotkey('8', "waypoint", WID_RAT_BUILD_WAYPOINT),
+		Hotkey('9', "station", WID_RAT_BUILD_STATION),
+		Hotkey('S', "signal", WID_RAT_BUILD_SIGNALS),
+		Hotkey('B', "bridge", WID_RAT_BUILD_BRIDGE),
+		Hotkey('T', "tunnel", WID_RAT_BUILD_TUNNEL),
+		Hotkey('R', "remove", WID_RAT_REMOVE),
+		Hotkey('C', "convert", WID_RAT_CONVERT_RAIL),
+		Hotkey(WKC_CTRL | 'C', "convert_track", WID_RAT_CONVERT_RAIL_TRACK),
+	}, RailToolbarGlobalHotkeys};
 };
-
-/**
- * Handler for global hotkeys of the BuildRailToolbarWindow.
- * @param hotkey Hotkey
- * @return ES_HANDLED if hotkey was accepted.
- */
-static EventState RailToolbarGlobalHotkeys(int hotkey)
-{
-	if (_game_mode != GM_NORMAL) return ES_NOT_HANDLED;
-	extern RailType _last_built_railtype;
-	Window *w = ShowBuildRailToolbar(_last_built_railtype);
-	if (w == nullptr) return ES_NOT_HANDLED;
-	return w->OnHotkey(hotkey);
-}
-
-const uint16_t _railtoolbar_autorail_keys[] = {'5', 'A' | WKC_GLOBAL_HOTKEY, 0};
-const uint16_t _railtoolbar_polyrail_keys[] = {'Y', 'A' | WKC_CTRL | WKC_GLOBAL_HOTKEY, 0};
-const uint16_t _railtoolbar_new_poly_keys[] = {'Y' | WKC_CTRL, 'A' | WKC_CTRL | WKC_SHIFT | WKC_GLOBAL_HOTKEY, 0};
-
-static Hotkey railtoolbar_hotkeys[] = {
-	Hotkey('1', "build_ns", WID_RAT_BUILD_NS),
-	Hotkey('2', "build_x", WID_RAT_BUILD_X),
-	Hotkey('3', "build_ew", WID_RAT_BUILD_EW),
-	Hotkey('4', "build_y", WID_RAT_BUILD_Y),
-	Hotkey(_railtoolbar_autorail_keys, "autorail", WID_RAT_AUTORAIL),
-	Hotkey(_railtoolbar_polyrail_keys, "polyrail", HOTKEY_POLYRAIL),
-	Hotkey(_railtoolbar_new_poly_keys, "new_polyrail", HOTKEY_NEW_POLYRAIL),
-	Hotkey('6', "demolish", WID_RAT_DEMOLISH),
-	Hotkey('7', "depot", WID_RAT_BUILD_DEPOT),
-	Hotkey('8', "waypoint", WID_RAT_BUILD_WAYPOINT),
-	Hotkey('9', "station", WID_RAT_BUILD_STATION),
-	Hotkey('S', "signal", WID_RAT_BUILD_SIGNALS),
-	Hotkey('B', "bridge", WID_RAT_BUILD_BRIDGE),
-	Hotkey('T', "tunnel", WID_RAT_BUILD_TUNNEL),
-	Hotkey('R', "remove", WID_RAT_REMOVE),
-	Hotkey('C', "convert", WID_RAT_CONVERT_RAIL),
-	Hotkey(WKC_CTRL | 'C', "convert_track", WID_RAT_CONVERT_RAIL_TRACK),
-};
-HotkeyList BuildRailToolbarWindow::hotkeys("railtoolbar", railtoolbar_hotkeys, RailToolbarGlobalHotkeys);
 
 static constexpr std::initializer_list<NWidgetPart> _nested_build_rail_widgets = {
 	NWidget(NWID_HORIZONTAL),
@@ -2049,31 +2042,28 @@ public:
 		}
 	}
 
-	static HotkeyList hotkeys;
+	static inline HotkeyList hotkeys{"signaltoolbar", {
+		Hotkey('N', "routing_restriction", WID_BS_TRACE_RESTRICT),
+		Hotkey('K', "convert", WID_BS_CONVERT),
+		Hotkey(0, "program_signal", WID_BS_PROGRAM),
+		Hotkey(0, "semaphore_normal", WID_BS_SEMAPHORE_NORM),
+		Hotkey(0, "semaphore_entry", WID_BS_SEMAPHORE_ENTRY),
+		Hotkey(0, "semaphore_exit", WID_BS_SEMAPHORE_EXIT),
+		Hotkey(0, "semaphore_combo", WID_BS_SEMAPHORE_COMBO),
+		Hotkey(0, "semaphore_prog", WID_BS_SEMAPHORE_PROG),
+		Hotkey(0, "semaphore_pbs", WID_BS_SEMAPHORE_PBS),
+		Hotkey(0, "semaphore_pbs_oneway", WID_BS_SEMAPHORE_PBS_OWAY),
+		Hotkey(0, "semaphore_no_entry", WID_BS_SEMAPHORE_NO_ENTRY),
+		Hotkey('G', "signal_normal", WID_BS_ELECTRIC_NORM),
+		Hotkey(0, "signal_entry", WID_BS_ELECTRIC_ENTRY),
+		Hotkey(0, "signal_exit", WID_BS_ELECTRIC_EXIT),
+		Hotkey(0, "signal_combo", WID_BS_ELECTRIC_COMBO),
+		Hotkey(0, "signal_prog", WID_BS_ELECTRIC_PROG),
+		Hotkey('H', "signal_pbs", WID_BS_ELECTRIC_PBS),
+		Hotkey('J', "signal_pbs_oneway", WID_BS_ELECTRIC_PBS_OWAY),
+		Hotkey(0, "signal_no_entry", WID_BS_ELECTRIC_NO_ENTRY),
+	}};
 };
-
-static Hotkey signaltoolbar_hotkeys[] = {
-	Hotkey('N', "routing_restriction", WID_BS_TRACE_RESTRICT),
-	Hotkey('K', "convert", WID_BS_CONVERT),
-	Hotkey((uint16_t)0, "program_signal", WID_BS_PROGRAM),
-	Hotkey((uint16_t)0, "semaphore_normal", WID_BS_SEMAPHORE_NORM),
-	Hotkey((uint16_t)0, "semaphore_entry", WID_BS_SEMAPHORE_ENTRY),
-	Hotkey((uint16_t)0, "semaphore_exit", WID_BS_SEMAPHORE_EXIT),
-	Hotkey((uint16_t)0, "semaphore_combo", WID_BS_SEMAPHORE_COMBO),
-	Hotkey((uint16_t)0, "semaphore_prog", WID_BS_SEMAPHORE_PROG),
-	Hotkey((uint16_t)0, "semaphore_pbs", WID_BS_SEMAPHORE_PBS),
-	Hotkey((uint16_t)0, "semaphore_pbs_oneway", WID_BS_SEMAPHORE_PBS_OWAY),
-	Hotkey((uint16_t)0, "semaphore_no_entry", WID_BS_SEMAPHORE_NO_ENTRY),
-	Hotkey('G', "signal_normal", WID_BS_ELECTRIC_NORM),
-	Hotkey((uint16_t)0, "signal_entry", WID_BS_ELECTRIC_ENTRY),
-	Hotkey((uint16_t)0, "signal_exit", WID_BS_ELECTRIC_EXIT),
-	Hotkey((uint16_t)0, "signal_combo", WID_BS_ELECTRIC_COMBO),
-	Hotkey((uint16_t)0, "signal_prog", WID_BS_ELECTRIC_PROG),
-	Hotkey('H', "signal_pbs", WID_BS_ELECTRIC_PBS),
-	Hotkey('J', "signal_pbs_oneway", WID_BS_ELECTRIC_PBS_OWAY),
-	Hotkey((uint16_t)0, "signal_no_entry", WID_BS_ELECTRIC_NO_ENTRY),
-};
-HotkeyList BuildSignalWindow::hotkeys("signaltoolbar", signaltoolbar_hotkeys);
 
 /** Nested widget definition of the build signal window */
 static constexpr std::initializer_list<NWidgetPart> _nested_signal_builder_widgets = {

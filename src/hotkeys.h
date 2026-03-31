@@ -21,7 +21,7 @@
  */
 struct Hotkey {
 	Hotkey(uint16_t default_keycode, const char *name, int num);
-	Hotkey(const uint16_t *default_keycodes, const char *name, int num);
+	Hotkey(std::initializer_list<uint16_t> default_keycodes, const char *name, int num);
 
 	void AddKeycode(uint16_t keycode);
 

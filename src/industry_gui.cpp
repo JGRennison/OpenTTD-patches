@@ -1949,13 +1949,10 @@ public:
 		}
 	}
 
-	static HotkeyList hotkeys;
+	static inline HotkeyList hotkeys {"industrydirectory", {
+		Hotkey('F', "focus_filter_box", WID_ID_FILTER),
+	}};
 };
-
-static Hotkey industrydirectory_hotkeys[] = {
-	Hotkey('F', "focus_filter_box", WID_ID_FILTER),
-};
-HotkeyList IndustryDirectoryWindow::hotkeys("industrydirectory", industrydirectory_hotkeys);
 
 Listing IndustryDirectoryWindow::last_sorting = {false, 0};
 

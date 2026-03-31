@@ -359,34 +359,32 @@ struct TerraformToolbarWindow : Window {
 		this->RaiseButtons();
 	}
 
-	static HotkeyList hotkeys;
-};
 
-/**
- * Handler for global hotkeys of the TerraformToolbarWindow.
- * @param hotkey Hotkey
- * @return ES_HANDLED if hotkey was accepted.
- */
-static EventState TerraformToolbarGlobalHotkeys(int hotkey)
-{
-	if (_game_mode != GM_NORMAL) return ES_NOT_HANDLED;
-	Window *w = ShowTerraformToolbar(nullptr);
-	if (w == nullptr) return ES_NOT_HANDLED;
-	return w->OnHotkey(hotkey);
-}
+	/**
+	 * Handler for global hotkeys of the TerraformToolbarWindow.
+	 * @param hotkey Hotkey
+	 * @return ES_HANDLED if hotkey was accepted.
+	 */
+	static EventState TerraformToolbarGlobalHotkeys(int hotkey)
+	{
+		if (_game_mode != GM_NORMAL) return ES_NOT_HANDLED;
+		Window *w = ShowTerraformToolbar(nullptr);
+		if (w == nullptr) return ES_NOT_HANDLED;
+		return w->OnHotkey(hotkey);
+	}
 
-static Hotkey terraform_hotkeys[] = {
-	Hotkey('Q' | WKC_GLOBAL_HOTKEY, "lower", WID_TT_LOWER_LAND),
-	Hotkey('W' | WKC_GLOBAL_HOTKEY, "raise", WID_TT_RAISE_LAND),
-	Hotkey('E' | WKC_GLOBAL_HOTKEY, "level", WID_TT_LEVEL_LAND),
-	Hotkey('D' | WKC_GLOBAL_HOTKEY, "dynamite", WID_TT_DEMOLISH),
-	Hotkey('U', "buyland", WID_TT_BUY_LAND),
-	Hotkey('I', "trees", WID_TT_PLANT_TREES),
-	Hotkey('R' | WKC_SHIFT, "ruler", WID_TT_MEASUREMENT_TOOL),
-	Hotkey('O', "placesign", WID_TT_PLACE_SIGN),
-	Hotkey('P', "placeobject", WID_TT_PLACE_OBJECT),
+	static inline HotkeyList hotkeys{"terraform", {
+		Hotkey('Q' | WKC_GLOBAL_HOTKEY, "lower", WID_TT_LOWER_LAND),
+		Hotkey('W' | WKC_GLOBAL_HOTKEY, "raise", WID_TT_RAISE_LAND),
+		Hotkey('E' | WKC_GLOBAL_HOTKEY, "level", WID_TT_LEVEL_LAND),
+		Hotkey('D' | WKC_GLOBAL_HOTKEY, "dynamite", WID_TT_DEMOLISH),
+		Hotkey('U', "buyland", WID_TT_BUY_LAND),
+		Hotkey('I', "trees", WID_TT_PLANT_TREES),
+		Hotkey('R' | WKC_SHIFT, "ruler", WID_TT_MEASUREMENT_TOOL),
+		Hotkey('O', "placesign", WID_TT_PLACE_SIGN),
+		Hotkey('P', "placeobject", WID_TT_PLACE_OBJECT),
+	}, TerraformToolbarGlobalHotkeys};
 };
-HotkeyList TerraformToolbarWindow::hotkeys("terraform", terraform_hotkeys, TerraformToolbarGlobalHotkeys);
 
 static constexpr std::initializer_list<NWidgetPart> _nested_terraform_widgets = {
 	NWidget(NWID_HORIZONTAL),
@@ -950,33 +948,29 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 		show_desert->SetDisplayedPlane(_settings_game.game_creation.landscape == LandscapeType::Tropic ? 0 : SZSP_NONE);
 	}
 
-	static HotkeyList hotkeys;
+	/**
+	 * Handler for global hotkeys of the ScenarioEditorLandscapeGenerationWindow.
+	 * @param hotkey Hotkey
+	 * @return ES_HANDLED if hotkey was accepted.
+	 */
+	static EventState TerraformToolbarEditorGlobalHotkeys(int hotkey)
+	{
+		if (_game_mode != GM_EDITOR) return ES_NOT_HANDLED;
+		Window *w = ShowEditorTerraformToolbar();
+		if (w == nullptr) return ES_NOT_HANDLED;
+		return w->OnHotkey(hotkey);
+	}
+
+	static inline HotkeyList hotkeys{"terraform_editor", {
+		Hotkey('D' | WKC_GLOBAL_HOTKEY, "dynamite", WID_ETT_DEMOLISH),
+		Hotkey('Q' | WKC_GLOBAL_HOTKEY, "lower", WID_ETT_LOWER_LAND),
+		Hotkey('W' | WKC_GLOBAL_HOTKEY, "raise", WID_ETT_RAISE_LAND),
+		Hotkey('E' | WKC_GLOBAL_HOTKEY, "level", WID_ETT_LEVEL_LAND),
+		Hotkey('R', "rocky", WID_ETT_PLACE_ROCKS),
+		Hotkey('T', "desert", WID_ETT_PLACE_DESERT),
+		Hotkey('O', "object", WID_ETT_PLACE_OBJECT),
+	}, TerraformToolbarEditorGlobalHotkeys};
 };
-
-/**
- * Handler for global hotkeys of the ScenarioEditorLandscapeGenerationWindow.
- * @param hotkey Hotkey
- * @return ES_HANDLED if hotkey was accepted.
- */
-static EventState TerraformToolbarEditorGlobalHotkeys(int hotkey)
-{
-	if (_game_mode != GM_EDITOR) return ES_NOT_HANDLED;
-	Window *w = ShowEditorTerraformToolbar();
-	if (w == nullptr) return ES_NOT_HANDLED;
-	return w->OnHotkey(hotkey);
-}
-
-static Hotkey terraform_editor_hotkeys[] = {
-	Hotkey('D' | WKC_GLOBAL_HOTKEY, "dynamite", WID_ETT_DEMOLISH),
-	Hotkey('Q' | WKC_GLOBAL_HOTKEY, "lower", WID_ETT_LOWER_LAND),
-	Hotkey('W' | WKC_GLOBAL_HOTKEY, "raise", WID_ETT_RAISE_LAND),
-	Hotkey('E' | WKC_GLOBAL_HOTKEY, "level", WID_ETT_LEVEL_LAND),
-	Hotkey('R', "rocky", WID_ETT_PLACE_ROCKS),
-	Hotkey('T', "desert", WID_ETT_PLACE_DESERT),
-	Hotkey('O', "object", WID_ETT_PLACE_OBJECT),
-};
-
-HotkeyList ScenarioEditorLandscapeGenerationWindow::hotkeys("terraform_editor", terraform_editor_hotkeys, TerraformToolbarEditorGlobalHotkeys);
 
 static WindowDesc _scen_edit_land_gen_desc(__FILE__, __LINE__,
 	WDP_AUTO, "toolbar_landscape_scen", 0, 0,

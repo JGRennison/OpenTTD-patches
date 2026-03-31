@@ -230,18 +230,16 @@ Hotkey::Hotkey(uint16_t default_keycode, const char *name, int num) :
 
 /**
  * Create a new Hotkey object with multiple default keycodes.
- * @param default_keycodes An array of default keycodes terminated with 0.
+ * @param default_keycodes An array of default keycodes.
  * @param name The name of this hotkey.
  * @param num Number of this hotkey, should be unique within the hotkey list.
  */
-Hotkey::Hotkey(const uint16_t *default_keycodes, const char *name, int num) :
+Hotkey::Hotkey(std::initializer_list<uint16_t> default_keycodes, const char *name, int num) :
 	name(name),
 	num(num)
 {
-	const uint16_t *keycode = default_keycodes;
-	while (*keycode != 0) {
-		this->AddKeycode(*keycode);
-		keycode++;
+	for (uint16_t keycode : default_keycodes) {
+		this->AddKeycode(keycode);
 	}
 }
 

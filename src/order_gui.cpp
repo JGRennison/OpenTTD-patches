@@ -4211,7 +4211,24 @@ public:
 		this->SetDirty();
 	}
 
-	static HotkeyList hotkeys;
+	static inline HotkeyList hotkeys{"order", {
+		Hotkey('D', "skip", OHK_SKIP),
+		Hotkey('F', "delete", OHK_DELETE),
+		Hotkey('G', "goto", OHK_GOTO),
+		Hotkey('H', "nonstop", OHK_NONSTOP),
+		Hotkey(0, "via", OHK_VIA),
+		Hotkey('J', "fullload", OHK_FULLLOAD),
+		Hotkey('K', "unload", OHK_UNLOAD),
+		Hotkey(0, "nearest_depot", OHK_NEAREST_DEPOT),
+		Hotkey(0, "always_service", OHK_ALWAYS_SERVICE),
+		Hotkey(0, "transfer", OHK_TRANSFER),
+		Hotkey(0, "no_unload", OHK_NO_UNLOAD),
+		Hotkey(0, "no_load", OHK_NO_LOAD),
+		Hotkey(0, "refit", OHK_REFIT),
+		Hotkey(0, "duplicate", OHK_DUPLICATE),
+		Hotkey(0, "retarget_jump", OHK_RETARGET_JUMP),
+		Hotkey(0, "close", OHK_CLOSE),
+	}};
 };
 
 void InvalidateOrderListWindowOnOrderMove(VehicleID veh, VehicleOrderID from, VehicleOrderID to, uint16_t count)
@@ -4222,26 +4239,6 @@ void InvalidateOrderListWindowOnOrderMove(VehicleID veh, VehicleOrderID from, Ve
 		w->OnOrderMove(from, to, count);
 	}
 }
-
-static Hotkey order_hotkeys[] = {
-	Hotkey('D', "skip", OHK_SKIP),
-	Hotkey('F', "delete", OHK_DELETE),
-	Hotkey('G', "goto", OHK_GOTO),
-	Hotkey('H', "nonstop", OHK_NONSTOP),
-	Hotkey((uint16_t)0, "via", OHK_VIA),
-	Hotkey('J', "fullload", OHK_FULLLOAD),
-	Hotkey('K', "unload", OHK_UNLOAD),
-	Hotkey((uint16_t)0, "nearest_depot", OHK_NEAREST_DEPOT),
-	Hotkey((uint16_t)0, "always_service", OHK_ALWAYS_SERVICE),
-	Hotkey((uint16_t)0, "transfer", OHK_TRANSFER),
-	Hotkey((uint16_t)0, "no_unload", OHK_NO_UNLOAD),
-	Hotkey((uint16_t)0, "no_load", OHK_NO_LOAD),
-	Hotkey((uint16_t)0, "refit", OHK_REFIT),
-	Hotkey((uint16_t)0, "duplicate", OHK_DUPLICATE),
-	Hotkey((uint16_t)0, "retarget_jump", OHK_RETARGET_JUMP),
-	Hotkey((uint16_t)0, "close", OHK_CLOSE),
-};
-HotkeyList OrdersWindow::hotkeys("order", order_hotkeys);
 
 /** Nested widget definition for "your" train orders. */
 static constexpr std::initializer_list<NWidgetPart> _nested_orders_train_widgets = {
