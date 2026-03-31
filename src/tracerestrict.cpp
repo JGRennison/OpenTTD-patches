@@ -479,7 +479,7 @@ static const Order *TraceRestrictGetNextGotoOrder(const Train *v)
 			if (order_idx == v->cur_real_order_index) return nullptr;
 			if (order->IsGotoOrder()) return order;
 		}
-		if (order->IsType(OT_CONDITIONAL) && order->GetConditionVariable() == OCV_UNCONDITIONALLY) {
+		if (order->IsType(OT_CONDITIONAL) && order->GetConditionVariable() == OrderConditionVariable::Unconditionally) {
 			order_idx = order->GetConditionSkipToOrder();
 		} else {
 			order_idx++;
@@ -3602,7 +3602,7 @@ bool ClearOrderTraceRestrictSlotIf(Order *o, F cond)
 {
 	bool changed_order = false;
 	if (o->IsType(OT_CONDITIONAL) &&
-			(o->GetConditionVariable() == OCV_SLOT_OCCUPANCY || o->GetConditionVariable() == OCV_VEH_IN_SLOT) &&
+			(o->GetConditionVariable() == OrderConditionVariable::SlotOccupancy || o->GetConditionVariable() == OrderConditionVariable::VehicleInSlot) &&
 			cond(static_cast<TraceRestrictSlotID>(o->GetXData()))) {
 		o->GetXDataRef() = INVALID_TRACE_RESTRICT_SLOT_ID.base();
 		changed_order = true;
@@ -3857,7 +3857,7 @@ bool ClearOrderTraceRestrictSlotGroupIf(Order *o, F cond)
 {
 	bool changed_order = false;
 	if (o->IsType(OT_CONDITIONAL) &&
-			o->GetConditionVariable() == OCV_VEH_IN_SLOT_GROUP &&
+			o->GetConditionVariable() == OrderConditionVariable::VehicleInSlotGroup &&
 			cond(static_cast<TraceRestrictSlotGroupID>(o->GetXData()))) {
 		o->GetXDataRef() = INVALID_TRACE_RESTRICT_SLOT_GROUP.base();
 		changed_order = true;
@@ -4086,7 +4086,7 @@ bool ClearOrderTraceRestrictCounterIf(Order *o, F cond)
 {
 	bool changed_order = false;
 	if (o->IsType(OT_CONDITIONAL) &&
-			(o->GetConditionVariable() == OCV_COUNTER_VALUE) &&
+			(o->GetConditionVariable() == OrderConditionVariable::CounterValue) &&
 			cond(static_cast<TraceRestrictCounterID>(o->GetXDataHigh()))) {
 		o->SetXDataHigh(INVALID_TRACE_RESTRICT_COUNTER_ID.base());
 		changed_order = true;

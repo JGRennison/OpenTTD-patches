@@ -376,7 +376,7 @@ CommandCost CmdSchDispatchRemoveSchedule(DoCommandFlags flags, VehicleID veh, ui
 			} else if (idx > (int)schedule_index) {
 				o->SetDispatchScheduleIndex(idx - 1);
 			}
-			if (o->IsType(OT_CONDITIONAL) && o->GetConditionVariable() == OCV_DISPATCH_SLOT) {
+			if (o->IsType(OT_CONDITIONAL) && o->GetConditionVariable() == OrderConditionVariable::DispatchSlot) {
 				uint16_t order_schedule = o->GetConditionDispatchScheduleID();
 				if (order_schedule == UINT16_MAX) {
 					/* do nothing */
@@ -557,7 +557,7 @@ CommandCost CmdSchDispatchEditRoute(DoCommandFlags flags, VehicleID veh, uint32_
 					}
 				}
 				for (Order *o : v->Orders()) {
-					if (o->IsType(OT_CONDITIONAL) && o->GetConditionVariable() == OCV_DISPATCH_SLOT && o->GetConditionDispatchScheduleID() == schedule_index) {
+					if (o->IsType(OT_CONDITIONAL) && o->GetConditionVariable() == OrderConditionVariable::DispatchSlot && o->GetConditionDispatchScheduleID() == schedule_index) {
 						if (GB(o->GetConditionValue(), ODCB_MODE_START, ODCB_MODE_COUNT) == OCDM_ROUTE_ID && o->GetXData2Low() == route_id) {
 							o->SetXData2Low(INVALID_DISPATCH_SLOT_ROUTE_ID);
 						}
@@ -831,7 +831,7 @@ CommandCost CmdSchDispatchSwapSchedules(DoCommandFlags flags, VehicleID veh, uin
 			} else if (idx == (int)schedule_index_2) {
 				o->SetDispatchScheduleIndex((int)schedule_index_1);
 			}
-			if (o->IsType(OT_CONDITIONAL) && o->GetConditionVariable() == OCV_DISPATCH_SLOT) {
+			if (o->IsType(OT_CONDITIONAL) && o->GetConditionVariable() == OrderConditionVariable::DispatchSlot) {
 				uint16_t order_schedule = o->GetConditionDispatchScheduleID();
 				if (order_schedule == schedule_index_1) {
 					o->SetConditionDispatchScheduleID(schedule_index_2);

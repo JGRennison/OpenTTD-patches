@@ -212,40 +212,41 @@ using OrderWaypointFlags = EnumBitSet<OrderWaypointFlag, uint8_t>;
 /**
  * Variables (of a vehicle) to 'cause' skipping on.
  */
-enum OrderConditionVariable : uint8_t {
-	OCV_LOAD_PERCENTAGE,    ///< Skip based on the amount of load
-	OCV_RELIABILITY,        ///< Skip based on the reliability
-	OCV_MAX_SPEED,          ///< Skip based on the maximum speed
-	OCV_AGE,                ///< Skip based on the age
-	OCV_REQUIRES_SERVICE,   ///< Skip when the vehicle requires service
-	OCV_UNCONDITIONALLY,    ///< Always skip
-	OCV_REMAINING_LIFETIME, ///< Skip based on the remaining lifetime
-	OCV_MAX_RELIABILITY,    ///< Skip based on the maximum reliability
-	OCV_CARGO_WAITING,      ///< Skip if specified cargo is waiting at station
-	OCV_CARGO_ACCEPTANCE,   ///< Skip if specified cargo is accepted at station
-	OCV_FREE_PLATFORMS,     ///< Skip based on free platforms at station
-	OCV_PERCENT,            ///< Skip xx percent of times
-	OCV_SLOT_OCCUPANCY,     ///< Test if vehicle slot is fully occupied, or empty
-	OCV_VEH_IN_SLOT,        ///< Test if vehicle is in slot
-	OCV_CARGO_LOAD_PERCENTAGE, ///< Skip based on the amount of load of a specific cargo
-	OCV_CARGO_WAITING_AMOUNT,  ///< Skip based on the amount of a specific cargo waiting at station
-	OCV_COUNTER_VALUE,      ///< Skip based on counter value
-	OCV_TIME_DATE,          ///< Skip based on current time/date
-	OCV_TIMETABLE,          ///< Skip based on timetable state
-	OCV_DISPATCH_SLOT,      ///< Skip based on scheduled dispatch slot state
-	OCV_CARGO_WAITING_AMOUNT_PERCENTAGE, ///< Skip based on the amount of a specific cargo waiting at station, relative to the vehicle capacity
-	OCV_VEH_IN_SLOT_GROUP,  ///< Test if vehicle is in slot group
-	OCV_END
+enum class OrderConditionVariable : uint8_t {
+	LoadPercentage               =  0, ///< Skip based on the amount of load
+	Reliability                  =  1, ///< Skip based on the reliability
+	MaxSpeed                     =  2, ///< Skip based on the maximum speed
+	Age                          =  3, ///< Skip based on the age
+	RequiresService              =  4, ///< Skip when the vehicle requires service
+	Unconditionally              =  5, ///< Always skip
+	RemainingLifetime            =  6, ///< Skip based on the remaining lifetime
+	MaxReliability               =  7, ///< Skip based on the maximum reliability
+	/* end of upstream variables */
+	CargoWaiting                 =  8, ///< Skip if specified cargo is waiting at station
+	CargoAcceptance              =  9, ///< Skip if specified cargo is accepted at station
+	FreePlatforms                = 10, ///< Skip based on free platforms at station
+	Percent                      = 11, ///< Skip xx percent of times
+	SlotOccupancy                = 12, ///< Test if vehicle slot is fully occupied, or empty
+	VehicleInSlot                = 13, ///< Test if vehicle is in slot
+	CargoLoadPercentage          = 14, ///< Skip based on the amount of load of a specific cargo
+	CargoWaitingAmount           = 15, ///< Skip based on the amount of a specific cargo waiting at station
+	CounterValue                 = 16, ///< Skip based on counter value
+	TimeDate                     = 17, ///< Skip based on current time/date
+	Timetable                    = 18, ///< Skip based on timetable state
+	DispatchSlot                 = 19, ///< Skip based on scheduled dispatch slot state
+	CargoWaitingAmountPercentage = 20, ///< Skip based on the amount of a specific cargo waiting at station, relative to the vehicle capacity
+	VehicleInSlotGroup           = 21, ///< Test if vehicle is in slot group
+	End, ///< End marker.
 };
 
 inline bool ConditionVariableHasStationID(OrderConditionVariable ocv)
 {
-	return ocv == OCV_CARGO_WAITING || ocv == OCV_CARGO_ACCEPTANCE || ocv == OCV_FREE_PLATFORMS || ocv == OCV_CARGO_WAITING_AMOUNT || ocv == OCV_CARGO_WAITING_AMOUNT_PERCENTAGE;
+	return ocv == OrderConditionVariable::CargoWaiting || ocv == OrderConditionVariable::CargoAcceptance || ocv == OrderConditionVariable::FreePlatforms || ocv == OrderConditionVariable::CargoWaitingAmount || ocv == OrderConditionVariable::CargoWaitingAmountPercentage;
 }
 
 inline bool ConditionVariableTestsCargoWaitingAmount(OrderConditionVariable ocv)
 {
-	return ocv == OCV_CARGO_WAITING_AMOUNT || ocv == OCV_CARGO_WAITING_AMOUNT_PERCENTAGE;
+	return ocv == OrderConditionVariable::CargoWaitingAmount || ocv == OrderConditionVariable::CargoWaitingAmountPercentage;
 }
 
 /**
@@ -326,7 +327,7 @@ enum OrderTimetableConditionMode {
 };
 
 /**
- * Condition value field for OCV_DISPATCH_SLOT
+ * Condition value field for OrderConditionVariable::DispatchSlot
  *  0                   1
  *  0 1 2 3 4 5 6 7 8 9 0
  * +-+-+-+-+-+-+-+-+-+-+-+

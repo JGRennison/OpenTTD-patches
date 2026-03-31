@@ -175,9 +175,9 @@ DepartureShowAs DepartureCallingSettings::GetShowAsType(const Order *order, Depa
 
 static DeparturesConditionalJumpResult GetNonScheduleDepartureConditionalOrderMode(const Order *order, const Vehicle *v, StateTicks eval_tick)
 {
-	if (order->GetConditionVariable() == OCV_UNCONDITIONALLY) return DCJD_TAKEN;
-	if (order->GetConditionVariable() == OCV_REQUIRES_SERVICE) return OrderConditionCompare(order->GetConditionComparator(), 0, order->GetConditionValue()) ? DCJD_TAKEN : DCJD_NOT_TAKEN;
-	if (order->GetConditionVariable() == OCV_TIME_DATE) {
+	if (order->GetConditionVariable() == OrderConditionVariable::Unconditionally) return DCJD_TAKEN;
+	if (order->GetConditionVariable() == OrderConditionVariable::RequiresService) return OrderConditionCompare(order->GetConditionComparator(), 0, order->GetConditionValue()) ? DCJD_TAKEN : DCJD_NOT_TAKEN;
+	if (order->GetConditionVariable() == OrderConditionVariable::TimeDate) {
 		int value = GetTraceRestrictTimeDateValueFromStateTicks(static_cast<TraceRestrictTimeDateValueField>(order->GetConditionValue()), eval_tick);
 		return OrderConditionCompare(order->GetConditionComparator(), value, order->GetXData()) ? DCJD_TAKEN : DCJD_NOT_TAKEN;
 	}
@@ -187,11 +187,11 @@ static DeparturesConditionalJumpResult GetNonScheduleDepartureConditionalOrderMo
 
 static DeparturesConditionalJumpResult GetDepartureConditionalOrderMode(const Order *order, const Vehicle *v, StateTicks eval_tick, const ScheduledDispatchVehicleRecords &records, Ticks current_lateness)
 {
-	if (order->GetConditionVariable() == OCV_TIMETABLE) {
+	if (order->GetConditionVariable() == OrderConditionVariable::Timetable) {
 		return EvaluateTimetableStateConditionalOrder(order, current_lateness) ? DCJD_TAKEN : DCJD_NOT_TAKEN;
 	}
 
-	if (order->GetConditionVariable() == OCV_DISPATCH_SLOT) {
+	if (order->GetConditionVariable() == OrderConditionVariable::DispatchSlot) {
 		auto get_vehicle_records = [&](uint16_t schedule_index) -> const LastDispatchRecord * {
 			auto record = records.find(schedule_index);
 			if (record != records.end()) {
@@ -524,7 +524,7 @@ static void PrepareLiveDepartureCandidateVehicle(std::vector<LiveCandidateVehicl
 
 	bool have_veh_dispatch_conditionals = false;
 	for (const Order *order : v->Orders()) {
-		if (order->IsType(OT_CONDITIONAL) && order->GetConditionVariable() == OCV_DISPATCH_SLOT && GB(order->GetConditionValue(), ODCB_SRC_START, ODCB_SRC_COUNT) == ODCS_VEH) {
+		if (order->IsType(OT_CONDITIONAL) && order->GetConditionVariable() == OrderConditionVariable::DispatchSlot && GB(order->GetConditionValue(), ODCB_SRC_START, ODCB_SRC_COUNT) == ODCS_VEH) {
 			have_veh_dispatch_conditionals = true;
 		}
 	}
@@ -1397,7 +1397,7 @@ struct DepartureListScheduleModeSlotEvaluator {
 	void EvaluateSlots(DepartureTypes types);
 
 private:
-	inline bool IsDepartureDependantConditionVariable(OrderConditionVariable ocv) const { return ocv == OCV_DISPATCH_SLOT || ocv == OCV_TIME_DATE; }
+	inline bool IsDepartureDependantConditionVariable(OrderConditionVariable ocv) const { return ocv == OrderConditionVariable::DispatchSlot || ocv == OrderConditionVariable::TimeDate; }
 
 	DeparturesConditionalJumpResult EvaluateConditionalOrder(const Order *order, StateTicks eval_tick);
 	std::pair<const Order *, StateTicks> EvaluateDepartureFromSourceOrder(const Order *source_order, StateTicks departure_tick);
@@ -1407,7 +1407,7 @@ private:
 };
 
 DeparturesConditionalJumpResult DepartureListScheduleModeSlotEvaluator::EvaluateConditionalOrder(const Order *order, StateTicks eval_tick) {
-	if (order->GetConditionVariable() == OCV_TIME_DATE) {
+	if (order->GetConditionVariable() == OrderConditionVariable::TimeDate) {
 		TraceRestrictTimeDateValueField field = static_cast<TraceRestrictTimeDateValueField>(order->GetConditionValue());
 		if (field != TRTDVF_MINUTE && field != TRTDVF_HOUR && field != TRTDVF_HOUR_MINUTE) {
 			/* No reasonable way to handle this with a minutes schedule, give up */
@@ -1415,12 +1415,12 @@ DeparturesConditionalJumpResult DepartureListScheduleModeSlotEvaluator::Evaluate
 		}
 	}
 
-	if (order->GetConditionVariable() == OCV_TIMETABLE) {
+	if (order->GetConditionVariable() == OrderConditionVariable::Timetable) {
 		/* In schedule/slot evaluation mode, take lateness/earliness to always be 0. */
 		return EvaluateTimetableStateConditionalOrder(order, 0) ? DCJD_TAKEN : DCJD_NOT_TAKEN;
 	}
 
-	if (order->GetConditionVariable() == OCV_DISPATCH_SLOT) {
+	if (order->GetConditionVariable() == OrderConditionVariable::DispatchSlot) {
 		LastDispatchRecord record{};
 
 		auto get_vehicle_records = [&](uint16_t schedule_index) -> const LastDispatchRecord * {

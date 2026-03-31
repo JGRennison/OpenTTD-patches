@@ -370,7 +370,7 @@ static ScriptOrder::OrderPosition RealOrderPositionToScriptOrderPosition(Vehicle
 
 	const Order *order = ::ResolveOrder(vehicle_id, order_position);
 	SQInteger value = order->GetConditionValue();
-	if (order->GetConditionVariable() == OCV_MAX_SPEED) value = value * 16 / 10;
+	if (order->GetConditionVariable() == OrderConditionVariable::MaxSpeed) value = value * 16 / 10;
 	return value;
 }
 

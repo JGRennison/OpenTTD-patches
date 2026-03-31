@@ -173,7 +173,7 @@ LinkRefresher::TimetableTravelTime LinkRefresher::UpdateTimetableTravelSoFar(con
 
 	do {
 		if (from->IsType(OT_CONDITIONAL)) {
-			if (from->GetConditionVariable() == OCV_UNCONDITIONALLY) {
+			if (from->GetConditionVariable() == OrderConditionVariable::Unconditionally) {
 				/* Taken branch travel time */
 				travel.time_so_far += from->GetWaitTime();
 				from = this->vehicle->orders->GetOrderAt(from->GetConditionSkipToOrder());
@@ -239,7 +239,7 @@ std::pair<const Order *, LinkRefresher::TimetableTravelTime> LinkRefresher::Pred
 		flags.Set(RefreshFlag::UseNext);
 
 		if (next->IsType(OT_CONDITIONAL)) {
-			if (next->GetConditionVariable() == OCV_UNCONDITIONALLY) {
+			if (next->GetConditionVariable() == OrderConditionVariable::Unconditionally) {
 				const Order *current = next;
 				CargoTypes this_cargo_mask = this->cargo_mask;
 				next = this->vehicle->orders->GetNextDecisionNode(

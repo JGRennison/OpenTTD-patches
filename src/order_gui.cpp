@@ -632,28 +632,28 @@ static const StringID _order_manage_list_dropdown[] = {
 
 /** Variables for conditional orders; this defines the order of appearance in the dropdown box */
 static const OrderConditionVariable _order_conditional_variable[] = {
-	OCV_LOAD_PERCENTAGE,
-	OCV_CARGO_LOAD_PERCENTAGE,
-	OCV_RELIABILITY,
-	OCV_MAX_RELIABILITY,
-	OCV_MAX_SPEED,
-	OCV_AGE,
-	OCV_REMAINING_LIFETIME,
-	OCV_REQUIRES_SERVICE,
-	OCV_CARGO_WAITING,
-	OCV_CARGO_WAITING_AMOUNT,
-	OCV_CARGO_WAITING_AMOUNT_PERCENTAGE,
-	OCV_CARGO_ACCEPTANCE,
-	OCV_FREE_PLATFORMS,
-	OCV_SLOT_OCCUPANCY,
-	OCV_VEH_IN_SLOT,
-	OCV_VEH_IN_SLOT_GROUP,
-	OCV_COUNTER_VALUE,
-	OCV_TIME_DATE,
-	OCV_TIMETABLE,
-	OCV_DISPATCH_SLOT,
-	OCV_PERCENT,
-	OCV_UNCONDITIONALLY,
+	OrderConditionVariable::LoadPercentage,
+	OrderConditionVariable::CargoLoadPercentage,
+	OrderConditionVariable::Reliability,
+	OrderConditionVariable::MaxReliability,
+	OrderConditionVariable::MaxSpeed,
+	OrderConditionVariable::Age,
+	OrderConditionVariable::RemainingLifetime,
+	OrderConditionVariable::RequiresService,
+	OrderConditionVariable::CargoWaiting,
+	OrderConditionVariable::CargoWaitingAmount,
+	OrderConditionVariable::CargoWaitingAmountPercentage,
+	OrderConditionVariable::CargoAcceptance,
+	OrderConditionVariable::FreePlatforms,
+	OrderConditionVariable::SlotOccupancy,
+	OrderConditionVariable::VehicleInSlot,
+	OrderConditionVariable::VehicleInSlotGroup,
+	OrderConditionVariable::CounterValue,
+	OrderConditionVariable::TimeDate,
+	OrderConditionVariable::Timetable,
+	OrderConditionVariable::DispatchSlot,
+	OrderConditionVariable::Percent,
+	OrderConditionVariable::Unconditionally,
 };
 
 static const StringID _order_conditional_condition[] = {
@@ -812,9 +812,9 @@ static const StringID _order_timetable_dropdown[] = {
 
 StringID OrderStringForVariable(const Vehicle *v, OrderConditionVariable ocv)
 {
-	if (ocv == OCV_VEH_IN_SLOT && v->type != VEH_TRAIN) return STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT;
-	if (ocv == OCV_VEH_IN_SLOT_GROUP && v->type != VEH_TRAIN) return STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT_GROUP;
-	return STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE + ocv;
+	if (ocv == OrderConditionVariable::VehicleInSlot && v->type != VEH_TRAIN) return STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT;
+	if (ocv == OrderConditionVariable::VehicleInSlotGroup && v->type != VEH_TRAIN) return STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT_GROUP;
+	return STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE + to_underlying(ocv);
 }
 
 static StringID GetDepotOrderGoToString(const Order &order)
@@ -990,12 +990,12 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 
 			const OrderConditionVariable ocv = order->GetConditionVariable();
 			/* handle some non-ordinary cases separately */
-			if (ocv == OCV_UNCONDITIONALLY) {
+			if (ocv == OrderConditionVariable::Unconditionally) {
 				AppendStringInPlace(line, STR_ORDER_CONDITIONAL_UNCONDITIONAL, order->GetConditionSkipToOrder() + 1);
-			} else if (ocv == OCV_PERCENT) {
+			} else if (ocv == OrderConditionVariable::Percent) {
 				AppendStringInPlace(line, STR_ORDER_CONDITIONAL_PERCENT_DISPLAY, order->GetConditionSkipToOrder() + 1,
 						order->GetConditionValue());
-			} else if (ocv == OCV_FREE_PLATFORMS) {
+			} else if (ocv == OrderConditionVariable::FreePlatforms) {
 				auto [str, value] = get_station_params();
 				AppendStringInPlace(line, STR_ORDER_CONDITIONAL_FREE_PLATFORMS_DISPLAY,
 						order->GetConditionSkipToOrder() + 1,
@@ -1003,7 +1003,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 						value,
 						STR_ORDER_CONDITIONAL_COMPARATOR_HAS + to_underlying(order->GetConditionComparator()),
 						order->GetConditionValue());
-			} else if (ocv == OCV_SLOT_OCCUPANCY) {
+			} else if (ocv == OrderConditionVariable::SlotOccupancy) {
 				StringID comparator;
 				switch (order->GetConditionComparator()) {
 					case OrderConditionComparator::IsTrue:
@@ -1027,7 +1027,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 							STR_TRACE_RESTRICT_VARIABLE_UNDEFINED,
 							comparator);
 				}
-			} else if (ocv == OCV_VEH_IN_SLOT) {
+			} else if (ocv == OrderConditionVariable::VehicleInSlot) {
 				StringID comparator;
 				switch (order->GetConditionComparator()) {
 					case OrderConditionComparator::IsTrue:
@@ -1052,7 +1052,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 							comparator,
 							STR_TRACE_RESTRICT_VARIABLE_UNDEFINED);
 				}
-			} else if (ocv == OCV_VEH_IN_SLOT_GROUP) {
+			} else if (ocv == OrderConditionVariable::VehicleInSlotGroup) {
 				StringID comparator;
 				switch (order->GetConditionComparator()) {
 					case OrderConditionComparator::IsTrue:
@@ -1077,14 +1077,14 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 							STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED,
 							std::monostate{});
 				}
-			} else if (ocv == OCV_CARGO_LOAD_PERCENTAGE) {
+			} else if (ocv == OrderConditionVariable::CargoLoadPercentage) {
 				AppendStringInPlace(line, STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE_DISPLAY,
 						order->GetConditionSkipToOrder() + 1,
 						CargoSpec::Get(order->GetConditionValue())->name,
 						STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + to_underlying(order->GetConditionComparator()),
 						order->GetXData());
-			} else if (ocv == OCV_CARGO_WAITING_AMOUNT || ocv == OCV_CARGO_WAITING_AMOUNT_PERCENTAGE) {
-				const bool percent_mode = (ocv == OCV_CARGO_WAITING_AMOUNT_PERCENTAGE);
+			} else if (ocv == OrderConditionVariable::CargoWaitingAmount || ocv == OrderConditionVariable::CargoWaitingAmountPercentage) {
+				const bool percent_mode = (ocv == OrderConditionVariable::CargoWaitingAmountPercentage);
 				std::array<StringParameter, 10> tmp_params{};
 
 				tmp_params[0] = order->GetConditionSkipToOrder() + 1;
@@ -1121,7 +1121,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 					output_condition_value(7);
 				}
 				AppendStringWithArgsInPlace(line, substr, tmp_params);
-			} else if (ocv == OCV_COUNTER_VALUE) {
+			} else if (ocv == OrderConditionVariable::CounterValue) {
 				if (TraceRestrictCounter::IsValidID(order->GetXDataHigh())) {
 					AppendStringInPlace(line, STR_ORDER_CONDITIONAL_COUNTER,
 							order->GetConditionSkipToOrder() + 1,
@@ -1135,19 +1135,19 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 							STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + to_underlying(order->GetConditionComparator()),
 							order->GetXDataLow());
 				}
-			} else if (ocv == OCV_TIME_DATE) {
+			} else if (ocv == OrderConditionVariable::TimeDate) {
 				AppendStringInPlace(line, (order->GetConditionValue() == TRTDVF_HOUR_MINUTE) ? STR_ORDER_CONDITIONAL_TIME_HHMM : STR_ORDER_CONDITIONAL_NUM,
 						order->GetConditionSkipToOrder() + 1,
 						STR_TRACE_RESTRICT_TIME_MINUTE_ITEM + order->GetConditionValue(),
 						STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + to_underlying(order->GetConditionComparator()),
 						order->GetXData());
-			} else if (ocv == OCV_TIMETABLE) {
+			} else if (ocv == OrderConditionVariable::Timetable) {
 				AppendStringInPlace(line, STR_ORDER_CONDITIONAL_TIMETABLE,
 						order->GetConditionSkipToOrder() + 1,
 						STR_TRACE_RESTRICT_TIMETABLE_LATENESS + order->GetConditionValue(),
 						STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + to_underlying(order->GetConditionComparator()),
 						order->GetXData());
-			} else if (ocv == OCV_DISPATCH_SLOT) {
+			} else if (ocv == OrderConditionVariable::DispatchSlot) {
 				const DispatchSchedule *selected_schedule = nullptr;
 				uint16_t schedule_id = order->GetConditionDispatchScheduleID();
 				std::string schedule_str;
@@ -1216,7 +1216,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 						std::move(schedule_str),
 						STR_TRACE_RESTRICT_DISPATCH_SLOT_NEXT + GB(value, ODCB_SRC_START, ODCB_SRC_COUNT),
 						cond_str);
-			} else if (ocv == OCV_CARGO_ACCEPTANCE) {
+			} else if (ocv == OrderConditionVariable::CargoAcceptance) {
 				auto [str, value] = get_station_params();
 				AppendStringInPlace(line, STR_ORDER_CONDITIONAL_CARGO_ACCEPTANCE,
 						order->GetConditionSkipToOrder() + 1,
@@ -1224,7 +1224,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 						value,
 						STR_ORDER_CONDITIONAL_COMPARATOR_ACCEPTS + to_underlying(order->GetConditionComparator()) - to_underlying(OrderConditionComparator::IsTrue),
 						CargoSpec::Get(order->GetConditionValue())->name);
-			} else if (ocv == OCV_CARGO_WAITING) {
+			} else if (ocv == OrderConditionVariable::CargoWaiting) {
 				auto [str, value] = get_station_params();
 				AppendStringInPlace(line, STR_ORDER_CONDITIONAL_CARGO_WAITING_DISPLAY,
 						order->GetConditionSkipToOrder() + 1,
@@ -1235,12 +1235,12 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 			} else {
 				OrderConditionComparator occ = order->GetConditionComparator();
 				uint value = order->GetConditionValue();
-				if (ocv == OCV_MAX_SPEED) {
+				if (ocv == OrderConditionVariable::MaxSpeed) {
 					value = ConvertSpeedToDisplaySpeed(value, v->type);
 				}
 				AppendStringInPlace(line, (occ == OrderConditionComparator::IsTrue || occ == OrderConditionComparator::IsFalse) ? STR_ORDER_CONDITIONAL_TRUE_FALSE : STR_ORDER_CONDITIONAL_NUM,
 						order->GetConditionSkipToOrder() + 1,
-						(ocv == OCV_FREE_PLATFORMS) ? STR_ORDER_CONDITIONAL_NEXT_STATION : OrderStringForVariable(v, ocv),
+						(ocv == OrderConditionVariable::FreePlatforms) ? STR_ORDER_CONDITIONAL_NEXT_STATION : OrderStringForVariable(v, ocv),
 						STR_ORDER_CONDITIONAL_COMPARATOR_EQUALS + to_underlying(occ),
 						value);
 			}
@@ -1689,21 +1689,21 @@ private:
 	{
 		if (order == nullptr) return _order_conditional_condition;
 		switch (order->GetConditionVariable()) {
-			case OCV_FREE_PLATFORMS:
-			case OCV_CARGO_WAITING:
+			case OrderConditionVariable::FreePlatforms:
+			case OrderConditionVariable::CargoWaiting:
 				return _order_conditional_condition_has;
 
-			case OCV_CARGO_ACCEPTANCE:
+			case OrderConditionVariable::CargoAcceptance:
 				return _order_conditional_condition_accepts;
 
-			case OCV_SLOT_OCCUPANCY:
+			case OrderConditionVariable::SlotOccupancy:
 				return _order_conditional_condition_occupancy;
 
-			case OCV_VEH_IN_SLOT:
-			case OCV_VEH_IN_SLOT_GROUP:
+			case OrderConditionVariable::VehicleInSlot:
+			case OrderConditionVariable::VehicleInSlotGroup:
 				return v->type == VEH_TRAIN ? _order_conditional_condition_is_in_slot : _order_conditional_condition_is_in_slot_non_train;
 
-			case OCV_DISPATCH_SLOT: {
+			case OrderConditionVariable::DispatchSlot: {
 				const uint16_t value = order->GetConditionValue();
 				switch ((OrderDispatchConditionModes)GB(value, ODCB_MODE_START, ODCB_MODE_COUNT)) {
 					case ODCM_FIRST_LAST:
@@ -2113,7 +2113,7 @@ public:
 			case WID_O_COND_VARIABLE: {
 				Dimension d = {0, 0};
 				for (const auto &ocv : _order_conditional_variable) {
-					if (this->vehicle->type != VEH_TRAIN && ocv == OCV_FREE_PLATFORMS) {
+					if (this->vehicle->type != VEH_TRAIN && ocv == OrderConditionVariable::FreePlatforms) {
 						continue;
 					}
 					d = maxdim(d, GetStringBoundingBox(OrderStringForVariable(this->vehicle, ocv)));
@@ -2417,15 +2417,15 @@ public:
 						train_row_sel->SetDisplayedPlane(DP_GROUNDVEHICLE_ROW_CONDITIONAL);
 					}
 
-					OrderConditionVariable ocv = (order == nullptr) ? OCV_LOAD_PERCENTAGE : order->GetConditionVariable();
-					bool is_cargo = (ocv == OCV_CARGO_ACCEPTANCE || ocv == OCV_CARGO_WAITING);
-					bool is_slot_occupancy = (ocv == OCV_SLOT_OCCUPANCY || ocv == OCV_VEH_IN_SLOT);
-					bool is_slot_group_occupancy = (ocv == OCV_VEH_IN_SLOT_GROUP);
-					bool is_auxiliary_cargo = (ocv == OCV_CARGO_LOAD_PERCENTAGE || ConditionVariableTestsCargoWaitingAmount(ocv));
-					bool is_counter = (ocv == OCV_COUNTER_VALUE);
-					bool is_time_date = (ocv == OCV_TIME_DATE);
-					bool is_timetable = (ocv == OCV_TIMETABLE);
-					bool is_sched_dispatch = (ocv == OCV_DISPATCH_SLOT);
+					OrderConditionVariable ocv = (order == nullptr) ? OrderConditionVariable::LoadPercentage : order->GetConditionVariable();
+					bool is_cargo = (ocv == OrderConditionVariable::CargoAcceptance || ocv == OrderConditionVariable::CargoWaiting);
+					bool is_slot_occupancy = (ocv == OrderConditionVariable::SlotOccupancy || ocv == OrderConditionVariable::VehicleInSlot);
+					bool is_slot_group_occupancy = (ocv == OrderConditionVariable::VehicleInSlotGroup);
+					bool is_auxiliary_cargo = (ocv == OrderConditionVariable::CargoLoadPercentage || ConditionVariableTestsCargoWaitingAmount(ocv));
+					bool is_counter = (ocv == OrderConditionVariable::CounterValue);
+					bool is_time_date = (ocv == OrderConditionVariable::TimeDate);
+					bool is_timetable = (ocv == OrderConditionVariable::Timetable);
+					bool is_sched_dispatch = (ocv == OrderConditionVariable::DispatchSlot);
 
 					if (is_cargo) {
 						if (order == nullptr || !CargoSpec::Get(order->GetConditionValue())->IsValid()) {
@@ -2494,7 +2494,7 @@ public:
 						aux3_sel->SetDisplayedPlane(SZSP_NONE);
 					}
 
-					if (ocv == OCV_CARGO_WAITING_AMOUNT_PERCENTAGE) {
+					if (ocv == OrderConditionVariable::CargoWaitingAmountPercentage) {
 						aux4_sel->SetDisplayedPlane(DP_COND_AUX4_REFIT_MODE);
 						this->SetWidgetLoweredState(WID_O_COND_AUX_REFIT_MODE, HasBit(order->GetXData2(), 16));
 					} else {
@@ -2504,9 +2504,9 @@ public:
 					/* Set the strings for the dropdown boxes. */
 					this->GetWidget<NWidgetCore>(WID_O_COND_VARIABLE)->SetString(OrderStringForVariable(this->vehicle, ocv));
 					this->GetWidget<NWidgetCore>(WID_O_COND_COMPARATOR)->SetString(GetComparatorStrings(this->vehicle, order)[to_underlying(order->GetConditionComparator())]);
-					this->GetWidget<NWidgetCore>(WID_O_COND_VALUE)->SetString((ocv == OCV_TIME_DATE && order->GetConditionValue() == TRTDVF_HOUR_MINUTE) ? STR_JUST_TIME_HHMM : STR_JUST_COMMA);
-					this->SetWidgetDisabledState(WID_O_COND_COMPARATOR, ocv == OCV_UNCONDITIONALLY || ocv == OCV_PERCENT);
-					this->SetWidgetDisabledState(WID_O_COND_VALUE, ocv == OCV_REQUIRES_SERVICE || ocv == OCV_UNCONDITIONALLY);
+					this->GetWidget<NWidgetCore>(WID_O_COND_VALUE)->SetString((ocv == OrderConditionVariable::TimeDate && order->GetConditionValue() == TRTDVF_HOUR_MINUTE) ? STR_JUST_TIME_HHMM : STR_JUST_COMMA);
+					this->SetWidgetDisabledState(WID_O_COND_COMPARATOR, ocv == OrderConditionVariable::Unconditionally || ocv == OrderConditionVariable::Percent);
+					this->SetWidgetDisabledState(WID_O_COND_VALUE, ocv == OrderConditionVariable::RequiresService || ocv == OrderConditionVariable::Unconditionally);
 					break;
 				}
 
@@ -2742,19 +2742,19 @@ public:
 				if (order != nullptr && order->IsType(OT_CONDITIONAL)) {
 					uint value;
 					switch (order->GetConditionVariable()) {
-						case OCV_CARGO_LOAD_PERCENTAGE:
-						case OCV_TIME_DATE:
+						case OrderConditionVariable::CargoLoadPercentage:
+						case OrderConditionVariable::TimeDate:
 							value = order->GetXData();
 							break;
 
-						case OCV_TIMETABLE:
+						case OrderConditionVariable::Timetable:
 							value = order->GetXData();
 							if (!_settings_client.gui.timetable_in_ticks) value /= TimetableDisplayUnitSize();
 							break;
 
-						case OCV_CARGO_WAITING_AMOUNT:
-						case OCV_CARGO_WAITING_AMOUNT_PERCENTAGE:
-						case OCV_COUNTER_VALUE:
+						case OrderConditionVariable::CargoWaitingAmount:
+						case OrderConditionVariable::CargoWaitingAmountPercentage:
+						case OrderConditionVariable::CounterValue:
 							value = order->GetXDataLow();
 							break;
 
@@ -2762,8 +2762,8 @@ public:
 							value = order->GetConditionValue();
 							break;
 					}
-					if (order->GetConditionVariable() == OCV_MAX_SPEED) value = ConvertSpeedToDisplaySpeed(value, this->vehicle->type);
-					if (order->GetConditionVariable() == OCV_CARGO_WAITING_AMOUNT) value = ConvertCargoQuantityToDisplayQuantity(order->GetConditionValue(), value);
+					if (order->GetConditionVariable() == OrderConditionVariable::MaxSpeed) value = ConvertSpeedToDisplaySpeed(value, this->vehicle->type);
+					if (order->GetConditionVariable() == OrderConditionVariable::CargoWaitingAmount) value = ConvertCargoQuantityToDisplayQuantity(order->GetConditionValue(), value);
 					return GetString(STR_JUST_COMMA, value);
 				}
 				return {};
@@ -2774,7 +2774,7 @@ public:
 				const Order *order = this->vehicle->GetOrder(sel);
 
 				if (order != nullptr && order->IsType(OT_CONDITIONAL)) {
-					if (order->GetConditionVariable() == OCV_DISPATCH_SLOT) {
+					if (order->GetConditionVariable() == OrderConditionVariable::DispatchSlot) {
 						return GetString(stringid, GB(order->GetConditionValue(), ODFLCB_TAG_START, ODFLCB_TAG_COUNT) + 1);
 					}
 					return GetString(stringid);
@@ -2800,7 +2800,7 @@ public:
 				const Order *order = this->vehicle->GetOrder(sel);
 
 				uint schedule_index = order->GetConditionDispatchScheduleID();
-				if (order != nullptr && order->IsType(OT_CONDITIONAL) && order->GetConditionVariable() == OCV_DISPATCH_SLOT && schedule_index != UINT16_MAX) {
+				if (order != nullptr && order->IsType(OT_CONDITIONAL) && order->GetConditionVariable() == OrderConditionVariable::DispatchSlot && schedule_index != UINT16_MAX) {
 					if (schedule_index < this->vehicle->orders->GetScheduledDispatchScheduleCount()) {
 						const DispatchSchedule &ds = this->vehicle->orders->GetDispatchScheduleByIndex(schedule_index);
 						if (!ds.ScheduleName().empty()) {
@@ -2818,7 +2818,7 @@ public:
 				const Order *order = this->vehicle->GetOrder(sel);
 
 				if (order != nullptr && order->IsType(OT_CONDITIONAL)) {
-					if (order->GetConditionVariable() == OCV_DISPATCH_SLOT) {
+					if (order->GetConditionVariable() == OrderConditionVariable::DispatchSlot) {
 						uint16_t value = order->GetConditionValue();
 						switch ((OrderDispatchConditionModes)GB(value, ODCB_MODE_START, ODCB_MODE_COUNT)) {
 							case OCDM_TAG:
@@ -2830,7 +2830,7 @@ public:
 									return GetString(STR_ORDER_CONDITIONAL_DISPATCH_SLOT_DEF_ROUTE);
 								} else {
 									uint schedule_index = order->GetConditionDispatchScheduleID();
-									if (order != nullptr && order->IsType(OT_CONDITIONAL) && order->GetConditionVariable() == OCV_DISPATCH_SLOT && schedule_index != UINT16_MAX) {
+									if (order != nullptr && order->IsType(OT_CONDITIONAL) && order->GetConditionVariable() == OrderConditionVariable::DispatchSlot && schedule_index != UINT16_MAX) {
 										if (schedule_index < this->vehicle->orders->GetScheduledDispatchScheduleCount()) {
 											const DispatchSchedule &ds = this->vehicle->orders->GetDispatchScheduleByIndex(schedule_index);
 											std::string_view name = ds.GetSupplementaryName(DispatchSchedule::SupplementaryNameType::RouteID, route_id);
@@ -3230,7 +3230,7 @@ public:
 				int selected;
 				const Order *order = this->vehicle->GetOrder(this->OrderGetSel());
 				TraceRestrictSlotID value{order->GetXDataLow()};
-				DropDownList list = GetSlotDropDownList(this->vehicle->owner, value, selected, this->vehicle->type, order->GetConditionVariable() == OCV_SLOT_OCCUPANCY);
+				DropDownList list = GetSlotDropDownList(this->vehicle->owner, value, selected, this->vehicle->type, order->GetConditionVariable() == OrderConditionVariable::SlotOccupancy);
 				if (!list.empty()) ShowDropDownList(this, std::move(list), selected, WID_O_COND_SLOT, 0, DropDownOptions{}, DDSF_SHARED);
 				break;
 			}
@@ -3398,26 +3398,26 @@ public:
 				const OrderConditionVariable current_ocv = this->vehicle->GetOrder(this->OrderGetSel())->GetConditionVariable();
 				DropDownList list;
 				for (const auto &ocv : _order_conditional_variable) {
-					if (this->vehicle->type != VEH_TRAIN && ocv == OCV_FREE_PLATFORMS) {
+					if (this->vehicle->type != VEH_TRAIN && ocv == OrderConditionVariable::FreePlatforms) {
 						continue;
 					}
 					if (current_ocv != ocv) {
-						if (ocv == OCV_COUNTER_VALUE && !_settings_client.gui.show_adv_tracerestrict_features) {
+						if (ocv == OrderConditionVariable::CounterValue && !_settings_client.gui.show_adv_tracerestrict_features) {
 							continue;
 						}
-						if ((ocv == OCV_DISPATCH_SLOT) && this->vehicle->orders->GetScheduledDispatchScheduleCount() == 0) {
+						if ((ocv == OrderConditionVariable::DispatchSlot) && this->vehicle->orders->GetScheduledDispatchScheduleCount() == 0) {
 							continue;
 						}
 					}
-					list.push_back(MakeDropDownListStringItem(OrderStringForVariable(this->vehicle, ocv), ocv, false));
+					list.push_back(MakeDropDownListStringItem(OrderStringForVariable(this->vehicle, ocv), to_underlying(ocv), false));
 				}
-				ShowDropDownList(this, std::move(list), current_ocv, WID_O_COND_VARIABLE, 0, DropDownOptions{}, DDSF_SHARED);
+				ShowDropDownList(this, std::move(list), to_underlying(current_ocv), WID_O_COND_VARIABLE, 0, DropDownOptions{}, DDSF_SHARED);
 				break;
 			}
 
 			case WID_O_COND_COMPARATOR: {
 				const Order *o = this->vehicle->GetOrder(this->OrderGetSel());
-				if (o->GetConditionVariable() == OCV_DISPATCH_SLOT) {
+				if (o->GetConditionVariable() == OrderConditionVariable::DispatchSlot) {
 					DropDownList list;
 
 					const int true_cond = ((int)OrderConditionComparator::IsTrue) << 16;
@@ -3464,20 +3464,20 @@ public:
 				}
 				uint mask;
 				switch (o->GetConditionVariable()) {
-					case OCV_REQUIRES_SERVICE:
-					case OCV_CARGO_ACCEPTANCE:
-					case OCV_CARGO_WAITING:
-					case OCV_VEH_IN_SLOT_GROUP:
-					case OCV_DISPATCH_SLOT:
+					case OrderConditionVariable::RequiresService:
+					case OrderConditionVariable::CargoAcceptance:
+					case OrderConditionVariable::CargoWaiting:
+					case OrderConditionVariable::VehicleInSlotGroup:
+					case OrderConditionVariable::DispatchSlot:
 						mask = 0x3F;
 						break;
 
-					case OCV_VEH_IN_SLOT:
-					case OCV_SLOT_OCCUPANCY:
+					case OrderConditionVariable::VehicleInSlot:
+					case OrderConditionVariable::SlotOccupancy:
 						mask = 0x3C;
 						break;
 
-					case OCV_TIMETABLE:
+					case OrderConditionVariable::Timetable:
 						mask = 0xC3;
 						break;
 
@@ -3494,12 +3494,12 @@ public:
 				uint value;
 				CharSetFilter charset_filter = CS_NUMERAL;
 				switch (order->GetConditionVariable()) {
-					case OCV_CARGO_LOAD_PERCENTAGE:
-					case OCV_TIME_DATE:
+					case OrderConditionVariable::CargoLoadPercentage:
+					case OrderConditionVariable::TimeDate:
 						value = order->GetXData();
 						break;
 
-					case OCV_TIMETABLE:
+					case OrderConditionVariable::Timetable:
 						value = order->GetXData();
 						if (!_settings_client.gui.timetable_in_ticks) {
 							value /= TimetableDisplayUnitSize();
@@ -3507,9 +3507,9 @@ public:
 						}
 						break;
 
-					case OCV_CARGO_WAITING_AMOUNT:
-					case OCV_CARGO_WAITING_AMOUNT_PERCENTAGE:
-					case OCV_COUNTER_VALUE:
+					case OrderConditionVariable::CargoWaitingAmount:
+					case OrderConditionVariable::CargoWaitingAmountPercentage:
+					case OrderConditionVariable::CounterValue:
 						value = order->GetXDataLow();
 						break;
 
@@ -3517,10 +3517,10 @@ public:
 						value = order->GetConditionValue();
 						break;
 				}
-				if (order->GetConditionVariable() == OCV_MAX_SPEED) value = ConvertSpeedToDisplaySpeed(value, this->vehicle->type);
-				if (order->GetConditionVariable() == OCV_CARGO_WAITING_AMOUNT) value = ConvertCargoQuantityToDisplayQuantity(order->GetConditionValue(), value);
+				if (order->GetConditionVariable() == OrderConditionVariable::MaxSpeed) value = ConvertSpeedToDisplaySpeed(value, this->vehicle->type);
+				if (order->GetConditionVariable() == OrderConditionVariable::CargoWaitingAmount) value = ConvertCargoQuantityToDisplayQuantity(order->GetConditionValue(), value);
 				this->query_text_widget = widget;
-				ShowQueryString(GetString(STR_JUST_INT, value), STR_ORDER_CONDITIONAL_VALUE_CAPT, (order->GetConditionVariable() == OCV_CARGO_WAITING_AMOUNT) ? 12 : 6, this, charset_filter, {});
+				ShowQueryString(GetString(STR_JUST_INT, value), STR_ORDER_CONDITIONAL_VALUE_CAPT, (order->GetConditionVariable() == OrderConditionVariable::CargoWaitingAmount) ? 12 : 6, this, charset_filter, {});
 				break;
 			}
 
@@ -3615,28 +3615,28 @@ public:
 			uint value = *try_value;
 
 			switch (this->vehicle->GetOrder(sel)->GetConditionVariable()) {
-				case OCV_MAX_SPEED:
+				case OrderConditionVariable::MaxSpeed:
 					value = Clamp(ConvertDisplaySpeedToSpeed(value, this->vehicle->type), 0, 2047);
 					break;
 
-				case OCV_PERCENT:
-				case OCV_RELIABILITY:
-				case OCV_LOAD_PERCENTAGE:
-				case OCV_CARGO_LOAD_PERCENTAGE:
+				case OrderConditionVariable::Percent:
+				case OrderConditionVariable::Reliability:
+				case OrderConditionVariable::LoadPercentage:
+				case OrderConditionVariable::CargoLoadPercentage:
 					value = Clamp(value, 0, 100);
 					break;
 
-				case OCV_CARGO_WAITING_AMOUNT:
+				case OrderConditionVariable::CargoWaitingAmount:
 					value = Clamp(ConvertDisplayQuantityToCargoQuantity(this->vehicle->GetOrder(sel)->GetConditionValue(), value), 0, 0xFFFF);
 					break;
 
-				case OCV_COUNTER_VALUE:
-				case OCV_TIME_DATE:
-				case OCV_CARGO_WAITING_AMOUNT_PERCENTAGE:
+				case OrderConditionVariable::CounterValue:
+				case OrderConditionVariable::TimeDate:
+				case OrderConditionVariable::CargoWaitingAmountPercentage:
 					value = Clamp(value, 0, 0xFFFF);
 					break;
 
-				case OCV_TIMETABLE: {
+				case OrderConditionVariable::Timetable: {
 					value = Clamp(ParseTimetableDuration(*str), 0, 0xFFFF);
 					break;
 				}
@@ -3762,7 +3762,7 @@ public:
 			case WID_O_COND_COMPARATOR: {
 				const Order *o = this->vehicle->GetOrder(this->OrderGetSel());
 				if (o == nullptr) return;
-				if (o->GetConditionVariable() == OCV_DISPATCH_SLOT) {
+				if (o->GetConditionVariable() == OrderConditionVariable::DispatchSlot) {
 					this->ModifyOrder(this->OrderGetSel(), MOF_COND_COMPARATOR, index >> 16);
 
 					const uint16_t old_value = o->GetConditionValue();
@@ -3852,7 +3852,7 @@ public:
 			case WID_O_COND_SCHED_VALUE: {
 				const Order *o = this->vehicle->GetOrder(this->OrderGetSel());
 				if (o == nullptr) return;
-				if (o->GetConditionVariable() == OCV_DISPATCH_SLOT) {
+				if (o->GetConditionVariable() == OrderConditionVariable::DispatchSlot) {
 					switch (index >> 16) {
 						case 0:
 							this->ModifyOrder(this->OrderGetSel(), MOF_COND_VALUE, (o->GetConditionValue() & GetBitMaskSC<uint16_t>(ODCB_SRC_START, ODCB_SRC_COUNT)) | index);

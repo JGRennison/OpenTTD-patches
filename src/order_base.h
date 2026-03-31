@@ -68,25 +68,25 @@ void ClearOrderDestinationRefcountMap();
 /*
  * xdata users:
  * OT_COUNTER: Counter operation value (not counter ID)
- * OCV_SLOT_OCCUPANCY, OCV_VEH_IN_SLOT: Trace restrict slot ID
- * OCV_VEH_IN_SLOT_GROUP: Trace restrict slot group ID
- * OCV_COUNTER_VALUE: Bits 0-15: Counter comparison value, Bits 16-31: Counter ID
- * OCV_TIMETABLE: Timetable lateness/earliness
- * OCV_TIME_DATE: Time/date
- * OCV_CARGO_WAITING_AMOUNT: Bits 0-15: Cargo quantity comparison value, Bits 16-31: Via station ID + 2
- * OCV_CARGO_WAITING_AMOUNT_PERCENTAGE: Bits 0-15: Cargo quantity comparison value, Bits 16-31: Via station ID + 2
- * OCV_CARGO_LOAD_PERCENTAGE: Cargo percentage comparison value
- * OCV_DISPATCH_SLOT: Bits 0-15: Dispatch schedule ID
- * OCV_PERCENT: Bits 0-7: Jump counter
+ * OrderConditionVariable::SlotOccupancy, OrderConditionVariable::VehicleInSlot: Trace restrict slot ID
+ * OrderConditionVariable::VehicleInSlotGroup: Trace restrict slot group ID
+ * OrderConditionVariable::CounterValue: Bits 0-15: Counter comparison value, Bits 16-31: Counter ID
+ * OrderConditionVariable::Timetable: Timetable lateness/earliness
+ * OrderConditionVariable::TimeDate: Time/date
+ * OrderConditionVariable::CargoWaitingAmount: Bits 0-15: Cargo quantity comparison value, Bits 16-31: Via station ID + 2
+ * OrderConditionVariable::CargoWaitingAmountPercentage: Bits 0-15: Cargo quantity comparison value, Bits 16-31: Via station ID + 2
+ * OrderConditionVariable::CargoLoadPercentage: Cargo percentage comparison value
+ * OrderConditionVariable::DispatchSlot: Bits 0-15: Dispatch schedule ID
+ * OrderConditionVariable::Percent: Bits 0-7: Jump counter
  */
 /*
  * xdata2 users:
- * OCV_CARGO_WAITING: Bits 0-15: Station ID to test + 1
- * OCV_CARGO_ACCEPTANCE: Bits 0-15: Station ID to test + 1
- * OCV_FREE_PLATFORMS: Bits 0-15: Station ID to test + 1
- * OCV_CARGO_WAITING_AMOUNT: Bits 0-15: Station ID to test + 1
- * OCV_CARGO_WAITING_AMOUNT_PERCENTAGE: Bits 0-15: Station ID to test + 1, Bit 16: Refit mode
- * OCV_DISPATCH_SLOT: OCDM_ROUTE_ID: Bits 0-15: Route ID
+ * OrderConditionVariable::CargoWaiting: Bits 0-15: Station ID to test + 1
+ * OrderConditionVariable::CargoAcceptance: Bits 0-15: Station ID to test + 1
+ * OrderConditionVariable::FreePlatforms: Bits 0-15: Station ID to test + 1
+ * OrderConditionVariable::CargoWaitingAmount: Bits 0-15: Station ID to test + 1
+ * OrderConditionVariable::CargoWaitingAmountPercentage: Bits 0-15: Station ID to test + 1, Bit 16: Refit mode
+ * OrderConditionVariable::DispatchSlot: OCDM_ROUTE_ID: Bits 0-15: Route ID
  */
 
 struct OrderExtraInfo {
@@ -344,7 +344,7 @@ public:
 	 * @param percent the jump chance in %.
 	 * @param dry_run whether this is a dry-run, so do not execute side-effects
 	 * @return whether to jump or not.
-	 * @pre IsType(OT_CONDITIONAL) && this->GetConditionVariable() == OCV_PERCENT.
+	 * @pre IsType(OT_CONDITIONAL) && this->GetConditionVariable() == OrderConditionVariable::Percent.
 	 */
 	bool UpdateJumpCounter(uint8_t percent, bool dry_run);
 
@@ -515,7 +515,7 @@ public:
 	/** Set waypoint flags. */
 	inline void SetWaypointFlags(OrderWaypointFlags waypoint_flags) { SB(this->flags, 0, 3, waypoint_flags.base()); }
 	/** Set variable we have to compare. */
-	inline void SetConditionVariable(OrderConditionVariable condition_variable) { SB(this->dest.value, 11, 5, condition_variable); }
+	inline void SetConditionVariable(OrderConditionVariable condition_variable) { SB(this->dest.value, 11, 5, to_underlying(condition_variable)); }
 	/** Set the comparator to use. */
 	inline void SetConditionComparator(OrderConditionComparator condition_comparator) { SB(this->type, 5, 3, to_underlying(condition_comparator)); }
 	/** Get the order to skip to. */

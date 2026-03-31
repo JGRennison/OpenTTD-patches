@@ -2278,7 +2278,7 @@ bool AfterLoadGame()
 
 	if (SlXvIsFeaturePresent(XSLFI_JOKERPP, 1, SL_JOKER_1_23)) {
 		IterateAllNonVehicleOrders([&](Order *order) {
-			if (order->IsType(OT_CONDITIONAL) && order->GetConditionVariable() == OCV_SLOT_OCCUPANCY) {
+			if (order->IsType(OT_CONDITIONAL) && order->GetConditionVariable() == OrderConditionVariable::SlotOccupancy) {
 				order->GetXDataRef() = order->GetConditionValue();
 			}
 		});
@@ -4187,8 +4187,8 @@ bool AfterLoadGame()
 
 	if (SlXvIsFeaturePresent(XSLFI_MORE_COND_ORDERS, 1, 1)) {
 		IterateAllNonVehicleOrders([&](Order *order) {
-			/* Insertion of OCV_MAX_RELIABILITY between OCV_REMAINING_LIFETIME and OCV_CARGO_WAITING */
-			if (order->IsType(OT_CONDITIONAL) && order->GetConditionVariable() > OCV_REMAINING_LIFETIME) {
+			/* Insertion of OrderConditionVariable::MaxReliability between OrderConditionVariable::RemainingLifetime and OrderConditionVariable::CargoWaiting */
+			if (order->IsType(OT_CONDITIONAL) && order->GetConditionVariable() > OrderConditionVariable::RemainingLifetime) {
 				order->SetConditionVariable(static_cast<OrderConditionVariable>((uint)order->GetConditionVariable() + 1));
 			}
 		});
@@ -4206,7 +4206,7 @@ bool AfterLoadGame()
 			};
 
 			for (Order *order : order_list->Orders()) {
-				/* Fixup station ID for OCV_CARGO_WAITING, OCV_CARGO_ACCEPTANCE, OCV_FREE_PLATFORMS, OCV_CARGO_WAITING_AMOUNT, OCV_CARGO_WAITING_AMOUNT_PERCENTAGE */
+				/* Fixup station ID for OrderConditionVariable::CargoWaiting, OrderConditionVariable::CargoAcceptance, OrderConditionVariable::FreePlatforms, OrderConditionVariable::CargoWaitingAmount, OrderConditionVariable::CargoWaitingAmountPercentage */
 				if (order->IsType(OT_CONDITIONAL) && ConditionVariableHasStationID(order->GetConditionVariable())) {
 					StationID next_id = get_real_station(order);
 					order->SetConditionStationID(next_id);

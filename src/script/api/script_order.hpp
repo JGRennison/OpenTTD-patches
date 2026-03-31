@@ -89,14 +89,14 @@ public:
 	 */
 	enum OrderCondition {
 		/* Note: these values represent part of the in-game OrderConditionVariable enum */
-		OC_LOAD_PERCENTAGE     = ::OCV_LOAD_PERCENTAGE,    ///< Skip based on the amount of load, value is in tons.
-		OC_RELIABILITY         = ::OCV_RELIABILITY,        ///< Skip based on the reliability, value is percent (0..100).
-		OC_MAX_RELIABILITY     = ::OCV_MAX_RELIABILITY,    ///< Skip based on the maximum reliability.  Value in percent
-		OC_MAX_SPEED           = ::OCV_MAX_SPEED,          ///< Skip based on the maximum speed, value is in OpenTTD's internal speed unit, see ScriptEngine::GetMaxSpeed.
-		OC_AGE                 = ::OCV_AGE,                ///< Skip based on the age, value is in calendar-years. @see \ref ScriptCalendarTime
-		OC_REQUIRES_SERVICE    = ::OCV_REQUIRES_SERVICE,   ///< Skip when the vehicle requires service, no value.
-		OC_UNCONDITIONALLY     = ::OCV_UNCONDITIONALLY,    ///< Always skip, no compare function, no value.
-		OC_REMAINING_LIFETIME  = ::OCV_REMAINING_LIFETIME, ///< Skip based on the remaining lifetime in calendar-years. @see \ref ScriptCalendarTime
+		OC_LOAD_PERCENTAGE     = to_underlying(::OrderConditionVariable::LoadPercentage),    ///< Skip based on the amount of load, value is in tons.
+		OC_RELIABILITY         = to_underlying(::OrderConditionVariable::Reliability),       ///< Skip based on the reliability, value is percent (0..100).
+		OC_MAX_RELIABILITY     = to_underlying(::OrderConditionVariable::MaxReliability),    ///< Skip based on the maximum reliability.  Value in percent
+		OC_MAX_SPEED           = to_underlying(::OrderConditionVariable::MaxSpeed),          ///< Skip based on the maximum speed, value is in OpenTTD's internal speed unit, see ScriptEngine::GetMaxSpeed.
+		OC_AGE                 = to_underlying(::OrderConditionVariable::Age),               ///< Skip based on the age, value is in calendar-years. @see \ref ScriptCalendarTime
+		OC_REQUIRES_SERVICE    = to_underlying(::OrderConditionVariable::RequiresService),   ///< Skip when the vehicle requires service, no value.
+		OC_UNCONDITIONALLY     = to_underlying(::OrderConditionVariable::Unconditionally),   ///< Always skip, no compare function, no value.
+		OC_REMAINING_LIFETIME  = to_underlying(::OrderConditionVariable::RemainingLifetime), ///< Skip based on the remaining lifetime in calendar-years. @see \ref ScriptCalendarTime
 
 		/* Custom added value, only valid for this API */
 		OC_INVALID             = -1,                       ///< An invalid condition, do not use.

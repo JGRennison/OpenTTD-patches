@@ -155,12 +155,12 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 		if (order->IsType(OT_CONDITIONAL)) {
 			bool jump = false;
 			switch (order->GetConditionVariable()) {
-				case OCV_UNCONDITIONALLY: {
+				case OrderConditionVariable::Unconditionally: {
 					jump = true;
 					break;
 				}
 
-				case OCV_TIME_DATE: {
+				case OrderConditionVariable::TimeDate: {
 					predicted = true;
 					StateTicks time = _state_ticks + sum;
 					if (!no_offset) time -= v->lateness_counter;
@@ -169,7 +169,7 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 					break;
 				}
 
-				case OCV_DISPATCH_SLOT: {
+				case OrderConditionVariable::DispatchSlot: {
 					StateTicks time = _state_ticks + sum;
 					if (!no_offset) time -= v->lateness_counter;
 
@@ -188,13 +188,13 @@ static void FillTimetableArrivalDepartureTable(const Vehicle *v, VehicleOrderID 
 					break;
 				}
 
-				case OCV_REQUIRES_SERVICE: {
+				case OrderConditionVariable::RequiresService: {
 					bool requires_service = reached_depot ? false : v->NeedsServicing();
 					jump = OrderConditionCompare(order->GetConditionComparator(), requires_service, order->GetConditionValue());
 					break;
 				}
 
-				case OCV_TIMETABLE: {
+				case OrderConditionVariable::Timetable: {
 					predicted = true;
 					jump = EvaluateTimetableStateConditionalOrder(order, no_offset ? 0 : v->lateness_counter);
 					break;

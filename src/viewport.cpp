@@ -2685,8 +2685,8 @@ void ViewportRouteOverlay::PrepareRoutePathsConditionalOrder(const Vehicle *veh,
 
 		if (order->IsType(OT_CONDITIONAL)) {
 			this->PrepareRoutePathsConditionalOrder(veh, veh->GetOrder(order->GetConditionSkipToOrder()), state,
-					conditional || order->GetConditionVariable() != OCV_UNCONDITIONALLY, depth + 1);
-			if (order->GetConditionVariable() == OCV_UNCONDITIONALLY) return;
+					conditional || order->GetConditionVariable() != OrderConditionVariable::Unconditionally, depth + 1);
+			if (order->GetConditionVariable() == OrderConditionVariable::Unconditionally) return;
 
 			continue;
 		}
@@ -2718,8 +2718,8 @@ void ViewportRouteOverlay::PrepareRoutePaths(const Vehicle *veh)
 		if (order->IsType(OT_CONDITIONAL) && from_tile != INVALID_TILE) {
 			state.reset(from_tile);
 			this->PrepareRoutePathsConditionalOrder(veh, order, state,
-					conditional || order->GetConditionVariable() != OCV_UNCONDITIONALLY, 0);
-			if (order->GetConditionVariable() == OCV_UNCONDITIONALLY) {
+					conditional || order->GetConditionVariable() != OrderConditionVariable::Unconditionally, 0);
+			if (order->GetConditionVariable() == OrderConditionVariable::Unconditionally) {
 				from_tile = INVALID_TILE;
 				return true;
 			}
