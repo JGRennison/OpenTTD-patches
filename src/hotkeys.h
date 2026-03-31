@@ -13,7 +13,7 @@
 #include "gfx_type.h"
 #include "window_type.h"
 #include "string_type.h"
-#include "3rdparty/cpp-btree/btree_set.h"
+#include "3rdparty/svector/svector.h"
 
 /**
  * All data for a single hotkey. The name (for saving/loading a configfile),
@@ -27,7 +27,7 @@ struct Hotkey {
 
 	const char *name;
 	int num;
-	btree::btree_set<uint16_t> keycodes;
+	ankerl::svector<uint16_t, 2> keycodes;
 };
 
 struct IniFile;
