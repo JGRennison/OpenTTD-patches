@@ -1285,6 +1285,7 @@ static CommandCost PreInsertOrderCheck(Vehicle *v, const Order &new_order, CmdIn
 					[[fallthrough]];
 				case OrderConditionVariable::LoadPercentage:
 				case OrderConditionVariable::Reliability:
+				case OrderConditionVariable::MaxReliability:
 					if (new_order.GetConditionValue() > 100) return CMD_ERROR;
 					[[fallthrough]];
 
@@ -2111,6 +2112,7 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 
 				case OrderConditionVariable::LoadPercentage:
 				case OrderConditionVariable::Reliability:
+				case OrderConditionVariable::MaxReliability:
 				case OrderConditionVariable::Percent:
 				case OrderConditionVariable::CargoLoadPercentage:
 					if (data > 100) return CMD_ERROR;
@@ -2485,6 +2487,7 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 						/* FALL THROUGH */
 					case OrderConditionVariable::LoadPercentage:
 					case OrderConditionVariable::Reliability:
+					case OrderConditionVariable::MaxReliability:
 						if (order->GetConditionValue() > 100) order->SetConditionValue(100);
 						[[fallthrough]];
 

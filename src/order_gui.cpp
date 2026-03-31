@@ -3621,6 +3621,7 @@ public:
 
 				case OrderConditionVariable::Percent:
 				case OrderConditionVariable::Reliability:
+				case OrderConditionVariable::MaxReliability:
 				case OrderConditionVariable::LoadPercentage:
 				case OrderConditionVariable::CargoLoadPercentage:
 					value = Clamp(value, 0, 100);
