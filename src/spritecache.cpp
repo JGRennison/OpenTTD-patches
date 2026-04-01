@@ -110,6 +110,7 @@ SpriteFile &OpenCachedSpriteFile(const std::string &filename, Subdirectory subdi
 
 /**
  * Skip the given amount of sprite graphics data.
+ * @param file The file to read from.
  * @param type the type of sprite (compressed etc)
  * @param num the amount of sprites to skip
  * @return true if the data could be correctly skipped.
@@ -181,7 +182,7 @@ uint32_t GetSpriteLocalID(SpriteID sprite)
 
 /**
  * Count the sprites which originate from a specific file in a range of SpriteIDs.
- * @param file The loaded SpriteFile.
+ * @param filename The loaded SpriteFile.
  * @param begin First sprite in range.
  * @param end First sprite not in range.
  * @return Number of sprites.
@@ -635,7 +636,7 @@ size_t GetGRFSpriteOffset(uint32_t id)
 
 /**
  * Parse the sprite section of GRFs.
- * @param container_version Container version of the GRF we're currently processing.
+ * @param file The file to read the sprite offsets for.
  */
 void ReadGRFSpriteOffsets(SpriteFile &file)
 {
@@ -689,7 +690,6 @@ void ReadGRFSpriteOffsets(SpriteFile &file)
  * @param load_index Global sprite index.
  * @param file GRF to load from.
  * @param file_sprite_id Sprite number in the GRF.
- * @param container_version Container version of the GRF.
  * @return True if a valid sprite was loaded, false on any error.
  */
 bool LoadNextSprite(SpriteID load_index, SpriteFile &file, uint file_sprite_id)

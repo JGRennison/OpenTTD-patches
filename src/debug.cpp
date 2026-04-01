@@ -199,7 +199,7 @@ void DebugIntlVFmt(DebugLevelID dbg, int8_t level, fmt::string_view msg, fmt::fo
  * Internal function for outputting the debug line.
  * @param dbg Debug category.
  * @param level Debug level.
- * @param buf Text line to output.
+ * @param msg Text line to output.
  */
 void debug_print(DebugLevelID dbg, int8_t level, std::string_view msg)
 {

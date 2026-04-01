@@ -1261,14 +1261,9 @@ static void AddCombinedSprite(SpriteID image, PaletteID pal, int x, int y, int z
  * @param pal the provided palette,
  * @param x position X (world) of the sprite,
  * @param y position Y (world) of the sprite,
- * @param w bounding box extent towards positive X (world),
- * @param h bounding box extent towards positive Y (world),
- * @param dz bounding box extent towards positive Z (world),
  * @param z position Z (world) of the sprite,
+ * @param bounds Bounding box extent towards positive X/Y/Z (world).
  * @param transparent if true, switch the palette between the provided palette and the transparent palette,
- * @param bb_offset_x bounding box extent towards negative X (world),
- * @param bb_offset_y bounding box extent towards negative Y (world),
- * @param bb_offset_z bounding box extent towards negative Z (world)
  * @param sub Only draw a part of the sprite.
  * @param special_flags Special flags (special sorting, etc).
  */
@@ -6895,12 +6890,7 @@ void SetObjectToPlace(CursorID icon, PaletteID pal, HighLightStyle mode, WindowC
 		SetRailSnapMode((mode & HT_NEW_POLY) == HT_NEW_POLY ? RSM_NO_SNAP : RSM_SNAP_TO_RAIL);
 	}
 
-	if ((icon & ANIMCURSOR_FLAG) != 0) {
-		SetAnimatedMouseCursor(_animcursors[icon & ~ANIMCURSOR_FLAG]);
-	} else {
-		SetMouseCursor(icon, pal);
-	}
-
+	SetCursor(icon, pal);
 }
 
 /** Reset the cursor and mouse mode handling back to default (normal cursor, only clicking in windows). */

@@ -911,7 +911,7 @@ static void ClearPixelBuffer(size_t len, T data)
  * @param w New width of the window.
  * @param h New height of the window.
  * @param force Recreate resources even if size didn't change.
- * @param False if nothing had to be done, true otherwise.
+ * @return \c false if nothing had to be done, \c true otherwise.
  */
 bool OpenGLBackend::Resize(int w, int h, bool force)
 {
@@ -1271,6 +1271,7 @@ void OpenGLBackend::ReleaseAnimBuffer(const Rect &update_rect)
 /**
  * Render a sprite to the back buffer.
  * @param gl_sprite Sprite to render.
+ * @param pal The palette to draw the sprite with.
  * @param x X position of the sprite.
  * @param y Y position of the sprite.
  * @param zoom Zoom level to use.
@@ -1396,6 +1397,7 @@ void OpenGLBackend::RenderOglSprite(const OpenGLSprite *gl_sprite, PaletteID pal
 
 /**
  * Create an OpenGL sprite with a palette remap part.
+ * @param sprite_type The type of sprite to load.
  * @param sprite The sprite to create the OpenGL sprite for
  */
 OpenGLSprite::OpenGLSprite(SpriteType sprite_type, const SpriteLoader::SpriteCollection &sprite)

@@ -779,6 +779,7 @@ public:
 	 * Event to display a custom tooltip.
 	 * @param pt     The point where the mouse is located.
 	 * @param widget The widget where the mouse is located.
+	 * @param close_cond The conditions when to close the tooltip.
 	 * @return True if the event is handled, false if it is ignored.
 	 */
 	virtual bool OnTooltip([[maybe_unused]] Point pt, [[maybe_unused]] WidgetID widget, [[maybe_unused]] TooltipCloseCondition close_cond) { return false; }
@@ -912,7 +913,8 @@ public:
 
 	/**
 	 * The user clicked on a vehicle while HT_VEHICLE has been set.
-	 * @param v clicked vehicle
+	 * @param begin Begin iterator of the vehicle list.
+	 * @param end End iterator of the vehicle list.
 	 * @return True if the click is handled, false if it is ignored
 	 * @pre v->IsPrimaryVehicle() == true
 	 */

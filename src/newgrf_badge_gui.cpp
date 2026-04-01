@@ -421,7 +421,8 @@ DropDownList BuildBadgeClassConfigurationList(const GUIBadgeClasses &gui_classes
  * Toggle badge class visibility.
  * @param feature Feature being used.
  * @param class_badge Class badge.
- * @param click Dropdown click result.
+ * @param click_result Dropdown click result.
+ * @param choices Configuration of the badge filters.
  */
 static void BadgeClassToggleVisibility(GrfSpecFeature feature, Badge &class_badge, int click_result, std::span<BadgeFilterChoices *> choices)
 {
@@ -505,6 +506,7 @@ static void BadgeClassMoveNext(GrfSpecFeature feature, Badge &class_badge, uint 
  * @param columns Maximum column number permitted.
  * @param result Selected dropdown item value.
  * @param click_result Dropdown click result.
+ * @param choices Configuration of the badge filters.
  * @return true iff the caller should reinitialise their widgets.
  */
 bool HandleBadgeConfigurationDropDownClick(GrfSpecFeature feature, uint columns, int result, int click_result, std::span<BadgeFilterChoices *> choices)
@@ -597,7 +599,7 @@ DropDownList NWidgetBadgeFilter::GetDropDownList(PaletteID palette) const
 /**
  * Add badge drop down filter widgets.
  * @param window Window that holds the container.
- * @param container Container widget index to hold filter widgets.
+ * @param container_id Container widget index to hold filter widgets.
  * @param widget Widget index to apply to first filter.
  * @param colour Background colour of widgets.
  * @param feature GRF feature for filters.

@@ -291,6 +291,7 @@ bool Window::IsWidgetHighlighted(WidgetID widget_index) const
  * @param pt the point inside the window the mouse resides on after closure.
  * @param widget the widget (button) that the dropdown is associated with.
  * @param index the element in the dropdown that is selected.
+ * @param click_result The result of the OnClick call.
  * @param instant_close whether the dropdown was configured to close on mouse up.
  */
 void Window::OnDropdownClose(Point pt, WidgetID widget, int index, int click_result, bool instant_close)
@@ -1247,7 +1248,8 @@ Window *GetMainWindow()
  * Delete a window by its class and window number (if it is open).
  * @param cls Window class
  * @param number Number of the window within the window class
- * @param force force deletion; if false don't delete when stickied
+ * @param force force closing; if false don't close when stickied
+ * @param data Arbitrary data to pass to the Close function.
  */
 void CloseWindowById(WindowClass cls, WindowNumber number, bool force, int data)
 {
@@ -1278,6 +1280,7 @@ void CloseAllWindowsById(WindowClass cls, WindowNumber number, bool force, int d
 /**
  * Delete all windows of a given class
  * @param cls Window class of windows to delete
+ * @param data Arbitrary data to pass to the Close function.
  */
 void CloseWindowByClass(WindowClass cls, int data)
 {
@@ -1957,7 +1960,6 @@ static Point LocalGetWindowPlacement(const WindowDesc &desc, int16_t sm_width, i
  * Perform the first part of the initialization of a nested widget tree.
  * Construct a nested widget tree in #nested_root, and optionally fill the #widget_lookup array to provide quick access to the uninitialized widgets.
  * This is mainly useful for setting very basic properties.
- * @param fill_nested Fill the #widget_lookup (enabling is expensive!).
  * @note Filling the nested array requires an additional traversal through the nested widget tree, and is best performed by #FinishInitNested rather than here.
  */
 void Window::CreateNestedTree()
@@ -2274,6 +2276,7 @@ static void EnsureVisibleCaption(Window *w, int nx, int ny)
  * @param delta_x Delta x-size of changed window (positive if larger, etc.)
  * @param delta_y Delta y-size of changed window
  * @param clamp_to_screen Whether to make sure the whole window stays visible
+ * @param schedule_resize Whether to schedule for resizing (when a Window isn't fully initialised yet), or resize immediately.
  */
 void ResizeWindow(Window *w, int delta_x, int delta_y, bool clamp_to_screen, bool schedule_resize)
 {
@@ -2952,6 +2955,10 @@ void HandleShiftChanged()
  * Insert a text string at the cursor position into the edit box widget.
  * @param wid Edit box widget.
  * @param str Text string to insert.
+ * @param marked Replace the currently marked text with the new text.
+ * @param caret Move the caret to this point in the insertion string.
+ * @param insert_location Position at which to insert the string.
+ * @param replacement_end Replace all characters from insert_location up to this location with the new string.
  */
 /* virtual */ void Window::InsertTextString(WidgetID wid, std::string_view str, bool marked, std::optional<size_t> caret, std::optional<size_t> insert_location, std::optional<size_t> replacement_end)
 {
@@ -2967,8 +2974,10 @@ void HandleShiftChanged()
 /**
  * Handle text input.
  * @param str Text string to input.
- * @param marked Is the input a marked composition string from an IME?
+ * @param marked Replace the currently marked text with the new text.
  * @param caret Move the caret to this point in the insertion string.
+ * @param insert_location Position at which to insert the string.
+ * @param replacement_end Replace all characters from insert_location up to this location with the new string.
  */
 void HandleTextInput(std::string_view str, bool marked, std::optional<size_t> caret, std::optional<size_t> insert_location, std::optional<size_t> replacement_end)
 {

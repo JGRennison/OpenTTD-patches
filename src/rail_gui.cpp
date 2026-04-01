@@ -45,6 +45,8 @@
 #include "newgrf_newsignals.h"
 #include "core/backup_type.hpp"
 #include "picker_gui.h"
+#include "toolbar_gui.h"
+#include "scope.h"
 
 #include "station_map.h"
 #include "tunnelbridge_map.h"
@@ -686,136 +688,148 @@ struct BuildRailToolbarWindow : Window {
 		}
 	}
 
+	/**
+	 * Returns corresponding cursor for provided button.
+	 * @param widget Widget ID of the button.
+	 * @return Corresponding cursor ID.
+	 */
+	CursorID GetCursorForWidget(WidgetID widget)
+	{
+		switch (widget) {
+			case WID_RAT_BUILD_NS: return GetRailTypeInfo(_cur_railtype)->cursor.rail_ns;
+			case WID_RAT_BUILD_X: return GetRailTypeInfo(_cur_railtype)->cursor.rail_swne;
+			case WID_RAT_BUILD_EW: return GetRailTypeInfo(_cur_railtype)->cursor.rail_ew;
+			case WID_RAT_BUILD_Y: return GetRailTypeInfo(_cur_railtype)->cursor.rail_nwse;
+			case WID_RAT_AUTORAIL: return GetRailTypeInfo(_cur_railtype)->cursor.autorail;
+			case WID_RAT_DEMOLISH: return ANIMCURSOR_DEMOLISH;
+			case WID_RAT_BUILD_DEPOT: return GetRailTypeInfo(_cur_railtype)->cursor.depot;
+			case WID_RAT_BUILD_WAYPOINT: return SPR_CURSOR_WAYPOINT;
+			case WID_RAT_BUILD_STATION: return SPR_CURSOR_RAIL_STATION;
+			case WID_RAT_BUILD_SIGNALS: return ANIMCURSOR_BUILDSIGNALS;
+			case WID_RAT_BUILD_BRIDGE: return SPR_CURSOR_BRIDGE;
+			case WID_RAT_BUILD_TUNNEL: return GetRailTypeInfo(_cur_railtype)->cursor.tunnel;
+			case WID_RAT_CONVERT_RAIL: return GetRailTypeInfo(_cur_railtype)->cursor.convert;
+			default: NOT_REACHED();
+		}
+	}
+
+	/**
+	 * Returns corresponding high light style for provided button.
+	 * @param widget Widget ID of the button.
+	 * @return Corresponding high light style.
+	 */
+	HighLightStyle GetHighLightStyleForWidget(WidgetID widget)
+	{
+		switch (widget) {
+			case WID_RAT_BUILD_NS: return HT_LINE | HT_DIR_VL;
+			case WID_RAT_BUILD_X: return HT_LINE | HT_DIR_X;
+			case WID_RAT_BUILD_EW: return HT_LINE | HT_DIR_HL;
+			case WID_RAT_BUILD_Y: return HT_LINE | HT_DIR_Y;
+			case WID_RAT_AUTORAIL: return HT_RAIL;
+			case WID_RAT_DEMOLISH: return HT_RECT | HT_DIAGONAL;
+			case WID_RAT_BUILD_DEPOT: return HT_RECT;
+			case WID_RAT_BUILD_WAYPOINT: return HT_RECT;
+			case WID_RAT_BUILD_STATION: return HT_RECT;
+			case WID_RAT_BUILD_SIGNALS: return HT_RECT;
+			case WID_RAT_BUILD_BRIDGE: return HT_RECT;
+			case WID_RAT_BUILD_TUNNEL: return HT_SPECIAL | HT_TUNNEL;
+			case WID_RAT_CONVERT_RAIL: return _ctrl_pressed ? HT_RAIL : HT_RECT | HT_DIAGONAL;
+			default: NOT_REACHED();
+		}
+	}
+
+
 	void OnClick(Point pt, WidgetID widget, int click_count) override
 	{
 		if (widget < WID_RAT_BUILD_NS) return;
 
 		_remove_button_clicked = false;
-		switch (widget) {
-			case WID_RAT_BUILD_NS:
-				HandlePlacePushButton(this, WID_RAT_BUILD_NS, GetRailTypeInfo(_cur_railtype)->cursor.rail_ns, HT_LINE | HT_DIR_VL);
-				this->last_user_action = widget;
-				break;
 
-			case WID_RAT_BUILD_X:
-				HandlePlacePushButton(this, WID_RAT_BUILD_X, GetRailTypeInfo(_cur_railtype)->cursor.rail_swne, HT_LINE | HT_DIR_X);
-				this->last_user_action = widget;
-				break;
+		if (widget == WID_RAT_REMOVE) {
+			BuildRailClick_Remove(this);
+			if (_ctrl_pressed) RailToolbar_CtrlChanged(this);
+			return;
+		}
 
-			case WID_RAT_BUILD_EW:
-				HandlePlacePushButton(this, WID_RAT_BUILD_EW, GetRailTypeInfo(_cur_railtype)->cursor.rail_ew, HT_LINE | HT_DIR_HL);
-				this->last_user_action = widget;
-				break;
+		auto guard = scope_guard([this, widget]() {
+			this->UpdateRemoveWidgetStatus(widget);
+			if (_ctrl_pressed) RailToolbar_CtrlChanged(this);
+		});
 
-			case WID_RAT_BUILD_Y:
-				HandlePlacePushButton(this, WID_RAT_BUILD_Y, GetRailTypeInfo(_cur_railtype)->cursor.rail_nwse, HT_LINE | HT_DIR_Y);
-				this->last_user_action = widget;
-				break;
-
-			case WID_RAT_AUTORAIL:
-				HandlePlacePushButton(this, WID_RAT_AUTORAIL, GetRailTypeInfo(_cur_railtype)->cursor.autorail, HT_RAIL);
-				this->last_user_action = widget;
-				break;
-
-			case WID_RAT_POLYRAIL: {
-				if (!_settings_client.gui.show_rail_polyline_tool) break;
-				bool was_snap = CurrentlySnappingRailPlacement();
-				bool was_open = this->IsWidgetLowered(WID_RAT_POLYRAIL);
-				bool do_snap;
-				bool do_open;
-				/* "polyrail" hotkey     - activate polyline tool in snapping mode, close the tool if snapping mode is already active
-				 * "new_polyrail" hotkey - activate polyline tool in non-snapping (new line) mode, close the tool if non-snapping mode is already active
-				 * button ctrl-clicking  - switch between snapping and non-snapping modes, open the tool in non-snapping mode if it is closed
-				 * button clicking       - open the tool in non-snapping mode, close the tool if it is opened */
-				if (this->last_user_action == HOTKEY_POLYRAIL) {
-					do_snap = true;
-					do_open = !was_open || !was_snap;
-				} else if (this->last_user_action == HOTKEY_NEW_POLYRAIL) {
-					do_snap = false;
-					do_open = !was_open || was_snap;
-				} else if (_ctrl_pressed) {
-					do_snap = !was_open || !was_snap;
-					do_open = true;
-				} else {
-					do_snap = false;
-					do_open = !was_open;
-				}
-				/* close the tool explicitly so it can be re-opened in different snapping mode */
-				if (was_open) ResetObjectToPlace();
-				/* open the tool in desired mode */
-				if (do_open && HandlePlacePushButton(this, WID_RAT_POLYRAIL, GetRailTypeInfo(railtype)->cursor.autorail, do_snap ? (HT_RAIL | HT_POLY) : (HT_RAIL | HT_NEW_POLY))) {
-					/* if we are re-opening the tool but we couldn't switch the snapping
-					 * then close the tool instead of appearing to be doing nothing */
-					if (was_open && do_snap != CurrentlySnappingRailPlacement()) ResetObjectToPlace();
-				}
-				this->last_user_action = WID_RAT_POLYRAIL;
-				break;
+		if (widget == WID_RAT_POLYRAIL) {
+			if (!_settings_client.gui.show_rail_polyline_tool) return;
+			bool was_snap = CurrentlySnappingRailPlacement();
+			bool was_open = this->IsWidgetLowered(WID_RAT_POLYRAIL);
+			bool do_snap;
+			bool do_open;
+			/* "polyrail" hotkey     - activate polyline tool in snapping mode, close the tool if snapping mode is already active
+			 * "new_polyrail" hotkey - activate polyline tool in non-snapping (new line) mode, close the tool if non-snapping mode is already active
+			 * button ctrl-clicking  - switch between snapping and non-snapping modes, open the tool in non-snapping mode if it is closed
+			 * button clicking       - open the tool in non-snapping mode, close the tool if it is opened */
+			if (this->last_user_action == HOTKEY_POLYRAIL) {
+				do_snap = true;
+				do_open = !was_open || !was_snap;
+			} else if (this->last_user_action == HOTKEY_NEW_POLYRAIL) {
+				do_snap = false;
+				do_open = !was_open || was_snap;
+			} else if (_ctrl_pressed) {
+				do_snap = !was_open || !was_snap;
+				do_open = true;
+			} else {
+				do_snap = false;
+				do_open = !was_open;
 			}
+			/* close the tool explicitly so it can be re-opened in different snapping mode */
+			if (was_open) ResetObjectToPlace();
+			/* open the tool in desired mode */
+			if (do_open && HandlePlacePushButton(this, WID_RAT_POLYRAIL, GetRailTypeInfo(railtype)->cursor.autorail, do_snap ? (HT_RAIL | HT_POLY) : (HT_RAIL | HT_NEW_POLY))) {
+				/* if we are re-opening the tool but we couldn't switch the snapping
+				 * then close the tool instead of appearing to be doing nothing */
+				if (was_open && do_snap != CurrentlySnappingRailPlacement()) ResetObjectToPlace();
+			}
+			this->last_user_action = WID_RAT_POLYRAIL;
+			return;
+		}
 
-			case WID_RAT_DEMOLISH:
-				HandlePlacePushButton(this, WID_RAT_DEMOLISH, ANIMCURSOR_DEMOLISH, HT_RECT | HT_DIAGONAL);
-				this->last_user_action = widget;
-				break;
+		this->last_user_action = widget;
+		bool started = HandlePlacePushButton(this, widget, this->GetCursorForWidget(widget), this->GetHighLightStyleForWidget(widget));
 
+		switch (widget) {
 			case WID_RAT_BUILD_DEPOT:
-				if (HandlePlacePushButton(this, WID_RAT_BUILD_DEPOT, GetRailTypeInfo(_cur_railtype)->cursor.depot, HT_RECT)) {
+				if (started) {
 					ShowBuildTrainDepotPicker(this);
-					this->last_user_action = widget;
 				}
 				break;
 
 			case WID_RAT_BUILD_WAYPOINT:
-				this->last_user_action = widget;
-				if (HandlePlacePushButton(this, WID_RAT_BUILD_WAYPOINT, SPR_CURSOR_WAYPOINT, HT_RECT)) {
+				if (started) {
 					ShowBuildWaypointPicker(this);
 				}
 				break;
 
 			case WID_RAT_BUILD_STATION:
-				if (HandlePlacePushButton(this, WID_RAT_BUILD_STATION, SPR_CURSOR_RAIL_STATION, HT_RECT)) {
+				if (started) {
 					ShowStationBuilder(this);
-					this->last_user_action = widget;
 				}
 				break;
 
 			case WID_RAT_BUILD_SIGNALS: {
-				this->last_user_action = widget;
-				bool started = HandlePlacePushButton(this, WID_RAT_BUILD_SIGNALS, ANIMCURSOR_BUILDSIGNALS, HT_RECT);
 				if (started != _ctrl_pressed) {
 					ShowSignalBuilder(this);
 				}
 				break;
 			}
 
-			case WID_RAT_BUILD_BRIDGE:
-				HandlePlacePushButton(this, WID_RAT_BUILD_BRIDGE, SPR_CURSOR_BRIDGE, HT_RECT);
-				this->last_user_action = widget;
-				break;
-
-			case WID_RAT_BUILD_TUNNEL:
-				HandlePlacePushButton(this, WID_RAT_BUILD_TUNNEL, GetRailTypeInfo(_cur_railtype)->cursor.tunnel, HT_SPECIAL | HT_TUNNEL);
-				this->last_user_action = widget;
-				break;
-
-			case WID_RAT_REMOVE:
-				BuildRailClick_Remove(this);
-				break;
-
 			case WID_RAT_CONVERT_RAIL: {
-				bool active = HandlePlacePushButton(this, WID_RAT_CONVERT_RAIL, GetRailTypeInfo(_cur_railtype)->cursor.convert, _ctrl_pressed ? HT_RAIL : HT_RECT | HT_DIAGONAL);
-				if (active && _ctrl_pressed) _thd.square_palette = SPR_ZONING_INNER_HIGHLIGHT_GREEN;
-				this->last_user_action = widget;
+				if (started && _ctrl_pressed) _thd.square_palette = SPR_ZONING_INNER_HIGHLIGHT_GREEN;
 				break;
 			}
-
-			default: NOT_REACHED();
 		}
-		this->UpdateRemoveWidgetStatus(widget);
-		if (_ctrl_pressed) RailToolbar_CtrlChanged(this);
 	}
 
 	EventState OnHotkey(int hotkey) override
 	{
+		if (IsSpecialHotkey(hotkey)) return this->ChangeRailTypeOnHotkey(hotkey);
 		MarkTileDirtyByTile(TileVirtXY(_thd.pos.x, _thd.pos.y)); // redraw tile selection
 
 		switch (hotkey) {
@@ -1031,6 +1045,29 @@ struct BuildRailToolbarWindow : Window {
 	}
 
 	/**
+	 * Selects new RailType based on SpecialHotkeys and order defined in _sorted_railtypes.
+	 * @param hotkey Defines what action to perform.
+	 * @return ES_HANDLED if hotkey was accepted.
+	 */
+	EventState ChangeRailTypeOnHotkey(int hotkey)
+	{
+		auto [index, step] = GetListIndexStep(SpecialListHotkeys(hotkey), _sorted_railtypes, this->railtype);
+
+		while (!HasRailTypeAvail(_local_company, _sorted_railtypes[index])) {
+			index = (index + step) % _sorted_railtypes.size();
+		}
+
+		_last_built_railtype = _cur_railtype = _sorted_railtypes[index];
+		this->ModifyRailType(_last_built_railtype);
+
+		/* Update cursor and all sub windows. */
+		if (_thd.GetCallbackWnd() == this) SetCursor(this->GetCursorForWidget(this->last_user_action), PAL_NONE);
+		for (WindowClass cls : {WC_BUILD_STATION, WC_BUILD_SIGNAL, WC_BUILD_WAYPOINT, WC_BUILD_DEPOT}) SetWindowDirty(cls, TRANSPORT_RAIL);
+
+		return ES_HANDLED;
+	}
+
+	/**
 	 * Handler for global hotkeys of the BuildRailToolbarWindow.
 	 * @param hotkey Hotkey
 	 * @return ES_HANDLED if hotkey was accepted.
@@ -1062,6 +1099,10 @@ struct BuildRailToolbarWindow : Window {
 		Hotkey('R', "remove", WID_RAT_REMOVE),
 		Hotkey('C', "convert", WID_RAT_CONVERT_RAIL),
 		Hotkey(WKC_CTRL | 'C', "convert_track", WID_RAT_CONVERT_RAIL_TRACK),
+		Hotkey(WKC_L_BRACKET, "prev_railtype", to_underlying(SpecialListHotkeys::PreviousItem)),
+		Hotkey(WKC_R_BRACKET, "next_railtype", to_underlying(SpecialListHotkeys::NextItem)),
+		Hotkey(WKC_L_BRACKET | WKC_CTRL, "first_railtype", to_underlying(SpecialListHotkeys::FirstItem)),
+		Hotkey(WKC_R_BRACKET | WKC_CTRL, "last_railtype", to_underlying(SpecialListHotkeys::LastItem)),
 	}, RailToolbarGlobalHotkeys};
 };
 
@@ -1680,6 +1721,7 @@ private:
 
 	/**
 	 * Draw dynamic a signal-sprite in a button in the signal GUI
+	 * @param r The rectangle to draw the sprite in.
 	 * @param image        the sprite to draw
 	 */
 	void DrawSignalSprite(const Rect &r, PalSpriteID image) const

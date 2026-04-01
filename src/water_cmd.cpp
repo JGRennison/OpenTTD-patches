@@ -890,6 +890,7 @@ static void DrawCanalWater(TileIndex tile)
  * @param base    Base sprite.
  * @param offset  Additional sprite offset.
  * @param palette Palette to use.
+ * @param feature The canal feature to get the sprite offset to apply from.
  */
 static void DrawWaterTileStruct(const TileInfo *ti, std::span<const DrawTileSeqStruct> seq, SpriteID base, uint offset, PaletteID palette, CanalFeature feature)
 {
@@ -1550,6 +1551,9 @@ static CommandCost TerraformTile_Water(TileIndex tile, DoCommandFlags flags, int
 {
 	/* Canals can't be terraformed */
 	if (IsWaterTile(tile) && IsCanal(tile)) return CommandCost(STR_ERROR_MUST_DEMOLISH_CANAL_FIRST);
+
+	/* Rivers can't be terraformed */
+	if (IsWaterTile(tile) && IsRiver(tile)) return CommandCost(STR_ERROR_MUST_DEMOLISH_RIVER_FIRST);
 
 	return Command<Commands::LandscapeClear>::Do(flags, tile);
 }

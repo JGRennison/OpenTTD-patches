@@ -1692,7 +1692,7 @@ static bool SlObjectMember(void *object, const SaveLoad &sld)
 
 /**
  * Set the length of this list.
- * @param The length of the list.
+ * @param length The length of the list.
  */
 void SlSetStructListLength(size_t length)
 {

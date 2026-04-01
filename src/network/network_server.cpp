@@ -1951,7 +1951,7 @@ static void NetworkAutoCleanCompanies()
 
 /**
  * Check whether a name is unique, and otherwise try to make it unique.
- * @param new_name The name to check/modify.
+ * @param name The name to check/modify.
  * @return True if an unique name was achieved.
  */
 bool NetworkMakeClientNameUnique(std::string &name)
@@ -2484,8 +2484,6 @@ bool NetworkCompanyHasClients(CompanyID company)
 
 /**
  * Get the name of the client, if the user did not send it yet, Client ID is used.
- * @param client_name The variable to write the name to.
- * @param last        The pointer to the last element of the destination buffer
  */
 std::string ServerNetworkGameSocketHandler::GetClientName() const
 {

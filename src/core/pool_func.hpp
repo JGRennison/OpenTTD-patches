@@ -87,6 +87,7 @@ DEFINE_POOL_METHOD(inline size_t)::FindFirstFree()
  * @param index index of item
  * @pre index < this->size
  * @pre this->Get(index) == nullptr
+ * @return The resulting allocation and pool-type index.
  */
 DEFINE_POOL_METHOD(inline void *)::AllocateItem(size_t size, size_t index, Pool::ParamType param)
 {
@@ -112,7 +113,7 @@ DEFINE_POOL_METHOD(inline void *)::AllocateItem(size_t size, size_t index, Pool:
 /**
  * Allocates new item
  * @param size size of item
- * @return pointer to allocated item and the index of said item.
+ * @return The resulting allocation and pool-type index.
  * @note FatalError() on failure! (no free item)
  */
 DEFINE_POOL_METHOD(AllocationResult<Tindex>)::GetNew(size_t size, Pool::ParamType param)

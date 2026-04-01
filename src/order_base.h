@@ -1108,9 +1108,9 @@ public:
 	OrderList(OrderListID index) : PoolItemBase(index) {}
 
 	/**
-	 * Create an order list with the given order chain for the given vehicle.
+	 * Create an order list with the order for the given vehicle.
 	 * @param index index of the list within the order list pool
-	 * @param chain pointer to the first order of the order chain
+	 * @param order Rvalue reference to the order.
 	 * @param v any vehicle using this orderlist
 	 */
 	OrderList(OrderListID index, OrderPoolItem *chain, Vehicle *v) : PoolItemBase(index)
@@ -1196,7 +1196,7 @@ public:
 	/**
 	 * Get the order after the given one or the first one, if the given one is the
 	 * last one.
-	 * @param curr Order to find the next one for.
+	 * @param cur Order to find the next one for.
 	 * @return Next order.
 	 */
 	inline const Order *GetNext(const Order *curr) const

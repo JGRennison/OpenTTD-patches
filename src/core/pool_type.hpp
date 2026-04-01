@@ -333,7 +333,7 @@ public:
 
 		/**
 		 * Creates a new T-object in the associated pool.
-		 * @param args... The arguments to the constructor.
+		 * @param args The arguments to the constructor.
 		 * @return The created object.
 		 */
 		template <typename T = Titem, typename... Targs>
@@ -347,7 +347,7 @@ public:
 		/**
 		 * Creates a new T-object in the associated pool.
 		 * @param index The to allocate the object at.
-		 * @param args... The arguments to the constructor.
+		 * @param args The arguments to the constructor.
 		 * @return The created object.
 		 */
 		template <typename T = Titem, typename... Targs>

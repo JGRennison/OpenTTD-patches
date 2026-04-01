@@ -96,7 +96,6 @@ class AsymmetricScaler : public Scaler {
 public:
 	/**
 	 * Nothing to do here.
-	 * @param unused.
 	 */
 	inline void AddNode(const Node &)
 	{
@@ -104,7 +103,6 @@ public:
 
 	/**
 	 * Nothing to do here.
-	 * @param unused.
 	 */
 	inline void SetDemandPerNode(uint)
 	{
@@ -122,7 +120,6 @@ public:
 	/**
 	 * Get the effective supply of one node towards another one.
 	 * @param from The supplying node.
-	 * @param unused.
 	 */
 	inline uint EffectiveSupply(const Node &from, const Node &)
 	{

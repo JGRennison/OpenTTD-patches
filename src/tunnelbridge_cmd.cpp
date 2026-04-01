@@ -343,6 +343,7 @@ bool MayTownBuildBridgeType(BridgeType bridge_type)
 /**
  * Calculate the base cost of clearing a tunnel/bridge per tile.
  * @param tile Start tile of the tunnel/bridge.
+ * @param base_price The base cost for clearing the tile.
  * @return How much clearing this tunnel/bridge costs per tile.
  */
 static Money TunnelBridgeClearCost(TileIndex tile, Price base_price)

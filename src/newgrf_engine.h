@@ -106,7 +106,7 @@ enum class BuildProbabilityType : uint8_t {
 	Reversed = 0, ///< Change the rail vehicle should be reversed when purchased.
 };
 
-std::optional<bool> TestVehicleBuildProbability(const Vehicle *v, EngineID engine, BuildProbabilityType type);
+std::optional<bool> TestVehicleBuildProbability(const Vehicle *v, BuildProbabilityType type);
 
 void TriggerVehicleRandomisation(Vehicle *veh, VehicleRandomTrigger trigger);
 

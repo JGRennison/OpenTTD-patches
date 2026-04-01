@@ -149,7 +149,6 @@ void NewGRFClass<Tspec, Tindex, Tmax>::PrepareIndices()
  * Retrieve a spec by GRF location.
  * @param grfid    GRF ID of spec.
  * @param local_id Index within GRF file of spec.
- * @param index    Pointer to return the index of the spec in its class. If nullptr then not used.
  * @return The spec.
  */
 template <typename Tspec, typename Tindex, Tindex Tmax>

@@ -154,7 +154,7 @@ public:
 	void SortVehicleList();
 	void CountOwnVehicles();
 	void BuildVehicleList();
-	void SetCargoFilter(uint8_t index);
+	void SetCargoFilter(CargoType cargo_type);
 	void SetCargoFilterArray();
 	void FilterVehicleList();
 	StringID GetCargoFilterLabel(CargoType cargo_type) const;

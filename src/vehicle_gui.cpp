@@ -1948,6 +1948,7 @@ static void DrawSmallOrderList(OrderIterateWrapper<const Order> orders, int left
  * @param v         Front vehicle
  * @param r         Rect to draw at
  * @param selection Selected vehicle to draw a frame around
+ * @param image_type Context where the image is being drawn.
  * @param skip      Number of pixels to skip at the front (for scrolling)
  */
 void DrawVehicleImage(const Vehicle *v, const Rect &r, VehicleID selection, EngineImageType image_type, int skip)
@@ -4797,6 +4798,7 @@ void CcBuildPrimaryVehicle(const CommandCost &result)
 /**
  * Get the width of a vehicle (part) in pixels.
  * @param v Vehicle to get the width for.
+ * @param image_type Context where the image is being drawn.
  * @return Width of the vehicle.
  */
 int GetSingleVehicleWidth(const Vehicle *v, EngineImageType image_type)
@@ -4820,6 +4822,7 @@ int GetSingleVehicleWidth(const Vehicle *v, EngineImageType image_type)
 /**
  * Get the width of a vehicle (including all parts of the consist) in pixels.
  * @param v Vehicle to get the width for.
+ * @param image_type Context where the image is being drawn.
  * @return Width of the vehicle.
  */
 int GetVehicleWidth(const Vehicle *v, EngineImageType image_type)

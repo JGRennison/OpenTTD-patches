@@ -143,6 +143,7 @@ void ClientNetworkEmergencySave()
 /**
  * Create a new socket for the client side of the game connection.
  * @param s The socket to connect with.
+ * @param connection_string The connection string that the connection was made with.
  */
 ClientNetworkGameSocketHandler::ClientNetworkGameSocketHandler(SOCKET s, std::string connection_string)
 	: NetworkGameSocketHandler(s), connection_string(std::move(connection_string))
@@ -498,7 +499,6 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendNewGRFsOk()
 
 /**
  * Set the game password as requested.
- * @param password The game password.
  */
 NetworkRecvStatus ClientNetworkGameSocketHandler::SendAuthResponse()
 {
@@ -1622,7 +1622,7 @@ bool NetworkValidateOurClientName()
 
 /**
  * Send the server our name as callback from the setting.
- * @param newname The new client name.
+ * @param client_name The new client name.
  */
 void NetworkUpdateClientName(const std::string &client_name)
 {

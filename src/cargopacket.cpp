@@ -280,7 +280,6 @@ void CargoPacket::PayDeferredPayments()
 
 /**
  * Invalidates (sets source_id to INVALID_SOURCE) all cargo packets from given source.
- * @param src_type Type of source.
  * @param src Index of source.
  */
 /* static */ void CargoPacket::InvalidateAllFrom(Source src)

@@ -163,7 +163,8 @@ NodeID LinkGraph::AddNode(const Station *st)
  * @param edge Edge to fill.
  * @param capacity Capacity of the link.
  * @param usage Usage to be added.
- * @param mode Update mode to be used.
+ * @param travel_time Travel time to be added, in ticks.
+ * @param modes Update modes to be used.
  */
 static void AddEdge(LinkGraph::BaseEdge &edge, uint capacity, uint usage, uint32_t travel_time, EdgeUpdateModes modes)
 {
@@ -181,7 +182,8 @@ static void AddEdge(LinkGraph::BaseEdge &edge, uint capacity, uint usage, uint32
  * @param to Target node.
  * @param capacity Capacity of the link.
  * @param usage Usage to be added.
- * @param mode Update mode to be used.
+ * @param travel_time Travel time to be added, in ticks.
+ * @param modes Update modes to be used.
  */
 void LinkGraph::UpdateEdge(NodeID from, NodeID to, uint capacity, uint usage, uint32_t travel_time, EdgeUpdateModes modes)
 {
@@ -215,7 +217,7 @@ void LinkGraph::RemoveEdge(NodeID from, NodeID to)
  * @param capacity Capacity to be added/updated.
  * @param usage Usage to be added.
  * @param travel_time Travel time to be added, in ticks.
- * @param mode Update mode to be applied.
+ * @param modes Update modes to be applied.
  */
 void LinkGraph::Edge::Update(uint capacity, uint usage, uint32_t travel_time, EdgeUpdateModes modes)
 {

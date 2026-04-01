@@ -1268,6 +1268,7 @@ static RoadBits GetTownRoadGridElement(Town *t, TileIndex tile, DiagDirection di
  *
  * @param t The current town.
  * @param tile The target tile for the extra house.
+ * @param modes The parts of the town that are being grown.
  * @return true if an extra house has been added.
  */
 static bool GrowTownWithExtraHouse(Town *t, TileIndex tile, TownExpandModes modes)
@@ -1622,6 +1623,7 @@ enum class TownGrowthResult {
  * @param cur_rb The current tiles RoadBits
  * @param target_dir The target road dir
  * @param t1 The current town
+ * @param modes The parts of the town that are being grown.
  * @return Result so far.
  */
 static TownGrowthResult GrowTownInTile(TileIndex *tile_ptr, RoadBits cur_rb, DiagDirection target_dir, Town *t1, TownExpandModes modes)
@@ -1891,6 +1893,7 @@ static TownGrowthResult GrowTownInTile(TileIndex *tile_ptr, RoadBits cur_rb, Dia
  * This only checks trivial but often cases.
  * @param tile Start tile for road.
  * @param dir Direction for road to follow or build.
+ * @param modes The parts of the town that are being grown.
  * @return true If road is or can be connected in the specified direction.
  */
 static bool CanFollowRoad(TileIndex tile, DiagDirection dir, TownExpandModes modes)
@@ -1933,6 +1936,7 @@ static bool CanFollowRoad(TileIndex tile, DiagDirection dir, TownExpandModes mod
  * Try to grow a town at a given road tile.
  * @param t The town to grow.
  * @param tile The road tile to try growing from.
+ * @param modes The parts of the town that are being grown.
  * @return true if we successfully expanded the town.
  */
 static bool GrowTownAtRoad(Town *t, TileIndex tile, TownExpandModes modes)
@@ -2049,6 +2053,7 @@ static RoadBits GenRandomRoadBits()
 /**
  * Grow the town.
  * @param t The town to grow
+ * @param modes The parts of the town that are being grown.
  * @return true if we successfully grew the town with a road or house.
  */
 static bool GrowTown(Town *t, TownExpandModes modes)
@@ -2830,11 +2835,11 @@ static inline void ClearMakeHouseTile(TileIndex tile, Town *t, uint8_t counter, 
 
 /**
  * Write house information into the map. For multi-tile houses, all tiles are marked.
- * @param town The town related to this house
- * @param t The tile to build on. If a multi-tile house, this is the northern-most tile.
+ * @param tile The tile to build on. If a multi-tile house, this is the northern-most tile.
+ * @param t The town related to this house
  * @param counter The counter of the construction stage.
+ * @param type The type of house.
  * @param stage The current construction stage.
- * @param The type of house.
  * @param random_bits Random bits for newgrf houses to use.
  * @param is_protected Whether the house is protected from the town upgrading it.
  * @pre The house can be built here.
@@ -2993,6 +2998,7 @@ static inline CommandCost IsAnotherHouseTypeAllowedInTown(Town *t, HouseID house
  * Checks if current town layout allows building here
  * @param t town
  * @param ta tile area to check
+ * @param modes The parts of the town that are being grown.
  * @return true iff town layout allows building here
  * @note see layouts
  */
@@ -3154,6 +3160,7 @@ static void BuildTownHouse(Town *t, TileIndex tile, const HouseSpec *hs, HouseID
  * Tries to build a house at this tile.
  * @param t The town the house will belong to.
  * @param tile The tile to try building on.
+ * @param modes The parts of the town that are being grown.
  * @return false iff no house can be built on this tile.
  */
 static bool TryBuildTownHouse(Town *t, TileIndex tile, TownExpandModes modes)
@@ -3232,7 +3239,7 @@ static bool TryBuildTownHouse(Town *t, TileIndex tile, TownExpandModes modes)
  * Place an individual house.
  * @param flags Type of operation.
  * @param tile Tile on which to place the house.
- * @param HouseID The HouseID of the house spec.
+ * @param house The HouseID of the house spec.
  * @param is_protected Whether the house is protected from the town upgrading it.
  * @param town_id Town ID, or TownID::Invalid() to pick a town automatically.
  * @param replace Whether to automatically demolish an existing house on this tile, if present.
@@ -3657,7 +3664,8 @@ CommandCost CmdTownRating(DoCommandFlags flags, TownID town_id, CompanyID compan
 /**
  * Expand a town (scenario editor only).
  * @param flags Type of operation.
- * @param TownID Town ID to expand.
+ * @param town_id Town ID to expand.
+ * @param modes The parts of the town that are being grown.
  * @param grow_amount Amount to grow, or 0 to grow a random size up to the current amount of houses.
  * @return Empty cost or an error.
  */

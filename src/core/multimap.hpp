@@ -144,7 +144,6 @@ public:
 	/**
 	 * Postfix increment operator. Same as prefix increment, but return the
 	 * previous state.
-	 * @param dummy param to mark postfix.
 	 * @return This iterator before incrementing.
 	 */
 	Self operator++(int)
@@ -175,7 +174,6 @@ public:
 	/**
 	 * Postfix decrement operator. Same as prefix decrement, but return the
 	 * previous state.
-	 * @param dummy param to mark postfix.
 	 * @return This iterator before decrementing.
 	 */
 	Self operator--(int)

@@ -89,7 +89,7 @@ public:
 
 	/**
 	 * Run the calculation.
-	 * @param graph Component to be calculated.
+	 * @param job Component to be calculated.
 	 */
 	void Run(LinkGraphJob &job) const override { Tpass pass(job); }
 };

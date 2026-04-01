@@ -12,6 +12,8 @@
 
 #include "company_type.h"
 #include "dropdown_type.h"
+#include "rail_type.h"
+#include "road_type.h"
 
 enum MainToolbarHotkeys : int32_t {
 	MTHK_PAUSE,
@@ -72,6 +74,10 @@ void ToggleWidgetOutlines();
 std::unique_ptr<DropDownListItem> MakeCompanyDropDownListItem(CompanyID cid, bool selectable = true);
 
 extern uint _toolbar_width;
+
+extern RailType _last_built_railtype; ///< The most recently used type of rail.
+extern RoadType _last_built_roadtype; ///< The most recently used type of road.
+extern RoadType _last_built_tramtype; ///< The most recently used type of tram track.
 
 struct MainToolbarScaleAdjuster {
 	ZoomLevel old_gui_zoom;

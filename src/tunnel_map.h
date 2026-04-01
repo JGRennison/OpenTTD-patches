@@ -129,7 +129,8 @@ inline uint8_t GetTunnelSignalStyle(TileIndex t)
  * @param o the owner of the entrance
  * @param id the tunnel ID
  * @param d the direction facing out of the tunnel
- * @param r the road type used in the tunnel
+ * @param road_rt The road type used in the tunnel.
+ * @param tram_rt The tram type used in the tunnel.
  */
 inline void MakeRoadTunnel(TileIndex t, Owner o, TunnelID id, DiagDirection d, RoadType road_rt, RoadType tram_rt)
 {

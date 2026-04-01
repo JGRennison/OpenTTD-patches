@@ -507,6 +507,7 @@ public:
 	/**
 	 * Gets the sprite to show for the given direction
 	 * @param direction the direction the vehicle is facing
+	 * @param image_type Context where the image is being drawn.
 	 * @param[out] result Vehicle sprite sequence.
 	 */
 	virtual void GetImage([[maybe_unused]] Direction direction, [[maybe_unused]] EngineImageType image_type, [[maybe_unused]] VehicleSpriteSeq *result) const { result->Clear(); }
@@ -1456,7 +1457,7 @@ struct SpecializedVehicle : public Vehicle {
 
 	/**
 	 * Creates a new T-object in the vehicle pool.
-	 * @param args... The arguments to the constructor.
+	 * @param args The arguments to the constructor.
 	 * @return The created object.
 	 */
 	template <typename... Targs>
@@ -1473,7 +1474,7 @@ struct SpecializedVehicle : public Vehicle {
 	/**
 	 * Creates a new T-object in the vehicle pool.
 	 * @param index The index allocate the object at.
-	 * @param args... The arguments to the constructor.
+	 * @param args The arguments to the constructor.
 	 * @return The created object.
 	 */
 	template <typename... Targs>

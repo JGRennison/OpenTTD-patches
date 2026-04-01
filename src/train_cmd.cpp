@@ -1366,6 +1366,7 @@ static SpriteID GetDefaultTrainSprite(uint8_t spritenum, Direction direction)
  * Get the sprite to display the train.
  * @param direction Direction of view/travel.
  * @param image_type Visualisation context.
+ * @param result Sprite sequence to add the to be drawn sprites to.
  * @return Sprite to display.
  */
 void Train::GetImage(Direction direction, EngineImageType image_type, VehicleSpriteSeq *result) const
@@ -1541,7 +1542,7 @@ static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlags flags, const
 
 		v->group_id = DEFAULT_GROUP;
 
-		auto prob = TestVehicleBuildProbability(v, v->engine_type, BuildProbabilityType::Reversed);
+		auto prob = TestVehicleBuildProbability(v, BuildProbabilityType::Reversed);
 		if (prob.has_value()) v->flags.Set(VehicleRailFlag::Flipped, prob.value());
 		AddArticulatedParts(v);
 
@@ -1633,8 +1634,8 @@ static void AddRearEngineToMultiheadedTrain(Train *v)
 	u->SetMultiheaded();
 	if (v->IsVirtual()) u->SetVirtual();
 	v->SetNext(u);
-	auto prob = TestVehicleBuildProbability(u, u->engine_type, BuildProbabilityType::Reversed);
-	if (prob.has_value()) v->flags.Set(VehicleRailFlag::Flipped, prob.value());
+	auto prob = TestVehicleBuildProbability(u, BuildProbabilityType::Reversed);
+	if (prob.has_value()) u->flags.Set(VehicleRailFlag::Flipped, prob.value());
 	u->UpdatePosition();
 
 	/* Now we need to link the front and rear engines together */
@@ -1713,7 +1714,7 @@ CommandCost CmdBuildRailVehicle(TileIndex tile, DoCommandFlags flags, const Engi
 		v->SetFrontEngine();
 		v->SetEngine();
 
-		auto prob = TestVehicleBuildProbability(v, v->engine_type, BuildProbabilityType::Reversed);
+		auto prob = TestVehicleBuildProbability(v, BuildProbabilityType::Reversed);
 		if (prob.has_value()) v->flags.Set(VehicleRailFlag::Flipped, prob.value());
 		v->UpdatePosition();
 

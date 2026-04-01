@@ -621,6 +621,7 @@ const Order *OrderList::GetNextDecisionNode(const Order *next, uint hops, CargoT
 
 /**
  * Recursively determine the next deterministic station to stop at.
+ * @param next_station The next stations that we have already seen, and might be adding to.
  * @param v The vehicle we're looking at.
  * @param CargoTypes cargo_mask Bit-set of the cargo IDs of interest. This may be 0 to ignore cargo types entirely.
  * @param first Order to start searching at or nullptr to start at cur_implicit_order_index + 1.

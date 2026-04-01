@@ -135,6 +135,7 @@ std::string RemoveUnderscores(std::string_view name)
  * Register a new command to be used in the console
  * @param name name of the command that will be used
  * @param proc function that will be called upon execution of command
+ * @param hook Callback to check whether the command is allowed to run in the current context.
  */
 /* static */ void IConsole::CmdRegister(std::string_view name, IConsoleCmdProc *proc, IConsoleHook *hook, bool unlisted)
 {
@@ -267,6 +268,7 @@ static void IConsoleAliasExec(const IConsoleAlias *alias, std::span<std::string_
  * Execute a given command passed to us. First chop it up into
  * individual tokens (separated by spaces), then execute it if possible
  * @param command_string string to be parsed and executed
+ * @param recurse_count The number of re-entrant calls to this function.
  */
 void IConsoleCmdExec(std::string_view command_string, const uint recurse_count)
 {

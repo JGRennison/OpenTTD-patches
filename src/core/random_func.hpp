@@ -140,6 +140,7 @@ inline bool Chance16I(const uint a, const uint b, const uint32_t r)
  * @see Chance16I()
  * @param a The nominator of the fraction
  * @param b The denominator of the fraction
+ * @param location Source code location where this function is called from.
  * @return True with (a/b) probability
  */
 #ifdef RANDOM_DEBUG
@@ -164,6 +165,7 @@ inline bool Chance16(const uint a, const uint b)
  * @param a The numerator of the fraction
  * @param b The denominator of the fraction
  * @param r The variable to save the randomize-number from Random()
+ * @param location Source code location where this function is called from.
  * @return True in (a/b) percent
  */
 #ifdef RANDOM_DEBUG

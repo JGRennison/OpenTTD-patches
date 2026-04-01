@@ -647,7 +647,6 @@ CargoArray GetProductionAroundTiles(TileIndex north_tile, int w, int h, int rad)
  * @param h Y extent of area
  * @param rad Search radius in addition to given area
  * @param always_accepted bitmask of cargo accepted by houses and headquarters; can be nullptr
- * @param ind Industry associated with neutral station (e.g. oil rig) or nullptr
  */
 CargoArray GetAcceptanceAroundTiles(TileIndex center_tile, int w, int h, int rad, CargoTypes *always_accepted)
 {
@@ -1382,6 +1381,7 @@ void GetStationLayout(uint8_t *layout, uint numtracks, uint plat_len, const Stat
  * @param ta the area of the newly build station
  * @param st 'return' pointer for the found station
  * @param error_message the error message when building a station on top of others
+ * @param filter The filter to remove unwanted stations.
  * @return command cost with the error or 'okay'
  */
 template <class T, class F>
@@ -2671,7 +2671,7 @@ Town *AirportGetNearestTown(const AirportSpec *as, Direction rotation, TileIndex
 /**
  * Finds the town nearest to given existing airport. Based on minimal manhattan distance to any airport's tile.
  * If two towns have the same distance, town with lower index is returned.
- * @param station existing station with airport
+ * @param st Existing station with airport.
  * @param[out] mindist Minimum distance to town
  * @return nearest town to airport
  */
@@ -4611,7 +4611,8 @@ void DeleteStaleLinks(Station *from)
  * @param next_station_id Station the consist will be travelling to next.
  * @param capacity Capacity to add to link stat.
  * @param usage Usage to add to link stat.
- * @param mode Update mode to be applied.
+ * @param time The travel time for the link.
+ * @param modes Update modes to be applied.
  */
 void IncreaseStats(Station *st, CargoType cargo, StationID next_station_id, uint capacity, uint usage, uint32_t time, EdgeUpdateModes modes)
 {

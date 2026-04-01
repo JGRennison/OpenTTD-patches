@@ -38,6 +38,7 @@ static std::array<robin_hood::unordered_map<char32_t, SpriteID>, FS_END> _char_m
 
 /**
  * Get SpriteID associated with a character.
+ * @param fs The font size of the character.
  * @param key Character to find.
  * @return SpriteID for character, or 0 if not present.
  */

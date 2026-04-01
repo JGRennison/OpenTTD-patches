@@ -155,7 +155,7 @@ static void GuiGroupListAddChildren(GUIGroupList &dst, const GUIGroupList &src, 
 
 /**
  * Build GUI group list, a sorted hierarchical list of groups for owner and vehicle type.
- * @param dst Destination list, owned by the caller.
+ * @param list Destination list, owned by the caller.
  * @param fold Whether to handle group folding/hiding.
  * @param owner Owner of groups.
  * @param veh_type Vehicle type of groups.
@@ -368,6 +368,7 @@ private:
 	 * Draw a row in the group list.
 	 * @param r Rect to draw row in.
 	 * @param g_id Group to list.
+	 * @param level_mask Bitset with the vertical lines of the tree that need to be drawn before this group.
 	 * @param indent Indentation level.
 	 * @param protection Whether autoreplace protection is set.
 	 * @param has_children Whether the group has children and should have a fold / unfold button.
