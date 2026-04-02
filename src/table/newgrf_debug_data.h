@@ -454,8 +454,11 @@ class NIHVehicle : public NIHelper {
 			}
 		}
 
-		output.Print("  Cached sprite bounds: ({}, {}) to ({}, {}), offs: ({}, {})",
-				v->sprite_seq_bounds.left, v->sprite_seq_bounds.top, v->sprite_seq_bounds.right, v->sprite_seq_bounds.bottom, v->bounds.origin.x, v->bounds.origin.y);
+		output.Print("  Cached sprite bounds: ({}, {}) to ({}, {}), origin: ({}, {}, {}), extent: ({}, {}, {}), offset: ({}, {}, {})",
+				v->sprite_seq_bounds.left, v->sprite_seq_bounds.top, v->sprite_seq_bounds.right, v->sprite_seq_bounds.bottom,
+				v->bounds.origin.x, v->bounds.origin.y, v->bounds.origin.z,
+				v->bounds.extent.x, v->bounds.extent.y, v->bounds.extent.z,
+				v->bounds.offset.x, v->bounds.offset.y, v->bounds.offset.z);
 
 		output.Print("  Current image cacheable: {} ({:X}), spritenum: {:X}",
 				v->cur_image_valid_dir != INVALID_DIR ? "yes" : "no", v->cur_image_valid_dir, v->spritenum);
