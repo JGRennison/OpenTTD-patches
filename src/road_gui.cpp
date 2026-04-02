@@ -568,7 +568,7 @@ struct BuildRoadToolbarWindow : Window {
 
 	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
-		bool started;
+		bool started = false;
 		_remove_button_clicked = false;
 		_one_way_button_clicked = false;
 
