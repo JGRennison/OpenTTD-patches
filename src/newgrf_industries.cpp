@@ -10,6 +10,7 @@
 #include "stdafx.h"
 #include "debug.h"
 #include "industry.h"
+#include "newgrf_analysis.h"
 #include "newgrf_badge.h"
 #include "newgrf_industries.h"
 #include "newgrf_town.h"
@@ -746,4 +747,16 @@ void DumpIndustrySpriteGroup(const IndustrySpec *spec, SpriteGroupDumper &dumper
 void DumpIndustryTileSpriteGroup(const IndustryTileSpec *spec, SpriteGroupDumper &dumper)
 {
 	dumper.DumpStandardGRFFileProps(spec->grf_prop);
+}
+
+void AnalyseIndustrySpriteGroups()
+{
+	for (IndustrySpec &spec : _industry_specs) {
+		const struct SpriteGroup *root_spritegroup = spec.grf_prop.GetSpriteGroup(false);
+		if (root_spritegroup != nullptr) {
+			IndustryLocationAnalyser analyser;
+			analyser.AnalyseGroup(root_spritegroup);
+			spec.behaviour.Set(IndustryBehaviour::ExpensiveLocationCallback, analyser.expensive_location_cb);
+		}
+	}
 }

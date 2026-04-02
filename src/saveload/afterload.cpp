@@ -1046,6 +1046,7 @@ bool AfterLoadGame()
 	}
 
 	AfterLoadEngines();
+	AnalyseIndustrySpriteGroups();
 	AnalyseIndustryTileSpriteGroups();
 	extern void AnalyseHouseSpriteGroups();
 	AnalyseHouseSpriteGroups();
@@ -4704,6 +4705,7 @@ void ReloadNewGRFData()
 	ResetVehicleHash();
 	AfterLoadLabelMaps();
 	AfterLoadEngines();
+	AnalyseIndustrySpriteGroups();
 	AnalyseIndustryTileSpriteGroups();
 	extern void AnalyseHouseSpriteGroups();
 	AnalyseHouseSpriteGroups();

@@ -81,6 +81,9 @@ enum class IndustryBehaviour : uint8_t {
 	CanCloseLastInstance = 17, ///< Allow closing down the last instance of this type
 	CargoTypesUnlimited = 18, ///< Allow produced/accepted cargoes callbacks to supply more than 2 and 3 types
 	NoPaxProdClamp = 19, ///< Do not clamp production of passengers. (smooth economy only)
+
+	/* Internal use */
+	ExpensiveLocationCallback = 31, ///< Location callback looks expensive
 };
 using IndustryBehaviours = EnumBitSet<IndustryBehaviour, uint32_t>;
 

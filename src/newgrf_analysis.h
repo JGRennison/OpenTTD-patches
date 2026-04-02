@@ -81,6 +81,16 @@ struct FindRandomTriggerAnalyser final : public SpriteChainAnalyser<FindRandomTr
 	void AnalyseCalculatedResultSpriteGroup() { /* Do nothing */ }
 };
 
+struct IndustryLocationAnalyser final : public SpriteChainAnalyser<IndustryLocationAnalyser> {
+	bool expensive_location_cb = false;
+
+	bool IsEarlyExitSet() const { return this->expensive_location_cb; }
+	void AnalyseDeterministicSpriteGroup(const DeterministicSpriteGroup *);
+	void AnalyseRandomisedSpriteGroup(const RandomizedSpriteGroup *rsg) { this->DefaultAnalyseRandomisedSpriteGroup(rsg); }
+	void AnalyseCallbackResultSpriteGroup(const CallbackResultSpriteGroup *) { /* Do nothing */ }
+	void AnalyseCalculatedResultSpriteGroup() { /* Do nothing */ }
+};
+
 struct IndustryTileDataAnalyser final : public SpriteChainAnalyser<IndustryTileDataAnalyser> {
 	const IndustryTileDataAnalyserConfig &cfg;
 	uint64_t check_mask;

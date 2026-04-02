@@ -1284,6 +1284,8 @@ class NIHIndustry : public NIHelper {
 				check(IndustryBehaviour::CanCloseLastInstance, "CanCloseLastInstance");
 				check(IndustryBehaviour::CargoTypesUnlimited,  "CargoTypesUnlimited");
 				check(IndustryBehaviour::NoPaxProdClamp,       "NoPaxProdClamp");
+
+				check(IndustryBehaviour::ExpensiveLocationCallback, "ExpensiveLocationCallback (internal)");
 			}
 		}
 	}

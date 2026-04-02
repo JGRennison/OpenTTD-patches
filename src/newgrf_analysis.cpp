@@ -187,6 +187,29 @@ void FindRandomTriggerAnalyser::AnalyseRandomisedSpriteGroup(const RandomizedSpr
 	this->DefaultAnalyseRandomisedSpriteGroup(rsg);
 }
 
+/* Industry analysis */
+
+void IndustryLocationAnalyser::AnalyseDeterministicSpriteGroup(const DeterministicSpriteGroup *dsg)
+{
+	/* Only follow CBID_INDUSTRY_LOCATION in callback switches */
+	if (IsTrivialSwitchOfSpecificVariable(dsg, 0xC, 0xFF)) {
+		this->AnalyseGroup(GetSwitchTargetForValue(dsg, CBID_INDUSTRY_LOCATION));
+		return;
+	}
+
+	for (const auto &adjust : dsg->adjusts) {
+		if (adjust.variable == 0x7E) this->AnalyseGroup(adjust.subroutine);
+		if (dsg->var_scope == VSG_SCOPE_SELF) {
+			if (adjust.variable == 0x43 || adjust.variable == 0x8B) {
+				this->expensive_location_cb = true;
+				return; // early exit
+			}
+		}
+	}
+
+	this->DefaultAnalyseDeterministicSpriteGroup(dsg);
+}
+
 /* Industry tile analysis */
 
 void IndustryTileDataAnalyser::AnalyseDeterministicSpriteGroup(const DeterministicSpriteGroup *dsg)

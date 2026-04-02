@@ -2086,6 +2086,8 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
  */
 static CommandCost CreateNewIndustryHelper(TileIndex tile, IndustryType type, DoCommandFlags flags, const IndustrySpec *indspec, size_t layout_index, uint32_t random_var8f, uint16_t random_initial_bits, Owner founder, IndustryAvailabilityCallType creation_type, Industry **ip)
 {
+	if (!Industry::CanAllocateItem()) return CommandCost(STR_ERROR_TOO_MANY_INDUSTRIES);
+
 	assert(layout_index < indspec->layouts.size());
 	const IndustryTileLayout &layout = indspec->layouts[layout_index];
 
@@ -2110,8 +2112,14 @@ static CommandCost CreateNewIndustryHelper(TileIndex tile, IndustryType type, Do
 	if (ret.Failed()) return ret;
 
 	/* 3. NewGRF-defined checks on industry level. */
-	if (GetIndustrySpec(type)->callback_mask.Test(IndustryCallbackMask::Location)) {
-		ret = CheckIfCallBackAllowsCreation(tile, type, layout_index, random_var8f, random_initial_bits, founder, creation_type);
+	bool deferred_location_check = false;
+	const IndustrySpec *spec = GetIndustrySpec(type);
+	if (spec->callback_mask.Test(IndustryCallbackMask::Location)) {
+		if (spec->behaviour.Test(IndustryBehaviour::ExpensiveLocationCallback)) {
+			deferred_location_check = true;
+		} else {
+			ret = CheckIfCallBackAllowsCreation(tile, type, layout_index, random_var8f, random_initial_bits, founder, creation_type);
+		}
 	} else {
 		ret = _check_new_industry_procs[indspec->check_proc](tile);
 	}
@@ -2127,7 +2135,11 @@ static CommandCost CreateNewIndustryHelper(TileIndex tile, IndustryType type, Do
 		return CommandCost(STR_ERROR_SITE_UNSUITABLE);
 	}
 
-	if (!Industry::CanAllocateItem()) return CommandCost(STR_ERROR_TOO_MANY_INDUSTRIES);
+	/* 3a. NewGRF-defined checks on industry level (deferred). */
+	if (deferred_location_check) {
+		ret = CheckIfCallBackAllowsCreation(tile, type, layout_index, random_var8f, random_initial_bits, founder, creation_type);
+		if (ret.Failed()) return ret;
+	}
 
 	if (flags.Test(DoCommandFlag::Execute)) {
 		*ip = Industry::Create(tile);

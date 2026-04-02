@@ -112,6 +112,8 @@ bool IndustryTemporarilyRefusesCargo(Industry *ind, CargoType cargo_type);
 
 IndustryType MapNewGRFIndustryType(IndustryType grf_type, uint32_t grf_id);
 
+void AnalyseIndustrySpriteGroups();
+
 /* in newgrf_industrytiles.cpp*/
 uint32_t GetNearbyIndustryTileInformation(uint8_t parameter, TileIndex tile, IndustryID index, bool signed_offsets, bool grf_version8, uint32_t mask);
 
