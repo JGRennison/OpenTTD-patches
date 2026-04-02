@@ -1259,6 +1259,32 @@ class NIHIndustry : public NIHelper {
 			if (indsp->grf_prop.grffile != nullptr) {
 				output.Print("  GRF local ID: {}", indsp->grf_prop.local_id);
 			}
+			{
+				output.Print("  Behaviour flags:");
+				auto check = [&](IndustryBehaviour flag, const char *name) {
+					if (indsp->behaviour.Test(flag)) output.Print("    {}", name);
+				};
+				check(IndustryBehaviour::PlantFields,          "PlantFields");
+				check(IndustryBehaviour::CutTrees,             "CutTrees");
+				check(IndustryBehaviour::BuiltOnWater,         "BuiltOnWater");
+				check(IndustryBehaviour::Town1200More,         "Town1200More");
+				check(IndustryBehaviour::OnlyInTown,           "OnlyInTown");
+				check(IndustryBehaviour::OnlyNearTown,         "OnlyNearTown");
+				check(IndustryBehaviour::PlantOnBuild,         "PlantOnBuild");
+				check(IndustryBehaviour::DontIncrProd,         "DontIncrProd");
+				check(IndustryBehaviour::Before1950,           "Before1950");
+				check(IndustryBehaviour::After1960,            "After1960");
+				check(IndustryBehaviour::AIAirShipRoutes,      "AIAirShipRoutes");
+				check(IndustryBehaviour::AirplaneAttacks,      "AirplaneAttacks");
+				check(IndustryBehaviour::ChopperAttacks,       "ChopperAttacks");
+				check(IndustryBehaviour::CanSubsidence,        "CanSubsidence");
+				check(IndustryBehaviour::ProdMultiHandling,    "ProdMultiHandling");
+				check(IndustryBehaviour::ProdCallbackRandom,   "ProdCallbackRandom");
+				check(IndustryBehaviour::NoBuildMapCreation,   "NoBuildMapCreation");
+				check(IndustryBehaviour::CanCloseLastInstance, "CanCloseLastInstance");
+				check(IndustryBehaviour::CargoTypesUnlimited,  "CargoTypesUnlimited");
+				check(IndustryBehaviour::NoPaxProdClamp,       "NoPaxProdClamp");
+			}
 		}
 	}
 
