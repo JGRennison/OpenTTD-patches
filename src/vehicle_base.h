@@ -1510,7 +1510,6 @@ struct SpecializedVehicle : public Vehicle {
 		return (const T *)v;
 	}
 
-private:
 	inline uint16_t GetVehicleCurvature() const
 	{
 		uint16_t curvature = 0;
@@ -1525,6 +1524,7 @@ private:
 		return curvature;
 	}
 
+private:
 	inline bool CheckVehicleCurvature() const {
 		if (!(EXPECTED_TYPE == VEH_TRAIN || EXPECTED_TYPE == VEH_ROAD)) return false;
 		if (likely(!HasBit(this->vcache.cached_veh_flags, VCF_IMAGE_CURVATURE))) return false;

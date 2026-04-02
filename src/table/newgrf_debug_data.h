@@ -463,6 +463,10 @@ class NIHVehicle : public NIHelper {
 		output.Print("  Current image cacheable: {} ({:X}), spritenum: {:X}",
 				v->cur_image_valid_dir != INVALID_DIR ? "yes" : "no", v->cur_image_valid_dir, v->spritenum);
 
+		if (v->type == VEH_TRAIN && HasBit(v->vcache.cached_veh_flags, VCF_IMAGE_CURVATURE)) {
+			output.Print("  Curvature: cached: {:X}, current: {:X}", v->vcache.cached_image_curvature, Train::From(v)->GetVehicleCurvature());
+		}
+
 		if (v->vehicle_flags.Test(VehicleFlag::SeparationActive)) {
 			std::vector<TimetableProgress> progress_array = PopulateSeparationState(v);
 			if (!progress_array.empty()) {
