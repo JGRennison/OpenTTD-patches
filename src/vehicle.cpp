@@ -2880,7 +2880,7 @@ void Vehicle::UpdateViewportDeferred()
 {
 	Rect new_coord = ConvertRect<Rect16, Rect>(this->sprite_seq_bounds);
 
-	Point pt = RemapCoords(this->x_pos + this->bounds.origin.x, this->y_pos + this->bounds.origin.y, this->z_pos);
+	Point pt = RemapCoords(this->x_pos + this->bounds.origin.x + this->bounds.offset.x, this->y_pos + this->bounds.origin.y + this->bounds.offset.y, this->z_pos);
 	new_coord.left   += pt.x;
 	new_coord.top    += pt.y;
 	new_coord.right  += pt.x + 2 * ZOOM_BASE;

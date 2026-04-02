@@ -1558,7 +1558,7 @@ public:
 	}
 
 private:
-	inline void UpdateViewportNormalViewportMode(bool force_update, Point pt)
+	inline void UpdateViewportNormalViewportMode(bool force_update)
 	{
 		const Direction current_direction = ((T *)this)->GetMapImageDirection();
 		if (this->cur_image_valid_dir != current_direction || this->CheckVehicleCurvature()) {
@@ -1597,9 +1597,9 @@ public:
 		extern std::vector<Rect> _viewport_vehicle_normal_redraw_rects;
 		extern std::vector<Rect> _viewport_vehicle_map_redraw_rects;
 
-		Point pt = RemapCoords(this->x_pos + this->bounds.origin.x, this->y_pos + this->bounds.origin.y, this->z_pos);
+		Point pt = RemapCoords(this->x_pos + this->bounds.origin.x + this->bounds.offset.x, this->y_pos + this->bounds.origin.y + this->bounds.offset.y, this->z_pos);
 		if (EXPECTED_TYPE >= VEH_COMPANY_END || IsPointInViewportVehicleRedrawArea(_viewport_vehicle_normal_redraw_rects, pt)) {
-			UpdateViewportNormalViewportMode(force_update, pt);
+			UpdateViewportNormalViewportMode(force_update);
 			return;
 		}
 
