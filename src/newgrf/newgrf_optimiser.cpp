@@ -57,6 +57,18 @@ static bool IsExpensiveStationVariable(uint16_t variable)
 	}
 }
 
+static bool IsExpensiveIndustryVariable(uint16_t variable)
+{
+	switch (variable) {
+		case 0x43:
+		case 0x8B:
+			return true;
+
+		default:
+			return false;
+	}
+}
+
 static bool IsExpensiveIndustryTileVariable(uint16_t variable)
 {
 	switch (variable) {
@@ -143,6 +155,9 @@ static bool IsExpensiveVariable(uint16_t variable, GrfSpecFeature scope_feature)
 
 		case GSF_STATIONS:
 			return IsExpensiveStationVariable(variable);
+
+		case GSF_INDUSTRIES:
+			return IsExpensiveIndustryVariable(variable);
 
 		case GSF_INDUSTRYTILES:
 			return IsExpensiveIndustryTileVariable(variable);
