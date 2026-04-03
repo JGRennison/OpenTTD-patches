@@ -196,7 +196,7 @@ class NIHVehicle : public NIHelper {
 		}
 		output.buffer.format("  Position: {:X}, {:X}, {:X}, Direction: {}", v->x_pos, v->y_pos, v->z_pos, v->direction);
 		if (v->type == VEH_TRAIN) output.buffer.format(", tile margin: {}", GetTileMarginInFrontOfTrain(Train::From(v)));
-		if (v->type == VEH_SHIP) output.buffer.format(", rotation: {}", Ship::From(v)->rotation);
+		if (v->type == VEH_SHIP) output.buffer.format(", rotation: {}, state: 0x{:X}", Ship::From(v)->rotation, Ship::From(v)->state);
 		output.FinishPrint();
 
 		if (v->IsPrimaryVehicle()) {
@@ -419,8 +419,7 @@ class NIHVehicle : public NIHelper {
 		}
 		if (v->type == VEH_SHIP) {
 			const Ship *s = Ship::From(v);
-			output.Print("  Lost counter: {}",
-					s->lost_count);
+			output.Print("  Lost counter: {}", s->lost_count);
 
 			output.buffer.format("  Path cache: ");
 			if (!s->cached_path.empty()) {
