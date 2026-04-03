@@ -633,8 +633,8 @@ public:
 
 		/* Clear farmland. */
 		for (TileIndex tile(0); tile < Map::Size(); ++tile) {
-			if (IsTileType(tile, TileType::Clear) && GetClearGround(tile) == CLEAR_FIELDS) {
-				MakeClear(tile, CLEAR_GRASS, 3);
+			if (IsTileType(tile, TileType::Clear) && GetClearGround(tile) == ClearGround::Fields) {
+				MakeClear(tile, ClearGround::Grass, 3);
 			}
 		}
 

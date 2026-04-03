@@ -3158,38 +3158,43 @@ uint32_t _vp_map_vegetation_clear_colours[16][6][8]; ///< [Slope][ClearGround][M
 uint32_t _vp_map_vegetation_tree_colours[16][5][MAX_TREE_COUNT_BY_LANDSCAPE]; ///< [Slope][TreeGround][max of _tree_count_by_landscape]
 uint32_t _vp_map_water_colour[5]; ///< [Slope]
 
+static inline uint32_t GetVegetationClearColour(uint slope, ClearGround cg, uint multi)
+{
+	return _vp_map_vegetation_clear_colours[slope][to_underlying(cg)][multi];
+}
+
 static inline uint ViewportMapGetColourIndexMulti(const TileIndex tile, const ClearGround cg)
 {
 	switch (cg) {
-		case CLEAR_GRASS:
-		case CLEAR_SNOW:
-		case CLEAR_DESERT:
+		case ClearGround::Grass:
+		case ClearGround::Snow:
+		case ClearGround::Desert:
 			return GetClearDensity(tile);
-		case CLEAR_ROUGH:
+		case ClearGround::Rough:
 			return GB(TileX(tile) ^ TileY(tile), 4, 3);
-		case CLEAR_ROCKS:
+		case ClearGround::Rocks:
 			return TileHash(TileX(tile), TileY(tile)) & 1;
-		case CLEAR_FIELDS:
+		case ClearGround::Fields:
 			return GetFieldType(tile) & 7;
 		default: NOT_REACHED();
 	}
 }
 
 static const ClearGround _treeground_to_clearground[5] = {
-	CLEAR_GRASS, // TREE_GROUND_GRASS
-	CLEAR_ROUGH, // TREE_GROUND_ROUGH
-	CLEAR_SNOW,  // TREE_GROUND_SNOW_DESERT, make it +1 if _settings_game.game_creation.landscape == LandscapeType::Tropic
-	CLEAR_GRASS, // TREE_GROUND_SHORE
-	CLEAR_SNOW,  // TREE_GROUND_ROUGH_SNOW, make it +1 if _settings_game.game_creation.landscape == LandscapeType::Tropic
+	ClearGround::Grass, // TreeGround::Grass
+	ClearGround::Rough, // TreeGround::Rough
+	ClearGround::Snow,  // TreeGround::SnowOrDesert, make it +1 if _settings_game.game_creation.landscape == LandscapeType::Tropic
+	ClearGround::Grass, // TreeGround::Shore
+	ClearGround::Snow,  // TreeGround::RoughSnow, make it +1 if _settings_game.game_creation.landscape == LandscapeType::Tropic
 };
 
 template <bool is_32bpp>
 static inline uint32_t ViewportMapGetColourVegetationTree(const TileIndex tile, const TreeGround tg, const uint td, const uint tc, const uint8_t colour_index, Slope slope)
 {
 	if (IsTransparencySet(TO_TREES)) {
-		ClearGround cg = _treeground_to_clearground[tg];
-		if (cg == CLEAR_SNOW && _settings_game.game_creation.landscape == LandscapeType::Tropic) cg = CLEAR_DESERT;
-		uint32_t ground_colour = _vp_map_vegetation_clear_colours[slope][cg][td];
+		ClearGround cg = _treeground_to_clearground[to_underlying(tg)];
+		if (cg == ClearGround::Snow && _settings_game.game_creation.landscape == LandscapeType::Tropic) cg = ClearGround::Desert;
+		uint32_t ground_colour = GetVegetationClearColour(slope, cg, td);
 
 		if (IsInvisibilitySet(TO_TREES)) {
 			/* Like ground. */
@@ -3201,15 +3206,15 @@ static inline uint32_t ViewportMapGetColourVegetationTree(const TileIndex tile, 
 			return Blitter_32bppBase::MakeTransparent(ground_colour, 192, 256).data;
 		} else {
 			/* 8bpp transparent snow trees give blue. Definitely don't want that. Prefer grey. */
-			if (cg == CLEAR_SNOW && td > 1) return GREY_SCALE(13 - tc).p;
+			if (cg == ClearGround::Snow && td > 1) return GREY_SCALE(13 - tc).p;
 			return _pal2trsp_remap_ptr[ground_colour];
 		}
 	} else {
-		if (tg == TREE_GROUND_SNOW_DESERT || tg == TREE_GROUND_ROUGH_SNOW) {
-			return _vp_map_vegetation_clear_colours[colour_index ^ slope][_settings_game.game_creation.landscape == LandscapeType::Tropic ? CLEAR_DESERT : CLEAR_SNOW][td];
+		if (tg == TreeGround::SnowOrDesert || tg == TreeGround::RoughSnow) {
+			return GetVegetationClearColour(colour_index ^ slope, _settings_game.game_creation.landscape == LandscapeType::Tropic ? ClearGround::Desert : ClearGround::Snow, td);
 		} else {
 			const uint rnd = std::min<uint>(tc ^ (((tile.base() & 3) ^ (TileY(tile) & 3)) * td), MAX_TREE_COUNT_BY_LANDSCAPE - 1);
-			return _vp_map_vegetation_tree_colours[slope][tg][rnd];
+			return _vp_map_vegetation_tree_colours[slope][to_underlying(tg)][rnd];
 		}
 	}
 }
@@ -3228,7 +3233,7 @@ static bool ViewportMapGetColourVegetationCustomObject(uint32_t &colour, const T
 			ApplyFoundationToSlope(GetFoundation_Object(tile, slope), slope);
 			slope &= SLOPE_ELEVATED;
 		}
-		colour = _vp_map_vegetation_clear_colours[slope][cg][multi];
+		colour = GetVegetationClearColour(slope, cg, multi);
 		return true;
 	};
 
@@ -3252,33 +3257,33 @@ static bool ViewportMapGetColourVegetationCustomObject(uint32_t &colour, const T
 				} else {
 					switch (GetObjectGroundType(tile)) {
 						case OBJECT_GROUND_GRASS:
-							return do_clear_ground(CLEAR_GRASS, GetObjectGroundDensity(tile));
+							return do_clear_ground(ClearGround::Grass, GetObjectGroundDensity(tile));
 
 						case OBJECT_GROUND_SNOW_DESERT:
-							return do_clear_ground(_settings_game.game_creation.landscape == LandscapeType::Tropic ? CLEAR_DESERT : CLEAR_SNOW, GetObjectGroundDensity(tile));
+							return do_clear_ground(_settings_game.game_creation.landscape == LandscapeType::Tropic ? ClearGround::Desert : ClearGround::Snow, GetObjectGroundDensity(tile));
 
 						case OBJECT_GROUND_SHORE:
 							return do_water(true);
 
 						default:
 							/* This should never be reached, just draw as clear as a fallback */
-							return do_clear_ground(CLEAR_GRASS, 0);
+							return do_clear_ground(ClearGround::Grass, 0);
 					}
 				}
 			}
-			return do_clear_ground(CLEAR_GRASS, 0);
+			return do_clear_ground(ClearGround::Grass, 0);
 		case OVMT_GRASS:
-			return do_clear_ground(CLEAR_GRASS, 3);
+			return do_clear_ground(ClearGround::Grass, 3);
 		case OVMT_ROUGH:
-			return do_clear_ground(CLEAR_ROUGH, GB(TileX(tile) ^ TileY(tile), 4, 3));
+			return do_clear_ground(ClearGround::Rough, GB(TileX(tile) ^ TileY(tile), 4, 3));
 		case OVMT_ROCKS:
-			return do_clear_ground(CLEAR_ROCKS, TileHash(TileX(tile), TileY(tile)) & 1);
+			return do_clear_ground(ClearGround::Rocks, TileHash(TileX(tile), TileY(tile)) & 1);
 		case OVMT_FIELDS:
-			return (colour_index & 1) ? do_clear_ground(CLEAR_GRASS, 1) : do_clear_ground(CLEAR_FIELDS, spec->vport_map_subtype & 7);
+			return (colour_index & 1) ? do_clear_ground(ClearGround::Grass, 1) : do_clear_ground(ClearGround::Fields, spec->vport_map_subtype & 7);
 		case OVMT_SNOW:
-			return do_clear_ground(CLEAR_SNOW, 3);
+			return do_clear_ground(ClearGround::Snow, 3);
 		case OVMT_DESERT:
-			return do_clear_ground(CLEAR_DESERT, 3);
+			return do_clear_ground(ClearGround::Desert, 3);
 		case OVMT_TREES: {
 			Slope slope = SLOPE_FLAT;
 			if (show_slope) {
@@ -3288,7 +3293,7 @@ static bool ViewportMapGetColourVegetationCustomObject(uint32_t &colour, const T
 				slope &= SLOPE_ELEVATED;
 			}
 			TreeGround tg = (TreeGround)GB(spec->vport_map_subtype, 0, 4);
-			if (tg > TREE_GROUND_ROUGH_SNOW) tg = TREE_GROUND_GRASS;
+			if (tg > TreeGround::RoughSnow) tg = TreeGround::Grass;
 			const uint td = std::min<uint>(GB(spec->vport_map_subtype, 4, 4), 3);
 			const uint tc = Clamp<uint>(GB(spec->vport_map_subtype, 8, 4), 1, 4);
 			if (is_32bpp) {
@@ -3325,14 +3330,14 @@ static inline uint32_t ViewportMapGetColourVegetation(const TileIndex tile, Tile
 		case TileType::Clear: {
 			Slope slope = show_slope ? (Slope) (GetTileSlope(tile) & SLOPE_ELEVATED) : SLOPE_FLAT;
 			uint multi;
-			ClearGround cg = IsSnowTile(tile) ? CLEAR_SNOW : GetClearGround(tile);
-			if (cg == CLEAR_FIELDS && (colour_index & 1) != 0) {
-				cg = CLEAR_GRASS;
+			ClearGround cg = IsSnowTile(tile) ? ClearGround::Snow : GetClearGround(tile);
+			if (cg == ClearGround::Fields && (colour_index & 1) != 0) {
+				cg = ClearGround::Grass;
 				multi = 1;
 			} else {
 				multi = ViewportMapGetColourIndexMulti(tile, cg);
 			}
-			return _vp_map_vegetation_clear_colours[slope][cg][multi];
+			return GetVegetationClearColour(slope, cg, multi);
 		}
 
 		case TileType::Industry:

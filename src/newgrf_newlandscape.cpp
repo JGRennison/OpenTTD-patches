@@ -61,7 +61,7 @@ std::vector<const GRFFile *> _new_landscape_rocks_grfs;
 			if (extra.mask & 0x100) {
 				switch (this->landscape_type) {
 					case NEW_LANDSCAPE_ROCKS:
-						if (IsTileType(tile, TileType::Clear) && IsClearGround(tile, CLEAR_ROCKS)) result |= 0x100;
+						if (IsTileType(tile, TileType::Clear) && IsClearGround(tile, ClearGround::Rocks)) result |= 0x100;
 						break;
 				}
 			}

@@ -1423,7 +1423,7 @@ GrfSpecFeature GetGrfSpecFeature(TileIndex tile)
 	switch (GetTileType(tile)) {
 		default:              return GSF_INVALID;
 		case TileType::Clear:
-			if (GetClearGround(tile) == CLEAR_ROCKS) return GSF_NEWLANDSCAPE;
+			if (GetClearGround(tile) == ClearGround::Rocks) return GSF_NEWLANDSCAPE;
 			return GSF_INVALID;
 		case TileType::Railway: {
 			extern std::vector<const GRFFile *> _new_signals_grfs;

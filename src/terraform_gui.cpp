@@ -97,11 +97,11 @@ static void GenerateRockyArea(TileIndex end, TileIndex start)
 	for (TileIndex tile : ta) {
 		switch (GetTileType(tile)) {
 			case TileType::Trees:
-				if (GetTreeGround(tile) == TREE_GROUND_SHORE) continue;
+				if (GetTreeGround(tile) == TreeGround::Shore) continue;
 				[[fallthrough]];
 
 			case TileType::Clear:
-				MakeClear(tile, CLEAR_ROCKS, 3);
+				MakeClear(tile, ClearGround::Rocks, 3);
 				break;
 
 			default:

@@ -80,15 +80,4 @@ static const EnumClassIndexContainer<std::array<AndOr, to_underlying(TileType::E
 	AndOr{MKCOLOUR_0XX0(PC_BLACK     ), MKCOLOUR_F00F},
 };
 
-static const uint32_t _vegetation_clear_bits[] = {
-	MKCOLOUR_XXXX(PC_GRASS_LAND), ///< full grass
-	MKCOLOUR_XXXX(PC_ROUGH_LAND), ///< rough land
-	MKCOLOUR_XXXX(PC_GREY),       ///< rocks
-	MKCOLOUR_XXXX(PC_FIELDS),     ///< fields
-	MKCOLOUR_XXXX(PC_LIGHT_BLUE), ///< snow
-	MKCOLOUR_XXXX(PC_ORANGE),     ///< desert
-	MKCOLOUR_XXXX(PC_GRASS_LAND), ///< unused
-	MKCOLOUR_XXXX(PC_GRASS_LAND), ///< unused
-};
-
 #endif /* SMALLMAP_COLOURS_H */

@@ -1205,7 +1205,7 @@ FloodingBehaviour GetFloodingBehaviour(TileIndex tile)
 			return FLOOD_NONE;
 
 		case TileType::Trees:
-			return (GetTreeGround(tile) == TREE_GROUND_SHORE ? FLOOD_DRYUP : FLOOD_NONE);
+			return (GetTreeGround(tile) == TreeGround::Shore ? FLOOD_DRYUP : FLOOD_NONE);
 
 		case TileType::Object:
 			return (GetObjectGroundType(tile) == OBJECT_GROUND_SHORE ? FLOOD_DRYUP : ((GetWaterClass(tile) == WaterClass::Sea) ? FLOOD_ACTIVE : FLOOD_NONE));
@@ -1242,7 +1242,7 @@ static void DoFloodTile(TileIndex target)
 
 			case TileType::Trees:
 				if (!IsSlopeWithOneCornerRaised(tileh)) {
-					SetTreeGroundDensity(target, TREE_GROUND_SHORE, 3);
+					SetTreeGroundDensity(target, TreeGround::Shore, 3);
 					MarkTileDirtyByTile(target);
 					flooded = true;
 					break;
@@ -1341,7 +1341,7 @@ static void DoDryUp(TileIndex tile)
 			break;
 
 		case TileType::Trees:
-			SetTreeGroundDensity(tile, TREE_GROUND_GRASS, 3);
+			SetTreeGroundDensity(tile, TreeGround::Grass, 3);
 			MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 			break;
 
@@ -1349,7 +1349,7 @@ static void DoDryUp(TileIndex tile)
 			assert_tile(IsCoast(tile), tile);
 
 			if (Command<Commands::LandscapeClear>::Do(DoCommandFlag::Execute, tile).Succeeded()) {
-				MakeClear(tile, CLEAR_GRASS, 3);
+				MakeClear(tile, ClearGround::Grass, 3);
 				MarkTileDirtyByTile(tile);
 			}
 			break;
@@ -1402,8 +1402,8 @@ void TileLoopWaterFlooding(FloodingBehaviour flooding_behaviour, TileIndex tile)
 				/* This neighbour tile might be floodable later if the tile is cleared, so allow flooding to continue. */
 				continue_flooding = true;
 
-				/* TREE_GROUND_SHORE is the sign of a previous flood. */
-				if (IsTileType(dest, TileType::Trees) && GetTreeGround(dest) == TREE_GROUND_SHORE) continue;
+				/* TreeGround::Shore is the sign of a previous flood. */
+				if (IsTileType(dest, TileType::Trees) && GetTreeGround(dest) == TreeGround::Shore) continue;
 				if (IsTileType(dest, TileType::Object) && (GetObjectEffectiveFoundationType(dest) != OEFT_NONE || GetObjectGroundType(dest) == OBJECT_GROUND_SHORE)) continue;
 
 				auto [slope_dest, z_dest] = GetFoundationSlope(dest);

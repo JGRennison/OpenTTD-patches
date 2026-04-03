@@ -387,16 +387,16 @@ void CheckBlitter()
 static SpriteID GetSpriteIDForClearGround(const ClearGround cg, const Slope slope, const uint multi)
 {
 	switch (cg) {
-		case CLEAR_GRASS:
+		case ClearGround::Grass:
 			return GetSpriteIDForClearLand(slope, (uint8_t)multi);
-		case CLEAR_ROUGH:
+		case ClearGround::Rough:
 			return GetSpriteIDForHillyLand(slope, multi);
-		case CLEAR_ROCKS:
+		case ClearGround::Rocks:
 			return GetSpriteIDForRocks(slope, multi);
-		case CLEAR_FIELDS:
+		case ClearGround::Fields:
 			return GetSpriteIDForFields(slope, multi);
-		case CLEAR_SNOW:
-		case CLEAR_DESERT:
+		case ClearGround::Snow:
+		case ClearGround::Desert:
 			return GetSpriteIDForSnowDesert(slope, multi);
 		default: NOT_REACHED();
 	}
@@ -424,12 +424,12 @@ void GfxDetermineMainColours()
 		uint8_t min;
 		uint8_t max;
 	} multi[6] = {
-		{ 0, 3 }, // CLEAR_GRASS, density
-		{ 0, 7 }, // CLEAR_ROUGH, "random" based on position
-		{ 0, 1 }, // CLEAR_ROCKS, tile hash parity
-		{ 0, 7 }, // CLEAR_FIELDS, some field types
-		{ 0, 3 }, // CLEAR_SNOW, density
-		{ 1, 3 }, // CLEAR_DESERT, density
+		{ 0, 3 }, // ClearGround::Grass, density
+		{ 0, 7 }, // ClearGround::Rough, "random" based on position
+		{ 0, 1 }, // ClearGround::Rocks, tile hash parity
+		{ 0, 7 }, // ClearGround::Fields, some field types
+		{ 0, 3 }, // ClearGround::Snow, density
+		{ 1, 3 }, // ClearGround::Desert, density
 	};
 	for (uint s = 0; s <= SLOPE_ELEVATED; s++) {
 		for (uint cg = 0; cg < 6; cg++) {

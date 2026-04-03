@@ -2349,12 +2349,12 @@ static CommandCost TownCanBePlacedHere(TileIndex tile, bool city, bool check_sur
 			switch (GetTileType(t)) {
 				case TileType::Clear:
 					/* Don't allow rough tiles, as they are likely wetlands. */
-					if (GetClearGround(t) == CLEAR_ROUGH) continue;
+					if (GetClearGround(t) == ClearGround::Rough) continue;
 					break;
 
 				case TileType::Trees:
 					/* Don't allow rough trees, as they are likely wetlands. */
-					if (GetTreeGround(t) == TREE_GROUND_ROUGH) continue;
+					if (GetTreeGround(t) == TreeGround::Rough) continue;
 					break;
 
 				default:

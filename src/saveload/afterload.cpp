@@ -151,7 +151,7 @@ void SetWaterClassDependingOnSurroundings(TileIndex t, bool include_invalid_wate
 
 			case TileType::Trees:
 				/* trees on shore */
-				has_water |= (GB(_m[neighbour].m2, 4, 2) == TREE_GROUND_SHORE);
+				has_water |= (static_cast<TreeGround>(GB(_m[neighbour].m2, 4, 2)) == TreeGround::Shore);
 				break;
 
 			default: break;
@@ -539,7 +539,7 @@ static void FixOwnerOfRailTrack(TileIndex t)
 	}
 
 	/* if it's not a crossing, make it clean land */
-	MakeClear(t, CLEAR_GRASS, 0);
+	MakeClear(t, ClearGround::Grass, 0);
 }
 
 /**
@@ -1493,7 +1493,7 @@ bool AfterLoadGame()
 						}
 					} else {
 						if (GB(_m[t].m5, 3, 2) == 0) {
-							MakeClear(t, CLEAR_GRASS, 3);
+							MakeClear(t, ClearGround::Grass, 3);
 						} else {
 							if (!IsTileFlat(t)) {
 								MakeShore(t);
@@ -1890,9 +1890,9 @@ bool AfterLoadGame()
 	 *  plant new ones. */
 	if (IsSavegameVersionBefore(SLV_32)) {
 		for (TileIndex t(0); t < map_size; t++) {
-			if (IsTileType(t, TileType::Clear) && IsClearGround(t, CLEAR_FIELDS)) {
+			if (IsTileType(t, TileType::Clear) && IsClearGround(t, ClearGround::Fields)) {
 				/* remove fields */
-				MakeClear(t, CLEAR_GRASS, 3);
+				MakeClear(t, ClearGround::Grass, 3);
 			}
 		}
 
@@ -2213,7 +2213,7 @@ bool AfterLoadGame()
 		for (TileIndex t(0); t < map_size; t++) {
 			if (GetTileType(t) == TileType::Trees) {
 				TreeGround ground_type = (TreeGround)GB(_m[t].m2, 4, 2);
-				if (ground_type != TREE_GROUND_SNOW_DESERT) SB(_m[t].m2, 6, 2, 3);
+				if (ground_type != TreeGround::SnowOrDesert) SB(_m[t].m2, 6, 2, 3);
 			}
 		}
 	}
@@ -2868,8 +2868,8 @@ bool AfterLoadGame()
 	if (IsSavegameVersionBefore(SLV_135)) {
 		for (TileIndex t(0); t < map_size; t++) {
 			if (IsTileType(t, TileType::Clear)) {
-				if (GetClearGround(t) == CLEAR_SNOW) { // CLEAR_SNOW becomes CLEAR_GRASS with IsSnowTile() set.
-					SetClearGroundDensity(t, CLEAR_GRASS, GetClearDensity(t));
+				if (GetClearGround(t) == ClearGround::Snow) { // ClearGround::Snow becomes ClearGround::Grass with IsSnowTile() set.
+					SetClearGroundDensity(t, ClearGround::Grass, GetClearDensity(t));
 					SetBit(_m[t].m3, 4);
 				} else {
 					ClrBit(_m[t].m3, 4);
@@ -3367,13 +3367,13 @@ bool AfterLoadGame()
 		/* We store 4 fences in the field tiles instead of only SE and SW. */
 		for (TileIndex t(0); t < map_size; t++) {
 			if (!IsTileType(t, TileType::Clear) && !IsTileType(t, TileType::Trees)) continue;
-			if (IsTileType(t, TileType::Clear) && IsClearGround(t, CLEAR_FIELDS)) continue;
+			if (IsTileType(t, TileType::Clear) && IsClearGround(t, ClearGround::Fields)) continue;
 			uint fence = GB(_m[t].m4, 5, 3);
-			if (fence != 0 && IsTileType(TileAddXY(t, 1, 0), TileType::Clear) && IsClearGround(TileAddXY(t, 1, 0), CLEAR_FIELDS)) {
+			if (fence != 0 && IsTileType(TileAddXY(t, 1, 0), TileType::Clear) && IsClearGround(TileAddXY(t, 1, 0), ClearGround::Fields)) {
 				SetFence(TileAddXY(t, 1, 0), DIAGDIR_NE, fence);
 			}
 			fence = GB(_m[t].m4, 2, 3);
-			if (fence != 0 && IsTileType(TileAddXY(t, 0, 1), TileType::Clear) && IsClearGround(TileAddXY(t, 0, 1), CLEAR_FIELDS)) {
+			if (fence != 0 && IsTileType(TileAddXY(t, 0, 1), TileType::Clear) && IsClearGround(TileAddXY(t, 0, 1), ClearGround::Fields)) {
 				SetFence(TileAddXY(t, 0, 1), DIAGDIR_NW, fence);
 			}
 			SB(_m[t].m4, 2, 3, 0);
@@ -4004,7 +4004,7 @@ bool AfterLoadGame()
 	if (IsSavegameVersionBefore(SLV_TREES_WATER_CLASS) && !SlXvIsFeaturePresent(XSLFI_CHUNNEL, 2)) {
 		/* Update water class for trees. */
 		for (TileIndex t(0); t < map_size; t++) {
-			if (IsTileType(t, TileType::Trees)) SetWaterClass(t, GetTreeGround(t) == TREE_GROUND_SHORE ? WaterClass::Sea : WaterClass::Invalid);
+			if (IsTileType(t, TileType::Trees)) SetWaterClass(t, GetTreeGround(t) == TreeGround::Shore ? WaterClass::Sea : WaterClass::Invalid);
 		}
 	}
 

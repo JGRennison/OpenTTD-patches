@@ -497,6 +497,17 @@ static inline uint32_t GetSmallMapLinkStatsPixels(TileIndex tile, TileType t)
 	return _smallmap_show_heightmap ? GetSmallMapContoursPixels(tile, t) : GetSmallMapRoutesPixels(tile, t);
 }
 
+static constexpr EnumClassIndexContainer<std::array<uint32_t, to_underlying(ClearGround::MaxSize)>, ClearGround> _vegetation_clear_bits = {
+	MKCOLOUR_XXXX(PC_GRASS_LAND), ///< full grass
+	MKCOLOUR_XXXX(PC_ROUGH_LAND), ///< rough land
+	MKCOLOUR_XXXX(PC_GREY),       ///< rocks
+	MKCOLOUR_XXXX(PC_FIELDS),     ///< fields
+	MKCOLOUR_XXXX(PC_LIGHT_BLUE), ///< snow
+	MKCOLOUR_XXXX(PC_ORANGE),     ///< desert
+	MKCOLOUR_XXXX(PC_GRASS_LAND), ///< unused
+	MKCOLOUR_XXXX(PC_GRASS_LAND), ///< unused
+};
+
 /**
  * Return the colour a tile would be displayed with in the smallmap in mode "Vegetation".
  *
@@ -508,17 +519,17 @@ static inline uint32_t GetSmallMapVegetationPixels(TileIndex tile, TileType t)
 {
 	switch (t) {
 		case TileType::Clear:
-			if (IsClearGround(tile, CLEAR_GRASS)) {
+			if (IsClearGround(tile, ClearGround::Grass)) {
 				if (GetClearDensity(tile) < 3) return MKCOLOUR_XXXX(PC_BARE_LAND);
 				if (GetTropicZone(tile) == TROPICZONE_RAINFOREST) return MKCOLOUR_XXXX(PC_RAINFOREST);
 			}
-			return _vegetation_clear_bits[IsSnowTile(tile) ? CLEAR_SNOW : GetClearGround(tile)];
+			return _vegetation_clear_bits[IsSnowTile(tile) ? ClearGround::Snow : GetClearGround(tile)];
 
 		case TileType::Industry:
 			return IsTileForestIndustry(tile) ? MKCOLOUR_XXXX(PC_GREEN) : MKCOLOUR_XXXX(PC_DARK_RED);
 
 		case TileType::Trees:
-			if (GetTreeGround(tile) == TREE_GROUND_SNOW_DESERT || GetTreeGround(tile) == TREE_GROUND_ROUGH_SNOW) {
+			if (GetTreeGround(tile) == TreeGround::SnowOrDesert || GetTreeGround(tile) == TreeGround::RoughSnow) {
 				return (_settings_game.game_creation.landscape == LandscapeType::Arctic) ? MKCOLOUR_XYYX(PC_LIGHT_BLUE, PC_TREES) : MKCOLOUR_XYYX(PC_ORANGE, PC_TREES);
 			}
 			return (GetTropicZone(tile) == TROPICZONE_RAINFOREST) ? MKCOLOUR_XYYX(PC_RAINFOREST, PC_TREES) : MKCOLOUR_XYYX(PC_GRASS_LAND, PC_TREES);
@@ -539,10 +550,10 @@ static inline uint32_t GetSmallMapVegetationPixels(TileIndex tile, TileType t)
 								case OBJECT_GROUND_GRASS:
 									if (GetObjectGroundDensity(tile) < 3) return MKCOLOUR_XXXX(PC_BARE_LAND);
 									if (GetTropicZone(tile) == TROPICZONE_RAINFOREST) return MKCOLOUR_XXXX(PC_RAINFOREST);
-									return _vegetation_clear_bits[CLEAR_GRASS];
+									return _vegetation_clear_bits[ClearGround::Grass];
 
 								case OBJECT_GROUND_SNOW_DESERT:
-									return _vegetation_clear_bits[_settings_game.game_creation.landscape == LandscapeType::Tropic ? CLEAR_DESERT : CLEAR_SNOW];
+									return _vegetation_clear_bits[_settings_game.game_creation.landscape == LandscapeType::Tropic ? ClearGround::Desert : ClearGround::Snow];
 
 								case OBJECT_GROUND_SHORE:
 									t = TileType::Water;
@@ -559,20 +570,20 @@ static inline uint32_t GetSmallMapVegetationPixels(TileIndex tile, TileType t)
 					break;
 				case OVMT_GRASS:
 					if (GetTropicZone(tile) == TROPICZONE_RAINFOREST) return MKCOLOUR_XXXX(PC_RAINFOREST);
-					return _vegetation_clear_bits[CLEAR_GRASS];
+					return _vegetation_clear_bits[ClearGround::Grass];
 				case OVMT_ROUGH:
-					return _vegetation_clear_bits[CLEAR_ROUGH];
+					return _vegetation_clear_bits[ClearGround::Rough];
 				case OVMT_ROCKS:
-					return _vegetation_clear_bits[CLEAR_ROCKS];
+					return _vegetation_clear_bits[ClearGround::Rocks];
 				case OVMT_FIELDS:
-					return _vegetation_clear_bits[CLEAR_FIELDS];
+					return _vegetation_clear_bits[ClearGround::Fields];
 				case OVMT_SNOW:
-					return _vegetation_clear_bits[CLEAR_SNOW];
+					return _vegetation_clear_bits[ClearGround::Snow];
 				case OVMT_DESERT:
-					return _vegetation_clear_bits[CLEAR_DESERT];
+					return _vegetation_clear_bits[ClearGround::Desert];
 				case OVMT_TREES: {
 					const TreeGround tg = (TreeGround)GB(spec->vport_map_subtype, 0, 4);
-					if (tg == TREE_GROUND_SNOW_DESERT || tg == TREE_GROUND_ROUGH_SNOW) {
+					if (tg == TreeGround::SnowOrDesert || tg == TreeGround::RoughSnow) {
 						return (_settings_game.game_creation.landscape == LandscapeType::Arctic) ? MKCOLOUR_XYYX(PC_LIGHT_BLUE, PC_TREES) : MKCOLOUR_XYYX(PC_ORANGE, PC_TREES);
 					}
 					return (GetTropicZone(tile) == TROPICZONE_RAINFOREST) ? MKCOLOUR_XYYX(PC_RAINFOREST, PC_TREES) : MKCOLOUR_XYYX(PC_GRASS_LAND, PC_TREES);
