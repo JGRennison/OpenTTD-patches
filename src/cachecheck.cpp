@@ -626,9 +626,27 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 		ValidateVehicleTickCaches(cclog_output);
 
 		for (Vehicle *v : Vehicle::Iterate()) {
-			if (v->Previous()) assert_msg(v->Previous()->Next() == v, "{}", v->index);
-			if (v->Next()) assert_msg(v->Next()->Previous() == v, "{}", v->index);
+			if (v->Previous() != nullptr) assert_msg(v->Previous()->Next() == v, "{}", v->index);
+			if (v->Next() != nullptr) assert_msg(v->Next()->Previous() == v, "{}", v->index);
 		}
+
+		/* Check the last vehicle cache. */
+		for (Vehicle *v : Vehicle::Iterate()) {
+			if (v != v->First() || v->vehstatus.Test(VehState::Crashed) || !v->IsPrimaryVehicle()) continue;
+
+			/* Check that the last vehicle is actually last. */
+			if (v->Last()->Next() != nullptr) {
+				cclog("Vehicle cache mismatch, last vehicle must not have a next vehicle: type {}, vehicle {}, company {}, unit number {}, invalid 'Last()'", v->type, v->index, v->owner, v->unitnumber);
+			}
+
+			/* Ensure that all vehicles in the chain have the same last vehicle. */
+			for (Vehicle *u = v; u != nullptr; u = u->Next()) {
+				if (u->Last() != v->Last()) {
+					cclog("Vehicle cache mismatch, all vehicles in chain must have same last vehicle: type {}, vehicle {}, company {}, unit number {}, invalid 'Last()'", v->type, v->index, v->owner, v->unitnumber);
+				}
+			}
+		}
+
 		for (const TemplateVehicle *tv : TemplateVehicle::Iterate()) {
 			if (tv->Prev()) assert_msg(tv->Prev()->Next() == tv, "{}", tv->index);
 			if (tv->Next()) assert_msg(tv->Next()->Prev() == tv, "{}", tv->index);
