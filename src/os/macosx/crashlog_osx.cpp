@@ -174,8 +174,7 @@ class CrashLogOSX final : public CrashLog {
 
 	void LogOSVersion(format_target_ctrl &buffer) const override
 	{
-		int ver_maj, ver_min, ver_bug;
-		GetMacOSVersion(&ver_maj, &ver_min, &ver_bug);
+		auto [ver_major, ver_minor, ver_patch] = GetMacOSVersion();
 
 		const NXArchInfo *arch = NXGetLocalArchInfo();
 
@@ -186,7 +185,7 @@ class CrashLogOSX final : public CrashLog {
 				" Machine:  {}\n"
 				" Min Ver:  {}\n"
 				" Max Ver:  {}\n",
-				ver_maj, ver_min, ver_bug,
+				ver_major, ver_minor, ver_patch,
 				arch != nullptr ? arch->description : "unknown",
 				MAC_OS_X_VERSION_MIN_REQUIRED,
 				MAC_OS_X_VERSION_MAX_ALLOWED
