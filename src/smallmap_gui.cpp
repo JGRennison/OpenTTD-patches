@@ -36,6 +36,7 @@
 
 #include "widgets/smallmap_widget.h"
 
+#include "table/heightmap_colours.h"
 #include "table/strings.h"
 
 #include <bitset>

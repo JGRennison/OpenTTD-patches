@@ -22,21 +22,7 @@
 
 static const int NUM_NO_COMPANY_ENTRIES = 4; ///< Number of entries in the owner legend that are not companies.
 
-/** Mapping of tile type to importance of the tile (higher number means more interesting to show). */
-static const EnumClassIndexContainer<std::array<uint8_t, to_underlying(TileType::End) + 1>, TileType> _tiletype_importance = {
-	2, // TileType::Clear
-	8, // TileType::Railway
-	7, // TileType::Road
-	5, // TileType::House
-	2, // TileType::Trees
-	9, // TileType::Station
-	2, // TileType::Water
-	1, // TileType::Void
-	6, // TileType::Industry
-	8, // TileType::TunnelBridge
-	2, // TileType::Object
-	0,
-};
+extern const EnumClassIndexContainer<std::array<uint8_t, to_underlying(TileType::End) + 1>, TileType> _tiletype_importance;
 
 /* set up the cargos to be displayed in the smallmap's route legend */
 void BuildLinkStatsLegend();

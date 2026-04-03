@@ -134,6 +134,7 @@
 
 #include "widgets/vehicle_widget.h"
 
+#include "table/darklight_colours.h"
 #include "table/strings.h"
 #include "table/string_colours.h"
 

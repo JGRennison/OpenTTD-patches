@@ -494,6 +494,7 @@ add_files(
     smallmap_colours.h
     smallmap_gui.cpp
     smallmap_gui.h
+    smallmap_table.cpp
     social_integration.cpp
     social_integration.h
     sortlist_type.h

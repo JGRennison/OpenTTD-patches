@@ -26,9 +26,6 @@
 #define MKCOLOUR_F00F       MKCOLOUR_X00X(PixelColour{0xFF})
 #define MKCOLOUR_FFFF       MKCOLOUR_XXXX(PixelColour{0xFF})
 
-#include "table/heightmap_colours.h"
-#include "table/darklight_colours.h"
-
 /** Colour scheme of the smallmap. */
 struct SmallMapColourScheme {
 	std::vector<uint32_t> height_colours; ///< Cached colours for each level in a map.
@@ -48,36 +45,7 @@ inline uint32_t ApplyMask(uint32_t colour, const AndOr &mask)
 	return (colour & mask.mand) | mask.mor;
 }
 
-/** Colour masks for "Contour" and "Routes" modes. */
-static const EnumClassIndexContainer<std::array<AndOr, to_underlying(TileType::End) + 1>, TileType> _smallmap_contours_andor = {
-	AndOr{MKCOLOUR_0000               , MKCOLOUR_FFFF}, // TileType::Clear
-	AndOr{MKCOLOUR_0XX0(PC_GREY      ), MKCOLOUR_F00F}, // TileType::Railway
-	AndOr{MKCOLOUR_0XX0(PC_BLACK     ), MKCOLOUR_F00F}, // TileType::Road
-	AndOr{MKCOLOUR_0XX0(PC_DARK_RED  ), MKCOLOUR_F00F}, // TileType::House
-	AndOr{MKCOLOUR_0000               , MKCOLOUR_FFFF}, // TileType::Trees
-	AndOr{MKCOLOUR_XXXX(PC_LIGHT_BLUE), MKCOLOUR_0000}, // TileType::Station
-	AndOr{MKCOLOUR_XXXX(PC_WATER     ), MKCOLOUR_0000}, // TileType::Water
-	AndOr{MKCOLOUR_0000               , MKCOLOUR_FFFF}, // TileType::Void
-	AndOr{MKCOLOUR_XXXX(PC_DARK_RED  ), MKCOLOUR_0000}, // TileType::Industry
-	AndOr{MKCOLOUR_0000               , MKCOLOUR_FFFF}, // TileType::TunnelBridge
-	AndOr{MKCOLOUR_0XX0(PC_DARK_RED  ), MKCOLOUR_F00F}, // TileType::Object
-	AndOr{MKCOLOUR_0XX0(PC_GREY      ), MKCOLOUR_F00F},
-};
-
-/** Colour masks for "Vehicles", "Industry", and "Vegetation" modes. */
-static const EnumClassIndexContainer<std::array<AndOr, to_underlying(TileType::End) + 1>, TileType> _smallmap_vehicles_andor = {
-	AndOr{MKCOLOUR_0000               , MKCOLOUR_FFFF}, // TileType::Clear
-	AndOr{MKCOLOUR_0XX0(PC_BLACK     ), MKCOLOUR_F00F}, // TileType::Railway
-	AndOr{MKCOLOUR_0XX0(PC_BLACK     ), MKCOLOUR_F00F}, // TileType::Road
-	AndOr{MKCOLOUR_0XX0(PC_DARK_RED  ), MKCOLOUR_F00F}, // TileType::House
-	AndOr{MKCOLOUR_0000               , MKCOLOUR_FFFF}, // TileType::Trees
-	AndOr{MKCOLOUR_0XX0(PC_BLACK     ), MKCOLOUR_F00F}, // TileType::Station
-	AndOr{MKCOLOUR_XXXX(PC_WATER     ), MKCOLOUR_0000}, // TileType::Water
-	AndOr{MKCOLOUR_0000               , MKCOLOUR_FFFF}, // TileType::Void
-	AndOr{MKCOLOUR_XXXX(PC_DARK_RED  ), MKCOLOUR_0000}, // TileType::Industry
-	AndOr{MKCOLOUR_0000               , MKCOLOUR_FFFF}, // TileType::TunnelBridge
-	AndOr{MKCOLOUR_0XX0(PC_DARK_RED  ), MKCOLOUR_F00F}, // TileType::Object
-	AndOr{MKCOLOUR_0XX0(PC_BLACK     ), MKCOLOUR_F00F},
-};
+extern const EnumClassIndexContainer<std::array<AndOr, to_underlying(TileType::End) + 1>, TileType> _smallmap_contours_andor;
+extern const EnumClassIndexContainer<std::array<AndOr, to_underlying(TileType::End) + 1>, TileType> _smallmap_vehicles_andor;
 
 #endif /* SMALLMAP_COLOURS_H */
