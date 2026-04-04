@@ -195,6 +195,7 @@ inline void ResetIndustryConstructionStage(TileIndex tile)
  * Get the animation loop number
  * @param tile the tile to get the animation loop number of
  * @pre IsTileType(tile, TileType::Industry)
+ * @return The loop/frame number.
  */
 inline uint8_t GetIndustryAnimationLoop(TileIndex tile)
 {

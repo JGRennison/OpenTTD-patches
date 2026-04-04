@@ -79,7 +79,11 @@ DECLARE_ENUM_AS_BIT_SET(SpriteGroupFlags)
 struct SpriteGroup : SpriteGroupPool::PoolItem<&_spritegroup_pool> {
 protected:
 	SpriteGroup(SpriteGroupID index, SpriteGroupType type) : PoolItemBase(index), type(type) {}
-	/** Base sprite group resolver */
+	/**
+	 * Resolves a callback or rerandomisation callback to a NewGRF.
+	 * @param object Information needed to resolve the group.
+	 * @return The result of resolving this SpriteGroup.
+	 */
 	virtual const SpriteGroup *Resolve([[maybe_unused]] ResolverObject &object) const { return this; };
 
 public:

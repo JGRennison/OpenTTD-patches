@@ -207,7 +207,7 @@ std::array<uint8_t, NUM_CARGO> _sorted_cargo_types;        ///< Sort order of ca
 std::vector<const CargoSpec *> _sorted_cargo_specs;        ///< Cargo specifications sorted alphabetically by name.
 std::span<const CargoSpec *> _sorted_standard_cargo_specs; ///< Standard cargo specifications sorted alphabetically by name.
 
-/** Sort cargo specifications by their name. */
+/** Sort cargo specifications by their name. @copydoc GUIList::Sorter */
 static bool CargoSpecNameSorter(const CargoSpec * const &a, const CargoSpec * const &b)
 {
 	format_buffer a_name;
@@ -221,7 +221,7 @@ static bool CargoSpecNameSorter(const CargoSpec * const &a, const CargoSpec * co
 	return (res != 0) ? res < 0 : (a->bitnum < b->bitnum);
 }
 
-/** Sort cargo specifications by their cargo class. */
+/** Sort cargo specifications by their cargo class. @copydoc GUIList::Sorter */
 static bool CargoSpecClassSorter(const CargoSpec * const &a, const CargoSpec * const &b)
 {
 	int res = b->classes.Test(CargoClass::Passengers) - a->classes.Test(CargoClass::Passengers);

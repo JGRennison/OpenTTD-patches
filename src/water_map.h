@@ -334,6 +334,7 @@ inline uint8_t GetWaterTileRandomBits(TileIndex t)
 /**
  * Checks whether the tile has water at the ground.
  * That is, it is either some plain water tile, or a object/industry/station/... with water under it.
+ * @param t The tile to query.
  * @return true iff the tile has water at the ground.
  * @note Coast tiles are not considered waterish, even if there is water on a halftile.
  */
@@ -356,6 +357,7 @@ inline void SetDockingTile(TileIndex t, bool b)
 
 /**
  * Checks whether the tile is marked as a dockling tile.
+ * @param t The tile to query.
  * @return true iff the tile is marked as a docking tile.
  */
 inline bool IsDockingTile(TileIndex t)
@@ -521,6 +523,7 @@ inline void SetNonFloodingWaterTile(TileIndex t, bool b)
 }
 /**
  * Checks whether the tile is marked as a non-flooding water tile.
+ * @param t The tile to query.
  * @return true iff the tile is marked as a non-flooding water tile.
  */
 inline bool IsNonFloodingWaterTile(TileIndex t)

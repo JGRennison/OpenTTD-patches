@@ -19,6 +19,9 @@
 #ifndef SAFEGUARDS_H
 #define SAFEGUARDS_H
 
+/* Ignore everything in here for doxygen. These should not be used, so also not show up in the documentation. */
+#ifndef DOXYGEN_API
+
 /* Use MallocT instead. */
 #define malloc    SAFEGUARD_DO_NOT_USE_THIS_METHOD
 
@@ -98,4 +101,5 @@
 #define strerror SAFEGUARD_DO_NOT_USE_THIS_METHOD
 #endif /* defined(NETWORK_CORE_OS_ABSTRACTION_H) && defined(_WIN32) */
 
+#endif /* DOXYGEN_API */
 #endif /* SAFEGUARDS_H */

@@ -202,6 +202,12 @@ protected:
 	uint16_t max_entities; ///< what is the amount of entities, old and new summed
 
 	uint16_t invalid_id;   ///< ID used to detected invalid entities
+
+	/**
+	 * Checks whether the given ID is valid in the context of this override manager.
+	 * @param testid The ID to test.
+	 * @return Whether the ID is valid.
+	 */
 	virtual bool CheckValidNewID(uint16_t testid) { return true; }
 
 public:

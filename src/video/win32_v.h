@@ -31,7 +31,7 @@ public:
 
 	bool ToggleFullscreen(bool fullscreen) override;
 
-	bool ClaimMousePointer() override;
+	void ClaimMousePointer() override;
 
 	void EditBoxLostFocus() override;
 
@@ -60,15 +60,30 @@ protected:
 	bool MakeWindow(bool full_screen, bool resize = true);
 	void ClientSizeChanged(int w, int h, bool force = false);
 
-	/** Get screen depth to use for fullscreen mode. */
 	virtual uint8_t GetFullscreenBpp();
-	/** (Re-)create the backing store. */
+
+	/**
+	 * (Re-)create the backing store.
+	 * @param w The width of the window.
+	 * @param h The height of the window.
+	 * @param force Whether to force full reallocation, instead of not reallocating when size did not change.
+	 * @return Whether the backing store was (re-)created.
+	 */
 	virtual bool AllocateBackingStore(int w, int h, bool force = false) = 0;
-	/** Get a pointer to the video buffer. */
+
+	/**
+	 * Get a pointer to the video buffer.
+	 * @return The pointer.
+	 */
 	virtual void *GetVideoPointer() = 0;
+
 	/** Hand video buffer back to the painting backend. */
 	virtual void ReleaseVideoPointer() {}
-	/** Palette of the window has changed. */
+
+	/**
+	 * Palette of the window has changed.
+	 * @param hWnd The window handle of the changed window.
+	 */
 	virtual void PaletteChanged(HWND hWnd) = 0;
 
 private:
@@ -166,7 +181,7 @@ protected:
 class FVideoDriver_Win32OpenGL : public DriverFactoryBase {
 public:
 	FVideoDriver_Win32OpenGL() : DriverFactoryBase(Driver::DT_VIDEO, 10, "win32-opengl", "Win32 OpenGL Video Driver") {}
-	/* virtual */ std::unique_ptr<Driver> CreateInstance() const override { return std::make_unique<VideoDriver_Win32OpenGL>(); }
+	std::unique_ptr<Driver> CreateInstance() const override { return std::make_unique<VideoDriver_Win32OpenGL>(); }
 
 protected:
 	bool UsesHardwareAcceleration() const override { return true; }

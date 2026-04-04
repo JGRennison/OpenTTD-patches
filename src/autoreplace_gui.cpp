@@ -38,6 +38,7 @@
 
 #include "safeguards.h"
 
+/** Compare the (NewGRF) list position. @copydoc GUIList::Sorter. */
 static bool EngineNumberSorter(const GUIEngineListItem &a, const GUIEngineListItem &b, const GUIEngineListSortCache &cache)
 {
 	return Engine::Get(a.engine_id)->list_position < Engine::Get(b.engine_id)->list_position;
@@ -463,7 +464,8 @@ public:
 				int side = (widget == WID_RV_LEFT_MATRIX) ? 0 : 1;
 
 				/* Do the actual drawing */
-				DrawEngineList((VehicleType)this->window_number, r, this->engines[side], *this->vscroll[side], this->sel_engine[side], side == 0, this->sel_group, this->badge_classes);
+				DrawEngineList((VehicleType)this->window_number, r, this->engines[side], *this->vscroll[side], this->sel_engine[side], side == 0,
+						this->sel_group, this->badge_classes, std::data(_engine_sort_listing[this->window_number])[this->sort_criteria]);
 				break;
 			}
 		}

@@ -41,6 +41,7 @@ public:
 
 	/**
 	 * Get the currently active instance of the sound driver.
+	 * @return The instance.
 	 */
 	static SoundDriver *GetInstance()
 	{

@@ -63,10 +63,9 @@ DWORD _imm_props;
 /** Local copy of the palette for use in the drawing thread. */
 static Palette _local_palette;
 
-bool VideoDriver_Win32Base::ClaimMousePointer()
+void VideoDriver_Win32Base::ClaimMousePointer()
 {
 	MyShowCursor(false, true);
-	return true;
 }
 
 struct Win32VkMapping {
@@ -136,7 +135,10 @@ static uint MapWindowsKey(uint sym)
 	return key;
 }
 
-/** Colour depth to use for fullscreen display modes. */
+/**
+ * Colour depth to use for fullscreen display modes.
+ * @return The colour depth in bits per pixel.
+ */
 uint8_t VideoDriver_Win32Base::GetFullscreenBpp()
 {
 	/* Check modes for the relevant fullscreen bpp */

@@ -56,6 +56,23 @@ struct GUIListParamConfig<std::nullptr_t>
 template <typename T, typename P = std::nullptr_t, typename F = std::string_view>
 class GUIList : public std::vector<T> {
 public:
+	/**
+	 * Comparison helper for the sorter, comparing \c a to \c b.
+	 * @param a The first element.
+	 * @param b The second element.
+	 * @return \c true if the first element is less than the second element.
+	 */
+	using Sorter = bool (const T &a, const T &b);
+
+	/**
+	 * Comparison helper for the sorter, comparing \c a to \c b taking the \c filter ino consideration.
+	 * @param a The first element.
+	 * @param b The second element.
+	 * @param filter Filter parameter for a subsection of the data, e.g. a specific cargo type when comparing industry production.
+	 * @return \c true if the first element is less than the second element.
+	 */
+	using SorterWithFilter = bool(const T &a, const T &b, const P filter);
+
 	using SortFunction = std::conditional_t<std::is_same_v<P, std::nullptr_t>, bool (const T&, const T&), bool (const T&, const T&, const P)>; ///< Signature of sort function.
 	using FilterFunction = bool(const T*, F); ///< Signature of filter function.
 
@@ -120,6 +137,9 @@ public:
 
 	template <typename T_ = T, typename P_ = P, typename _F = F, std::enable_if_t<!std::is_same_v<P_, std::nullptr_t>>* = nullptr>
 	SortParameterReference &SortParameterData() { return this->params; }
+
+	template <typename T_ = T, typename P_ = P, typename _F = F, std::enable_if_t<!std::is_same_v<P_, std::nullptr_t>>* = nullptr>
+	const SortParameterReference &SortParameterData() const { return this->params; }
 
 	/**
 	 * Get the sorttype of the list

@@ -28,6 +28,8 @@ struct OrderBackup;
 using OrderBackupPool = Pool<OrderBackup, OrderBackupID, 1>;
 /** The pool with order backups. */
 extern OrderBackupPool _order_backup_pool;
+/** An item in the OrderBackupPool. */
+using OrderBackupPoolItem = OrderBackupPool::PoolItem<&_order_backup_pool>;
 
 namespace upstream_sl {
 	SaveLoadTable GetOrderBackupDescription();
@@ -38,7 +40,7 @@ namespace upstream_sl {
  * Data for backing up an order of a vehicle so it can be
  * restored after a vehicle is rebuilt in the same depot.
  */
-struct OrderBackup : OrderBackupPool::PoolItem<&_order_backup_pool>, BaseConsist {
+struct OrderBackup : OrderBackupPoolItem, BaseConsist {
 private:
 	friend NamedSaveLoadTable GetOrderBackupDescription(); ///< Saving and loading of order backups.
 	friend struct OrderBackupDispatchScheduleStructHandler; ///< Saving and loading of order backups.
@@ -62,7 +64,7 @@ private:
 
 	void DoRestore(Vehicle *v);
 
-	friend OrderBackupPool::PoolItem<&_order_backup_pool>;
+	friend OrderBackupPoolItem; ///< Loading of order backups.
 	/** Creation for savegame restoration. */
 	OrderBackup(OrderBackupID index) : PoolItemBase(index) {}
 	OrderBackup(OrderBackupID index, const Vehicle *v, uint32_t user);

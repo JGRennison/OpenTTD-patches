@@ -171,9 +171,7 @@ void WindowDesc::LoadFromConfig()
 	}
 }
 
-/**
- * Sort WindowDesc by ini_key.
- */
+/** Sort WindowDesc by ini_key. @copydoc GUIList::Sorter */
 static bool DescSorter(WindowDesc * const &a, WindowDesc * const &b)
 {
 	if (a->ini_key != nullptr && b->ini_key != nullptr) return strcmp(a->ini_key, b->ini_key) < 0;
@@ -1139,6 +1137,7 @@ void Window::CloseChildWindowById(WindowClass wc, WindowNumber number) const
 
 /**
  * Hide the window and all its child windows, and mark them for a later deletion.
+ * @param data Window specific data to be passed through the window close functions.
  */
 void Window::Close([[maybe_unused]] int data)
 {

@@ -394,6 +394,7 @@ static void NetworkHandleCommandQueue(NetworkClientSocket *cs);
 /**
  * Send the client information about a client.
  * @param ci The client to send information about.
+ * @return The new state the network.
  */
 NetworkRecvStatus ServerNetworkGameSocketHandler::SendClientInfo(NetworkClientInfo *ci)
 {
@@ -409,7 +410,10 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendClientInfo(NetworkClientIn
 	return NETWORK_RECV_STATUS_OKAY;
 }
 
-/** Send the client information about the server. */
+/**
+ * Send the client information about the server.
+ * @return The new state the network.
+ */
 NetworkRecvStatus ServerNetworkGameSocketHandler::SendGameInfo()
 {
 	auto p = std::make_unique<Packet>(this, PACKET_SERVER_GAME_INFO, TCP_MTU);
@@ -434,6 +438,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendGameInfoExtended(PacketGam
  * Send an error to the client, and close its connection.
  * @param error The error to disconnect for.
  * @param reason In case of kicking a client, specifies the reason for kicking the client.
+ * @return The new state the network.
  */
 NetworkRecvStatus ServerNetworkGameSocketHandler::SendError(NetworkErrorCode error, std::string_view reason)
 {
@@ -491,7 +496,10 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendDesyncLog(std::string_view
 	return NETWORK_RECV_STATUS_OKAY;
 }
 
-/** Send the check for the NewGRFs. */
+/**
+ * Send the check for the NewGRFs.
+ * @return The new state the network.
+ */
 NetworkRecvStatus ServerNetworkGameSocketHandler::SendNewGRFCheck()
 {
 	/* Invalid packet when status is anything but STATUS_IDENTIFY. */
@@ -514,7 +522,10 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendNewGRFCheck()
 	return NETWORK_RECV_STATUS_OKAY;
 }
 
-/** Request the game password. */
+/**
+ * Request the game password.
+ * @return The new state the network.
+ */
 NetworkRecvStatus ServerNetworkGameSocketHandler::SendAuthRequest()
 {
 	/* Invalid packet when status is anything but STATUS_INACTIVE or STATUS_AUTH_GAME. */
@@ -536,7 +547,10 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendAuthRequest()
 	return NETWORK_RECV_STATUS_OKAY;
 }
 
-/** Notify the client that the authentication has completed and tell that for the remainder of this socket encryption is enabled. */
+/**
+ * Notify the client that the authentication has completed and tell that for the remainder of this socket encryption is enabled.
+ * @return The new state the network.
+ */
 NetworkRecvStatus ServerNetworkGameSocketHandler::SendEnableEncryption()
 {
 	/* Invalid packet when status is anything but STATUS_AUTH_GAME. */
@@ -571,7 +585,10 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendNeedCompanyPassword()
 	return NETWORK_RECV_STATUS_OKAY;
 }
 
-/** Send the client a welcome message with some basic information. */
+/**
+ * Send the client a welcome message with some basic information.
+ * @return The new state the network.
+ */
 NetworkRecvStatus ServerNetworkGameSocketHandler::SendWelcome()
 {
 	/* Invalid packet when status is anything but STATUS_AUTH_COMPANY. */
@@ -605,7 +622,10 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendWelcome()
 	return this->SendClientInfo(NetworkClientInfo::GetByClientID(CLIENT_ID_SERVER));
 }
 
-/** Tell the client that its put in a waiting queue. */
+/**
+ * Tell the client that its put in a waiting queue.
+ * @return The new state the network.
+ */
 NetworkRecvStatus ServerNetworkGameSocketHandler::SendWait()
 {
 	int waiting = 1; // current player getting the map counts as 1
@@ -649,7 +669,10 @@ void ServerNetworkGameSocketHandler::CheckNextClientToSendMap(NetworkClientSocke
 	}
 }
 
-/** This sends the map to the client */
+/**
+ * This sends the map to the client.
+ * @return The new state the network.
+ */
 NetworkRecvStatus ServerNetworkGameSocketHandler::SendMap()
 {
 	if (this->status < STATUS_AUTHORIZED) {
@@ -698,6 +721,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendMap()
 /**
  * Tell that a client joined.
  * @param client_id The client that joined.
+ * @return The new state the network.
  */
 NetworkRecvStatus ServerNetworkGameSocketHandler::SendJoin(ClientID client_id)
 {
@@ -709,7 +733,10 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendJoin(ClientID client_id)
 	return NETWORK_RECV_STATUS_OKAY;
 }
 
-/** Tell the client that they may run to a particular frame. */
+/**
+ * Tell the client that they may run to a particular frame.
+ * @return The new state the network.
+ */
 NetworkRecvStatus ServerNetworkGameSocketHandler::SendFrame()
 {
 	auto p = std::make_unique<Packet>(this, PACKET_SERVER_FRAME, TCP_MTU);
@@ -730,7 +757,10 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendFrame()
 	return NETWORK_RECV_STATUS_OKAY;
 }
 
-/** Request the client to sync. */
+/**
+ * Request the client to sync.
+ * @return The new state the network.
+ */
 NetworkRecvStatus ServerNetworkGameSocketHandler::SendSync()
 {
 	auto p = std::make_unique<Packet>(this, PACKET_SERVER_SYNC, TCP_MTU);
@@ -745,6 +775,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendSync()
 /**
  * Send a command to the client to execute.
  * @param cp The command to send.
+ * @return The new state the network.
  */
 NetworkRecvStatus ServerNetworkGameSocketHandler::SendCommand(const OutgoingCommandPacket &cp)
 {
@@ -765,6 +796,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendCommand(const OutgoingComm
  * @param self_send Whether we did send the message.
  * @param msg The actual message.
  * @param data Arbitrary extra data.
+ * @return The new state the network.
  */
 NetworkRecvStatus ServerNetworkGameSocketHandler::SendChat(NetworkAction action, ClientID client_id, bool self_send, std::string_view msg, NetworkTextMessageData data)
 {
@@ -788,6 +820,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendChat(NetworkAction action,
  * @param colour TextColour to use for the message.
  * @param user Name of the user who sent the message.
  * @param msg The actual message.
+ * @return The new state the network.
  */
 NetworkRecvStatus ServerNetworkGameSocketHandler::SendExternalChat(std::string_view source, TextColour colour, std::string_view user, std::string_view msg)
 {
@@ -808,6 +841,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendExternalChat(std::string_v
  * Tell the client another client quit with an error.
  * @param client_id The client that quit.
  * @param errorno The reason the client quit.
+ * @return The new state the network.
  */
 NetworkRecvStatus ServerNetworkGameSocketHandler::SendErrorQuit(ClientID client_id, NetworkErrorCode errorno)
 {
@@ -823,6 +857,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendErrorQuit(ClientID client_
 /**
  * Tell the client another client quit.
  * @param client_id The client that quit.
+ * @return The new state the network.
  */
 NetworkRecvStatus ServerNetworkGameSocketHandler::SendQuit(ClientID client_id)
 {
@@ -834,7 +869,10 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendQuit(ClientID client_id)
 	return NETWORK_RECV_STATUS_OKAY;
 }
 
-/** Tell the client we're shutting down. */
+/**
+ * Tell the client we're shutting down.
+ * @return The new state the network.
+ */
 NetworkRecvStatus ServerNetworkGameSocketHandler::SendShutdown()
 {
 	auto p = std::make_unique<Packet>(this, PACKET_SERVER_SHUTDOWN, TCP_MTU);
@@ -842,7 +880,10 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendShutdown()
 	return NETWORK_RECV_STATUS_OKAY;
 }
 
-/** Tell the client we're starting a new game. */
+/**
+ * Tell the client we're starting a new game.
+ * @return The new state the network.
+ */
 NetworkRecvStatus ServerNetworkGameSocketHandler::SendNewGame()
 {
 	auto p = std::make_unique<Packet>(this, PACKET_SERVER_NEWGAME, TCP_MTU);
@@ -854,6 +895,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendNewGame()
  * Send the result of a console action.
  * @param colour The colour of the result.
  * @param command The command that was executed.
+ * @return The new state the network.
  */
 NetworkRecvStatus ServerNetworkGameSocketHandler::SendRConResult(uint16_t colour, std::string_view command)
 {
@@ -899,6 +941,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendRConDenied()
  * Tell that a client moved to another company.
  * @param client_id The client that moved.
  * @param company_id The company the client moved to.
+ * @return The new state the network.
  */
 NetworkRecvStatus ServerNetworkGameSocketHandler::SendMove(ClientID client_id, CompanyID company_id)
 {
@@ -921,7 +964,10 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendCompanyUpdate()
 	return NETWORK_RECV_STATUS_OKAY;
 }
 
-/** Send an update about the max company/spectator counts. */
+/**
+ * Send an update about the max company/spectator counts.
+ * @return The new state the network.
+ */
 NetworkRecvStatus ServerNetworkGameSocketHandler::SendConfigUpdate()
 {
 	auto p = std::make_unique<Packet>(this, PACKET_SERVER_CONFIG_UPDATE, TCP_MTU);
@@ -1224,10 +1270,6 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_MAP_OK(Packet &
 	return this->SendError(NETWORK_ERROR_NOT_EXPECTED);
 }
 
-/**
- * The client has done a command and wants us to handle it
- * @param p the packet in which the command was sent
- */
 NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_COMMAND(Packet &p)
 {
 	/* The client was never joined.. so this is impossible, right?

@@ -556,6 +556,38 @@ static void Ptrs_STNS()
 	}
 }
 
+struct StationWaitingTriggersStructHandler final : public TypedSaveLoadStructHandler<StationWaitingTriggersStructHandler, BaseStation> {
+	using StationWaitingTriggersPair = std::pair<const TileIndex, StationRandomTriggers>;
+
+	NamedSaveLoadTable GetDescription() const override
+	{
+		static const NamedSaveLoad desc[] = {
+			NSL("first",  SLE_VAR(StationWaitingTriggersPair,  first, SLE_UINT32)),
+			NSL("second", SLE_VAR(StationWaitingTriggersPair, second,  SLE_UINT8)),
+		};
+		return desc;
+	}
+
+	void Save(BaseStation *st) const override
+	{
+		SlSetStructListLength(st->tile_waiting_random_triggers.size());
+		for (const auto &pair : st->tile_waiting_random_triggers) {
+			SlObject(const_cast<StationWaitingTriggersPair *>(&pair), this->GetLoadDescription());
+		}
+	}
+
+	void Load(BaseStation *st) const override
+	{
+		size_t num = SlGetStructListLength(UINT32_MAX);
+		if (num == 0) return;
+
+		StationWaitingTriggersPair pair;
+		for (uint j = 0; j < num; ++j) {
+			SlObject(&pair, this->GetLoadDescription());
+			st->tile_waiting_random_triggers.emplace(pair.first, pair.second);
+		}
+	}
+};
 
 static const NamedSaveLoad _base_station_desc[] = {
 	NSL("xy",                                     SLE_VAR(BaseStation, xy,                        SLE_UINT32)),
@@ -577,6 +609,8 @@ static const NamedSaveLoad _base_station_desc[] = {
 	NSL("",                             SLEG_CONDVARVEC_X(_custom_road_stop_tiles,                SLE_UINT32,                  SL_MIN_VERSION,        SL_MAX_VERSION,      SlXvFeatureTest(XSLFTO_AND, XSLFI_GRF_ROADSTOPS, 1, 1))),
 	NSL("",                             SLEG_CONDVARVEC_X(_custom_road_stop_data,                 SLE_UINT16,                  SL_MIN_VERSION,        SL_MAX_VERSION,      SlXvFeatureTest(XSLFTO_AND, XSLFI_GRF_ROADSTOPS, 1, 1))),
 	NSL("",                                SLEG_CONDVAR_X(_num_roadstop_custom_tiles,             SLE_UINT32,                  SL_MIN_VERSION,        SL_MAX_VERSION,      SlXvFeatureTest(XSLFTO_AND, XSLFI_GRF_ROADSTOPS, 2))),
+
+	NSLT_STRUCTLIST<StationWaitingTriggersStructHandler>("tile_waiting_triggers"),
 };
 
 void IncludeBaseStationDescription(std::vector<SaveLoad> &slt)

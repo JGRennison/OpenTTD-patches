@@ -83,10 +83,10 @@ public:
 		return true;
 	}
 
-	virtual bool ClaimMousePointer()
-	{
-		return true;
-	}
+	/**
+	 * Claim the exclusive rights for the mouse pointer.
+	 */
+	virtual void ClaimMousePointer() {}
 
 	/**
 	 * Get whether the mouse cursor is drawn by the video driver.
@@ -166,6 +166,10 @@ public:
 		return {};
 	}
 
+	/**
+	 * Get some information about the selected driver/backend to be shown to the user.
+	 * @return The information.
+	 */
 	virtual const char *GetInfoString() const
 	{
 		return this->GetName();
@@ -195,6 +199,7 @@ public:
 
 	/**
 	 * Get the currently active instance of the video driver.
+	 * @return The instance.
 	 */
 	static VideoDriver *GetInstance()
 	{
@@ -229,6 +234,7 @@ protected:
 
 	/**
 	 * Get the resolution of the main screen.
+	 * @return The dimension of the screen in pixels.
 	 */
 	virtual Dimension GetScreenSize() const { return { DEFAULT_WINDOW_WIDTH, DEFAULT_WINDOW_HEIGHT }; }
 

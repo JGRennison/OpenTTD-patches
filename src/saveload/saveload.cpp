@@ -1760,12 +1760,12 @@ class SlSkipHandler : public SaveLoadHandler {
 		this->Load(object);
 	}
 
-	virtual SaveLoadTable GetDescription() const override
+	SaveLoadTable GetDescription() const override
 	{
 		return {};
 	}
 
-	virtual SaveLoadCompatTable GetCompatDescription() const override
+	SaveLoadCompatTable GetCompatDescription() const override
 	{
 		NOT_REACHED();
 	}

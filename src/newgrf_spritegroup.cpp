@@ -147,6 +147,8 @@ static inline uint32_t GetVariable(const ResolverObject &object, ScopeResolver *
 
 /**
  * Store a value into the persistent storage area (PSA). Default implementation does nothing (for newgrf classes without storage).
+ * @param pos The position into the storage area.
+ * @param value The new value to store.
  */
 /* virtual */ void ScopeResolver::StorePSA(uint reg, int32_t value) {}
 
@@ -165,6 +167,8 @@ static inline uint32_t GetVariable(const ResolverObject &object, ScopeResolver *
 
 /**
  * Get a resolver for the \a scope.
+ * @param scope The scope to resolve.
+ * @param relative The relative in case of a #VSG_SCOPE_RELATIVE.
  * @return The resolver for the requested scope.
  */
 /* virtual */ ScopeResolver *ResolverObject::GetScope(VarSpriteGroupScope scope, VarSpriteGroupScopeOffset relative)

@@ -624,6 +624,9 @@ inline DiagDirection GetDockDirection(TileIndex t)
 
 /**
  * Check whether a dock tile is the tile on water.
+ * @param t Tile to query.
+ * @pre IsDockTile(t)
+ * @return \c true iff the given tile is the water part.
  */
 inline bool IsDockWaterPart(TileIndex t)
 {

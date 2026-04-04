@@ -204,9 +204,9 @@
 	return Game::scanner_info->GetConsoleList(newest_only);
 }
 
-/* static */ std::string Game::GetConsoleLibraryList()
+/* static */ std::string Game::GetConsoleLibraryList(bool newest_only)
 {
-	 return Game::scanner_library->GetConsoleList(true);
+	 return Game::scanner_library->GetConsoleList(newest_only);
 }
 
 /* static */ const ScriptInfoList *Game::GetInfoList()
@@ -236,25 +236,40 @@
 }
 
 /**
- * Check whether we have an Game (library) with the exact characteristics as ci.
+ * Check whether we have an Game with the exact characteristics as ci.
  * @param ci the characteristics to search on (shortname and md5sum)
  * @param md5sum whether to check the MD5 checksum
- * @return true iff we have an Game (library) matching.
+ * @return true iff we have an Game matching.
  */
 /* static */ bool Game::HasGame(const ContentInfo &ci, bool md5sum)
 {
 	return Game::scanner_info->HasScript(ci, md5sum);
 }
 
+/**
+ * Check whether we have an Game library with the exact characteristics as ci.
+ * @param ci the characteristics to search on (shortname and md5sum)
+ * @param md5sum whether to check the MD5 checksum
+ * @return true iff we have an Game library matching.
+ */
 /* static */ bool Game::HasGameLibrary(const ContentInfo &ci, bool md5sum)
 {
 	return Game::scanner_library->HasScript(ci, md5sum);
 }
 
+/**
+ * Get the scanner info for Game scripts.
+ * @return The Game Script scanner info.
+ */
 /* static */ GameScannerInfo *Game::GetScannerInfo()
 {
 	return Game::scanner_info.get();
 }
+
+/**
+ * Get the scanner info for Game script libraries.
+ * @return The Game script library scanner info.
+ */
 /* static */ GameScannerLibrary *Game::GetScannerLibrary()
 {
 	return Game::scanner_library.get();

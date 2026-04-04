@@ -28,6 +28,8 @@
 #include <bitset>
 #include <vector>
 
+struct GRFConfig;
+
 /**
  * List of different canal 'features'.
  * Each feature gets an entry in the canal spritegroup table
@@ -397,7 +399,7 @@ struct GRFFile {
 
 	btree::btree_map<GRFStringID, StringIndexInTab> string_map{}; ///< Map of local GRF string ID to string ID
 
-	GRFFile(const struct GRFConfig &config);
+	GRFFile(const GRFConfig &config);
 	GRFFile();
 	GRFFile(GRFFile &&other);
 	~GRFFile();

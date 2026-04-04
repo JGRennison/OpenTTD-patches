@@ -1553,15 +1553,15 @@ protected:
 		return percentage / produced_cargo_count;
 	}
 
-	/** Sort industries by name */
-	static bool IndustryNameSorter(const Industry * const &a, const Industry * const &b, const CargoType &)
+	/** Sort industries by name. @copydoc GUIList::SorterWithFilter */
+	static bool IndustryNameSorter(const Industry * const &a, const Industry * const &b, [[maybe_unused]] const CargoType &filter)
 	{
 		int r = StrNaturalCompare(a->GetCachedName(), b->GetCachedName()); // Sort by name (natural sorting).
 		if (r == 0) return a->index < b->index;
 		return r < 0;
 	}
 
-	/** Sort industries by type and name */
+	/** Sort industries by type and name. @copydoc GUIList::SorterWithFilter */
 	static bool IndustryTypeSorter(const Industry * const &a, const Industry * const &b, const CargoType &filter)
 	{
 		int it_a = 0;
@@ -1572,7 +1572,7 @@ protected:
 		return (r == 0) ? IndustryNameSorter(a, b, filter) : r < 0;
 	}
 
-	/** Sort industries by production and name */
+	/** Sort industries by production and name. @copydoc GUIList::SorterWithFilter */
 	static bool IndustryProductionSorter(const Industry * const &a, const Industry * const &b, const CargoType &filter)
 	{
 		if (filter == CargoFilterCriteria::CF_NONE) return IndustryTypeSorter(a, b, filter);
@@ -1596,7 +1596,7 @@ protected:
 		return (r == 0) ? IndustryTypeSorter(a, b, filter) : r < 0;
 	}
 
-	/** Sort industries by transported cargo and name */
+	/** Sort industries by transported cargo and name. @copydoc GUIList::SorterWithFilter */
 	static bool IndustryTransportedCargoSorter(const Industry * const &a, const Industry * const &b, const CargoType &filter)
 	{
 		int r = GetCargoTransportedSortValue(a) - GetCargoTransportedSortValue(b);

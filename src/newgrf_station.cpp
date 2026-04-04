@@ -247,7 +247,14 @@ static uint32_t GetRailContinuationInfo(TileIndex tile)
 
 /* virtual */ uint32_t StationScopeResolver::GetRandomTriggers() const
 {
-	return this->st == nullptr ? 0 : this->st->waiting_random_triggers.base();
+	if (this->st == nullptr) return 0;
+
+	StationRandomTriggers triggers = st->waiting_random_triggers;
+
+	auto it = this->st->tile_waiting_random_triggers.find(this->tile);
+	if (it != std::end(this->st->tile_waiting_random_triggers)) triggers.Set(it->second);
+
+	return triggers.base();
 }
 
 
@@ -966,7 +973,7 @@ void TriggerStationAnimation(BaseStation *st, TileIndex trigger_tile, StationAni
 void TriggerStationRandomisation(BaseStation *st, TileIndex trigger_tile, StationRandomTrigger trigger, CargoType cargo_type)
 {
 	/* List of coverage areas for each animation trigger */
-	static const TriggerArea tas[] = {
+	static constexpr TriggerArea tas[] = {
 		TA_WHOLE, TA_WHOLE, TA_PLATFORM, TA_PLATFORM, TA_PLATFORM, TA_PLATFORM
 	};
 
@@ -987,12 +994,17 @@ void TriggerStationRandomisation(BaseStation *st, TileIndex trigger_tile, Statio
 	}
 
 	/* Store triggers now for var 5F */
-	st->waiting_random_triggers.Set(trigger);
+	TriggerArea ta = tas[to_underlying(trigger)];
+	if (ta == TA_WHOLE) st->waiting_random_triggers.Set(trigger);
 	StationRandomTriggers used_random_triggers;
 
 	/* Check all tiles over the station to check if the specindex is still in use */
-	for (TileIndex tile : GetRailTileArea(st, trigger_tile, tas[static_cast<size_t>(trigger)])) {
+	for (TileIndex tile : GetRailTileArea(st, trigger_tile, ta)) {
 		if (st->TileBelongsToRailStation(tile)) {
+			/* Store triggers now for var 5F */
+			StationRandomTriggers &tile_triggers = st->tile_waiting_random_triggers[tile];
+			tile_triggers.Set(trigger);
+
 			const StationSpec *ss = GetStationSpec(tile);
 			if (ss == nullptr) continue;
 
@@ -1004,10 +1016,10 @@ void TriggerStationRandomisation(BaseStation *st, TileIndex trigger_tile, Statio
 
 			if (cargo_type == INVALID_CARGO || HasBit(ss->cargo_triggers, cargo_type)) {
 				StationResolverObject object(ss, st, tile, INVALID_RAILTYPE, CBID_RANDOM_TRIGGER, 0);
-				object.SetWaitingRandomTriggers(st->waiting_random_triggers);
-
+				object.SetWaitingRandomTriggers(st->waiting_random_triggers | tile_triggers);
 				object.ResolveRerandomisation();
 
+				tile_triggers.Reset(object.GetUsedRandomTriggers());
 				used_random_triggers.Set(object.GetUsedRandomTriggers());
 
 				uint32_t reseed = object.GetReseedSum();

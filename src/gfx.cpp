@@ -624,7 +624,7 @@ static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, 
 		int dpi_right = dpi->left + dpi->width - 1;
 		TextColour last_colour = initial_colour;
 
-		for (int run_index = 0; run_index < line.CountRuns(); run_index++) {
+		for (size_t run_index = 0; run_index < line.CountRuns(); run_index++) {
 			const ParagraphLayouter::VisualRun &run = line.GetVisualRun(run_index);
 			const auto &glyphs = run.GetGlyphs();
 			const auto &positions = run.GetPositions();
@@ -639,7 +639,7 @@ static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, 
 			if (do_shadow && (!fc->GetDrawGlyphShadow() || !colour_has_shadow)) continue;
 			ctx.SetColourRemap(do_shadow ? TC_BLACK : colour); // the last run also sets the colour for the truncation dots
 
-			for (int i = 0; i < run.GetGlyphCount(); i++) {
+			for (size_t i = 0; i < run.GetGlyphCount(); i++) {
 				GlyphID glyph = glyphs[i];
 
 				/* Not a valid glyph (empty) */
