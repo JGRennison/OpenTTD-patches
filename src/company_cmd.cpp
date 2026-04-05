@@ -384,10 +384,11 @@ void UpdateLandscapingLimits()
 }
 
 /**
- * Set the right DParams for STR_ERROR_OWNED_BY.
- * @param owner the owner to get the name of.
- * @param tile  optional tile to get the right town.
+ * Get the right StringParameters for STR_ERROR_OWNED_BY.
+ * @param owner The owner to get the name of.
+ * @param tile Optional tile to get the right town.
  * @pre if tile == 0, then owner can't be OWNER_TOWN.
+ * @return The string parameters.
  */
 std::array<StringParameter, 2> GetParamsForOwnedBy(Owner owner, TileIndex tile)
 {
@@ -1146,6 +1147,16 @@ static bool ExecuteAllowListCtrlAction(CompanyAllowListCtrlAction action, Compan
 		case CALCA_REMOVE:
 			return c->allow_list.Remove(public_key);
 
+		case CALCA_ALLOW_ANY:
+			if (c->allow_any) return false;
+			c->allow_any = true;
+			return true;
+
+		case CALCA_ALLOW_LISTED:
+			if (!c->allow_any) return false;
+			c->allow_any = false;
+			return true;
+
 		default:
 			NOT_REACHED();
 	}
@@ -1163,12 +1174,16 @@ CommandCost CmdCompanyAllowListCtrl(DoCommandFlags flags, CompanyAllowListCtrlAc
 	Company *c = Company::GetIfValid(_current_company);
 	if (c == nullptr) return CMD_ERROR;
 
-	/* The public key length includes the '\0'. */
-	if (public_key.size() != NETWORK_PUBLIC_KEY_LENGTH - 1) return CMD_ERROR;
-
 	switch (action) {
 		case CALCA_ADD:
 		case CALCA_REMOVE:
+			/* The public key length includes the '\0'. */
+			if (public_key.size() != NETWORK_PUBLIC_KEY_LENGTH - 1) return CMD_ERROR;
+			break;
+
+		case CALCA_ALLOW_ANY:
+		case CALCA_ALLOW_LISTED:
+			if (public_key.size() != 0) return CMD_ERROR;
 			break;
 
 		default:

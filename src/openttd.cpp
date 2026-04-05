@@ -158,7 +158,7 @@ static std::atomic<bool> _sound_inited;
 /**
  * Error handling for fatal user errors.
  * @param str the string to print.
- * @note Does NEVER return.
+ * @attention Function does not return.
  */
 void UserErrorI(const std::string &str)
 {
@@ -179,7 +179,7 @@ void UserErrorI(const std::string &str)
 /**
  * Error handling for fatal non-user errors.
  * @param str the string to print.
- * @note Does NEVER return.
+ * @attention Function does not return.
  */
 void FatalErrorI(const std::string &str)
 {

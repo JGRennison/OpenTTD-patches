@@ -334,6 +334,7 @@ CargoType GetOverallCargoOfArticulatedVehicle(const Vehicle *v)
  *   For autoreplace/-renew:
  *    - Default cargo type (without capacity)
  *    - intersection and union of refit masks.
+ * @param v The vehicle to check.
  */
 void CheckConsistencyOfArticulatedVehicle(const Vehicle *v)
 {

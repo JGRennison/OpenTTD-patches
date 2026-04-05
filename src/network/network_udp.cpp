@@ -124,7 +124,10 @@ void ClientNetworkUDPSocketHandler::Receive_EX_SERVER_RESPONSE(Packet &, Network
 	NetworkAddServer(client_addr.GetAddressAsString(false), false, true); // TODO, mark as extended
 }
 
-/** Broadcast to all ips */
+/**
+ * Broadcast to all IPs.
+ * @param socket The socket to broadcast on.
+ */
 static void NetworkUDPBroadCast(NetworkUDPSocketHandler &socket)
 {
 	for (NetworkAddress &addr : _broadcast_list) {

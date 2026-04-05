@@ -204,9 +204,9 @@ struct IntSettingDesc : SettingDesc {
 	using PreChangeCheck = bool(int32_t &value);
 	/**
 	 * A callback to denote that a setting has been changed.
-	 * @param The new value for the setting.
+	 * @param new_value The new value for the setting.
 	 */
-	using PostChangeCallback = void(int32_t value);
+	using PostChangeCallback = void(int32_t new_value);
 
 	constexpr IntSettingDesc(const SaveLoad &save, const char *name, SettingFlags flags, OnGuiCtrl *guiproc, bool startup, const char *patx_name, int32_t def,
 			int32_t min, uint32_t max, int32_t interval, StringID str, StringID str_help, StringID str_val,

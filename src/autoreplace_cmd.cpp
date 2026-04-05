@@ -575,10 +575,10 @@ static inline CommandCost CmdMoveVehicle(const Vehicle *v, const Vehicle *after,
 
 /**
  * Copy head specific things to the new vehicle chain after it was successfully constructed
- * @param old_head The old front vehicle (no wagons attached anymore)
- * @param new_head The new head of the completely replaced vehicle chain
- * @param flags the command flags to use
- * @param start_stop_check whether to run the start-stop check
+ * @param old_head The old front vehicle (no wagons attached anymore).
+ * @param new_head The new head of the completely replaced vehicle chain.
+ * @param flags the command flags to use.
+ * @param start_stop_check whether to run the start-stop check.
  */
 CommandCost CopyHeadSpecificThings(Vehicle *old_head, Vehicle *new_head, DoCommandFlags flags, bool start_stop_check)
 {
@@ -686,6 +686,12 @@ struct ReplaceChainItem {
 	Vehicle *new_veh; ///< Replacement vehicle, or nullptr if no replacement.
 	Money cost; /// Cost of buying and refitting replacement.
 
+	/**
+	 * Create a new item.
+	 * @param old_veh The vehicle to replace.
+	 * @param new_veh The replacement vehicle, maybe be \c nullptr if there is no replacement.
+	 * @param cost The cost for buying/refitting.
+	 */
 	ReplaceChainItem(Vehicle *old_veh, Vehicle *new_veh, Money cost) : old_veh(old_veh), new_veh(new_veh), cost(cost) { }
 
 	/**

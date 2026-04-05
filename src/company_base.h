@@ -39,7 +39,10 @@ struct CompanyInfrastructure {
 	uint32_t station = 0;                      ///< Count of company owned station tiles.
 	uint32_t airport = 0;                      ///< Count of company owned airports.
 
-	/** Get total sum of all owned track bits. */
+	/**
+	 * Get total sum of all owned track bits.
+	 * @return The number of owned track bits.
+	 */
 	uint32_t GetRailTotal() const
 	{
 		return std::accumulate(std::begin(this->rail), std::end(this->rail), 0U);
@@ -89,6 +92,7 @@ struct CompanyProperties {
 	std::string president_name{};            ///< Name of the president if the user changed it.
 
 	NetworkAuthorizedKeys allow_list{};      ///< Public keys of clients that are allowed to join this company.
+	bool allow_any = false;                  ///< Set if anyone is allowed to join this company.
 
 	CompanyManagerFace face{};               ///< Face description of the president.
 

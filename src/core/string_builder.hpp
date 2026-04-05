@@ -29,6 +29,7 @@ public:
 	using pointer = void;
 	using reference = void;
 
+	/** The type of the size of our strings. */
 	using size_type = std::string_view::size_type;
 
 	/**
@@ -87,6 +88,7 @@ public:
 
 	/**
 	 * Append string.
+	 * @param str The string to append.
 	 */
 	void Put(std::string_view str) { this->string->append(str.data(), str.data() + str.size()); }
 
@@ -127,6 +129,8 @@ public:
 
 	/**
 	 * Append integer 'value' in given number 'base'.
+	 * @param value The value.
+	 * @param base The base to format the value in.
 	 */
 	template <class T>
 	void PutIntegerBase(T value, int base)

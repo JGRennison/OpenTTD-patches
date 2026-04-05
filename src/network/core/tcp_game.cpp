@@ -100,9 +100,9 @@ NetworkGameSocketHandler::NetworkGameSocketHandler(SOCKET s) : NetworkTCPSocketH
  *  A socket can make errors. When that happens this handles what to do.
  * For clients: close connection and drop back to main-menu
  * For servers: close connection and that is it
- * @return the new status
+ * @copydoc NetworkTCPSocketHandler::CloseConnection
  */
-NetworkRecvStatus NetworkGameSocketHandler::CloseConnection(bool)
+NetworkRecvStatus NetworkGameSocketHandler::CloseConnection([[maybe_unused]] bool error)
 {
 	if (this->ignore_close) return NETWORK_RECV_STATUS_CLIENT_QUIT;
 

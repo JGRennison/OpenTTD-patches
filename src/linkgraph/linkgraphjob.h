@@ -266,6 +266,7 @@ public:
 	/**
 	 * Bare constructor, only for save/load. link_graph, join_date and actually
 	 * settings have to be brutally const-casted in order to populate them.
+	 * @param index Index into the LinkGraphJob pool.
 	 */
 	LinkGraphJob(LinkGraphJobID index) : PoolItemBase(index), link_graph(LinkGraphID::Invalid()), settings(_settings_game.linkgraph),
 			join_tick(0), start_tick(0), day_length_factor(1), job_completed(false), job_aborted(false) {}
@@ -382,19 +383,34 @@ public:
 
 	Path(NodeID n, bool source = false);
 
-	/** Get the node this leg passes. */
+	/**
+	 * Get the node this leg passes.
+	 * @return The node.
+	 */
 	inline NodeID GetNode() const { return this->node; }
 
-	/** Get the overall origin of the path. */
+	/**
+	 * Get the overall origin of the path.
+	 * @return The origin node.
+	 */
 	inline NodeID GetOrigin() const { return this->origin; }
 
-	/** Get the parent leg of this one. */
+	/**
+	 * Get the parent leg of this one.
+	 * @return The parent of this leg.
+	 */
 	inline Path *GetParent() { return reinterpret_cast<Path *>(this->parent_storage & ~static_cast<uintptr_t>(1)); }
 
-	/** Get the overall capacity of the path. */
+	/**
+	 * Get the overall capacity of the path.
+	 * @return The path's capacity.
+	 */
 	inline uint GetCapacity() const { return this->capacity; }
 
-	/** Get the free capacity of the path. */
+	/**
+	 * Get the free capacity of the path.
+	 * @return The path's capacity that isn't used.
+	 */
 	inline int GetFreeCapacity() const { return this->free_capacity; }
 
 	/**
@@ -418,19 +434,34 @@ public:
 		return Path::GetCapacityRatio(this->free_capacity, this->capacity);
 	}
 
-	/** Get the overall distance of the path. */
+	/**
+	 * Get the overall distance of the path.
+	 * @return The path's length.
+	 */
 	inline uint GetDistance() const { return this->distance; }
 
-	/** Reduce the flow on this leg only by the specified amount. */
+	/**
+	 * Reduce the flow on this leg only by the specified amount.
+	 * @param f The amount of flow to decrease by.
+	 */
 	inline void ReduceFlow(uint f) { this->flow -= f; }
 
-	/** Increase the flow on this leg only by the specified amount. */
+	/**
+	 * Increase the flow on this leg only by the specified amount.
+	 * @param f The amount of flow to increase by.
+	 */
 	inline void AddFlow(uint f) { this->flow += f; }
 
-	/** Get the flow on this leg. */
+	/**
+	 * Get the flow on this leg.
+	 * @return The accumulated flow.
+	 */
 	inline uint GetFlow() const { return this->flow; }
 
-	/** Get the number of "forked off" child legs of this one. */
+	/**
+	 * Get the number of "forked off" child legs of this one.
+	 * @return The number of children.
+	 */
 	inline uint GetNumChildren() const { return this->num_children; }
 
 	/**

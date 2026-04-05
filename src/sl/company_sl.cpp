@@ -512,6 +512,7 @@ static const NamedSaveLoad _company_desc[] = {
 	NSLT_STRUCTLIST<CompanyOldEconomyStructHandler>("old_economy"),
 	NSLT_STRUCTLIST<CompanyLiveriesStructHandler>("liveries"),
 	NSLT_STRUCTLIST<CompanyAllowListStructHandler>("allow_list"),
+	NSLT("allow_any", SLE_VAR(CompanyProperties, allow_any, SLE_BOOL)),
 };
 
 struct PLYRNonTableHelper {

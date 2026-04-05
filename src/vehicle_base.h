@@ -133,6 +133,7 @@ struct VehicleSpriteSeq {
 
 	/**
 	 * Check whether the sequence contains any sprites.
+	 * @return \c true iff this has any sprites.
 	 */
 	bool IsValid() const
 	{
@@ -149,6 +150,7 @@ struct VehicleSpriteSeq {
 
 	/**
 	 * Assign a single sprite to the sequence.
+	 * @param sprite The new first sprite.
 	 */
 	void Set(SpriteID sprite)
 	{
@@ -159,6 +161,7 @@ struct VehicleSpriteSeq {
 
 	/**
 	 * Copy data from another sprite sequence, while dropping all recolouring information.
+	 * @param src The source to copy the sprites from.
 	 */
 	void CopyWithoutPalette(const VehicleSpriteSeq &src)
 	{
@@ -485,6 +488,7 @@ public:
 	/**
 	 * Sets the expense type associated to this vehicle type
 	 * @param income whether this is income or (running) expenses of the vehicle
+	 * @return The expense type.
 	 */
 	virtual ExpensesType GetExpenseType([[maybe_unused]] bool income) const { return EXPENSES_OTHER; }
 
@@ -496,6 +500,7 @@ public:
 
 	/**
 	 * Whether this is the primary vehicle in the chain.
+	 * @return \c true iff this considered the primary vehicle.
 	 */
 	virtual bool IsPrimaryVehicle() const { return false; }
 
@@ -821,7 +826,7 @@ public:
 
 	/**
 	 * Get the next station the vehicle will stop at.
-	 * @return ID of the next station the vehicle will stop at or StationID::Invalid().
+	 * @param next_station The next stations that we have already seen, and might be adding to.
 	 */
 	inline CargoStationIDVectorSet GetNextStoppingStation() const
 	{
@@ -1444,6 +1449,7 @@ struct SpecializedVehicle : public Vehicle {
 
 	/**
 	 * Gets vehicle with given index
+	 * @param index The pool index to look for.
 	 * @return pointer to vehicle with given index cast to T *
 	 */
 	static inline T *Get(auto index)
@@ -1453,6 +1459,7 @@ struct SpecializedVehicle : public Vehicle {
 
 	/**
 	 * Returns vehicle if the index is a valid index for this vehicle type
+	 * @param index The pool index to look for.
 	 * @return pointer to vehicle with given index if it's a vehicle of this type
 	 */
 	static inline T *GetIfValid(auto index)

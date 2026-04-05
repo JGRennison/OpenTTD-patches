@@ -298,7 +298,8 @@ std::string GetDebugString()
  * If show_date_in_logs or \p force is enabled it returns
  * the date, otherwise it returns an empty string.
  *
- * @return the prefix for logs (do not free), never nullptr.
+ * @param force Whether to force the prefix on.
+ * @return The prefix for logs.
  */
 std::string_view log_prefix::GetLogPrefix(bool force)
 {

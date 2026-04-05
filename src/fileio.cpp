@@ -391,8 +391,7 @@ bool FioRenameFile(const std::string &oldname, const std::string &newname)
 /**
  * Appends, if necessary, the path separator character to the end of the string.
  * It does not add the path separator to zero-sized strings.
- * @param buf  string to append the separator to
- * @return true iff the operation succeeded
+ * @param buf String to append the separator to.
  */
 void AppendPathSeparator(std::string &buf)
 {
@@ -432,6 +431,11 @@ uint TarScanner::DoScan(Subdirectory sd)
 	return num;
 }
 
+/**
+ * Perform the scanning of content in the given modes.
+ * @param modes The modes to scan for.
+ * @return The number of found tar files.
+ */
 /* static */ uint TarScanner::DoScan(TarScanner::Modes modes)
 {
 	Debug(misc, 2, "Scanning for tars");
@@ -716,6 +720,7 @@ extern void DetermineBasePaths(const char *exe);
  * so when we crop the path to there, when can remove the name of the bundle
  * in the same way we remove the name from the executable name.
  * @param exe the path to the executable
+ * @return \c true iff the path to the executable was found.
  */
 static bool ChangeWorkingDirectoryToExecutable(const char *exe)
 {
@@ -1120,6 +1125,7 @@ static bool MatchesExtension(std::string_view extension, const std::string &file
  * @param path            full path we're currently at
  * @param basepath_length from where in the path are we 'based' on the search path
  * @param recursive       whether to recursively search the sub directories
+ * @return The number of files that have been found.
  */
 static uint ScanPath(FileScanner *fs, std::string_view extension, const char *path, size_t basepath_length, bool recursive)
 {
@@ -1163,6 +1169,7 @@ static uint ScanPath(FileScanner *fs, std::string_view extension, const char *pa
  * @param fs        the file scanner to scan for
  * @param extension the extension of files to search for.
  * @param tar       the tar to search in.
+ * @return The number of files that have been found.
  */
 static uint ScanTar(FileScanner *fs, std::string_view extension, const TarFileList::value_type &tar)
 {

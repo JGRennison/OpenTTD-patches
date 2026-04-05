@@ -24,7 +24,7 @@
 template <typename T>
 class ReusableBuffer {
 private:
-	std::vector<T> buffer;
+	std::vector<T> buffer; ///< Buffer to work with.
 
 public:
 	/**

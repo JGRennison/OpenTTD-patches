@@ -138,8 +138,22 @@ DECLARE_INCREMENT_DECREMENT_OPERATORS(Searchpath)
 
 class FileHandle {
 public:
+	/**
+	 * Open an RAII file handle if possible.
+	 * The canonical RAII-way is for FileHandle to open the file and throw an exception on failure, but we don't want that.
+	 * @param filename UTF-8 encoded filename to open.
+	 * @param mode Mode to open file.
+	 * @return FileHandle, or std::nullopt on failure.
+	 */
 	static std::optional<FileHandle> Open(const char *filename, const char *mode);
 
+	/**
+	 * Open an RAII file handle if possible.
+	 * The canonical RAII-way is for FileHandle to open the file and throw an exception on failure, but we don't want that.
+	 * @param filename UTF-8 encoded filename to open.
+	 * @param mode Mode to open file.
+	 * @return FileHandle, or std::nullopt on failure.
+	 */
 	static std::optional<FileHandle> Open(const std::string &filename, const char *mode)
 	{
 		return FileHandle::Open(filename.c_str(), mode);

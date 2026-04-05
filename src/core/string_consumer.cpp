@@ -25,6 +25,10 @@
 
 #include "../safeguards.h"
 
+/**
+ * Log an error in the processing (too small buffer, integer out of range, etc.).
+ * @param msg The message to log.
+ */
 /* static */ void StringConsumer::LogError(std::string &&msg)
 {
 #if defined(STRGEN) || defined(SETTINGSGEN)

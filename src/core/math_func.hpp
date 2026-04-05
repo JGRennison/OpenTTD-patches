@@ -249,7 +249,7 @@ constexpr auto Delta(const T a, const T b)
  * @param x The value to check
  * @param base The base value of the interval
  * @param size The size of the interval
- * @return True if the value is in the interval, false else.
+ * @return \c true iff the value is in the interval.
  */
 template <typename T>
 constexpr bool IsInsideBS(const T x, const size_t base, const size_t size)
@@ -265,6 +265,7 @@ constexpr bool IsInsideBS(const T x, const size_t base, const size_t size)
  * @param x The value to check
  * @param min The minimum of the interval
  * @param max The maximum of the interval
+ * @return \c true iff the value is in the interval.
  * @see IsInsideBS()
  */
 template <typename T, std::enable_if_t<std::disjunction_v<std::is_convertible<T, size_t>, std::is_base_of<StrongTypedefBase, T>>, int> = 0>
@@ -277,6 +278,7 @@ constexpr bool IsInsideMM(const T x, const size_t min, const size_t max) noexcep
 	}
 }
 
+/** Specialization of IsInsideMM for enums. @copydoc IsInsideMM(const size_t, const size_t, const size_t) */
 template <typename enum_type, std::enable_if_t<std::is_enum_v<enum_type>, bool> = true>
 constexpr bool IsInsideMM(enum_type x, enum_type min, enum_type max) noexcept
 {

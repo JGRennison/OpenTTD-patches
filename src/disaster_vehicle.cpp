@@ -245,6 +245,7 @@ void DisasterVehicle::UpdatePosition(int x, int y, int z)
  * 2: Create more smoke and leave debris on ground
  * 3: Clear the runway after some time and remove crashed zeppeliner
  * If not airport was found, only state 0 is reached until zeppeliner leaves map
+ * @copydoc DisasterVehicleTickProc
  */
 static bool DisasterTick_Zeppeliner(DisasterVehicle *v)
 {
@@ -455,6 +456,7 @@ static void DestructIndustry(Industry *i)
  * @param leave_at_top True iff the vehicle leaves the map at the north side.
  * @param news_message The string that's used as news message.
  * @param behaviour Only attack industries that have this behaviour set.
+ * @return \c true iff the vehicle still exists, i.e. has not been destroyed.
  */
 static bool DisasterTick_Aircraft(DisasterVehicle *v, uint16_t image_override, bool leave_at_top, StringID news_message, IndustryBehaviour behaviour)
 {
@@ -516,19 +518,19 @@ static bool DisasterTick_Aircraft(DisasterVehicle *v, uint16_t image_override, b
 	return true;
 }
 
-/** Airplane handling. */
+/** Airplane handling. @copydoc DisasterVehicleTickProc */
 static bool DisasterTick_Airplane(DisasterVehicle *v)
 {
 	return DisasterTick_Aircraft(v, SPR_F_15_FIRING, true, STR_NEWS_DISASTER_AIRPLANE_OIL_REFINERY, IndustryBehaviour::AirplaneAttacks);
 }
 
-/** Helicopter handling. */
+/** Helicopter handling. @copydoc DisasterVehicleTickProc */
 static bool DisasterTick_Helicopter(DisasterVehicle *v)
 {
 	return DisasterTick_Aircraft(v, SPR_AH_64A_FIRING, false, STR_NEWS_DISASTER_HELICOPTER_FACTORY, IndustryBehaviour::ChopperAttacks);
 }
 
-/** Helicopter rotor blades; keep these spinning */
+/** Helicopter rotor blades; keep these spinning. @copydoc DisasterVehicleTickProc */
 static bool DisasterTick_Helicopter_Rotors(DisasterVehicle *v)
 {
 	v->tick_counter++;
@@ -546,7 +548,8 @@ static bool DisasterTick_Helicopter_Rotors(DisasterVehicle *v)
  * (Big) Ufo handling, v->state states:
  * 0: Fly around to the middle of the map, then randomly for a while and home in on a piece of rail
  * 1: Land there and breakdown all trains in a radius of 12 tiles; and now we wait...
- *    because as soon as the Ufo lands, a fighter jet, a Skyranger, is called to clear up the mess
+ *    because as soon as the Ufo lands, a fighter jet, a Skyranger, is called to clear up the mess.
+ * @copydoc DisasterVehicleTickProc
  */
 static bool DisasterTick_Big_Ufo(DisasterVehicle *v)
 {
@@ -649,7 +652,8 @@ static bool DisasterTick_Big_Ufo(DisasterVehicle *v)
 
 /**
  * Skyranger destroying (Big) Ufo handling, v->state states:
- * 0: Home in on landed Ufo and shoot it down
+ * 0: Home in on landed Ufo and shoot it down.
+ * @copydoc DisasterVehicleTickProc
  */
 static bool DisasterTick_Big_Ufo_Destroyer(DisasterVehicle *v)
 {
@@ -695,7 +699,8 @@ static bool DisasterTick_Big_Ufo_Destroyer(DisasterVehicle *v)
 
 /**
  * Submarine, v->state states:
- * Unused, just float around aimlessly and pop up at different places, turning around
+ * Unused, just float around aimlessly and pop up at different places, turning around.
+ * @copydoc DisasterVehicleTickProc
  */
 static bool DisasterTick_Submarine(DisasterVehicle *v)
 {
@@ -724,12 +729,18 @@ static bool DisasterTick_Submarine(DisasterVehicle *v)
 }
 
 
-static bool DisasterTick_NULL(DisasterVehicle *)
+/** No-op vehicle tick. @copydoc DisasterVehicleTickProc */
+static bool DisasterTick_NULL([[maybe_unused]] DisasterVehicle *v)
 {
 	return true;
 }
 
-typedef bool DisasterVehicleTickProc(DisasterVehicle *v);
+/**
+ * Perform any actions for a given vehicle.
+ * @param v The vehicle to check.
+ * @return \c true iff the vehicle still exists, i.e. has not been destroyed.
+ */
+using DisasterVehicleTickProc = bool(DisasterVehicle *v);
 
 static DisasterVehicleTickProc * const _disastervehicle_tick_procs[] = {
 	DisasterTick_Zeppeliner, DisasterTick_NULL,
@@ -878,6 +889,10 @@ static void Disaster_Big_Ufo_Init()
 }
 
 
+/**
+ * Initialise a submarine.
+ * @param subtype The sub type of submarine.
+ */
 static void Disaster_Submarine_Init(DisasterSubType subtype)
 {
 	if (!Vehicle::CanAllocateItem()) return;
@@ -923,9 +938,8 @@ static void Disaster_Big_Submarine_Init()
 static void Disaster_CoalMine_Init()
 {
 	int index = GB(Random(), 0, 4);
-	uint m;
 
-	for (m = 0; m < 15; m++) {
+	for (uint m = 0; m < 15; m++) {
 		for (const Industry *i : Industry::Iterate()) {
 			if (GetIndustrySpec(i->type)->behaviour.Test(IndustryBehaviour::CanSubsidence) && --index < 0) {
 				AddTileNewsItem(GetEncodedString(STR_NEWS_DISASTER_COAL_MINE_SUBSIDENCE, i->town->index), NewsType::Accident, i->location.tile + TileDiffXY(1, 1)); // keep the news, even when the mine closes
@@ -946,12 +960,14 @@ static void Disaster_CoalMine_Init()
 	}
 }
 
+/** Initialisation function and time period to run the different disasters. */
 struct Disaster {
 	DisasterInitProc *init_proc; ///< The init function for this disaster.
 	CalTime::Year min_year;      ///< The first year this disaster will occur.
 	CalTime::Year max_year;      ///< The last year this disaster will occur.
 };
 
+/** Table per disaster subtype when to create disasters, and how to create them. */
 static const Disaster _disasters[] = {
 	{Disaster_Zeppeliner_Init,      CalTime::Year{1930}, CalTime::Year{1955}}, // zeppeliner
 	{Disaster_Small_Ufo_Init,       CalTime::Year{1940}, CalTime::Year{1970}}, // ufo {small}
@@ -963,6 +979,7 @@ static const Disaster _disasters[] = {
 	{Disaster_CoalMine_Init,        CalTime::Year{1950}, CalTime::Year{1985}}, // coalmine
 };
 
+/** Create a random disaster, if there is one available. */
 void DoDisaster()
 {
 	std::vector<DisasterInitProc *> available_disasters;
@@ -978,12 +995,13 @@ void DoDisaster()
 	available_disasters[RandomRange(static_cast<uint32_t>(available_disasters.size()))]();
 }
 
-
+/** Resets the introduction of the next disaster. */
 static void ResetDisasterDelay()
 {
 	_disaster_delay = GB(Random(), 0, 9) + 730;
 }
 
+/** Daily trigger to check whether to add a new disaster. */
 void DisasterDailyLoop()
 {
 	if (--_disaster_delay != 0) return;
@@ -993,6 +1011,7 @@ void DisasterDailyLoop()
 	if (_settings_game.difficulty.disasters != 0) DoDisaster();
 }
 
+/** Starts up disasters. */
 void StartupDisasters()
 {
 	ResetDisasterDelay();

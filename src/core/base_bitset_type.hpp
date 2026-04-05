@@ -40,7 +40,13 @@ public:
 	using BaseType = Tstorage; ///< Storage type of this BaseBitSet, be ConvertibleThroughBase
 	static constexpr Tstorage MASK = Tmask; ///< Mask of valid values.
 
+	/** Create an empty bitset. */
 	constexpr BaseBitSet() : data(0) {}
+
+	/**
+	 * Create a bitset with a given bits that are within the mask of valid values.
+	 * @param data The initial set bits.
+	 */
 	explicit constexpr BaseBitSet(Tstorage data) : data(data & Tmask) {}
 
 	constexpr bool operator==(const BaseBitSet &rhs) const { return this->data == rhs.data; }
@@ -262,11 +268,20 @@ public:
 
 	inline constexpr SetBitIterator<Tvalue_type, Tstorage> IterateSetBits() const { return SetBitIterator<Tvalue_type, Tstorage>(this->data); }
 
-	/* Use IterateSetBits instead, unless BaseBitSetEnableDirectIteration is specifically enabled for the implementation type */
+	/**
+	 * Returns an iterator to begin of the set bits.
+	 * @return The iterator.
+	 * @note Use IterateSetBits instead, unless BaseBitSetEnableDirectIteration is specifically enabled for the implementation type.
+	 */
 	auto begin() const requires BaseBitSetEnableDirectIteration<Timpl>::value
 	{
 		return SetBitIterator<Tvalue_type, Tstorage>(this->data).begin();
 	}
+	/**
+	 * Returns an iterator to the end of the set bits.
+	 * @return The iterator past the last set bit.
+	 * @note Use IterateSetBits instead, unless BaseBitSetEnableDirectIteration is specifically enabled for the implementation type.
+	 */
 	auto end() const requires BaseBitSetEnableDirectIteration<Timpl>::value
 	{
 		return SetBitIterator<Tvalue_type, Tstorage>(this->data).end();

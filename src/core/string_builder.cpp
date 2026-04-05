@@ -14,6 +14,7 @@
 
 /**
  * Append binary uint16 using little endian.
+ * @param value The value to append.
  */
 void StringBuilder::PutUint16LE(uint16_t value)
 {
@@ -26,6 +27,7 @@ void StringBuilder::PutUint16LE(uint16_t value)
 
 /**
  * Append binary int16 using little endian.
+ * @param value The value to append.
  */
 void StringBuilder::PutSint16LE(int16_t value)
 {
@@ -34,6 +36,7 @@ void StringBuilder::PutSint16LE(int16_t value)
 
 /**
  * Append binary uint32 using little endian.
+ * @param value The value to append.
  */
 void StringBuilder::PutUint32LE(uint32_t value)
 {
@@ -48,6 +51,7 @@ void StringBuilder::PutUint32LE(uint32_t value)
 
 /**
  * Append binary int32 using little endian.
+ * @param value The value to append.
  */
 void StringBuilder::PutSint32LE(int32_t value)
 {
@@ -56,6 +60,7 @@ void StringBuilder::PutSint32LE(int32_t value)
 
 /**
  * Append binary uint64 using little endian.
+ * @param value The value to append.
  */
 void StringBuilder::PutUint64LE(uint64_t value)
 {
@@ -74,6 +79,7 @@ void StringBuilder::PutUint64LE(uint64_t value)
 
 /**
  * Append binary int64 using little endian.
+ * @param value The value to append.
  */
 void StringBuilder::PutSint64LE(int64_t value)
 {

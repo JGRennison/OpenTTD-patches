@@ -47,8 +47,7 @@ struct Backup {
 	~Backup()
 	{
 		/* Check whether restoration was done */
-		if (this->valid)
-		{
+		if (this->valid) {
 			/* We cannot assert here, as missing restoration is 'normal' when exceptions are thrown.
 			 * Exceptions are especially used to abort world generation. */
 			Debug(misc, 0, "{}:{}: Backed-up value was not restored!", this->file, this->line);
@@ -136,11 +135,11 @@ struct Backup {
 	}
 
 private:
-	T &original;
-	const char * const file;
-	const int line;
-	bool valid;
-	T original_value;
+	T &original;             ///< Reference to the value we are backing up.
+	const char * const file; ///< File location where the backup was created.
+	const int line;          ///< Line location where the backup was created.
+	bool valid;              ///< Whether the original value has been restored.
+	T original_value;        ///< The value at the moment of making a backup.
 };
 
 struct AutoRestoreBackupNoNewValueTag {};
@@ -193,8 +192,8 @@ struct AutoRestoreBackup {
 	}
 
 private:
-	T &original;
-	T original_value;
+	T &original; ///< Reference to the value we are backing up.
+	T original_value; ///< The value at the moment of making a backup.
 
 	/* Prevent copy, assignment and allocation on stack. */
 	AutoRestoreBackup(const AutoRestoreBackup&) = delete;

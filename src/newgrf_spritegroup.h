@@ -623,7 +623,6 @@ struct ResultSpriteGroup final : SpecializedSpriteGroup<ResultSpriteGroup> {
 	 * @param index Unique (pool) identifier of the SpriteGroup.
 	 * @param sprite The sprite number.
 	 * @param num_sprites The number of sprites per set.
-	 * @return A spritegroup representing the sprite number result.
 	 */
 	ResultSpriteGroup(SpriteGroupID index, SpriteID sprite, uint8_t num_sprites) :
 		SpecializedSpriteGroup<ResultSpriteGroup>(index),
@@ -806,12 +805,14 @@ public:
 	/**
 	 * Get the feature number being resolved for.
 	 * This function is mainly intended for the callback profiling feature.
+	 * @return The feature.
 	 */
 	virtual GrfSpecFeature GetFeature() const { return GSF_INVALID; }
 	/**
 	 * Get an identifier for the item being resolved.
 	 * This function is mainly intended for the callback profiling feature,
 	 * and should return an identifier recognisable by the NewGRF developer.
+	 * @return The identifier.
 	 */
 	virtual uint32_t GetDebugID() const { return 0; }
 

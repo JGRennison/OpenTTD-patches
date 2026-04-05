@@ -268,7 +268,10 @@ static void UpdateFences(TileIndex tile)
 }
 
 
-/** Convert to or from snowy tiles. */
+/**
+ * Convert to or from snowy tiles.
+ * @param tile The tile to consider.
+ */
 static void TileLoopClearAlps(TileIndex tile)
 {
 	int k;

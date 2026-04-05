@@ -41,6 +41,7 @@ public:
 
 	/**
 	 * Similar to HTTPCallback::OnReceiveData, but thread-safe.
+	 * @copydoc HTTPCallback::OnReceiveData
 	 */
 	void OnReceiveData(UniqueBuffer<char> data)
 	{
@@ -87,6 +88,7 @@ public:
 
 	/**
 	 * Check if the queue is empty.
+	 * @return \c true iff the queue is empty.
 	 */
 	bool IsQueueEmpty()
 	{
