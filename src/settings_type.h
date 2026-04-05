@@ -797,6 +797,7 @@ struct VehicleSettings {
 	uint8_t  extend_vehicle_life;              ///< extend vehicle life by this many years
 	uint8_t  road_side;                        ///< the side of the road vehicles drive on
 	uint8_t  plane_crashes;                    ///< number of plane crashes, 0 = none, 1 = reduced, 2 = normal
+	bool     aircraft_range;                   ///< enable range limits for aircraft
 	bool     adjacent_crossings;               ///< enable closing of adjacent level crossings
 	bool     safer_crossings;                  ///< enable safer level crossings
 	bool     improved_breakdowns;              ///< different types, chances and severities of breakdowns

@@ -8,6 +8,7 @@
 /** @file settings_table.cpp The tables of all the settings as well as the implementation of most of their callbacks. */
 
 #include "stdafx.h"
+#include "aircraft.h"
 #include "base_media_base.h"
 #include "base_media_music.h"
 #include "base_media_sounds.h"
@@ -24,6 +25,7 @@
 #include "graph_gui.h"
 #include "gui.h"
 #include "infrastructure_func.h"
+#include "news_func.h"
 #include "order_func.h"
 #include "plans_func.h"
 #include "rail.h"
@@ -643,6 +645,25 @@ static void RoadVehSlopeSteepnessChanged(int32_t new_value)
 static void ProgrammableSignalsShownChanged(int32_t new_value)
 {
 	InvalidateWindowData(WC_BUILD_SIGNAL, 0);
+}
+
+
+/**
+ * This function updates the aircraft cache when the aircraft range setting is changed.
+ */
+static void AircraftRangeChanged(int32_t)
+{
+	for (Aircraft *v : Aircraft::Iterate()) {
+		v->acache.cached_max_range = Engine::Get(v->engine_type)->GetRange();
+		v->acache.cached_max_range_sqr = v->acache.cached_max_range * v->acache.cached_max_range;
+
+		/* Reset destination is too far state */
+		if (v->flags.Test(VehicleAirFlag::DestinationTooFar)) {
+			v->flags.Reset(VehicleAirFlag::DestinationTooFar);
+			SetWindowWidgetDirty(WC_VEHICLE_VIEW, v->index, WID_VV_START_STOP);
+			DeleteVehicleNews(v->index, AdviceType::AircraftDestinationTooFar);
+		}
+	}
 }
 
 static void TownFoundingChanged(int32_t new_value)
