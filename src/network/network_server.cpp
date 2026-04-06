@@ -1760,6 +1760,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_SET_NAME(Packet
 					ServerNetworkGameSocketHandler::GetName(), this->client_id, this->GetClientIP(), ci->client_name, client_name, this->GetPeerPublicKey());
 			ci->client_name = std::move(client_name);
 			NetworkUpdateClientInfo(ci->client_id);
+			InvalidateWindowData(WC_CLIENT_LIST, 0);
 		}
 	}
 	return NETWORK_RECV_STATUS_OKAY;
