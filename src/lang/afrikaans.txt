@@ -1613,6 +1613,7 @@ STR_CONFIG_SETTING_NOSERVICE_HELPTEXT                           :As dit geaktive
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS                             :Laat wa spoed beperkings toe: {STRING}
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS_HELPTEXT                    :As dit geaktiveer is bepaal die spoedbeperking van treinwaens ook die maksimum spoed van die hele trein
 
+
 STR_CONFIG_SETTING_DISABLE_ELRAILS                              :Deaktiveer elektriese spore: {STRING}
 STR_CONFIG_SETTING_DISABLE_ELRAILS_HELPTEXT                     :As dit geaktiveerd is, is dit nie nodig om spore te elektrifiseer voordat elektriese treine die spore kan gebruik nie
 
@@ -3499,6 +3500,8 @@ STR_PURCHASE_INFO_ALL_BUT                                       :Alles behalwe {
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Maks. Traktiewe Poging: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Afstand: {GOLD}{COMMA} teëls
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Vliegtuig tipe: {GOLD}{STRING}
+
+# Vehicle sort details
 
 ###length 3
 

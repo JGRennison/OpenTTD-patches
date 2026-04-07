@@ -771,6 +771,7 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Violkolora
 
 
 
+
 ###length 3
 
 
@@ -1278,6 +1279,8 @@ STR_GROUP_DEFAULT_AIRCRAFTS                                     :Negrupigita aer
 # Vehicle availability
 ###length VEHICLE_TYPES
 
+
+# Vehicle sort details
 
 ###length 3
 

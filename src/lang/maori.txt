@@ -923,7 +923,7 @@ STR_NEWS_AIRCRAFT_IS_WAITING                                    :{WHITE}Kei te t
 
 # Order review system / warnings
 STR_NEWS_VEHICLE_HAS_TOO_FEW_ORDERS                             :{WHITE}Ehara i te rawaka ngā mahi i te rārangi mō {VEHICLE}
-STR_NEWS_VEHICLE_HAS_VOID_ORDER                                 :{WHITE}He mahi hemahema tā {VEHICLE}
+STR_NEWS_VEHICLE_HAS_VOID_ORDER                                 :{WHITE}He mahi muhu tā {VEHICLE}
 STR_NEWS_VEHICLE_HAS_DUPLICATE_ENTRY                            :{WHITE}He mahi taurua tā {VEHICLE}
 STR_NEWS_VEHICLE_HAS_INVALID_ENTRY                              :{WHITE}He teihana muhu kei roto i ngā mahi a {VEHICLE}
 STR_NEWS_PLANE_USES_TOO_SHORT_RUNWAY                            :{WHITE}He poto rawa te aratau o tētahi taunga rererangi i roto i ngā mahi a {VEHICLE}
@@ -1062,7 +1062,7 @@ STR_GAME_OPTIONS_LANGUAGE_TOOLTIP                               :Kōwhiria te re
 STR_GAME_OPTIONS_LANGUAGE_PERCENTAGE                            :{STRING} ({NUM}% kua oti)
 
 STR_GAME_OPTIONS_FULLSCREEN                                     :Mata whārahi
-STR_GAME_OPTIONS_FULLSCREEN_TOOLTIP                             :Mākatia tēnei pouaka kia tākaro i OpenTTD i te aratau mata whārahi
+STR_GAME_OPTIONS_FULLSCREEN_TOOLTIP                             :Whakakā kia tākaro i OpenTTD i te aratau mata whārahi
 
 STR_GAME_OPTIONS_RESOLUTION                                     :Ariari mata
 STR_GAME_OPTIONS_RESOLUTION_TOOLTIP                             :Kōwhiria te ariari mata hei whakamahi
@@ -1070,11 +1070,11 @@ STR_GAME_OPTIONS_RESOLUTION_OTHER                               :kē atu
 STR_GAME_OPTIONS_RESOLUTION_ITEM                                :{NUM}x{NUM}
 
 STR_GAME_OPTIONS_VIDEO_ACCELERATION                             :Whakahohoro ā pūmārō
-STR_GAME_OPTIONS_VIDEO_ACCELERATION_TOOLTIP                     :Mākatia tēnei pouaka kia tuku i OpenTTD kia tarai ki te whakamahi i te whakahohoro ā-pūmārō. Ka kitea te tautuhinga hou i muri i tētahi whakaara anō i te kēmu
+STR_GAME_OPTIONS_VIDEO_ACCELERATION_TOOLTIP                     :Whakakā kia tuku i OpenTTD kia tarai ki te whakamahi i te whakahohoro ā pūmārō. Ka kitea te tautuhinga hou i muri i tētahi whakaara anō i te kēmu
 STR_GAME_OPTIONS_VIDEO_ACCELERATION_RESTART                     :{WHITE}Ka kitea te tautuhinga i muri i tētahi whakaara anō i te kēmu
 
 STR_GAME_OPTIONS_VIDEO_VSYNC                                    :Tukutahi poutū
-STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :Mākatia tēnei pouaka kia tukutahi poutū i te mata. Ka kitea te tautuhinga hou i muri i tētahi whakaara anō i te kēmu. Kāore e tutuki mehemea kāore te whakahohoro ā-pūmārō i te kā
+STR_GAME_OPTIONS_VIDEO_VSYNC_TOOLTIP                            :Whakakā kia tukutahi poutū i te mata. Ka kitea te tautuhinga hou i muri i tētahi whakaara anō i te kēmu. Kāore e tutuki mehemea kāore te whakahohoro ā pūmārō i te kā
 
 STR_GAME_OPTIONS_VIDEO_DRIVER_INFO                              :Pūtāhono onāianei: {STRING}
 
@@ -1083,15 +1083,15 @@ STR_GAME_OPTIONS_INTERFACE                                      :Tāhono
 STR_GAME_OPTIONS_GUI_SCALE_FRAME                                :Rahi o te tāhono
 STR_GAME_OPTIONS_GUI_SCALE_TOOLTIP                              :Tōia te tāneke kia tautuhi i te rahi o te tāhono. Pātaki+Tō kia motukore te whakarite
 STR_GAME_OPTIONS_GUI_SCALE_AUTO                                 :Kimi aunoatia te rahi
-STR_GAME_OPTIONS_GUI_SCALE_AUTO_TOOLTIP                         :Mākatia tēnei pouaka kia kite aunoatia te rahi o te tāhono
+STR_GAME_OPTIONS_GUI_SCALE_AUTO_TOOLTIP                         :Whakakā kia kite aunoatia te rahi o te tāhono
 
 STR_GAME_OPTIONS_GUI_SCALE_BEVELS                               :Hurirahitia ngā hema
-STR_GAME_OPTIONS_GUI_SCALE_BEVELS_TOOLTIP                       :Mākatia tēnei pouaka kia hurirahitia ngā hema kia ōrite ki te rahi o te tāhono
+STR_GAME_OPTIONS_GUI_SCALE_BEVELS_TOOLTIP                       :Whakakā kia hurirahitia ngā hema kia ōrite ki te rahi o te tāhono
 
 STR_GAME_OPTIONS_GUI_FONT_SPRITE                                :Whakamahia te momotuhi taketake
-STR_GAME_OPTIONS_GUI_FONT_SPRITE_TOOLTIP                        :Mākatia tēnei pouaka mehemea ka hiahia koe ki te whakamahi i te momotuhi taketake he tūmau te rahi
+STR_GAME_OPTIONS_GUI_FONT_SPRITE_TOOLTIP                        :Whakakā mehemea ka hiahia koe ki te whakamahi i te momotuhi taketake he pūmau ai te rahi
 STR_GAME_OPTIONS_GUI_FONT_AA                                    :Whakamahenitia ngā tongi i te momotuhi
-STR_GAME_OPTIONS_GUI_FONT_AA_TOOLTIP                            :Mākatia tēnei pouaka kia whakamahenitia ngā tongi kei ngā momotuhi hurirahi
+STR_GAME_OPTIONS_GUI_FONT_AA_TOOLTIP                            :Whakakā kia whakamahenitia ngā tongi kei ngā momotuhi hurirahi
 
 STR_GAME_OPTIONS_GUI_SCALE_MARK                                 :{DECIMAL}x
 
@@ -1905,6 +1905,7 @@ STR_CONFIG_SETTING_STATION_LENGTH_LOADING_PENALTY_HELPTEXT      :Ina kā, ka pō
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS                             :Whakakāngia ngā tepetere wākena: {STRING}
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS_HELPTEXT                    :Ina kā, whakamahia ngā tepetere o ngā wākena hei whakatau i te tere mōrahi o te tereina
 
+
 STR_CONFIG_SETTING_DISABLE_ELRAILS                              :Āraia ngā rēra hiko: {STRING}
 STR_CONFIG_SETTING_DISABLE_ELRAILS_HELPTEXT                     :Ina kā, kāore te whakahiko ara e pīrangitia kia rere ai ngā tereina hiko
 
@@ -2548,6 +2549,8 @@ STR_NETWORK_CLIENT_LIST_SERVER_CONNECTION_TYPE_TURN             :{BLACK}Mā tēt
 STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_KICK                       :Whana atu
 STR_NETWORK_CLIENT_LIST_ADMIN_CLIENT_BAN                        :Aukati
 STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_RESET                     :Muku
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_ALLOW_ANY                 :Tukuna ngā kiritaki katoa
+STR_NETWORK_CLIENT_LIST_ADMIN_COMPANY_ALLOW_LISTED              :Tukuna ngā kiritaki anake kei te rārangi
 
 STR_NETWORK_CLIENT_LIST_ASK_CAPTION                             :{WHITE}Mahi whakahaere
 STR_NETWORK_CLIENT_LIST_ASK_CLIENT_KICK                         :{YELLOW}Kei te tino hiahia rānei koe ki te whana i te kaitākaro ko {STRING}?
@@ -4231,6 +4234,19 @@ STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Kaha Kum
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Whānui: {GOLD}{COMMA} Papariki
 STR_PURCHASE_INFO_AIRCRAFT_TYPE                                 :{BLACK}Momo waka rererangi: {GOLD}{STRING}
 STR_PURCHASE_INFO_RAILTYPES                                     :{BLACK}Momo rēra: {GOLD}{STRING}
+
+# Vehicle sort details
+STR_PURCHASE_SORT_DETAILS_COST                                  :{CURRENCY_LONG}
+STR_PURCHASE_SORT_DETAILS_SPEED                                 :{VELOCITY}
+STR_PURCHASE_SORT_DETAILS_POWER                                 :{POWER}
+STR_PURCHASE_SORT_DETAILS_MAX_TE                                :{FORCE}
+STR_PURCHASE_SORT_DETAILS_INTRO_DATE                            :{NUM}
+STR_PURCHASE_SORT_DETAILS_RUNNINGCOST_YEAR                      :{CURRENCY_LONG}/tau
+STR_PURCHASE_SORT_DETAILS_RUNNINGCOST_PERIOD                    :{CURRENCY_LONG}/wā
+STR_PURCHASE_SORT_DETAILS_RELIABILITY                           :{COMMA}%
+STR_PURCHASE_SORT_DETAILS_POWER_VS_RUNNING_COST                 :{DECIMAL}
+STR_PURCHASE_SORT_DETAILS_AIRCRAFT_RANGE                        :{COMMA} papariki
+STR_PURCHASE_SORT_DETAILS_CAPACITY                              :{COMMA}
 
 ###length 3
 STR_CARGO_TYPE_FILTER_ALL                                       :Momo utanga katoa

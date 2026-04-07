@@ -1528,6 +1528,7 @@ STR_CONFIG_SETTING_NOSERVICE_HELPTEXT                           :Ef þessi still
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS                             :Leyfa hraðatakmarkanir vagna: {STRING}
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS_HELPTEXT                    :Ef þessi stilling er virk er hámarkshraði á vögnum einnig notaður til að ákvarða hámarks hraða á járnbrautalestum
 
+
 STR_CONFIG_SETTING_DISABLE_ELRAILS                              :Ekki nota rafknúnar lestir: {STRING}
 STR_CONFIG_SETTING_DISABLE_ELRAILS_HELPTEXT                     :Ef þessi stilling er virk er ekki boðið upp á að nota rafmagns knúnar járnbrautalestar né spor fyrir þá
 
@@ -3198,6 +3199,8 @@ STR_PURCHASE_INFO_ALL_TYPES                                     :Allar tegundir 
 STR_PURCHASE_INFO_ALL_BUT                                       :Allt nema {CARGO_LIST}
 STR_PURCHASE_INFO_MAX_TE                                        :{BLACK}Hámarks togkrafur: {GOLD}{FORCE}
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Drægni: {GOLD}{COMMA} reitir
+
+# Vehicle sort details
 
 ###length 3
 

@@ -642,6 +642,7 @@ STR_CONFIG_SETTING_AI_BUILDS_AIRCRAFT                           :कंप्य
 
 
 
+
 STR_CONFIG_SETTING_NEWS_ACCIDENTS_DISASTERS                     :दुर्घटनायें / आपदायें : {STRING}
 
 
@@ -1217,6 +1218,8 @@ STR_BUY_VEHICLE_TRAIN_ALL_CAPTION                               :नई ट्�
 STR_PURCHASE_INFO_COST_WEIGHT                                   :{BLACK}मूल्य : {GOLD}{CURRENCY_LONG}{BLACK} भार : {GOLD}{WEIGHT_SHORT}
 STR_PURCHASE_INFO_SPEED                                         :{BLACK}रफ़्तार: {GOLD}{VELOCITY}
 STR_PURCHASE_INFO_WEIGHT_CWEIGHT                                :{BLACK}भार : {GOLD}{WEIGHT_SHORT} ({WEIGHT_SHORT})
+
+# Vehicle sort details
 
 ###length 3
 STR_CARGO_TYPE_FILTER_FREIGHT                                   :परिवहन

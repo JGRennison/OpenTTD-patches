@@ -1042,6 +1042,7 @@ STR_CONFIG_SETTING_SCRIPT_MAX_OPCODES                           :#ОПкодов
 
 
 
+
 STR_CONFIG_SETTING_NEWS_ARRIVAL_FIRST_VEHICLE_OWN               :Пристигнување на првото возило на станицата на играчот: {STRING}
 
 STR_CONFIG_SETTING_NEWS_ARRIVAL_FIRST_VEHICLE_OTHER             :Пристигнување на прво возило на конкурентска станица: {STRING}
@@ -1713,6 +1714,8 @@ STR_BUY_VEHICLE_TRAIN_ALL_CAPTION                               :Шински в
 STR_BUY_VEHICLE_AIRCRAFT_CAPTION                                :Нов авион
 
 STR_PURCHASE_INFO_AIRCRAFT_RANGE                                :{BLACK}Опсег: {GOLD}{COMMA} плочки
+
+# Vehicle sort details
 
 ###length 3
 
