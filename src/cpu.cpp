@@ -13,6 +13,7 @@
 #if defined(_MSC_VER)
 #include <intrin.h>
 #endif
+#include <array>
 
 #include "safeguards.h"
 
