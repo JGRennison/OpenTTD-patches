@@ -2,6 +2,12 @@
 
 * * *
 
+### v0.71.2 (2026-04-07)
+* Fix incorrect text in station rating tooltip and bridge too low error messages.
+* Fix vehicle viewport rendering issues which could occur in some special cases.
+* Improve industry placement performance for some industry NewGRFs.
+* Bump trunk base from commit b41e23270d5fb4386e44193139d41d5955f866cf to commit 0b3c448ea1e0faab3e3eea0049186f4e8ed01ffd.
+
 ### v0.71.1 (2026-03-21)
 * Fix text/colour for vehicle lifetime profit and capcities of multi-cargo ships.
 * Fix not being able to change the else if/or if type of some routing restriction conditionals.
