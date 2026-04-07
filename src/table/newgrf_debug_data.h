@@ -2184,6 +2184,12 @@ class NIHStationStruct : public NIHelper {
 			output.Print("  road_waypoint_area: tile: {}, width: {}, height: {}",
 					wp->road_waypoint_area.tile, wp->road_waypoint_area.w, wp->road_waypoint_area.h);
 		}
+		if (!bst->tile_waiting_random_triggers.empty()) {
+			output.Print("  Tile waiting random triggers: ");
+			for (const auto &it : bst->tile_waiting_random_triggers) {
+				output.Print("    {}: 0x{:X}", it.first, it.second);
+			}
+		}
 	}
 };
 
