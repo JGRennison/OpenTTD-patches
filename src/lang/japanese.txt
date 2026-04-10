@@ -2669,7 +2669,6 @@ STR_STATION_CLASS_WAYP                                          :中継駅
 
 # Signal window
 STR_BUILD_SIGNAL_CAPTION                                        :{WHITE}信号種類の選択
-STR_BUILD_SIGNAL_TOGGLE_ADVANCED_SIGNAL_TOOLTIP                 :{BLACK}高度な信号の表示切替
 STR_BUILD_SIGNAL_SEMAPHORE_NORM_TOOLTIP                         :{BLACK}閉塞信号 (腕木式){}最も一般的な信号で、1つの閉塞内(信号同士の間の区間)には1編成のみが進入できます。配置した信号をクリックすると信号の向きを「一方向→一方向(逆)→二方向」の順で変えられます。一方向式の信号は背面から通過できません
 STR_BUILD_SIGNAL_SEMAPHORE_ENTRY_TOOLTIP                        :{BLACK}入口信号 (腕木式){}この信号の先にある出口信号のうち最低でも1つが緑であれば緑になりますが、そうでなければ赤になります。場内信号に良く使われます
 STR_BUILD_SIGNAL_SEMAPHORE_EXIT_TOOLTIP                         :{BLACK}出口信号 (腕木式){}動作は普通の閉塞信号と同様ですが、入口/コンボ信号を使用する場合に必要になります。ホームの入り口に良く使われます

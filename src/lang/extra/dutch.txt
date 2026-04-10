@@ -22,6 +22,8 @@ STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Transpar
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Gemiddelde reistijd: {STRING}
 STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Capaciteit: {CARGO_LONG}
 
+STR_BUILD_SIGNAL_TOGGLE_ADVANCED_SIGNAL_TOOLTIP                 :{BLACK}Wisselen tussen geavanceerde seintypen weergeven-verbergen
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

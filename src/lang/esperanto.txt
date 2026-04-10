@@ -3020,7 +3020,6 @@ STR_STATION_CLASS_WAYP_WAYPOINT                                 :Defaŭlta vojpu
 
 # Signal window
 STR_BUILD_SIGNAL_CAPTION                                        :{WHITE}Elekto de signalilo
-STR_BUILD_SIGNAL_TOGGLE_ADVANCED_SIGNAL_TOOLTIP                 :{BLACK}Ŝaltu montradon de altnivelaj tipoj de semaforoj
 STR_BUILD_SIGNAL_SEMAPHORE_NORM_TOOLTIP                         :{BLACK}Bloksignalilo (semafora){}Tio ĉi estas la plej baza tipo de signalilo, kiu permesas al nur unu vagonaro esti en la sama bloko dum la sama tempo
 STR_BUILD_SIGNAL_SEMAPHORE_ENTRY_TOOLTIP                        :{BLACK}Enirsemaforo{}Restas verda dum estas almenaŭ unu verda elirsemaforo de la sekva traksekcio. Alikaze ĝi estas ruĝa
 STR_BUILD_SIGNAL_SEMAPHORE_EXIT_TOOLTIP                         :{BLACK}Elira semaforo{}Kondutas same kiel bloka semaforo, sed estas bezonata por kaŭzi la ĝustan koloron ĉe eniraj kaj kombinaj antaŭsemaforoj

@@ -2865,7 +2865,6 @@ STR_STATION_CLASS_WAYP_WAYPOINT                                 :Predvolený bod
 
 # Signal window
 STR_BUILD_SIGNAL_CAPTION                                        :{WHITE}Výber návestidla
-STR_BUILD_SIGNAL_TOGGLE_ADVANCED_SIGNAL_TOOLTIP                 :{BLACK}Prepnúť zobrazenie zložitejších typov návestidiel
 STR_BUILD_SIGNAL_SEMAPHORE_NORM_TOOLTIP                         :{BLACK}Obyčajné návestidlo (mechanické){}Základný typ návestidla, povolí iba jeden vlak v jednom úseku v rovnakom čase
 STR_BUILD_SIGNAL_SEMAPHORE_ENTRY_TOOLTIP                        :{BLACK}Vstupné návestidlo (mechanické){}Zelená tak dlho, kým je aspoň jedno zelené výstupné návestidlo na nasledujúcom úseku trate. Inak ukazuje červenú
 STR_BUILD_SIGNAL_SEMAPHORE_EXIT_TOOLTIP                         :{BLACK}Výstupné návestidlo (mechanické){}Funguje rovnako ako obyčajné návestidlo, je však nevyhnutné na určenie správnej farby na vstupných a kombinovaných návestidlách umiestnených pred ním

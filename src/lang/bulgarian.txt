@@ -2839,7 +2839,6 @@ STR_STATION_CLASS_WAYP_WAYPOINT                                 :Влаков м
 
 # Signal window
 STR_BUILD_SIGNAL_CAPTION                                        :{WHITE}Селекция на сигнал
-STR_BUILD_SIGNAL_TOGGLE_ADVANCED_SIGNAL_TOOLTIP                 :{BLACK}Превключване на показването на разширени типове сигнали
 STR_BUILD_SIGNAL_SEMAPHORE_NORM_TOOLTIP                         :{BLACK}Нормален сигнал (семафор){}Това е най-базовият тип сигнал, позволяващ само един влак да бъде в дадена секция от влаковата линия в даден момент
 STR_BUILD_SIGNAL_SEMAPHORE_ENTRY_TOOLTIP                        :{BLACK}Входен сигнал (семафор){}Свети зелено, докато има поне един зелен изходен сигнал от следващия сегмент от пътя. В противен случай свети червено
 STR_BUILD_SIGNAL_SEMAPHORE_EXIT_TOOLTIP                         :{BLACK}Изходен сигнал (семафор){}Действа като нормален сигнал, но е необходим, за да работят входните и комбинираните пред-сигнали

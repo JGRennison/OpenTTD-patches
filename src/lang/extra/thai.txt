@@ -14,6 +14,8 @@ STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :แสดงเ
 
 STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}เปิด/ปิด การโปร่งใสของตัวบอกการบรรทุกของ. กด Ctrl+Click สำหรับการล็อก
 
+STR_BUILD_SIGNAL_TOGGLE_ADVANCED_SIGNAL_TOOLTIP                 :{BLACK}แสดงประเภทเสาสัญญาณแบบขั้นสูง
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

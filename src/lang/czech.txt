@@ -2993,7 +2993,6 @@ STR_STATION_CLASS_WAYP_WAYPOINT                                 :Původní směr
 
 # Signal window
 STR_BUILD_SIGNAL_CAPTION                                        :{WHITE}Výběr návěstidel
-STR_BUILD_SIGNAL_TOGGLE_ADVANCED_SIGNAL_TOOLTIP                 :{BLACK}Zobrazit dokonalejší návěstidla
 STR_BUILD_SIGNAL_SEMAPHORE_NORM_TOOLTIP                         :{BLACK}Obyčejné návěstidlo (semafor){}Návěstidla jsou nutná, aby nedocházelo ke srážkám vlaků na tratích, kde jezdí více než jeden vlak
 STR_BUILD_SIGNAL_SEMAPHORE_ENTRY_TOOLTIP                        :{BLACK}Vjezdové návěstidlo (semafor){}Svítí zeleně do té doby, kdy v následujícím úseku trati je alespoň jedno další svítící zeleně. Jinak svítí červeně
 STR_BUILD_SIGNAL_SEMAPHORE_EXIT_TOOLTIP                         :{BLACK}Výjezdové návěstidlo (semafor){}Chová se stejně jako obyčejné, ale je nezbytné nastavit správnou barvu vjezdových a kombinovaných pre-signálů

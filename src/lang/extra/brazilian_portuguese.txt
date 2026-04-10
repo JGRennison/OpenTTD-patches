@@ -19,6 +19,8 @@ STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Mostra tempos d
 
 STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Altera transparência para os indicadores de carga. Ctrl+Clique para travar
 
+STR_BUILD_SIGNAL_TOGGLE_ADVANCED_SIGNAL_TOOLTIP                 :{BLACK}Mostrar/Ocultar tipos de sinais avançados
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

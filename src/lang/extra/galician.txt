@@ -800,6 +800,7 @@ STR_LINKGRAPH_STATS_TOOLTIP_PRODUCTION_INTERVAL                 :{BLACK}{CARGO_L
 
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_POLYRAIL                         :{BLACK}Construír vías utilizando o modo poliliña. Ctrl alterna construír/borrar para a construción de ferrocarrís. Shift alterna construír/amosar a estimación de custos
 
+STR_BUILD_SIGNAL_TOGGLE_ADVANCED_SIGNAL_TOOLTIP                 :{BLACK}Activa ou desactiva amosar os tipos de sinais avanzados
 STR_BUILD_SIGNAL_SEMAPHORE_PROG_TOOLTIP                         :{BLACK}Pre-sinal programable (mecánico){}O pre-sinal programable é un sinal combo que pode ser programado para comportarse de xeitos complexos.
 STR_BUILD_SIGNAL_SEMAPHORE_NO_ENTRY_TOOLTIP                     :{BLACK}Sinal de Non-entrada (mecánico){}Un sinal de ruta permite entrar a máis dun tren nun cantón ao mesmo tempo, se o tren pode atopar unha ruta a un punto de parada seguro. Os sinais de ruta estándar poden rebasarse en sentido contrario.
 STR_BUILD_SIGNAL_ELECTRIC_PROG_TOOLTIP                          :{BLACK}Pre-sinal programable (eléctrico){}O pre-sinal programable é un sinal combo que pode ser programado para comportarse de xeitos complexos.

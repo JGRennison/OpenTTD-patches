@@ -13,6 +13,8 @@ STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Показва 
 
 STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Вклучи прозрачност за товарещи указатели. Ctrl+Click за заключване
 
+STR_BUILD_SIGNAL_TOGGLE_ADVANCED_SIGNAL_TOOLTIP                 :{BLACK}Превключване на показването на разширени типове сигнали
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

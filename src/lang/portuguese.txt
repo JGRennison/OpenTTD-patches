@@ -2928,7 +2928,6 @@ STR_STATION_CLASS_WAYP_WAYPOINT                                 :Ponto de contro
 
 # Signal window
 STR_BUILD_SIGNAL_CAPTION                                        :{WHITE}Seleção de Sinal
-STR_BUILD_SIGNAL_TOGGLE_ADVANCED_SIGNAL_TOOLTIP                 :{BLACK}Alterna a exibição para tipos de sinais avançados
 STR_BUILD_SIGNAL_SEMAPHORE_NORM_TOOLTIP                         :{BLACK}Sinal de bloco (semáforo){}Este é o tipo mais básico de sinal. Permite apenas a passagem de um comboio dentro de um bloco de linha ao mesmo tempo.
 STR_BUILD_SIGNAL_SEMAPHORE_ENTRY_TOOLTIP                        :{BLACK}Sinal de entrada (semáforo){}Apresenta-se verde enquanto existir um ou mais sinais de saída verdes no seguimento da linha. Caso contrário, ficará vermelho.
 STR_BUILD_SIGNAL_SEMAPHORE_EXIT_TOOLTIP                         :{BLACK}Sinal de saída (semáforo){}Funciona da mesma forma que o sinal de bloco, mas é necessário para ativar a cor correta nos pré-sinais de entrada e combinado.

@@ -2958,7 +2958,6 @@ STR_STATION_CLASS_WAYP                                          :Putanje
 
 # Signal window
 STR_BUILD_SIGNAL_CAPTION                                        :{WHITE}Odabir signalizacije
-STR_BUILD_SIGNAL_TOGGLE_ADVANCED_SIGNAL_TOOLTIP                 :{BLACK}Prikaz naprednih tipova signala
 STR_BUILD_SIGNAL_SEMAPHORE_NORM_TOOLTIP                         :{BLACK}Blok signalizacija (semafor){}Ovo je najosnovnija vrsta signalizacije, dozvoljava samo jedan voz da bude u istoj deonici
 STR_BUILD_SIGNAL_SEMAPHORE_ENTRY_TOOLTIP                        :{BLACK}Ulazna signalizacija (semafor){}Otvoren prolaz ukoliko postoji jedna ili više otvorenih izlaznih signalizacija sa nastupajuće deonice. U suprotnom je zatvoren
 STR_BUILD_SIGNAL_SEMAPHORE_EXIT_TOOLTIP                         :{BLACK}Izlazna signalizacija (semafor){}Ponaša se isto kao i blok signalizacija ali je neophodan za uparivanje sa ulaznom i/ili kombinovanom signalizacijom

@@ -22,6 +22,8 @@ STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Átláts
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Átlagos utazási idő: {STRING}
 STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Kapacitás: {CARGO_LONG}
 
+STR_BUILD_SIGNAL_TOGGLE_ADVANCED_SIGNAL_TOOLTIP                 :{BLACK}Mutassa vagy ne mutassa az összes jelzőtípust
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

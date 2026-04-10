@@ -2902,7 +2902,6 @@ STR_STATION_CLASS_WAYP_WAYPOINT                                 :Waypoint predef
 
 # Signal window
 STR_BUILD_SIGNAL_CAPTION                                        :{WHITE}Selezione segnale
-STR_BUILD_SIGNAL_TOGGLE_ADVANCED_SIGNAL_TOOLTIP                 :{BLACK}Attiva/disattiva la visualizzazione dei tipi di segnale avanzati
 STR_BUILD_SIGNAL_SEMAPHORE_NORM_TOOLTIP                         :{BLACK}Segnale di blocco (semaforico){}I segnali sono necessari per impedire ai convogli di scontrarsi su reti ferroviarie dove viaggia più di un treno
 STR_BUILD_SIGNAL_SEMAPHORE_ENTRY_TOOLTIP                        :{BLACK}Segnale di entrata (semaforico){}Questo pre-segnale permette l'accesso a un blocco solo se è presente almeno un segnale di uscita verde al termine della sezione del blocco, altrimenti è rosso.
 STR_BUILD_SIGNAL_SEMAPHORE_EXIT_TOOLTIP                         :{BLACK}Segnale di uscita (semaforico){}Questo pre-segnale interagisce con i segnali di entrata, comunicandogli se vi sono uscite disponibili dal blocco, a cui entrambi appartengono. Se non è in combinazione con un segnale di entrata, si comporta come un comune segnale di blocco.

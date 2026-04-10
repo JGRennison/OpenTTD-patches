@@ -23,6 +23,8 @@ STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :ダイヤで行
 
 STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}積み降ろしインジケーターの透過表示を切り替えます。{}Ctrl+クリックでロックします
 
+STR_BUILD_SIGNAL_TOGGLE_ADVANCED_SIGNAL_TOOLTIP                 :{BLACK}高度な信号の表示切替
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

@@ -2927,7 +2927,6 @@ STR_STATION_CLASS_WAYP_WAYPOINT                                 :Varsayılan yol
 
 # Signal window
 STR_BUILD_SIGNAL_CAPTION                                        :{WHITE}Sinyal Seçimi
-STR_BUILD_SIGNAL_TOGGLE_ADVANCED_SIGNAL_TOOLTIP                 :{BLACK}Gelişmiş sinyal türlerini göster
 STR_BUILD_SIGNAL_SEMAPHORE_NORM_TOOLTIP                         :{BLACK}Blok Sinyali (semafor){}Bu en temel sinyal türüdür, bir blok içinde aynı anda yalnız bir tren bulunmasına izin verir
 STR_BUILD_SIGNAL_SEMAPHORE_ENTRY_TOOLTIP                        :{BLACK}Giriş-Sinyali (semafor){}Yolun devam eden bölümünde en az bir yeşil çıkış sinyali olduğu sürece yeşil yanar. Aksi halde kırmızı yanar
 STR_BUILD_SIGNAL_SEMAPHORE_EXIT_TOOLTIP                         :{BLACK}Çıkış Sinyali (semafor){}Blok sinyali ile aynı şekilde çalışır ancak giriş ve karışık ön sinyaller ile doğru rengi tetiklemek gerekmektedir

@@ -2852,7 +2852,6 @@ STR_STATION_CLASS_WAYP_WAYPOINT                                 :Punct intermedi
 
 # Signal window
 STR_BUILD_SIGNAL_CAPTION                                        :{WHITE}Alegere semnal
-STR_BUILD_SIGNAL_TOGGLE_ADVANCED_SIGNAL_TOOLTIP                 :{BLACK}Comută afișarea tipurilor de semnal avansate
 STR_BUILD_SIGNAL_SEMAPHORE_NORM_TOOLTIP                         :{BLACK}Semnal standard (semafor){}Acesta este cel mai simplu tip de semnal, permițând numai unui tren să fie în același bloc, la un moment dat
 STR_BUILD_SIGNAL_SEMAPHORE_ENTRY_TOOLTIP                        :{BLACK}Semnal de intrare (semafor){}Verde, atat timp cât există unul sau mai multe semnale verzi de ieșire din secțiunea următoare a căii ferate. Altfel indică roșu
 STR_BUILD_SIGNAL_SEMAPHORE_EXIT_TOOLTIP                         :{BLACK}Semnal de ieșire (semafor){}Se comportă în același fel ca semnalul normal, dar este necesar pentru declanșarea culorii corecte la presemnalizatoarele de intrare și cele combinate

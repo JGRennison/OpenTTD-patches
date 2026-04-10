@@ -2900,7 +2900,6 @@ STR_STATION_CLASS_WAYP_WAYPOINT                                 :Pwynt llwybro r
 
 # Signal window
 STR_BUILD_SIGNAL_CAPTION                                        :{WHITE}Dewis Signal
-STR_BUILD_SIGNAL_TOGGLE_ADVANCED_SIGNAL_TOOLTIP                 :{BLACK}Toglu dangos mathau signal uwch
 STR_BUILD_SIGNAL_SEMAPHORE_NORM_TOOLTIP                         :{BLACK}Signal Bloc (semaffor){}Dyma'r math mwyaf sylfaenol o signal, sy'n caniatáu un trên yn unig ymhob bloc ar unrhyw adeg
 STR_BUILD_SIGNAL_SEMAPHORE_ENTRY_TOOLTIP                        :{BLACK}Signal Mynediad (semaffor){}Gwyrdd cyhyd y bod un neu fwy o signalau gadael yn wyrdd yn yr ardal nesaf o drac. Dangosir coch fel arall
 STR_BUILD_SIGNAL_SEMAPHORE_EXIT_TOOLTIP                         :{BLACK}Signal Gadael (semaffor){}Yn ymddwyn fel signal bloc, ond yn angenrheidiol ar gyfer gweithredu'r lliw cywir ar signalau mynediad a chyfun

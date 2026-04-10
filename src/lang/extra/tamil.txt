@@ -15,6 +15,8 @@ STR_CONFIG_SETTING_AUTOSAVE_HELPTEXT                            :தானிய
 STR_CONFIG_SETTING_TIMETABLE_IN_TICKS                           :கால அட்டவணையை நாட்களில் அல்லாமல் சொடுக்குகளில் காட்டு: {STRING}
 STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :கால அட்டவணையை நாட்களில் அல்லாமல் சொடுக்குகளில் காட்டு
 
+STR_BUILD_SIGNAL_TOGGLE_ADVANCED_SIGNAL_TOOLTIP                 :{BLACK}மேம்பட்ட சிக்னல் வகைகளைக் காட்டவும்/மறைக்கவும்
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

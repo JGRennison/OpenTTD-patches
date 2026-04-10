@@ -2610,7 +2610,6 @@ STR_STATION_CLASS_WAYP_WAYPOINT                                 :תחנת ברי
 
 # Signal window
 STR_BUILD_SIGNAL_CAPTION                                        :{WHITE}בחירת רמזורים
-STR_BUILD_SIGNAL_TOGGLE_ADVANCED_SIGNAL_TOOLTIP                 :{BLACK} החלף הצגת רמזורים מתקדמים
 STR_BUILD_SIGNAL_SEMAPHORE_NORM_TOOLTIP                         :{BLACK}רמזור בלוק (מכאניים){}זהו הרמזורי הפשוט ביותר, מאפשר לרכבת אחת בלבד להמצא בבלוק מסויים בזמן נתון
 STR_BUILD_SIGNAL_SEMAPHORE_ENTRY_TOOLTIP                        :{BLACK}רמזור כניסה (סמפור){}ירוקים כל עוד יש לפחות רמזור יציאה ירוק מקטע המסילה העוקב. אחרת מראה אדום
 STR_BUILD_SIGNAL_SEMAPHORE_EXIT_TOOLTIP                         :{BLACK}רמזור יציאה (סמפור){} מתנהג בדומה לרמזור הבלוק, אבל נחוץ להצגת הצבע הנכון ברמזורי כניסה ורמזורים משולבים

@@ -18,6 +18,8 @@ STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Menunjukan wakt
 
 STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Hidup/matikan indikator proses pemuatan kargo. CTRL+klik untuk mengunci
 
+STR_BUILD_SIGNAL_TOGGLE_ADVANCED_SIGNAL_TOOLTIP                 :{BLACK} Beralih menampilkan jenis sinyal tingkat lanjut
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

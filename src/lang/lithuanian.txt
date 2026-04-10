@@ -2950,7 +2950,6 @@ STR_STATION_CLASS_WAYP                                          :Keliarodžiai
 
 # Signal window
 STR_BUILD_SIGNAL_CAPTION                                        :{WHITE}Signalo pasirinkimas
-STR_BUILD_SIGNAL_TOGGLE_ADVANCED_SIGNAL_TOOLTIP                 :{BLACK}Perjungti išplėstinių signalų tipų rodymą
 STR_BUILD_SIGNAL_SEMAPHORE_NORM_TOOLTIP                         :{BLACK}Bėgių bloko semaforas{}Paprasčiausias signalo tipas, leidžiantis viename bėgių bloke tuo pačiu metu būti tik vienam traukiniui
 STR_BUILD_SIGNAL_SEMAPHORE_ENTRY_TOOLTIP                        :{BLACK}Įvažiavimo semaforas{}Leidžia įvažiuoti į bėgių bloką, jei bent vienas išvažiavimo signalas leidžia išvažiuoti iš bloko. Kitu atveju traukinių eismas draudžiamas
 STR_BUILD_SIGNAL_SEMAPHORE_EXIT_TOOLTIP                         :{BLACK}Išvažiavimo semaforas{}Veikia lygiai taip pat, kaip ir paprastas bėgių bloko signalas, bet yra reikalingas normaliam įvažiavimo bei kombinuotųjų semaforų darbui

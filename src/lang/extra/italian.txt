@@ -22,6 +22,8 @@ STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Attiva/d
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}tempo medio di percorrenza: {STRING}
 STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Capacità: {CARGO_LONG}
 
+STR_BUILD_SIGNAL_TOGGLE_ADVANCED_SIGNAL_TOOLTIP                 :{BLACK}Attiva/disattiva la visualizzazione dei tipi di segnale avanzati
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

@@ -2924,7 +2924,6 @@ STR_STATION_CLASS_WAYP_WAYPOINT                                 :Điểm mốc m
 
 # Signal window
 STR_BUILD_SIGNAL_CAPTION                                        :{WHITE}Chọn Đèn Tín Hiệu
-STR_BUILD_SIGNAL_TOGGLE_ADVANCED_SIGNAL_TOOLTIP                 :{BLACK}Bật/tắt hiển thị các loại đèn báo nâng cao
 STR_BUILD_SIGNAL_SEMAPHORE_NORM_TOOLTIP                         :{BLACK}Đèn (cờ) tín hiệu khoá{}Đây là loại tín hiệu cơ bản, chỉ cho phép một đoàn tàu đi vào chỗ khoá cùng một thời điểm.
 STR_BUILD_SIGNAL_SEMAPHORE_ENTRY_TOOLTIP                        :{BLACK}Đèn (cờ) tín hiệu cửa nhập{}Sẽ xanh nếu một hoặc nhiều đèn tín hiệu cửa thoát ở phía sau màu xanh. Không thì sẽ đỏ.
 STR_BUILD_SIGNAL_SEMAPHORE_EXIT_TOOLTIP                         :{BLACK}Đèn (cờ) tín hiệu cửa thoát{}Tương tự đèn tín hiệu khoá, nhưng cần có để đổi trạng thái của đèn tín hiệu loại cửa nhập & kết hợp nằm trước nó.

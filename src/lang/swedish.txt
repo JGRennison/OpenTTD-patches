@@ -2926,7 +2926,6 @@ STR_STATION_CLASS_WAYP_WAYPOINT                                 :Standardriktmä
 
 # Signal window
 STR_BUILD_SIGNAL_CAPTION                                        :{WHITE}Signalval
-STR_BUILD_SIGNAL_TOGGLE_ADVANCED_SIGNAL_TOOLTIP                 :{BLACK}Slå av/på visning av avancerade signaltyper
 STR_BUILD_SIGNAL_SEMAPHORE_NORM_TOOLTIP                         :{BLACK}Standardsignal (semafor){}Detta är den enklaste typen av signal, som endast tillåter ett tåg per block vid samma tidpunkt
 STR_BUILD_SIGNAL_SEMAPHORE_ENTRY_TOOLTIP                        :{BLACK}Infartssignal (semafor){}Grön så länge det finns en eller flera gröna utfartssignaler på efterföljande bit av spår, annars visas rött
 STR_BUILD_SIGNAL_SEMAPHORE_EXIT_TOOLTIP                         :{BLACK}Utfartssignal (semafor){}Fungerar på samma sätt som en vanlig signal, men behövs för att utlösa korrekt färg på in- eller kombinationssignaler

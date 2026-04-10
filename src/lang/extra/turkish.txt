@@ -22,6 +22,8 @@ STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Transpar
 STR_LINKGRAPH_STATS_TOOLTIP_TIME_EXTENSION_GENERAL              :{}Ortalama seyahat süresi: {STRING}
 STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Kapasite: {CARGO_LONG}
 
+STR_BUILD_SIGNAL_TOGGLE_ADVANCED_SIGNAL_TOOLTIP                 :{BLACK}Gelişmiş sinyal türlerini göster
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

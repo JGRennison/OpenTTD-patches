@@ -19,6 +19,8 @@ STR_CONFIG_SETTING_TIMETABLE_IN_TICKS_HELPTEXT                  :Arată timpii d
 
 STR_TRANSPARENT_LOADING_TOOLTIP                                 :{BLACK}Comută transparenţa pentru indicatorii de încarcare. Ctrl+Click pentru blocare
 
+STR_BUILD_SIGNAL_TOGGLE_ADVANCED_SIGNAL_TOOLTIP                 :{BLACK}Comută afișarea tipurilor de semnal avansate
+
 # Tracerestrict GUI
 
 # Programmable Pre-Signals

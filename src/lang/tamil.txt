@@ -2558,7 +2558,6 @@ STR_STATION_CLASS_WAYP_WAYPOINT                                 :இயல்ப
 
 # Signal window
 STR_BUILD_SIGNAL_CAPTION                                        :{WHITE}சிக்னல் தேர்ந்தெடுத்தல்
-STR_BUILD_SIGNAL_TOGGLE_ADVANCED_SIGNAL_TOOLTIP                 :{BLACK}மேம்பட்ட சிக்னல் வகைகளைக் காட்டவும்/மறைக்கவும்
 STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_TOOLTIP                   :{BLACK}சிக்னல்களை இழுக்கும் தொலைவு
 STR_BUILD_SIGNAL_DRAG_SIGNALS_DENSITY_DECREASE_TOOLTIP          :{BLACK}சிக்னல்களை இழுக்கும் தூரத்தைக் குறைக்கவும்
 

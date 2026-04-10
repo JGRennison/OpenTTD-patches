@@ -2889,7 +2889,6 @@ STR_STATION_CLASS_WAYP_WAYPOINT                                 :Punto de ruta p
 
 # Signal window
 STR_BUILD_SIGNAL_CAPTION                                        :{WHITE}Selección de señales
-STR_BUILD_SIGNAL_TOGGLE_ADVANCED_SIGNAL_TOOLTIP                 :{BLACK}Alternar vista de señales avanzadas
 STR_BUILD_SIGNAL_SEMAPHORE_NORM_TOOLTIP                         :{BLACK}Señal de tramo (mecánica){}Es la señal más básica. Permite a un solo tren ocupar un tramo de vía entre dos señales
 STR_BUILD_SIGNAL_SEMAPHORE_ENTRY_TOOLTIP                        :{BLACK}Señal de entrada (mecánica){}Se abre si existe una o más señales de salida en el siguiente tramo, de lo contrario se mostrará cerrada
 STR_BUILD_SIGNAL_SEMAPHORE_EXIT_TOOLTIP                         :{BLACK}Señal de salida (mecánica){}Igual que una señal de tramo pero es necesaria para activar la posición correcta de las señales de entrada y combo

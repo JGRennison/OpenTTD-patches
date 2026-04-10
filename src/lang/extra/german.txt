@@ -566,6 +566,7 @@ STR_LINKGRAPH_STATS_TOOLTIP_CAPACITY                            :{}Kapazität: {
 
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_POLYRAIL                         :{BLACK}Gleise legen mit automatischem Legen mehrerer Gleise. Strg halten, um zwischen Bauen und Entfernen umzuschalten. Shift schaltet zwischen Bauen und Kostenvoranschlag um
 
+STR_BUILD_SIGNAL_TOGGLE_ADVANCED_SIGNAL_TOOLTIP                 :{BLACK}Das Zeigen erweiterter Signaltypen umschalten
 STR_BUILD_SIGNAL_SEMAPHORE_PROG_TOOLTIP                         :{BLACK}Programmierbares Signal (Formsignal){}Das programmierbare Signal ist ein Kombinationssignal, welches programmiert werden kann sich komplex zu verhalten.
 STR_BUILD_SIGNAL_SEMAPHORE_NO_ENTRY_TOOLTIP                     :{BLACK}Sperrsignal (Formsignal){}Erlaubt mehreren Zügen, einen Signalabschnitt zu befahren, sofern sie separate Gleisabschnitte belegen können. Sperrsignale können nicht von vorne durchfahren werden.
 STR_BUILD_SIGNAL_ELECTRIC_PROG_TOOLTIP                          :{BLACK}Programmierbares Signal (Lichtsignal){}Das programmierbare Signal ist ein Kombinationssignal, welches programmiert werden kann sich komplex zu verhalten.

@@ -2927,7 +2927,6 @@ STR_STATION_CLASS_WAYP_WAYPOINT                                 :預設中途站
 
 # Signal window
 STR_BUILD_SIGNAL_CAPTION                                        :{WHITE}號誌選擇
-STR_BUILD_SIGNAL_TOGGLE_ADVANCED_SIGNAL_TOOLTIP                 :{BLACK}是否顯示進階號誌類型
 STR_BUILD_SIGNAL_SEMAPHORE_NORM_TOOLTIP                         :{BLACK}閉塞號誌 (信號){}這是最常見的基本號誌，在同一時間裡只允許一列火車在同個區塊裡。
 STR_BUILD_SIGNAL_SEMAPHORE_ENTRY_TOOLTIP                        :{BLACK}入口號誌 (懸臂){}當綠燈亮時，代表此號誌後有一個以上的出口號誌呈現綠燈，否則將會亮紅燈
 STR_BUILD_SIGNAL_SEMAPHORE_EXIT_TOOLTIP                         :{BLACK}出口號誌 (懸臂){}與閉塞號誌類似，但它還會負責觸發前頭的入口號誌及組合號誌

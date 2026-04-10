@@ -810,6 +810,7 @@ STR_LINKGRAPH_STATS_TOOLTIP_PRODUCTION_INTERVAL                 :{BLACK}1 생산
 
 STR_RAIL_TOOLBAR_TOOLTIP_BUILD_POLYRAIL                         :{BLACK}다각건설 모드로 선로를 건설합니다. CTRL 키를 누르면 건설/철거모드를 바꿀 수 있습니다. SHIFT 키를 누른 채로 사용하면 예상 비용을 볼 수 있습니다
 
+STR_BUILD_SIGNAL_TOGGLE_ADVANCED_SIGNAL_TOOLTIP                 :{BLACK}고급 신호기 종류를 보이거나 감춥니다
 STR_BUILD_SIGNAL_SEMAPHORE_PROG_TOOLTIP                         :{BLACK}프로그램 신호기 (구식){}프로그램 신호기는 복잡한 기능을 할 수 있도록 프로그래밍 가능한 복합 신호기입니다
 STR_BUILD_SIGNAL_SEMAPHORE_NO_ENTRY_TOOLTIP                     :{BLACK}진입 금지 신호기 (구식){}경로가 겹치지 않는 경우에 한 대 이상의 열차가 한 폐색 구간에 동시에 들어갈 수 있게 해주는 경로 신호기입니다. 진입 금지 신호기는 앞쪽에서 통과가 불가능합니다
 STR_BUILD_SIGNAL_ELECTRIC_PROG_TOOLTIP                          :{BLACK}프로그램 신호기 (전자식){}프로그램 신호기는 복잡한 기능을 할 수 있도록 프로그래밍 가능한 복합 신호기입니다
