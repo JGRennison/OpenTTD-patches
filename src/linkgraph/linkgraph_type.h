@@ -21,15 +21,18 @@ using LinkGraphJobID = PoolID<LinkGraphJobIDTag>;
 typedef uint16_t NodeID;
 static const NodeID INVALID_NODE = UINT16_MAX;
 
-enum DistributionType : uint8_t {
-	DT_MANUAL = 0,           ///< Manual distribution. No link graph calculations are run.
-	DT_ASYMMETRIC = 1,       ///< Asymmetric distribution. Usually cargo will only travel in one direction.
-	DT_SYMMETRIC = 2,        ///< Symmetric distribution. The same amount of cargo travels in each direction between each pair of nodes.
+/**
+ * Distribution types.
+ */
+enum class DistributionType : uint8_t {
+	Manual = 0,              ///< Manual distribution. No link graph calculations are run.
+	Asymmetric = 1,          ///< Asymmetric distribution. Usually cargo will only travel in one direction.
+	Symmetric = 2,           ///< Symmetric distribution. The same amount of cargo travels in each direction between each pair of nodes.
 
-	DT_ASYMMETRIC_EQ = 20,   ///< Asymmetric distribution (equal). Usually cargo will only travel in one direction. Attempt to distribute the same amount of cargo to each sink.
-	DT_ASYMMETRIC_NEAR = 21, ///< Asymmetric distribution (nearest). Usually cargo will only travel in one direction. Attempt to distribute cargo to the nearest sink.
+	AsymmetricEqual = 20,    ///< Asymmetric distribution (equal). Usually cargo will only travel in one direction. Attempt to distribute the same amount of cargo to each sink.
+	AsymmetricNearest = 21,  ///< Asymmetric distribution (nearest). Usually cargo will only travel in one direction. Attempt to distribute cargo to the nearest sink.
 
-	DT_PER_CARGO_DEFAULT = 128, ///< Per cargo: Use default value
+	PerCargoDefault = 128,   ///< Per cargo: Use default value
 };
 
 /**

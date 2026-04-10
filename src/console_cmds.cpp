@@ -1270,7 +1270,7 @@ static bool ConResetCompany(std::span<std::string_view> argv)
 	}
 
 	/* It is safe to remove this company */
-	Command<Commands::CompanyControl>::Post(CCA_DELETE, *index, CRR_MANUAL, INVALID_CLIENT_ID, {});
+	Command<Commands::CompanyControl>::Post(CompanyCtrlAction::Delete, *index, CompanyRemoveReason::Manual, INVALID_CLIENT_ID, {});
 	IConsolePrint(CC_DEFAULT, "Company deleted.");
 
 	return true;
@@ -1298,7 +1298,7 @@ static bool ConOfferCompanySale(std::span<std::string_view> argv)
 		return true;
 	}
 
-	Command<Commands::CompanyControl>::Post(CCA_SALE, *index, CRR_NONE, INVALID_CLIENT_ID, {});
+	Command<Commands::CompanyControl>::Post(CompanyCtrlAction::Sale, *index, CompanyRemoveReason::None, INVALID_CLIENT_ID, {});
 	IConsolePrint(CC_DEFAULT, "Company offered for sale.");
 
 	return true;
@@ -1331,7 +1331,7 @@ static bool ConMergeCompanies(std::span<std::string_view> argv)
 		return true;
 	}
 
-	Command<Commands::CompanyControl>::Post(CCA_MERGE, *main_company, CRR_NONE, INVALID_CLIENT_ID, *to_merge_company);
+	Command<Commands::CompanyControl>::Post(CompanyCtrlAction::Merge, *main_company, CompanyRemoveReason::None, INVALID_CLIENT_ID, *to_merge_company);
 	IConsolePrint(CC_DEFAULT, "Companies merged.");
 
 	return true;
@@ -1753,7 +1753,7 @@ static bool ConStartAI(std::span<std::string_view> argv)
 	}
 
 	/* Start a new AI company */
-	Command<Commands::CompanyControl>::Post(CCA_NEW_AI, CompanyID::Invalid(), CRR_NONE, INVALID_CLIENT_ID, {});
+	Command<Commands::CompanyControl>::Post(CompanyCtrlAction::NewAI, CompanyID::Invalid(), CompanyRemoveReason::None, INVALID_CLIENT_ID, {});
 
 	return true;
 }
@@ -1795,8 +1795,8 @@ static bool ConReloadAI(std::span<std::string_view> argv)
 	}
 
 	/* First kill the company of the AI, then start a new one. This should start the current AI again */
-	Command<Commands::CompanyControl>::Post(CCA_DELETE, *company_id, CRR_MANUAL, INVALID_CLIENT_ID, {});
-	Command<Commands::CompanyControl>::Post(CCA_NEW_AI, *company_id, CRR_NONE, INVALID_CLIENT_ID, {});
+	Command<Commands::CompanyControl>::Post(CompanyCtrlAction::Delete, *company_id, CompanyRemoveReason::Manual, INVALID_CLIENT_ID, {});
+	Command<Commands::CompanyControl>::Post(CompanyCtrlAction::NewAI, *company_id, CompanyRemoveReason::None, INVALID_CLIENT_ID, {});
 	IConsolePrint(CC_DEFAULT, "AI reloaded.");
 
 	return true;
@@ -1839,7 +1839,7 @@ static bool ConStopAI(std::span<std::string_view> argv)
 	}
 
 	/* Now kill the company of the AI. */
-	Command<Commands::CompanyControl>::Post(CCA_DELETE, *company_id, CRR_MANUAL, INVALID_CLIENT_ID, {});
+	Command<Commands::CompanyControl>::Post(CompanyCtrlAction::Delete, *company_id, CompanyRemoveReason::Manual, INVALID_CLIENT_ID, {});
 	IConsolePrint(CC_DEFAULT, "AI stopped, company deleted.");
 
 	return true;
@@ -2425,7 +2425,7 @@ static void PerformNetworkAuthorizedKeyAction(std::string_view name, NetworkAuth
 				authorized_keys->Add(authorized_key);
 			} else {
 				AutoRestoreBackup backup(_current_company, company);
-				Command<Commands::CompanyAllowListControl>::Post(CALCA_ADD, authorized_key);
+				Command<Commands::CompanyAllowListControl>::Post(CompanyAllowListCtrlAction::AddKey, authorized_key);
 			}
 			IConsolePrint(CC_INFO, "Added {} to {}.", authorized_key, name);
 			return;
@@ -2440,7 +2440,7 @@ static void PerformNetworkAuthorizedKeyAction(std::string_view name, NetworkAuth
 				authorized_keys->Remove(authorized_key);
 			} else {
 				AutoRestoreBackup backup(_current_company, company);
-				Command<Commands::CompanyAllowListControl>::Post(CALCA_REMOVE, authorized_key);
+				Command<Commands::CompanyAllowListControl>::Post(CompanyAllowListCtrlAction::RemoveKey, authorized_key);
 			}
 			IConsolePrint(CC_INFO, "Removed {} from {}.", authorized_key, name);
 			return;
@@ -4065,7 +4065,7 @@ static bool ConDeleteCompany(std::span<std::string_view> argv)
 		return true;
 	}
 
-	Command<Commands::CompanyControl>::Post(CCA_DELETE, company_id, CRR_MANUAL, INVALID_CLIENT_ID, {});
+	Command<Commands::CompanyControl>::Post(CompanyCtrlAction::Delete, company_id, CompanyRemoveReason::Manual, INVALID_CLIENT_ID, {});
 	IConsolePrint(CC_DEFAULT, "Company deleted.");
 
 	return true;

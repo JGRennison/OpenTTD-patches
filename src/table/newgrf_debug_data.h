@@ -1616,7 +1616,7 @@ class NIHObject : public NIHelper {
 			if (spec->grf_prop.grffile != nullptr) {
 				output.buffer.format("  (local ID: {})", spec->grf_prop.local_id);
 			}
-			if (spec->class_index != INVALID_OBJECT_CLASS) {
+			if (spec->class_index != ObjectClassID::Invalid()) {
 				uint class_id = ObjectClass::Get(spec->class_index)->global_id;
 				output.buffer.format(", class ID: {}", label_dumper().Label(class_id));
 			}

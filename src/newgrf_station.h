@@ -11,6 +11,7 @@
 #define NEWGRF_STATION_H
 
 #include "core/enum_type.hpp"
+#include "newgrf_station_id.h"
 #include "newgrf_animation_type.h"
 #include "newgrf_badge_type.h"
 #include "newgrf_callbacks.h"
@@ -118,15 +119,8 @@ struct StationResolverObject : public SpecializedResolverObject<StationRandomTri
 static const uint32_t STATION_CLASS_LABEL_DEFAULT = 'DFLT';
 static const uint32_t STATION_CLASS_LABEL_WAYPOINT = 'WAYP';
 
-enum StationClassID : uint16_t {
-	STAT_CLASS_BEGIN = 0,    ///< the lowest valid value
-	STAT_CLASS_DFLT = 0,     ///< Default station class.
-	STAT_CLASS_WAYP,         ///< Waypoint class.
-	STAT_CLASS_MAX = UINT16_MAX, ///< Maximum number of classes.
-};
-
-/** Allow incrementing of StationClassID variables */
-DECLARE_INCREMENT_DECREMENT_OPERATORS(StationClassID)
+static constexpr StationClassID STAT_CLASS_DFLT{0}; ///< Default station class.
+static constexpr StationClassID STAT_CLASS_WAYP{1}; ///< Waypoint class.
 
 /** Flags describing behaviour of NewGRF stations. */
 enum class StationSpecFlag : uint8_t {
@@ -221,7 +215,7 @@ struct StationSpec : NewGRFSpecBase<StationClassID> {
 };
 
 /** Class containing information relating to station classes. */
-using StationClass = NewGRFClass<StationSpec, StationClassID, STAT_CLASS_MAX>;
+using StationClass = NewGRFClass<StationSpec, StationClassID>;
 
 const StationSpec *GetStationSpec(TileIndex t);
 

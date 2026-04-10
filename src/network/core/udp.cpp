@@ -188,14 +188,12 @@ void NetworkUDPSocketHandler::ReceivePackets()
  */
 void NetworkUDPSocketHandler::HandleUDPPacket(Packet &p, NetworkAddress &client_addr)
 {
-	PacketUDPType type;
-
 	/* New packet == new client, which has not quit yet */
 	this->Reopen();
 
-	type = (PacketUDPType)p.Recv_uint8();
+	PacketUDPType type = static_cast<PacketUDPType>(p.Recv_uint8());
 
-	switch (this->HasClientQuit() ? PACKET_UDP_END : type) {
+	switch (type) {
 		case PACKET_UDP_CLIENT_FIND_SERVER:   this->Receive_CLIENT_FIND_SERVER(p, client_addr);   break;
 		case PACKET_UDP_SERVER_RESPONSE:      this->Receive_SERVER_RESPONSE(p, client_addr);      break;
 
@@ -203,11 +201,7 @@ void NetworkUDPSocketHandler::HandleUDPPacket(Packet &p, NetworkAddress &client_
 		case PACKET_UDP_EX_SERVER_RESPONSE:   this->Receive_EX_SERVER_RESPONSE(p, client_addr);   break;
 
 		default:
-			if (this->HasClientQuit()) {
-				Debug(net, 0, "[udp] received invalid packet type {} from {}", type, FormatNetworkAddress(client_addr));
-			} else {
-				Debug(net, 0, "[udp] received illegal packet from {}", FormatNetworkAddress(client_addr));
-			}
+			Debug(net, 0, "[udp] Received invalid packet type {} from {}", type, FormatNetworkAddress(client_addr));
 			break;
 	}
 }

@@ -115,7 +115,7 @@ TEST_CASE("CmdDataT simple tests")
 
 TEST_CASE("TupleRefCmdData tests")
 {
-	CmdCompanyCtrlData payload = CmdCompanyCtrlData::Make(CCA_NEW_AI, CompanyID{2}, CompanyRemoveReason{3}, {}, CompanyID{5});
+	CmdCompanyCtrlData payload = CmdCompanyCtrlData::Make(CompanyCtrlAction::NewAI, CompanyID{2}, CompanyRemoveReason{3}, {}, CompanyID{5});
 	CHECK(TestGeneralCommandPayload<Commands::CompanyControl>(payload, PayloadChecker{{ 1, 2, 3, 0, 5 }}));
 
 	CmdCompanyCtrlData payload2 = payload;

@@ -164,7 +164,8 @@ public:
 		td.owner_type[0] = STR_LAND_AREA_INFORMATION_OWNER; // At least one owner is displayed, though it might be "N/A".
 
 		CargoArray acceptance{};
-		AddAcceptedCargo(tile, acceptance, nullptr);
+		CargoTypes always_accepted{};
+		AddAcceptedCargo(tile, acceptance, always_accepted);
 		GetTileDesc(tile, td);
 
 		this->landinfo_data.clear();

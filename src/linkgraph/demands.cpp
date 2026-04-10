@@ -438,7 +438,7 @@ DemandCalculator::DemandCalculator(LinkGraphJob &job) :
 		this->mod_dist = 100 + ((over100 * over100) / 12);
 	}
 
-	if (settings.GetDistributionType(cargo) == DT_MANUAL) return;
+	if (settings.GetDistributionType(cargo) == DistributionType::Manual) return;
 
 	const uint size = job.Size();
 
@@ -480,16 +480,16 @@ DemandCalculator::DemandCalculator(LinkGraphJob &job) :
 		}
 
 		switch (settings.GetDistributionType(cargo)) {
-			case DT_SYMMETRIC:
+			case DistributionType::Symmetric:
 				this->CalcDemand<SymmetricScaler>(job, reachable_nodes, SymmetricScaler(settings.demand_size));
 				break;
-			case DT_ASYMMETRIC:
+			case DistributionType::Asymmetric:
 				this->CalcDemand<AsymmetricScaler>(job, reachable_nodes, AsymmetricScaler());
 				break;
-			case DT_ASYMMETRIC_EQ:
+			case DistributionType::AsymmetricEqual:
 				this->CalcMinimisedDistanceDemand<AsymmetricScalerEq>(job, reachable_nodes, AsymmetricScalerEq());
 				break;
-			case DT_ASYMMETRIC_NEAR:
+			case DistributionType::AsymmetricNearest:
 				this->CalcMinimisedDistanceDemand<AsymmetricScaler>(job, reachable_nodes, AsymmetricScaler());
 				break;
 			default:

@@ -117,7 +117,8 @@ struct Map {
 	/**
 	 * 'Wraps' the given "tile" so it is within the map.
 	 * It does this by masking the 'high' bits of.
-	 * @param tile the tile to 'wrap'
+	 * @param tile the tile to 'wrap'.
+	 * @return The wrapped tile.
 	 */
 	static inline TileIndex WrapToMap(TileIndex tile)
 	{

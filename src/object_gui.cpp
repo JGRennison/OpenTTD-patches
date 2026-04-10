@@ -62,7 +62,7 @@ public:
 		return false;
 	}
 
-	int GetSelectedClass() const override { return _object_gui.sel_class; }
+	int GetSelectedClass() const override { return _object_gui.sel_class.base(); }
 	void SetSelectedClass(int id) const override { _object_gui.sel_class = this->GetClassIndex(id); }
 
 	StringID GetClassName(int id) const override
@@ -113,7 +113,7 @@ public:
 		for (const Object *o : Object::Iterate()) {
 			if (GetTileOwner(o->location.tile) != _current_company) continue;
 			const ObjectSpec *spec = ObjectSpec::Get(o->type);
-			if (spec == nullptr || spec->class_index == INVALID_OBJECT_CLASS || !spec->IsEverAvailable()) continue;
+			if (spec == nullptr || spec->class_index == ObjectClassID::Invalid() || !spec->IsEverAvailable()) continue;
 			items.insert(GetPickerItem(spec));
 		}
 	}
@@ -363,6 +363,11 @@ public:
 		this->UpdateButtons(nullptr);
 	}
 
+	inline void PickItem(ObjectClassID cls_id, int id)
+	{
+		this->PickerWindow::PickItem(cls_id.base(), id);
+	}
+
 	/**
 	 * Handler for global hotkeys of the BuildObjectWindow.
 	 * @param hotkey Hotkey
@@ -422,7 +427,10 @@ bool ShouldShowBuildObjectPicker()
 	return ObjectPickerCallbacks::instance.IsActive();
 }
 
-/** Show our object picker.  */
+/**
+ * Show our object picker.
+ * @return The allocated window or \c nullptr when no window was allocated.
+ */
 Window *ShowBuildObjectPicker()
 {
 	/* Don't show the place object button when there are no objects to place. */
@@ -435,7 +443,7 @@ Window *ShowBuildObjectPicker()
 /** Show our object picker, and select a particular spec.  */
 void ShowBuildObjectPickerAndSelect(const ObjectSpec *spec)
 {
-	if (spec == nullptr || !spec->IsAvailable() || !ObjectPickerCallbacks::instance.IsActive() || spec->class_index == INVALID_OBJECT_CLASS) return;
+	if (spec == nullptr || !spec->IsAvailable() || !ObjectPickerCallbacks::instance.IsActive() || spec->class_index == ObjectClassID::Invalid()) return;
 
 	BuildObjectWindow *w = AllocateWindowDescFront<BuildObjectWindow, true>(_build_object_desc, 0);
 	if (w != nullptr) {
@@ -446,5 +454,5 @@ void ShowBuildObjectPickerAndSelect(const ObjectSpec *spec)
 /** Reset all data of the object GUI. */
 void InitializeObjectGui()
 {
-	_object_gui.sel_class = ObjectClassID::OBJECT_CLASS_BEGIN;
+	_object_gui.sel_class = ObjectClassID::Begin();
 }

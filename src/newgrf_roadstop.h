@@ -10,6 +10,7 @@
 #ifndef NEWGRF_ROADSTATION_H
 #define NEWGRF_ROADSTATION_H
 
+#include "newgrf_station_id.h"
 #include "newgrf_animation_type.h"
 #include "newgrf_spritegroup.h"
 #include "newgrf_badge_type.h"
@@ -27,13 +28,8 @@ static const int NUM_ROADSTOPS_PER_GRF = 64000;
 static const uint32_t ROADSTOP_CLASS_LABEL_DEFAULT = 'DFLT';
 static const uint32_t ROADSTOP_CLASS_LABEL_WAYPOINT = 'WAYP';
 
-enum RoadStopClassID : uint16_t {
-	ROADSTOP_CLASS_BEGIN = 0,          ///< The lowest valid value
-	ROADSTOP_CLASS_DFLT  = 0,          ///< Default road stop class.
-	ROADSTOP_CLASS_WAYP,               ///< Waypoint class (unimplemented: this is reserved for future use with road waypoints).
-	ROADSTOP_CLASS_MAX   = UINT16_MAX, ///< Maximum number of classes.
-};
-DECLARE_INCREMENT_DECREMENT_OPERATORS(RoadStopClassID)
+static constexpr RoadStopClassID ROADSTOP_CLASS_DFLT{0}; ///< Default road stop class.
+static constexpr RoadStopClassID ROADSTOP_CLASS_WAYP{1}; ///< Waypoint class.
 
 /**
  * Various different options for availability, restricting
@@ -178,7 +174,7 @@ struct RoadStopSpec : NewGRFSpecBase<RoadStopClassID> {
 	static const RoadStopSpec *Get(uint16_t index);
 };
 
-using RoadStopClass = NewGRFClass<RoadStopSpec, RoadStopClassID, ROADSTOP_CLASS_MAX>;
+using RoadStopClass = NewGRFClass<RoadStopSpec, RoadStopClassID>;
 
 const TileLayoutSpriteGroup *GetRoadStopLayout(TileInfo *ti, const RoadStopSpec *spec, BaseStation *st, StationType type, int view);
 void DrawRoadStopTile(int x, int y, RoadType roadtype, const RoadStopSpec *spec, StationType type, int view);

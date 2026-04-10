@@ -961,7 +961,7 @@ int openttd_main(std::span<char * const> arguments)
 	}
 
 	if (videodriver.empty() && !_ini_videodriver.empty()) videodriver = _ini_videodriver;
-	DriverFactoryBase::SelectDriver(videodriver, Driver::DT_VIDEO);
+	DriverFactoryBase::SelectDriver(videodriver, Driver::Type::Video);
 
 	InitializeSpriteSorter();
 
@@ -1015,14 +1015,14 @@ int openttd_main(std::span<char * const> arguments)
 
 	if (_sound_driver_params.empty() && BaseSounds::GetUsedSet()->name == "NoSound" && _music_driver_params.empty() && BaseMusic::GetUsedSet()->name == "NoMusic") {
 		Debug(driver, 1, "Deferring loading of sound driver until a sound or music set is loaded");
-		DriverFactoryBase::SelectDriver("null", Driver::DT_SOUND);
+		DriverFactoryBase::SelectDriver("null", Driver::Type::Sound);
 	} else {
 		InitSoundDriver();
 	}
 
 	if (_music_driver_params.empty() && BaseMusic::GetUsedSet()->name == "NoMusic") {
 		Debug(driver, 1, "Deferring loading of music driver until a music set is loaded");
-		DriverFactoryBase::SelectDriver("null", Driver::DT_MUSIC);
+		DriverFactoryBase::SelectDriver("null", Driver::Type::Music);
 	} else {
 		InitMusicDriver(false);
 	}
@@ -1053,7 +1053,7 @@ void InitMusicDriver(bool init_volume)
 		static std::unique_ptr<MusicDriver> old_driver;
 		old_driver = MusicDriver::ExtractDriver();
 
-		DriverFactoryBase::SelectDriver(_music_driver_params, Driver::DT_MUSIC);
+		DriverFactoryBase::SelectDriver(_music_driver_params, Driver::Type::Music);
 	}
 
 	if (init_volume) MusicDriver::GetInstance()->SetVolume(_settings_client.music.music_vol);
@@ -1069,7 +1069,7 @@ void InitSoundDriver()
 		static std::unique_ptr<SoundDriver> old_driver;
 		old_driver = SoundDriver::ExtractDriver();
 
-		DriverFactoryBase::SelectDriver(_sound_driver_params, Driver::DT_SOUND);
+		DriverFactoryBase::SelectDriver(_sound_driver_params, Driver::Type::Sound);
 	}
 }
 
@@ -1237,6 +1237,7 @@ static void MakeNewEditorWorld()
  * @param subdir default directory to look for filename, set to 0 if not needed
  * @param lf Load filter to use, if nullptr: use filename + subdir.
  * @param error_detail Optional string to fill with detaied error information.
+ * @return \c true iff the save was loaded without problems.
  */
 bool SafeLoad(const std::string &filename, SaveLoadOperation fop, DetailedFileType dft, GameMode newgm, Subdirectory subdir,
 		std::shared_ptr<struct LoadFilter> lf = nullptr, std::string *error_detail = nullptr)

@@ -202,7 +202,8 @@ SpriteID TileZoneCheckUnservedBuildingsEvaluation(TileIndex tile, Owner owner)
 
 	CargoArray dat{};
 	dat.Clear();
-	AddAcceptedCargo(tile, dat, nullptr);
+	CargoTypes always_accepted{};
+	AddAcceptedCargo(tile, dat, always_accepted);
 	if (!has_town_cargo(dat)) {
 		/* nothing is accepted, so now test if cargo is produced */
 		AddProducedCargo(tile, dat);

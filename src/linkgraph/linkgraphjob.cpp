@@ -153,7 +153,7 @@ void LinkGraphJob::FinaliseJob()
 		for (FlowStatMap::iterator it(geflows.begin()); it != geflows.end();) {
 			FlowStatMap::iterator new_it = flows.find(it->GetOrigin());
 			if (new_it == flows.end()) {
-				if (_settings_game.linkgraph.GetDistributionType(this->Cargo()) != DT_MANUAL) {
+				if (_settings_game.linkgraph.GetDistributionType(this->Cargo()) != DistributionType::Manual) {
 					if (it->Invalidate()) {
 						StationID origin = it->GetOrigin();
 						FlowStat shares(StationID::Invalid(), StationID::Invalid(), 1);

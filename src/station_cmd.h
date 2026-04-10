@@ -14,9 +14,8 @@
 #include "cargo_type.h"
 #include "direction_type.h"
 #include "station_type.h"
+#include "newgrf_station_id.h"
 
-enum StationClassID : uint16_t;
-enum RoadStopClassID : uint16_t;
 enum RailType : uint8_t;
 enum RoadType : uint8_t;
 

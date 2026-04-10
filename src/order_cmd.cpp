@@ -369,9 +369,9 @@ uint16_t Order::MapOldOrder() const
 }
 
 /**
- *
  * Updates the widgets of a vehicle which contains the order-data
- *
+ * @param v The vehicle to update the widgets for.
+ * @param data The arbitrary data to send to the widgets.
  */
 void InvalidateVehicleOrder(const Vehicle *v, int data)
 {
@@ -877,6 +877,7 @@ static inline bool OrderGoesToRoadDepot(const Vehicle *v, const Order *o)
  * This could kill still valid warnings (for example about void order when just
  * another order gets added), but assume the company will notice the problems,
  * when they're changing the orders.
+ * @param v The vehicle to remove the order news for.
  */
 static void DeleteOrderWarnings(const Vehicle *v)
 {
@@ -1491,6 +1492,7 @@ void InsertOrder(Vehicle *v, Order &&new_o, VehicleOrderID sel_ord)
  * Declone an order-list
  * @param *dst delete the orders of this vehicle
  * @param flags execution flags
+ * @return The command's costs.
  */
 static CommandCost DecloneOrder(Vehicle *dst, DoCommandFlags flags)
 {
@@ -3133,9 +3135,8 @@ CommandCost CmdOrderRefit(DoCommandFlags flags, VehicleID veh, VehicleOrderID or
 
 
 /**
- *
  * Check the orders of a vehicle, to see if there are invalid orders and stuff
- *
+ * @param v The vehicle to check.
  */
 void CheckOrders(const Vehicle *v)
 {
@@ -3426,11 +3427,10 @@ uint16_t GetServiceIntervalClamped(int interval, bool ispercent)
 
 /**
  *
- * Check if a vehicle has any valid orders
- *
- * @return false if there are no valid orders
+ * Check if a vehicle has any valid orders.
+ * @param v The vehicle to check.
+ * @return \c false iff there are no valid orders.
  * @note Conditional orders are not considered valid destination orders
- *
  */
 static bool CheckForValidOrders(const Vehicle *v)
 {
@@ -3454,6 +3454,10 @@ static bool CheckForValidOrders(const Vehicle *v)
 
 /**
  * Compare the variable and value based on the given comparator.
+ * @param occ The comparator to use.
+ * @param variable The first parameter of the comparison.
+ * @param value The second parameter.
+ * @return The result of the comparator on the variable and value.
  */
 bool OrderConditionCompare(OrderConditionComparator occ, int variable, int value)
 {
@@ -3987,6 +3991,7 @@ void FlushAdvanceOrderIndexDeferred(const Vehicle *v, bool apply)
  * @param v the vehicle to update
  * @param conditional_depth the depth (amount of steps) to go with conditional orders. This to prevent infinite loops.
  * @param pbs_look_ahead Whether we are forecasting orders for pbs reservations in advance. If true, the order indices must not be modified.
+ * @return \c true iff the order is suitable for reversing.
  */
 bool UpdateOrderDest(Vehicle *v, const Order *order, int conditional_depth, bool pbs_look_ahead)
 {
@@ -4323,6 +4328,8 @@ bool Order::ShouldStopAtStation(const Vehicle *v, StationID station, bool waypoi
  * 1. it can load cargo here OR
  * 2a. it could leave the last station with cargo AND
  * 2b. it doesn't have to unload all cargo here.
+ * @param has_cargo Whether the vehicle has cargo.
+ * @return \c true iff the vehicle can leave.
  */
 bool Order::CanLeaveWithCargo(bool has_cargo, CargoType cargo) const
 {

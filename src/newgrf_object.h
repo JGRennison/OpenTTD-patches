@@ -10,6 +10,7 @@
 #ifndef NEWGRF_OBJECT_H
 #define NEWGRF_OBJECT_H
 
+#include "core/pool_type.hpp"
 #include "newgrf_callbacks.h"
 #include "newgrf_spritegroup.h"
 #include "newgrf_town.h"
@@ -62,13 +63,8 @@ static const uint8_t OBJECT_SIZE_1X1 = 0x11; ///< The value of a NewGRF's size p
 void ResetObjects();
 
 /** Class IDs for objects. */
-enum ObjectClassID : uint16_t {
-	OBJECT_CLASS_BEGIN   = 0,          ///< The lowest valid value
-	OBJECT_CLASS_MAX     = UINT16_MAX, ///< Maximum number of classes.
-	INVALID_OBJECT_CLASS = UINT16_MAX, ///< Class for the less fortunate.
-};
-/** Allow incrementing of ObjectClassID variables */
-DECLARE_INCREMENT_DECREMENT_OPERATORS(ObjectClassID)
+struct ObjectClassIDTag : public PoolIDTraits<uint16_t, UINT16_MAX, UINT16_MAX> {};
+using ObjectClassID = PoolID<ObjectClassIDTag>;
 
 enum ObjectViewportMapType {
 	OVMT_DEFAULT = 0,
@@ -199,7 +195,7 @@ private:
 };
 
 /** Class containing information relating to object classes. */
-using ObjectClass = NewGRFClass<ObjectSpec, ObjectClassID, OBJECT_CLASS_MAX>;
+using ObjectClass = NewGRFClass<ObjectSpec, ObjectClassID>;
 
 uint16_t GetObjectCallback(CallbackID callback, uint32_t param1, uint32_t param2, const ObjectSpec *spec, Object *o, TileIndex tile, uint8_t view = 0);
 

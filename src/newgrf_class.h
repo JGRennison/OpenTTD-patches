@@ -15,7 +15,7 @@
 
 #include <vector>
 
-/* Base for each type of NewGRF spec to be used with NewGRFClass. */
+/** Base for each type of NewGRF spec to be used with NewGRFClass. */
 template <typename Tindex>
 struct NewGRFSpecBase {
 	Tindex class_index; ///< Class index of this spec, invalid until class is allocated.
@@ -25,21 +25,21 @@ struct NewGRFSpecBase {
 /**
  * Struct containing information relating to NewGRF classes for stations and airports.
  */
-template <typename Tspec, typename Tindex, Tindex Tmax>
+template <typename Tspec, typename Tindex>
 class NewGRFClass {
 private:
 	/* Tspec must be of NewGRFSpecBase<Tindex>. */
 	static_assert(std::is_base_of_v<NewGRFSpecBase<Tindex>, Tspec>);
 
 	uint ui_count = 0;                     ///< Number of specs in this class potentially available to the user.
-	Tindex index = static_cast<Tindex>(0); ///< Index of class within the list of classes.
+	Tindex index{};                        ///< Index of class within the list of classes.
 	std::vector<Tspec *> spec;             ///< List of specifications.
 
 	/**
 	 * The actual classes.
 	 * @note This may be reallocated during initialization so pointers may be invalidated.
 	 */
-	static inline std::vector<NewGRFClass<Tspec, Tindex, Tmax>> classes;
+	static inline std::vector<NewGRFClass<Tspec, Tindex>> classes;
 	static inline robin_hood::unordered_flat_map<uint64_t, const Tspec *> grf_index;
 
 	static inline uint64_t GrfHashKey(uint32_t grfid, uint16_t local_id)
@@ -70,7 +70,7 @@ public:
 	 * Get read-only span of all classes of this type.
 	 * @return Read-only span of classes.
 	 */
-	static std::span<NewGRFClass<Tspec, Tindex, Tmax> const> Classes() { return NewGRFClass::classes; }
+	static std::span<NewGRFClass<Tspec, Tindex> const> Classes() { return NewGRFClass::classes; }
 
 	void Insert(Tspec *spec);
 

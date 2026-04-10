@@ -313,7 +313,7 @@ bool FindSubsidyTownCargoRoute()
 
 	/* Avoid using invalid NewGRF cargoes. */
 	if (!CargoSpec::Get(cargo_type)->IsValid() ||
-			_settings_game.linkgraph.GetDistributionType(cargo_type) != DT_MANUAL) {
+			_settings_game.linkgraph.GetDistributionType(cargo_type) != DistributionType::Manual) {
 		return false;
 	}
 
@@ -363,7 +363,7 @@ bool FindSubsidyIndustryCargoRoute()
 	 * or if the cargo is automatically distributed */
 	if (total == 0 || trans > SUBSIDY_MAX_PCT_TRANSPORTED ||
 			cargo_type == INVALID_CARGO ||
-			_settings_game.linkgraph.GetDistributionType(cargo_type) != DT_MANUAL) {
+			_settings_game.linkgraph.GetDistributionType(cargo_type) != DistributionType::Manual) {
 		return false;
 	}
 
@@ -388,10 +388,11 @@ bool FindSubsidyCargoDestination(CargoType cargo_type, Source src)
 
 			/* Calculate cargo acceptance of houses around town center. */
 			CargoArray town_cargo_accepted{};
+			CargoTypes always_accepted{};
 			TileArea ta = TileArea(dst_town->xy, 1, 1).Expand(SUBSIDY_TOWN_CARGO_RADIUS);
 			for (TileIndex tile : ta) {
 				if (IsTileType(tile, TileType::House)) {
-					AddAcceptedCargo(tile, town_cargo_accepted, nullptr);
+					AddAcceptedCargo(tile, town_cargo_accepted, always_accepted);
 				}
 			}
 
@@ -463,10 +464,10 @@ void SubsidyMonthlyLoop()
 	} else if (_settings_game.difficulty.subsidy_duration == 0) {
 		/* If subsidy duration is set to 0, subsidies are disabled, so bail out. */
 		return;
-	} else if (_settings_game.linkgraph.distribution_pax != DT_MANUAL &&
-			   _settings_game.linkgraph.distribution_mail != DT_MANUAL &&
-			   _settings_game.linkgraph.distribution_armoured != DT_MANUAL &&
-			   _settings_game.linkgraph.distribution_default != DT_MANUAL) {
+	} else if (_settings_game.linkgraph.distribution_pax != DistributionType::Manual &&
+			   _settings_game.linkgraph.distribution_mail != DistributionType::Manual &&
+			   _settings_game.linkgraph.distribution_armoured != DistributionType::Manual &&
+			   _settings_game.linkgraph.distribution_default != DistributionType::Manual) {
 		/* Return early if there are no manually distributed cargoes and if we
 		 * don't need to invalidate the subsidies window. */
 		return;
@@ -478,7 +479,7 @@ void SubsidyMonthlyLoop()
 
 	int random_chance = RandomRange(16);
 
-	if (random_chance < 2 && _settings_game.linkgraph.distribution_pax == DT_MANUAL) {
+	if (random_chance < 2 && _settings_game.linkgraph.distribution_pax == DistributionType::Manual) {
 		/* There is a 1/8 chance each month of generating a passenger subsidy. */
 		int n = 1000;
 

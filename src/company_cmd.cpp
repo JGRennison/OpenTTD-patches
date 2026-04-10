@@ -711,7 +711,7 @@ TimeoutTimer<TimerGameTick> _new_competitor_timeout({ TimerGameTick::Priority::C
 
 	/* Send a command to all clients to start up a new AI.
 	 * Works fine for Multiplayer and Singleplayer */
-	Command<Commands::CompanyControl>::Post(CCA_NEW_AI, CompanyID::Invalid(), CRR_NONE, INVALID_CLIENT_ID, {});
+	Command<Commands::CompanyControl>::Post(CompanyCtrlAction::NewAI, CompanyID::Invalid(), CompanyRemoveReason::None, INVALID_CLIENT_ID, {});
 });
 
 /** Start of a new game. */
@@ -873,7 +873,7 @@ void OnTick_Companies(bool main_tick)
 			for (auto i = 0; i < _settings_game.difficulty.max_no_competitors; i++) {
 				if (_networking && num_companies++ >= _settings_client.network.max_companies) break;
 				if (num_ais++ >= _settings_game.difficulty.max_no_competitors) break;
-				Command<Commands::CompanyControl>::Post(CCA_NEW_AI, CompanyID::Invalid(), CRR_NONE, INVALID_CLIENT_ID, {});
+				Command<Commands::CompanyControl>::Post(CompanyCtrlAction::NewAI, CompanyID::Invalid(), CompanyRemoveReason::None, INVALID_CLIENT_ID, {});
 			}
 			timeout = 10 * 60 * TICKS_PER_SECOND;
 		}
@@ -957,9 +957,9 @@ void CompanyAdminRemove(CompanyID company_id, CompanyRemoveReason reason)
  * @param flags operation to perform
  * @param cca action to perform
  * @param company_id company to perform the action on
- * @param reason The reason why the company is being removed (with CCA_DELETE).
+ * @param reason The reason why the company is being removed (with CompanyCtrlAction::Delete).
  * @param client_id ClientID
- * @param to_merge_id CompanyID to merge (with CCA_MERGE)
+ * @param to_merge_id CompanyID to merge (with CompanyCtrlAction::Merge)
  * @return the cost of this operation or an error
  */
 CommandCost CmdCompanyCtrl(DoCommandFlags flags, CompanyCtrlAction cca, CompanyID company_id, CompanyRemoveReason reason, ClientID client_id, CompanyID to_merge_id)
@@ -967,7 +967,7 @@ CommandCost CmdCompanyCtrl(DoCommandFlags flags, CompanyCtrlAction cca, CompanyI
 	InvalidateWindowData(WC_COMPANY_LEAGUE, 0, 0);
 
 	switch (cca) {
-		case CCA_NEW: { // Create a new company
+		case CompanyCtrlAction::New: { // Create a new company
 			/* This command is only executed in a multiplayer game */
 			if (!_networking) return CMD_ERROR;
 
@@ -1029,7 +1029,7 @@ CommandCost CmdCompanyCtrl(DoCommandFlags flags, CompanyCtrlAction cca, CompanyI
 			break;
 		}
 
-		case CCA_NEW_AI: { // Make a new AI company
+		case CompanyCtrlAction::NewAI: { // Make a new AI company
 			if (company_id != CompanyID::Invalid() && company_id >= MAX_COMPANIES) return CMD_ERROR;
 
 			/* For network games, company deletion is delayed. */
@@ -1049,8 +1049,8 @@ CommandCost CmdCompanyCtrl(DoCommandFlags flags, CompanyCtrlAction cca, CompanyI
 			break;
 		}
 
-		case CCA_DELETE: { // Delete a company
-			if (reason >= CRR_END) return CMD_ERROR;
+		case CompanyCtrlAction::Delete: { // Delete a company
+			if (reason >= CompanyRemoveReason::End) return CMD_ERROR;
 
 			/* We can't delete the last existing company in singleplayer mode. */
 			if (!_networking && Company::GetNumItems() == 1) return CMD_ERROR;
@@ -1086,7 +1086,7 @@ CommandCost CmdCompanyCtrl(DoCommandFlags flags, CompanyCtrlAction cca, CompanyI
 			break;
 		}
 
-		case CCA_SALE: {
+		case CompanyCtrlAction::Sale: {
 			Company *c = Company::GetIfValid(company_id);
 			if (c == nullptr) return CMD_ERROR;
 
@@ -1101,7 +1101,7 @@ CommandCost CmdCompanyCtrl(DoCommandFlags flags, CompanyCtrlAction cca, CompanyI
 			break;
 		}
 
-		case CCA_MERGE: {
+		case CompanyCtrlAction::Merge: {
 			Company *c = Company::GetIfValid(company_id);
 			if (c == nullptr) return CMD_ERROR;
 
@@ -1141,18 +1141,18 @@ CommandCost CmdCompanyCtrl(DoCommandFlags flags, CompanyCtrlAction cca, CompanyI
 static bool ExecuteAllowListCtrlAction(CompanyAllowListCtrlAction action, Company *c, const std::string &public_key)
 {
 	switch (action) {
-		case CALCA_ADD:
+		case CompanyAllowListCtrlAction::AddKey:
 			return c->allow_list.Add(public_key);
 
-		case CALCA_REMOVE:
+		case CompanyAllowListCtrlAction::RemoveKey:
 			return c->allow_list.Remove(public_key);
 
-		case CALCA_ALLOW_ANY:
+		case CompanyAllowListCtrlAction::AllowAny:
 			if (c->allow_any) return false;
 			c->allow_any = true;
 			return true;
 
-		case CALCA_ALLOW_LISTED:
+		case CompanyAllowListCtrlAction::AllowListed:
 			if (!c->allow_any) return false;
 			c->allow_any = false;
 			return true;
@@ -1175,14 +1175,14 @@ CommandCost CmdCompanyAllowListCtrl(DoCommandFlags flags, CompanyAllowListCtrlAc
 	if (c == nullptr) return CMD_ERROR;
 
 	switch (action) {
-		case CALCA_ADD:
-		case CALCA_REMOVE:
+		case CompanyAllowListCtrlAction::AddKey:
+		case CompanyAllowListCtrlAction::RemoveKey:
 			/* The public key length includes the '\0'. */
 			if (public_key.size() != NETWORK_PUBLIC_KEY_LENGTH - 1) return CMD_ERROR;
 			break;
 
-		case CALCA_ALLOW_ANY:
-		case CALCA_ALLOW_LISTED:
+		case CompanyAllowListCtrlAction::AllowAny:
+		case CompanyAllowListCtrlAction::AllowListed:
 			if (public_key.size() != 0) return CMD_ERROR;
 			break;
 
@@ -1502,18 +1502,18 @@ void CmdCompanyCtrlData::FormatDebugSummary(format_target &output) const
 {
 	auto cca_name = [&]() -> const char * {
 		switch (this->cca) {
-			case CCA_NEW: return "new";
-			case CCA_NEW_AI: return "new_ai";
-			case CCA_DELETE: return "delete";
-			case CCA_SALE: return "sale";
-			case CCA_MERGE: return "merge";
+			case CompanyCtrlAction::New: return "new";
+			case CompanyCtrlAction::NewAI: return "new_ai";
+			case CompanyCtrlAction::Delete: return "delete";
+			case CompanyCtrlAction::Sale: return "sale";
+			case CompanyCtrlAction::Merge: return "merge";
 			default: return "???";
 		}
 	};
 
 	output.format("cca: {} ({}), cid: {}, client: {}", this->cca, cca_name(), this->company_id, this->client_id);
-	if (this->cca == CCA_DELETE) output.format(", reason: {}", this->reason);
-	if (this->cca == CCA_MERGE) output.format(", to_merge: {}", this->to_merge_id);
+	if (this->cca == CompanyCtrlAction::Delete) output.format(", reason: {}", this->reason);
+	if (this->cca == CompanyCtrlAction::Merge) output.format(", to_merge: {}", this->to_merge_id);
 }
 
 static std::vector<FaceSpec> _faces; ///< All company manager face styles.

@@ -1242,10 +1242,10 @@ public:
 
 	bool HasClassChoice() const override
 	{
-		return std::ranges::count_if(StationClass::Classes(), std::not_fn(IsWaypointClass)) > 1;
+		return std::ranges::count_if(StationClass::Classes(), [](const auto &cls) { return !IsWaypointClass(cls); }) > 1;
 	}
 
-	int GetSelectedClass() const override { return _station_gui.sel_class; }
+	int GetSelectedClass() const override { return _station_gui.sel_class.base(); }
 	void SetSelectedClass(int id) const override { _station_gui.sel_class = this->GetClassIndex(id); }
 
 	StringID GetClassName(int id) const override
@@ -1291,12 +1291,12 @@ public:
 		for (const Station *st : Station::Iterate()) {
 			if (st->owner != _local_company) continue;
 			if (!default_added && StationUsesDefaultType(st)) {
-				items.insert({0, 0, STAT_CLASS_DFLT, 0});
+				items.insert({0, 0, STAT_CLASS_DFLT.base(), 0});
 				default_added = true;
 			}
 			for (const auto &sm : st->speclist) {
 				if (sm.spec == nullptr) continue;
-				items.insert({sm.grfid, sm.localidx, sm.spec->class_index, sm.spec->index});
+				items.insert({sm.grfid, sm.localidx, sm.spec->class_index.base(), sm.spec->index});
 			}
 		}
 	}
@@ -1621,6 +1621,11 @@ public:
 	void OnRealtimeTick([[maybe_unused]] uint delta_ms) override
 	{
 		CheckRedrawStationCoverage(this);
+	}
+
+	inline void PickItem(StationClassID cls_id, int id)
+	{
+		this->PickerWindow::PickItem(cls_id.base(), id);
 	}
 
 	/**
@@ -2302,11 +2307,11 @@ public:
 
 	bool HasClassChoice() const override
 	{
-		return std::ranges::count_if(StationClass::Classes(), IsWaypointClass) > 1;
+		return std::ranges::count_if(StationClass::Classes(), [](const auto &cls) { return IsWaypointClass(cls); }) > 1;
 	}
 
 	void Close(int) override { ResetObjectToPlace(); }
-	int GetSelectedClass() const override { return _waypoint_gui.sel_class; }
+	int GetSelectedClass() const override { return _waypoint_gui.sel_class.base(); }
 	void SetSelectedClass(int id) const override { _waypoint_gui.sel_class = this->GetClassIndex(id); }
 
 	StringID GetClassName(int id) const override
@@ -2350,12 +2355,12 @@ public:
 		for (const Waypoint *wp : Waypoint::Iterate()) {
 			if (wp->owner != _local_company) continue;
 			if (!default_added && StationUsesDefaultType(wp)) {
-				items.insert({0, 0, STAT_CLASS_WAYP, 0});
+				items.insert({0, 0, STAT_CLASS_WAYP.base(), 0});
 				default_added = true;
 			}
 			for (const auto &sm : wp->speclist) {
 				if (sm.spec == nullptr) continue;
-				items.insert({sm.grfid, sm.localidx, sm.spec->class_index, sm.spec->index});
+				items.insert({sm.grfid, sm.localidx, sm.spec->class_index.base(), sm.spec->index});
 			}
 		}
 	}
@@ -2368,6 +2373,11 @@ struct BuildRailWaypointWindow : public PickerWindow {
 	BuildRailWaypointWindow(WindowDesc &desc, Window *parent) : PickerWindow(desc, parent, TRANSPORT_RAIL, WaypointPickerCallbacks::instance)
 	{
 		this->ConstructWindow();
+	}
+
+	inline void PickItem(StationClassID cls_id, int id)
+	{
+		this->PickerWindow::PickItem(cls_id.base(), id);
 	}
 
 	static inline HotkeyList hotkeys{"buildrailwaypoint", {
@@ -2409,9 +2419,9 @@ static void ShowBuildWaypointPicker(Window *parent)
 void InitializeRailGui()
 {
 	_build_depot_direction = DIAGDIR_NW;
-	_station_gui.sel_class = StationClassID::STAT_CLASS_DFLT;
+	_station_gui.sel_class = STAT_CLASS_DFLT;
 	_station_gui.sel_type = 0;
-	_waypoint_gui.sel_class = StationClassID::STAT_CLASS_WAYP;
+	_waypoint_gui.sel_class = STAT_CLASS_WAYP;
 	_waypoint_gui.sel_type = 0;
 }
 

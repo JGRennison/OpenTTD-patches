@@ -12,9 +12,7 @@
 
 #include "command_type.h"
 #include "station_type.h"
-
-enum StationClassID : uint16_t;
-enum RoadStopClassID : uint16_t;
+#include "newgrf_station_id.h"
 
 DEF_CMD_TUPLE   (Commands::BuildRailWaypoint,           CmdBuildRailWaypoint,                     {}, CommandType::LandscapeConstruction, CmdDataT<Axis, uint8_t, uint8_t, StationClassID, uint16_t, StationID, bool>)
 DEF_CMD_TUPLE   (Commands::RemoveFromRailWaypoint,      CmdRemoveFromRailWaypoint,                {}, CommandType::LandscapeConstruction, CmdDataT<TileIndex, bool>)

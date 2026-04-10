@@ -359,6 +359,7 @@ add_files(
     newgrf_spritegroup.h
     newgrf_station.cpp
     newgrf_station.h
+    newgrf_station_id.h
     newgrf_storage.cpp
     newgrf_storage.h
     newgrf_text.cpp

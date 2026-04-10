@@ -903,7 +903,7 @@ struct LinkGraphSettings {
 
 	inline DistributionType GetDistributionType(CargoType cargo) const
 	{
-		if (this->distribution_per_cargo[cargo] != DT_PER_CARGO_DEFAULT) return this->distribution_per_cargo[cargo];
+		if (this->distribution_per_cargo[cargo] != DistributionType::PerCargoDefault) return this->distribution_per_cargo[cargo];
 		if (IsCargoInClass(cargo, CargoClass::Passengers)) return this->distribution_pax;
 		if (IsCargoInClass(cargo, CargoClass::Mail)) return this->distribution_mail;
 		if (IsCargoInClass(cargo, CargoClass::Armoured)) return this->distribution_armoured;

@@ -5,21 +5,19 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file waypoint_func.h Functions related to waypoints. */
+/** @file newgrf_station_id.h Header file for NewGRF station class IDs. */
 
-#ifndef WAYPOINT_FUNC_H
-#define WAYPOINT_FUNC_H
+#ifndef NEWGRF_STATION_ID_H
+#define NEWGRF_STATION_ID_H
 
-#include "rail_type.h"
-#include "command_type.h"
-#include "station_type.h"
-#include "newgrf_station_id.h"
+#include "core/pool_id_type.hpp"
 
-CommandCost RemoveBuoy(TileIndex tile, DoCommandFlags flags);
+/** Class IDs for stations. */
+struct StationClassIDTag : public PoolIDTraits<uint16_t, UINT16_MAX, UINT16_MAX> {};
+using StationClassID = PoolID<StationClassIDTag>;
 
-Axis GetAxisForNewWaypoint(TileIndex tile);
-Axis GetAxisForNewRoadWaypoint(TileIndex tile);
-void ShowWaypointWindow(const Waypoint *wp);
-void DrawWaypointSprite(int x, int y, StationClassID station_class, uint16_t station_type, RailType railtype);
+/** Class IDs for road stops. */
+struct RoadStopClassIDTag : public PoolIDTraits<uint16_t, UINT16_MAX, UINT16_MAX> {};
+using RoadStopClassID = PoolID<RoadStopClassIDTag>;
 
-#endif /* WAYPOINT_FUNC_H */
+#endif /* NEWGRF_STATION_ID_H */

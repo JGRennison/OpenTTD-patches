@@ -664,7 +664,9 @@ bool BaseSetBase::ReadVersionString(std::string_view version_str)
 /** Names corresponding to the GraphicsFileType */
 static const std::string_view _graphics_file_names[] = { "base", "logos", "arctic", "tropical", "toyland", "extra" };
 
-/** Implementation */
+/* Implementation */
+
+/** @copydoc BaseSet::GetFilenames */
 template <>
 /* static */ std::span<const std::string_view> BaseSet<GraphicsSet>::GetFilenames()
 {
