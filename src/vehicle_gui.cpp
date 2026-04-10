@@ -1571,7 +1571,11 @@ uint ShowRefitOptionsList(int left, int right, int y, EngineID engine)
 	return DrawStringMultiLine(left, right, y, INT32_MAX, str);
 }
 
-/** Get the cargo subtype text from NewGRF for the vehicle details window. */
+/**
+ * Get the cargo subtype text from NewGRF for the vehicle details window.
+ * @param v The vehicle to get the text for.
+ * @return The text or STR_EMPTY.
+ */
 StringID GetCargoSubtypeText(const Vehicle *v)
 {
 	if (!EngInfo(v->engine_type)->callback_mask.Test(VehicleCallbackMask::CargoSuffix)) return STR_EMPTY;
@@ -3285,7 +3289,12 @@ struct VehicleDetailsWindow : Window {
 		}
 	}
 
-	/** Checks whether service interval is enabled for the vehicle. */
+	/**
+	 * Checks whether service interval is enabled for the vehicle.
+	 * @param vehicle_type The vehicle type class (train, road vehicle, ship, aircraft).
+	 * @param company_id The company to consider.
+	 * @return \c true iff service interval are enabled for the given vehicle type and company.
+	 */
 	static bool IsVehicleServiceIntervalEnabled(const VehicleType vehicle_type, CompanyID company_id)
 	{
 		if (_local_company != company_id) return false;
@@ -3874,7 +3883,11 @@ static const StringID _aircraft_breakdown_strings[] = {
 	STR_BREAKDOWN_TYPE_LANDING,
 };
 
-/** Checks whether the vehicle may be refitted at the moment.*/
+/**
+ * Checks whether the vehicle may be refitted at the moment.
+ * @param v The vehicle to consider.
+ * @return \c true iff the vehicle may be refitted now.
+ */
 static bool IsVehicleRefittable(const Vehicle *v)
 {
 	if (!v->IsStoppedInDepot()) return false;

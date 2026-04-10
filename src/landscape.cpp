@@ -90,6 +90,12 @@ const EnumClassIndexContainer<std::array<const TileTypeProcs *, to_underlying(Ti
 	nullptr,
 };
 
+/** @copydoc GetSlopePixelZProc */
+int GetSlopePixelZ_MaxZ(TileIndex tile, uint x, uint y, [[maybe_unused]] bool ground_vehicle)
+{
+	return GetTileMaxPixelZ(tile);
+}
+
 /** landscape slope => sprite */
 extern const uint8_t _slope_to_sprite_offset[32] = {
 	0, 1, 2, 3, 4, 5, 6,  7, 8, 9, 10, 11, 12, 13, 14, 0,
@@ -252,7 +258,7 @@ int GetSlopePixelZ(int x, int y, bool ground_vehicle)
 {
 	TileIndex tile = TileVirtXY(x, y);
 
-	return _tile_type_procs[GetTileType(tile)]->get_slope_z_proc(tile, x, y, ground_vehicle);
+	return _tile_type_procs[GetTileType(tile)]->get_slope_pixel_z_proc(tile, x, y, ground_vehicle);
 }
 
 /**
@@ -268,7 +274,7 @@ int GetSlopePixelZOutsideMap(int x, int y)
 	if (IsInsideBS(x, 0, Map::SizeX() * TILE_SIZE) && IsInsideBS(y, 0, Map::SizeY() * TILE_SIZE)) {
 		return GetSlopePixelZ(x, y, false);
 	} else {
-		return _tile_type_procs[TileType::Void]->get_slope_z_proc(INVALID_TILE, x, y, false);
+		return _tile_type_procs[TileType::Void]->get_slope_pixel_z_proc(INVALID_TILE, x, y, false);
 	}
 }
 
@@ -322,7 +328,9 @@ void GetSlopePixelZOnEdge(Slope tileh, DiagDirection edge, int &z1, int &z2)
 
 Slope UpdateFoundationSlopeFromTileSlope(TileIndex tile, Slope tileh, int &tilez)
 {
-	Foundation f = _tile_type_procs[GetTileType(tile)]->get_foundation_proc(tile, tileh);
+	GetFoundationProc *proc = _tile_type_procs[GetTileType(tile)]->get_foundation_proc;
+	if (proc == nullptr) return tileh;
+	Foundation f = proc(tile, tileh);
 	tilez += ApplyFoundationToSlope(f, tileh);
 	return tileh;
 }
@@ -508,7 +516,12 @@ void DoClearSquare(TileIndex tile)
  */
 TrackStatus GetTileTrackStatus(TileIndex tile, TransportType mode, uint sub_mode, DiagDirection side)
 {
-	return _tile_type_procs[GetTileType(tile)]->get_tile_track_status_proc(tile, mode, sub_mode, side);
+	GetTileTrackStatusProc *proc = _tile_type_procs[GetTileType(tile)]->get_tile_track_status_proc;
+	if (proc != nullptr) {
+		return proc(tile, mode, sub_mode, side);
+	} else {
+		return 0;
+	}
 }
 
 /**
@@ -519,7 +532,8 @@ TrackStatus GetTileTrackStatus(TileIndex tile, TransportType mode, uint sub_mode
  */
 void ChangeTileOwner(TileIndex tile, Owner old_owner, Owner new_owner)
 {
-	_tile_type_procs[GetTileType(tile)]->change_tile_owner_proc(tile, old_owner, new_owner);
+	ChangeTileOwnerProc *proc = _tile_type_procs[GetTileType(tile)]->change_tile_owner_proc;
+	if (proc != nullptr) proc(tile, old_owner, new_owner);
 }
 
 void GetTileDesc(TileIndex tile, TileDesc &td)

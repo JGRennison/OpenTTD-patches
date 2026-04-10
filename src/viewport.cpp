@@ -1424,6 +1424,7 @@ void EndSpriteCombine()
  * @param begin The begin of the interval.
  * @param end   The end of the interval.
  * @param check The value to check.
+ * @return \c true iff check is between begin and end, including both begin and end.
  */
 static bool IsInRangeInclusive(int begin, int end, int check)
 {
@@ -5884,7 +5885,10 @@ void VpStartPlaceSizing(TileIndex tile, ViewportPlaceMethod method, ViewportDrag
 	_special_mouse_mode = WSM_SIZING;
 }
 
-/** Drag over the map while holding the left mouse down. */
+/**
+ * Drag over the map while holding the left mouse down.
+ * @param process The chosen selection process.
+ */
 void VpStartDragging(ViewportDragDropSelectionProcess process)
 {
 	_thd.select_method = VPM_X_AND_Y;

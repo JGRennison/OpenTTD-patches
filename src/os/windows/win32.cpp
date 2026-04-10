@@ -320,9 +320,20 @@ void CreateConsole()
 /** Temporary pointer to get the help message to the window */
 static std::string_view _help_msg;
 
-/** Callback function to handle the window */
+/**
+ * Callback function to handle the window.
+ *
+ * Relates to the resource with id 101 in ottdres.rc.in.
+ * @param wnd Handle to the window.
+ * @param msg The dialog message to handle.
+ * @param wParam Message specific data; for \c WM_COMMAND the id of the button.
+ * @return \c TRUE when the message is handled, otherwise \c FALSE.
+ */
 static INT_PTR CALLBACK HelpDialogFunc(HWND wnd, UINT msg, WPARAM wParam, LPARAM)
 {
+	static constexpr int TEXT_CONTROL = 11;
+	static constexpr int OK_BUTTON = 12;
+
 	switch (msg) {
 		case WM_INITDIALOG: {
 			const size_t help_msg_size = 1 + _help_msg.size() + std::count(_help_msg.begin(), _help_msg.end(), '\n');
@@ -345,12 +356,12 @@ static INT_PTR CALLBACK HelpDialogFunc(HWND wnd, UINT msg, WPARAM wParam, LPARAM
 			 * buffer in OTTD2FS might not be large enough (512 chars). */
 			const size_t help_msg_buf_size = ((q - help_msg.get()) * 3) / 2;
 			auto help_msg_buf = std::make_unique<wchar_t[]>(help_msg_buf_size);
-			SetDlgItemText(wnd, 11, convert_to_fs(help_msg.get(), {help_msg_buf.get(), help_msg_buf_size}));
-			SendDlgItemMessage(wnd, 11, WM_SETFONT, (WPARAM)GetStockObject(ANSI_FIXED_FONT), FALSE);
+			SetDlgItemText(wnd, TEXT_CONTROL, convert_to_fs(help_msg.get(), {help_msg_buf.get(), help_msg_buf_size}));
+			SendDlgItemMessage(wnd, TEXT_CONTROL, WM_SETFONT, (WPARAM)GetStockObject(ANSI_FIXED_FONT), FALSE);
 		} return TRUE;
 
 		case WM_COMMAND:
-			if (wParam == 12) ExitProcess(0);
+			if (wParam == OK_BUTTON) ExitProcess(0);
 			return TRUE;
 		case WM_CLOSE:
 			ExitProcess(0);
@@ -572,7 +583,10 @@ wchar_t *convert_to_fs(std::string_view src, std::span<wchar_t> dst_buf)
 	return dst_buf.data();
 }
 
-/** Determine the current user's locale. */
+/**
+ * Determine the current user's locale.
+ * @return String containing current charset, or nullptr if not-determinable.
+ */
 const char *GetCurrentLocale(const char *)
 {
 	const LANGID userUiLang = GetUserDefaultUILanguage();

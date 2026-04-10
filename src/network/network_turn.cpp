@@ -47,16 +47,16 @@ public:
 	}
 };
 
-bool ClientNetworkTurnSocketHandler::Receive_TURN_ERROR(Packet &)
+bool ClientNetworkTurnSocketHandler::ReceiveServerError(Packet &)
 {
-	Debug(net, 9, "Receive_TURN_ERROR()");
+	Debug(net, 9, "ReceiveServerError()");
 
 	this->ConnectFailure();
 
 	return false;
 }
 
-bool ClientNetworkTurnSocketHandler::Receive_TURN_CONNECTED(Packet &p)
+bool ClientNetworkTurnSocketHandler::ReceiveServerConnected(Packet &p)
 {
 	Debug(net, 9, "Receive_TURN_CONNECTED()");
 
@@ -98,7 +98,7 @@ void ClientNetworkTurnSocketHandler::Connect()
 {
 	auto turn_handler = std::make_unique<ClientNetworkTurnSocketHandler>(token, tracking_number, connection_string);
 
-	auto p = std::make_unique<Packet>(turn_handler.get(), PACKET_TURN_SERCLI_CONNECT);
+	auto p = std::make_unique<Packet>(turn_handler.get(), PacketTurnType::ClientConnect);
 	p->Send_uint8(NETWORK_COORDINATOR_VERSION);
 	p->Send_string(ticket);
 

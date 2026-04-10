@@ -468,6 +468,7 @@ static void ProcessIniFile(const char *fname)
  * And the main program (what else?)
  * @param argc Number of command-line arguments including the program name itself.
  * @param argv Vector of the command-line arguments.
+ * @return The exit code of the application.
  */
 int CDECL main(int argc, char *argv[])
 {

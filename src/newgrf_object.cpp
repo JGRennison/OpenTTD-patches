@@ -633,6 +633,7 @@ uint8_t GetNewObjectTileAnimationSpeed(TileIndex tile)
  * @param tile    The location of the triggered tile.
  * @param trigger The trigger that is triggered.
  * @param spec    The spec associated with the object.
+ * @return \c true iff the object has an animation trigger set.
  */
 bool TriggerObjectTileAnimation(Object *o, TileIndex tile, ObjectAnimationTrigger trigger, const ObjectSpec *spec)
 {
@@ -644,6 +645,7 @@ bool TriggerObjectTileAnimation(Object *o, TileIndex tile, ObjectAnimationTrigge
  * @param o       The object that got triggered.
  * @param trigger The trigger that is triggered.
  * @param spec    The spec associated with the object.
+ * @return \c true iff all tiles of the object had an animation trigger set.
  */
 bool TriggerObjectAnimation(Object *o, ObjectAnimationTrigger trigger, const ObjectSpec *spec)
 {

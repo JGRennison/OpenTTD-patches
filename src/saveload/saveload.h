@@ -133,6 +133,7 @@ public:
 	 * Get the description for how to load the chunk. Depending on the
 	 * savegame version this can either use the headers in the savegame or
 	 * fall back to backwards compatibility and uses hard-coded headers.
+	 * @return The description to load the complete chunk.
 	 */
 	SaveLoadTable GetLoadDescription() const;
 };
@@ -923,6 +924,9 @@ inline bool IsSavegameVersionBeforeOrAt(SaveLoadVersion major)
  * Get the address of the variable. Null-variables don't have an address,
  * everything else has a callback function that returns the address based
  * on the saveload data and the current object for non-globals.
+ * @param object The object to get a relative address from, or \c nullptr for global objects.
+ * @param sld The save-load configuration for a single variable.
+ * @return The address where to store the given variable into.
  */
 inline void *GetVariableAddress(const void *object, const SaveLoad &sld)
 {

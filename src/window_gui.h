@@ -639,7 +639,10 @@ public:
 	void SetDirtyAsBlocks();
 	void ReInit(int rx = 0, int ry = 0, bool reposition = false);
 
-	/** Is window shaded currently? */
+	/**
+	 * Is window shaded currently?
+	 * @return \c true iff the window supports shading and is shaded.
+	 */
 	inline bool IsShaded() const
 	{
 		return this->shade_select != nullptr && this->shade_select->shown_plane == SZSP_HORIZONTAL;
@@ -846,6 +849,7 @@ public:
 
 	/**
 	 * Called periodically.
+	 * @param delta_ms The number of milliseconds since the last call.
 	 */
 	virtual void OnRealtimeTick([[maybe_unused]] uint delta_ms) {}
 
@@ -1103,7 +1107,7 @@ inline NWID *Window::GetWidget(WidgetID widnum)
 	return nwid;
 }
 
-/** Specialized case of #Window::GetWidget for the nested widget base class. */
+/** Specialized case of #Window::GetWidget for the nested widget base class. @copydoc Window::GetWidget */
 template <>
 inline const NWidgetBase *Window::GetWidget<NWidgetBase>(WidgetID widnum) const
 {
@@ -1136,7 +1140,7 @@ public:
 		this->parent = parent;
 	}
 
-	void Close([[maybe_unused]] int data = 0) override;
+	void Close(int data = 0) override;
 };
 
 void BringWindowToFront(Window *w);

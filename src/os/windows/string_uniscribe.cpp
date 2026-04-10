@@ -55,9 +55,7 @@ struct UniscribeRun {
 	UniscribeRun(int pos, int len, Font *font, SCRIPT_ANALYSIS &sa) : pos(pos), len(len), font(font), sa(sa), total_advance(0) {}
 };
 
-/** Break a string into language formatting ranges. */
 static std::vector<SCRIPT_ITEM> UniscribeItemizeString(UniscribeParagraphLayoutFactory::CharType *buff, int32_t length);
-/** Generate and place glyphs for a run of characters. */
 static bool UniscribeShapeRun(const UniscribeParagraphLayoutFactory::CharType *buff, UniscribeRun &range);
 
 /**
@@ -138,7 +136,11 @@ void UniscribeResetScriptCache(FontSize size)
 	}
 }
 
-/** Load the matching native Windows font. */
+/**
+ * Load the matching native Windows font.
+ * @param font The internal font configuration to load.
+ * @return The reference to the native font.
+ */
 static HFONT HFontFromFont(Font *font)
 {
 	if (font->fc->GetOSHandle() != nullptr) return CreateFontIndirect(reinterpret_cast<PLOGFONT>(const_cast<void *>(font->fc->GetOSHandle())));
@@ -152,7 +154,12 @@ static HFONT HFontFromFont(Font *font)
 	return CreateFontIndirect(&logfont);
 }
 
-/** Determine the glyph positions for a run. */
+/**
+ * Determine the glyph positions for a run.
+ * @param buff The buffer of characters to shape.
+ * @param[in,out] range The metadata about the run.
+ * @return \c true iff shaping was executed without issues.
+ */
 static bool UniscribeShapeRun(const UniscribeParagraphLayoutFactory::CharType *buff, UniscribeRun &range)
 {
 	/* Initial size guess for the number of glyphs recommended by Uniscribe. */
@@ -245,6 +252,12 @@ static bool UniscribeShapeRun(const UniscribeParagraphLayoutFactory::CharType *b
 	return true;
 }
 
+/**
+ * Break a string into language formatting ranges.
+ * @param buff The string to itemize.
+ * @param length The length of the string.
+ * @return The descriptions of the formatting ranges.
+ */
 static std::vector<SCRIPT_ITEM> UniscribeItemizeString(UniscribeParagraphLayoutFactory::CharType *buff, int32_t length)
 {
 	/* Itemize text. */

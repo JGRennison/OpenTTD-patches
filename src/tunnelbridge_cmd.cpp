@@ -1550,12 +1550,7 @@ static CommandCost DoClearBridge(TileIndex tile, DoCommandFlags flags)
 	return cost;
 }
 
-/**
- * Remove a tunnel or a bridge from the game.
- * @param tile Tile containing one of the endpoints.
- * @param flags Command flags.
- * @return Succeeded or failed command.
- */
+/** @copydoc ClearTileProc */
 static CommandCost ClearTile_TunnelBridge(TileIndex tile, DoCommandFlags flags)
 {
 	if (IsTunnel(tile)) {
@@ -2164,11 +2159,12 @@ void MarkTunnelBridgeSignalDirty(TileIndex tile, bool exit)
 }
 
 /**
+ * @copydoc DrawTileProc
+ *
  * Draws a tunnel of bridge tile.
  * For tunnels, this is rather simple, as you only need to draw the entrance.
  * Bridges are a bit more complex. base_offset is where the sprite selection comes into play
  * and it works a bit like a bitmask.<p> For bridge heads:
- * @param ti TileInfo of the structure to draw
  * <ul><li>Bit 0: direction</li>
  * <li>Bit 1: northern or southern heads</li>
  * <li>Bit 2: Set if the bridge head is sloped</li>
@@ -2723,6 +2719,7 @@ void DrawBridgeMiddle(const TileInfo *ti)
 }
 
 
+/** @copydoc GetSlopePixelZProc */
 static int GetSlopePixelZ_TunnelBridge(TileIndex tile, uint x, uint y, bool ground_vehicle)
 {
 	auto [tileh, z] = GetTilePixelSlope(tile);
@@ -2758,12 +2755,14 @@ static int GetSlopePixelZ_TunnelBridge(TileIndex tile, uint x, uint y, bool grou
 	return z + GetPartialPixelZ(x, y, tileh);
 }
 
+/** @copydoc GetFoundationProc */
 static Foundation GetFoundation_TunnelBridge(TileIndex tile, Slope tileh)
 {
 	if (IsCustomBridgeHeadTile(tile)) return FOUNDATION_LEVELED;
 	return IsTunnel(tile) ? FOUNDATION_NONE : GetBridgeFoundation(tileh, DiagDirToAxis(GetTunnelBridgeDirection(tile)));
 }
 
+/** @copydoc GetTileDescProc */
 static void GetTileDesc_TunnelBridge(TileIndex tile, TileDesc &td)
 {
 	TransportType tt = GetTunnelBridgeTransportType(tile);
@@ -2949,6 +2948,7 @@ static uint8_t MapTunnelBridgeGroundTypeBits(TileIndex tile, RailGroundType type
 	return ground_bits;
 }
 
+/** @copydoc TileLoopProc */
 static void TileLoop_TunnelBridge(TileIndex tile)
 {
 	const uint8_t old_ground_bits = GetTunnelBridgeGroundBits(tile);
@@ -2993,6 +2993,7 @@ static void TileLoop_TunnelBridge(TileIndex tile)
 	}
 }
 
+/** @copydoc ClickTileProc */
 static bool ClickTile_TunnelBridge(TileIndex tile)
 {
 	if (_ctrl_pressed && IsTunnelBridgeWithSignalSimulation(tile)) {
@@ -3042,6 +3043,7 @@ static bool ClickTile_TunnelBridge(TileIndex tile)
 
 extern const TrackBits _road_trackbits[16];
 
+/** @copydoc GetTileTrackStatusProc */
 static TrackStatus GetTileTrackStatus_TunnelBridge(TileIndex tile, TransportType mode, uint sub_mode, DiagDirection side)
 {
 	TransportType transport_type = GetTunnelBridgeTransportType(tile);
@@ -3176,6 +3178,7 @@ void SetTunnelBridgeSignalStyleExtended(TileIndex t, uint8_t style)
 	SetTunnelBridgeCombinedNormalShuntSignalStyle(t, HasBit(_signal_style_masks.combined_normal_shunt, style));
 }
 
+/** @copydoc ChangeTileOwnerProc */
 static void ChangeTileOwner_TunnelBridge(TileIndex tile, Owner old_owner, Owner new_owner)
 {
 	const TileIndex other_end = GetOtherTunnelBridgeEnd(tile);
@@ -3274,7 +3277,8 @@ extern const uint8_t _tunnel_visibility_frame[DIAGDIR_END] = {12, 8, 8, 12};
 
 extern const uint8_t _tunnel_turnaround_pre_visibility_frame[DIAGDIR_END] = {31, 27, 27, 31};
 
-static VehicleEnterTileStates VehicleEnter_TunnelBridge(Vehicle *v, TileIndex tile, int x, int y)
+/** @copydoc VehicleEnterTileProc */
+static VehicleEnterTileStates VehicleEnterTile_TunnelBridge(Vehicle *v, TileIndex tile, int x, int y)
 {
 	/* Direction into the wormhole */
 	const DiagDirection dir = GetTunnelBridgeDirection(tile);
@@ -3484,6 +3488,7 @@ static VehicleEnterTileStates VehicleEnter_TunnelBridge(Vehicle *v, TileIndex ti
 	return {};
 }
 
+/** @copydoc TerraformTileProc */
 static CommandCost TerraformTile_TunnelBridge(TileIndex tile, DoCommandFlags flags, int z_new, Slope tileh_new)
 {
 	if (_settings_game.construction.build_on_slopes && AutoslopeEnabled() && IsBridge(tile) && GetTunnelBridgeTransportType(tile) != TRANSPORT_WATER) {
@@ -3530,19 +3535,17 @@ static CommandCost TerraformTile_TunnelBridge(TileIndex tile, DoCommandFlags fla
 	return Command<Commands::LandscapeClear>::Do(flags, tile);
 }
 
+/** TileTypeProcs definitions for TileType::TunnelBridge tiles. */
 extern const TileTypeProcs _tile_type_tunnelbridge_procs = {
-	DrawTile_TunnelBridge,           // draw_tile_proc
-	GetSlopePixelZ_TunnelBridge,     // get_slope_z_proc
-	ClearTile_TunnelBridge,          // clear_tile_proc
-	nullptr,                            // add_accepted_cargo_proc
-	GetTileDesc_TunnelBridge,        // get_tile_desc_proc
-	GetTileTrackStatus_TunnelBridge, // get_tile_track_status_proc
-	ClickTile_TunnelBridge,          // click_tile_proc
-	nullptr,                            // animate_tile_proc
-	TileLoop_TunnelBridge,           // tile_loop_proc
-	ChangeTileOwner_TunnelBridge,    // change_tile_owner_proc
-	nullptr,                            // add_produced_cargo_proc
-	VehicleEnter_TunnelBridge,       // vehicle_enter_tile_proc
-	GetFoundation_TunnelBridge,      // get_foundation_proc
-	TerraformTile_TunnelBridge,      // terraform_tile_proc
+	.draw_tile_proc = DrawTile_TunnelBridge,
+	.get_slope_pixel_z_proc = GetSlopePixelZ_TunnelBridge,
+	.clear_tile_proc = ClearTile_TunnelBridge,
+	.get_tile_desc_proc = GetTileDesc_TunnelBridge,
+	.get_tile_track_status_proc = GetTileTrackStatus_TunnelBridge,
+	.click_tile_proc = ClickTile_TunnelBridge,
+	.tile_loop_proc = TileLoop_TunnelBridge,
+	.change_tile_owner_proc = ChangeTileOwner_TunnelBridge,
+	.vehicle_enter_tile_proc = VehicleEnterTile_TunnelBridge,
+	.get_foundation_proc = GetFoundation_TunnelBridge,
+	.terraform_tile_proc = TerraformTile_TunnelBridge,
 };

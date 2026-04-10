@@ -63,7 +63,10 @@ static const ScreenshotProvider *GetScreenshotProvider()
 	return providers.front();
 }
 
-/** Get filename extension of current screenshot file format. */
+/**
+ * Get filename extension of current screenshot file format.
+ * @return The screenshot extension.
+ */
 std::string_view GetCurrentScreenshotExtension()
 {
 	auto provider = GetScreenshotProvider();
@@ -74,6 +77,10 @@ std::string_view GetCurrentScreenshotExtension()
 
 /**
  * Callback of the screenshot generator that dumps the current video buffer.
+ * @param buf Videobuffer with same bitdepth as current blitter
+ * @param y First line to render
+ * @param pitch Pitch of the videobuffer
+ * @param n Number of lines to render
  * @see ScreenshotCallback
  */
 static void CurrentScreenCallback(void *, void *buf, uint y, uint pitch, uint n)
@@ -196,7 +203,11 @@ static const char *MakeScreenshotName(std::string_view default_fn, std::string_v
 	return _full_screenshot_path.c_str();
 }
 
-/** Make a screenshot of the current screen. */
+/**
+ * Make a screenshot of the current screen.
+ * @param crashlog Whether this is called in the context of a crashlog, for the file name.
+ * @return \c true iff the screenshot was made successfully.
+ */
 static bool MakeSmallScreenshot(bool crashlog)
 {
 	auto provider = GetScreenshotProvider();
@@ -343,6 +354,7 @@ static void HeightmapCallback(void *, void *buffer, uint y, uint, uint n)
 /**
  * Make a heightmap of the current map.
  * @param filename Filename to use for saving.
+ * @return \c true iff the screenshot was made successfully.
  */
 bool MakeHeightmapScreenshot(const char *filename)
 {
@@ -796,6 +808,7 @@ static void IndustryScreenCallback(void *userdata, void *buf, uint y, uint pitch
 
 /**
  * Make a minimap screenshot.
+ * @return \c true iff the screenshot was made successfully.
  */
 bool MakeMinimapWorldScreenshot(std::string_view name)
 {

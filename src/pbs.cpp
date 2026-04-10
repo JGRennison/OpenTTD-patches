@@ -415,7 +415,15 @@ static void AddSignalToLookAhead(const Train *v, TrainReservationLookAhead *look
 	}
 }
 
-/** Follow a reservation starting from a specific tile to the end. */
+/**
+ * Follow a reservation starting from a specific tile to the end.
+ * @param o The owner of the track to follow; tracks of other owners are excluded.
+ * @param rts The rail types to follow the reservation for; rail types not in the mask are excluded.
+ * @param tile The start tile.
+ * @param trackdir The start trackdir on the tile.
+ * @param ignore_oneway Whether one way signals are to be ignored.
+ * @return The end of the path.
+ */
 static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Trackdir trackdir, FollowReservationFlags flags, const Train *v, TrainReservationLookAhead *lookahead)
 {
 	TileIndex start_tile = tile;
@@ -835,7 +843,11 @@ struct FindTrainOnTrackInfo {
 	FindTrainOnTrackInfo() : best(nullptr) {}
 };
 
-/** Find the best matching vehicle on a tile. */
+/**
+ * Find the best matching vehicle on a tile.
+ * @param[in,out] info State of the finding a vehicle on a reservation.
+ * @param tile The tile to search for.
+ */
 static void CheckTrainsOnTrack(FindTrainOnTrackInfo &info, TileIndex tile)
 {
 	for (Train *t : VehiclesOnTile<VEH_TRAIN>(tile)) {

@@ -25,6 +25,7 @@
 
 #include "safeguards.h"
 
+/** @copydoc ClearTileProc */
 static CommandCost ClearTile_Clear(TileIndex tile, DoCommandFlags flags)
 {
 	static constexpr Price clear_price_table[to_underlying(ClearGround::MaxSize)] = {
@@ -170,6 +171,7 @@ static void DrawClearLandFence(const TileInfo *ti)
 	EndSpriteCombine();
 }
 
+/** @copydoc DrawTileProc */
 static void DrawTile_Clear(TileInfo *ti, DrawTileProcParams params)
 {
 	ClearGround real_ground = GetClearGround(ti->tile);
@@ -239,16 +241,12 @@ static void DrawTile_Clear(TileInfo *ti, DrawTileProcParams params)
 	DrawBridgeMiddle(ti);
 }
 
-static int GetSlopePixelZ_Clear(TileIndex tile, uint x, uint y, bool)
+/** @copydoc GetSlopePixelZProc */
+static int GetSlopePixelZ_Clear(TileIndex tile, uint x, uint y, [[maybe_unused]] bool ground_vehicle)
 {
 	auto [tileh, z] = GetTilePixelSlope(tile);
 
 	return z + GetPartialPixelZ(x & 0xF, y & 0xF, tileh);
-}
-
-static Foundation GetFoundation_Clear(TileIndex, Slope)
-{
-	return FOUNDATION_NONE;
 }
 
 static void UpdateFences(TileIndex tile)
@@ -356,6 +354,7 @@ static void TileLoopClearDesert(TileIndex tile)
 	MarkTileDirtyByTile(tile);
 }
 
+/** @copydoc TileLoopProc */
 static void TileLoop_Clear(TileIndex tile)
 {
 	AmbientSoundEffect(tile);
@@ -455,11 +454,7 @@ get_out:;
 	} while (--i);
 }
 
-static TrackStatus GetTileTrackStatus_Clear(TileIndex, TransportType, uint, DiagDirection)
-{
-	return 0;
-}
-
+/** @copydoc GetTileDescProc */
 static void GetTileDesc_Clear(TileIndex tile, TileDesc &td)
 {
 	/* Each pair holds a normal and a snowy ClearGround description. */
@@ -483,29 +478,18 @@ static void GetTileDesc_Clear(TileIndex tile, TileDesc &td)
 	td.owner[0] = GetTileOwner(tile);
 }
 
-static void ChangeTileOwner_Clear(TileIndex, Owner, Owner)
-{
-	return;
-}
-
+/** @copydoc TerraformTileProc */
 static CommandCost TerraformTile_Clear(TileIndex tile, DoCommandFlags flags, int, Slope)
 {
 	return Command<Commands::LandscapeClear>::Do(flags, tile);
 }
 
+/** TileTypeProcs definitions for TileType::Clear tiles. */
 extern const TileTypeProcs _tile_type_clear_procs = {
-	DrawTile_Clear,           ///< draw_tile_proc
-	GetSlopePixelZ_Clear,     ///< get_slope_z_proc
-	ClearTile_Clear,          ///< clear_tile_proc
-	nullptr,                     ///< add_accepted_cargo_proc
-	GetTileDesc_Clear,        ///< get_tile_desc_proc
-	GetTileTrackStatus_Clear, ///< get_tile_track_status_proc
-	nullptr,                     ///< click_tile_proc
-	nullptr,                     ///< animate_tile_proc
-	TileLoop_Clear,           ///< tile_loop_proc
-	ChangeTileOwner_Clear,    ///< change_tile_owner_proc
-	nullptr,                     ///< add_produced_cargo_proc
-	nullptr,                     ///< vehicle_enter_tile_proc
-	GetFoundation_Clear,      ///< get_foundation_proc
-	TerraformTile_Clear,      ///< terraform_tile_proc
+	.draw_tile_proc = DrawTile_Clear,
+	.get_slope_pixel_z_proc = GetSlopePixelZ_Clear,
+	.clear_tile_proc = ClearTile_Clear,
+	.get_tile_desc_proc = GetTileDesc_Clear,
+	.tile_loop_proc = TileLoop_Clear,
+	.terraform_tile_proc = TerraformTile_Clear,
 };

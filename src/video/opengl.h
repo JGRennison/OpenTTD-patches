@@ -80,7 +80,10 @@ private:
 	void RenderOglSprite(const OpenGLSprite *gl_sprite, PaletteID pal, int x, int y, ZoomLevel zoom);
 
 public:
-	/** Get singleton instance of this class. */
+	/**
+	 * Get singleton instance of this class.
+	 * @return Our instance.
+	 */
 	static inline OpenGLBackend *Get()
 	{
 		return OpenGLBackend::instance;

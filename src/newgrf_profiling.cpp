@@ -60,6 +60,7 @@ void NewGRFProfiler::BeginResolve(const ResolverObject &resolver)
 
 /**
  * Capture the completion of a sprite group resolution.
+ * @param result The result to process.
  */
 void NewGRFProfiler::EndResolve(const SpriteGroup *result)
 {
@@ -171,6 +172,7 @@ static TimeoutTimer<TimerGameTick> _profiling_finish_timeout({ TimerGameTick::Pr
 
 /**
  * Start the timeout timer that will finish all profiling sessions.
+ * @param ticks The timemout in game ticks.
  */
 /* static */ void NewGRFProfiler::StartTimer(uint64_t ticks)
 {

@@ -37,7 +37,6 @@ public:
 
 	bool HasAnimBuffer() override { return true; }
 
-	/** Return driver name */
 	const char *GetName() const override { return "cocoa-opengl"; }
 
 	const char *GetInfoString() const override { return this->driver_info.c_str(); }

@@ -122,7 +122,6 @@ public:
 	const char *Start(const StringList &param) override;
 	void Stop() override;
 
-	/** Return driver name */
 	const char *GetName() const override { return "cocoa"; }
 
 	void AllocateBackingStore(bool force = false) override;

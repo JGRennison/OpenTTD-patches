@@ -565,6 +565,7 @@ CommandCost CmdBuildObjectArea(DoCommandFlags flags, TileIndex tile, TileIndex s
 
 Foundation GetFoundation_Object(TileIndex tile, Slope tileh);
 
+/** @copydoc DrawTileProc */
 static void DrawTile_Object(TileInfo *ti, DrawTileProcParams params)
 {
 	const Object *obj = Object::GetByTile(ti->tile);
@@ -650,7 +651,8 @@ static void DrawTile_Object(TileInfo *ti, DrawTileProcParams params)
 	DrawBridgeMiddle(ti);
 }
 
-static int GetSlopePixelZ_Object(TileIndex tile, uint x, uint y, bool)
+/** @copydoc GetSlopePixelZProc */
+static int GetSlopePixelZ_Object(TileIndex tile, uint x, uint y, [[maybe_unused]] bool ground_vehicle)
 {
 	if (IsObjectType(tile, OBJECT_OWNED_LAND)) {
 		auto [tileh, z] = GetTilePixelSlope(tile);
@@ -661,6 +663,7 @@ static int GetSlopePixelZ_Object(TileIndex tile, uint x, uint y, bool)
 	}
 }
 
+/** @copydoc GetFoundationProc */
 Foundation GetFoundation_Object(TileIndex tile, Slope tileh)
 {
 	if (tileh == SLOPE_FLAT) return FOUNDATION_NONE;
@@ -731,6 +734,7 @@ bool WouldObjectLeaveWaterBehind(TileIndex tile)
 	return wc != WaterClass::Invalid;
 }
 
+/** @copydoc ClearTileProc */
 static CommandCost ClearTile_Object(TileIndex tile, DoCommandFlags flags)
 {
 	/* Get to the northern most tile. */
@@ -814,6 +818,7 @@ static CommandCost ClearTile_Object(TileIndex tile, DoCommandFlags flags)
 	return cost;
 }
 
+/** @copydoc AddAcceptedCargoProc */
 static void AddAcceptedCargo_Object(TileIndex tile, CargoArray &acceptance, CargoTypes &always_accepted)
 {
 	if (!IsObjectType(tile, OBJECT_HQ)) return;
@@ -843,6 +848,7 @@ static void AddAcceptedCargo_Object(TileIndex tile, CargoArray &acceptance, Carg
 	}
 }
 
+/** @copydoc AddProducedCargoProc */
 static void AddProducedCargo_Object(TileIndex tile, CargoArray &produced)
 {
 	if (!IsObjectType(tile, OBJECT_HQ)) return;
@@ -854,6 +860,7 @@ static void AddProducedCargo_Object(TileIndex tile, CargoArray &produced)
 }
 
 
+/** @copydoc GetTileDescProc */
 static void GetTileDesc_Object(TileIndex tile, TileDesc &td)
 {
 	const ObjectSpec *spec = ObjectSpec::GetByTile(tile);
@@ -944,6 +951,7 @@ static void TileLoopObjectGroundDesert(TileIndex tile)
 	MarkTileDirtyByTile(tile);
 }
 
+/** @copydoc TileLoopProc */
 static void TileLoop_Object(TileIndex tile)
 {
 	const ObjectSpec *spec = ObjectSpec::GetByTile(tile);
@@ -1024,11 +1032,7 @@ static void TileLoop_Object(TileIndex tile)
 }
 
 
-static TrackStatus GetTileTrackStatus_Object(TileIndex, TransportType, uint, DiagDirection)
-{
-	return 0;
-}
-
+/** @copydoc ClickTileProc */
 static bool ClickTile_Object(TileIndex tile)
 {
 	if (!IsObjectType(tile, OBJECT_HQ)) return false;
@@ -1037,6 +1041,7 @@ static bool ClickTile_Object(TileIndex tile)
 	return true;
 }
 
+/** @copydoc AnimateTileProc */
 void AnimateTile_Object(TileIndex tile)
 {
 	AnimateNewObjectTile(tile);
@@ -1164,6 +1169,7 @@ void GenerateObjects()
 	}
 }
 
+/** @copydoc ChangeTileOwnerProc */
 static void ChangeTileOwner_Object(TileIndex tile, Owner old_owner, Owner new_owner)
 {
 	if (!IsTileOwner(tile, old_owner)) return;
@@ -1210,6 +1216,7 @@ static int GetObjectEffectiveZ(TileIndex tile, const ObjectSpec *spec, int z, Sl
 	return z + GetSlopeMaxZ(tileh);
 }
 
+/** @copydoc TerraformTileProc */
 static CommandCost TerraformTile_Object(TileIndex tile, DoCommandFlags flags, int z_new, Slope tileh_new)
 {
 	ObjectType type = GetObjectType(tile);
@@ -1278,21 +1285,20 @@ static CommandCost TerraformTile_Object(TileIndex tile, DoCommandFlags flags, in
 	return Command<Commands::LandscapeClear>::Do(flags, tile);
 }
 
+/** TileTypeProcs definitions for TileType::Object tiles. */
 extern const TileTypeProcs _tile_type_object_procs = {
-	DrawTile_Object,             // draw_tile_proc
-	GetSlopePixelZ_Object,       // get_slope_z_proc
-	ClearTile_Object,            // clear_tile_proc
-	AddAcceptedCargo_Object,     // add_accepted_cargo_proc
-	GetTileDesc_Object,          // get_tile_desc_proc
-	GetTileTrackStatus_Object,   // get_tile_track_status_proc
-	ClickTile_Object,            // click_tile_proc
-	AnimateTile_Object,          // animate_tile_proc
-	TileLoop_Object,             // tile_loop_proc
-	ChangeTileOwner_Object,      // change_tile_owner_proc
-	AddProducedCargo_Object,     // add_produced_cargo_proc
-	nullptr,                        // vehicle_enter_tile_proc
-	GetFoundation_Object,        // get_foundation_proc
-	TerraformTile_Object,        // terraform_tile_proc
+	.draw_tile_proc = DrawTile_Object,
+	.get_slope_pixel_z_proc = GetSlopePixelZ_Object,
+	.clear_tile_proc = ClearTile_Object,
+	.add_accepted_cargo_proc = AddAcceptedCargo_Object,
+	.get_tile_desc_proc = GetTileDesc_Object,
+	.click_tile_proc = ClickTile_Object,
+	.animate_tile_proc = AnimateTile_Object,
+	.tile_loop_proc = TileLoop_Object,
+	.change_tile_owner_proc = ChangeTileOwner_Object,
+	.add_produced_cargo_proc = AddProducedCargo_Object,
+	.get_foundation_proc = GetFoundation_Object,
+	.terraform_tile_proc = TerraformTile_Object,
 };
 
 TileIndex FindMissingObjectTile()

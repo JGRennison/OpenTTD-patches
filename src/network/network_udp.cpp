@@ -52,7 +52,7 @@ static UDPSocket _udp_server("Server"); ///< udp server socket
 
 static Packet PrepareUdpClientFindServerPacket(NetworkUDPSocketHandler &socket)
 {
-	Packet p(&socket, PACKET_UDP_CLIENT_FIND_SERVER);
+	Packet p(&socket, PacketUDPType::ClientFindServer);
 	p.Send_uint32(FIND_SERVER_EXTENDED_TOKEN);
 	p.Send_uint16(0); // flags
 	p.Send_uint16(0); // version
@@ -64,8 +64,8 @@ static Packet PrepareUdpClientFindServerPacket(NetworkUDPSocketHandler &socket)
 /** Helper class for handling all server side communication. */
 class ServerNetworkUDPSocketHandler : public NetworkUDPSocketHandler {
 protected:
-	void Receive_CLIENT_FIND_SERVER(Packet &p, NetworkAddress &client_addr) override;
-	void Reply_CLIENT_FIND_SERVER_extended(Packet &p, NetworkAddress &client_addr);
+	void ReceiveClientFindServer(Packet &p, NetworkAddress &client_addr) override;
+	void ReplyClientFindServerExtended(Packet &p, NetworkAddress &client_addr);
 public:
 	/**
 	 * Create the socket.
@@ -75,25 +75,25 @@ public:
 	~ServerNetworkUDPSocketHandler() override = default;
 };
 
-void ServerNetworkUDPSocketHandler::Receive_CLIENT_FIND_SERVER(Packet &p, NetworkAddress &client_addr)
+void ServerNetworkUDPSocketHandler::ReceiveClientFindServer(Packet &p, NetworkAddress &client_addr)
 {
 	if (p.CanReadFromPacket(8) && p.Recv_uint32() == FIND_SERVER_EXTENDED_TOKEN) {
-		this->Reply_CLIENT_FIND_SERVER_extended(p, client_addr);
+		this->ReplyClientFindServerExtended(p, client_addr);
 		return;
 	}
 
-	Packet packet(this, PACKET_UDP_SERVER_RESPONSE);
+	Packet packet(this, PacketUDPType::ServerResponse);
 	this->SendPacket(packet, client_addr);
 
 	Debug(net, 7, "Queried from {}", client_addr.GetHostname());
 }
 
-void ServerNetworkUDPSocketHandler::Reply_CLIENT_FIND_SERVER_extended(Packet &p, NetworkAddress &client_addr)
+void ServerNetworkUDPSocketHandler::ReplyClientFindServerExtended(Packet &p, NetworkAddress &client_addr)
 {
 	[[maybe_unused]] uint16_t flags = p.Recv_uint16();
 	uint16_t version = p.Recv_uint16();
 
-	Packet packet(this, PACKET_UDP_EX_SERVER_RESPONSE);
+	Packet packet(this, PacketUDPType::ExtendedServerResponse);
 	this->SendPacket(packet, client_addr);
 
 	Debug(net, 7, "Queried (extended: {}) from {}", version, client_addr.GetHostname());
@@ -104,20 +104,20 @@ void ServerNetworkUDPSocketHandler::Reply_CLIENT_FIND_SERVER_extended(Packet &p,
 /** Helper class for handling all client side communication. */
 class ClientNetworkUDPSocketHandler : public NetworkUDPSocketHandler {
 protected:
-	void Receive_SERVER_RESPONSE(Packet &p, NetworkAddress &client_addr) override;
-	void Receive_EX_SERVER_RESPONSE(Packet &p, NetworkAddress &client_addr) override;
+	void ReceiveServerResponse(Packet &p, NetworkAddress &client_addr) override;
+	void ReceiveExtendedServerResponse(Packet &p, NetworkAddress &client_addr) override;
 public:
 	~ClientNetworkUDPSocketHandler() override = default;
 };
 
-void ClientNetworkUDPSocketHandler::Receive_SERVER_RESPONSE(Packet &, NetworkAddress &client_addr)
+void ClientNetworkUDPSocketHandler::ReceiveServerResponse(Packet &, NetworkAddress &client_addr)
 {
 	Debug(net, 3, "Server response from {}", FormatNetworkAddress(client_addr));
 
 	NetworkAddServer(client_addr.GetAddressAsString(false), false, true);
 }
 
-void ClientNetworkUDPSocketHandler::Receive_EX_SERVER_RESPONSE(Packet &, NetworkAddress &client_addr)
+void ClientNetworkUDPSocketHandler::ReceiveExtendedServerResponse(Packet &, NetworkAddress &client_addr)
 {
 	Debug(net, 3, "Extended server response from {}", FormatNetworkAddress(client_addr));
 

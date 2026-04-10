@@ -1187,14 +1187,17 @@ static int PickRandomBit(uint bits)
  */
 static Trackdir RoadFindPathToDest(RoadVehicle *v, TileIndex tile, DiagDirection enterdir)
 {
-#define return_track(x) { best_track = (Trackdir)x; goto found_best_track; }
-
-	Trackdir best_track;
 	bool path_found = true;
 
 	TrackStatus ts = GetTileTrackStatus(tile, TRANSPORT_ROAD, ((v->roadtype + 1) << 8) | GetRoadTramType(v->roadtype));
 	TrackdirBits red_signals = TrackStatusToRedSignals(ts); // crossing
 	TrackdirBits trackdirs = TrackStatusToTrackdirBits(ts);
+
+	/* Replaces the given track with INVALID_TRACK when there is red signal for that track. */
+	auto FilterRedSignal = [&red_signals](auto track) {
+		if (HasBit(red_signals, track)) return INVALID_TRACKDIR;
+		return static_cast<Trackdir>(track);
+	};
 
 	if (IsTileType(tile, TileType::Road)) {
 		if (IsRoadDepot(tile) && (!IsInfraTileUsageAllowed(VEH_ROAD, v->owner, tile) || GetRoadDepotDirection(tile) == enterdir)) {
@@ -1235,7 +1238,7 @@ static Trackdir RoadFindPathToDest(RoadVehicle *v, TileIndex tile, DiagDirection
 		/* If vehicle expected a path, it no longer exists, so invalidate it. */
 		if (v->cached_path != nullptr) v->cached_path->clear();
 		/* No reachable tracks, so we'll reverse */
-		return_track(_road_reverse_table[enterdir]);
+		return FilterRedSignal(_road_reverse_table[enterdir]);
 	}
 
 	if (v->reverse_ctr != 0) {
@@ -1251,14 +1254,14 @@ static Trackdir RoadFindPathToDest(RoadVehicle *v, TileIndex tile, DiagDirection
 		if (reverse) {
 			v->reverse_ctr = 0;
 			if (v->tile != tile) {
-				return_track(_road_reverse_table[enterdir]);
+				return FilterRedSignal(_road_reverse_table[enterdir]);
 			}
 		}
 	}
 
 	if (v->dest_tile == INVALID_TILE) {
 		/* We've got no destination, pick a random track */
-		return_track(PickRandomBit(trackdirs));
+		return FilterRedSignal(PickRandomBit(trackdirs));
 	}
 
 	/* Only one track to choose between? */
@@ -1267,7 +1270,7 @@ static Trackdir RoadFindPathToDest(RoadVehicle *v, TileIndex tile, DiagDirection
 			/* Vehicle expected a choice here, invalidate its path. */
 			v->cached_path->clear();
 		}
-		return_track(FindFirstBit(trackdirs));
+		return FilterRedSignal(FindFirstBit(trackdirs));
 	}
 
 	/* Path cache is out of date, clear it */
@@ -1285,7 +1288,7 @@ static Trackdir RoadFindPathToDest(RoadVehicle *v, TileIndex tile, DiagDirection
 
 			if (HasBit(trackdirs, trackdir)) {
 				v->cached_path->pop_front();
-				return_track(trackdir);
+				return FilterRedSignal(trackdir);
 			}
 
 			/* Vehicle expected a choice which is no longer available. */
@@ -1293,16 +1296,12 @@ static Trackdir RoadFindPathToDest(RoadVehicle *v, TileIndex tile, DiagDirection
 		}
 	}
 
-	best_track = YapfRoadVehicleChooseTrack(v, tile, enterdir, trackdirs, path_found, v->GetOrCreatePathCache());
+	Trackdir best_track = YapfRoadVehicleChooseTrack(v, tile, enterdir, trackdirs, path_found, v->GetOrCreatePathCache());
 	DEBUG_UPDATESTATECHECKSUM("RoadFindPathToDest: v: {}, path_found: {}, best_track: {}", v->index, path_found, best_track);
 	UpdateStateChecksum((((uint64_t) v->index.base()) << 32) | (path_found << 16) | best_track);
 	v->HandlePathfindingResult(path_found);
 
-found_best_track:;
-
-	if (HasBit(red_signals, best_track)) return INVALID_TRACKDIR;
-
-	return best_track;
+	return FilterRedSignal(best_track);
 }
 
 struct RoadDriveEntry {

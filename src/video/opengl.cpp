@@ -222,7 +222,10 @@ static bool BindGLProc(F &f, const char *name)
 	return f != nullptr;
 }
 
-/** Bind basic information functions. */
+/**
+ * Bind basic information functions.
+ * @return \c true iff all procs could be bound.
+ */
 static bool BindBasicInfoProcs()
 {
 	if (!BindGLProc(_glGetString, "glGetString")) return false;
@@ -232,7 +235,10 @@ static bool BindBasicInfoProcs()
 	return true;
 }
 
-/** Bind OpenGL 1.0 and 1.1 functions. */
+/**
+ * Bind OpenGL 1.0 and 1.1 functions.
+ * @return \c true iff all procs could be bound.
+ */
 static bool BindBasicOpenGLProcs()
 {
 	if (!BindGLProc(_glDisable, "glDisable")) return false;
@@ -255,7 +261,10 @@ static bool BindBasicOpenGLProcs()
 	return true;
 }
 
-/** Bind texture-related extension functions. */
+/**
+ * Bind texture-related extension functions.
+ * @return \c true iff all extension procs could be bound.
+ */
 static bool BindTextureExtensions()
 {
 	if (IsOpenGLVersionAtLeast(1, 3)) {
@@ -267,7 +276,10 @@ static bool BindTextureExtensions()
 	return true;
 }
 
-/** Bind vertex buffer object extension functions. */
+/**
+ * Bind vertex buffer object extension functions.
+ * @return \c true iff all extension procs could be bound.
+ */
 static bool BindVBOExtension()
 {
 	if (IsOpenGLVersionAtLeast(1, 5)) {
@@ -297,7 +309,10 @@ static bool BindVBOExtension()
 	return true;
 }
 
-/** Bind vertex array object extension functions. */
+/**
+ * Bind vertex array object extension functions.
+ * @return \c true iff all extension procs could be bound.
+ */
 static bool BindVBAExtension()
 {
 	/* The APPLE and ARB variants have different semantics (that don't matter for us).
@@ -316,7 +331,10 @@ static bool BindVBAExtension()
 	return true;
 }
 
-/** Bind extension functions for shader support. */
+/**
+ * Bind extension functions for shader support.
+ * @return \c true iff all extension procs could be bound.
+ */
 static bool BindShaderExtensions()
 {
 	if (IsOpenGLVersionAtLeast(2, 0)) {
@@ -382,7 +400,10 @@ static bool BindShaderExtensions()
 	return true;
 }
 
-/** Bind extension functions for persistent buffer mapping. */
+/**
+ * Bind extension functions for persistent buffer mapping.
+ * @return \c true iff all extension procs could be bound.
+ */
 static bool BindPersistentBufferExtensions()
 {
 	/* Optional functions for persistent buffer mapping. */
@@ -403,8 +424,13 @@ static bool BindPersistentBufferExtensions()
 	return true;
 }
 
-/** Callback to receive OpenGL debug messages. */
-void APIENTRY DebugOutputCallback([[maybe_unused]] GLenum source, GLenum type, [[maybe_unused]] GLuint id, GLenum severity, [[maybe_unused]] GLsizei length, const GLchar *message, [[maybe_unused]] const void *userParam)
+/**
+ * Callback to receive OpenGL debug messages.
+ * @param type The type of message.
+ * @param severity The severity of the issue.
+ * @param message The message to convey to the end user.
+ */
+void APIENTRY DebugOutputCallback(GLenum, GLenum type, GLuint, GLenum severity, GLsizei, const GLchar *message, const void *)
 {
 	/* Make severity human readable. */
 	std::string_view severity_str;

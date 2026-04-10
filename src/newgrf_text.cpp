@@ -541,6 +541,14 @@ void AddGRFTextToList(GRFTextWrapper &list, std::string_view text_to_add)
 
 /**
  * Add the new read string into our structure.
+ * @param grfid The GRF to load the string for.
+ * @param stringid The GRF-local identifier of the string.
+ * @param langid_to_add The language to add them to.
+ * @param new_scheme Is the NewGRF version 7 or higher?
+ * @param allow_newlines Whether newlines are allowed in the string.
+ * @param text_to_add The actual text of the string.
+ * @param def_string The fallback string if a translation for this string isn't available.
+ * @return The OpenTTD internal string identifer.
  */
 StringID AddGRFString(uint32_t grfid, GRFStringID stringid, uint8_t langid_to_add, bool new_scheme, bool allow_newlines, std::string_view text_to_add, StringID def_string)
 {
@@ -599,6 +607,9 @@ StringID AddGRFString(uint32_t grfid, GRFStringID stringid, uint8_t langid_to_ad
 /**
  * Returns the index for this stringid associated with its grfID.
  * This form should be preferred over the uint32_t grfid form, to avoid redundant GRFID to GRF lookups.
+ * @param grfid The GRF to find the string for.
+ * @param stringid The GRF-local identifier of the string.
+ * @return The string identifier, or STR_UNDEFINED when it can't be found.
  */
 StringID GetGRFStringID(const GRFFile *grf, GRFStringID stringid)
 {
@@ -612,6 +623,9 @@ StringID GetGRFStringID(const GRFFile *grf, GRFStringID stringid)
 
 /**
  * Returns the index for this stringid associated with its grfID
+ * @param grfid The GRF to find the string for.
+ * @param stringid The GRF-local identifier of the string.
+ * @return The string identifier, or STR_UNDEFINED when it can't be found.
  */
 StringID GetGRFStringID(uint32_t grfid, GRFStringID stringid)
 {
@@ -638,6 +652,7 @@ StringID GetGRFStringID(uint32_t grfid, GRFStringID stringid)
  * is returned. If there is neither a default nor a translation for the
  * current language nullptr is returned.
  * @param text_list The GRFTextList to get the string from.
+ * @return The content of the requested string, or \c std::nullopt.
  */
 std::optional<std::string_view> GetGRFStringFromGRFText(const GRFTextList &text_list)
 {
@@ -677,7 +692,8 @@ const char *GetDefaultLangGRFStringFromGRFText(const GRFTextList &text_list)
  * current language it is returned, otherwise the default translation
  * is returned. If there is neither a default nor a translation for the
  * current language nullptr is returned.
- * @param text The GRFTextList to get the string from.
+ * @param text The GRFTextWrapper to get the string from.
+ * @return The content of the requested string, or \c std::nullopt.
  */
 std::optional<std::string_view> GetGRFStringFromGRFText(const GRFTextWrapper &text)
 {
@@ -691,6 +707,8 @@ const char *GetDefaultLangGRFStringFromGRFText(const GRFTextWrapper &text)
 
 /**
  * Get a C-string from a stringid set by a newgrf.
+ * @param stringid The index of the string in the NewGRF string-tab.
+ * @return The raw string.
  */
 std::string_view GetGRFStringPtr(StringIndexInTab stringid)
 {

@@ -51,7 +51,10 @@ std::pair<const GRFFile *, uint16_t> GetAiPurchaseCallbackResult(GrfSpecFeature 
 void AmbientSoundEffectCallback(TileIndex tile);
 uint16_t GetTownZonesCallback(Town *t);
 
-/** Play an ambient sound effect for an empty tile. */
+/**
+ * Play an ambient sound effect for an empty tile.
+ * @param tile The tile to play the sound at.
+ */
 inline void AmbientSoundEffect(TileIndex tile)
 {
 	/* Only run callback if enabled. */
