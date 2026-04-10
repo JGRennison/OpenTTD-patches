@@ -3636,10 +3636,10 @@ STR_COMPANY_INFRASTRUCTURE_VIEW_AIRPORTS                        :{WHITE}נמלי
 STR_INDUSTRY_DIRECTORY_CAPTION                                  :{WHITE}תעשיות ({COMMA} מ-{COMMA})
 STR_INDUSTRY_DIRECTORY_NONE                                     :{ORANGE}- אין -
 STR_INDUSTRY_DIRECTORY_ITEM_NOPROD                              :{ORANGE}{INDUSTRY}
-STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUSTRY} {STRING}
-STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}
-STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING}
-STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING} ו{NUM} ועוד...
+STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUSTRY} {BLACK}{STRING}
+STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {BLACK}{STRING}, {STRING}
+STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {BLACK}{STRING}, {STRING}, {STRING}
+STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {BLACK}{STRING}, {STRING}, {STRING} ו{NUM} ועוד...
 STR_INDUSTRY_DIRECTORY_LIST_TOOLTIP                             :{BLACK}רשימת תעשיות - לחץ על שם כדי להתמקד בתעשייה. Ctrl+לחיצה פותח חלונית תצוגה חדשה על מיקום התעשייה
 STR_INDUSTRY_DIRECTORY_ACCEPTED_CARGO_FILTER                    :{BLACK}מטען מקובל: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_PRODUCED_CARGO_FILTER                    :{BLACK}מטען שיוצר: {SILVER}{STRING}

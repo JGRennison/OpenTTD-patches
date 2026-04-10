@@ -4081,10 +4081,10 @@ STR_INDUSTRY_DIRECTORY_CAPTION                                  :{WHITE}Industri
 STR_INDUSTRY_DIRECTORY_NONE                                     :{ORANGE}- Ingen -
 STR_INDUSTRY_DIRECTORY_ITEM_INFO                                :{BLACK}{CARGO_LONG}{STRING}{YELLOW} ({COMMA}% transportert)
 STR_INDUSTRY_DIRECTORY_ITEM_NOPROD                              :{ORANGE}{INDUSTRY}
-STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUSTRY} {STRING}
-STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}
-STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING}
-STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING} og {NUM} flere...
+STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUSTRY} {BLACK}{STRING}
+STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {BLACK}{STRING}, {STRING}
+STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {BLACK}{STRING}, {STRING}, {STRING}
+STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {BLACK}{STRING}, {STRING}, {STRING} og {NUM} flere...
 STR_INDUSTRY_DIRECTORY_LIST_TOOLTIP                             :{BLACK}Industrinavn - klikk på navn for å sentrere hovedvisningen på industrien. Ctrl+klikk for å åpne et nytt tilleggsvindu på industrilokasjonen
 STR_INDUSTRY_DIRECTORY_ACCEPTED_CARGO_FILTER                    :{BLACK}Godtatte varer:{SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_PRODUCED_CARGO_FILTER                    :{BLACK}Produserte varer: {SILVER}{STRING}

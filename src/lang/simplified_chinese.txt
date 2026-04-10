@@ -4078,10 +4078,10 @@ STR_INDUSTRY_DIRECTORY_CAPTION                                  :{WHITE}工业�
 STR_INDUSTRY_DIRECTORY_NONE                                     :{ORANGE}- 没有 -
 STR_INDUSTRY_DIRECTORY_ITEM_INFO                                :{BLACK}{CARGO_LONG}{STRING}{YELLOW}（已运输 {COMMA}%）
 STR_INDUSTRY_DIRECTORY_ITEM_NOPROD                              :{ORANGE}{INDUSTRY}
-STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUSTRY} {STRING}
-STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {STRING}、{STRING}
-STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {STRING}、{STRING}、{STRING}
-STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {STRING}、{STRING}、{STRING}……（尚有 {NUM} 个未显示）
+STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUSTRY} {BLACK}{STRING}
+STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {BLACK}{STRING}、{STRING}
+STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {BLACK}{STRING}、{STRING}、{STRING}
+STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {BLACK}{STRING}、{STRING}、{STRING}……（尚有 {NUM} 个未显示）
 STR_INDUSTRY_DIRECTORY_LIST_TOOLTIP                             :{BLACK}工业名称 - 点选名称以将屏幕中心移动到当前工业的位置。按住 <Ctrl> 键点选会在新视点中显示工业位置
 STR_INDUSTRY_DIRECTORY_ACCEPTED_CARGO_FILTER                    :{BLACK}接受货物：{SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_PRODUCED_CARGO_FILTER                    :{BLACK}产出货物：{SILVER}{STRING}

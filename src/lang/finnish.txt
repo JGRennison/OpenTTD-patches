@@ -4079,10 +4079,10 @@ STR_INDUSTRY_DIRECTORY_CAPTION                                  :{WHITE}Laitokse
 STR_INDUSTRY_DIRECTORY_NONE                                     :{ORANGE}- Ei mitään -
 STR_INDUSTRY_DIRECTORY_ITEM_INFO                                :{BLACK}{CARGO_LONG}{STRING}{YELLOW} ({COMMA}% kuljetettu)
 STR_INDUSTRY_DIRECTORY_ITEM_NOPROD                              :{ORANGE}{INDUSTRY}
-STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUSTRY} {STRING}
-STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}
-STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING}
-STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING} ja {NUM} muuta
+STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUSTRY} {BLACK}{STRING}
+STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {BLACK}{STRING}, {STRING}
+STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {BLACK}{STRING}, {STRING}, {STRING}
+STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {BLACK}{STRING}, {STRING}, {STRING} ja {NUM} muuta
 STR_INDUSTRY_DIRECTORY_LIST_TOOLTIP                             :{BLACK}Teollisuushaarojen nimet – kohdista päänäkymä tuotantolaitokseen napsauttamalla nimeä. Ctrl+napsautus avaa uuden näkymäikkunan laitoksen sijaintiin
 STR_INDUSTRY_DIRECTORY_ACCEPTED_CARGO_FILTER                    :{BLACK}Vastaanotettava rahti: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_PRODUCED_CARGO_FILTER                    :{BLACK}Tuotettu rahti: {SILVER}{STRING}

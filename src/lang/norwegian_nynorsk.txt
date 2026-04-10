@@ -3219,7 +3219,7 @@ STR_COMPANY_INFRASTRUCTURE_VIEW_TOTAL_PERIOD                    :{WHITE}{CURRENC
 STR_INDUSTRY_DIRECTORY_NONE                                     :{ORANGE}- Ingen -
 STR_INDUSTRY_DIRECTORY_ITEM_INFO                                :{BLACK}{CARGO_LONG}{STRING}{YELLOW} ({COMMA}% transportert)
 STR_INDUSTRY_DIRECTORY_ITEM_NOPROD                              :{ORANGE}{INDUSTRY}
-STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUSTRY} {STRING}
+STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUSTRY} {BLACK}{STRING}
 STR_INDUSTRY_DIRECTORY_LIST_TOOLTIP                             :{BLACK}Industrinamn - Klikk på namnet for å syne industrien i hovedvisninga. CTRL+klikk syner industrien i eit tilleggsvindauge
 
 # Industry view

@@ -3260,8 +3260,8 @@ STR_COMPANY_INFRASTRUCTURE_VIEW_AIRPORTS                        :{WHITE}المط
 # Industry directory
 STR_INDUSTRY_DIRECTORY_NONE                                     :{ORANGE}-بدون-
 STR_INDUSTRY_DIRECTORY_ITEM_NOPROD                              :{ORANGE}{INDUSTRY}
-STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUSTRY} {STRING}
-STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {STRING}، {STRING}، {STRING} و{NUM} اكثر...
+STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUSTRY} {BLACK}{STRING}
+STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {BLACK}{STRING}، {STRING}، {STRING} و{NUM} اكثر...
 STR_INDUSTRY_DIRECTORY_LIST_TOOLTIP                             :{BLACK}اسماء المصانع - اضغط على اسم المصنع لتوسيط الشاشة عليه. اضغط + كنترول لفتح شاشة عرض جديدة لمنطقة المصنع.
 STR_INDUSTRY_DIRECTORY_FILTER_ALL_TYPES                         :جميع انواع الحمولة
 STR_INDUSTRY_DIRECTORY_FILTER_NONE                              :بدون

@@ -4173,10 +4173,10 @@ STR_INDUSTRY_DIRECTORY_CAPTION                                  :{WHITE}Βιομ
 STR_INDUSTRY_DIRECTORY_NONE                                     :{ORANGE}- Τίποτα -
 STR_INDUSTRY_DIRECTORY_ITEM_INFO                                :{BLACK}{CARGO_LONG}{STRING}{YELLOW} ({COMMA}% μεταφέρθηκαν)
 STR_INDUSTRY_DIRECTORY_ITEM_NOPROD                              :{ORANGE}{INDUSTRY}
-STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUSTRY} {STRING}
-STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}
-STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING}
-STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {STRING}, {STRING}, {STRING} και {NUM} περισσότερα...
+STR_INDUSTRY_DIRECTORY_ITEM_PROD1                               :{ORANGE}{INDUSTRY} {BLACK}{STRING}
+STR_INDUSTRY_DIRECTORY_ITEM_PROD2                               :{ORANGE}{INDUSTRY} {BLACK}{STRING}, {STRING}
+STR_INDUSTRY_DIRECTORY_ITEM_PROD3                               :{ORANGE}{INDUSTRY} {BLACK}{STRING}, {STRING}, {STRING}
+STR_INDUSTRY_DIRECTORY_ITEM_PRODMORE                            :{ORANGE}{INDUSTRY} {BLACK}{STRING}, {STRING}, {STRING} και {NUM} περισσότερα...
 STR_INDUSTRY_DIRECTORY_LIST_TOOLTIP                             :{BLACK}Ονόματα βιομηχανιών - πατήστε στο όνομα για κεντράρισμα της κύριας προβολής στη βιομηχανία. Ctrl+Κλικ για άνοιγμα νέου παραθύρου προβολής στην τοποθεσία της βιομηχανίας
 STR_INDUSTRY_DIRECTORY_ACCEPTED_CARGO_FILTER                    :{BLACK}Αποδεκτό φορτίο: {SILVER}{STRING}
 STR_INDUSTRY_DIRECTORY_PRODUCED_CARGO_FILTER                    :{BLACK}Παραγόμενο εμπόρευμα: {SILVER}{STRING}
