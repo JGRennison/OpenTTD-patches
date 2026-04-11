@@ -44,7 +44,12 @@
 
 #include "safeguards.h"
 
-/* Tables used in vehicle_func.h to find the right error message for a certain vehicle type */
+/**
+ * @name Tables used to find the right error message for a certain vehicle type.
+ * @see vehicle_func.h
+ * @{
+ */
+/** When can't buy such vehicle. */
 const StringID _veh_build_msg_table[] = {
 	STR_ERROR_CAN_T_BUY_TRAIN,
 	STR_ERROR_CAN_T_BUY_ROAD_VEHICLE,
@@ -52,6 +57,7 @@ const StringID _veh_build_msg_table[] = {
 	STR_ERROR_CAN_T_BUY_AIRCRAFT,
 };
 
+/** When can't sell such vehicle. */
 const StringID _veh_sell_msg_table[] = {
 	STR_ERROR_CAN_T_SELL_TRAIN,
 	STR_ERROR_CAN_T_SELL_ROAD_VEHICLE,
@@ -59,6 +65,7 @@ const StringID _veh_sell_msg_table[] = {
 	STR_ERROR_CAN_T_SELL_AIRCRAFT,
 };
 
+/** When can't sell all vehicles in depot. */
 const StringID _veh_sell_all_msg_table[] = {
 	STR_ERROR_CAN_T_SELL_ALL_TRAIN,
 	STR_ERROR_CAN_T_SELL_ALL_ROAD_VEHICLE,
@@ -66,6 +73,7 @@ const StringID _veh_sell_all_msg_table[] = {
 	STR_ERROR_CAN_T_SELL_ALL_AIRCRAFT,
 };
 
+/** When can't autoreplace such vehicle. */
 const StringID _veh_autoreplace_msg_table[] = {
 	STR_ERROR_CAN_T_AUTOREPLACE_TRAIN,
 	STR_ERROR_CAN_T_AUTOREPLACE_ROAD_VEHICLE,
@@ -73,6 +81,7 @@ const StringID _veh_autoreplace_msg_table[] = {
 	STR_ERROR_CAN_T_AUTOREPLACE_AIRCRAFT,
 };
 
+/** When can't refit such vehicle. */
 const StringID _veh_refit_msg_table[] = {
 	STR_ERROR_CAN_T_REFIT_TRAIN,
 	STR_ERROR_CAN_T_REFIT_ROAD_VEHICLE,
@@ -80,12 +89,14 @@ const StringID _veh_refit_msg_table[] = {
 	STR_ERROR_CAN_T_REFIT_AIRCRAFT,
 };
 
+/** When can't send to depot such vehicle. */
 const StringID _send_to_depot_msg_table[] = {
 	STR_ERROR_CAN_T_SEND_TRAIN_TO_DEPOT,
 	STR_ERROR_CAN_T_SEND_ROAD_VEHICLE_TO_DEPOT,
 	STR_ERROR_CAN_T_SEND_SHIP_TO_DEPOT,
 	STR_ERROR_CAN_T_SEND_AIRCRAFT_TO_HANGAR,
 };
+/** @} */
 
 
 CommandCost CmdBuildRailVehicle(TileIndex tile, DoCommandFlags flags, const Engine *e, Vehicle **v);

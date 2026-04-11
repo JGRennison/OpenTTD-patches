@@ -17,7 +17,7 @@ namespace upstream_sl {
 
 extern void SlSkipArray();
 
-/* Water Region savegame data is no longer used, but still needed for old savegames to load without errors. */
+/** Water Region savegame data is no longer used, but still needed for old savegames to load without errors. */
 struct WaterRegionChunkHandler : ChunkHandler {
 	WaterRegionChunkHandler() : ChunkHandler('WRGN', CH_READONLY)
 	{}

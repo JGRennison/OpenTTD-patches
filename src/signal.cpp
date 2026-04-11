@@ -113,9 +113,9 @@ SignalType NextSignalType(SignalType cur, SignalCycleGroups which_signals)
 template <typename Tdir, uint items>
 struct SmallSet {
 private:
-	uint n = 0; // actual number of units
-	bool overflowed = false; // did we try to overflow the set?
-	const std::string_view name; // name, used for debugging purposes...
+	uint n = 0; ///< Actual number of units.
+	bool overflowed = false; ///< Did we try to overflow the set?
+	const std::string_view name; ///< Name, used for debugging purposes...
 
 	/** Element of set */
 	struct SSdata {
@@ -124,7 +124,10 @@ private:
 	} data[items];
 
 public:
-	/** Constructor - just set default values and 'name' */
+	/**
+	 * Constructor - just set default values and 'name'
+	 * @param name The name of the set.
+	 */
 	SmallSet(std::string_view name) : name(name) { }
 
 	/** Reset variables to default values */

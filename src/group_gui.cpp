@@ -196,7 +196,7 @@ void BuildGuiGroupList(GUIGroupList &dst, GroupFoldBits fold, Owner owner, Vehic
 	GuiGroupListAddChildren(dst, list, fold, GroupID::Invalid(), 0);
 }
 
-/* Columns in the group list */
+/** Columns in the group list. */
 enum VehicleGroupColumns : uint8_t {
 	VGC_FOLD,          ///< Fold / Unfold button.
 	VGC_NAME,          ///< Group name.

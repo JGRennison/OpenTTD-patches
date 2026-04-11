@@ -82,7 +82,7 @@ HouseSpec *HouseSpec::Get(size_t house_id)
 	return &_house_specs[house_id];
 }
 
-/* Reset and initialise house specs. */
+/** Reset and initialise house specs. */
 void ResetHouses()
 {
 	_house_specs.clear();

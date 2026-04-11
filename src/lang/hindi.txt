@@ -1500,7 +1500,6 @@ STR_ERROR_BRIDGE_TOO_HIGH_AFTER_LOWER_LAND                      :{WHITE}बा�
 
 # Town related errors
 STR_ERROR_CAN_T_RENAME_TOWN                                     :{WHITE}नगर का नाम नहीं बदला जा सकता है...
-STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP_SUB                          :{WHITE}... मानचित्र के किनारों के बहुत समीप
 
 # Industry related errors
 STR_ERROR_CAN_ONLY_BE_BUILT_IN_DESERT                           :{WHITE}... केवल रेगिस्तानी इलाकों में ही बनाया जा सकता है

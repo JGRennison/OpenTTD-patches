@@ -609,6 +609,7 @@ static void ShowRejectOrAcceptNews(const Station *st, CargoTypes cargoes, bool r
  * @param w X extent of the area
  * @param h Y extent of the area
  * @param rad Search radius in addition to the given area
+ * @return Array of production per cargo type.
  */
 CargoArray GetProductionAroundTiles(TileIndex north_tile, int w, int h, int rad)
 {
@@ -3021,6 +3022,7 @@ CommandCost CmdOpenCloseAirport(DoCommandFlags flags, StationID station_id)
  * @param station station ID
  * @param include_company If true only check vehicles of \a company, if false only check vehicles of other companies
  * @param company company ID
+ * @return \c true when at least one vehicle is ordered to go to this station.
  */
 bool HasStationInUse(StationID station, bool include_company, CompanyID company)
 {

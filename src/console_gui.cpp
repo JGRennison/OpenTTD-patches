@@ -72,7 +72,7 @@ static jgr::ring_buffer<IConsoleLine> _iconsole_buffer;
 static bool TruncateBuffer();
 
 
-/* ** main console cmd buffer ** */
+/** Main console cmd buffer. */
 static Textbuf _iconsole_cmdline(ICON_CMDLN_SIZE);
 static jgr::ring_buffer<std::string> _iconsole_history;
 static ptrdiff_t _iconsole_historypos;

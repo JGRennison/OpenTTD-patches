@@ -2401,21 +2401,22 @@ static const std::initializer_list<std::pair<std::string_view, NetworkAuthorized
 	{ "settings", &_settings_client.network.settings_authorized_keys },
 };
 
-enum ConNetworkAuthorizedKeyAction : uint8_t {
-	CNAKA_LIST,
-	CNAKA_ADD,
-	CNAKA_REMOVE,
+/** Actions that can be performed on authorized keys from the console. */
+enum class ConNetworkAuthorizedKeyAction : uint8_t {
+	List, ///< List all authorized keys.
+	Add, ///< Add an authorized key.
+	Remove, ///< Remove an authorized key.
 };
 
 static void PerformNetworkAuthorizedKeyAction(std::string_view name, NetworkAuthorizedKeys *authorized_keys, ConNetworkAuthorizedKeyAction action, const std::string &authorized_key, CompanyID company = CompanyID::Invalid())
 {
 	switch (action) {
-		case CNAKA_LIST:
+		case ConNetworkAuthorizedKeyAction::List:
 			IConsolePrint(CC_WHITE, "The authorized keys for {} are:", name);
 			for (auto &ak : *authorized_keys) IConsolePrint(CC_INFO, "  {}", ak);
 			return;
 
-		case CNAKA_ADD:
+		case ConNetworkAuthorizedKeyAction::Add:
 			if (authorized_keys->Contains(authorized_key)) {
 				IConsolePrint(CC_WARNING, "Not added {} to {} as it already exists.", authorized_key, name);
 				return;
@@ -2430,7 +2431,7 @@ static void PerformNetworkAuthorizedKeyAction(std::string_view name, NetworkAuth
 			IConsolePrint(CC_INFO, "Added {} to {}.", authorized_key, name);
 			return;
 
-		case CNAKA_REMOVE:
+		case ConNetworkAuthorizedKeyAction::Remove:
 			if (!authorized_keys->Contains(authorized_key)) {
 				IConsolePrint(CC_WARNING, "Not removed {} from {} as it does not exist.", authorized_key, name);
 				return;
@@ -2466,18 +2467,18 @@ static bool ConNetworkAuthorizedKey(std::span<std::string_view> argv)
 	ConNetworkAuthorizedKeyAction action;
 	std::string_view action_string = argv[1];
 	if (StrEqualsIgnoreCase(action_string, "list")) {
-		action = CNAKA_LIST;
+		action = ConNetworkAuthorizedKeyAction::List;
 	} else if (StrEqualsIgnoreCase(action_string, "add")) {
-		action = CNAKA_ADD;
+		action = ConNetworkAuthorizedKeyAction::Add;
 	} else if (StrEqualsIgnoreCase(action_string, "remove") || StrEqualsIgnoreCase(action_string, "delete")) {
-		action = CNAKA_REMOVE;
+		action = ConNetworkAuthorizedKeyAction::Remove;
 	} else {
 		IConsolePrint(CC_WARNING, "No valid action was given.");
 		return false;
 	}
 
 	std::string authorized_key;
-	if (action != CNAKA_LIST) {
+	if (action != ConNetworkAuthorizedKeyAction::List) {
 		if (argv.size() <= 3) {
 			IConsolePrint(CC_ERROR, "You must enter the key.");
 			return false;
@@ -4434,10 +4435,7 @@ static bool ConDumpInfo(std::span<std::string_view> argv)
 	return false;
 }
 
-/*******************************
- * console command registration
- *******************************/
-
+/** Console command registration. */
 void IConsoleStdLibRegister()
 {
 	IConsole::CmdRegister("debug_level",             ConDebugLevel);

@@ -146,6 +146,7 @@ public:
 
 	/**
 	 * Move ourselves to the next tile in the rectangle on the map.
+	 * @return Reference to this iterator.
 	 */
 	virtual TileIterator& operator ++() = 0;
 
@@ -154,6 +155,7 @@ public:
 
 	/**
 	 * Allocate a new iterator that is a copy of this one.
+	 * @return A clone of this iterator.
 	 */
 	virtual std::unique_ptr<TileIterator> Clone() const = 0;
 
@@ -188,6 +190,7 @@ public:
 
 	/**
 	 * Move ourselves to the next tile in the rectangle on the map.
+	 * @return Reference to this iterator.
 	 */
 	inline TileIterator& operator ++() override
 	{
@@ -400,6 +403,7 @@ private:
 
 	/**
 	 * Test whether the iterator reached the end.
+	 * @return \c true iff the end of the iteration is reached.
 	 */
 	bool IsEnd() const
 	{

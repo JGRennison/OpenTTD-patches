@@ -47,6 +47,7 @@ public:
 
 	/**
 	 * Create a new script.
+	 * @param api_name The name of the API (AI/GS).
 	 */
 	ScriptInstance(std::string_view api_name, ScriptType script_type);
 	virtual ~ScriptInstance();
@@ -92,11 +93,13 @@ public:
 
 	/**
 	 * Get the storage of this script.
+	 * @return The storage associated with this script.
 	 */
 	class ScriptStorage &GetStorage();
 
 	/**
 	 * Get the log pointer of this script.
+	 * @return The logs associated with this script.
 	 */
 	ScriptLogTypes::LogData &GetLogData();
 
@@ -156,6 +159,7 @@ public:
 
 	/**
 	 * Get the controller attached to the instance.
+	 * @return The instance's controller.
 	 */
 	class ScriptController &GetController()
 	{
@@ -164,12 +168,14 @@ public:
 	}
 
 	/**
-	 * Return the "this script died" value
+	 * Return the "this script died" value.
+	 * @return \c true iff the script is dead.
 	 */
 	inline bool IsDead() const { return this->is_dead; }
 
 	/**
 	 * Return whether the script is alive.
+	 * @return \c true iff the script not dead and not dying (being shut down).
 	 */
 	inline bool IsAlive() const { return !this->IsDead() && !this->in_shutdown; }
 
@@ -254,6 +260,7 @@ public:
 	 * Check if the instance is sleeping, which either happened because the
 	 *  script executed a DoCommand, executed this.Sleep() or it has been
 	 *  paused.
+	 * @return \c true iff the script is sleeping or paused.
 	 */
 	bool IsSleeping() { return this->suspend != 0; }
 
@@ -263,6 +270,7 @@ public:
 
 	/**
 	 * Indicate whether this instance is currently being destroyed.
+	 * @return \c true iff being shut down.
 	 */
 	inline bool InShutdown() const { return this->in_shutdown; }
 
@@ -296,6 +304,7 @@ protected:
 
 	/**
 	 * Get the callback handling DoCommands in case of networking.
+	 * @return The callback function to use to get results back to the script.
 	 */
 	virtual CommandCallback GetDoCommandCallback() = 0;
 
@@ -324,6 +333,7 @@ private:
 	/**
 	 * Call the script Load function if it exists and data was loaded
 	 *  from a savegame.
+	 * @return \c true iff the load succeeded.
 	 */
 	bool CallLoad();
 
@@ -347,6 +357,7 @@ private:
 
 	/**
 	 * Load all objects from a savegame.
+	 * @param data The data from the savegame.
 	 * @return True if the loading was successful.
 	 */
 	static bool LoadObjects(ScriptData *data);

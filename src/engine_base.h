@@ -94,7 +94,7 @@ struct Engine : EnginePool::PoolItem<&_engine_pool> {
 	std::unique_ptr<EngineRefitCapacityValue[], FreeDeleter> refit_capacity_values;
 
 private:
-	/* Vehicle-type specific information. */
+	/** Vehicle-type specific information. */
 	std::variant<std::monostate, RailVehicleInfo, RoadVehicleInfo, ShipVehicleInfo, AircraftVehicleInfo> vehicle_info{};
 
 public:

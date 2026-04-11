@@ -49,7 +49,6 @@ enum SortingBits : uint8_t {
 };
 DECLARE_ENUM_AS_BIT_SET(SortingBits)
 
-/* Variables to display file lists */
 extern SortingBits _savegame_sort_order;
 
 struct FiosOrderListInfo {

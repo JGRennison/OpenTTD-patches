@@ -54,7 +54,7 @@ void ChangeOwnershipOfCargoPacketDeferredPayments(Owner old_owner, Owner new_own
  */
 struct CargoPacket : CargoPacketPool::PoolItem<&_cargopacket_pool> {
 private:
-	/* A mathematical vector from (0,0). */
+	/** A mathematical vector from (0,0). */
 	struct Vector {
 		int32_t x;
 		int32_t y;

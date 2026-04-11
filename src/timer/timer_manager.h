@@ -112,7 +112,10 @@ private:
 		}
 	};
 
-	/** Singleton list, to store all the active timers. */
+	/**
+	 * Singleton list, to store all the active timers.
+	 * @return The set of timers.
+	 */
 	static btree::btree_set<BaseTimer<TTimerType> *, base_timer_sorter> &GetTimers()
 	{
 		static btree::btree_set<BaseTimer<TTimerType> *, base_timer_sorter> timers;

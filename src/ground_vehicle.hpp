@@ -71,7 +71,7 @@ struct GroundVehicleAcceleration {
  * These functions are not defined as pure virtual functions at this class to improve performance.
  *
  * virtual uint16_t      GetPower() const = 0;
- * virtual uint16_t      GetPoweredPartPower(const T *head) const = 0;
+ * virtual uint16_t      GetPoweredPartPower() const = 0;
  * virtual uint16_t      GetWeightWithoutCargo() const = 0;
  * virtual uint16_t      GetCargoWeight() const = 0;
  * virtual uint16_t      GetWeight() const = 0;

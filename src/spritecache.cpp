@@ -39,7 +39,7 @@
 
 #include "safeguards.h"
 
-/* Default of 4MB spritecache */
+/** Default of 4MB spritecache. */
 uint _sprite_cache_size = 4;
 
 size_t _spritecache_bytes_used = 0;

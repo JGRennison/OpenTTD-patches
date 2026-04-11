@@ -44,6 +44,8 @@ extern bool _signal_sprite_oversized;
 /**
  * Maps a trackdir to the bit that stores its status in the map arrays, in the
  * direction along with the trackdir.
+ * @param trackdir The track dir to consider.
+ * @return Bitmask of the storage of the signal in the associated trackdir in the map array.
  */
 inline uint8_t SignalAlongTrackdir(Trackdir trackdir)
 {
@@ -54,6 +56,8 @@ inline uint8_t SignalAlongTrackdir(Trackdir trackdir)
 /**
  * Maps a trackdir to the bit that stores its status in the map arrays, in the
  * direction against the trackdir.
+ * @param trackdir The track dir to consider.
+ * @return Bitmask of the storage of the signal in the associated trackdir in the map array.
  */
 inline uint8_t SignalAgainstTrackdir(Trackdir trackdir)
 {
@@ -64,6 +68,8 @@ inline uint8_t SignalAgainstTrackdir(Trackdir trackdir)
 /**
  * Maps a Track to the bits that store the status of the two signals that can
  * be present on the given track.
+ * @param track The track to consider.
+ * @return Bitmask of the storage of the signal in the associated track in the map array.
  */
 inline uint8_t SignalOnTrack(Track track)
 {

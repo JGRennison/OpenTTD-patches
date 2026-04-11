@@ -1225,7 +1225,7 @@ static void TileLoopTreesAlps(TileIndex tile)
 	MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE_NON_VEG);
 }
 
-/*
+/**
  * Check if trees on this tile are allowed to spread.
  * If they are allowed to spread, they are also allowed to die.
  * @param tile The tile to check.

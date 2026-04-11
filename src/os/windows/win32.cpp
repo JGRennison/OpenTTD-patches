@@ -17,7 +17,7 @@
 #include <fcntl.h>
 #include <mmsystem.h>
 #include <regstr.h>
-#define NO_SHOBJIDL_SORTDIRECTION // Avoid multiple definition of SORT_ASCENDING
+#define NO_SHOBJIDL_SORTDIRECTION /**< Avoid multiple definition of SORT_ASCENDING. */
 #include <shlobj.h> /* SHGetFolderPath */
 #include <shellapi.h>
 #include <winnls.h>
@@ -630,10 +630,10 @@ int OTTDStringCompare(std::string_view s1, std::string_view s2)
 	static bool first_time = true;
 
 #ifndef SORT_DIGITSASNUMBERS
-#	define SORT_DIGITSASNUMBERS 0x00000008  // use digits as numbers sort method
+#	define SORT_DIGITSASNUMBERS 0x00000008  /**< Use digits as numbers sort method. */
 #endif
 #ifndef LINGUISTIC_IGNORECASE
-#	define LINGUISTIC_IGNORECASE 0x00000010 // linguistically appropriate 'ignore case'
+#	define LINGUISTIC_IGNORECASE 0x00000010 /**< Linguistically appropriate 'ignore case'. */
 #endif
 
 	if (first_time) {

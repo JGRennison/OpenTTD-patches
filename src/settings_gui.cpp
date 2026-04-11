@@ -187,8 +187,8 @@ static void AddCustomRefreshRates()
 	}
 }
 
-static const int SCALE_NMARKS = (MAX_INTERFACE_SCALE - MIN_INTERFACE_SCALE) / 25 + 1; // Show marks at 25% increments
-static const int VOLUME_NMARKS = 9; // Show 5 values and 4 empty marks.
+static const int SCALE_NMARKS = (MAX_INTERFACE_SCALE - MIN_INTERFACE_SCALE) / 25 + 1; ///< Show marks at 25% increments.
+static const int VOLUME_NMARKS = 9; ///< Show 5 values and 4 empty marks.
 
 static std::optional<std::string> ScaleMarkFunc(int, int, int value)
 {

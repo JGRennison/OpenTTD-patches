@@ -1314,6 +1314,10 @@ bool Train::ConsistNeedsRepair() const
 	return false;
 }
 
+/**
+ * Get the offset for train image when it is used as cursor.
+ * @return The offset in horizontal direction.
+ */
 int Train::GetCursorImageOffset() const
 {
 	if (this->gcache.cached_veh_length != 8 && this->flags.Test(VehicleRailFlag::Flipped) && !EngInfo(this->engine_type)->misc_flags.Test(EngineMiscFlag::RailFlips)) {
@@ -1579,7 +1583,10 @@ static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlags flags, const
 	return CommandCost();
 }
 
-/** Move all free vehicles in the depot to the train */
+/**
+ * Move all free vehicles in the depot to the train.
+ * @param u The train to move the free vehicles to.
+ */
 void NormalizeTrainVehInDepot(const Train *u)
 {
 	assert(u->IsEngine());
@@ -3331,7 +3338,6 @@ ClosestDepot Train::FindClosestDepot()
 	return ClosestDepot(tfdd.tile, GetDepotIndex(tfdd.tile), tfdd.reverse);
 }
 
-/** Play a sound for a train leaving the station. */
 void Train::PlayLeaveStationSound(bool force) const
 {
 	static const SoundFx sfx[] = {
@@ -5173,6 +5179,7 @@ static uint CheckTrainCollision(Train *v, Train *t)
  * Reports the incident in a flashy news item, modifies station ratings and
  * plays a sound.
  * @param v %Train to test.
+ * @return \c true iff there has been a collision.
  */
 static bool CheckTrainCollision(Train *v)
 {

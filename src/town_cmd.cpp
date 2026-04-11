@@ -177,8 +177,9 @@ Town::~Town()
 /**
  * Invalidating of the "nearest town cache" has to be done
  * after removing item from the pool.
+ * @copydoc Pool::PoolItem::PostDestructor
  */
-void Town::PostDestructor(size_t)
+void Town::PostDestructor([[maybe_unused]] size_t index)
 {
 	InvalidateWindowData(WC_TOWN_DIRECTORY, 0, TDIWD_FORCE_REBUILD);
 	UpdateNearestTownForRoadTiles(false);
@@ -985,6 +986,7 @@ static RoadBits GetTownRoadBits(TileIndex tile)
 /**
  * Get the road type that towns should build at this current moment.
  * They may have built a different type in the past.
+ * @return The best road type for towns at this time.
  */
 RoadType GetTownRoadType()
 {
@@ -1569,6 +1571,7 @@ static bool TownCanGrowRoad(TileIndex tile)
 
 /**
  * Check if the town is allowed to build roads.
+ * @param modes The configuration of the town growth.
  * @return true If the town is allowed to build roads.
  */
 static inline bool TownAllowedToBuildRoads(TownExpandModes modes)
@@ -1576,7 +1579,7 @@ static inline bool TownAllowedToBuildRoads(TownExpandModes modes)
 	return modes.Test(TownExpandMode::Roads);
 }
 
-/* The possible states of town growth. */
+/** The possible states of town growth. */
 enum class TownGrowthResult {
 	Succeed, ///< The town has grown.
 	SearchStopped, ///< There is a reason not to try growing the town now.
@@ -2292,7 +2295,7 @@ static CommandCost TownCanBePlacedHere(TileIndex tile, bool city, bool check_sur
 {
 	/* Check if too close to the edge of map */
 	if (DistanceFromEdge(tile) < 12) {
-		return CommandCost(STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP_SUB);
+		return CommandCost(STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP);
 	}
 
 	/* Check distance to all other towns. */

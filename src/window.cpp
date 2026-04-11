@@ -75,7 +75,7 @@ uint64_t _window_update_number = 1;
 
 /*
  * Window that currently has focus. - The main purpose is to generate
- * #FocusLost events, not to give next window in z-order focus when a
+ * #Window::OnFocusLost events, not to give next window in z-order focus when a
  * window is closed.
  */
 Window *_focused_window;

@@ -89,7 +89,8 @@ struct Town : TownPool::PoolItem<&_town_pool> {
 
 	TownCache cache{}; ///< Container for all cacheable data.
 
-	/* Town name */
+	/** @name Town name.
+	 * @{ */
 	uint32_t townnamegrfid = 0;
 	uint16_t townnametype = 0;
 	uint32_t townnameparts = 0;

@@ -1482,12 +1482,12 @@ private:
 	}
 
 	/** Filter grfs by tags/name. @copydoc GUIList::FilterFunction */
-	static bool TagNameFilter(const GRFConfig * const *a, StringFilter &filter)
+	static bool TagNameFilter(const GRFConfig * const *item, StringFilter &filter)
 	{
 		filter.ResetState();
-		filter.AddLine((*a)->GetName());
-		filter.AddLine((*a)->filename);
-		if (auto desc = (*a)->GetDescription(); desc.has_value()) filter.AddLine(*desc);
+		filter.AddLine((*item)->GetName());
+		filter.AddLine((*item)->filename);
+		if (auto desc = (*item)->GetDescription(); desc.has_value()) filter.AddLine(*desc);
 		return filter.GetState();;
 	}
 
@@ -1978,7 +1978,7 @@ std::unique_ptr<NWidgetBase> NewGRFDisplay()
 	return std::make_unique<NWidgetNewGRFDisplay>(std::move(avs), std::move(acs), std::move(inf));
 }
 
-/* Widget definition of the manage newgrfs window */
+/** Widget definition of the manage newgrfs window. */
 static constexpr std::initializer_list<NWidgetPart> _nested_newgrf_widgets = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, COLOUR_MAUVE),

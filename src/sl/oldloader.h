@@ -34,7 +34,7 @@ struct LoadgameState {
 	std::vector<StringID> vehicle_names;
 };
 
-/* OldChunk-Type */
+/** OldChunk-Type. */
 enum OldChunkType : uint32_t {
 	OC_SIMPLE    = 0,
 	OC_NULL      = 1,
@@ -127,6 +127,7 @@ inline uint32_t ReadUint32(LoadgameState &ls)
 #define OCL_CCHUNK(type, amount, proc)       { OC_CHUNK | type, amount, nullptr,    0,                             proc }
 #define OCL_ASSERT(type, size)               { OC_ASSERT | type,     1, nullptr, size,                             nullptr }
 #define OCL_NULL(amount)        OCL_CNULL((OldChunkType)0, amount)
+/** Load another proc to load a part of the savegame, 'amount' times. */
 #define OCL_CHUNK(amount, proc) OCL_CCHUNK((OldChunkType)0, amount, proc)
 
 #endif /* SL_OLDLOADER_H */

@@ -612,7 +612,7 @@ DropDownList BaseVehicleListWindow::BuildActionDropdownList(bool show_autoreplac
 	return list;
 }
 
-/* cached values for VehicleNameSorter to spare many GetString() calls */
+/** Cached values for VehicleNameSorter to spare many GetString() calls. */
 static const Vehicle *_last_vehicle[2] = { nullptr, nullptr };
 
 static btree::btree_map<VehicleID, int> _vehicle_max_speed_loaded;
@@ -632,7 +632,7 @@ void DepotSortList(VehicleList *list)
 	std::sort(list->begin(), list->end(), &VehicleNumberSorter);
 }
 
-/** draw the vehicle profit button in the vehicle list window. */
+/** Draw the vehicle profit button in the vehicle list window. */
 static void DrawVehicleProfitButton(EconTime::DateDelta age, Money display_profit_last_year, uint num_vehicles, int x, int y)
 {
 	SpriteID spr;
@@ -1542,7 +1542,14 @@ void ShowVehicleRefitWindow(const Vehicle *v, VehicleOrderID order, Window *pare
 	w->parent = parent;
 }
 
-/** Display list of cargo types of the engine, for the purchase information window */
+/**
+ * Display list of cargo types of the engine, for the purchase information window.
+ * @param left The left bound of the area to draw in.
+ * @param right The right bound of the area to draw in.
+ * @param y The top bound of the area to draw in.
+ * @param engine The engine to draw the options for.
+ * @return The bottom of the area that was drawn to.
+ */
 uint ShowRefitOptionsList(int left, int right, int y, EngineID engine)
 {
 	/* List of cargo types of this engine */
@@ -3059,7 +3066,11 @@ struct VehicleDetailsWindow : Window {
 		VDWDDA_REMOVE_FROM_SLOT,
 	};
 
-	/** Initialize a newly created vehicle details window */
+	/**
+	 * Initialize a newly created vehicle details window.
+	 * @param desc The configuration of the window.
+	 * @param window_number The unique number of the window within the class.
+	 */
 	VehicleDetailsWindow(WindowDesc &desc, WindowNumber window_number) : Window(desc)
 	{
 		this->invalidation_policy = WindowInvalidationPolicy::QueueSingle;
@@ -3739,7 +3750,10 @@ static WindowDesc _nontrain_vehicle_details_desc(__FILE__, __LINE__,
 	_nested_nontrain_vehicle_details_widgets
 );
 
-/** Shows the vehicle details window of the given vehicle. */
+/**
+ * Shows the vehicle details window of the given vehicle.
+ * @param v The vehicle to show the window for.
+ */
 static void ShowVehicleDetailsWindow(const Vehicle *v)
 {
 	CloseWindowById(WC_VEHICLE_ORDERS, v->index, false);
@@ -3813,10 +3827,12 @@ static const ZoomLevel _vehicle_view_zoom_levels[] = {
 	ZoomLevel::Aircraft,
 };
 
-/* Constants for geometry of vehicle view viewport */
+/** @{
+ * Constants for geometry of vehicle view viewport. */
 static const int VV_INITIAL_VIEWPORT_WIDTH = 226;
 static const int VV_INITIAL_VIEWPORT_HEIGHT = 84;
 static const int VV_INITIAL_VIEWPORT_HEIGHT_TRAIN = 102;
+/** @} */
 
 /** Command indices for the _vehicle_command_translation_table. */
 enum VehicleCommandTranslation : uint8_t {
@@ -4723,7 +4739,10 @@ static WindowDesc _train_view_desc(__FILE__, __LINE__,
 	&VehicleViewWindow::hotkeys
 );
 
-/** Shows the vehicle view window of the given vehicle. */
+/**
+ * Shows the vehicle view window of the given vehicle.
+ * @param v The vehicle to show the view for.
+ */
 void ShowVehicleViewWindow(const Vehicle *v)
 {
 	AllocateWindowDescFront<VehicleViewWindow>((v->type == VEH_TRAIN) ? _train_view_desc : _vehicle_view_desc, v->index);

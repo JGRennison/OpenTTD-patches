@@ -55,6 +55,7 @@ void PostTransparencyOptionLoad();
  * and if we aren't in the game menu (there's never transparency)
  *
  * @param to the structure which transparency option is ask for
+ * @return \c true if transparency is set for the option, and not in the main menu.
  */
 inline bool IsTransparencySet(TransparencyOption to)
 {
@@ -66,6 +67,7 @@ inline bool IsTransparencySet(TransparencyOption to)
  * and if we aren't in the game menu (there's never transparency)
  *
  * @param to the structure which invisibility option is ask for
+ * @return \c true if invisibility is set for the option, and not in the main menu.
  */
 inline bool IsInvisibilitySet(TransparencyOption to)
 {

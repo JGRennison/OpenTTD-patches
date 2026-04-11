@@ -142,7 +142,7 @@ protected:
 	const SpriteGroup *Resolve(ResolverObject &object) const override;
 };
 
-/* Shared by deterministic and random groups. */
+/** Shared by deterministic and random groups. */
 enum VarSpriteGroupScope : uint8_t {
 	VSG_BEGIN,
 
@@ -529,7 +529,7 @@ struct DeterministicSpriteGroup final : SpecializedSpriteGroup<DeterministicSpri
 	/* Dynamically allocated, this is the sole owner */
 	const SpriteGroup *default_group = nullptr;
 
-	const SpriteGroup *error_group = nullptr; // was first range, before sorting ranges
+	const SpriteGroup *error_group = nullptr; ///< Was first range, before sorting ranges.
 
 	bool GroupMayBeBypassed() const;
 	const SpriteGroup *GetBypassGroupForValue(uint32_t value) const;

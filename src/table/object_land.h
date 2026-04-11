@@ -108,14 +108,13 @@ static const DrawTileSpriteSpan _object_hq[] = {
 
 #define M(name, size, build_cost_multiplier, clear_cost_multiplier, height, introduction_date, climate, gen_amount, flags, ctrl_flags) { {ObjectClassID::Invalid(), 0}, StandardGRFFileProps{}, AnimationInfo<ObjectAnimationTriggers>{}, name, climate, size, build_cost_multiplier, clear_cost_multiplier, CalTime::Date{}, CalTime::MAX_DATE + 1, flags, ctrl_flags, {0, 0, 0, 0}, ObjectCallbackMasks{}, height, 1, gen_amount, OVMT_DEFAULT, 0, {} }
 
-/* Climates
- * T = Temperate
- * A = Sub-Arctic
- * S = Sub-Tropic
- * Y = Toyland */
+/** Climate temperate. */
 #define T LandscapeType::Temperate
+/** Climate sub-arctic. */
 #define A LandscapeType::Arctic
+/** Climate sub-tropic. */
 #define S LandscapeType::Tropic
+/** Climate toyland. */
 #define Y LandscapeType::Toyland
 /** Specification of the original object structures. */
 extern const ObjectSpec _original_objects[] = {

@@ -149,7 +149,7 @@ static bool ClassIDSorter(int const &a, int const &b)
 	return a < b;
 }
 
-/** Filter classes by class name. */
+/** Filter classes by class name. @copydoc GUIList::FilterFunction */
 static bool ClassTagNameFilter(int const *item, PickerFilterData &filter)
 {
 	filter.ResetState();
@@ -165,7 +165,7 @@ static bool TypeIDSorter(PickerItem const &a, PickerItem const &b)
 	return r < 0;
 }
 
-/** Filter types by class name. */
+/** Filter types by class name. @copydoc GUIList::FilterFunction */
 static bool TypeTagNameFilter(PickerItem const *item, PickerFilterData &filter)
 {
 	auto badges = filter.callbacks->GetTypeBadges(item->class_index, item->index);

@@ -434,7 +434,7 @@ private:
 
 	std::optional<FiosOrderListInfo> order_list_info; ///< Used for order list import/export.
 	QueryString filename_editbox; ///< Filename editbox.
-	AbstractFileType abstract_filetype{}; /// Type of file to select.
+	AbstractFileType abstract_filetype{}; ///< Type of file to select.
 	SaveLoadOperation fop{}; ///< File operation to perform.
 	FileList fios_items{}; ///< Item list.
 	FiosItem o_dir{}; ///< Original dir (home dir for this browser)

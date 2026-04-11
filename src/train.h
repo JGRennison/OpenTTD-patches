@@ -63,7 +63,7 @@ enum class ConsistChangeFlag : uint8_t {
 	Length, ///< Allow vehicles to change length.
 	Capacity, ///< Allow vehicles to change capacity.
 };
-
+/** Bitset of the %ConsistChangeFlag elements. */
 using ConsistChangeFlags = EnumBitSet<ConsistChangeFlag, uint8_t>;
 
 static constexpr ConsistChangeFlags CCF_TRACK{}; ///< Valid changes while vehicle is driving, and possibly changing tracks.
@@ -125,7 +125,7 @@ DECLARE_ENUM_AS_BIT_SET(TrainCacheFlags)
 
 /** Variables that are cached to improve performance and such */
 struct TrainCache {
-	/* Cached wagon override spritegroup */
+	/** Cached wagon override spritegroup. */
 	const struct SpriteGroup *cached_override = nullptr;
 
 	/* cached values, recalculated on load and each time a vehicle is added to/removed from the consist. */
@@ -152,19 +152,19 @@ struct TrainCache {
  * 'Train' is either a loco or a wagon.
  */
 struct Train final : public GroundVehicle<Train, VEH_TRAIN> {
-	TrackBits track{};
+	TrackBits track{}; ///< On which track the train currently is.
 	VehicleRailFlags flags{};
 	TrainCache tcache{};
 
-	/* Link between the two ends of a multiheaded engine */
+	/** Link between the two ends of a multiheaded engine. */
 	Train *other_multiheaded_part = nullptr;
 
 	std::unique_ptr<TrainReservationLookAhead> lookahead{};
 
-	RailTypes railtypes{};
-	RailTypes compatible_railtypes{};
+	RailTypes railtypes{}; ///< On which rail types the train can run.
+	RailTypes compatible_railtypes{}; ///< With which rail types the train is compatible.
 
-	TrainForceProceeding force_proceed{};
+	TrainForceProceeding force_proceed{}; ///< How the train should behave when it encounters next obstacle.
 	uint8_t critical_breakdown_count = 0; ///< Counter for the number of critical breakdowns since last service
 
 	/** Ticks waiting in front of a signal, ticks being stuck or a counter for forced proceeding through signals. */
@@ -176,6 +176,7 @@ struct Train final : public GroundVehicle<Train, VEH_TRAIN> {
 	uint16_t signal_speed_restriction = 0;
 	uint16_t crash_anim_pos = 0; ///< Crash animation counter, also used for realistic braking train brake overheating
 
+	/** Create new Train object. @copydoc GroundVehicle::GroundVehicle */
 	Train(VehicleID index) : GroundVehicleBase(index) {}
 	/** We want to 'destruct' the right class. */
 	~Train() override { this->PreDestructor(); }
@@ -405,10 +406,10 @@ protected: // These functions should not be called outside acceleration code.
 	 * Returns a value if this articulated part is powered.
 	 * @return Power value from the articulated part in HP, or zero if it is not powered.
 	 */
-	inline uint16_t GetPoweredPartPower(const Train *head) const
+	inline uint16_t GetPoweredPartPower() const
 	{
 		/* For powered wagons the engine defines the type of engine (i.e. railtype) */
-		if (this->flags.Test(VehicleRailFlag::PoweredWagon) && (head->IsVirtual() || HasPowerOnRail(head->railtypes, GetRailTypeByTrackBit(this->tile, this->track)))) {
+		if (this->flags.Test(VehicleRailFlag::PoweredWagon) && (this->IsVirtual() || HasPowerOnRail(this->railtypes, GetRailTypeByTrackBit(this->tile, this->track)))) {
 			return RailVehInfo(this->gcache.first_engine)->pow_wag_power;
 		}
 

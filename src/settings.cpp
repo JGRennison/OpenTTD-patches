@@ -430,6 +430,7 @@ StringID IntSettingDesc::GetHelp() const
 /**
  * Get parameters for drawing the value of the setting.
  * @param value Setting value to set params for.
+ * @return The string parameters for formatting the value of this setting.
  */
 std::pair<StringParameter, StringParameter> IntSettingDesc::GetValueParams(int32_t value) const
 {
@@ -1089,6 +1090,7 @@ static void GameLoadConfig(const IniFile &ini, std::string_view grpname)
 
 /**
  * Load BaseGraphics set selection and configuration.
+ * @param ini The ini-file to read from.
  */
 static void GraphicsSetLoadConfig(IniFile &ini)
 {
@@ -1141,6 +1143,7 @@ static void GraphicsSetLoadConfig(IniFile &ini)
  * @param ini       The configuration to read from.
  * @param grpname   Group name containing the configuration of the GRF.
  * @param is_static GRF is static.
+ * @return The list of loaded NewGRF configurations.
  */
 static GRFConfigList GRFLoadConfig(const IniFile &ini, std::string_view grpname, bool is_static)
 {
@@ -1315,6 +1318,7 @@ static void SaveVersionInConfig(IniFile &ini)
 
 /**
  * Save BaseGraphics set selection and configuration.
+ * @param ini The ini-file to write to.
  */
 static void GraphicsSetSaveConfig(IniFile &ini)
 {
@@ -1940,6 +1944,7 @@ const char *GetCompanySettingNameByIndex(uint32_t idx)
  * @param sd The SettingDesc we want to change.
  * @param value new value of the setting
  * @param force_newgame force the newgame settings
+ * @return \c true iff the setting was changed.
  */
 bool SetSettingValue(const IntSettingDesc *sd, int32_t value, bool force_newgame)
 {
@@ -1983,6 +1988,7 @@ bool SetSettingValue(const IntSettingDesc *sd, int32_t value, bool force_newgame
 
 /**
  * Set the company settings for a new company to their default values.
+ * @param cid The company to reset the settings for.
  */
 void SetDefaultCompanySettings(CompanyID cid)
 {
@@ -2019,6 +2025,7 @@ void SyncCompanySettings()
  * @param sd the setting to change.
  * @param value the value to write
  * @param force_newgame force the newgame settings
+ * @return \c true iff the setting was changed.
  * @note Strings WILL NOT be synced over the network
  */
 bool SetSettingValue(const StringSettingDesc *sd, std::string_view value, bool force_newgame)

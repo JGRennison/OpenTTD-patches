@@ -79,7 +79,7 @@ void GroundVehicle<T, Type>::CalculatePower(uint32_t &total_power, uint32_t &max
 	const T *v = T::From(this);
 
 	for (const T *u = v; u != nullptr; u = u->Next()) {
-		uint32_t current_power = u->GetPower() + u->GetPoweredPartPower(u);
+		uint32_t current_power = u->GetPower() + u->GetPoweredPartPower();
 
 		if (breakdowns && u->breakdown_ctr == 1 && u->breakdown_type == BREAKDOWN_LOW_POWER) {
 			current_power = current_power * u->breakdown_severity / 256;
