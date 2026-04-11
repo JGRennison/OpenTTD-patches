@@ -4952,10 +4952,14 @@ void DumpVehicleStats(struct format_target &buffer)
 	};
 	std::map<Owner, cstats> cstatmap;
 
-	for (Vehicle *v : Vehicle::Iterate()) {
+	std::array<uint, 8> sprite_seq_sizes{};
+
+	for (const Vehicle *v : Vehicle::Iterate()) {
 		cstats &cs = cstatmap[v->owner];
 		vtypestats &vs = ((v->type == VEH_TRAIN) && Train::From(v)->IsVirtual()) ? cs.virt_train : cs.vstats[v->type];
 		vs.count[v->Previous() != nullptr ? 1 : 0]++;
+
+		if (v->sprite_seq.count < sprite_seq_sizes.size()) sprite_seq_sizes[v->sprite_seq.count]++;
 	}
 
 	for (const TemplateVehicle *tv : TemplateVehicle::Iterate()) {
@@ -4998,6 +5002,11 @@ void DumpVehicleStats(struct format_target &buffer)
 	buffer.append("Totals\n");
 	print_stats(totals, true);
 	buffer.format("Total vehicles: {}\n", Vehicle::GetNumItems());
+
+	buffer.append("Sprite seq sizes:\n");
+	for (size_t i = 0; i < sprite_seq_sizes.size(); i++) {
+		if (sprite_seq_sizes[i] > 0) buffer.format("  {}: {}\n", i, sprite_seq_sizes[i]);
+	}
 }
 
 void AdjustVehicleStateTicksBase(StateTicksDelta delta)
