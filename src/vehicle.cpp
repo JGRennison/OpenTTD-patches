@@ -4842,36 +4842,6 @@ StringID GetVehicleCannotUseStationReason(const Vehicle *v, const Station *st)
 }
 
 /**
- * Access the ground vehicle cache of the vehicle.
- * @pre The vehicle is a #GroundVehicle.
- * @return #GroundVehicleCache of the vehicle.
- */
-GroundVehicleCache *Vehicle::GetGroundVehicleCache()
-{
-	dbg_assert(this->IsGroundVehicle());
-	if (this->type == VEH_TRAIN) {
-		return &Train::From(this)->gcache;
-	} else {
-		return &RoadVehicle::From(this)->gcache;
-	}
-}
-
-/**
- * Access the ground vehicle cache of the vehicle.
- * @pre The vehicle is a #GroundVehicle.
- * @return #GroundVehicleCache of the vehicle.
- */
-const GroundVehicleCache *Vehicle::GetGroundVehicleCache() const
-{
-	dbg_assert(this->IsGroundVehicle());
-	if (this->type == VEH_TRAIN) {
-		return &Train::From(this)->gcache;
-	} else {
-		return &RoadVehicle::From(this)->gcache;
-	}
-}
-
-/**
  * Access the ground vehicle flags of the vehicle.
  * @pre The vehicle is a #GroundVehicle.
  * @return #GroundVehicleFlags of the vehicle.

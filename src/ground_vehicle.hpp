@@ -64,6 +64,36 @@ struct GroundVehicleAcceleration {
 	int braking;
 };
 
+/** Base class for GroundVehicle. */
+struct BaseGroundVehicle : public Vehicle {
+	GroundVehicleCache gcache{}; ///< Cache of often calculated values.
+	uint16_t gv_flags = 0;       ///< @see GroundVehicleFlags.
+
+	using Vehicle::Vehicle;
+};
+
+/**
+ * Access the ground vehicle cache of the vehicle.
+ * @pre The vehicle is a #GroundVehicle.
+ * @return #GroundVehicleCache of the vehicle.
+ */
+GroundVehicleCache *Vehicle::GetGroundVehicleCache()
+{
+	dbg_assert(this->IsGroundVehicle());
+	return &static_cast<BaseGroundVehicle *>(this)->gcache;
+}
+
+/**
+ * Access the ground vehicle cache of the vehicle.
+ * @pre The vehicle is a #GroundVehicle.
+ * @return #GroundVehicleCache of the vehicle.
+ */
+const GroundVehicleCache *Vehicle::GetGroundVehicleCache() const
+{
+	dbg_assert(this->IsGroundVehicle());
+	return &static_cast<const BaseGroundVehicle *>(this)->gcache;
+}
+
 /**
  * Base class for all vehicles that move through ground.
  *
@@ -88,17 +118,14 @@ struct GroundVehicleAcceleration {
  * virtual bool          TileMayHaveSlopedTrack() const = 0;
  */
 template <class T, VehicleType Type>
-struct GroundVehicle : public SpecializedVehicle<T, Type> {
-	GroundVehicleCache gcache{}; ///< Cache of often calculated values.
-	uint16_t gv_flags = 0;       ///< @see GroundVehicleFlags.
-
+struct GroundVehicle : public SpecializedVehicle<T, Type, BaseGroundVehicle> {
 	typedef GroundVehicle<T, Type> GroundVehicleBase; ///< Our type
 
 	/**
 	 * The constructor at SpecializedVehicle must be called.
 	 * @param index The index into the vehicle pool.
 	 */
-	GroundVehicle(VehicleID index) : SpecializedVehicle<T, Type>(index) {}
+	GroundVehicle(VehicleID index) : SpecializedVehicle<T, Type, BaseGroundVehicle>(index) {}
 
 	void PowerChanged();
 	void CargoChanged();

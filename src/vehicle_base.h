@@ -410,8 +410,8 @@ public:
 	void LeaveStation();
 	void AdvanceLoadingInStation();
 
-	GroundVehicleCache *GetGroundVehicleCache();
-	const GroundVehicleCache *GetGroundVehicleCache() const;
+	inline GroundVehicleCache *GetGroundVehicleCache();
+	inline const GroundVehicleCache *GetGroundVehicleCache() const;
 
 	uint16_t &GetGroundVehicleFlags();
 	const uint16_t &GetGroundVehicleFlags() const;
@@ -1338,17 +1338,23 @@ inline bool IsPointInViewportVehicleRedrawArea(const std::vector<Rect> &viewport
  * Class defining several overloaded accessors so we don't
  * have to cast vehicle types that often
  */
-template <class T, VehicleType Type>
-struct SpecializedVehicle : public Vehicle {
+template <class T, VehicleType Type, class Base>
+struct SpecializedVehicle : public Base {
 	static const VehicleType EXPECTED_TYPE = Type; ///< Specialized type
 
-	typedef SpecializedVehicle<T, Type> SpecializedVehicleBase; ///< Our type
+	typedef SpecializedVehicle<T, Type, Base> SpecializedVehicleBase; ///< Our type
+
+	using Pool = Vehicle::Pool;
+	using VehicleTypeFilter = Vehicle::VehicleTypeFilter;
+	using VehicleFrontOnlyFilter = Vehicle::VehicleFrontOnlyFilter;
+	using VehicleFrontOnlyTypeFilter = Vehicle::VehicleFrontOnlyTypeFilter;
+	using VehicleFrontOnlyTypeMaskFilter = Vehicle::VehicleFrontOnlyTypeMaskFilter;
 
 	/**
 	 * Set vehicle type correctly
 	 * @param index The index into the vehicle pool.
 	 */
-	inline SpecializedVehicle(VehicleID index) : Vehicle(index, Type)
+	inline SpecializedVehicle(VehicleID index) : Base(index, Type)
 	{
 		this->sprite_seq.count = 1;
 	}
