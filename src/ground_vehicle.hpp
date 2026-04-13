@@ -94,6 +94,29 @@ const GroundVehicleCache *Vehicle::GetGroundVehicleCache() const
 	return &static_cast<const BaseGroundVehicle *>(this)->gcache;
 }
 
+
+/**
+ * Access the ground vehicle flags of the vehicle.
+ * @pre The vehicle is a #GroundVehicle.
+ * @return #GroundVehicleFlags of the vehicle.
+ */
+uint16_t &Vehicle::GetGroundVehicleFlags()
+{
+	dbg_assert(this->IsGroundVehicle());
+	return static_cast<BaseGroundVehicle *>(this)->gv_flags;
+}
+
+/**
+ * Access the ground vehicle flags of the vehicle.
+ * @pre The vehicle is a #GroundVehicle.
+ * @return #GroundVehicleFlags of the vehicle.
+ */
+uint16_t Vehicle::GetGroundVehicleFlags() const
+{
+	dbg_assert(this->IsGroundVehicle());
+	return static_cast<const BaseGroundVehicle *>(this)->gv_flags;
+}
+
 /**
  * Base class for all vehicles that move through ground.
  *

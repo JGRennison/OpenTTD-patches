@@ -4850,36 +4850,6 @@ StringID GetVehicleCannotUseStationReason(const Vehicle *v, const Station *st)
 }
 
 /**
- * Access the ground vehicle flags of the vehicle.
- * @pre The vehicle is a #GroundVehicle.
- * @return #GroundVehicleFlags of the vehicle.
- */
-uint16_t &Vehicle::GetGroundVehicleFlags()
-{
-	dbg_assert(this->IsGroundVehicle());
-	if (this->type == VEH_TRAIN) {
-		return Train::From(this)->gv_flags;
-	} else {
-		return RoadVehicle::From(this)->gv_flags;
-	}
-}
-
-/**
- * Access the ground vehicle flags of the vehicle.
- * @pre The vehicle is a #GroundVehicle.
- * @return #GroundVehicleFlags of the vehicle.
- */
-const uint16_t &Vehicle::GetGroundVehicleFlags() const
-{
-	dbg_assert(this->IsGroundVehicle());
-	if (this->type == VEH_TRAIN) {
-		return Train::From(this)->gv_flags;
-	} else {
-		return RoadVehicle::From(this)->gv_flags;
-	}
-}
-
-/**
  * Calculates the set of vehicles that will be affected by a given selection.
  * @param[in,out] set Set of affected vehicles.
  * @param v First vehicle of the selection.
