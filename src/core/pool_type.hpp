@@ -118,7 +118,7 @@ public:
 	size_t first_free = 0;   ///< No item with index lower than this is free (doesn't say anything about this one!)
 	size_t first_unused = 0; ///< This and all higher indexes are free (doesn't say anything about first_unused-1 !)
 	size_t items = 0;        ///< Number of used indexes (non-nullptr)
-#ifdef WITH_ASSERT
+#ifdef WITH_FULL_ASSERTS
 	size_t checked = 0;      ///< Number of items we checked for
 #endif /* WITH_ASSERT */
 	bool cleaning = false;   ///< True if cleaning pool (deleting all items)
@@ -169,7 +169,7 @@ public:
 	inline bool CanAllocate(size_t n = 1)
 	{
 		bool ret = this->items <= MAX_SIZE - n;
-#ifdef WITH_ASSERT
+#ifdef WITH_FULL_ASSERTS
 		this->checked = ret ? n : 0;
 #endif /* WITH_ASSERT */
 		return ret;
