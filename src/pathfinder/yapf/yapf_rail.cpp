@@ -804,6 +804,19 @@ bool YapfTrainCheckReverse(const Train *v)
 
 	int reverse_penalty = 0;
 
+	/* Consider whether the train might back up at reduced speed. */
+	if (_settings_game.difficulty.train_flip_reverse_allowed == TrainFlipReversingAllowed::None && !v->Last()->CanLeadTrain()) {
+		constexpr int DRIVING_BACKWARDS_PENALTY = 100 * YAPF_TILE_LENGTH;
+
+		if (!v->vehicle_flags.Test(VehicleFlag::DrivingBackwards)) {
+			/* We're currently driving forwards at full speed, and would rather not reverse if possible. */
+			reverse_penalty += DRIVING_BACKWARDS_PENALTY;
+		} else {
+			/* We're currently driving backwards slowly, prefer reversing. */
+			reverse_penalty -= DRIVING_BACKWARDS_PENALTY;
+		}
+	}
+
 	if (moving_front->track & TRACK_BIT_WORMHOLE) {
 		/* front in tunnel / on bridge */
 		DiagDirection dir_into_wormhole = GetTunnelBridgeDirection(tile);
@@ -835,14 +848,23 @@ bool YapfTrainCheckReverse(const Train *v)
 		}
 	}
 
-	/* slightly hackish: If the pathfinders finds a path, the cost of the first node is tested to distinguish between forward- and reverse-path. */
-	if (reverse_penalty == 0) reverse_penalty = 1;
+	bool swapped = false;
+	if (reverse_penalty < 0) {
+		reverse_penalty = -reverse_penalty;
+		swapped = true;
+
+		std::swap(tile, tile_rev);
+		std::swap(td, td_rev);
+	} else if (reverse_penalty == 0) {
+		/* slightly hackish: If the pathfinders finds a path, the cost of the first node is tested to distinguish between forward- and reverse-path. */
+		reverse_penalty = 1;
+	}
 
 	bool reverse = _settings_game.pf.forbid_90_deg
 		? CYapfRailNo90::stCheckReverseTrain(v, tile, td, tile_rev, td_rev, reverse_penalty)
 		: CYapfRail::stCheckReverseTrain(v, tile, td, tile_rev, td_rev, reverse_penalty);
 
-	return reverse;
+	return reverse != swapped;
 }
 
 bool YapfTrainCheckDepotReverse(const Train *v, TileIndex forward_depot, TileIndex reverse_depot)
