@@ -5717,7 +5717,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 		direction_changed = true;
 	};
 
-	if (reverse && v->reverse_distance == 1 && (v->cur_speed <= 15 || !v->UsingRealisticBraking())) {
+	if (reverse && first->reverse_distance == 1 && (first->cur_speed <= 15 || !first->UsingRealisticBraking())) {
 		/* Train is not moving too fast and reversing distance has been reached */
 		goto reverse_train_direction;
 	}
@@ -5754,7 +5754,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 					/* Inside depot */
 					gp.x = v->x_pos;
 					gp.y = v->y_pos;
-					v->reverse_distance = 0;
+					first->reverse_distance = 0;
 				} else {
 					/* Not inside depot */
 
@@ -5903,7 +5903,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 								}, [&](const TraceRestrictProgramResult &out) {
 									if (out.flags & TRPRF_REVERSE_BEHIND && GetSignalType(gp.new_tile, TrackdirToTrack(dir)) == SIGTYPE_PBS &&
 											!HasSignalOnTrackdir(gp.new_tile, dir)) {
-										v->reverse_distance = first->gcache.cached_total_length + (IsDiagonalTrack(TrackdirToTrack(dir)) ? 16 : 8);
+										first->reverse_distance = first->gcache.cached_total_length + (IsDiagonalTrack(TrackdirToTrack(dir)) ? 16 : 8);
 										SetWindowDirty(WC_VEHICLE_VIEW, first->index);
 									}
 								});
