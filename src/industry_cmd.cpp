@@ -2693,9 +2693,9 @@ static void UpdateIndustryStatistics(Industry *i)
 		if (a.history == nullptr) continue;
 
 		(*a.history)[THIS_MONTH].waiting = GetAndResetAccumulatedAverage<uint16_t>(a.accumulated_waiting, i->accumulated_wait_count);
-		i->accumulated_wait_count = 0;
 		RotateHistory(*a.history, i->valid_history, HISTORY_YEAR, month);
 	}
+	i->accumulated_wait_count = 0;
 }
 
 /**
