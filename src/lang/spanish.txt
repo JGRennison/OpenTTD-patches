@@ -1352,8 +1352,8 @@ STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :Altos
 STR_CONFIG_SETTING_RECESSIONS                                   :Recesiones: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Si se activa, ocurrirán recesiones periódicamente. Durante una recesión, toda la producción es significativamente menor (volverá a su nivel anterior cuando acabe la recesión)
 
-STR_CONFIG_SETTING_TRAIN_REVERSING                              :Prohibir cambio de dirección de trenes en estaciones: {STRING}
-STR_CONFIG_SETTING_TRAIN_REVERSING_HELPTEXT                     :Si se activa, los trenes no se darán la vuelta en estaciones no finales, ni siquiera existiendo un camino más corto a su próximo destino aunque dieran la vuelta
+
+###length 3
 
 STR_CONFIG_SETTING_DISASTERS                                    :Desastres: {STRING}
 STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :Activa desastres que ocasionalmente pueden bloquear o destruir vehículos o infraestructuras
@@ -2233,7 +2233,7 @@ STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... igno
 # Video initalization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Error en los ajustes de vídeo...
 STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... no se ha encontrado ninguna GPU compatible. La aceleración por hardware se ha desactivado
-STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :{WHITE}... el controlador de GPU ha hecho fallar el juego. Se ha deshabilitado la aceleración por hardware
+STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :El controlador de GPU ha hecho fallar el juego. Se ha deshabilitado la aceleración por hardware
 
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD
@@ -2370,15 +2370,15 @@ STR_FACE_SIMPLE                                                 :{BLACK}Sencilla
 STR_FACE_SIMPLE_TOOLTIP                                         :{BLACK}Selección simple de caras
 STR_FACE_LOAD                                                   :{BLACK}Cargar
 STR_FACE_LOAD_TOOLTIP                                           :{BLACK}Carga la cara favorita
-STR_FACE_LOAD_DONE                                              :{WHITE}Tu cara favorita ha sido cargada del fichero de configuración de OpenTTD
+STR_FACE_LOAD_DONE                                              :Tu cara favorita ha sido cargada del fichero de configuración de OpenTTD
 STR_FACE_FACECODE                                               :{BLACK}Código de cara del jugador
 STR_FACE_FACECODE_TOOLTIP                                       :{BLACK}Muestra y/o asigna el código de cara del presidente de la empresa
 STR_FACE_FACECODE_CAPTION                                       :{WHITE}Mostrar y/o asignar el código de cara de presidente
-STR_FACE_FACECODE_SET                                           :{WHITE}Se ha asignado una nueva cara de presidente
-STR_FACE_FACECODE_ERR                                           :{WHITE}No se puede asignar el código de cara de presidente - deben ser una etiqueta y número válidos
+STR_FACE_FACECODE_SET                                           :Se ha asignado una nueva cara de presidente
+STR_FACE_FACECODE_ERR                                           :No se puede asignar el código de cara de presidente - deben ser una etiqueta y número válidos
 STR_FACE_SAVE                                                   :{BLACK}Guardar
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Guarda como cara favorita
-STR_FACE_SAVE_DONE                                              :{WHITE}Esta cara ha sido guardada como tu favorita en el fichero de configuración
+STR_FACE_SAVE_DONE                                              :Esta cara ha sido guardada como tu favorita en el fichero de configuración
 STR_FACE_SETTING_TOGGLE                                         :{STRING} {ORANGE}{STRING}
 STR_FACE_SETTING_NUMERIC                                        :{STRING} {ORANGE}{NUM} / {NUM}
 STR_FACE_YES                                                    :Sí
@@ -3690,17 +3690,17 @@ STR_NEWGRF_LIST_COMPATIBLE                                      :{YELLOW}Archivo
 STR_NEWGRF_LIST_MISSING                                         :{RED}Faltan archivos
 
 # NewGRF 'it's broken' warnings
-STR_NEWGRF_BROKEN                                               :{WHITE}Es probable que el funcionamiento del NewGRF '{PUSH_COLOUR}{0:STRING}{POP_COLOUR}' cause desincronizaciones o fallos
-STR_NEWGRF_BROKEN_POWERED_WAGON                                 :{WHITE}Ha cambiado el estado 'vagón motorizado' '{PUSH_COLOUR}{1:ENGINE}{POP_COLOUR}' cuando no estaba dentro de un depósito
-STR_NEWGRF_BROKEN_VEHICLE_LENGTH                                :{WHITE}Ha cambiado la longitud del vehículo '{PUSH_COLOUR}{1:ENGINE}{POP_COLOUR}' cuando no estaba dentro de un depósito
-STR_NEWGRF_BROKEN_CAPACITY                                      :{WHITE}Ha cambiado la capacidad del vehículo '{PUSH_COLOUR}{1:ENGINE}{POP_COLOUR}' cuando no estaba dentro de un depósito o mientras no se estaba reformando
+STR_NEWGRF_BROKEN                                               :{WHITE}Es probable que el funcionamiento del NewGRF '{0:STRING}' cause desincronizaciones o fallos
+STR_NEWGRF_BROKEN_POWERED_WAGON                                 :{WHITE}Ha cambiado el estado 'vagón motorizado' '{1:ENGINE}' cuando no estaba dentro de un depósito
+STR_NEWGRF_BROKEN_VEHICLE_LENGTH                                :{WHITE}Ha cambiado la longitud del vehículo '{1:ENGINE}' cuando no estaba dentro de un depósito
+STR_NEWGRF_BROKEN_CAPACITY                                      :{WHITE}Ha cambiado la capacidad del vehículo '{1:ENGINE}' cuando no estaba dentro de un depósito o mientras no se estaba reformando
 STR_BROKEN_VEHICLE_LENGTH                                       :{WHITE}El tren '{VEHICLE}' perteneciente a '{COMPANY}' tiene una longitud incorrecta. Esto puede deberse a problemas con los NewGRF. El juego puede desincronizarse o fallar por completo
 
-STR_NEWGRF_BUGGY                                                :{WHITE}El NewGRF '{PUSH_COLOUR}{0:STRING}{POP_COLOUR}' da información incorrecta
-STR_NEWGRF_BUGGY_ARTICULATED_CARGO                              :{WHITE}La información de carga/reforma para '{PUSH_COLOUR}{1:ENGINE}{POP_COLOUR}' difiere de la de lista de compra después de la construcción. Esto puede causar que la renovación/reemplazo automático no haga la reforma correcta
-STR_NEWGRF_BUGGY_ENDLESS_PRODUCTION_CALLBACK                    :{WHITE}'{PUSH_COLOUR}{1:STRING}{POP_COLOUR}' ha causado un bucle sin fin en la 'callback' de producción
+STR_NEWGRF_BUGGY                                                :{WHITE}El NewGRF '{0:STRING}' proporciona información incorrecta
+STR_NEWGRF_BUGGY_ARTICULATED_CARGO                              :{WHITE}La información de carga/reforma para '{1:ENGINE}' difiere de la de lista de compra después de la construcción. Esto puede causar que la renovación/reemplazo automáticos no haga la reforma correcta
+STR_NEWGRF_BUGGY_ENDLESS_PRODUCTION_CALLBACK                    :{WHITE}'{1:STRING}' ha causado un bucle infinito en la 'lamada de retorno de producción
 STR_NEWGRF_BUGGY_UNKNOWN_CALLBACK_RESULT                        :{WHITE}'Callback' {1:HEX} ha devuelto el resultado desconocido o inválido {2:HEX}
-STR_NEWGRF_BUGGY_INVALID_CARGO_PRODUCTION_CALLBACK              :{WHITE}'{PUSH_COLOUR}{1:STRING}{POP_COLOUR}' ha devuelto tipo de carga inválida en el 'callback' de producción en {2:HEX}
+STR_NEWGRF_BUGGY_INVALID_CARGO_PRODUCTION_CALLBACK              :{WHITE}'{1:STRING}' ha devuelto tipo de carga inválida en llamada de retorno de producción en {2:HEX}
 
 # 'User removed essential NewGRFs'-placeholders for stuff without specs
 STR_NEWGRF_INVALID_CARGO                                        :<carga incorrecta>
@@ -5113,14 +5113,14 @@ STR_ERROR_LOCAL_AUTHORITY_REFUSES_NOISE                         :{WHITE}Las auto
 STR_ERROR_BRIBE_FAILED                                          :{WHITE}Su intento de soborno ha sido descubierto por un investigador regional
 
 # Levelling errors
-STR_ERROR_CAN_T_RAISE_LAND_HERE                                 :{WHITE}No se puede subir el terreno aquí...
+STR_ERROR_CAN_T_RAISE_LAND_HERE                                 :No se puede subir el terreno aquí...
 STR_ERROR_CAN_T_LOWER_LAND_HERE                                 :{WHITE}No se puede bajar el terreno aquí...
 STR_ERROR_CAN_T_LEVEL_LAND_HERE                                 :{WHITE}No se puede nivelar el terreno aquí...
 STR_ERROR_EXCAVATION_WOULD_DAMAGE                               :{WHITE}La excavación dañaría el túnel
 STR_ERROR_ALREADY_AT_SEA_LEVEL                                  :{WHITE}... ya está a nivel del mar
 STR_ERROR_TOO_HIGH                                              :{WHITE}... demasiado alto
 STR_ERROR_ALREADY_LEVELLED                                      :{WHITE}... ya es llano
-STR_ERROR_BRIDGE_TOO_HIGH_AFTER_LOWER_LAND                      :{WHITE}Después del cambio, el puente sobre este terreno será demasiado alto.
+STR_ERROR_BRIDGE_TOO_HIGH_AFTER_LOWER_LAND                      :después del cambio, el puente sobre este terreno sería demasiado alto.
 
 # Company related errors
 STR_ERROR_CAN_T_CHANGE_COMPANY_NAME                             :{WHITE}No se puede cambiar el nombre de la empresa...
@@ -5146,7 +5146,7 @@ STR_ERROR_TOO_MANY_TOWNS                                        :{WHITE}... dema
 STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}... no hay más espacio en el mapa
 STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :{WHITE}Obras de carretera en progreso
 STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}No se puede eliminar este municipio...{}{}Quedan estaciones o depósitos relacionados con él, o una propiedad suya no puede ser retirada
-STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :{WHITE}... no existe un lugar apropiado para una estatua en el centro de este municipio
+STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :no existe un lugar apropiado para una estatua en el centro de este municipio
 STR_ERROR_CAN_T_BUILD_HOUSE                                     :{WHITE}No se puede construir edificio...
 
 # Industry related errors
@@ -5171,17 +5171,17 @@ STR_ERROR_CAN_ONLY_BE_BUILT_BELOW_SNOW_LINE                     :{WHITE}... solo
 
 STR_ERROR_PROSPECTING_WAS_UNLUCKY                               :{WHITE}La fundación ha fallado debido a una prospeccion desafortunada; intentar de nuevo
 STR_ERROR_NO_SUITABLE_PLACES_FOR_PROSPECTING                    :{WHITE}No había lugares apropiados para realizar prospecciones para esta industria
-STR_ERROR_NO_SUITABLE_PLACES_FOR_INDUSTRIES                     :{WHITE}No había lugares apropiados para industrias '{STRING}'
-STR_ERROR_NO_SUITABLE_PLACES_FOR_INDUSTRIES_EXPLANATION         :{WHITE}Cambia los parámetros de generación del mapa para obtener un mapa mejor
+STR_ERROR_NO_SUITABLE_PLACES_FOR_INDUSTRIES                     :No había lugares apropiados para industrias '{STRING}'
+STR_ERROR_NO_SUITABLE_PLACES_FOR_INDUSTRIES_EXPLANATION         :Cambia los parámetros de generación del mapa para obtener un mapa mejor
 
 # Station construction related errors
-STR_ERROR_CAN_T_BUILD_RAILROAD_STATION                          :{WHITE}No se puede construir estación de tren aquí...
-STR_ERROR_CAN_T_BUILD_BUS_STATION                               :{WHITE}No puede construirse una estación de autobuses...
+STR_ERROR_CAN_T_BUILD_RAILROAD_STATION                          :No se puede construir una estación de tren aquí...
+STR_ERROR_CAN_T_BUILD_BUS_STATION                               :No puede construirse una estación de autobuses...
 STR_ERROR_CAN_T_BUILD_TRUCK_STATION                             :{WHITE}No se puede construir estación de camiones...
 STR_ERROR_CAN_T_BUILD_PASSENGER_TRAM_STATION                    :{WHITE}No se puede construir estación de tranvía de pasajeros...
 STR_ERROR_CAN_T_BUILD_CARGO_TRAM_STATION                        :{WHITE}No puede construirse una estación de tranvía de carga...
 STR_ERROR_CAN_T_BUILD_DOCK_HERE                                 :{WHITE}No pueden construirse muelles aquí...
-STR_ERROR_CAN_T_BUILD_AIRPORT_HERE                              :{WHITE}No puede construirse un aeropuerto aquí...
+STR_ERROR_CAN_T_BUILD_AIRPORT_HERE                              :No puede construirse un aeropuerto aquí...
 
 STR_ERROR_ADJOINS_MORE_THAN_ONE_EXISTING                        :{WHITE}Contigua a más de una estación/zona de carga existente
 STR_ERROR_STATION_TOO_SPREAD_OUT                                :{WHITE}... estación demasiado extendida
@@ -5195,10 +5195,10 @@ STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}Demasiad
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}Demasiado cerca de otro aeropuerto
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}No se puede renombrar estación...
 STR_ERROR_CAN_T_MOVE_STATION_NAME                               :{WHITE}No se puede mover el letrero de la estación
-STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :{WHITE}... carretera propiedad del municipio
-STR_ERROR_DRIVE_THROUGH_DIRECTION                               :{WHITE}... carretera en dirección incorrecta
-STR_ERROR_DRIVE_THROUGH_CORNER                                  :{WHITE}... las estaciones de autobuses de paso no pueden tener esquinas
-STR_ERROR_DRIVE_THROUGH_JUNCTION                                :{WHITE}... las estaciones de autobuses de paso no pueden tener intersecciones
+STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :carretera propiedad del municipio
+STR_ERROR_DRIVE_THROUGH_DIRECTION                               :carretera en dirección incorrecta
+STR_ERROR_DRIVE_THROUGH_CORNER                                  :las estaciones de paso no pueden tener esquinas
+STR_ERROR_DRIVE_THROUGH_JUNCTION                                :las estaciones de paso no pueden tener intersecciones
 
 # Station destruction related errors
 STR_ERROR_CAN_T_REMOVE_PART_OF_STATION                          :{WHITE}No se puede retirar parte de la estación...
@@ -5243,7 +5243,7 @@ STR_ERROR_CAN_T_BUILD_SHIP_DEPOT                                :{WHITE}No se pu
 
 STR_ERROR_CAN_T_RENAME_DEPOT                                    :{WHITE}No se puede renombrar depósito...
 
-STR_ERROR_TRAIN_MUST_BE_STOPPED_INSIDE_DEPOT                    :{WHITE}... debe de estar detenido dentro de un depósito
+STR_ERROR_TRAIN_MUST_BE_STOPPED_INSIDE_DEPOT                    :debe de estar detenido dentro de un depósito
 STR_ERROR_ROAD_VEHICLE_MUST_BE_STOPPED_INSIDE_DEPOT             :{WHITE}... debe de estar detenido dentro de un depósito
 STR_ERROR_SHIP_MUST_BE_STOPPED_INSIDE_DEPOT                     :{WHITE}... debe estar detenido dentro de un astillero
 STR_ERROR_AIRCRAFT_MUST_BE_STOPPED_INSIDE_HANGAR                :{WHITE}... debe estar detenido dentro de un hangar
@@ -5276,7 +5276,7 @@ STR_ERROR_AUTOREPLACE_INCOMPATIBLE_CARGO                        :{WHITE}El nuevo
 STR_ERROR_AUTOREPLACE_INCOMPATIBLE_REFIT                        :{WHITE}El nuevo vehículo no se puede reformar en la orden {NUM}
 
 # Rail construction errors
-STR_ERROR_IMPOSSIBLE_TRACK_COMBINATION                          :{WHITE}Combinación imposible de vías
+STR_ERROR_IMPOSSIBLE_TRACK_COMBINATION                          :Combinación imposible de vías
 STR_ERROR_MUST_REMOVE_SIGNALS_FIRST                             :{WHITE}Primero deben retirar las señales
 STR_ERROR_NO_SUITABLE_RAILROAD_TRACK                            :{WHITE}Vía de ferrocarril no apropiada
 STR_ERROR_MUST_REMOVE_RAILROAD_TRACK                            :{WHITE}Primero se debe retirar la vía de ferrocarril
@@ -5284,7 +5284,7 @@ STR_ERROR_CROSSING_ON_ONEWAY_ROAD                               :{WHITE}Carreter
 STR_ERROR_CROSSING_DISALLOWED_RAIL                              :{WHITE}No se permiten pasos a nivel para este tipo de ferrocarril
 STR_ERROR_CROSSING_DISALLOWED_ROAD                              :{WHITE}No se permiten pasos a nivel para este tipo de carretera
 STR_ERROR_CAN_T_BUILD_SIGNALS_HERE                              :{WHITE}No se pueden construir señales aquí...
-STR_ERROR_CAN_T_BUILD_RAILROAD_TRACK                            :{WHITE}No se pueden construir ferrocarriles aquí...
+STR_ERROR_CAN_T_BUILD_RAILROAD_TRACK                            :No se pueden construir vías de ferrocarril aquí...
 STR_ERROR_CAN_T_REMOVE_RAILROAD_TRACK                           :{WHITE}No se pueden retirar ferrocarriles aquí...
 STR_ERROR_CAN_T_REMOVE_SIGNALS_FROM                             :{WHITE}No se pueden retirar señales de aquí...
 STR_ERROR_SIGNAL_CAN_T_CONVERT_SIGNALS_HERE                     :{WHITE}No se pueden convertir las señales aquí...
@@ -5308,7 +5308,7 @@ STR_ERROR_NO_SUITABLE_ROAD                                      :{WHITE}Carreter
 STR_ERROR_NO_SUITABLE_TRAMWAY                                   :{WHITE}Vía de tranvía no adecuado
 
 # Waterway construction errors
-STR_ERROR_CAN_T_BUILD_CANALS                                    :{WHITE}No pueden construirse canales aquí...
+STR_ERROR_CAN_T_BUILD_CANALS                                    :No pueden construirse canales aquí...
 STR_ERROR_CAN_T_BUILD_LOCKS                                     :{WHITE}No pueden construirse esclusas aquí...
 STR_ERROR_CAN_T_PLACE_RIVERS                                    :{WHITE}No se pueden situar ríos aquí...
 STR_ERROR_MUST_BE_BUILT_ON_WATER                                :{WHITE}... debe construirse sobre el agua
@@ -5317,7 +5317,7 @@ STR_ERROR_CAN_T_BUILD_ON_SEA                                    :{WHITE}... no s
 STR_ERROR_CAN_T_BUILD_ON_CANAL                                  :{WHITE}... no se puede construir en un canal
 STR_ERROR_CAN_T_BUILD_ON_RIVER                                  :{WHITE}... no se puede construir en un río
 STR_ERROR_MUST_DEMOLISH_CANAL_FIRST                             :{WHITE}Primero debe demolerse el canal
-STR_ERROR_CAN_T_BUILD_AQUEDUCT_HERE                             :{WHITE}No puede construirse un acueducto aquí
+STR_ERROR_CAN_T_BUILD_AQUEDUCT_HERE                             :No puede construirse un acueducto aquí...
 
 # Tree related errors
 STR_ERROR_TREE_ALREADY_HERE                                     :{WHITE}... ya hay árboles aquí
@@ -5325,7 +5325,7 @@ STR_ERROR_TREE_WRONG_TERRAIN_FOR_TREE_TYPE                      :{WHITE}... terr
 STR_ERROR_CAN_T_PLANT_TREE_HERE                                 :{WHITE}No se pueden plantar árboles aquí...
 
 # Bridge related errors
-STR_ERROR_CAN_T_BUILD_BRIDGE_HERE                               :{WHITE}No puede construirse un puente aquí...
+STR_ERROR_CAN_T_BUILD_BRIDGE_HERE                               :No puede construirse un puente aquí...
 STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST                            :{WHITE}Primero debe demolerse el puente
 STR_ERROR_CAN_T_START_AND_END_ON                                :{WHITE}No se puede comenzar y acabar en la misma posición
 STR_ERROR_BRIDGEHEADS_NOT_SAME_HEIGHT                           :{WHITE}Los estribos del puente no están al mismo nivel

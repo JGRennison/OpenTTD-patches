@@ -1351,8 +1351,8 @@ STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :Høj
 STR_CONFIG_SETTING_RECESSIONS                                   :Kriser: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Hvis aktiveret, kan lavkonjunktur forekomme hvert par år. Under en lavkonjunktur er al produktion væsentligt lavere (den vender tilbage til tidligere niveau, når recessionen er forbi)
 
-STR_CONFIG_SETTING_TRAIN_REVERSING                              :Forbyd toge at køre baglængs i stationer: {STRING}
-STR_CONFIG_SETTING_TRAIN_REVERSING_HELPTEXT                     :Hvis aktiveret, vil tog ikke vende på stationer der ikke er endestationer, også selvom der er en kortere rute til deres næste destination ved at vende
+
+###length 3
 
 STR_CONFIG_SETTING_DISASTERS                                    :Katastrofer: {STRING}
 STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :Slå katastrofer, som lejlighedsvis kan blokere eller ødelægge køretøjer eller infrastruktur, til og fra
@@ -2216,7 +2216,7 @@ STR_CONFIG_ERROR                                                :{WHITE}Fejl i k
 STR_CONFIG_ERROR_ARRAY                                          :{WHITE}... fejl i array '{STRING}'
 STR_CONFIG_ERROR_INVALID_VALUE                                  :{WHITE}... ugyldig værdi '{STRING}' for '{STRING}'
 STR_CONFIG_ERROR_TRAILING_CHARACTERS                            :{WHITE}... efterfølgende karakterer i slutningen af indstilling '{STRING}'
-STR_CONFIG_ERROR_DUPLICATE_GRFID                                :{WHITE}... ignorerer NewGRF '{STRING}': identisk GRF ID med '{STRING}'
+STR_CONFIG_ERROR_DUPLICATE_GRFID                                :{WHITE}... ignorerer NewGRF '{STRING}': duplikere NewGRF ID med '{STRING}'
 STR_CONFIG_ERROR_INVALID_GRF                                    :{WHITE}... ignorér ugyldig NewGRF '{STRING}': {STRING}
 STR_CONFIG_ERROR_INVALID_GRF_NOT_FOUND                          :ikke fundet
 STR_CONFIG_ERROR_INVALID_GRF_UNSAFE                             :usikker til fast brug
@@ -2599,8 +2599,8 @@ STR_NETWORK_ERROR_LOSTCONNECTION                                :{WHITE}Netværk
 STR_NETWORK_ERROR_SAVEGAMEERROR                                 :{WHITE}Kunne ikke hente gemt spil
 STR_NETWORK_ERROR_SERVER_START                                  :{WHITE}Kunne ikke starte serveren
 STR_NETWORK_ERROR_SERVER_ERROR                                  :{WHITE}Der opstod en protokol-fejl og forbindelsen blev lukket
-STR_NETWORK_ERROR_BAD_PLAYER_NAME                               :{WHITE}Dit spillernavn er ikke registreret. Navnet kan sættes i toppen af Netværksspil vinduet.
-STR_NETWORK_ERROR_BAD_SERVER_NAME                               :{WHITE}Dit servernavn er ikke indstillet. Navnet kan indstilles øverst i Netværksspil vinduet
+STR_NETWORK_ERROR_BAD_PLAYER_NAME                               :Dit spillernavn er ikke registreret. Navnet kan sættes i toppen af Netværksspil vinduet.
+STR_NETWORK_ERROR_BAD_SERVER_NAME                               :Dit servernavn er ikke indstillet. Navnet kan indstilles øverst i Netværksspil vinduet
 STR_NETWORK_ERROR_WRONG_REVISION                                :{WHITE}Revisionen af denne klient passer ikke sammen med serverens revision
 STR_NETWORK_ERROR_WRONG_PASSWORD                                :{WHITE}Forkert kodeord
 STR_NETWORK_ERROR_NOT_ON_ALLOW_LIST                             :{WHITE}Du er ikke på listen over tilladte klienter
@@ -2610,10 +2610,10 @@ STR_NETWORK_ERROR_KICKED                                        :{WHITE}Du blev 
 STR_NETWORK_ERROR_KICK_MESSAGE                                  :{WHITE}Grund: {STRING}
 STR_NETWORK_ERROR_CHEATER                                       :{WHITE}Snyderi er ikke tilladt på denne server
 STR_NETWORK_ERROR_TOO_MANY_COMMANDS                             :{WHITE}Du sendte for mange kommandoer til serveren
-STR_NETWORK_ERROR_TIMEOUT_PASSWORD                              :{WHITE}Du tog for lang tid om at indtaste adgangskoden
-STR_NETWORK_ERROR_TIMEOUT_COMPUTER                              :{WHITE}Din computer er for langsom at holde trit med serveren
-STR_NETWORK_ERROR_TIMEOUT_MAP                                   :{WHITE}Din computer tog for lang tid om at downloade kortet
-STR_NETWORK_ERROR_TIMEOUT_JOIN                                  :{WHITE}Din computer var for længe om at forbinde til serveren
+STR_NETWORK_ERROR_TIMEOUT_PASSWORD                              :Du tog for lang tid om at indtaste adgangskoden
+STR_NETWORK_ERROR_TIMEOUT_COMPUTER                              :Din computer er for langsom at holde trit med serveren
+STR_NETWORK_ERROR_TIMEOUT_MAP                                   :Din computer tog for lang tid om at downloade kortet
+STR_NETWORK_ERROR_TIMEOUT_JOIN                                  :Din computer var for længe om at forbinde til serveren
 STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :{WHITE}Dit spillernavn er ikke gyldigt
 
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :{WHITE}Mulig forbindelses tab
@@ -2675,7 +2675,7 @@ STR_NETWORK_MESSAGE_SERVER_REBOOT                               :{WHITE}Serveren
 STR_NETWORK_MESSAGE_KICKED                                      :*** {STRING} blev smidt ud. Grund: ({STRING})
 
 STR_NETWORK_ERROR_COORDINATOR_REGISTRATION_FAILED               :{WHITE}Server registrering mislykkedes
-STR_NETWORK_ERROR_COORDINATOR_REUSE_OF_INVITE_CODE              :{WHITE}En anden server har registreret sig med samme invitationskode. Skifter til "lokal" spiltype.
+STR_NETWORK_ERROR_COORDINATOR_REUSE_OF_INVITE_CODE              :En anden server har registreret sig med samme invitationskode. Skifter til "lokal" spiltype.
 STR_NETWORK_ERROR_COORDINATOR_ISOLATED                          :{WHITE}Din server tillader ikke forbindelser udefra
 STR_NETWORK_ERROR_COORDINATOR_ISOLATED_DETAIL                   :{WHITE}Andre spillere vil ikke kunne forbinde til din server
 
@@ -3674,12 +3674,12 @@ STR_NEWGRF_ERROR_INDPROD_CALLBACK                               :Ugyldig produkt
 STR_NEWGRF_POPUP_CAUTION_CAPTION                                :{WHITE}Advarsel!
 STR_NEWGRF_CONFIRMATION_TEXT                                    :{YELLOW}Du er ved at ændre et igangværende spil; dette kan få OpenTTD til at gå ned.{}Er du helt sikker på at du vil fortsætte?
 
-STR_NEWGRF_DUPLICATE_GRFID                                      :{WHITE}Kan ikke tilføje sæt: dobbelt GRF ID
+STR_NEWGRF_DUPLICATE_GRFID                                      :{WHITE}Kan ikke tilføje sæt: dobbelt  NewGRF ID
 STR_NEWGRF_COMPATIBLE_LOADED                                    :{ORANGE}Tilsvarende fil ikke fundet (kompatibel  NewGRF indlæst)
 STR_NEWGRF_TOO_MANY_NEWGRFS                                     :{WHITE}Kan ikke tilføje fil: Grænsen for antal NewGRF filer er nået
 
-STR_NEWGRF_COMPATIBLE_LOAD_WARNING                              :{WHITE}Kompatible GRF fil(er) indlæst i stedet for manglende fil(er)
-STR_NEWGRF_DISABLED_WARNING                                     :{WHITE}Manglende GRF fil(er) er blevet slået fra
+STR_NEWGRF_COMPATIBLE_LOAD_WARNING                              :{WHITE}Kompatible  NewGRF fil(er) indlæst i stedet for manglende fil(er)
+STR_NEWGRF_DISABLED_WARNING                                     :{WHITE}Manglende  NewGRF fil(er) er blevet slået fra
 STR_NEWGRF_UNPAUSE_WARNING_TITLE                                :{YELLOW}Manglende  NewGRF-fil(er)
 STR_NEWGRF_UNPAUSE_WARNING                                      :{WHITE}OpenTTD kan gå ned, når spillet sættes i gang igen. Undlad at indsende fejlrapporter for efterfølgende nedbrud.{}Vil du virkelig sætte spillet i gang igen?
 
@@ -3691,17 +3691,17 @@ STR_NEWGRF_LIST_COMPATIBLE                                      :{YELLOW}Har fun
 STR_NEWGRF_LIST_MISSING                                         :{RED}Manglende filer
 
 # NewGRF 'it's broken' warnings
-STR_NEWGRF_BROKEN                                               :{WHITE}Denne NewGRFs opførsel '{PUSH_COLOUR}{0:STRING}{POP_COLOUR}' vil sandsynligvis forårsage at spillet går ud af synkronisering og/eller går ned
-STR_NEWGRF_BROKEN_POWERED_WAGON                                 :{WHITE}Den ændrer status for '{PUSH_COLOUR}{1:ENGINE}{POP_COLOUR}' når den ikke er i depot
-STR_NEWGRF_BROKEN_VEHICLE_LENGTH                                :{WHITE}Den ændrer toglængden for '{PUSH_COLOUR}{1:ENGINE}{POP_COLOUR}' mens den ikke er i depot
-STR_NEWGRF_BROKEN_CAPACITY                                      :{WHITE}Det ændrede køretøj kapacitet til '{PUSH_COLOUR}{1:ENGINE}{POP_COLOUR}' når det ikke er inde i et depot eller genmontering
+STR_NEWGRF_BROKEN                                               :NewGRF´s opførsel '{0:STRING}' vil sandsynligvis forårsage desynkronisering og/eller nedbrud
+STR_NEWGRF_BROKEN_POWERED_WAGON                                 :Den ændrer status for ''{1:ENGINE}' når den ikke er i depot
+STR_NEWGRF_BROKEN_VEHICLE_LENGTH                                :{WHITE}Ændrer toglængden for '{1:ENGINE}' mens den ikke er i depot
+STR_NEWGRF_BROKEN_CAPACITY                                      :Det ændrede køretøj kapacitet til {1:ENGINE}' når det ikke er inde i et depot eller genmontering
 STR_BROKEN_VEHICLE_LENGTH                                       :{WHITE}Toget '{VEHICLE}' fra selskabet '{COMPANY}' har ugyldig længde. Det skyldes sandsynligvis at problem med en NewGRF. Risiko for at spillet mister synkronisering eller går ned.
 
-STR_NEWGRF_BUGGY                                                :{WHITE}NewGRF '{PUSH_COLOUR}{0:STRING}{POP_COLOUR}' indeholder forkert information
-STR_NEWGRF_BUGGY_ARTICULATED_CARGO                              :{WHITE}Fragt-/tilpasningsinformation for '{PUSH_COLOUR}{1:ENGINE}{POP_COLOUR}' afviger fra indkøbslisten efter konstruktion. Dette kan medføre, at autofornyelse ikke fungerer korrekt.
-STR_NEWGRF_BUGGY_ENDLESS_PRODUCTION_CALLBACK                    :{WHITE}'{PUSH_COLOUR}{1:STRING}{POP_COLOUR}' forårsagede en uendelig løkke i produktions-callback'en
+STR_NEWGRF_BUGGY                                                :{WHITE}NewGRF '{0:STRING}'  indeholder forkert information
+STR_NEWGRF_BUGGY_ARTICULATED_CARGO                              :{WHITE}Fragt-/tilpasnings information for '{1:ENGINE}' afviger fra indkøbslisten efter konstruktion. Dette kan medføre, at autofornyelse ikke fungerer korrekt.
+STR_NEWGRF_BUGGY_ENDLESS_PRODUCTION_CALLBACK                    :{WHITE}'{1:STRING}' forårsagede en endeløs løkke i produktions-tilbagekaldet
 STR_NEWGRF_BUGGY_UNKNOWN_CALLBACK_RESULT                        :{WHITE}Callback {1:HEX} returnerede ukendt/ugyldigt resultat {2:HEX}
-STR_NEWGRF_BUGGY_INVALID_CARGO_PRODUCTION_CALLBACK              :{WHITE}'{PUSH_COLOUR}{1:STRING}{POP_COLOUR}' returnerede ugyldig godstype i produktion-callback ved {2:HEX}
+STR_NEWGRF_BUGGY_INVALID_CARGO_PRODUCTION_CALLBACK              :{WHITE}'{1:STRING}' returnerede ugyldig fragttype i produktionskaldet kl. {2:HEX}
 
 # 'User removed essential NewGRFs'-placeholders for stuff without specs
 STR_NEWGRF_INVALID_CARGO                                        :<ikke gyldigt gods>
@@ -5094,10 +5094,10 @@ STR_ERROR_NOT_ENOUGH_CASH_REQUIRES_CURRENCY                     :{WHITE}Ikke nok
 STR_ERROR_FLAT_LAND_REQUIRED                                    :{WHITE}Landskabet skal være fladt
 STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION                        :{WHITE}Landet hælder i den forkerte retning
 STR_ERROR_CAN_T_DO_THIS                                         :{WHITE}Det kan du ikke...
-STR_ERROR_BUILDING_MUST_BE_DEMOLISHED                           :{WHITE}Det er nødvendigt at nedrive bygningen først
+STR_ERROR_BUILDING_MUST_BE_DEMOLISHED                           :Det er nødvendigt at nedrive bygningen først
 STR_ERROR_BUILDING_IS_PROTECTED                                 :{WHITE}... bygningen er beskyttet
 STR_ERROR_CAN_T_CLEAR_THIS_AREA                                 :{WHITE}Kan ikke rydde området...
-STR_ERROR_SITE_UNSUITABLE                                       :{WHITE}... upassende placering
+STR_ERROR_SITE_UNSUITABLE                                       :upassende placering
 STR_ERROR_ALREADY_BUILT                                         :{WHITE}... allerede bygget
 STR_ERROR_OWNED_BY                                              :{WHITE}... ejes af {STRING}
 STR_ERROR_AREA_IS_OWNED_BY_ANOTHER                              :{WHITE}... området ejes af et andet selskab
@@ -5106,7 +5106,7 @@ STR_ERROR_CLEARING_LIMIT_REACHED                                :{WHITE}... græ
 STR_ERROR_TREE_PLANT_LIMIT_REACHED                              :{WHITE}... grænse for plantning af træer er nået
 STR_ERROR_NAME_MUST_BE_UNIQUE                                   :{WHITE}Navnet skal være unikt
 STR_ERROR_GENERIC_OBJECT_IN_THE_WAY                             :{WHITE}{STRING} i vejen
-STR_ERROR_NOT_ALLOWED_WHILE_PAUSED                              :{WHITE}Ikke tilladt imens spillet er på pause
+STR_ERROR_NOT_ALLOWED_WHILE_PAUSED                              :Ikke tilladt imens spillet er på pause
 
 # Local authority errors
 STR_ERROR_LOCAL_AUTHORITY_REFUSES_TO_ALLOW_THIS                 :{WHITE}{TOWN} de lokale myndigheder nægter at tillade dette
@@ -5119,10 +5119,11 @@ STR_ERROR_CAN_T_RAISE_LAND_HERE                                 :{WHITE}Kan ikke
 STR_ERROR_CAN_T_LOWER_LAND_HERE                                 :{WHITE}Kan ikke sænke landet her...
 STR_ERROR_CAN_T_LEVEL_LAND_HERE                                 :{WHITE}Kan ikke udflade landet her...
 STR_ERROR_EXCAVATION_WOULD_DAMAGE                               :{WHITE}Udgravning ville skade en tunnel
-STR_ERROR_ALREADY_AT_SEA_LEVEL                                  :{WHITE}... allerede ved havoverfladen
+STR_ERROR_ALREADY_AT_SEA_LEVEL                                  :... allerede ved havoverfladen
 STR_ERROR_TOO_HIGH                                              :{WHITE}... for højt
 STR_ERROR_ALREADY_LEVELLED                                      :{WHITE}... allerede fladt
 STR_ERROR_BRIDGE_TOO_HIGH_AFTER_LOWER_LAND                      :{WHITE}Bagefter vil broen over dette ville være for høj.
+STR_ERROR_MUST_DEMOLISH_RIVER_FIRST                             :{WHITE}Først skal floden fjernes ned
 
 # Company related errors
 STR_ERROR_CAN_T_CHANGE_COMPANY_NAME                             :{WHITE}Kan ikke ændre selskabets navn...
@@ -5144,7 +5145,7 @@ STR_ERROR_CAN_T_RENAME_TOWN                                     :{WHITE}Kan ikke
 STR_ERROR_CAN_T_FOUND_TOWN_HERE                                 :{WHITE}Kan ikke bygge en by her...
 STR_ERROR_CAN_T_EXPAND_TOWN                                     :{WHITE}Kan ikke udvide byen...
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN                             :{WHITE}... for tæt på en anden by
-STR_ERROR_TOO_MANY_TOWNS                                        :{WHITE}... for mange byer
+STR_ERROR_TOO_MANY_TOWNS                                        :for mange byer
 STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}... der er ikke mere plads på kortet
 STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :{WHITE}Vejarbejde i gang
 STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}Kan ikke slette denne by...{}{}En station eller et depot refererer til byen, eller en brik der er ejet a byen kan ikke fjernes
@@ -5152,7 +5153,7 @@ STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :{WHITE}... Der 
 STR_ERROR_CAN_T_BUILD_HOUSE                                     :{WHITE}Kan ikke bygge hus...
 
 # Industry related errors
-STR_ERROR_TOO_MANY_INDUSTRIES                                   :{WHITE}... for mange industrier
+STR_ERROR_TOO_MANY_INDUSTRIES                                   :for mange industrier
 STR_ERROR_CAN_T_GENERATE_INDUSTRIES                             :{WHITE}Kan ikke lave industrier...
 STR_ERROR_CAN_T_BUILD_HERE                                      :{WHITE}Kan ikke bygge {STRING} her...
 STR_ERROR_CAN_T_CONSTRUCT_THIS_INDUSTRY                         :{WHITE}Kan ikke bygge denne industritype her...
@@ -5189,10 +5190,10 @@ STR_ERROR_ADJOINS_MORE_THAN_ONE_EXISTING                        :{WHITE}Grænser
 STR_ERROR_STATION_TOO_SPREAD_OUT                                :{WHITE}... stationen er for spredt
 STR_ERROR_STATION_DISALLOWED_NUMBER_TRACKS                      :{WHITE}... ikke-understøttet antal numre
 STR_ERROR_STATION_DISALLOWED_LENGTH                             :{WHITE}... ikke-understøttet længde
-STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}For mange stationer/fragtcentraler
-STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Banegården er i for mange dele
-STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}For mange busterminaler
-STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}For mange fragtcentraler
+STR_ERROR_TOO_MANY_STATIONS_LOADING                             :for mange stationer/fragtcentraler
+STR_ERROR_TOO_MANY_STATION_SPECS                                :banegården er i for mange dele
+STR_ERROR_TOO_MANY_BUS_STOPS                                    :for mange busterminaler
+STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :for mange fragtcentraler
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :{WHITE}For tæt på en anden havn
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :{WHITE}For tæt på en anden lufthavn
 STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Kan ikke omdøbe stationen...
@@ -5282,9 +5283,9 @@ STR_ERROR_IMPOSSIBLE_TRACK_COMBINATION                          :{WHITE}Umulig s
 STR_ERROR_MUST_REMOVE_SIGNALS_FIRST                             :{WHITE}Det er nødvendigt at fjerne signalet først
 STR_ERROR_NO_SUITABLE_RAILROAD_TRACK                            :{WHITE}Ingen egnet jernbane
 STR_ERROR_MUST_REMOVE_RAILROAD_TRACK                            :{WHITE}Det er nødvendigt at fjerne jernbaneskinnerne først
-STR_ERROR_CROSSING_ON_ONEWAY_ROAD                               :{WHITE}Vejen er ensrettet eller blokeret
-STR_ERROR_CROSSING_DISALLOWED_RAIL                              :{WHITE}Niveaukrydsning ikke tilladt for denne type skinner
-STR_ERROR_CROSSING_DISALLOWED_ROAD                              :{WHITE}Niveaukrydsning ikke tilladt for denne type vej
+STR_ERROR_CROSSING_ON_ONEWAY_ROAD                               :vejen er ensrettet eller blokeret
+STR_ERROR_CROSSING_DISALLOWED_RAIL                              :niveau krydsning ikke tilladt for denne type skinner
+STR_ERROR_CROSSING_DISALLOWED_ROAD                              :niveau krydsning ikke tilladt for denne type vej
 STR_ERROR_CAN_T_BUILD_SIGNALS_HERE                              :{WHITE}Kan ikke bygge signaler her...
 STR_ERROR_CAN_T_BUILD_RAILROAD_TRACK                            :{WHITE}Kan ikke bygge jernbane her...
 STR_ERROR_CAN_T_REMOVE_RAILROAD_TRACK                           :{WHITE}Kan ikke fjerne jernbane herfra...
@@ -5331,23 +5332,23 @@ STR_ERROR_CAN_T_BUILD_BRIDGE_HERE                               :{WHITE}Kan ikke
 STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST                            :{WHITE}Det er nødvendigt at rive broen ned først
 STR_ERROR_CAN_T_START_AND_END_ON                                :{WHITE}Kan ikke starte og slutte på samme position
 STR_ERROR_BRIDGEHEADS_NOT_SAME_HEIGHT                           :{WHITE}Brohoveder er ikke i samme niveau
-STR_ERROR_BRIDGE_TOO_LOW_FOR_TERRAIN                            :{WHITE}Broen er for lav til terrænet
+STR_ERROR_BRIDGE_TOO_LOW_FOR_TERRAIN                            :broen er for lav til terrænet
 STR_ERROR_BRIDGE_TOO_HIGH_FOR_TERRAIN                           :{WHITE}Broen er for høj for dette terræn.
 STR_ERROR_START_AND_END_MUST_BE_IN                              :{WHITE}Start- og slutposition skal være på linje
 STR_ERROR_ENDS_OF_BRIDGE_MUST_BOTH                              :{WHITE}... begge ender af en bro skal være på land
 STR_ERROR_BRIDGE_TOO_LONG                                       :{WHITE}... broen er for lang
 STR_ERROR_BRIDGE_THROUGH_MAP_BORDER                             :{WHITE}Broen ville slutte udenfor kortet
-STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}Broen er {HEIGHT} for lav til en station
-STR_ERROR_BRIDGE_TOO_LOW_FOR_ROADSTOP                           :{WHITE}Broen er {HEIGHT} for lav til et vej stoppested
-STR_ERROR_BRIDGE_TOO_LOW_FOR_DOCK                               :{WHITE}Broen er {HEIGHT} for lav til havnen
-STR_ERROR_BRIDGE_TOO_LOW_FOR_BUOY                               :{WHITE} Broen er {HEIGHT}  for lav til en bøje
-STR_ERROR_BRIDGE_TOO_LOW_FOR_RAIL_WAYPOINT                      :{WHITE}Broen er  {HEIGHT} for lav til et rutepunkt
-STR_ERROR_BRIDGE_TOO_LOW_FOR_ROAD_WAYPOINT                      :{WHITE}Broen er {HEIGHT} for lav til et rutepunkt
-STR_ERROR_BRIDGE_TOO_LOW_FOR_LOCK                               :{WHITE}Bro er {HEIGHT} for lav til slusen
+STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :broen er {HEIGHT} for lav til en station
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROADSTOP                           :Broen er {HEIGHT} for lav til et vej stoppested
+STR_ERROR_BRIDGE_TOO_LOW_FOR_DOCK                               :broen er {HEIGHT} for lav til havnen
+STR_ERROR_BRIDGE_TOO_LOW_FOR_BUOY                               :broen er {HEIGHT}  for lav til en bøje
+STR_ERROR_BRIDGE_TOO_LOW_FOR_RAIL_WAYPOINT                      :broen er  {HEIGHT} for lav til et rutepunkt
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROAD_WAYPOINT                      :broen er {HEIGHT} for lav til et rutepunkt
+STR_ERROR_BRIDGE_TOO_LOW_FOR_LOCK                               :broen er {HEIGHT} for lav til slusen
 
 # Tunnel related errors
 STR_ERROR_CAN_T_BUILD_TUNNEL_HERE                               :{WHITE}Kan ikke bygge en tunnel her...
-STR_ERROR_SITE_UNSUITABLE_FOR_TUNNEL                            :{WHITE}Dette sted er ikke brugbart til starten af en tunnel
+STR_ERROR_SITE_UNSUITABLE_FOR_TUNNEL                            :Dette sted er ikke brugbart til starten af en tunnel
 STR_ERROR_MUST_DEMOLISH_TUNNEL_FIRST                            :{WHITE}Det er nødvendigt at rive tunnelen ned først
 STR_ERROR_ANOTHER_TUNNEL_IN_THE_WAY                             :{WHITE}En anden tunnel er i vejen
 STR_ERROR_TUNNEL_THROUGH_MAP_BORDER                             :{WHITE}Tunnellen ville slutte uden for kortet
@@ -5355,7 +5356,7 @@ STR_ERROR_UNABLE_TO_EXCAVATE_LAND                               :{WHITE}Det er u
 STR_ERROR_TUNNEL_TOO_LONG                                       :{WHITE}... tunnel er for lang
 
 # Object related errors
-STR_ERROR_TOO_MANY_OBJECTS                                      :{WHITE}... for mange objecter
+STR_ERROR_TOO_MANY_OBJECTS                                      :for mange objecter
 STR_ERROR_CAN_T_BUILD_OBJECT                                    :{WHITE}Kan ikke bygge objekt...
 STR_ERROR_OBJECT_IN_THE_WAY                                     :{WHITE}Der er et objekt i vejen
 STR_ERROR_COMPANY_HEADQUARTERS_IN                               :{WHITE}... selskabets hovedkontor i vejen
@@ -5364,14 +5365,14 @@ STR_ERROR_YOU_ALREADY_OWN_IT                                    :{WHITE}... du e
 STR_ERROR_BUILD_OBJECT_LIMIT_REACHED                            :{WHITE}... grænse for objekt-konstruktion nået
 
 # Group related errors
-STR_ERROR_GROUP_CAN_T_CREATE                                    :{WHITE}Kan ikke oprette gruppe...
-STR_ERROR_GROUP_CAN_T_DELETE                                    :{WHITE}Kan ikke slette denne gruppe...
-STR_ERROR_GROUP_CAN_T_RENAME                                    :{WHITE}Kan ikke omdøbe gruppe...
+STR_ERROR_GROUP_CAN_T_CREATE                                    :Kan ikke oprette gruppe...
+STR_ERROR_GROUP_CAN_T_DELETE                                    :Kan ikke slette denne gruppe...
+STR_ERROR_GROUP_CAN_T_RENAME                                    :Kan ikke omdøbe gruppe...
 STR_ERROR_GROUP_CAN_T_SET_PARENT                                :{WHITE}Kan ikke sætte overordnede gruppe ...
 STR_ERROR_GROUP_CAN_T_SET_PARENT_RECURSION                      :{WHITE}... løkker i gruppe-hierarkiet er ikke tilladt
-STR_ERROR_GROUP_CAN_T_REMOVE_ALL_VEHICLES                       :{WHITE}Kan ikke fjerne alle køretøjer fra denne gruppe...
-STR_ERROR_GROUP_CAN_T_ADD_VEHICLE                               :{WHITE}Kan ikke tilføje køretøjet til denne gruppe...
-STR_ERROR_GROUP_CAN_T_ADD_SHARED_VEHICLE                        :{WHITE}Kan ikke tilføje delte køretøjer til gruppe...
+STR_ERROR_GROUP_CAN_T_REMOVE_ALL_VEHICLES                       :Kan ikke fjerne alle køretøjer fra denne gruppe...
+STR_ERROR_GROUP_CAN_T_ADD_VEHICLE                               :Kan ikke tilføje køretøjet til denne gruppe...
+STR_ERROR_GROUP_CAN_T_ADD_SHARED_VEHICLE                        :Kan ikke tilføje delte køretøjer til gruppe...
 
 # Generic vehicle errors
 
@@ -5388,14 +5389,14 @@ STR_ERROR_SHIP_NOT_AVAILABLE                                    :{WHITE}Skib er 
 STR_ERROR_AIRCRAFT_NOT_AVAILABLE                                :{WHITE}Fly er ikke tilgængelig
 
 ###length VEHICLE_TYPES
-STR_ERROR_CAN_T_REFIT_TRAIN                                     :{WHITE}Kan ikke tilpasse tog...
-STR_ERROR_CAN_T_REFIT_ROAD_VEHICLE                              :{WHITE}Kan ikke tilpasse vejkøretøj
-STR_ERROR_CAN_T_REFIT_SHIP                                      :{WHITE}Kan ikke tilpasse skib...
-STR_ERROR_CAN_T_REFIT_AIRCRAFT                                  :{WHITE}Kan ikke tilpasse fly...
+STR_ERROR_CAN_T_REFIT_TRAIN                                     :Kan ikke tilpasse tog...
+STR_ERROR_CAN_T_REFIT_ROAD_VEHICLE                              :Kan ikke tilpasse vejkøretøj
+STR_ERROR_CAN_T_REFIT_SHIP                                      :Kan ikke tilpasse skib...
+STR_ERROR_CAN_T_REFIT_AIRCRAFT                                  :Kan ikke tilpasse fly...
 
 ###length VEHICLE_TYPES
 STR_ERROR_CAN_T_RENAME_TRAIN                                    :{WHITE}Kan ikke give toget navn...
-STR_ERROR_CAN_T_RENAME_ROAD_VEHICLE                             :{WHITE}Kan ikke give køretøjet et navn...
+STR_ERROR_CAN_T_RENAME_ROAD_VEHICLE                             :Kan ikke give køretøjet et navn...
 STR_ERROR_CAN_T_RENAME_SHIP                                     :{WHITE}Kan ikke give skibet et navn...
 STR_ERROR_CAN_T_RENAME_AIRCRAFT                                 :{WHITE}Kan ikke navngive flyet...
 
@@ -5419,7 +5420,7 @@ STR_ERROR_CAN_T_BUY_AIRCRAFT                                    :{WHITE}Kan ikke
 
 ###length VEHICLE_TYPES
 STR_ERROR_CAN_T_RENAME_TRAIN_TYPE                               :{WHITE}Kan ikke omdøbe tog-/togvognstypen...
-STR_ERROR_CAN_T_RENAME_ROAD_VEHICLE_TYPE                        :{WHITE}Kan ikke omdøbe køretøjstypen...
+STR_ERROR_CAN_T_RENAME_ROAD_VEHICLE_TYPE                        :Kan ikke omdøbe køretøjstypen...
 STR_ERROR_CAN_T_RENAME_SHIP_TYPE                                :{WHITE}Kan ikke omdøbe skibstypen...
 STR_ERROR_CAN_T_RENAME_AIRCRAFT_TYPE                            :{WHITE}Kan ikke omdøbe flytypen...
 
@@ -5433,7 +5434,7 @@ STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}Kan ikke
 STR_ERROR_CAN_T_SELL_ALL_TRAIN                                  :{WHITE}Kan ikke sælge alle jernbanevogne...
 STR_ERROR_CAN_T_SELL_ALL_ROAD_VEHICLE                           :{WHITE}Kan ikke sælge alle vejkøretøjer...
 STR_ERROR_CAN_T_SELL_ALL_SHIP                                   :{WHITE}Kan ikke sælge alle skibe...
-STR_ERROR_CAN_T_SELL_ALL_AIRCRAFT                               :{WHITE}Kan ikke sælge alle fly...
+STR_ERROR_CAN_T_SELL_ALL_AIRCRAFT                               :Kan ikke sælge alle fly...
 
 ###length VEHICLE_TYPES
 STR_ERROR_CAN_T_AUTOREPLACE_TRAIN                               :{WHITE}Kan ikke automatisk erstatte jernbanevogne...
@@ -5441,7 +5442,7 @@ STR_ERROR_CAN_T_AUTOREPLACE_ROAD_VEHICLE                        :{WHITE}Kan ikke
 STR_ERROR_CAN_T_AUTOREPLACE_SHIP                                :{WHITE}Kan ikke automatisk erstatte skibe...
 STR_ERROR_CAN_T_AUTOREPLACE_AIRCRAFT                            :{WHITE}Kan ikke automatisk erstatte fly...
 
-STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}For mange køretøjer i spillet
+STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :for mange køretøjer i spillet
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :{WHITE}Kan ikke ændre serviceinterval...
 
 STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... fartøjet er ødelagt
@@ -5469,7 +5470,7 @@ STR_ERROR_AIRCRAFT_IS_IN_FLIGHT                                 :{WHITE}Flyet er
 
 # Order related errors
 STR_ERROR_NO_MORE_SPACE_FOR_ORDERS                              :{WHITE}Ikke mere plads til ordrer
-STR_ERROR_TOO_MANY_ORDERS                                       :{WHITE}For mange ordrer
+STR_ERROR_TOO_MANY_ORDERS                                       :for mange ordrer
 STR_ERROR_CAN_T_INSERT_NEW_ORDER                                :{WHITE}Kan ikke indsætte ny ordre...
 STR_ERROR_CAN_T_DELETE_THIS_ORDER                               :{WHITE}Kan ikke slette denne ordre...
 STR_ERROR_CAN_T_MODIFY_THIS_ORDER                               :{WHITE}Kan ikke ændre denne ordre...
@@ -5477,14 +5478,14 @@ STR_ERROR_CAN_T_MOVE_THIS_ORDER                                 :{WHITE}Kan ikke
 STR_ERROR_CAN_T_SKIP_ORDER                                      :{WHITE}Kan ikke springe over nuværende ordre...
 STR_ERROR_CAN_T_SKIP_TO_ORDER                                   :{WHITE}Kan ikke springe over valgt ordre...
 STR_ERROR_CAN_T_COPY_SHARE_ORDER                                :{WHITE}... køretøj kan ikke køre til alle stationer
-STR_ERROR_CAN_T_ADD_ORDER                                       :{WHITE}... køretøj kan ikke køre til denne station
-STR_ERROR_CAN_T_ADD_ORDER_SHARED                                :{WHITE}... et køretøj, der deler denne ordre, kan ikke køre til den station
-STR_ERROR_CAN_T_COPY_ORDER_VEHICLE_LIST                         :{WHITE}... ikke alle køretøjer har de samme ordrer
+STR_ERROR_CAN_T_ADD_ORDER                                       :køretøj kan ikke køre til denne station
+STR_ERROR_CAN_T_ADD_ORDER_SHARED                                :et køretøj, der deler denne ordre, kan ikke køre til den station
+STR_ERROR_CAN_T_COPY_ORDER_VEHICLE_LIST                         :ikke alle køretøjer har de samme ordrer
 STR_ERROR_CAN_T_SHARE_ORDER_VEHICLE_LIST                        :{WHITE}... Ikke alle køretøjer deler ordrer
 
 STR_ERROR_CAN_T_SHARE_ORDER_LIST                                :{WHITE}Kan ikke dele ordreliste...
 STR_ERROR_CAN_T_STOP_SHARING_ORDER_LIST                         :{WHITE}Kan ikke ophøre med at dele ordrer-liste...
-STR_ERROR_CAN_T_COPY_ORDER_LIST                                 :{WHITE}Kan ikke kopiere ordreliste...
+STR_ERROR_CAN_T_COPY_ORDER_LIST                                 :Kan ikke kopiere ordreliste...
 STR_ERROR_TOO_FAR_FROM_PREVIOUS_DESTINATION                     :{WHITE}... for langt fra forrige destination
 STR_ERROR_AIRCRAFT_NOT_ENOUGH_RANGE                             :{WHITE}... fly har ikke nok rækkevidde
 
@@ -5511,7 +5512,7 @@ STR_ERROR_TIMETABLE_INCOMPLETE                                  :{WHITE}... tids
 STR_ERROR_TIMETABLE_NOT_STARTED                                 :{WHITE}... tidsplanen er ikke startet endnu
 
 # Sign related errors
-STR_ERROR_TOO_MANY_SIGNS                                        :{WHITE}... for mange skilte
+STR_ERROR_TOO_MANY_SIGNS                                        :for mange skilte
 STR_ERROR_CAN_T_PLACE_SIGN_HERE                                 :{WHITE}Kan ikke placere skilt her...
 STR_ERROR_CAN_T_CHANGE_SIGN_NAME                                :{WHITE}Kan ikke ændre navnet på skiltet...
 STR_ERROR_CAN_T_DELETE_SIGN                                     :{WHITE}Kan ikke slette skilt...

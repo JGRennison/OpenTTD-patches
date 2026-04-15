@@ -1353,8 +1353,8 @@ STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :Augstas
 STR_CONFIG_SETTING_RECESSIONS                                   :Lejupslīde: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Ja ieslēgts, periodiski var rasties recesijas. Recesijas laikā visa ražošana ir ievērojami zemāka (tā atgriežas iepriekšējā līmenī, kad recesija ir beigusies)
 
-STR_CONFIG_SETTING_TRAIN_REVERSING                              :Neatļaut vilcienu apgriešanos stacijās: {STRING}
-STR_CONFIG_SETTING_TRAIN_REVERSING_HELPTEXT                     :Ja ieslēgts, stacijās vilcieni negriezīsies pretējā virzienā, pat ja braucot tādā veidā tie atrastu īsāku ceļu un nākamo pieturu; izņēmums ir gala stacijas
+
+###length 3
 
 STR_CONFIG_SETTING_DISASTERS                                    :Katastrofas: {STRING}
 STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :Pārslēgt katastrofas, kas laiku pa laikam var bloķēt vai iznīcināt transportlīdzekļus un infrastruktūru
@@ -2603,10 +2603,10 @@ STR_NETWORK_ERROR_LOSTCONNECTION                                :{WHITE}Tīkla s
 STR_NETWORK_ERROR_SAVEGAMEERROR                                 :{WHITE}Nevar ielādēt saglabāto spēli
 STR_NETWORK_ERROR_SERVER_START                                  :{WHITE}Nevar uzsākt servera darbību
 STR_NETWORK_ERROR_SERVER_ERROR                                  :{WHITE}Tika pielaista protokola kļūda un savienojums tika slēgts
-STR_NETWORK_ERROR_BAD_PLAYER_NAME                               :{WHITE} Jūsu spēlētāja vārds nav iestatīts. Nosaukumu var iestatīt šī loga augšdaļā
-STR_NETWORK_ERROR_BAD_SERVER_NAME                               :{WHITE} Jūsu servera nosaukums nav iestatīts. Nosaukumu var iestatīt vairākspēlētāju loga augšdaļā
-STR_NETWORK_ERROR_WRONG_REVISION                                :{WHITE}Klienta pārskats neatbilst servera pārskatam
-STR_NETWORK_ERROR_WRONG_PASSWORD                                :{WHITE}Nepareiza parole
+STR_NETWORK_ERROR_BAD_PLAYER_NAME                               :Jūsu spēlētāja vārds nav iestatīts. Nosaukumu var iestatīt šī loga augšdaļā
+STR_NETWORK_ERROR_BAD_SERVER_NAME                               :Jūsu servera nosaukums nav iestatīts. Nosaukumu var iestatīt vairākspēlētāju loga augšdaļā
+STR_NETWORK_ERROR_WRONG_REVISION                                :{WHITE}Klienta versija neatbilst servera versijai
+STR_NETWORK_ERROR_WRONG_PASSWORD                                :Nepareiza parole
 STR_NETWORK_ERROR_NOT_ON_ALLOW_LIST                             :{WHITE}Jūs neesat atļauto klientu sarakstā
 STR_NETWORK_ERROR_SERVER_FULL                                   :{WHITE}Serveris ir pilns
 STR_NETWORK_ERROR_SERVER_BANNED                                 :{WHITE}Šajā serverī jums ir aizliegums
@@ -3681,7 +3681,7 @@ STR_NEWGRF_ERROR_INDPROD_CALLBACK                               :Nederīgs indus
 STR_NEWGRF_POPUP_CAUTION_CAPTION                                :{WHITE}Uzmanību!
 STR_NEWGRF_CONFIRMATION_TEXT                                    :{YELLOW}Jūs grasāties veikt izmaiņas palaistai spēlei. Tas var izraisīt OpenTTD avāriju vai salauzt spēles stāvokli. Par šīm problēmām kļūdu ziņojumus nesūtiet.{}Vai jūs esat par to pilnībā pārliecināts?
 
-STR_NEWGRF_DUPLICATE_GRFID                                      :{WHITE}Nevar pievienot failu: vienādi GRF ID
+STR_NEWGRF_DUPLICATE_GRFID                                      :{WHITE}Nevar pievienot failu: vienādi NewGRF ID
 STR_NEWGRF_COMPATIBLE_LOADED                                    :{ORANGE}Atbilstošs fails nav atrasts (ielādēts saderīgs GRF)
 STR_NEWGRF_TOO_MANY_NEWGRFS                                     :{WHITE}Nevar pievienot datni: sasniegts NewGRF datņu limits
 
@@ -3698,17 +3698,17 @@ STR_NEWGRF_LIST_COMPATIBLE                                      :{YELLOW}Atrasti
 STR_NEWGRF_LIST_MISSING                                         :{RED}Trūkst faili
 
 # NewGRF 'it's broken' warnings
-STR_NEWGRF_BROKEN                                               :{WHITE}NewGRF uzvedība '{PUSH_COLOUR}{0:STRING}{POP_COLOUR}' visticamāk izraisīs desinhronizācijas vai avārijas
-STR_NEWGRF_BROKEN_POWERED_WAGON                                 :{WHITE}Tas mainīja '{PUSH_COLOUR}{1:ENGINE}{POP_COLOUR}' vilcējvagona stāvokli ārpus depo
-STR_NEWGRF_BROKEN_VEHICLE_LENGTH                                :{WHITE}Tas mainīja transportlīdzekļa '{PUSH_COLOUR}{1:ENGINE}{POP_COLOUR}' garumu, kad tas neatradās depo
-STR_NEWGRF_BROKEN_CAPACITY                                      :{WHITE}Tas mainīja transportlīdzekļa ietilpību '{PUSH_COLOUR}{1:ENGINE}{POP_COLOUR}' kad neatrodas depo vai netiek pielāgots
+STR_NEWGRF_BROKEN                                               :{WHITE}NewGRF '{0:STRING}' darbība, visticamāk, izraisīs desinhronizāciju un/vai avārijas.
+STR_NEWGRF_BROKEN_POWERED_WAGON                                 :{WHITE}Kad '{1:ENGINE}' neatradās depo, tika mainīts motorizēta vagona statuss.
+STR_NEWGRF_BROKEN_VEHICLE_LENGTH                                :{WHITE}Tas mainīja transportlīdzekļa garumu '{1:ENGINE}', kad tas neatradās depo.
+STR_NEWGRF_BROKEN_CAPACITY                                      :{WHITE}Tas mainīja transportlīdzekļa ietilpību '{1:ENGINE}', kad tas neatradās depo vai remonta vietā.
 STR_BROKEN_VEHICLE_LENGTH                                       :{WHITE}Vilciens '{VEHICLE}', kas pieder '{COMPANY}' ir ar nepareizu garumu. Iespējams, vainīga problēma ar NewGRF. Spēle var desinhronizēties vai avarēt
 
-STR_NEWGRF_BUGGY                                                :{WHITE}NewGRF '{PUSH_COLOUR}{0:STRING}{POP_COLOUR}' sniedz nepareizu informāciju
-STR_NEWGRF_BUGGY_ARTICULATED_CARGO                              :{WHITE}kravas pielāgošanas informācija pēc izbūves '{PUSH_COLOUR}{1:ENGINE}{POP_COLOUR}' atšķiras no pārdošanas sarakstā norādītās. Tas var liegt automātiskai atjaunošanai/aizvietošanai pareizi pielāgot kravas
-STR_NEWGRF_BUGGY_ENDLESS_PRODUCTION_CALLBACK                    :{WHITE}'{PUSH_COLOUR}{1:STRING}{POP_COLOUR}' izraisīja bezgalīgu ražošanas izsaukumu ciklu
+STR_NEWGRF_BUGGY                                                :{WHITE}NewGRF {0:STRING} sniedz nepareizu informāciju
+STR_NEWGRF_BUGGY_ARTICULATED_CARGO                              :{WHITE}Informācija par kravu/pārbūvi dzinējam '{1:ENGINE}' pēc izgatavošanas atšķiras no pirkumu saraksta. Tas var izraisīt automātiskās atjaunošanas/nomaiņas kļūmi, veicot pareizu pārbūvi.
+STR_NEWGRF_BUGGY_ENDLESS_PRODUCTION_CALLBACK                    :{WHITE}'{1:STRING}' izraisīja bezgalīgu ciklu ražošanas procesā
 STR_NEWGRF_BUGGY_UNKNOWN_CALLBACK_RESULT                        :{WHITE}Izsaukums {1:HEX} atgrieza nezināmu vai nederīgu rezultātu {2:HEX}
-STR_NEWGRF_BUGGY_INVALID_CARGO_PRODUCTION_CALLBACK              :{WHITE}'{PUSH_COLOUR}{1:STRING}{POP_COLOUR}' atgrieza nederīgu kravas veidu ražošanas atgriezeniskajā funkcijā punktā {2:HEX}
+STR_NEWGRF_BUGGY_INVALID_CARGO_PRODUCTION_CALLBACK              :{WHITE}'{1:STRING}' atgrieza nepareizu kravas tipu adresē {2:HEX}
 
 # 'User removed essential NewGRFs'-placeholders for stuff without specs
 STR_NEWGRF_INVALID_CARGO                                        :<nederīga krava>
@@ -5133,6 +5133,7 @@ STR_ERROR_ALREADY_AT_SEA_LEVEL                                  :{WHITE}... jau 
 STR_ERROR_TOO_HIGH                                              :{WHITE}... pārāk augstu
 STR_ERROR_ALREADY_LEVELLED                                      :{WHITE}... jau ir līdzens
 STR_ERROR_BRIDGE_TOO_HIGH_AFTER_LOWER_LAND                      :{WHITE}Tilta otrs gals ir pārāk augstu.
+STR_ERROR_MUST_DEMOLISH_RIVER_FIRST                             :{WHITE}Vispirms jānojauc upe
 
 # Company related errors
 STR_ERROR_CAN_T_CHANGE_COMPANY_NAME                             :{WHITE}Uzņēmuma nosaukumu nevar mainīt...

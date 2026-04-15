@@ -1438,8 +1438,8 @@ STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :vysoký
 STR_CONFIG_SETTING_RECESSIONS                                   :Krize: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Pokud jsou krize zapnuty, mohou se občas objevit krize. Během krize je snížena veškerá produkce. Po krizi se opět vrátí do původních hodnot
 
-STR_CONFIG_SETTING_TRAIN_REVERSING                              :Zakázat otáčení vlaků ve stanicích: {STRING}
-STR_CONFIG_SETTING_TRAIN_REVERSING_HELPTEXT                     :Pokud je zapnuto, vlaky se nebudou otáčet v nekoncových stanicích ani pokud by to zkrátilo cestu k dalšímu cíli
+
+###length 3
 
 STR_CONFIG_SETTING_DISASTERS                                    :Katastrofy: {STRING}
 STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :Katastrofy, které mohou občas zablokovat či zničit vozidla nebo infrastrukturu
@@ -2303,7 +2303,7 @@ STR_CONFIG_ERROR                                                :{WHITE}Chyba v 
 STR_CONFIG_ERROR_ARRAY                                          :{WHITE}... chyba v poli '{STRING}'
 STR_CONFIG_ERROR_INVALID_VALUE                                  :{WHITE}... neplatná hodnota '{STRING}' pro '{STRING}'
 STR_CONFIG_ERROR_TRAILING_CHARACTERS                            :{WHITE}... koncové znaky na konci nastavení '{STRING}'
-STR_CONFIG_ERROR_DUPLICATE_GRFID                                :{WHITE}... ignorována grafika '{STRING}': duplicitní GRF ID s '{STRING}'
+STR_CONFIG_ERROR_DUPLICATE_GRFID                                :{WHITE}... ignorována grafika '{STRING}': duplicitní NewGRF ID s '{STRING}'
 STR_CONFIG_ERROR_INVALID_GRF                                    :{WHITE}... ignorovány neplatné grafiky '{STRING}': {STRING}
 STR_CONFIG_ERROR_INVALID_GRF_NOT_FOUND                          :nenalezeno
 STR_CONFIG_ERROR_INVALID_GRF_UNSAFE                             :nebezpečné pro statické použití
@@ -3747,11 +3747,11 @@ STR_NEWGRF_ERROR_INDPROD_CALLBACK                               :Neplatné zpět
 STR_NEWGRF_POPUP_CAUTION_CAPTION                                :{WHITE}Varování!
 STR_NEWGRF_CONFIRMATION_TEXT                                    :{YELLOW}Právě se chystáš změnit nastavení za běžící hry. To může to shodit OpenTTD nebo způsobit zaseknutí hry. Neupozorňujte na to jako na bug.{}Jste si tím opravdu jisti?
 
-STR_NEWGRF_DUPLICATE_GRFID                                      :{WHITE}Nelze přidat soubor: duplicitní GRF ID
+STR_NEWGRF_DUPLICATE_GRFID                                      :{WHITE}Nelze přidat soubor: duplicitní NewGRF ID
 STR_NEWGRF_COMPATIBLE_LOADED                                    :{ORANGE}Odpovídající soubor nebyl nalezen (načetl se kompatibilní NewGRF)
 STR_NEWGRF_TOO_MANY_NEWGRFS                                     :{WHITE}Nemůžu přidat soubor. Dosažen limit NewGRF souborů
 
-STR_NEWGRF_COMPATIBLE_LOAD_WARNING                              :{WHITE}Kompatibilní GRF se načetly místo chybějících
+STR_NEWGRF_COMPATIBLE_LOAD_WARNING                              :{WHITE}Kompatibilní NewGRF se načetly místo chybějících
 STR_NEWGRF_DISABLED_WARNING                                     :{WHITE}Chybějící grafiky byly vypnuty
 STR_NEWGRF_UNPAUSE_WARNING_TITLE                                :{YELLOW}Chybějící soubory NewGRF grafik
 STR_NEWGRF_UNPAUSE_WARNING                                      :{WHITE}Spuštění hry může shodit OpenTTD. Nehlaš chybu kvůli pádům způsobeným touto akcí.{}Opravdu chceš rozjet hru?
