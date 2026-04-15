@@ -2268,6 +2268,7 @@ public:
 		if (this->IsShaded()) return;
 		/* House Information, including 'Accepts' and 'Supplies' texts. */
 		Rect r = this->GetWidget<NWidgetBase>(WID_BH_INFO)->GetCurrentRect();
+		if (!IsRectDrawn(_cur_dpi, r)) return;
 		const int bottom = r.bottom;
 		r.bottom = INT_MAX; // Allow overflow as we want to know the required height.
 		r.top = DrawStringMultiLine(r, this->house_info) + WidgetDimensions::scaled.vsep_normal;

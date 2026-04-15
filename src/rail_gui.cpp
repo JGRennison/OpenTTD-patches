@@ -1421,6 +1421,7 @@ public:
 		if (this->IsShaded()) return;
 		/* 'Accepts' and 'Supplies' texts. */
 		Rect r = this->GetWidget<NWidgetBase>(WID_BRAS_COVERAGE_TEXTS)->GetCurrentRect();
+		if (!IsRectDrawn(_cur_dpi, r)) return;
 		const int bottom = r.bottom;
 		r.bottom = INT_MAX; // Allow overflow as we want to know the required height.
 		if (statspec != nullptr) r.top = DrawBadgeNameList(r, statspec->badges, GSF_STATIONS);

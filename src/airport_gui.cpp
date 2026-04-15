@@ -427,7 +427,10 @@ public:
 	{
 		this->DrawWidgets();
 
+		if (this->IsShaded()) return;
+
 		Rect r = this->GetWidget<NWidgetBase>(WID_AP_ACCEPTANCE)->GetCurrentRect();
+		if (!IsRectDrawn(_cur_dpi, r)) return;
 		const int bottom = r.bottom;
 		r.bottom = INT_MAX; // Allow overflow as we want to know the required height.
 

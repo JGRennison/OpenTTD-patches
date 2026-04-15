@@ -211,6 +211,14 @@ inline bool FillDrawPixelInfo(DrawPixelInfo *n, const Rect &r)
 	return FillDrawPixelInfo(n, r.left, r.top, r.Width(), r.Height());
 }
 
+inline bool IsRectDrawn(const DrawPixelInfo *dpi, const Rect &r)
+{
+	if (r.right < dpi->left || r.left >= dpi->left + dpi->width) return false;
+	if (r.bottom < dpi->top || r.top >= dpi->top + dpi->height) return false;
+
+	return true;
+}
+
 /* window.cpp */
 enum DrawOverlappedWindowFlags {
 	DOWF_NONE         =      0,
