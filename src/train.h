@@ -62,6 +62,7 @@ enum TrainForceProceeding : uint8_t {
 enum class ConsistChangeFlag : uint8_t {
 	Length, ///< Allow vehicles to change length.
 	Capacity, ///< Allow vehicles to change capacity.
+	DepotDirection, ///< Normalise depot direction.
 };
 /** Bitset of the %ConsistChangeFlag elements. */
 using ConsistChangeFlags = EnumBitSet<ConsistChangeFlag, uint8_t>;
@@ -70,7 +71,7 @@ static constexpr ConsistChangeFlags CCF_TRACK{}; ///< Valid changes while vehicl
 static constexpr ConsistChangeFlags CCF_LOADUNLOAD{}; ///< Valid changes while vehicle is loading/unloading.
 static constexpr ConsistChangeFlags CCF_AUTOREFIT{ConsistChangeFlag::Capacity}; ///< Valid changes for autorefitting in stations.
 static constexpr ConsistChangeFlags CCF_REFIT{ConsistChangeFlag::Length, ConsistChangeFlag::Capacity}; ///< Valid changes for refitting in a depot.
-static constexpr ConsistChangeFlags CCF_ARRANGE{ConsistChangeFlag::Length, ConsistChangeFlag::Capacity}; ///< Valid changes for arranging the consist in a depot.
+static constexpr ConsistChangeFlags CCF_ARRANGE{ConsistChangeFlag::Length, ConsistChangeFlag::Capacity, ConsistChangeFlag::DepotDirection}; ///< Valid changes for arranging the consist in a depot.
 static constexpr ConsistChangeFlags CCF_SAVELOAD{ConsistChangeFlag::Length}; ///< Valid changes when loading a savegame. (Everything that is not stored in the save.)
 
 enum RealisticBrakingConstants {

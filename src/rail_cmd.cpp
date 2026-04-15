@@ -4771,23 +4771,24 @@ static VehicleEnterTileStates VehicleEnterTile_Rail(Vehicle *u, TileIndex tile, 
 		v->track = TRACK_BIT_DEPOT,
 		v->vehstatus.Set(VehState::Hidden); // hide it
 		v->UpdateIsDrawn();
+		v->tile = tile;
 		if (v->GetMovingNext() == nullptr) {
 			Train *consist = v->First();
-			if (consist->vehicle_flags.Test(VehicleFlag::DrivingBackwards)) {
-				/* Trains always drive forwards out of a depot.
-				 * This allows a player to easily reset a confused train,
-				 * and matches the behaviour of the \c VehicleRailFlag::Reversed variable. */
-				for (Train *u = consist; u != nullptr; u = u->Next()) {
-					u->vehicle_flags.Reset(VehicleFlag::DrivingBackwards);
-				}
+			/* Whether the train should always leave in the forward direction. */
+			const bool reset_reverse = _settings_game.difficulty.train_flip_reverse_allowed != TrainFlipReversingAllowed::None && !consist->Last()->CanLeadTrain();
+			if (reset_reverse) {
+				/* Clear reversed flag, drive out of depot in forward direction. */
+				consist->flags.Reset(VehicleRailFlag::Reversed);
+				consist->vehicle_flags.Reset(VehicleFlag::DrivingBackwards);
 			} else {
-				for (Train *u = consist; u != nullptr; u = u->Next()) {
-					u->direction = ReverseDir(u->direction);
-				}
+				/* Flip reversed flag, drive out of depot in opposite direction. */
+				consist->flags.Flip(VehicleRailFlag::Reversed);
+				consist->vehicle_flags.Flip(VehicleFlag::DrivingBackwards);
 			}
+
+			/* Vehicle::direction, VehicleFlag::DrivingBackwards of all vehicle parts is normalised in Train::ConsistChanged via VehicleEnterDepot. */
 			VehicleEnterDepot(consist);
 		}
-		v->tile = tile;
 
 		InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile.base());
 		return VehicleEnterTileState::EnteredWormhole;

@@ -291,6 +291,12 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 
 	const bool driving_backwards = this->vehicle_flags.Test(VehicleFlag::DrivingBackwards);
 
+	Direction normalised_direction = INVALID_DIR;
+	if (allowed_changes.Test(ConsistChangeFlag::DepotDirection)) {
+		normalised_direction = DiagDirToDir(GetRailDepotDirection(this->tile));
+		if (driving_backwards) normalised_direction = ReverseDir(normalised_direction);
+	}
+
 	for (Train *u = this; u != nullptr; u = u->Next()) {
 		const RailVehicleInfo *rvi_u = RailVehInfo(u->engine_type);
 
@@ -301,6 +307,11 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 			u->tcache.cached_tflags = (u->Next() == nullptr || !u->Next()->IsArticulatedPart()) ? TCF_MOVING_UNIT_START : TCF_NONE;
 		} else {
 			u->tcache.cached_tflags = !u->IsArticulatedPart() ? TCF_MOVING_UNIT_START : TCF_NONE;
+		}
+
+		/* Normalise direction of all train parts. */
+		if (allowed_changes.Test(ConsistChangeFlag::DepotDirection)) {
+			u->direction = normalised_direction;
 		}
 
 		/* Check the this->first cache. */
@@ -3583,13 +3594,39 @@ static bool CheckTrainStayInDepot(Train *v)
 				SetWindowWidgetDirty(WC_VEHICLE_VIEW, v->index, WID_VV_START_STOP);
 			}
 
+			/* If preserving direction, flip driving end. */
+			const bool preserve_direction = _settings_game.difficulty.train_flip_reverse_allowed == TrainFlipReversingAllowed::None || v->Last()->CanLeadTrain();
+			const bool driving_backwards = preserve_direction && !v->vehicle_flags.Test(VehicleFlag::DrivingBackwards);
+			if (driving_backwards) direction = ReverseDir(direction);
+
 			for (Train *u = v; u != nullptr; u = u->Next()) {
 				u->tile = behind_depot_tile;
 				u->direction = direction;
 				u->x_pos = x;
 				u->y_pos = y;
+				u->vehicle_flags.Set(VehicleFlag::DrivingBackwards, driving_backwards);
+
+				/* Set TCF_MOVING_UNIT_START flags according to movement direction. */
+				u->tcache.cached_tflags &= ~TCF_MOVING_UNIT_START;
+				if (driving_backwards) {
+					u->tcache.cached_tflags |= (u->Next() == nullptr || !u->Next()->IsArticulatedPart()) ? TCF_MOVING_UNIT_START : TCF_NONE;
+				} else {
+					u->tcache.cached_tflags |= !u->IsArticulatedPart() ? TCF_MOVING_UNIT_START : TCF_NONE;
+				}
+
 				u->UpdatePosition();
 				u->Vehicle::UpdateViewport(false);
+			}
+
+			if (driving_backwards && !v->Last()->CanLeadTrain()) {
+				v->tcache.cached_tflags |= TCF_NO_DRIVING_CAB;
+			} else {
+				v->tcache.cached_tflags &= ~TCF_NO_DRIVING_CAB;
+			}
+			if (preserve_direction) {
+				v->flags.Flip(VehicleRailFlag::Reversed);
+			} else {
+				v->flags.Reset(VehicleRailFlag::Reversed);
 			}
 
 			InvalidateWindowData(WC_VEHICLE_DEPOT, depot_tile.base());
@@ -3615,15 +3652,16 @@ static bool CheckTrainStayInDepot(Train *v)
 	DirtyVehicleListWindowForVehicle(v);
 	v->PlayLeaveStationSound();
 
-	v->track = TRACK_BIT_X;
-	if (v->direction & 2) v->track = TRACK_BIT_Y;
+	Train *moving_front = v->GetMovingFront();
+	moving_front->track = TRACK_BIT_X;
+	if (v->direction & 2) moving_front->track = TRACK_BIT_Y;
 
-	v->vehstatus.Reset(VehState::Hidden);
-	v->UpdateIsDrawn();
+	moving_front->vehstatus.Reset(VehState::Hidden);
+	moving_front->UpdateIsDrawn();
 	v->cur_speed = 0;
 
-	v->UpdateViewport(true, true);
-	v->UpdatePosition();
+	moving_front->UpdateViewport(true, true);
+	moving_front->UpdatePosition();
 	UpdateSignalsOnSegment(v->tile, INVALID_DIAGDIR, v->owner);
 	v->UpdateAcceleration();
 	InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile.base());

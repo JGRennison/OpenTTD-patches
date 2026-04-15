@@ -2699,7 +2699,6 @@ void VehicleEnterDepot(Vehicle *v)
 			UpdateSignalsOnSegment(t->tile, INVALID_DIAGDIR, t->owner);
 			t->wait_counter = 0;
 			t->force_proceed = TFP_NONE;
-			t->flags.Reset(VehicleRailFlag::Reversed);
 			t->ConsistChanged(CCF_ARRANGE);
 			t->reverse_distance = 0;
 			t->UpdateTrainSpeedAdaptationLimit(0);
