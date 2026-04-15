@@ -51,6 +51,7 @@ protected:
 	bool disable_cache = false;
 	std::vector<int> sig_look_ahead_costs = {};
 	bool treat_first_red_two_way_signal_as_eol = false;
+	TraceRestrictProgramInputFlags tracerestrict_flags = {};
 
 public:
 	bool stopped_on_first_two_way_signal = false;
@@ -88,6 +89,12 @@ public:
 	inline bool TreatFirstRedTwoWaySignalAsEOL()
 	{
 		return Yapf().PfGetSettings().rail_firstred_twoway_eol && this->treat_first_red_two_way_signal_as_eol;
+	}
+
+	/** Sets base trace restrict input flags */
+	void SetTraceRestrictProgramInputFlags(TraceRestrictProgramInputFlags flags)
+	{
+		this->tracerestrict_flags = flags;
 	}
 
 	inline int SlopeCost(TileIndex tile, Trackdir td)
@@ -292,8 +299,25 @@ private:
 		NOT_REACHED();
 	}
 
-	// returns true if dead end bit has been set
-	inline bool ExecuteTraceRestrict(Node& n, TileIndex tile, Trackdir trackdir, int& cost, TraceRestrictProgramResult &out, bool *is_res_through, bool *no_pbs_back_penalty)
+private:
+	void ExecutePathfindTraceRestrictProgram(const TraceRestrictProgram *prog, Node &n, TileIndex tile, Trackdir trackdir, TraceRestrictProgramResult &out)
+	{
+		TraceRestrictProgramInput input(tile, trackdir, &TraceRestrictPreviousSignalCallback, &n, this->tracerestrict_flags);
+		if ((prog->actions_used_flags & TRPAUF_DRIVE_DIR_CONDITIONALS) && Yapf().HasReverseOrigin()) {
+			Node *root = &n;
+			while (root->parent != nullptr) {
+				root = root->parent;
+			}
+
+			/* Check if it was reversed origin. */
+			if (root->cost != 0) input.input_flags.Flip(TraceRestrictProgramInputFlag::InvertDrivingDirection);
+		}
+		prog->Execute(Yapf().GetVehicle(), input, out);
+	}
+
+public:
+	/* Returns true if dead end bit has been set. */
+	bool ExecuteTraceRestrict(Node& n, TileIndex tile, Trackdir trackdir, int& cost, TraceRestrictProgramResult &out, bool *is_res_through, bool *no_pbs_back_penalty)
 	{
 		const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, TrackdirToTrack(trackdir));
 		TraceRestrictProgramActionsUsedFlags flags_to_check = TRPAUF_PF;
@@ -309,7 +333,7 @@ private:
 			flags_to_check |= TRPAUF_REVERSE_BEHIND;
 		}
 		if (prog != nullptr && prog->actions_used_flags & flags_to_check) {
-			prog->Execute(Yapf().GetVehicle(), TraceRestrictProgramInput(tile, trackdir, &TraceRestrictPreviousSignalCallback, &n), out);
+			ExecutePathfindTraceRestrictProgram(prog, n, tile, trackdir, out);
 			if (out.flags & TRPRF_RESERVE_THROUGH && is_res_through != nullptr) {
 				*is_res_through = true;
 			}
@@ -329,13 +353,13 @@ private:
 		return false;
 	}
 
-	// returns true if dead end bit has been set
-	inline bool ExecuteTunnelBridgeTraceRestrict(Node& n, TileIndex tile, Trackdir trackdir, int& cost, TraceRestrictProgramResult &out)
+	/* Returns true if dead end bit has been set. */
+	bool ExecuteTunnelBridgeTraceRestrict(Node& n, TileIndex tile, Trackdir trackdir, int& cost, TraceRestrictProgramResult &out)
 	{
 		const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, TrackdirToTrack(trackdir));
 		TraceRestrictProgramActionsUsedFlags flags_to_check = TRPAUF_PF;
 		if (prog != nullptr && prog->actions_used_flags & flags_to_check) {
-			prog->Execute(Yapf().GetVehicle(), TraceRestrictProgramInput(tile, trackdir, &TraceRestrictPreviousSignalCallback, &n), out);
+			ExecutePathfindTraceRestrictProgram(prog, n, tile, trackdir, out);
 			if (out.flags & TRPRF_DENY) {
 				n.segment->end_segment_reason.Set(EndSegmentReason::DeadEnd);
 				return true;
@@ -440,7 +464,7 @@ public:
 							const TraceRestrictProgram *prog = GetExistingTraceRestrictProgram(tile, TrackdirToTrack(trackdir));
 							if (prog != nullptr && prog->actions_used_flags & TRPAUF_PF) {
 								TraceRestrictProgramResult out;
-								prog->Execute(Yapf().GetVehicle(), TraceRestrictProgramInput(tile, trackdir, &TraceRestrictPreviousSignalCallback, &n), out);
+								ExecutePathfindTraceRestrictProgram(prog, n, tile, trackdir, out);
 								if (out.flags & TRPRF_DENY) {
 									n.segment->end_segment_reason.Set(EndSegmentReason::DeadEnd);
 									return -1;

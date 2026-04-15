@@ -104,6 +104,11 @@ public:
 			Yapf().AddStartupNode(n2);
 		}
 	}
+
+	inline bool HasReverseOrigin() const
+	{
+		return this->reverse_tile != INVALID_TILE;
+	}
 };
 
 /**

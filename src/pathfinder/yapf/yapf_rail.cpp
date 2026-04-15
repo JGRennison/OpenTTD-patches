@@ -687,15 +687,15 @@ public:
 		return next_trackdir;
 	}
 
-	static bool stCheckReverseTrain(const Train *v, TileIndex t1, Trackdir td1, TileIndex t2, Trackdir td2, int reverse_penalty)
+	static bool stCheckReverseTrain(const Train *v, TileIndex t1, Trackdir td1, TileIndex t2, Trackdir td2, int reverse_penalty, TraceRestrictProgramInputFlags tracerestrict_flags)
 	{
 		Tpf pf1;
-		bool result1 = pf1.CheckReverseTrain(v, t1, td1, t2, td2, reverse_penalty);
+		bool result1 = pf1.CheckReverseTrain(v, t1, td1, t2, td2, reverse_penalty, tracerestrict_flags);
 
 		if (GetDebugLevel(DebugLevelID::yapfdesync) > 0 || GetDebugLevel(DebugLevelID::desync) >= 2) {
 			Tpf pf2;
 			pf2.DisableCache(true);
-			bool result2 = pf2.CheckReverseTrain(v, t1, td1, t2, td2, reverse_penalty);
+			bool result2 = pf2.CheckReverseTrain(v, t1, td1, t2, td2, reverse_penalty, tracerestrict_flags);
 			if (result1 != result2) {
 				Debug(desync, 2, "CACHE ERROR: CheckReverseTrain() = [{}, {}]", result1 ? "T" : "F", result2 ? "T" : "F");
 				DumpState(pf1, pf2);
@@ -707,12 +707,13 @@ public:
 		return result1;
 	}
 
-	inline bool CheckReverseTrain(const Train *v, TileIndex t1, Trackdir td1, TileIndex t2, Trackdir td2, int reverse_penalty)
+	inline bool CheckReverseTrain(const Train *v, TileIndex t1, Trackdir td1, TileIndex t2, Trackdir td2, int reverse_penalty, TraceRestrictProgramInputFlags tracerestrict_flags)
 	{
 		/* create pathfinder instance
 		 * set origin and destination nodes */
 		Yapf().SetOrigin(t1, td1, t2, td2, reverse_penalty);
 		Yapf().SetTreatFirstRedTwoWaySignalAsEOL(false);
+		Yapf().SetTraceRestrictProgramInputFlags(tracerestrict_flags);
 		Yapf().SetDestination(v);
 
 		/* find the best path */
@@ -791,10 +792,12 @@ Track YapfTrainChooseTrack(const Train *v, TileIndex tile, DiagDirection enterdi
 
 static bool YapfTrainCheckReverse(const Train *v, TileIndex tile, Trackdir td, TileIndex tile_rev, Trackdir td_rev, int reverse_penalty)
 {
+	TraceRestrictProgramInputFlags input_flags{};
 	bool swapped = false;
 	if (reverse_penalty < 0) {
 		reverse_penalty = -reverse_penalty;
 		swapped = true;
+		input_flags.Set(TraceRestrictProgramInputFlag::InvertDrivingDirection);
 
 		std::swap(tile, tile_rev);
 		std::swap(td, td_rev);
@@ -804,8 +807,8 @@ static bool YapfTrainCheckReverse(const Train *v, TileIndex tile, Trackdir td, T
 	}
 
 	bool reverse = _settings_game.pf.forbid_90_deg
-		? CYapfRailNo90::stCheckReverseTrain(v, tile, td, tile_rev, td_rev, reverse_penalty)
-		: CYapfRail::stCheckReverseTrain(v, tile, td, tile_rev, td_rev, reverse_penalty);
+		? CYapfRailNo90::stCheckReverseTrain(v, tile, td, tile_rev, td_rev, reverse_penalty, input_flags)
+		: CYapfRail::stCheckReverseTrain(v, tile, td, tile_rev, td_rev, reverse_penalty, input_flags);
 
 	return reverse != swapped;
 }

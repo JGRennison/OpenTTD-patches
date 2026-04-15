@@ -778,6 +778,19 @@ void TraceRestrictProgram::Execute(const Train *v, const TraceRestrictProgramInp
 										break;
 								}
 								break;
+
+							case TRTSVF_DRIVING_BACKWARDS:
+								has_status = v->vehicle_flags.Test(VehicleFlag::DrivingBackwards) != input.input_flags.Test(TraceRestrictProgramInputFlag::InvertDrivingDirection);
+								break;
+
+							case TRTSVF_DRIVING_BACKWARDS_NO_CAB:
+								if (input.input_flags.Test(TraceRestrictProgramInputFlag::InvertDrivingDirection)) {
+									has_status = !v->vehicle_flags.Test(VehicleFlag::DrivingBackwards) && !v->Last()->CanLeadTrain();
+								} else {
+									/* Use cached value. */
+									has_status = v->tcache.cached_tflags & TCF_NO_DRIVING_CAB;
+								}
+								break;
 						}
 						result = TestBinaryConditionCommon(item, has_status);
 						break;
@@ -1489,6 +1502,11 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictPr
 						case TRTSVF_LOST:
 						case TRTSVF_REQUIRES_SERVICE:
 						case TRTSVF_STOPPING_AT_STATION_WAYPOINT:
+							break;
+
+						case TRTSVF_DRIVING_BACKWARDS:
+						case TRTSVF_DRIVING_BACKWARDS_NO_CAB:
+							actions_used_flags |= TRPAUF_DRIVE_DIR_CONDITIONALS;
 							break;
 
 						default:

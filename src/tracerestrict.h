@@ -381,6 +381,8 @@ enum TraceRestrictTrainStatusValueField : uint8_t {
 	TRTSVF_LOST                        =  9,      ///< Train is lost
 	TRTSVF_REQUIRES_SERVICE            = 10,      ///< Train requires service
 	TRTSVF_STOPPING_AT_STATION_WAYPOINT= 11,      ///< Train stops at destination station/waypoint
+	TRTSVF_DRIVING_BACKWARDS           = 12,      ///< Train is driving backwards
+	TRTSVF_DRIVING_BACKWARDS_NO_CAB    = 13,      ///< Train is driving backwards (no rear cab)
 };
 
 /**
@@ -810,6 +812,7 @@ enum TraceRestrictProgramActionsUsedFlags : uint32_t {
 	TRPAUF_REVERSE_AT             = 1 << 20, ///< Reverse at signal
 	TRPAUF_COUNTER_CONDITIONALS   = 1 << 21, ///< Counter conditionals are present
 	TRPAUF_IS_BACKUP              = 1 << 22, ///< This program is a backup
+	TRPAUF_DRIVE_DIR_CONDITIONALS = 1 << 23, ///< Driving direction conditionals are present
 };
 DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramActionsUsedFlags)
 
@@ -836,7 +839,8 @@ DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramInputSlotPermissions)
  * Enumeration for TraceRestrictProgramInput::input_flags
  */
 enum class TraceRestrictProgramInputFlag : uint8_t {
-	PassedStop,       ///< Train has passed stop
+	PassedStop,             ///< Train has passed stop
+	InvertDrivingDirection, ///< Invert whether train is considered to be driving backwards
 };
 using TraceRestrictProgramInputFlags = EnumBitSet<TraceRestrictProgramInputFlag, uint8_t>;
 
@@ -903,8 +907,8 @@ struct TraceRestrictProgramInput {
 	PreviousSignalProc *previous_signal_callback; ///< Callback to retrieve tile and direction of previous signal, may be nullptr
 	const void *previous_signal_ptr;              ///< Opaque pointer suitable to be passed to previous_signal_callback
 
-	TraceRestrictProgramInput(TileIndex tile_, Trackdir trackdir_, PreviousSignalProc *previous_signal_callback_, const void *previous_signal_ptr_)
-			: tile(tile_), trackdir(trackdir_), input_flags({}), permitted_slot_operations(TRPISP_NONE),
+	TraceRestrictProgramInput(TileIndex tile_, Trackdir trackdir_, PreviousSignalProc *previous_signal_callback_, const void *previous_signal_ptr_, TraceRestrictProgramInputFlags input_flags_ = {})
+			: tile(tile_), trackdir(trackdir_), input_flags(input_flags_), permitted_slot_operations(TRPISP_NONE),
 			previous_signal_callback(previous_signal_callback_), previous_signal_ptr(previous_signal_ptr_) { }
 };
 
