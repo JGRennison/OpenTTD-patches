@@ -3874,7 +3874,7 @@ void FreeTrainTrackReservation(Train *consist, TileIndex origin, Trackdir orig_t
 	}
 
 	TileIndex tile = origin != INVALID_TILE ? origin : moving_tile;
-	Trackdir  td = orig_td != INVALID_TRACKDIR ? orig_td : consist->GetVehicleTrackdir();
+	Trackdir  td = orig_td != INVALID_TRACKDIR ? orig_td : moving_front->GetVehicleTrackdir();
 	bool      free_tile = tile != moving_tile || !(IsRailStationTile(moving_tile) || IsTileType(moving_tile, TileType::TunnelBridge));
 	StationID station_id = IsRailStationTile(moving_tile) ? GetStationIndex(moving_tile) : StationID::Invalid();
 
