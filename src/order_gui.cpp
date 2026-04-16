@@ -653,6 +653,7 @@ static const OrderConditionVariable _order_conditional_variable[] = {
 	OrderConditionVariable::Timetable,
 	OrderConditionVariable::DispatchSlot,
 	OrderConditionVariable::Percent,
+	OrderConditionVariable::DrivingBackwards,
 	OrderConditionVariable::Unconditionally,
 };
 
@@ -812,9 +813,36 @@ static const StringID _order_timetable_dropdown[] = {
 
 StringID OrderStringForVariable(const Vehicle *v, OrderConditionVariable ocv)
 {
+	if (ocv > OrderConditionVariable::End) return STR_UNDEFINED;
 	if (ocv == OrderConditionVariable::VehicleInSlot && v->type != VEH_TRAIN) return STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT;
 	if (ocv == OrderConditionVariable::VehicleInSlotGroup && v->type != VEH_TRAIN) return STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT_GROUP;
-	return STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE + to_underlying(ocv);
+
+	static constexpr std::array<StringID, to_underlying(OrderConditionVariable::End)> ocv_names{
+		STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE,
+		STR_ORDER_CONDITIONAL_RELIABILITY,
+		STR_ORDER_CONDITIONAL_MAX_SPEED,
+		STR_ORDER_CONDITIONAL_AGE,
+		STR_ORDER_CONDITIONAL_REQUIRES_SERVICE,
+		STR_ORDER_CONDITIONAL_UNCONDITIONALLY,
+		STR_ORDER_CONDITIONAL_REMAINING_LIFETIME,
+		STR_ORDER_CONDITIONAL_MAX_RELIABILITY,
+		STR_ORDER_CONDITIONAL_CARGO_WAITING,
+		STR_ORDER_CONDITIONAL_ACCEPTANCE_DROPDOWN,
+		STR_ORDER_CONDITIONAL_FREE_PLATFORMS,
+		STR_ORDER_CONDITIONAL_PERCENT,
+		STR_ORDER_CONDITIONAL_SLOT_OCCUPANCY,
+		STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT,
+		STR_ORDER_CONDITIONAL_CARGO_LOAD_PERCENTAGE,
+		STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT,
+		STR_ORDER_CONDITIONAL_COUNTER_VALUE,
+		STR_ORDER_CONDITIONAL_TIME_DATE_VALUE,
+		STR_ORDER_CONDITIONAL_TIMETABLE_STATE,
+		STR_ORDER_CONDITIONAL_DISPATCH_SLOT,
+		STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_PERCENTAGE,
+		STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT_GROUP,
+		STR_ORDER_CONDITIONAL_DRIVING_BACKWARDS
+	};
+	return ocv_names[to_underlying(ocv)];
 }
 
 static StringID GetDepotOrderGoToString(const Order &order)
@@ -2508,7 +2536,7 @@ public:
 					this->GetWidget<NWidgetCore>(WID_O_COND_COMPARATOR)->SetString(GetComparatorStrings(this->vehicle, order)[to_underlying(order->GetConditionComparator())]);
 					this->GetWidget<NWidgetCore>(WID_O_COND_VALUE)->SetString((ocv == OrderConditionVariable::TimeDate && order->GetConditionValue() == TRTDVF_HOUR_MINUTE) ? STR_JUST_TIME_HHMM : STR_JUST_COMMA);
 					this->SetWidgetDisabledState(WID_O_COND_COMPARATOR, ocv == OrderConditionVariable::Unconditionally || ocv == OrderConditionVariable::Percent);
-					this->SetWidgetDisabledState(WID_O_COND_VALUE, ocv == OrderConditionVariable::RequiresService || ocv == OrderConditionVariable::Unconditionally);
+					this->SetWidgetDisabledState(WID_O_COND_VALUE, ocv == OrderConditionVariable::DrivingBackwards || ocv == OrderConditionVariable::RequiresService || ocv == OrderConditionVariable::Unconditionally);
 					break;
 				}
 
@@ -3400,7 +3428,7 @@ public:
 				const OrderConditionVariable current_ocv = this->vehicle->GetOrder(this->OrderGetSel())->GetConditionVariable();
 				DropDownList list;
 				for (const auto &ocv : _order_conditional_variable) {
-					if (this->vehicle->type != VEH_TRAIN && ocv == OrderConditionVariable::FreePlatforms) {
+					if (this->vehicle->type != VEH_TRAIN && (ocv == OrderConditionVariable::FreePlatforms || ocv == OrderConditionVariable::DrivingBackwards)) {
 						continue;
 					}
 					if (current_ocv != ocv) {
@@ -3471,6 +3499,7 @@ public:
 					case OrderConditionVariable::CargoWaiting:
 					case OrderConditionVariable::VehicleInSlotGroup:
 					case OrderConditionVariable::DispatchSlot:
+					case OrderConditionVariable::DrivingBackwards:
 						mask = 0x3F;
 						break;
 

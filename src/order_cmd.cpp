@@ -1262,6 +1262,7 @@ static CommandCost PreInsertOrderCheck(Vehicle *v, const Order &new_order, CmdIn
 					/* FALL THROUGH */
 
 				case OrderConditionVariable::RequiresService:
+				case OrderConditionVariable::DrivingBackwards:
 					if (occ != OrderConditionComparator::IsTrue && occ != OrderConditionComparator::IsFalse) return CMD_ERROR;
 					break;
 
@@ -2075,6 +2076,7 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 				case OrderConditionVariable::CargoAcceptance:
 				case OrderConditionVariable::CargoWaiting:
 				case OrderConditionVariable::DispatchSlot:
+				case OrderConditionVariable::DrivingBackwards:
 					if (occ != OrderConditionComparator::IsTrue && occ != OrderConditionComparator::IsFalse) return CMD_ERROR;
 					break;
 
@@ -2111,6 +2113,7 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 			switch (order->GetConditionVariable()) {
 				case OrderConditionVariable::Unconditionally:
 				case OrderConditionVariable::RequiresService:
+				case OrderConditionVariable::DrivingBackwards:
 					return CMD_ERROR;
 
 				case OrderConditionVariable::LoadPercentage:
@@ -2475,7 +2478,7 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 						order->SetConditionComparator(OrderConditionComparator::Equal);
 						break;
 					case OrderConditionVariable::RequiresService:
-						if (old_var_was_cargo || old_var_was_slot) order->SetConditionValue(0);
+					case OrderConditionVariable::DrivingBackwards:
 						if (occ != OrderConditionComparator::IsTrue && occ != OrderConditionComparator::IsFalse) order->SetConditionComparator(OrderConditionComparator::IsTrue);
 						order->SetConditionValue(0);
 						break;
@@ -3700,6 +3703,8 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, Pro
 		case OrderConditionVariable::MaxSpeed:            skip_order = OrderConditionCompare(occ, v->GetDisplayMaxSpeed() * 10 / 16, value); break;
 		case OrderConditionVariable::Age:                 skip_order = OrderConditionCompare(occ, DateDeltaToYearDelta(v->age).base(), value); break;
 		case OrderConditionVariable::RequiresService:     skip_order = OrderConditionCompare(occ, v->NeedsServicing(),               value); break;
+		case OrderConditionVariable::RemainingLifetime:   skip_order = OrderConditionCompare(occ, std::max(DateDeltaToYearDelta(v->max_age - v->age + DAYS_IN_LEAP_YEAR - 1).base(), 0), value); break;
+		case OrderConditionVariable::DrivingBackwards:    skip_order = OrderConditionCompare(occ, v->IsDrivingBackwards(), value); break;
 		case OrderConditionVariable::Unconditionally:     skip_order = true; break;
 		case OrderConditionVariable::CargoWaiting: {
 			StationID next_station = order->GetConditionStationID();
@@ -3839,7 +3844,6 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, Pro
 			skip_order = ord->UpdateJumpCounter((uint8_t)value, mode == PCO_DRY_RUN);
 			break;
 		}
-		case OrderConditionVariable::RemainingLifetime: skip_order = OrderConditionCompare(occ, std::max(DateDeltaToYearDelta(v->max_age - v->age + DAYS_IN_LEAP_YEAR - 1).base(), 0), value); break;
 		case OrderConditionVariable::CounterValue: {
 			const TraceRestrictCounter* ctr = TraceRestrictCounter::GetIfValid(order->GetXDataHigh());
 			if (ctr != nullptr) {

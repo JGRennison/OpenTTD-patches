@@ -4213,7 +4213,15 @@ bool AfterLoadGame()
 				order->SetConditionVariable(static_cast<OrderConditionVariable>((uint)order->GetConditionVariable() + 1));
 			}
 		});
+	} else if (!IsSavegameVersionBefore(SLV_DRIVE_BACKWARDS)) {
+		IterateAllNonVehicleOrders([&](Order *order) {
+			/* Move upstream OrderConditionVariable::DrivingBackwards from value 8. */
+			if (order->IsType(OT_CONDITIONAL) && to_underlying(order->GetConditionVariable()) == 8) {
+				order->SetConditionVariable(OrderConditionVariable::DrivingBackwards);
+			}
+		});
 	}
+
 	if (SlXvIsFeaturePresent(XSLFI_MORE_COND_ORDERS, 1, 14)) {
 		for (OrderList *order_list : OrderList::Iterate()) {
 			auto get_real_station = [&order_list](const Order *order) -> StationID {
