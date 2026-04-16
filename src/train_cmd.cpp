@@ -4362,7 +4362,7 @@ static bool HasLongReservePbsSignalOnTrackdir(Train *consist, TileIndex tile, Tr
 				TraceRestrictProgramResult out;
 				if (default_value) out.flags |= TRPRF_LONG_RESERVE;
 				TraceRestrictProgramInput input(tile, trackdir, &VehiclePosTraceRestrictPreviousSignalCallback, nullptr);
-				if (HasBit(lookahead_state_flags, CTTLASF_STOP_FOUND)) input.input_flags |= TRPIF_PASSED_STOP;
+				if (HasBit(lookahead_state_flags, CTTLASF_STOP_FOUND)) input.input_flags.Set(TraceRestrictProgramInputFlag::PassedStop);
 				prog->Execute(consist, input, out);
 				return (out.flags & TRPRF_LONG_RESERVE);
 			}
@@ -4426,7 +4426,7 @@ static void TryLongReserveChooseTrainTrack(Train *v, TileIndex tile, Trackdir td
 						TraceRestrictProgramResult out;
 						if (long_reserve) out.flags |= TRPRF_LONG_RESERVE;
 						TraceRestrictProgramInput input(exit_tile, exit_td, nullptr, nullptr);
-						if (HasBit(lookahead_state.flags, CTTLASF_STOP_FOUND)) input.input_flags |= TRPIF_PASSED_STOP;
+						if (HasBit(lookahead_state.flags, CTTLASF_STOP_FOUND)) input.input_flags.Set(TraceRestrictProgramInputFlag::PassedStop);
 						prog->Execute(v, input, out);
 						long_reserve = (out.flags & TRPRF_LONG_RESERVE);
 					}

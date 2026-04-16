@@ -926,7 +926,7 @@ void TraceRestrictProgram::Execute(const Train *v, const TraceRestrictProgramInp
 								break;
 
 							case TRLRVF_LONG_RESERVE_UNLESS_STOPPING:
-								if (!(input.input_flags & TRPIF_PASSED_STOP)) {
+								if (!input.input_flags.Test(TraceRestrictProgramInputFlag::PassedStop)) {
 									out.flags |= TRPRF_LONG_RESERVE;
 								}
 								break;

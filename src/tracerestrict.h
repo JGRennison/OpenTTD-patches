@@ -835,11 +835,10 @@ DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramInputSlotPermissions)
 /**
  * Enumeration for TraceRestrictProgramInput::input_flags
  */
-enum TraceRestrictProgramInputFlags : uint8_t {
-	TRPIF_NONE                    = 0,       ///< No flags set
-	TRPIF_PASSED_STOP             = 1 << 0,  ///< Train has passed stop
+enum class TraceRestrictProgramInputFlag : uint8_t {
+	PassedStop,       ///< Train has passed stop
 };
-DECLARE_ENUM_AS_BIT_SET(TraceRestrictProgramInputFlags)
+using TraceRestrictProgramInputFlags = EnumBitSet<TraceRestrictProgramInputFlag, uint8_t>;
 
 struct TraceRestrictSlotTemporaryState {
 	ankerl::svector<TraceRestrictSlotID, 8> veh_temporarily_added;
@@ -905,7 +904,7 @@ struct TraceRestrictProgramInput {
 	const void *previous_signal_ptr;              ///< Opaque pointer suitable to be passed to previous_signal_callback
 
 	TraceRestrictProgramInput(TileIndex tile_, Trackdir trackdir_, PreviousSignalProc *previous_signal_callback_, const void *previous_signal_ptr_)
-			: tile(tile_), trackdir(trackdir_), input_flags(TRPIF_NONE), permitted_slot_operations(TRPISP_NONE),
+			: tile(tile_), trackdir(trackdir_), input_flags({}), permitted_slot_operations(TRPISP_NONE),
 			previous_signal_callback(previous_signal_callback_), previous_signal_ptr(previous_signal_ptr_) { }
 };
 
