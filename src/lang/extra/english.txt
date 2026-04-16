@@ -43,22 +43,6 @@ STR_CONFIG_SETTING_ZOOM_LVL_OUT_128X                            :128x
 ##default-translation STR_COLOUR_DEFAULT
 STR_CONFIG_SETTING_DEFAULT_ROAD_TYPE_DEFAULT                    :Default
 
-##after STR_ORDER_CONDITIONAL_MAX_RELIABILITY
-STR_ORDER_CONDITIONAL_CARGO_WAITING                             :Waiting cargo
-STR_ORDER_CONDITIONAL_ACCEPTANCE_DROPDOWN                       :Accepted cargo
-STR_ORDER_CONDITIONAL_FREE_PLATFORMS                            :Free platforms
-STR_ORDER_CONDITIONAL_PERCENT                                   :Percent of times
-STR_ORDER_CONDITIONAL_SLOT_OCCUPANCY                            :Slot occupancy
-STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT                             :Train in slot
-STR_ORDER_CONDITIONAL_CARGO_LOAD_PERCENTAGE                     :Cargo load percentage
-STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT                      :Waiting cargo amount
-STR_ORDER_CONDITIONAL_COUNTER_VALUE                             :Counter value
-STR_ORDER_CONDITIONAL_TIME_DATE_VALUE                           :Current time/date
-STR_ORDER_CONDITIONAL_TIMETABLE_STATE                           :Timetable state
-STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :Dispatch slot
-STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_PERCENTAGE           :Waiting cargo / capacity
-STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT_GROUP                       :Train in slot group
-
 ##after STR_ORDER_STOP_LOCATION_FAR_END
 STR_ORDER_STOP_LOCATION_THROUGH                                 :{SPACE}[through load]
 
@@ -1751,6 +1735,21 @@ STR_ORDER_REVERSE                                               :{BLACK}Reverse
 STR_ORDER_REVERSE_TOOLTIP                                       :{BLACK}Change the reversing behaviour of the highlighted order.
 
 STR_ORDER_DROP_SELL_DEPOT                                       :Sell vehicle
+
+STR_ORDER_CONDITIONAL_CARGO_WAITING                             :Waiting cargo
+STR_ORDER_CONDITIONAL_ACCEPTANCE_DROPDOWN                       :Accepted cargo
+STR_ORDER_CONDITIONAL_FREE_PLATFORMS                            :Free platforms
+STR_ORDER_CONDITIONAL_PERCENT                                   :Percent of times
+STR_ORDER_CONDITIONAL_SLOT_OCCUPANCY                            :Slot occupancy
+STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT                             :Train in slot
+STR_ORDER_CONDITIONAL_CARGO_LOAD_PERCENTAGE                     :Cargo load percentage
+STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT                      :Waiting cargo amount
+STR_ORDER_CONDITIONAL_COUNTER_VALUE                             :Counter value
+STR_ORDER_CONDITIONAL_TIME_DATE_VALUE                           :Current time/date
+STR_ORDER_CONDITIONAL_TIMETABLE_STATE                           :Timetable state
+STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :Dispatch slot
+STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_PERCENTAGE           :Waiting cargo / capacity
+STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT_GROUP                       :Train in slot group
 
 STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT                           :Vehicle in slot
 STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT_GROUP                     :Vehicle in slot group

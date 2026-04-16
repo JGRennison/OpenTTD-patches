@@ -15,21 +15,6 @@ STR_CONFIG_SETTING_ZOOM_LVL_OUT_128X                            :128x
 
 STR_CONFIG_SETTING_DEFAULT_ROAD_TYPE_DEFAULT                    :기본값
 
-STR_ORDER_CONDITIONAL_CARGO_WAITING                             :{G=m}화물 대기 여부
-STR_ORDER_CONDITIONAL_ACCEPTANCE_DROPDOWN                       :{G=m}받는 화물
-STR_ORDER_CONDITIONAL_FREE_PLATFORMS                            :{G=m}빈 승강장
-STR_ORDER_CONDITIONAL_PERCENT                                   :{G=m}확률
-STR_ORDER_CONDITIONAL_SLOT_OCCUPANCY                            :{G=f}슬롯 점유
-STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT                             :{G=m}열차 슬롯
-STR_ORDER_CONDITIONAL_CARGO_LOAD_PERCENTAGE                     :{G=m}화물 적재율
-STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT                      :{G=m}화물 대기량
-STR_ORDER_CONDITIONAL_COUNTER_VALUE                             :{G=m}카운터 값
-STR_ORDER_CONDITIONAL_TIME_DATE_VALUE                           :{G=f}현재 시각/날짜
-STR_ORDER_CONDITIONAL_TIMETABLE_STATE                           :{G=f}시간표 상태
-STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :{G=m}배차일정 슬롯
-STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_PERCENTAGE           :{G=m}대기 화물 / 수송량
-STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT_GROUP                       :{G=m}열차 슬롯 그룹
-
 STR_ORDER_STOP_LOCATION_THROUGH                                 :{SPACE}[차례로 나눠 싣기]
 
 STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :매우 느림
@@ -1696,6 +1681,21 @@ STR_ORDER_REVERSE                                               :{BLACK}회차
 STR_ORDER_REVERSE_TOOLTIP                                       :{BLACK}선택된 경로에서 열차의 방향을 전환합니다
 
 STR_ORDER_DROP_SELL_DEPOT                                       :판매
+
+STR_ORDER_CONDITIONAL_CARGO_WAITING                             :{G=m}화물 대기 여부
+STR_ORDER_CONDITIONAL_ACCEPTANCE_DROPDOWN                       :{G=m}받는 화물
+STR_ORDER_CONDITIONAL_FREE_PLATFORMS                            :{G=m}빈 승강장
+STR_ORDER_CONDITIONAL_PERCENT                                   :{G=m}확률
+STR_ORDER_CONDITIONAL_SLOT_OCCUPANCY                            :{G=f}슬롯 점유
+STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT                             :{G=m}열차 슬롯
+STR_ORDER_CONDITIONAL_CARGO_LOAD_PERCENTAGE                     :{G=m}화물 적재율
+STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT                      :{G=m}화물 대기량
+STR_ORDER_CONDITIONAL_COUNTER_VALUE                             :{G=m}카운터 값
+STR_ORDER_CONDITIONAL_TIME_DATE_VALUE                           :{G=f}현재 시각/날짜
+STR_ORDER_CONDITIONAL_TIMETABLE_STATE                           :{G=f}시간표 상태
+STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :{G=m}배차일정 슬롯
+STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_PERCENTAGE           :{G=m}대기 화물 / 수송량
+STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT_GROUP                       :{G=m}열차 슬롯 그룹
 
 STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT                           :{G=m}슬롯에 있는 차량
 STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT_GROUP                     :{G=m}슬롯 그룹에 있는 차량

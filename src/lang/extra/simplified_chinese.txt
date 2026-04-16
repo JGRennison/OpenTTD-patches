@@ -15,21 +15,6 @@ STR_CONFIG_SETTING_ZOOM_LVL_OUT_128X                            :128 倍
 
 STR_CONFIG_SETTING_DEFAULT_ROAD_TYPE_DEFAULT                    :默认
 
-STR_ORDER_CONDITIONAL_CARGO_WAITING                             :等待货物
-STR_ORDER_CONDITIONAL_ACCEPTANCE_DROPDOWN                       :接受货物
-STR_ORDER_CONDITIONAL_FREE_PLATFORMS                            :未占用站台
-STR_ORDER_CONDITIONAL_PERCENT                                   :概率
-STR_ORDER_CONDITIONAL_SLOT_OCCUPANCY                            :路签使用率
-STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT                             :持有路签
-STR_ORDER_CONDITIONAL_CARGO_LOAD_PERCENTAGE                     :货物装载百分比
-STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT                      :等待货物总量
-STR_ORDER_CONDITIONAL_COUNTER_VALUE                             :计数器值
-STR_ORDER_CONDITIONAL_TIME_DATE_VALUE                           :当前时间/日期
-STR_ORDER_CONDITIONAL_TIMETABLE_STATE                           :时刻表状态
-STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :发车时间
-STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_PERCENTAGE           :等待中货物/容量
-STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT_GROUP                       :持有路签组路签
-
 STR_ORDER_STOP_LOCATION_THROUGH                                 :{SPACE}[通过式装载]
 
 STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :极慢
@@ -1655,6 +1640,21 @@ STR_ORDER_REVERSE                                               :{BLACK}换向
 STR_ORDER_REVERSE_TOOLTIP                                       :{BLACK}改变选中命令的换向行为
 
 STR_ORDER_DROP_SELL_DEPOT                                       :卖出载具
+
+STR_ORDER_CONDITIONAL_CARGO_WAITING                             :等待货物
+STR_ORDER_CONDITIONAL_ACCEPTANCE_DROPDOWN                       :接受货物
+STR_ORDER_CONDITIONAL_FREE_PLATFORMS                            :未占用站台
+STR_ORDER_CONDITIONAL_PERCENT                                   :概率
+STR_ORDER_CONDITIONAL_SLOT_OCCUPANCY                            :路签使用率
+STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT                             :持有路签
+STR_ORDER_CONDITIONAL_CARGO_LOAD_PERCENTAGE                     :货物装载百分比
+STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT                      :等待货物总量
+STR_ORDER_CONDITIONAL_COUNTER_VALUE                             :计数器值
+STR_ORDER_CONDITIONAL_TIME_DATE_VALUE                           :当前时间/日期
+STR_ORDER_CONDITIONAL_TIMETABLE_STATE                           :时刻表状态
+STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :发车时间
+STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_PERCENTAGE           :等待中货物/容量
+STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT_GROUP                       :持有路签组路签
 
 STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT                           :持有路签
 STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT_GROUP                     :持有路签组路签

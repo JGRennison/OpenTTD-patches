@@ -15,20 +15,6 @@ STR_CONFIG_SETTING_ZOOM_LVL_OUT_128X                            :128x
 
 STR_CONFIG_SETTING_DEFAULT_ROAD_TYPE_DEFAULT                    :По умолчанию
 
-STR_ORDER_CONDITIONAL_CARGO_WAITING                             :Доступный груз
-STR_ORDER_CONDITIONAL_ACCEPTANCE_DROPDOWN                       :Принятый груз
-STR_ORDER_CONDITIONAL_FREE_PLATFORMS                            :Свободные платформы
-STR_ORDER_CONDITIONAL_PERCENT                                   :Процент случаев
-STR_ORDER_CONDITIONAL_SLOT_OCCUPANCY                            :Заполненность слотов
-STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT                             :Поезд в слоте
-STR_ORDER_CONDITIONAL_CARGO_LOAD_PERCENTAGE                     :Процент загрузки груза
-STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT                      :Количество доступного груза
-STR_ORDER_CONDITIONAL_COUNTER_VALUE                             :Значение счётчика
-STR_ORDER_CONDITIONAL_TIME_DATE_VALUE                           :Текущее время/дата
-STR_ORDER_CONDITIONAL_TIMETABLE_STATE                           :Состояние расписания
-STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :Диспетчерский слот
-STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_PERCENTAGE           :Доступный груз/вместимость
-
 STR_ORDER_STOP_LOCATION_THROUGH                                 :{SPACE}[через нагрузку]
 
 STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :крайне низкая
@@ -1569,6 +1555,20 @@ STR_ORDER_REVERSE                                               :{BLACK}Инве
 STR_ORDER_REVERSE_TOOLTIP                                       :{BLACK}Измените поведение выделенного порядка в обратную сторону.
 
 STR_ORDER_DROP_SELL_DEPOT                                       :Продать транспортное средство
+
+STR_ORDER_CONDITIONAL_CARGO_WAITING                             :Доступный груз
+STR_ORDER_CONDITIONAL_ACCEPTANCE_DROPDOWN                       :Принятый груз
+STR_ORDER_CONDITIONAL_FREE_PLATFORMS                            :Свободные платформы
+STR_ORDER_CONDITIONAL_PERCENT                                   :Процент случаев
+STR_ORDER_CONDITIONAL_SLOT_OCCUPANCY                            :Заполненность слотов
+STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT                             :Поезд в слоте
+STR_ORDER_CONDITIONAL_CARGO_LOAD_PERCENTAGE                     :Процент загрузки груза
+STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT                      :Количество доступного груза
+STR_ORDER_CONDITIONAL_COUNTER_VALUE                             :Значение счётчика
+STR_ORDER_CONDITIONAL_TIME_DATE_VALUE                           :Текущее время/дата
+STR_ORDER_CONDITIONAL_TIMETABLE_STATE                           :Состояние расписания
+STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :Диспетчерский слот
+STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_PERCENTAGE           :Доступный груз/вместимость
 
 STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT                           :Транспортное средство в слоте
 

@@ -13,19 +13,6 @@ STR_CONFIG_SETTING_ZOOM_LVL_OUT_128X                            :128x
 
 STR_CONFIG_SETTING_DEFAULT_ROAD_TYPE_DEFAULT                    :Standard
 
-STR_ORDER_CONDITIONAL_CARGO_WAITING                             :Wartende Fracht
-STR_ORDER_CONDITIONAL_ACCEPTANCE_DROPDOWN                       :Akzeptierte Fracht
-STR_ORDER_CONDITIONAL_FREE_PLATFORMS                            :Freie Bahnsteige
-STR_ORDER_CONDITIONAL_PERCENT                                   :Prozent der Fälle
-STR_ORDER_CONDITIONAL_SLOT_OCCUPANCY                            :Slotauslastung
-STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT                             :Zug im Slot
-STR_ORDER_CONDITIONAL_CARGO_LOAD_PERCENTAGE                     :Frachtladezustand (Prozent)
-STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT                      :Wartende Frachtmenge
-STR_ORDER_CONDITIONAL_COUNTER_VALUE                             :Zählerwert
-STR_ORDER_CONDITIONAL_TIME_DATE_VALUE                           :Aktuelle(s) Zeit/Datum
-STR_ORDER_CONDITIONAL_TIMETABLE_STATE                           :Fahrplanstatus
-STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :Abfahrztszeitfenster
-
 STR_ORDER_STOP_LOCATION_THROUGH                                 :{SPACE}[durchgehendes Laden]
 
 STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :Extrem langsam
@@ -1247,6 +1234,19 @@ STR_ORDER_REVERSE                                               :{BLACK}Wende
 STR_ORDER_REVERSE_TOOLTIP                                       :{BLACK}Ändere das Wendeverhalten des ausgewählten Auftrags
 
 STR_ORDER_DROP_SELL_DEPOT                                       :Fahrzeug verkaufen
+
+STR_ORDER_CONDITIONAL_CARGO_WAITING                             :Wartende Fracht
+STR_ORDER_CONDITIONAL_ACCEPTANCE_DROPDOWN                       :Akzeptierte Fracht
+STR_ORDER_CONDITIONAL_FREE_PLATFORMS                            :Freie Bahnsteige
+STR_ORDER_CONDITIONAL_PERCENT                                   :Prozent der Fälle
+STR_ORDER_CONDITIONAL_SLOT_OCCUPANCY                            :Slotauslastung
+STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT                             :Zug im Slot
+STR_ORDER_CONDITIONAL_CARGO_LOAD_PERCENTAGE                     :Frachtladezustand (Prozent)
+STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT                      :Wartende Frachtmenge
+STR_ORDER_CONDITIONAL_COUNTER_VALUE                             :Zählerwert
+STR_ORDER_CONDITIONAL_TIME_DATE_VALUE                           :Aktuelle(s) Zeit/Datum
+STR_ORDER_CONDITIONAL_TIMETABLE_STATE                           :Fahrplanstatus
+STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :Abfahrztszeitfenster
 
 STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT                           :Fahrzeug im Slot
 

@@ -15,19 +15,6 @@ STR_CONFIG_SETTING_ZOOM_LVL_OUT_128X                            :128x
 
 STR_CONFIG_SETTING_DEFAULT_ROAD_TYPE_DEFAULT                    :Výchozí
 
-STR_ORDER_CONDITIONAL_CARGO_WAITING                             :Čekající náklad
-STR_ORDER_CONDITIONAL_ACCEPTANCE_DROPDOWN                       :Přijímaný náklad
-STR_ORDER_CONDITIONAL_FREE_PLATFORMS                            :Volná nástupiště
-STR_ORDER_CONDITIONAL_PERCENT                                   :Procento případů
-STR_ORDER_CONDITIONAL_SLOT_OCCUPANCY                            :Obsazenost slotu
-STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT                             :Vlak ve slotu
-STR_ORDER_CONDITIONAL_CARGO_LOAD_PERCENTAGE                     :Procento naložení (vybraný náklad)
-STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT                      :Množství čekajícího nákladu
-STR_ORDER_CONDITIONAL_COUNTER_VALUE                             :Hodnota počítadla
-STR_ORDER_CONDITIONAL_TIME_DATE_VALUE                           :Aktuální čas/datum
-STR_ORDER_CONDITIONAL_TIMETABLE_STATE                           :Stav jízdního řádu
-STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :Výpravní slot
-
 STR_ORDER_STOP_LOCATION_THROUGH                                 :{SPACE}[postupná nakládka]
 
 STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :extrémně pomalá
@@ -1385,6 +1372,19 @@ STR_ORDER_REVERSE                                               :{BLACK}Obrátit
 STR_ORDER_REVERSE_TOOLTIP                                       :{BLACK}Změní úvraťové chování vlaku v pozici daného příkazu.
 
 STR_ORDER_DROP_SELL_DEPOT                                       :Prodat vozidlo
+
+STR_ORDER_CONDITIONAL_CARGO_WAITING                             :Čekající náklad
+STR_ORDER_CONDITIONAL_ACCEPTANCE_DROPDOWN                       :Přijímaný náklad
+STR_ORDER_CONDITIONAL_FREE_PLATFORMS                            :Volná nástupiště
+STR_ORDER_CONDITIONAL_PERCENT                                   :Procento případů
+STR_ORDER_CONDITIONAL_SLOT_OCCUPANCY                            :Obsazenost slotu
+STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT                             :Vlak ve slotu
+STR_ORDER_CONDITIONAL_CARGO_LOAD_PERCENTAGE                     :Procento naložení (vybraný náklad)
+STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT                      :Množství čekajícího nákladu
+STR_ORDER_CONDITIONAL_COUNTER_VALUE                             :Hodnota počítadla
+STR_ORDER_CONDITIONAL_TIME_DATE_VALUE                           :Aktuální čas/datum
+STR_ORDER_CONDITIONAL_TIMETABLE_STATE                           :Stav jízdního řádu
+STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :Výpravní slot
 
 STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT                           :Vozidlo ve slotu
 

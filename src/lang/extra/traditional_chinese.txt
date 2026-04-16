@@ -15,21 +15,6 @@ STR_CONFIG_SETTING_ZOOM_LVL_OUT_128X                            :128 倍
 
 STR_CONFIG_SETTING_DEFAULT_ROAD_TYPE_DEFAULT                    :預設
 
-STR_ORDER_CONDITIONAL_CARGO_WAITING                             :等待貨物
-STR_ORDER_CONDITIONAL_ACCEPTANCE_DROPDOWN                       :接受貨物
-STR_ORDER_CONDITIONAL_FREE_PLATFORMS                            :未使用月台
-STR_ORDER_CONDITIONAL_PERCENT                                   :概率
-STR_ORDER_CONDITIONAL_SLOT_OCCUPANCY                            :路牌使用率
-STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT                             :持有路牌
-STR_ORDER_CONDITIONAL_CARGO_LOAD_PERCENTAGE                     :貨物裝載百分比
-STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT                      :等待貨物數量
-STR_ORDER_CONDITIONAL_COUNTER_VALUE                             :計數器值
-STR_ORDER_CONDITIONAL_TIME_DATE_VALUE                           :目前時間/日期
-STR_ORDER_CONDITIONAL_TIMETABLE_STATE                           :時刻表狀態
-STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :發車時間
-STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_PERCENTAGE           :等待中貨物/容量
-STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT_GROUP                       :持有路牌群組路牌
-
 STR_ORDER_STOP_LOCATION_THROUGH                                 :［通過式裝載］
 
 STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :極慢
@@ -1692,6 +1677,21 @@ STR_ORDER_REVERSE                                               :{BLACK}轉向
 STR_ORDER_REVERSE_TOOLTIP                                       :{BLACK}改變選中指令的轉向行為
 
 STR_ORDER_DROP_SELL_DEPOT                                       :賣出車輛
+
+STR_ORDER_CONDITIONAL_CARGO_WAITING                             :等待貨物
+STR_ORDER_CONDITIONAL_ACCEPTANCE_DROPDOWN                       :接受貨物
+STR_ORDER_CONDITIONAL_FREE_PLATFORMS                            :未使用月台
+STR_ORDER_CONDITIONAL_PERCENT                                   :概率
+STR_ORDER_CONDITIONAL_SLOT_OCCUPANCY                            :路牌使用率
+STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT                             :持有路牌
+STR_ORDER_CONDITIONAL_CARGO_LOAD_PERCENTAGE                     :貨物裝載百分比
+STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT                      :等待貨物數量
+STR_ORDER_CONDITIONAL_COUNTER_VALUE                             :計數器值
+STR_ORDER_CONDITIONAL_TIME_DATE_VALUE                           :目前時間/日期
+STR_ORDER_CONDITIONAL_TIMETABLE_STATE                           :時刻表狀態
+STR_ORDER_CONDITIONAL_DISPATCH_SLOT                             :發車時間
+STR_ORDER_CONDITIONAL_CARGO_WAITING_AMOUNT_PERCENTAGE           :等待中貨物/容量
+STR_ORDER_CONDITIONAL_TRAIN_IN_SLOT_GROUP                       :持有路牌群組路牌
 
 STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT                           :持有路牌
 STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT_GROUP                     :持有路牌群組路牌
