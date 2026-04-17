@@ -1259,10 +1259,8 @@ static CommandCost PreInsertOrderCheck(Vehicle *v, const Order &new_order, CmdIn
 				case OrderConditionVariable::CargoWaiting:
 				case OrderConditionVariable::CargoAcceptance:
 					if (!CargoSpec::Get(new_order.GetConditionValue())->IsValid()) return CMD_ERROR;
-					/* FALL THROUGH */
-
+					[[fallthrough]];
 				case OrderConditionVariable::RequiresService:
-				case OrderConditionVariable::DrivingBackwards:
 					if (occ != OrderConditionComparator::IsTrue && occ != OrderConditionComparator::IsFalse) return CMD_ERROR;
 					break;
 
@@ -1272,6 +1270,7 @@ static CommandCost PreInsertOrderCheck(Vehicle *v, const Order &new_order, CmdIn
 					break;
 
 				case OrderConditionVariable::FreePlatforms:
+				case OrderConditionVariable::DrivingBackwards:
 					if (v->type != VEH_TRAIN) return CMD_ERROR;
 					if (occ == OrderConditionComparator::IsTrue || occ == OrderConditionComparator::IsFalse) return CMD_ERROR;
 					break;
@@ -2059,10 +2058,12 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 			}
 			break;
 
-		case MOF_COND_VARIABLE:
-			if (data == to_underlying(OrderConditionVariable::FreePlatforms) && v->type != VEH_TRAIN) return CMD_ERROR;
-			if (data >= to_underlying(OrderConditionVariable::End)) return CMD_ERROR;
+		case MOF_COND_VARIABLE: {
+			OrderConditionVariable cond_variable = static_cast<OrderConditionVariable>(data);
+			if (cond_variable >= OrderConditionVariable::End) return CMD_ERROR;
+			if ((cond_variable == OrderConditionVariable::FreePlatforms || cond_variable == OrderConditionVariable::DrivingBackwards) && v->type != VEH_TRAIN) return CMD_ERROR;
 			break;
+		}
 
 		case MOF_COND_COMPARATOR: {
 			OrderConditionComparator occ = static_cast<OrderConditionComparator>(data);
