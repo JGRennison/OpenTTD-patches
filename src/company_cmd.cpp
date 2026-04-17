@@ -152,6 +152,10 @@ void SetLocalCompany(CompanyID new_company)
 		/* Close any construction windows... */
 		CloseConstructionWindows();
 		ResetObjectToPlace();
+
+		/* Update the default rail based on most used */
+		extern void SetDefaultRailGui();
+		SetDefaultRailGui();
 	}
 
 	if (switching_company && Company::IsValidID(new_company)) {

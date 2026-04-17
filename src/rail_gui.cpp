@@ -2452,7 +2452,7 @@ void ReinitGuiAfterToggleElrail(bool disable)
 }
 
 /** Set the initial (default) railtype to use */
-static void SetDefaultRailGui()
+void SetDefaultRailGui()
 {
 	if (_local_company == COMPANY_SPECTATOR || !Company::IsValidID(_local_company)) return;
 
@@ -2460,17 +2460,10 @@ static void SetDefaultRailGui()
 	RailType rt;
 	switch (_settings_client.gui.default_rail_type) {
 		case 2: {
-			/* Find the most used rail type */
-			std::array<uint, RAILTYPE_END> count{};
-			for (TileIndex t(0); t < Map::Size(); t++) {
-				if (IsTileType(t, TileType::Railway) || IsLevelCrossingTile(t) || HasStationTileRail(t) ||
-						(IsTileType(t, TileType::TunnelBridge) && GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL)) {
-					count[GetRailType(t)]++;
-				}
-			}
-
-			rt = static_cast<RailType>(std::distance(std::begin(count), std::ranges::max_element(count)));
-			if (count[rt] > 0) break;
+			/* Find the most used rail type for the company current company */
+			std::array<uint32_t, RAILTYPE_END> &rail_infra = Company::Get(_local_company)->infrastructure.rail;
+			rt = static_cast<RailType>(std::distance(std::begin(rail_infra), std::ranges::max_element(rail_infra)));
+			if (rail_infra[rt] > 0) break;
 
 			/* No rail, just get the first available one */
 			[[fallthrough]];
