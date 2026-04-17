@@ -102,6 +102,7 @@ void RedrawScreenRect(int left, int top, int right, int bottom);
 
 Dimension GetSpriteSize(SpriteID sprid, Point *offset = nullptr, ZoomLevel zoom = _gui_zoom);
 Dimension GetScaledSpriteSize(SpriteID sprid); /* widget.cpp */
+Dimension GetSquareScaledSpriteSize(SpriteID sprid); /* widget.cpp */
 struct SpritePointerHolder;
 void DrawSpriteViewport(const SpritePointerHolder &sprite_store, const DrawPixelInfo *dpi, SpriteID img, PaletteID pal, int x, int y, const SubSprite *sub = nullptr);
 void PrepareDrawSpriteViewportSpriteStore(SpritePointerHolder &sprite_store, const DrawPixelInfo *dpi, SpriteID img, PaletteID pal);

@@ -271,7 +271,7 @@ static void TrainDetailsInfoTab(const Train *v, int left, int right, int y, uint
 			}
 
 			case 1:
-				draw(STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS, v->reliability * 100 >> 16, v->breakdowns_since_last_service);
+				draw(STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS, ToPercent16(v->reliability), ToPercent16(v->GetEngine()->reliability), v->breakdowns_since_last_service);
 				break;
 
 			case 2: {

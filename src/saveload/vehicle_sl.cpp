@@ -29,7 +29,6 @@
 #include "../safeguards.h"
 
 bool TrainController(Train *v, Vehicle *nomove, bool reverse = true); // From train_cmd.cpp
-void ReverseTrainDirection(Train *v);
 void ReverseTrainSwapVeh(Train *v, int l, int r);
 
 static std::vector<Trackdir> _path_td;

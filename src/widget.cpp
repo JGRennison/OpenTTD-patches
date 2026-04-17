@@ -80,6 +80,22 @@ Dimension GetScaledSpriteSize(SpriteID sprid)
 }
 
 /**
+ * Scale sprite size for GUI, as a square.
+ * Offset is ignored.
+ * @param sprid The sprite to get the size from.
+ * @return The square scaled dimension of the sprite.
+ */
+Dimension GetSquareScaledSpriteSize(SpriteID sprid)
+{
+	Dimension d = GetScaledSpriteSize(sprid);
+	uint x = std::max(d.width, d.height);
+	return {x, x};
+}
+
+static Dimension _toolbar_image_size{}; ///< Cached dimension of maximal toolbar sprite size.
+extern Dimension GetToolbarMaximalImageSize();
+
+/**
  * Set up pre-scaled versions of Widget Dimensions.
  */
 void SetupWidgetDimensions()
@@ -113,6 +129,8 @@ void SetupWidgetDimensions()
 	WidgetDimensions::scaled.hsep_normal  = ScaleGUITrad(WidgetDimensions::unscaled.hsep_normal);
 	WidgetDimensions::scaled.hsep_wide    = ScaleGUITrad(WidgetDimensions::unscaled.hsep_wide);
 	WidgetDimensions::scaled.hsep_indent  = ScaleGUITrad(WidgetDimensions::unscaled.hsep_indent);
+
+	_toolbar_image_size = GetToolbarMaximalImageSize();
 }
 
 /**
@@ -223,9 +241,9 @@ static void ScrollbarClickPositioning(Window *w, NWidgetScrollbar *sb, int x, in
 		auto [start, end] = HandleScrollbarHittest(sb, mi, ma, sb->type == NWID_HSCROLLBAR);
 
 		if (pos < start) {
-			changed = sb->UpdatePosition(rtl ? 1 : -1, Scrollbar::SS_BIG);
+			changed = sb->UpdatePosition(rtl ? 1 : -1, Scrollbar::Stepping::Big);
 		} else if (pos > end) {
-			changed = sb->UpdatePosition(rtl ? -1 : 1, Scrollbar::SS_BIG);
+			changed = sb->UpdatePosition(rtl ? -1 : 1, Scrollbar::Stepping::Big);
 		} else {
 			_scrollbar_start_pos = start - mi - button_size;
 			_scrollbar_size = ma - mi - button_size * 2 - (end - start);
@@ -371,7 +389,7 @@ static inline void DrawImageTextButtons(const Rect &r, Colours colour, bool clic
 	DrawFrameRect(r, colour, clicked ? FrameFlag::Lowered : FrameFlags{});
 
 	bool rtl = _current_text_dir == TD_RTL;
-	int image_width = img != 0 ? GetScaledSpriteSize(img).width : 0;
+	int image_width = img != 0 ? std::max<int>(GetSquareScaledSpriteSize(img).width, r.Shrink(WidgetDimensions::scaled.framerect).Height()) : 0;
 	Rect r_img = r.Shrink(WidgetDimensions::scaled.framerect).WithWidth(image_width, rtl);
 	Rect r_text = r.Shrink(WidgetDimensions::scaled.framerect).Indent(image_width + WidgetDimensions::scaled.hsep_wide, rtl);
 
@@ -869,11 +887,11 @@ static void DrawOutline(const Window *, const NWidgetBase *wid)
  * <ol>
  * <li> A bottom-up sweep by recursively calling NWidgetBase::SetupSmallestSize() to initialize the smallest size (\e smallest_x, \e smallest_y) and
  *      to propagate filling and resize steps upwards to the root of the tree.
- * <li> A top-down sweep by recursively calling NWidgetBase::AssignSizePosition() with #ST_SMALLEST to make the smallest sizes consistent over
+ * <li> A top-down sweep by recursively calling NWidgetBase::AssignSizePosition() with #SizingType::Smallest to make the smallest sizes consistent over
  *      the entire tree, and to assign the top-left (\e pos_x, \e pos_y) position of each widget in the tree. This step uses \e fill_x and \e fill_y at each
  *      node in the tree to decide how to fill each widget towards consistent sizes. Also the current size (\e current_x and \e current_y) is set.
- * <li> After initializing the smallest size in the widget tree with #ST_SMALLEST, the tree can be resized (the current size modified) by calling
- *      NWidgetBase::AssignSizePosition() at the root with #ST_RESIZE and the new size of the window. For proper functioning, the new size should be the smallest
+ * <li> After initializing the smallest size in the widget tree with #SizingType::Smallest, the tree can be resized (the current size modified) by calling
+ *      NWidgetBase::AssignSizePosition() at the root with #SizingType::Resize and the new size of the window. For proper functioning, the new size should be the smallest
  *      size + a whole number of resize steps in both directions (ie you can only resize in steps of length resize_{x,y} from smallest_{x,y}).
  * </ol>
  * After the second step, the current size of the widgets are set to the smallest size.
@@ -1016,6 +1034,10 @@ void NWidgetResizeBase::AdjustPaddingForZoom()
 	if (!this->absolute) {
 		this->min_x = ScaleGUITrad(this->uz_min_x);
 		this->min_y = std::max(ScaleGUITrad(this->uz_min_y), this->uz_text_lines * GetCharacterHeight(this->uz_text_size) + ScaleGUITrad(this->uz_text_spacing));
+		if (this->toolbar_size > 0) {
+			this->min_x = std::max(this->min_x, this->toolbar_size * _toolbar_image_size.width + WidgetDimensions::scaled.imgbtn.Horizontal());
+			this->min_y = std::max(this->min_y, _toolbar_image_size.height + WidgetDimensions::scaled.imgbtn.Vertical());
+		}
 	}
 	NWidgetBase::AdjustPaddingForZoom();
 }
@@ -1029,8 +1051,15 @@ void NWidgetResizeBase::SetMinimalSize(uint min_x, uint min_y)
 {
 	this->uz_min_x = std::max(this->uz_min_x, min_x);
 	this->uz_min_y = std::max(this->uz_min_y, min_y);
-	this->min_x = ScaleGUITrad(this->uz_min_x);
-	this->min_y = std::max(ScaleGUITrad(this->uz_min_y), this->uz_text_lines * GetCharacterHeight(this->uz_text_size) + ScaleGUITrad(this->uz_text_spacing));
+}
+
+/**
+ * Set minimal size of the widget in toolbar-icon-relative width.
+ * @param toolbar_size Toolbar button size of the widget.
+ */
+void NWidgetResizeBase::SetToolbarMinimalSize(uint8_t toolbar_size)
+{
+	this->toolbar_size = toolbar_size;
 }
 
 /**
@@ -1056,7 +1085,6 @@ void NWidgetResizeBase::SetMinimalTextLines(uint8_t min_lines, uint8_t spacing, 
 	this->uz_text_lines = min_lines;
 	this->uz_text_spacing = spacing;
 	this->uz_text_size = size;
-	this->min_y = std::max(ScaleGUITrad(this->uz_min_y), this->uz_text_lines * GetCharacterHeight(this->uz_text_size) + ScaleGUITrad(this->uz_text_spacing));
 }
 
 /**
@@ -1300,11 +1328,11 @@ void NWidgetStacked::AssignSizePosition(SizingType sizing, int x, int y, uint gi
 	for (const auto &child_wid : this->children) {
 		plane++;
 		if (this->independent_planes && plane != this->shown_plane) continue;
-		uint hor_step = (sizing == ST_SMALLEST) ? 1 : child_wid->GetHorizontalStepSize(sizing);
+		uint hor_step = (sizing == SizingType::Smallest) ? 1 : child_wid->GetHorizontalStepSize(sizing);
 		uint child_width = ComputeMaxSize(child_wid->smallest_x, given_width - child_wid->padding.Horizontal(), hor_step);
 		uint child_pos_x = (rtl ? child_wid->padding.right : child_wid->padding.left);
 
-		uint vert_step = (sizing == ST_SMALLEST) ? 1 : child_wid->GetVerticalStepSize(sizing);
+		uint vert_step = (sizing == SizingType::Smallest) ? 1 : child_wid->GetVerticalStepSize(sizing);
 		uint child_height = ComputeMaxSize(child_wid->smallest_y, given_height - child_wid->padding.Vertical(), vert_step);
 		uint child_pos_y = child_wid->padding.top;
 
@@ -1417,11 +1445,11 @@ void NWidgetLayer::AssignSizePosition(SizingType sizing, int x, int y, uint give
 	this->StoreSizePosition(sizing, x, y, given_width, given_height);
 
 	for (const auto &child_wid : this->children) {
-		uint hor_step = (sizing == ST_SMALLEST) ? 1 : child_wid->GetHorizontalStepSize(sizing);
+		uint hor_step = (sizing == SizingType::Smallest) ? 1 : child_wid->GetHorizontalStepSize(sizing);
 		uint child_width = ComputeMaxSize(child_wid->smallest_x, given_width - child_wid->padding.Horizontal(), hor_step);
 		uint child_pos_x = (rtl ? child_wid->padding.right : child_wid->padding.left);
 
-		uint vert_step = (sizing == ST_SMALLEST) ? 1 : child_wid->GetVerticalStepSize(sizing);
+		uint vert_step = (sizing == SizingType::Smallest) ? 1 : child_wid->GetVerticalStepSize(sizing);
 		uint child_height = ComputeMaxSize(child_wid->smallest_y, given_height - child_wid->padding.Vertical(), vert_step);
 		uint child_pos_y = child_wid->padding.top;
 
@@ -1499,7 +1527,7 @@ void NWidgetHorizontal::SetupSmallestSize(Window *w)
 	for (const auto &child_wid : this->children) {
 		child_wid->SetupSmallestSize(w);
 		longest = std::max(longest, child_wid->smallest_x);
-		max_vert_fill = std::max(max_vert_fill, child_wid->GetVerticalStepSize(ST_SMALLEST));
+		max_vert_fill = std::max(max_vert_fill, child_wid->GetVerticalStepSize(SizingType::Smallest));
 		this->smallest_y = std::max(this->smallest_y, child_wid->smallest_y + child_wid->padding.Vertical());
 		if (child_wid->smallest_x != 0 || child_wid->fill_x != 0) this->gaps++;
 	}
@@ -1509,7 +1537,7 @@ void NWidgetHorizontal::SetupSmallestSize(Window *w)
 	uint cur_height = this->smallest_y;
 	for (;;) {
 		for (const auto &child_wid : this->children) {
-			uint step_size = child_wid->GetVerticalStepSize(ST_SMALLEST);
+			uint step_size = child_wid->GetVerticalStepSize(SizingType::Smallest);
 			uint child_height = child_wid->smallest_y + child_wid->padding.Vertical();
 			if (step_size > 1 && child_height < cur_height) { // Small step sizes or already fitting children are not interesting.
 				uint remainder = (cur_height - child_height) % step_size;
@@ -1590,7 +1618,7 @@ void NWidgetHorizontal::AssignSizePosition(SizingType sizing, int x, int y, uint
 			child_wid->current_x = child_wid->smallest_x;
 		}
 
-		uint vert_step = (sizing == ST_SMALLEST) ? 1 : child_wid->GetVerticalStepSize(sizing);
+		uint vert_step = (sizing == SizingType::Smallest) ? 1 : child_wid->GetVerticalStepSize(sizing);
 		child_wid->current_y = ComputeMaxSize(child_wid->smallest_y, given_height - child_wid->padding.Vertical(), vert_step);
 	}
 
@@ -1683,7 +1711,7 @@ void NWidgetVertical::SetupSmallestSize(Window *w)
 	for (const auto &child_wid : this->children) {
 		child_wid->SetupSmallestSize(w);
 		highest = std::max(highest, child_wid->smallest_y);
-		max_hor_fill = std::max(max_hor_fill, child_wid->GetHorizontalStepSize(ST_SMALLEST));
+		max_hor_fill = std::max(max_hor_fill, child_wid->GetHorizontalStepSize(SizingType::Smallest));
 		this->smallest_x = std::max(this->smallest_x, child_wid->smallest_x + child_wid->padding.Horizontal());
 		if (child_wid->smallest_y != 0 || child_wid->fill_y != 0) this->gaps++;
 	}
@@ -1693,7 +1721,7 @@ void NWidgetVertical::SetupSmallestSize(Window *w)
 	uint cur_width = this->smallest_x;
 	for (;;) {
 		for (const auto &child_wid : this->children) {
-			uint step_size = child_wid->GetHorizontalStepSize(ST_SMALLEST);
+			uint step_size = child_wid->GetHorizontalStepSize(SizingType::Smallest);
 			uint child_width = child_wid->smallest_x + child_wid->padding.Horizontal();
 			if (step_size > 1 && child_width < cur_width) { // Small step sizes or already fitting children are not interesting.
 				uint remainder = (cur_width - child_width) % step_size;
@@ -1765,7 +1793,7 @@ void NWidgetVertical::AssignSizePosition(SizingType sizing, int x, int y, uint g
 			child_wid->current_y = child_wid->smallest_y;
 		}
 
-		uint hor_step = (sizing == ST_SMALLEST) ? 1 : child_wid->GetHorizontalStepSize(sizing);
+		uint hor_step = (sizing == SizingType::Smallest) ? 1 : child_wid->GetHorizontalStepSize(sizing);
 		child_wid->current_x = ComputeMaxSize(child_wid->smallest_x, given_width - child_wid->padding.Horizontal(), hor_step);
 	}
 
@@ -2009,7 +2037,7 @@ NWidgetCore *NWidgetMatrix::GetWidgetFromPos(int x, int y)
 
 	NWidgetCore *child = dynamic_cast<NWidgetCore *>(this->children.front().get());
 	assert(child != nullptr);
-	child->AssignSizePosition(ST_RESIZE,
+	child->AssignSizePosition(SizingType::Resize,
 			this->pos_x + (rtl ? this->pip_post - widget_col * this->widget_w : this->pip_pre + widget_col * this->widget_w) + base_offs_x,
 			this->pos_y + this->pip_pre + widget_row * this->widget_h + base_offs_y,
 			child->smallest_x, child->smallest_y, rtl);
@@ -2065,7 +2093,7 @@ void NWidgetMatrix::FillDirtyWidgets(std::vector<NWidgetBase *> &dirty_widgets)
 				this->current_element = y * this->widgets_x + x;
 				if (this->current_element >= this->count) break;
 
-				child->AssignSizePosition(ST_RESIZE, offs_x, offs_y, child->smallest_x, child->smallest_y, rtl);
+				child->AssignSizePosition(SizingType::Resize, offs_x, offs_y, child->smallest_x, child->smallest_y, rtl);
 				child->SetLowered(this->clicked == this->current_element);
 				child->Draw(w);
 			}
@@ -2736,7 +2764,7 @@ NWidgetLeaf::NWidgetLeaf(WidgetType tp, Colours colour, WidgetID index, const Wi
 		case WWT_RESIZEBOX:
 			this->SetFill(0, 0);
 			this->SetMinimalSize(WidgetDimensions::WD_RESIZEBOX_WIDTH, 12);
-			this->SetResizeWidgetType(RWV_SHOW_BEVEL);
+			this->SetResizeWidgetType(ResizeWidgetType::ShowBevel);
 			this->SetToolTip(STR_TOOLTIP_RESIZE);
 			break;
 
@@ -2878,7 +2906,7 @@ void NWidgetLeaf::SetupSmallestSize(Window *w)
 		case WWT_IMGTEXTBTN:
 		case WWT_PUSHIMGTEXTBTN: {
 			padding = {WidgetDimensions::scaled.framerect.Horizontal(), WidgetDimensions::scaled.framerect.Vertical()};
-			Dimension di = GetScaledSpriteSize(this->widget_data.sprite);
+			Dimension di = GetSquareScaledSpriteSize(this->widget_data.sprite);
 			Dimension dt = GetStringBoundingBox(GetStringForWidget(w, this), this->text_size);
 			Dimension d2{
 				padding.width + 2 * (di.width + WidgetDimensions::scaled.hsep_wide) + dt.width,
@@ -3014,10 +3042,10 @@ void NWidgetLeaf::Draw(const Window *w)
 		case WWT_PUSHARROWBTN: {
 			SpriteID sprite;
 			switch (this->widget_data.arrow_widget_type) {
-				case AWV_DECREASE: sprite = _current_text_dir != TD_RTL ? SPR_ARROW_LEFT : SPR_ARROW_RIGHT; break;
-				case AWV_INCREASE: sprite = _current_text_dir == TD_RTL ? SPR_ARROW_LEFT : SPR_ARROW_RIGHT; break;
-				case AWV_LEFT:     sprite = SPR_ARROW_LEFT;  break;
-				case AWV_RIGHT:    sprite = SPR_ARROW_RIGHT; break;
+				case ArrowWidgetType::Decrease: sprite = _current_text_dir != TD_RTL ? SPR_ARROW_LEFT : SPR_ARROW_RIGHT; break;
+				case ArrowWidgetType::Increase: sprite = _current_text_dir == TD_RTL ? SPR_ARROW_LEFT : SPR_ARROW_RIGHT; break;
+				case ArrowWidgetType::Left:     sprite = SPR_ARROW_LEFT;  break;
+				case ArrowWidgetType::Right:    sprite = SPR_ARROW_RIGHT; break;
 				default: NOT_REACHED();
 			}
 			DrawImageButtons(r, WWT_PUSHIMGBTN, this->colour, clicked, sprite, this->align);
@@ -3063,7 +3091,7 @@ void NWidgetLeaf::Draw(const Window *w)
 			break;
 
 		case WWT_RESIZEBOX:
-			DrawResizeBox(r, this->colour, this->pos_x < (w->width / 2), w->flags.Test(WindowFlag::SizingLeft) || w->flags.Test(WindowFlag::SizingRight), this->widget_data.resize_widget_type == RWV_SHOW_BEVEL);
+			DrawResizeBox(r, this->colour, this->pos_x < (w->width / 2), w->flags.Test(WindowFlag::SizingLeft) || w->flags.Test(WindowFlag::SizingRight), this->widget_data.resize_widget_type == ResizeWidgetType::ShowBevel);
 			break;
 
 		case WWT_CLOSEBOX:
@@ -3153,6 +3181,14 @@ void ApplyNWidgetPartAttribute(const NWidgetPart &nwid, NWidgetBase *dest)
 			if (nwrb == nullptr) [[unlikely]] throw std::runtime_error("WPT_MINTEXTLINES requires NWidgetResizeBase");
 			assert(nwid.u.text_lines.size >= FS_BEGIN && nwid.u.text_lines.size < FS_END);
 			nwrb->SetMinimalTextLines(nwid.u.text_lines.lines, nwid.u.text_lines.spacing, nwid.u.text_lines.size);
+			break;
+		}
+
+		case WPT_TOOLBARSIZE: {
+			NWidgetResizeBase *nwrb = dynamic_cast<NWidgetResizeBase *>(dest);
+			if (nwrb == nullptr) [[unlikely]] throw std::runtime_error("WPT_TOOLBARSIZE requires NWidgetResizeBase");
+			assert(nwid.u.xy.x >= 0);
+			nwrb->SetToolbarMinimalSize(nwid.u.xy.x);
 			break;
 		}
 

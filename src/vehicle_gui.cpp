@@ -2613,9 +2613,11 @@ public:
 						this->GetSorterDisableMask(this->vli.vtype));
 				return;
 
-			case WID_VL_FILTER_BY_CARGO: // Cargo filter dropdown
-				ShowDropDownList(this, this->BuildCargoDropDownList(false), this->cargo_filter_criteria, widget);
+			case WID_VL_FILTER_BY_CARGO: { // Cargo filter dropdown
+				static std::string cargo_filter;
+				ShowDropDownList(this, this->BuildCargoDropDownList(false), this->cargo_filter_criteria, widget, 0, DropDownOption::Filterable, &cargo_filter);
 				break;
+			}
 
 			case WID_VL_LIST: { // Matrix to show vehicles
 				auto it = this->vscroll->GetScrolledItemFromWidget(this->vehgroups, pt.y, this, WID_VL_LIST);
@@ -2967,9 +2969,9 @@ static constexpr std::initializer_list<NWidgetPart> _nested_nontrain_vehicle_det
 	NWidget(WWT_PANEL, COLOUR_GREY, WID_VD_MIDDLE_DETAILS), SetMinimalSize(405, 45), SetResize(1, 0), EndContainer(),
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_VD_DECREASE_SERVICING_INTERVAL), SetFill(0, 1),
-				SetArrowWidgetTypeTip(AWV_DECREASE),
+				SetArrowWidgetTypeTip(ArrowWidgetType::Decrease),
 		NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_VD_INCREASE_SERVICING_INTERVAL), SetFill(0, 1),
-				SetArrowWidgetTypeTip(AWV_INCREASE),
+				SetArrowWidgetTypeTip(ArrowWidgetType::Increase),
 		NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_VD_SERVICE_INTERVAL_DROPDOWN), SetFill(0, 1),
 				SetStringTip(STR_EMPTY, STR_SERVICE_INTERVAL_DROPDOWN_TOOLTIP),
 		NWidget(WWT_PANEL, COLOUR_GREY, WID_VD_SERVICING_INTERVAL), SetFill(1, 1), SetResize(1, 0), EndContainer(),
@@ -2994,9 +2996,9 @@ static constexpr std::initializer_list<NWidgetPart> _nested_train_vehicle_detail
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_VD_DECREASE_SERVICING_INTERVAL), SetFill(0, 1),
-				SetArrowWidgetTypeTip(AWV_DECREASE),
+				SetArrowWidgetTypeTip(ArrowWidgetType::Decrease),
 		NWidget(WWT_PUSHARROWBTN, COLOUR_GREY, WID_VD_INCREASE_SERVICING_INTERVAL), SetFill(0, 1),
-				SetArrowWidgetTypeTip(AWV_INCREASE),
+				SetArrowWidgetTypeTip(ArrowWidgetType::Increase),
 		NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_VD_SERVICE_INTERVAL_DROPDOWN), SetFill(0, 1),
 				SetStringTip(STR_EMPTY, STR_SERVICE_INTERVAL_DROPDOWN_TOOLTIP),
 		NWidget(WWT_PANEL, COLOUR_GREY, WID_VD_SERVICING_INTERVAL), SetFill(1, 1), SetResize(1, 0), EndContainer(),
@@ -3213,7 +3215,7 @@ struct VehicleDetailsWindow : Window {
 				process(STR_VEHICLE_INFO_MAX_SPEED, max_value_i16);
 				process(STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED, max_value_i16, max_value_i16, max_value_i16);
 				process(STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE, max_value_i16, max_value_i16, max_value_i16, max_value_i16);
-				process(STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS, max_value_i16, max_value_i16);
+				process(STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS, max_value_i16, max_value_i16, max_value_i16);
 				process(this->GetRunningCostString(), STR_VEHICLE_INFO_AGE, max_value_i16, max_value_i16, max_value_i16);
 
 				const uint64_t max_value_16 = GetParamMaxValue(1 << 16);
@@ -3436,18 +3438,20 @@ struct VehicleDetailsWindow : Window {
 				if (v->type == VEH_TRAIN) {
 					/* we want to draw the average reliability and total number of breakdowns */
 					uint32_t total_reliability = 0;
+					uint32_t total_max_reliability = 0;
 					uint16_t total_breakdowns  = 0;
 					for (const Vehicle *w = v; w != nullptr; w = w->Next()) {
 						if (Train::From(w)->IsEngine() || Train::From(w)->IsMultiheaded()) {
 							total_reliability += w->reliability;
+							total_max_reliability += w->GetEngine()->reliability;
 							total_breakdowns += w->breakdowns_since_last_service;
 						}
 					}
 					uint8_t total_engines = Train::From(v)->tcache.cached_num_engines;
 					assert(total_engines > 0);
-					DrawString(tr, GetString(STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS, ToPercent16(total_reliability / total_engines), total_breakdowns));
+					DrawString(tr, GetString(STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS, ToPercent16(total_reliability / total_engines), ToPercent16(total_max_reliability / total_engines), total_breakdowns));
 				} else {
-					DrawString(tr, GetString(STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS, ToPercent16(v->reliability), v->breakdowns_since_last_service));
+					DrawString(tr, GetString(STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS, ToPercent16(v->reliability), ToPercent16(v->GetEngine()->reliability), v->breakdowns_since_last_service));
 				}
 				tr.top += GetCharacterHeight(FS_NORMAL);
 
