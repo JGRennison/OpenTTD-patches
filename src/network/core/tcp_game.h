@@ -642,6 +642,10 @@ public:
 	virtual std::string GetDebugInfo() const;
 	virtual void LogSentPacket(const Packet &pkt) override;
 
+	/**
+	 * Is this pending for deletion and as such should not be accessed anymore.
+	 * @return \c true iff this is being deleted.
+	 */
 	bool IsPendingDeletion() const { return this->is_pending_deletion; }
 
 	void DeferDeletion();

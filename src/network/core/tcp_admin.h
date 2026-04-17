@@ -99,7 +99,7 @@ enum class AdminUpdateFrequency : uint8_t {
 	Annually, ///< The admin gets information about this on a yearly basis.
 	Automatic, ///< The admin gets information about this when it changes.
 };
-using AdminUpdateFrequencies = EnumBitSet<AdminUpdateFrequency, uint8_t>;
+using AdminUpdateFrequencies = EnumBitSet<AdminUpdateFrequency, uint8_t>; ///< Bitset of chosen update frequencies.
 
 /** Reasons for removing a company - communicated to admins. */
 enum AdminCompanyRemoveReason : uint8_t {
@@ -210,7 +210,7 @@ protected:
 	 *
 	 * The server will determine which of the authentication methods supplied by the client will be used.
 	 * When there is no supported authentication method, an \c ADMIN_PACKET_SERVER_ERROR packet will be
-	 * sent with \c NETWORK_ERROR_NO_AUTHENTICATION_METHOD_AVAILABLE as error.
+	 * sent with \c NetworkErrorCode::NoAuthenticationMethodAvailable as error.
 	 * @param p The packet that was just received.
 	 * @return The state the network should have.
 	 */

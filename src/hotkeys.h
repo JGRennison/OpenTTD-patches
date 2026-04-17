@@ -10,6 +10,7 @@
 #ifndef HOTKEYS_H
 #define HOTKEYS_H
 
+#include "core/enum_type.hpp"
 #include "gfx_type.h"
 #include "window_type.h"
 #include "string_type.h"
@@ -22,6 +23,14 @@
 struct Hotkey {
 	Hotkey(uint16_t default_keycode, const char *name, int num);
 	Hotkey(std::initializer_list<uint16_t> default_keycodes, const char *name, int num);
+
+	/** @copydoc Hotkey(uint16_t, const std::string &, int) */
+	template <typename EnumType> requires is_scoped_enum_v<EnumType>
+	Hotkey(uint16_t default_keycode, const char *name, EnumType num) : Hotkey(default_keycode, name, to_underlying(num)) {}
+
+	/** @copydoc Hotkey(const std::vector<uint16_t> &, const std::string &, int) */
+	template <typename EnumType> requires is_scoped_enum_v<EnumType>
+	Hotkey(std::initializer_list<uint16_t> default_keycodes, const char *name, EnumType num) : Hotkey(default_keycodes, name, to_underlying(num)) {}
 
 	void AddKeycode(uint16_t keycode);
 

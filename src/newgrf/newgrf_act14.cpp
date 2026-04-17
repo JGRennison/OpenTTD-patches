@@ -1193,9 +1193,15 @@ static void Act14FeatureTest(ByteReader &buf)
 	HandleNodes(buf, _tags_root_feature_tests);
 }
 
+/** @copydoc GrfActionHandler::FileScan */
 template <> void GrfActionHandler<0x14>::FileScan(ByteReader &buf) { StaticGRFInfo(buf); }
+/** @copybrief GrfActionHandler::SafetyScan */
 template <> void GrfActionHandler<0x14>::SafetyScan(ByteReader &) { }
+/** @copybrief GrfActionHandler::LabelScan */
 template <> void GrfActionHandler<0x14>::LabelScan(ByteReader &) { }
+/** @copybrief GrfActionHandler::Init */
 template <> void GrfActionHandler<0x14>::Init(ByteReader &buf) { Act14FeatureTest(buf); }
+/** @copybrief GrfActionHandler::Reserve */
 template <> void GrfActionHandler<0x14>::Reserve(ByteReader &) { }
+/** @copybrief GrfActionHandler::Activation */
 template <> void GrfActionHandler<0x14>::Activation(ByteReader &) { }

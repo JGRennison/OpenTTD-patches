@@ -208,13 +208,14 @@ static bool CMSATree(TileIndex tile)
 	return IsTileType(tile, TileType::Trees);
 }
 
-enum StationNaming : uint8_t {
-	STATIONNAMING_RAIL,
-	STATIONNAMING_ROAD,
-	STATIONNAMING_AIRPORT,
-	STATIONNAMING_OILRIG,
-	STATIONNAMING_DOCK,
-	STATIONNAMING_HELIPORT,
+/** Station types a station could be named after. */
+enum class StationNaming : uint8_t {
+	Rail, ///< Railway station.
+	Road, ///< Truck or bus stop.
+	Airport, ///< Airport for fixed wing aircraft.
+	Oilrig, ///< Heliport of an oilrig.
+	Dock, ///< Ship dock.
+	Heliport, ///< Standalone heliport.
 };
 
 /** Information to handle station action 0 property 24 correctly */
@@ -222,12 +223,21 @@ struct StationNameInformation {
 	std::bitset<STR_SV_STNAME_FALLBACK - STR_SV_STNAME> used_names; ///< Used default station suffixes.
 	std::bitset<NUM_INDUSTRYTYPES> indtypes; ///< Bit set indicating when an industry type has been found.
 
+	/**
+	 * Is the given station name available, and not already used?
+	 * @param str The station name to check.
+	 * @return \c true iff the name has not been used and is available.
+	 */
 	bool IsAvailable(StringID str) const
 	{
 		assert(IsInsideMM(str, STR_SV_STNAME, STR_SV_STNAME_FALLBACK));
 		return !this->used_names.test(str - STR_SV_STNAME);
 	}
 
+	/**
+	 * Mark the given station name as used.
+	 * @param str The station name to mark used.
+	 */
 	void SetUsed(StringID str)
 	{
 		assert(IsInsideMM(str, STR_SV_STNAME, STR_SV_STNAME_FALLBACK));
@@ -235,6 +245,15 @@ struct StationNameInformation {
 	}
 };
 
+/**
+ * Generate a station name for the given station at the given location.
+ * This checks for local industries, the station type that is built and its surroundings to come up with an appropriate name.
+ * @param st The station that is being built.
+ * @param tile The tile the station is being built at.
+ * @param name_class The type of station that is being built.
+ * @param force_change Force name change.
+ * @return The \c StringID with the name of the station.
+ */
 static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming name_class, bool force_change = false)
 {
 	const Town *t = st->town;
@@ -295,16 +314,16 @@ static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming n
 	/* check default names
 	 * Oil rigs/mines name could be marked not free by looking for a near by industry. */
 	switch (name_class) {
-		case STATIONNAMING_AIRPORT:
+		case StationNaming::Airport:
 			if (sni.IsAvailable(STR_SV_STNAME_AIRPORT)) return STR_SV_STNAME_AIRPORT;
 			break;
-		case STATIONNAMING_OILRIG:
+		case StationNaming::Oilrig:
 			if (sni.IsAvailable(STR_SV_STNAME_OILFIELD)) return STR_SV_STNAME_OILFIELD;
 			break;
-		case STATIONNAMING_DOCK:
+		case StationNaming::Dock:
 			if (sni.IsAvailable(STR_SV_STNAME_DOCKS)) return STR_SV_STNAME_DOCKS;
 			break;
-		case STATIONNAMING_HELIPORT:
+		case StationNaming::Heliport:
 			if (sni.IsAvailable(STR_SV_STNAME_HELIPORT)) return STR_SV_STNAME_HELIPORT;
 			break;
 		default:
@@ -334,7 +353,7 @@ static StringID GenerateStationName(Station *st, TileIndex tile, StationNaming n
 			for (size_t i = 0; i < _extra_station_names.size(); i++) {
 				const ExtraStationNameInfo &info = _extra_station_names[i];
 				if (extra_names[i]) continue;
-				if (!HasBit(info.flags, name_class)) continue;
+				if (!HasBit(info.flags, to_underlying(name_class))) continue;
 				if (HasBit(info.flags, ESNIF_CENTRAL) && !is_central) continue;
 				if (HasBit(info.flags, ESNIF_NOT_CENTRAL) && is_central) continue;
 				if (HasBit(info.flags, ESNIF_NEAR_WATER) && !near_water) continue;
@@ -1603,7 +1622,7 @@ CommandCost CmdBuildRailStation(DoCommandFlags flags, TileIndex tile_org, RailTy
 	ret = FindJoiningStation(est, station_to_join, adjacent, new_location, &st);
 	if (ret.Failed()) return ret;
 
-	ret = BuildStationPart(&st, flags, reuse, new_location, STATIONNAMING_RAIL);
+	ret = BuildStationPart(&st, flags, reuse, new_location, StationNaming::Rail);
 	if (ret.Failed()) return ret;
 
 	if (st != nullptr && st->train_station.tile != INVALID_TILE) {
@@ -2202,7 +2221,7 @@ CommandCost CmdBuildRoadStop(DoCommandFlags flags, TileIndex tile, uint8_t width
 	/* Check if this number of road stops can be allocated. */
 	if (!RoadStop::CanAllocateItem(static_cast<size_t>(roadstop_area.w) * roadstop_area.h)) return CommandCost(is_truck_stop ? STR_ERROR_TOO_MANY_TRUCK_STOPS : STR_ERROR_TOO_MANY_BUS_STOPS);
 
-	ret = BuildStationPart(&st, flags, reuse, roadstop_area, STATIONNAMING_ROAD);
+	ret = BuildStationPart(&st, flags, reuse, roadstop_area, StationNaming::Road);
 	if (ret.Failed()) return ret;
 
 	/* Check if we can allocate a custom stationspec to this station */
@@ -2783,7 +2802,7 @@ CommandCost CmdBuildAirport(DoCommandFlags flags, TileIndex tile, uint8_t airpor
 	/* Distant join */
 	if (st == nullptr && distant_join) st = Station::GetIfValid(station_to_join);
 
-	ret = BuildStationPart(&st, flags, reuse, airport_area, GetAirport(airport_type)->flags.Test(AirportFTAClass::Flag::Airplanes) ? STATIONNAMING_AIRPORT : STATIONNAMING_HELIPORT);
+	ret = BuildStationPart(&st, flags, reuse, airport_area, GetAirport(airport_type)->flags.Test(AirportFTAClass::Flag::Airplanes) ? StationNaming::Airport : StationNaming::Heliport);
 	if (ret.Failed()) return ret;
 
 	/* action to be performed */
@@ -3129,7 +3148,7 @@ CommandCost CmdBuildDock(DoCommandFlags flags, TileIndex tile, StationID station
 	/* Distant join */
 	if (st == nullptr && distant_join) st = Station::GetIfValid(station_to_join);
 
-	ret = BuildStationPart(&st, flags, reuse, dock_area, STATIONNAMING_DOCK);
+	ret = BuildStationPart(&st, flags, reuse, dock_area, StationNaming::Dock);
 	if (ret.Failed()) return ret;
 
 	if (flags.Test(DoCommandFlag::Execute)) {
@@ -4843,15 +4862,15 @@ CommandCost CmdRenameStation(DoCommandFlags flags, StationID station_id, bool ge
 			if (generate && st->industry == nullptr) {
 				StationNaming name_class;
 				if (st->facilities.Test(StationFacility::Airport)) {
-					name_class = STATIONNAMING_AIRPORT;
+					name_class = StationNaming::Airport;
 				} else if (st->facilities.Test(StationFacility::Dock)) {
-					name_class = STATIONNAMING_DOCK;
+					name_class = StationNaming::Dock;
 				} else if (st->facilities.Test(StationFacility::Train)) {
-					name_class = STATIONNAMING_RAIL;
+					name_class = StationNaming::Rail;
 				} else if (st->facilities.Any({StationFacility::BusStop, StationFacility::TruckStop})) {
-					name_class = STATIONNAMING_ROAD;
+					name_class = StationNaming::Road;
 				} else {
-					name_class = STATIONNAMING_RAIL;
+					name_class = StationNaming::Rail;
 				}
 				Random(); // Advance random seed each time this is called
 				st->string_id = GenerateStationName(st, st->xy, name_class, true);
@@ -5170,7 +5189,7 @@ void BuildOilRig(TileIndex tile)
 	_station_kdtree.Insert(st->index);
 	st->town = ClosestTownFromTile(tile, UINT_MAX);
 
-	st->string_id = GenerateStationName(st, tile, STATIONNAMING_OILRIG);
+	st->string_id = GenerateStationName(st, tile, StationNaming::Oilrig);
 
 	assert_tile(IsTileType(tile, TileType::Industry), tile);
 	/* Mark industry as associated both ways */

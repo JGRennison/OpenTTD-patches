@@ -218,10 +218,6 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 {
 	if (this->IsPendingDeletion()) return;
 
-	/* First, send a CLIENT_ERROR to the server, so it knows we are
-	 *  disconnected (and why!) */
-	NetworkErrorCode errorno;
-
 	/* We just want to close the connection.. */
 	if (res == NETWORK_RECV_STATUS_CLOSE_QUERY) {
 		this->NetworkSocketHandler::MarkClosed();
@@ -232,11 +228,13 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 		return;
 	}
 
+	/* Send a CLIENT_ERROR to the server, so it knows we are disconnected (and why!) */
+	NetworkErrorCode errorno;
 	switch (res) {
-		case NETWORK_RECV_STATUS_DESYNC:          errorno = NETWORK_ERROR_DESYNC; break;
-		case NETWORK_RECV_STATUS_SAVEGAME:        errorno = NETWORK_ERROR_SAVEGAME_FAILED; break;
-		case NETWORK_RECV_STATUS_NEWGRF_MISMATCH: errorno = NETWORK_ERROR_NEWGRF_MISMATCH; break;
-		default:                                  errorno = NETWORK_ERROR_GENERAL; break;
+		case NETWORK_RECV_STATUS_DESYNC: errorno = NetworkErrorCode::Desync; break;
+		case NETWORK_RECV_STATUS_SAVEGAME: errorno = NetworkErrorCode::SavegameFailed; break;
+		case NETWORK_RECV_STATUS_NEWGRF_MISMATCH: errorno = NetworkErrorCode::NewGRFMismatch; break;
+		default: errorno = NetworkErrorCode::General; break;
 	}
 
 	if (res == NETWORK_RECV_STATUS_SERVER_ERROR || res == NETWORK_RECV_STATUS_SERVER_FULL ||
@@ -471,7 +469,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendKeyPasswordPacket(PacketTy
 NetworkRecvStatus ClientNetworkGameSocketHandler::SendJoin()
 {
 	my_client->status = STATUS_JOIN;
-	_network_join_status = NETWORK_JOIN_STATUS_AUTHORIZING;
+	_network_join_status = NetworkJoinStatus::Authorizing;
 	SetWindowDirty(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
 
 	auto p = std::make_unique<Packet>(my_client, PACKET_CLIENT_JOIN);
@@ -637,7 +635,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendError(NetworkErrorCode err
 {
 	auto p = std::make_unique<Packet>(my_client, PACKET_CLIENT_ERROR, TCP_MTU);
 
-	p->Send_uint8(errorno);
+	p->Send_uint8(to_underlying(errorno));
 	p->Send_uint8(recvstatus);
 	p->Send_uint8(my_client->status);
 	p->Send_uint8(my_client->last_pkt_type);
@@ -864,41 +862,53 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_CLIENT_INFO(Pac
 	return NETWORK_RECV_STATUS_OKAY;
 }
 
+/**
+ * Get a long form translateable string for a \c NetworkErrorCode.
+ * Any invalid errors will get \c STR_NETWORK_ERROR_LOSTCONNECTION.
+ * @param error The error code.
+ * @return The \c StringID.
+ */
+static StringID GetLongNetworkErrorString(NetworkErrorCode error)
+{
+	switch (error) {
+		case NetworkErrorCode::General:
+		case NetworkErrorCode::Desync:
+		case NetworkErrorCode::SavegameFailed:
+		case NetworkErrorCode::ConnectionLost:
+		case NetworkErrorCode::IllegalPacket:
+		case NetworkErrorCode::NewGRFMismatch:
+		case NetworkErrorCode::NameInUse:
+		default:
+			return STR_NETWORK_ERROR_LOSTCONNECTION;
+
+		case NetworkErrorCode::NotAuthorized:
+		case NetworkErrorCode::NotExpected:
+		case NetworkErrorCode::CompanyMismatch:
+		case NetworkErrorCode::NoAuthenticationMethodAvailable:
+			return STR_NETWORK_ERROR_SERVER_ERROR;
+
+		case NetworkErrorCode::WrongRevision: return STR_NETWORK_ERROR_WRONG_REVISION;
+		case NetworkErrorCode::WrongPassword: return STR_NETWORK_ERROR_WRONG_PASSWORD;
+		case NetworkErrorCode::Kicked: return STR_NETWORK_ERROR_KICKED;
+		case NetworkErrorCode::Cheater: return STR_NETWORK_ERROR_CHEATER;
+		case NetworkErrorCode::ServerFull: return STR_NETWORK_ERROR_SERVER_FULL;
+		case NetworkErrorCode::TooManyCommands: return STR_NETWORK_ERROR_TOO_MANY_COMMANDS;
+		case NetworkErrorCode::TimeoutPassword: return STR_NETWORK_ERROR_TIMEOUT_PASSWORD;
+		case NetworkErrorCode::TimeoutComputer: return STR_NETWORK_ERROR_TIMEOUT_COMPUTER;
+		case NetworkErrorCode::TimeoutMap: return STR_NETWORK_ERROR_TIMEOUT_MAP;
+		case NetworkErrorCode::TimeoutJoin: return STR_NETWORK_ERROR_TIMEOUT_JOIN;
+		case NetworkErrorCode::InvalidClientName: return STR_NETWORK_ERROR_INVALID_CLIENT_NAME;
+		case NetworkErrorCode::NotOnAllowList: return STR_NETWORK_ERROR_NOT_ON_ALLOW_LIST;
+	}
+}
+
 NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_ERROR(Packet &p)
 {
-	static const StringID network_error_strings[] = {
-		STR_NETWORK_ERROR_LOSTCONNECTION,      // NETWORK_ERROR_GENERAL
-		STR_NETWORK_ERROR_LOSTCONNECTION,      // NETWORK_ERROR_DESYNC
-		STR_NETWORK_ERROR_LOSTCONNECTION,      // NETWORK_ERROR_SAVEGAME_FAILED
-		STR_NETWORK_ERROR_LOSTCONNECTION,      // NETWORK_ERROR_CONNECTION_LOST
-		STR_NETWORK_ERROR_LOSTCONNECTION,      // NETWORK_ERROR_ILLEGAL_PACKET
-		STR_NETWORK_ERROR_LOSTCONNECTION,      // NETWORK_ERROR_NEWGRF_MISMATCH
-		STR_NETWORK_ERROR_SERVER_ERROR,        // NETWORK_ERROR_NOT_AUTHORIZED
-		STR_NETWORK_ERROR_SERVER_ERROR,        // NETWORK_ERROR_NOT_EXPECTED
-		STR_NETWORK_ERROR_WRONG_REVISION,      // NETWORK_ERROR_WRONG_REVISION
-		STR_NETWORK_ERROR_LOSTCONNECTION,      // NETWORK_ERROR_NAME_IN_USE
-		STR_NETWORK_ERROR_WRONG_PASSWORD,      // NETWORK_ERROR_WRONG_PASSWORD
-		STR_NETWORK_ERROR_SERVER_ERROR,        // NETWORK_ERROR_COMPANY_MISMATCH
-		STR_NETWORK_ERROR_KICKED,              // NETWORK_ERROR_KICKED
-		STR_NETWORK_ERROR_CHEATER,             // NETWORK_ERROR_CHEATER
-		STR_NETWORK_ERROR_SERVER_FULL,         // NETWORK_ERROR_FULL
-		STR_NETWORK_ERROR_TOO_MANY_COMMANDS,   // NETWORK_ERROR_TOO_MANY_COMMANDS
-		STR_NETWORK_ERROR_TIMEOUT_PASSWORD,    // NETWORK_ERROR_TIMEOUT_PASSWORD
-		STR_NETWORK_ERROR_TIMEOUT_COMPUTER,    // NETWORK_ERROR_TIMEOUT_COMPUTER
-		STR_NETWORK_ERROR_TIMEOUT_MAP,         // NETWORK_ERROR_TIMEOUT_MAP
-		STR_NETWORK_ERROR_TIMEOUT_JOIN,        // NETWORK_ERROR_TIMEOUT_JOIN
-		STR_NETWORK_ERROR_INVALID_CLIENT_NAME, // NETWORK_ERROR_INVALID_CLIENT_NAME
-		STR_NETWORK_ERROR_NOT_ON_ALLOW_LIST,   // NETWORK_ERROR_NOT_ON_ALLOW_LIST
-		STR_NETWORK_ERROR_SERVER_ERROR,        // NETWORK_ERROR_NO_AUTHENTICATION_METHOD_AVAILABLE
-	};
-	static_assert(lengthof(network_error_strings) == NETWORK_ERROR_END);
+	NetworkErrorCode error = static_cast<NetworkErrorCode>(p.Recv_uint8());
 
-	NetworkErrorCode error = (NetworkErrorCode)p.Recv_uint8();
-
-	StringID err = STR_NETWORK_ERROR_LOSTCONNECTION;
-	if (error < (ptrdiff_t)lengthof(network_error_strings)) err = network_error_strings[error];
+	StringID err = GetLongNetworkErrorString(error);
 	/* In case of kicking a client, we assume there is a kick message in the packet if we can read one byte */
-	if (error == NETWORK_ERROR_KICKED && p.CanReadFromPacket(1)) {
+	if (error == NetworkErrorCode::Kicked && p.CanReadFromPacket(1)) {
 		ShowErrorMessage(GetEncodedString(err),
 			GetEncodedString(STR_NETWORK_ERROR_KICK_MESSAGE, p.Recv_string(NETWORK_CHAT_LENGTH)),
 			WL_CRITICAL);
@@ -1042,7 +1052,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_WAIT(Packet &p)
 	if (this->status != STATUS_MAP_WAIT) return NETWORK_RECV_STATUS_MALFORMED_PACKET;
 
 	/* But... only now we set the join status to waiting, instead of requesting. */
-	_network_join_status = NETWORK_JOIN_STATUS_WAITING;
+	_network_join_status = NetworkJoinStatus::Waiting;
 	_network_join_waiting = p.Recv_uint8();
 	SetWindowDirty(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
 
@@ -1063,7 +1073,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_MAP_BEGIN(Packe
 	_network_join_bytes = 0;
 	_network_join_bytes_total = 0;
 
-	_network_join_status = NETWORK_JOIN_STATUS_DOWNLOADING;
+	_network_join_status = NetworkJoinStatus::Downloading;
 	SetWindowDirty(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
 
 	return NETWORK_RECV_STATUS_OKAY;
@@ -1099,7 +1109,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_MAP_DONE(Packet
 	if (this->status != STATUS_MAP) return NETWORK_RECV_STATUS_MALFORMED_PACKET;
 	if (this->savegame == nullptr) return NETWORK_RECV_STATUS_MALFORMED_PACKET;
 
-	_network_join_status = NETWORK_JOIN_STATUS_PROCESSING;
+	_network_join_status = NetworkJoinStatus::Processing;
 	SetWindowDirty(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
 
 	this->savegame->Reset();
@@ -1145,7 +1155,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_MAP_DONE(Packet
 		if (_network_join.company != COMPANY_SPECTATOR) {
 			/* We have arrived and ready to start playing; send a command to make a new company;
 			 * the server will give us a client-id and let us in */
-			_network_join_status = NETWORK_JOIN_STATUS_REGISTERING;
+			_network_join_status = NetworkJoinStatus::Registering;
 			ShowJoinStatusWindow();
 			NetworkSendCommand<Commands::CompanyControl>({}, CmdCompanyCtrlData::Make(CompanyCtrlAction::New, CompanyID::Invalid(), CompanyRemoveReason::None, {}, {}), (StringID)0, CommandCallback::None, 0, _local_company);
 		}
@@ -1304,7 +1314,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_ERROR_QUIT(Pack
 
 	NetworkClientInfo *ci = NetworkClientInfo::GetByClientID(client_id);
 	if (ci != nullptr) {
-		NetworkTextMessage(NETWORK_ACTION_LEAVE, CC_DEFAULT, false, ci->client_name, {}, GetNetworkErrorMsg((NetworkErrorCode)p.Recv_uint8()));
+		NetworkTextMessage(NETWORK_ACTION_LEAVE, CC_DEFAULT, false, ci->client_name, {}, GetNetworkErrorMsg(static_cast<NetworkErrorCode>(p.Recv_uint8())));
 		delete ci;
 	}
 

@@ -78,9 +78,9 @@ static DropDownList BuildVisibilityDropDownList()
 {
 	DropDownList list;
 
-	list.push_back(MakeDropDownListStringItem(STR_NETWORK_SERVER_VISIBILITY_LOCAL, SERVER_GAME_TYPE_LOCAL));
-	list.push_back(MakeDropDownListStringItem(STR_NETWORK_SERVER_VISIBILITY_INVITE_ONLY, SERVER_GAME_TYPE_INVITE_ONLY));
-	list.push_back(MakeDropDownListStringItem(STR_NETWORK_SERVER_VISIBILITY_PUBLIC, SERVER_GAME_TYPE_PUBLIC));
+	list.push_back(MakeDropDownListStringItem(STR_NETWORK_SERVER_VISIBILITY_LOCAL, to_underlying(ServerGameType::Local)));
+	list.push_back(MakeDropDownListStringItem(STR_NETWORK_SERVER_VISIBILITY_INVITE_ONLY, to_underlying(ServerGameType::InviteOnly)));
+	list.push_back(MakeDropDownListStringItem(STR_NETWORK_SERVER_VISIBILITY_PUBLIC, to_underlying(ServerGameType::Public)));
 
 	return list;
 }
@@ -987,7 +987,7 @@ struct NetworkStartServerWindow : public Window {
 	{
 		switch (widget) {
 			case WID_NSS_CONNTYPE_BTN:
-				return GetString(STR_NETWORK_SERVER_VISIBILITY_LOCAL + _settings_client.network.server_game_type);
+				return GetString(STR_NETWORK_SERVER_VISIBILITY_LOCAL + to_underlying(_settings_client.network.server_game_type));
 
 			case WID_NSS_CLIENTS_TXT:
 				return GetString(STR_NETWORK_START_SERVER_CLIENTS_SELECT, _settings_client.network.max_clients);
@@ -1033,7 +1033,7 @@ struct NetworkStartServerWindow : public Window {
 				break;
 
 			case WID_NSS_CONNTYPE_BTN: // Connection type
-				ShowDropDownList(this, BuildVisibilityDropDownList(), _settings_client.network.server_game_type, WID_NSS_CONNTYPE_BTN);
+				ShowDropDownList(this, BuildVisibilityDropDownList(), to_underlying(_settings_client.network.server_game_type), WID_NSS_CONNTYPE_BTN);
 				break;
 
 			case WID_NSS_CLIENTS_BTND:    case WID_NSS_CLIENTS_BTNU:    // Click on up/down button for number of clients
@@ -1803,7 +1803,7 @@ public:
 				return _network_server ? _settings_client.network.server_name : _network_server_name;
 
 			case WID_CL_SERVER_VISIBILITY:
-				return GetString(STR_NETWORK_SERVER_VISIBILITY_LOCAL + _settings_client.network.server_game_type);
+				return GetString(STR_NETWORK_SERVER_VISIBILITY_LOCAL + to_underlying(_settings_client.network.server_game_type));
 
 			case WID_CL_SERVER_INVITE_CODE:
 				return _network_server_connection_type == CONNECTION_TYPE_UNKNOWN ? std::string{} : _network_server_invite_code;
@@ -1843,7 +1843,7 @@ public:
 			case WID_CL_SERVER_VISIBILITY:
 				if (!_network_server) break;
 
-				ShowDropDownList(this, BuildVisibilityDropDownList(), _settings_client.network.server_game_type, WID_CL_SERVER_VISIBILITY);
+				ShowDropDownList(this, BuildVisibilityDropDownList(), to_underlying(_settings_client.network.server_game_type), WID_CL_SERVER_VISIBILITY);
 				break;
 
 			case WID_CL_MATRIX: {
@@ -2042,15 +2042,14 @@ struct NetworkJoinStatusWindow : Window {
 				Rect ir = r.Shrink(WidgetDimensions::scaled.bevel);
 				uint8_t progress; // used for progress bar
 				switch (_network_join_status) {
-					case NETWORK_JOIN_STATUS_CONNECTING:
-					case NETWORK_JOIN_STATUS_AUTHORIZING:
-					case NETWORK_JOIN_STATUS_GETTING_COMPANY_INFO:
+					case NetworkJoinStatus::Connecting:
+					case NetworkJoinStatus::Authorizing:
 						progress = 10; // first two stages 10%
 						break;
-					case NETWORK_JOIN_STATUS_WAITING:
+					case NetworkJoinStatus::Waiting:
 						progress = 15; // third stage is 15%
 						break;
-					case NETWORK_JOIN_STATUS_DOWNLOADING:
+					case NetworkJoinStatus::Downloading:
 						if (_network_join_bytes_total == 0) {
 							progress = 15; // We don't have the final size yet; the server is still compressing!
 							break;
@@ -2062,17 +2061,17 @@ struct NetworkJoinStatusWindow : Window {
 						break;
 				}
 				DrawFrameRect(ir.WithWidth(ir.Width() * progress / 100, _current_text_dir == TD_RTL), COLOUR_MAUVE, {});
-				DrawString(ir.left, ir.right, CentreBounds(ir.top, ir.bottom, GetCharacterHeight(FS_NORMAL)), STR_NETWORK_CONNECTING_1 + _network_join_status, TC_FROMSTRING, SA_HOR_CENTER);
+				DrawString(ir.left, ir.right, CentreBounds(ir.top, ir.bottom, GetCharacterHeight(FS_NORMAL)), STR_NETWORK_CONNECTING_1 + to_underlying(_network_join_status), TC_FROMSTRING, SA_HOR_CENTER);
 				break;
 			}
 
 			case WID_NJS_PROGRESS_TEXT:
 				switch (_network_join_status) {
-					case NETWORK_JOIN_STATUS_WAITING:
+					case NetworkJoinStatus::Waiting:
 						DrawStringMultiLine(r, GetString(STR_NETWORK_CONNECTING_WAITING, _network_join_waiting), TC_FROMSTRING, SA_CENTER);
 						break;
 
-					case NETWORK_JOIN_STATUS_DOWNLOADING:
+					case NetworkJoinStatus::Downloading:
 						if (_network_join_bytes_total == 0) {
 							DrawStringMultiLine(r, GetString(STR_NETWORK_CONNECTING_DOWNLOADING_1, _network_join_bytes), TC_FROMSTRING, SA_CENTER);
 						} else {
@@ -2092,7 +2091,7 @@ struct NetworkJoinStatusWindow : Window {
 		switch (widget) {
 			case WID_NJS_PROGRESS_BAR:
 				/* Account for the statuses */
-				for (uint i = 0; i < NETWORK_JOIN_STATUS_END; i++) {
+				for (uint i = 0; i < to_underlying(NetworkJoinStatus::End); i++) {
 					size = maxdim(size, GetStringBoundingBox(STR_NETWORK_CONNECTING_1 + i));
 				}
 				/* For the number of waiting (other) players */

@@ -139,7 +139,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::SendError(NetworkErrorCode er
 
 	auto p = std::make_unique<Packet>(this, ADMIN_PACKET_SERVER_ERROR);
 
-	p->Send_uint8(error);
+	p->Send_uint8(to_underlying(error));
 	this->SendPacket(std::move(p));
 
 	std::string error_message = GetString(GetNetworkErrorMsg(error));
@@ -319,7 +319,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::SendClientError(ClientID clie
 	auto p = std::make_unique<Packet>(this, ADMIN_PACKET_SERVER_CLIENT_ERROR);
 
 	p->Send_uint32(client_id);
-	p->Send_uint8 (error);
+	p->Send_uint8(to_underlying(error));
 	this->SendPacket(std::move(p));
 
 	return NETWORK_RECV_STATUS_OKAY;
@@ -452,14 +452,8 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::SendCompanyStats()
 
 		/* Send the information. */
 		p->Send_uint8(company->index);
-
-		for (uint i = 0; i < NETWORK_VEH_END; i++) {
-			p->Send_uint16(company_stats[company->index].num_vehicle[i]);
-		}
-
-		for (uint i = 0; i < NETWORK_VEH_END; i++) {
-			p->Send_uint16(company_stats[company->index].num_station[i]);
-		}
+		for (uint16_t value : company_stats[company->index].num_vehicle) p->Send_uint16(value);
+		for (uint16_t value : company_stats[company->index].num_station) p->Send_uint16(value);
 
 		this->SendPacket(std::move(p));
 	}
@@ -524,7 +518,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::SendRcon(uint16_t colour, std
 
 NetworkRecvStatus ServerNetworkAdminSocketHandler::Receive_ADMIN_RCON(Packet &p)
 {
-	if (this->status <= ADMIN_STATUS_AUTHENTICATE) return this->SendError(NETWORK_ERROR_NOT_EXPECTED);
+	if (this->status <= ADMIN_STATUS_AUTHENTICATE) return this->SendError(NetworkErrorCode::NotExpected);
 
 	std::string command = p.Recv_string(NETWORK_RCONCOMMAND_LENGTH);
 
@@ -538,7 +532,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::Receive_ADMIN_RCON(Packet &p)
 
 NetworkRecvStatus ServerNetworkAdminSocketHandler::Receive_ADMIN_GAMESCRIPT(Packet &p)
 {
-	if (this->status <= ADMIN_STATUS_AUTHENTICATE) return this->SendError(NETWORK_ERROR_NOT_EXPECTED);
+	if (this->status <= ADMIN_STATUS_AUTHENTICATE) return this->SendError(NetworkErrorCode::NotExpected);
 
 	std::string json = p.Recv_string(NETWORK_GAMESCRIPT_JSON_LENGTH);
 
@@ -550,7 +544,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::Receive_ADMIN_GAMESCRIPT(Pack
 
 NetworkRecvStatus ServerNetworkAdminSocketHandler::Receive_ADMIN_PING(Packet &p)
 {
-	if (this->status <= ADMIN_STATUS_AUTHENTICATE) return this->SendError(NETWORK_ERROR_NOT_EXPECTED);
+	if (this->status <= ADMIN_STATUS_AUTHENTICATE) return this->SendError(NetworkErrorCode::NotExpected);
 
 	uint32_t d1 = p.Recv_uint32();
 
@@ -678,18 +672,18 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::SendCmdLogging(ClientID clien
 
 NetworkRecvStatus ServerNetworkAdminSocketHandler::Receive_ADMIN_JOIN(Packet &p)
 {
-	if (this->status != ADMIN_STATUS_INACTIVE) return this->SendError(NETWORK_ERROR_NOT_EXPECTED);
+	if (this->status != ADMIN_STATUS_INACTIVE) return this->SendError(NetworkErrorCode::NotExpected);
 
 	if (!_settings_client.network.allow_insecure_admin_login) {
 		/* You're not authorized to login using this method. */
-		return this->SendError(NETWORK_ERROR_NOT_AUTHORIZED);
+		return this->SendError(NetworkErrorCode::NotAuthorized);
 	}
 
 	std::string password = p.Recv_string(NETWORK_PASSWORD_LENGTH);
 
 	if (_settings_client.network.admin_password.empty() || _settings_client.network.admin_password != password) {
 		/* Password is invalid */
-		return this->SendError(NETWORK_ERROR_WRONG_PASSWORD);
+		return this->SendError(NetworkErrorCode::WrongPassword);
 	}
 
 	this->admin_name = p.Recv_string(NETWORK_CLIENT_NAME_LENGTH);
@@ -697,7 +691,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::Receive_ADMIN_JOIN(Packet &p)
 
 	if (this->admin_name.empty() || this->admin_version.empty()) {
 		/* no name or version supplied */
-		return this->SendError(NETWORK_ERROR_ILLEGAL_PACKET);
+		return this->SendError(NetworkErrorCode::IllegalPacket);
 	}
 
 	Debug(net, 3, "[admin] '{}' ({}) has connected", this->admin_name, this->admin_version);
@@ -713,7 +707,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::Receive_ADMIN_QUIT(Packet &)
 
 NetworkRecvStatus ServerNetworkAdminSocketHandler::Receive_ADMIN_UPDATE_FREQUENCY(Packet &p)
 {
-	if (this->status <= ADMIN_STATUS_AUTHENTICATE) return this->SendError(NETWORK_ERROR_NOT_EXPECTED);
+	if (this->status <= ADMIN_STATUS_AUTHENTICATE) return this->SendError(NetworkErrorCode::NotExpected);
 
 	AdminUpdateType type = (AdminUpdateType)p.Recv_uint16();
 	AdminUpdateFrequencies freq = static_cast<AdminUpdateFrequencies>(p.Recv_uint16());
@@ -721,7 +715,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::Receive_ADMIN_UPDATE_FREQUENC
 	if (type >= ADMIN_UPDATE_END || !_admin_update_type_frequencies[type].All(freq)) {
 		/* The server does not know of this UpdateType. */
 		Debug(net, 1, "[admin] Not supported update frequency {} ({}) from '{}' ({})", type, freq, this->admin_name, this->admin_version);
-		return this->SendError(NETWORK_ERROR_ILLEGAL_PACKET);
+		return this->SendError(NetworkErrorCode::IllegalPacket);
 	}
 
 	this->update_frequency[type] = freq;
@@ -733,7 +727,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::Receive_ADMIN_UPDATE_FREQUENC
 
 NetworkRecvStatus ServerNetworkAdminSocketHandler::Receive_ADMIN_POLL(Packet &p)
 {
-	if (this->status <= ADMIN_STATUS_AUTHENTICATE) return this->SendError(NETWORK_ERROR_NOT_EXPECTED);
+	if (this->status <= ADMIN_STATUS_AUTHENTICATE) return this->SendError(NetworkErrorCode::NotExpected);
 
 	AdminUpdateType type = (AdminUpdateType)p.Recv_uint8();
 	uint32_t d1 = p.Recv_uint32();
@@ -791,7 +785,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::Receive_ADMIN_POLL(Packet &p)
 		default:
 			/* An unsupported "poll" update type. */
 			Debug(net, 1, "[admin] Not supported poll {} ({}) from '{}' ({}).", type, d1, this->admin_name, this->admin_version);
-			return this->SendError(NETWORK_ERROR_ILLEGAL_PACKET);
+			return this->SendError(NetworkErrorCode::IllegalPacket);
 	}
 
 	return NETWORK_RECV_STATUS_OKAY;
@@ -799,7 +793,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::Receive_ADMIN_POLL(Packet &p)
 
 NetworkRecvStatus ServerNetworkAdminSocketHandler::Receive_ADMIN_CHAT(Packet &p)
 {
-	if (this->status <= ADMIN_STATUS_AUTHENTICATE) return this->SendError(NETWORK_ERROR_NOT_EXPECTED);
+	if (this->status <= ADMIN_STATUS_AUTHENTICATE) return this->SendError(NetworkErrorCode::NotExpected);
 
 	NetworkAction action = (NetworkAction)p.Recv_uint8();
 	DestType desttype = (DestType)p.Recv_uint8();
@@ -817,7 +811,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::Receive_ADMIN_CHAT(Packet &p)
 
 		default:
 			Debug(net, 1, "[admin] Invalid chat action {} from admin '{}' ({}).", action, this->admin_name, this->admin_version);
-			return this->SendError(NETWORK_ERROR_ILLEGAL_PACKET);
+			return this->SendError(NetworkErrorCode::IllegalPacket);
 	}
 
 	return NETWORK_RECV_STATUS_OKAY;
@@ -825,7 +819,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::Receive_ADMIN_CHAT(Packet &p)
 
 NetworkRecvStatus ServerNetworkAdminSocketHandler::Receive_ADMIN_EXTERNAL_CHAT(Packet &p)
 {
-	if (this->status <= ADMIN_STATUS_AUTHENTICATE) return this->SendError(NETWORK_ERROR_NOT_EXPECTED);
+	if (this->status <= ADMIN_STATUS_AUTHENTICATE) return this->SendError(NetworkErrorCode::NotExpected);
 
 	std::string source = p.Recv_string(NETWORK_CHAT_LENGTH);
 	TextColour colour = (TextColour)p.Recv_uint16();
@@ -834,7 +828,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::Receive_ADMIN_EXTERNAL_CHAT(P
 
 	if (!IsValidConsoleColour(colour)) {
 		Debug(net, 1, "[admin] Not supported chat colour {} ({}, {}, {}) from '{}' ({}).", (uint16_t)colour, source, user, msg, this->admin_name, this->admin_version);
-		return this->SendError(NETWORK_ERROR_ILLEGAL_PACKET);
+		return this->SendError(NetworkErrorCode::IllegalPacket);
 	}
 
 	NetworkServerSendExternalChat(source, colour, user, msg);
@@ -848,7 +842,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::Receive_ADMIN_EXTERNAL_CHAT(P
 
 NetworkRecvStatus ServerNetworkAdminSocketHandler::Receive_ADMIN_JOIN_SECURE(Packet &p)
 {
-	if (this->status != ADMIN_STATUS_INACTIVE) return this->SendError(NETWORK_ERROR_NOT_EXPECTED);
+	if (this->status != ADMIN_STATUS_INACTIVE) return this->SendError(NetworkErrorCode::NotExpected);
 
 	this->admin_name = p.Recv_string(NETWORK_CLIENT_NAME_LENGTH);
 	this->admin_version = p.Recv_string(NETWORK_REVISION_LENGTH);
@@ -859,11 +853,11 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::Receive_ADMIN_JOIN_SECURE(Pac
 
 	if (this->admin_name.empty() || this->admin_version.empty()) {
 		/* No name or version supplied. */
-		return this->SendError(NETWORK_ERROR_ILLEGAL_PACKET);
+		return this->SendError(NetworkErrorCode::IllegalPacket);
 	}
 
 	auto handler = NetworkAuthenticationServerHandler::Create(&_admin_password_provider, &_admin_authorized_key_handler, method_mask);
-	if (!handler->CanBeUsed()) return this->SendError(NETWORK_ERROR_NO_AUTHENTICATION_METHOD_AVAILABLE);
+	if (!handler->CanBeUsed()) return this->SendError(NetworkErrorCode::NoAuthenticationMethodAvailable);
 
 	this->authentication_handler = std::move(handler);
 	Debug(net, 3, "[admin] '{}' ({}) has connected", this->admin_name, this->admin_version);
@@ -887,7 +881,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::SendAuthRequest()
 
 NetworkRecvStatus ServerNetworkAdminSocketHandler::SendEnableEncryption()
 {
-	if (this->status != ADMIN_STATUS_AUTHENTICATE) return this->SendError(NETWORK_ERROR_NOT_EXPECTED);
+	if (this->status != ADMIN_STATUS_AUTHENTICATE) return this->SendError(NetworkErrorCode::NotExpected);
 
 	auto p = std::make_unique<Packet>(this, ADMIN_PACKET_SERVER_ENABLE_ENCRYPTION);
 	this->authentication_handler->SendEnableEncryption(*p);
@@ -898,7 +892,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::SendEnableEncryption()
 
 NetworkRecvStatus ServerNetworkAdminSocketHandler::Receive_ADMIN_AUTH_RESPONSE(Packet &p)
 {
-	if (this->status != ADMIN_STATUS_AUTHENTICATE) return this->SendError(NETWORK_ERROR_NOT_EXPECTED);
+	if (this->status != ADMIN_STATUS_AUTHENTICATE) return this->SendError(NetworkErrorCode::NotExpected);
 
 	switch (this->authentication_handler->ReceiveResponse(p)) {
 		case NetworkAuthenticationServerHandler::ResponseResult::Authenticated:
@@ -918,7 +912,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::Receive_ADMIN_AUTH_RESPONSE(P
 		case NetworkAuthenticationServerHandler::ResponseResult::NotAuthenticated:
 		default:
 			Debug(net, 3, "[admin] '{}' ({}) authentication failed", this->admin_name, this->admin_version);
-			return this->SendError(NETWORK_ERROR_WRONG_PASSWORD);
+			return this->SendError(NetworkErrorCode::WrongPassword);
 	}
 }
 

@@ -21,24 +21,24 @@ static const uint MAX_CLIENTS = 255;
 /**
  * Vehicletypes in the order they are send in info packets.
  */
-enum NetworkVehicleType : uint8_t {
-	NETWORK_VEH_TRAIN = 0,
-	NETWORK_VEH_LORRY,
-	NETWORK_VEH_BUS,
-	NETWORK_VEH_PLANE,
-	NETWORK_VEH_SHIP,
+enum class NetworkVehicleType : uint8_t {
+	Train = 0, ///< A train.
+	Truck, ///< A road vehicle that stops at truck stops
+	Bus, ///< A road vehicle that stops at bus stops.
+	Aircraft, ///< An airplane or helicopter.
+	Ship, ///< A ship.
 
-	NETWORK_VEH_END
+	End ///< End marker for array sizes.
 };
 
 /**
  * Game type the server can be using.
  * Used on the network protocol to communicate with Game Coordinator.
  */
-enum ServerGameType : uint8_t {
-	SERVER_GAME_TYPE_LOCAL = 0,
-	SERVER_GAME_TYPE_PUBLIC,
-	SERVER_GAME_TYPE_INVITE_ONLY,
+enum class ServerGameType : uint8_t {
+	Local = 0, ///< Do not communicate with the game coordinator.
+	Public, ///< The game is publicly accessible.
+	InviteOnly, ///< The game can be accessed if you know the invite code.
 };
 
 /** 'Unique' identifier to be given to clients */
@@ -58,9 +58,10 @@ using AdminID = PoolID<AdminIDTag>;
 
 /** Simple calculated statistics of a company */
 struct NetworkCompanyStats {
-	uint16_t num_vehicle[NETWORK_VEH_END];          ///< How many vehicles are there of this type?
-	uint16_t num_station[NETWORK_VEH_END];          ///< How many stations are there of this type?
-	bool ai;                                        ///< Is this company an AI
+	/** Array indexed by NetworkVehicleType. */
+	using NetworkVehicleTypeArray = EnumClassIndexContainer<std::array<uint16_t, to_underlying(NetworkVehicleType::End)>, NetworkVehicleType>;
+	NetworkVehicleTypeArray num_vehicle; ///< How many vehicles are there of this type?
+	NetworkVehicleTypeArray num_station; ///< How many stations are there of this type?
 };
 
 /** Some state information of a company, especially for servers */
@@ -112,36 +113,34 @@ enum NetworkAction : uint8_t {
  * The error codes we send around in the protocols.
  * @warning The values of the enum items are part of the admin network API. Only append at the end.
  */
-enum NetworkErrorCode : uint8_t {
-	NETWORK_ERROR_GENERAL, // Try to use this one like never
+enum class NetworkErrorCode : uint8_t {
+	General, ///< Fallback error code in case nothing matches.
 
-	/* Signals from clients */
-	NETWORK_ERROR_DESYNC,
-	NETWORK_ERROR_SAVEGAME_FAILED,
-	NETWORK_ERROR_CONNECTION_LOST,
-	NETWORK_ERROR_ILLEGAL_PACKET,
-	NETWORK_ERROR_NEWGRF_MISMATCH,
+	Desync, ///< Client tells that they desynced.
+	SavegameFailed, ///< Client tells they could not load the savegame.
+	ConnectionLost, ///< Connection to the client was lost.
+	IllegalPacket, ///< A packet was received that has invalid content.
+	NewGRFMismatch, ///< Client does not have the right NewGRFs.
 
-	/* Signals from servers */
-	NETWORK_ERROR_NOT_AUTHORIZED,
-	NETWORK_ERROR_NOT_EXPECTED,
-	NETWORK_ERROR_WRONG_REVISION,
-	NETWORK_ERROR_NAME_IN_USE,
-	NETWORK_ERROR_WRONG_PASSWORD,
-	NETWORK_ERROR_COMPANY_MISMATCH, // Happens in CLIENT_COMMAND
-	NETWORK_ERROR_KICKED,
-	NETWORK_ERROR_CHEATER,
-	NETWORK_ERROR_FULL,
-	NETWORK_ERROR_TOO_MANY_COMMANDS,
-	NETWORK_ERROR_TIMEOUT_PASSWORD,
-	NETWORK_ERROR_TIMEOUT_COMPUTER,
-	NETWORK_ERROR_TIMEOUT_MAP,
-	NETWORK_ERROR_TIMEOUT_JOIN,
-	NETWORK_ERROR_INVALID_CLIENT_NAME,
-	NETWORK_ERROR_NOT_ON_ALLOW_LIST,
-	NETWORK_ERROR_NO_AUTHENTICATION_METHOD_AVAILABLE,
+	NotAuthorized, ///< The client tried to do something there are not authorized to.
+	NotExpected, ///< The request/packet was not expected in the current state.
+	WrongRevision, ///< The client is using the wrong revision.
+	NameInUse, ///< The client has a duplicate name (and we couldn't make it unique).
+	WrongPassword, ///< The client entered a wrong password.
+	CompanyMismatch, ///< The client was impersonating another company.
+	Kicked, ///< The client got kicked.
+	Cheater, ///< The client is trying control companies in a way they are not supposed to.
+	ServerFull, ///< The server is full.
+	TooManyCommands, ///< The client has sent too many commands in a short time.
+	TimeoutPassword, ///< The client has timed out providing a password.
+	TimeoutComputer, ///< The client has timed out because the computer could not keep up with the server.
+	TimeoutMap, ///< The client has timed out because it took too long to download the map.
+	TimeoutJoin, ///< The client has timed out because getting up to speed with the server failed.
+	InvalidClientName, ///< The client tried to set an invalid name.
+	NotOnAllowList, ///< The client is not on the allow list.
+	NoAuthenticationMethodAvailable, ///< The client and server could not find a common authentication method.
 
-	NETWORK_ERROR_END,
+	/* When adding elements to this enumeration, update the mapping in GetLongNetworkErrorString and GetNetworkErrorMsg. */
 };
 
 struct NetworkTextMessageData {

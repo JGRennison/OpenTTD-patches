@@ -20,7 +20,7 @@
 
 #include "../../safeguards.h"
 
-static std::vector<NetworkGameSocketHandler *> _deferred_deletions;
+static std::vector<NetworkGameSocketHandler *> _deferred_deletions; ///< NetworkGameSocketHandler that still need to be deleted.
 
 static const char* _packet_game_type_names[] {
 	"SERVER_FULL",
@@ -288,12 +288,14 @@ void NetworkGameSocketHandler::LogSentPacket(const Packet &pkt)
 	Debug(net, 5, "[tcp/game] sent packet type {} ({}) to client {}, {}", type, GetPacketGameTypeName(type), this->client_id, this->GetDebugInfo());
 }
 
+/** Mark this socket handler for deletion, once iterating the socket handlers is done. */
 void NetworkGameSocketHandler::DeferDeletion()
 {
 	_deferred_deletions.push_back(this);
 	this->is_pending_deletion = true;
 }
 
+/** Actually delete the socket handlers that were marked for deletion. */
 /* static */ void NetworkGameSocketHandler::ProcessDeferredDeletions()
 {
 	for (NetworkGameSocketHandler *cs : _deferred_deletions) {

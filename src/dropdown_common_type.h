@@ -289,10 +289,10 @@ public:
 };
 
 /* Commonly used drop down list items. */
-using DropDownListDividerItem = DropDownDivider<DropDownListItem>;
-using DropDownListStringItem = DropDownString<DropDownListItem>;
-using DropDownListIconItem = DropDownIcon<DropDownString<DropDownListItem>>;
-using DropDownListCheckedItem = DropDownIndent<DropDownCheck<DropDownString<DropDownListItem>>>;
+using DropDownListDividerItem = DropDownDivider<DropDownListItem>; ///< Drop down list item that divides list horizontally into two parts.
+using DropDownListStringItem = DropDownString<DropDownListItem>; ///< Drop down list item that contains a single string.
+using DropDownListIconItem = DropDownIcon<DropDownString<DropDownListItem>>; ///< Drop down list item that contains a single string and an icon.
+using DropDownListCheckedItem = DropDownIndent<DropDownCheck<DropDownString<DropDownListItem>>>; ///< Drop down list item with a single string and a space for tick.
 using DropDownListIndentStringItem = DropDownIndent<DropDownString<DropDownListItem>>;
 
 #endif /* DROPDOWN_COMMON_TYPE_H */

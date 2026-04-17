@@ -157,6 +157,7 @@ public:
 	}
 };
 
+/** TCPConnecter that resolves the server invite code if needed before connecting. */
 class TCPServerConnecter : public TCPConnecter {
 private:
 	SOCKET socket = INVALID_SOCKET; ///< The socket when a connection is established.

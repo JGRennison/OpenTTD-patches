@@ -238,8 +238,8 @@ struct InvokeGrfChangeInfoHandler {
 	static ChangeInfoResult Invoke(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf, GrfLoadingStage stage)
 	{
 		switch (stage) {
-			case GLS_RESERVE: return GrfChangeInfoHandler<TFeature>::Reserve(first, last, prop, mapping_entry, buf);
-			case GLS_ACTIVATION: return GrfChangeInfoHandler<TFeature>::Activation(first, last, prop, mapping_entry, buf);
+			case GrfLoadingStage::Reserve: return GrfChangeInfoHandler<TFeature>::Reserve(first, last, prop, mapping_entry, buf);
+			case GrfLoadingStage::Activation: return GrfChangeInfoHandler<TFeature>::Activation(first, last, prop, mapping_entry, buf);
 			default: NOT_REACHED();
 		}
 	}
@@ -291,7 +291,7 @@ static void FeatureChangeInfo(ByteReader &buf)
 	               GetFeatureString(feature_ref), numprops, engine, numinfo);
 
 	/* Test if feature handles change. */
-	ChangeInfoResult cir_test = InvokeGrfChangeInfoHandler::Invoke(feature, 0, 0, 0, nullptr, buf, GLS_ACTIVATION);
+	ChangeInfoResult cir_test = InvokeGrfChangeInfoHandler::Invoke(feature, 0, 0, 0, nullptr, buf, GrfLoadingStage::Activation);
 	if (cir_test == CIR_UNHANDLED) return;
 	if (cir_test == CIR_UNKNOWN) {
 		GrfMsg(1, "FeatureChangeInfo: Unsupported feature {}, skipping", GetFeatureString(feature_ref));
@@ -304,12 +304,12 @@ static void FeatureChangeInfo(ByteReader &buf)
 	while (numprops-- && buf.HasData()) {
 		GRFFilePropertyDescriptor desc = ReadAction0PropertyID(buf, feature);
 
-		ChangeInfoResult cir = InvokeGrfChangeInfoHandler::Invoke(feature, engine, engine + numinfo, desc.prop, desc.entry, buf, GLS_ACTIVATION);
+		ChangeInfoResult cir = InvokeGrfChangeInfoHandler::Invoke(feature, engine, engine + numinfo, desc.prop, desc.entry, buf, GrfLoadingStage::Activation);
 		if (HandleChangeInfoResult("FeatureChangeInfo", cir, feature, desc.prop)) return;
 	}
 }
 
-/* Action 0x00 (GLS_SAFETYSCAN) */
+/* Action 0x00 (GrfLoadingStage::SafetyScan) */
 static void SafeChangeInfo(ByteReader &buf)
 {
 	GrfSpecFeatureRef feature = ReadFeature(buf.ReadByte());
@@ -344,14 +344,14 @@ static void SafeChangeInfo(ByteReader &buf)
 	GRFUnsafe(buf);
 }
 
-/* Action 0x00 (GLS_RESERVE) */
+/* Action 0x00 (GrfLoadingStage::Reserve) */
 static void ReserveChangeInfo(ByteReader &buf)
 {
 	GrfSpecFeatureRef feature_ref = ReadFeature(buf.ReadByte());
 	GrfSpecFeature feature = feature_ref.id;
 
 	/* Test if feature handles reservation. */
-	ChangeInfoResult cir_test = InvokeGrfChangeInfoHandler::Invoke(feature, 0, 0, 0, nullptr, buf, GLS_RESERVE);
+	ChangeInfoResult cir_test = InvokeGrfChangeInfoHandler::Invoke(feature, 0, 0, 0, nullptr, buf, GrfLoadingStage::Reserve);
 	if (cir_test == CIR_UNHANDLED) return;
 	if (cir_test == CIR_UNKNOWN) {
 		GrfMsg(1, "ReserveChangeInfo: Unsupported feature {}, skipping", GetFeatureString(feature_ref));
@@ -365,14 +365,20 @@ static void ReserveChangeInfo(ByteReader &buf)
 	while (numprops-- && buf.HasData()) {
 		GRFFilePropertyDescriptor desc = ReadAction0PropertyID(buf, feature);
 
-		ChangeInfoResult cir = InvokeGrfChangeInfoHandler::Invoke(feature, index, index + numinfo, desc.prop, desc.entry, buf, GLS_RESERVE);
+		ChangeInfoResult cir = InvokeGrfChangeInfoHandler::Invoke(feature, index, index + numinfo, desc.prop, desc.entry, buf, GrfLoadingStage::Reserve);
 		if (HandleChangeInfoResult("ReserveChangeInfo", cir, feature, desc.prop)) return;
 	}
 }
 
+/** @copybrief GrfActionHandler::FileScan */
 template <> void GrfActionHandler<0x00>::FileScan(ByteReader &) { }
+/** @copydoc GrfActionHandler::SafetyScan */
 template <> void GrfActionHandler<0x00>::SafetyScan(ByteReader &buf) { SafeChangeInfo(buf); }
+/** @copybrief GrfActionHandler::LabelScan */
 template <> void GrfActionHandler<0x00>::LabelScan(ByteReader &) { }
+/** @copybrief GrfActionHandler::Init */
 template <> void GrfActionHandler<0x00>::Init(ByteReader &) { }
+/** @copydoc GrfActionHandler::Reserve */
 template <> void GrfActionHandler<0x00>::Reserve(ByteReader &buf) { ReserveChangeInfo(buf); }
+/** @copydoc GrfActionHandler::Activation */
 template <> void GrfActionHandler<0x00>::Activation(ByteReader &buf) { FeatureChangeInfo(buf); }
