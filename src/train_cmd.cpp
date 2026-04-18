@@ -7445,7 +7445,7 @@ CommandCost CmdBuildVirtualRailVehicle(DoCommandFlags flags, EngineID eid, Cargo
 			if (default_cargo != cargo) {
 				CommandCost refit_res = CmdRefitVehicle(flags, train->index, cargo, 0, false, false, 0);
 				if (!refit_res.Succeeded()) {
-					Command<Commands::SellVehicle>::Do(flags, train->index, SellVehicleFlags::VirtualOnly, client);
+					Command<Commands::SellVehicle>::Do(flags, train->tile, train->index, SellVehicleFlags::VirtualOnly, client);
 					return refit_res;
 				}
 			}
@@ -7460,7 +7460,7 @@ CommandCost CmdBuildVirtualRailVehicle(DoCommandFlags flags, EngineID eid, Cargo
 			}
 
 			if (move_result.Failed()) {
-				Command<Commands::SellVehicle>::Do(flags, train->index, SellVehicleFlags::VirtualOnly, client);
+				Command<Commands::SellVehicle>::Do(flags, train->tile, train->index, SellVehicleFlags::VirtualOnly, client);
 				return move_result;
 			}
 		}
@@ -7761,7 +7761,7 @@ static CommandCost CmdTemplateReplaceVehicle(DoCommandFlags flags, Train *incomi
 				if (move_cost.Succeeded()) {
 					buy.AddCost(buy_cost.GetCost());
 				} else {
-					Command<Commands::SellVehicle>::Do(flags, new_part->index, SellVehicleFlags::None, INVALID_CLIENT_ID);
+					Command<Commands::SellVehicle>::Do(flags, new_part->tile, new_part->index, SellVehicleFlags::None, INVALID_CLIENT_ID);
 					new_part = nullptr;
 				}
 			};
@@ -7803,7 +7803,7 @@ static CommandCost CmdTemplateReplaceVehicle(DoCommandFlags flags, Train *incomi
 	if (remainder_chain != nullptr && tv->IsSetKeepRemainingVehicles()) {
 		BreakUpRemainders(remainder_chain);
 	} else if (remainder_chain != nullptr) {
-		buy.AddCost(Command<Commands::SellVehicle>::Do(flags, remainder_chain->index, SellVehicleFlags::SellChain, INVALID_CLIENT_ID));
+		buy.AddCost(Command<Commands::SellVehicle>::Do(flags, remainder_chain->tile, remainder_chain->index, SellVehicleFlags::SellChain, INVALID_CLIENT_ID));
 	}
 
 	/* Redraw main gui for changed statistics */

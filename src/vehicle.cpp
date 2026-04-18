@@ -1738,7 +1738,7 @@ void CallVehicleTicks()
 		int y = v->y_pos;
 		int z = v->z_pos;
 
-		CommandCost cost = Command<Commands::SellVehicle>::Do(DoCommandFlag::Execute, v->index, SellVehicleFlags::SellChain, INVALID_CLIENT_ID);
+		CommandCost cost = Command<Commands::SellVehicle>::Do(DoCommandFlag::Execute, v->tile, v->index, SellVehicleFlags::SellChain, INVALID_CLIENT_ID);
 		v = nullptr;
 		if (!cost.Succeeded()) continue;
 
@@ -4013,7 +4013,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlags flags, DepotCommandFlags command
 				int y = this->y_pos;
 				int z = this->z_pos;
 
-				CommandCost cost = Command<Commands::SellVehicle>::Do(flags, this->index, SellVehicleFlags::SellChain, INVALID_CLIENT_ID);
+				CommandCost cost = Command<Commands::SellVehicle>::Do(flags, this->tile, this->index, SellVehicleFlags::SellChain, INVALID_CLIENT_ID);
 				if (cost.Succeeded()) {
 					if (IsLocalCompany()) {
 						if (cost.GetCost() != 0) {

@@ -669,11 +669,11 @@ static CommandCost ReplaceFreeUnit(Vehicle **single_unit, DoCommandFlags flags, 
 		}
 
 		/* Sell the old vehicle */
-		cost.AddCost(Command<Commands::SellVehicle>::Do(flags, old_v->index, SellVehicleFlags::None, INVALID_CLIENT_ID));
+		cost.AddCost(Command<Commands::SellVehicle>::Do(flags, old_v->tile, old_v->index, SellVehicleFlags::None, INVALID_CLIENT_ID));
 
 		/* If we are not in DoCommandFlag::Execute undo everything */
 		if (!flags.Test(DoCommandFlag::Execute)) {
-			Command<Commands::SellVehicle>::Do(DoCommandFlag::Execute, new_v->index, SellVehicleFlags::None, INVALID_CLIENT_ID);
+			Command<Commands::SellVehicle>::Do(DoCommandFlag::Execute, new_v->tile, new_v->index, SellVehicleFlags::None, INVALID_CLIENT_ID);
 		}
 	}
 
@@ -813,7 +813,7 @@ static CommandCost ReplaceChain(Vehicle **chain, DoCommandFlags flags, bool wago
 					assert(RailVehInfo(wagon->engine_type)->railveh_type == RAILVEH_WAGON);
 
 					/* Sell wagon */
-					[[maybe_unused]] CommandCost ret = Command<Commands::SellVehicle>::Do(DoCommandFlag::Execute, wagon->index, SellVehicleFlags::None, INVALID_CLIENT_ID);
+					[[maybe_unused]] CommandCost ret = Command<Commands::SellVehicle>::Do(DoCommandFlag::Execute, wagon->tile, wagon->index, SellVehicleFlags::None, INVALID_CLIENT_ID);
 					assert(ret.Succeeded());
 					it->new_veh = nullptr;
 
@@ -849,7 +849,7 @@ static CommandCost ReplaceChain(Vehicle **chain, DoCommandFlags flags, bool wago
 					/* Sell the vehicle.
 					 * Note: This might temporarily construct new trains, so use DoCommandFlag::AutoReplace to prevent
 					 *       it from failing due to engine limits. */
-					cost.AddCost(Command<Commands::SellVehicle>::Do(flags | DoCommandFlag::AutoReplace, w->index, SellVehicleFlags::None, INVALID_CLIENT_ID));
+					cost.AddCost(Command<Commands::SellVehicle>::Do(flags | DoCommandFlag::AutoReplace, w->tile, w->index, SellVehicleFlags::None, INVALID_CLIENT_ID));
 				}
 
 				if (flags.Test(DoCommandFlag::Execute)) CheckCargoCapacity(new_head);
@@ -876,7 +876,7 @@ static CommandCost ReplaceChain(Vehicle **chain, DoCommandFlags flags, bool wago
 		if (!flags.Test(DoCommandFlag::Execute)) {
 			for (auto it = std::rbegin(replacements); it != std::rend(replacements); ++it) {
 				if (it->new_veh != nullptr) {
-					Command<Commands::SellVehicle>::Do(DoCommandFlag::Execute, it->new_veh->index, SellVehicleFlags::None, INVALID_CLIENT_ID);
+					Command<Commands::SellVehicle>::Do(DoCommandFlag::Execute, it->new_veh->tile, it->new_veh->index, SellVehicleFlags::None, INVALID_CLIENT_ID);
 					it->new_veh = nullptr;
 				}
 			}
@@ -903,12 +903,12 @@ static CommandCost ReplaceChain(Vehicle **chain, DoCommandFlags flags, bool wago
 				}
 
 				/* Sell the old vehicle */
-				cost.AddCost(Command<Commands::SellVehicle>::Do(flags, old_head->index, SellVehicleFlags::None, INVALID_CLIENT_ID));
+				cost.AddCost(Command<Commands::SellVehicle>::Do(flags, old_head->tile, old_head->index, SellVehicleFlags::None, INVALID_CLIENT_ID));
 			}
 
 			/* If we are not in DoCommandFlag::Execute undo everything */
 			if (!flags.Test(DoCommandFlag::Execute)) {
-				Command<Commands::SellVehicle>::Do(DoCommandFlag::Execute, new_head->index, SellVehicleFlags::None, INVALID_CLIENT_ID);
+				Command<Commands::SellVehicle>::Do(DoCommandFlag::Execute, new_head->tile, new_head->index, SellVehicleFlags::None, INVALID_CLIENT_ID);
 			}
 		}
 	}
