@@ -306,6 +306,10 @@ private:
 		if ((prog->actions_used_flags & TRPAUF_DRIVE_DIR_CONDITIONALS) && Yapf().HasReverseOrigin()) {
 			Node *root = &n;
 			while (root->parent != nullptr) {
+				if (root->flags_u.flags_s.teleport || root->segment->end_segment_reason.Test(EndSegmentReason::Depot)) {
+					/* Reverse in depot or behind signal, flip direction. */
+					input.input_flags.Flip(TraceRestrictProgramInputFlag::InvertDrivingDirection);
+				}
 				root = root->parent;
 			}
 
