@@ -419,9 +419,6 @@ std::array<StringParameter, 2> GetParamsForOwnedBy(Owner owner, TileIndex tile)
  */
 CommandCost CheckOwnership(Owner owner, TileIndex tile)
 {
-	assert(owner < OWNER_END);
-	assert(owner != OWNER_TOWN || tile != 0);
-
 	if (owner == _current_company) return CommandCost();
 
 	CommandCost error{STR_ERROR_OWNED_BY};
