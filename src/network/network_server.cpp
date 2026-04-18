@@ -1329,7 +1329,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_COMMAND(Packet 
 
 		/* Check if we are full - else it's possible for spectators to send a Commands::CompanyControl and the company is created regardless of max_companies! */
 		if (Company::GetNumItems() >= _settings_client.network.max_companies) {
-			NetworkServerSendChat(NETWORK_ACTION_SERVER_MESSAGE, DESTTYPE_CLIENT, ci->client_id, "cannot create new company, server full", CLIENT_ID_SERVER);
+			NetworkServerSendChat(NETWORK_ACTION_SERVER_MESSAGE, NetworkChatDestinationType::Client, ci->client_id, "cannot create new company, server full", CLIENT_ID_SERVER);
 			return NETWORK_RECV_STATUS_OKAY;
 		}
 	}
@@ -1558,12 +1558,12 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_ACK(Packet &p)
  * @param data Arbitrary data.
  * @param from_admin Whether the origin is an admin or not.
  */
-void NetworkServerSendChat(NetworkAction action, DestType desttype, int dest, std::string_view msg, ClientID from_id, NetworkTextMessageData data, bool from_admin)
+void NetworkServerSendChat(NetworkAction action, NetworkChatDestinationType desttype, int dest, std::string_view msg, ClientID from_id, NetworkTextMessageData data, bool from_admin)
 {
 	const NetworkClientInfo *ci, *ci_own, *ci_to;
 
 	switch (desttype) {
-		case DESTTYPE_CLIENT:
+		case NetworkChatDestinationType::Client:
 			/* Are we sending to the server? */
 			if ((ClientID)dest == CLIENT_ID_SERVER) {
 				ci = NetworkClientInfo::GetByClientID(from_id);
@@ -1603,7 +1603,7 @@ void NetworkServerSendChat(NetworkAction action, DestType desttype, int dest, st
 				}
 			}
 			break;
-		case DESTTYPE_TEAM: {
+		case NetworkChatDestinationType::Team: {
 			/* If this is false, the message is already displayed on the client who sent it. */
 			bool show_local = true;
 			/* Find all clients that belong to this company */
@@ -1653,10 +1653,10 @@ void NetworkServerSendChat(NetworkAction action, DestType desttype, int dest, st
 			Debug(net, 1, "Received unknown chat destination type {}; doing broadcast instead", desttype);
 			[[fallthrough]];
 
-		case DESTTYPE_BROADCAST:
-		case DESTTYPE_BROADCAST_SS:
+		case NetworkChatDestinationType::Broadcast:
+		case NetworkChatDestinationType::BroadcastSelfSend:
 			for (NetworkClientSocket *cs : NetworkClientSocket::Iterate()) {
-				if (cs->status >= ServerNetworkGameSocketHandler::STATUS_AUTHORIZED) cs->SendChat(action, from_id, (desttype == DESTTYPE_BROADCAST_SS && from_id == cs->client_id), msg, data);
+				if (cs->status >= ServerNetworkGameSocketHandler::STATUS_AUTHORIZED) cs->SendChat(action, from_id, (desttype == NetworkChatDestinationType::BroadcastSelfSend && from_id == cs->client_id), msg, data);
 			}
 
 			NetworkAdminChat(action, desttype, from_id, msg, data, from_admin);
@@ -1664,7 +1664,7 @@ void NetworkServerSendChat(NetworkAction action, DestType desttype, int dest, st
 			ci = NetworkClientInfo::GetByClientID(from_id);
 			if (ci != nullptr) {
 				NetworkTextMessage(action, GetDrawStringCompanyColour(ci->client_playas),
-						(desttype == DESTTYPE_BROADCAST_SS && from_id == CLIENT_ID_SERVER), ci->client_name, msg, data);
+						(desttype == NetworkChatDestinationType::BroadcastSelfSend && from_id == CLIENT_ID_SERVER), ci->client_name, msg, data);
 			}
 			break;
 	}
@@ -1693,7 +1693,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::Receive_CLIENT_CHAT(Packet &p)
 	}
 
 	NetworkAction action = (NetworkAction)p.Recv_uint8();
-	DestType desttype = (DestType)p.Recv_uint8();
+	NetworkChatDestinationType desttype = static_cast<NetworkChatDestinationType>(p.Recv_uint8());
 	int dest = p.Recv_uint32();
 
 	std::string msg = p.Recv_string(NETWORK_CHAT_LENGTH);
@@ -2416,11 +2416,11 @@ void NetworkServerDoMove(ClientID client_id, CompanyID company_id)
 
 	if (company_id == COMPANY_SPECTATOR) {
 		/* The client has joined spectators. */
-		NetworkServerSendChat(NETWORK_ACTION_COMPANY_SPECTATOR, DESTTYPE_BROADCAST, 0, "", client_id);
+		NetworkServerSendChat(NETWORK_ACTION_COMPANY_SPECTATOR, NetworkChatDestinationType::Broadcast, 0, "", client_id);
 	} else {
 		/* The client has joined another company. */
 		std::string company_name = GetString(STR_COMPANY_NAME, company_id);
-		NetworkServerSendChat(NETWORK_ACTION_COMPANY_JOIN, DESTTYPE_BROADCAST, 0, company_name, client_id);
+		NetworkServerSendChat(NETWORK_ACTION_COMPANY_JOIN, NetworkChatDestinationType::Broadcast, 0, company_name, client_id);
 	}
 
 	InvalidateWindowData(WC_CLIENT_LIST, 0);
@@ -2599,7 +2599,7 @@ void NetworkServerNewCompany(const Company *c, NetworkClientInfo *ci)
 		/* ci is nullptr when replaying, or for AIs. In neither case there is a client.
 		   We need to send Admin port update here so that they first know about the new company
 		   and then learn about a possibly joining client (see FS#6025) */
-		NetworkServerSendChat(NETWORK_ACTION_COMPANY_NEW, DESTTYPE_BROADCAST, 0, "", ci->client_id, c->index + 1);
+		NetworkServerSendChat(NETWORK_ACTION_COMPANY_NEW, NetworkChatDestinationType::Broadcast, 0, "", ci->client_id, c->index + 1);
 	}
 }
 

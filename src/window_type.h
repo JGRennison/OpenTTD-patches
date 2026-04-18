@@ -10,6 +10,7 @@
 #ifndef WINDOW_TYPE_H
 #define WINDOW_TYPE_H
 
+#include "window_type_trait.h"
 #include "core/strong_typedef_type.hpp"
 
 /**
@@ -545,7 +546,7 @@ enum WindowClass : uint16_t {
 
 	/**
 	 * Chatbox; %Window numbers:
-	 *   - #DestType = #NetWorkChatWidgets
+	 *   - #NetworkChatDestinationType = #NetWorkChatWidgets
 	 */
 	WC_SEND_NETWORK_MSG,
 
@@ -872,6 +873,9 @@ public:
 	template <typename T> requires std::is_base_of_v<struct PoolIDBase, T>
 	WindowNumber(T value) : value(value.base()) {}
 
+	template <typename T> requires is_convertible_to_window_number_v<T>
+	WindowNumber(T value) : value(to_underlying(value)) {}
+
 	/* Automatically convert to int32_t. */
 	operator int32_t() const { return value; }
 
@@ -888,6 +892,9 @@ public:
 
 	template <typename T> requires std::is_base_of_v<struct PoolIDBase, T>
 	constexpr bool operator==(const T &rhs) const { return this->value == static_cast<int32_t>(rhs.base()); }
+
+	template <typename T> requires is_convertible_to_window_number_v<T>
+	constexpr bool operator==(const T &rhs) const { return this->value == static_cast<int32_t>(to_underlying(rhs)); }
 };
 
 /** State of handling an event. */

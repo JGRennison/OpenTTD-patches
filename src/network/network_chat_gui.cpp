@@ -267,20 +267,26 @@ void NetworkDrawChatMessage()
  * @param type The type of destination.
  * @param dest The actual destination index.
  */
-static void SendChat(std::string_view buf, DestType type, int dest)
+static void SendChat(std::string_view buf, NetworkChatDestinationType type, int dest)
 {
 	if (buf.empty()) return;
-	assert(type >= DESTTYPE_BROADCAST && type <= DESTTYPE_CLIENT);
+	NetworkAction action;
+	switch (type) {
+		case NetworkChatDestinationType::Broadcast: action = NETWORK_ACTION_CHAT; break;
+		case NetworkChatDestinationType::Team: action = NETWORK_ACTION_CHAT_COMPANY; break;
+		case NetworkChatDestinationType::Client: action = NETWORK_ACTION_CHAT_CLIENT; break;
+		default: NOT_REACHED();
+	}
 	if (!_network_server) {
-		MyClient::SendChat((NetworkAction)(NETWORK_ACTION_CHAT + type), type, dest, buf, NetworkTextMessageData());
+		MyClient::SendChat(action, type, dest, buf, NetworkTextMessageData());
 	} else {
-		NetworkServerSendChat((NetworkAction)(NETWORK_ACTION_CHAT + type), type, dest, buf, CLIENT_ID_SERVER);
+		NetworkServerSendChat(action, type, dest, buf, CLIENT_ID_SERVER);
 	}
 }
 
 /** Window to enter the chat message in. */
 struct NetworkChatWindow : public Window {
-	DestType dtype{}; ///< The type of destination.
+	NetworkChatDestinationType dtype{}; ///< The type of destination.
 	int dest = 0; ///< The identifier of the destination.
 	QueryString message_editbox; ///< Message editbox.
 
@@ -290,7 +296,8 @@ struct NetworkChatWindow : public Window {
 	 * @param type The type of destination.
 	 * @param dest The actual destination index.
 	 */
-	NetworkChatWindow(WindowDesc &desc, DestType type, int dest) : Window(desc), dtype(type), dest(dest), message_editbox(NETWORK_CHAT_LENGTH)
+	NetworkChatWindow(WindowDesc &desc, NetworkChatDestinationType type, int dest)
+			: Window(desc), dtype(type), dest(dest), message_editbox(NETWORK_CHAT_LENGTH)
 	{
 		this->querystrings[WID_NC_TEXTBOX] = &this->message_editbox;
 		this->message_editbox.cancel_button = WID_NC_CLOSE;
@@ -460,11 +467,11 @@ struct NetworkChatWindow : public Window {
 		};
 		assert((uint)this->dtype < lengthof(chat_captions));
 
-		if (this->dtype == DESTTYPE_CLIENT) {
-			return GetString(STR_NETWORK_CHAT_CLIENT_CAPTION, NetworkClientInfo::GetByClientID((ClientID)this->dest)->client_name);
+		if (this->dtype == NetworkChatDestinationType::Client) {
+			return GetString(STR_NETWORK_CHAT_CLIENT_CAPTION, NetworkClientInfo::GetByClientID(static_cast<ClientID>(this->dest))->client_name);
 		}
 
-		return GetString(chat_captions[this->dtype]);
+		return GetString(this->dtype == NetworkChatDestinationType::Broadcast ? STR_NETWORK_CHAT_ALL_CAPTION : STR_NETWORK_CHAT_COMPANY_CAPTION);
 	}
 
 	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
@@ -537,7 +544,7 @@ static WindowDesc _chat_window_desc(__FILE__, __LINE__,
  * @param type The type of destination.
  * @param dest The actual destination index.
  */
-void ShowNetworkChatQueryWindow(DestType type, int dest)
+void ShowNetworkChatQueryWindow(NetworkChatDestinationType type, int dest)
 {
 	CloseWindowByClass(WC_SEND_NETWORK_MSG);
 	new NetworkChatWindow(_chat_window_desc, type, dest);

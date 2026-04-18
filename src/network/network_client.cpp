@@ -615,13 +615,13 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendCommand(const OutgoingComm
  * @param data Optional arbitrary extra data.
  * @return The new state the network.
  */
-NetworkRecvStatus ClientNetworkGameSocketHandler::SendChat(NetworkAction action, DestType type, int dest, std::string_view msg, NetworkTextMessageData data)
+NetworkRecvStatus ClientNetworkGameSocketHandler::SendChat(NetworkAction action, NetworkChatDestinationType type, int dest, std::string_view msg, NetworkTextMessageData data)
 {
 	if (!my_client) return NETWORK_RECV_STATUS_CLIENT_QUIT;
 	auto p = std::make_unique<Packet>(my_client, PACKET_CLIENT_CHAT, TCP_MTU);
 
-	p->Send_uint8 (action);
-	p->Send_uint8 (type);
+	p->Send_uint8(action);
+	p->Send_uint8(to_underlying(type));
 	p->Send_uint32(dest);
 	p->Send_string(msg);
 	data.send(*p);
@@ -1697,7 +1697,7 @@ void NetworkUpdateClientName(const std::string &client_name)
  * @param msg The actual message.
  * @param data Arbitrary extra data.
  */
-void NetworkClientSendChat(NetworkAction action, DestType type, int dest, std::string_view msg, NetworkTextMessageData data)
+void NetworkClientSendChat(NetworkAction action, NetworkChatDestinationType type, int dest, std::string_view msg, NetworkTextMessageData data)
 {
 	MyClient::SendChat(action, type, dest, msg, data);
 }

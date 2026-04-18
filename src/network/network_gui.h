@@ -19,7 +19,7 @@
 
 void ShowNetworkNeedPassword(NetworkPasswordType npt, std::shared_ptr<class NetworkAuthenticationPasswordRequest> request);
 void ShowNetworkGiveMoneyWindow(CompanyID company);
-void ShowNetworkChatQueryWindow(DestType type, int dest);
+void ShowNetworkChatQueryWindow(NetworkChatDestinationType type, int dest);
 void ShowJoinStatusWindow();
 void ShowNetworkGameWindow();
 void ShowClientList();

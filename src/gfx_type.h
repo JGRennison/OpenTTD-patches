@@ -255,6 +255,11 @@ DECLARE_INCREMENT_DECREMENT_OPERATORS(FontSize)
 
 using FontSizes = EnumBitSet<FontSize, uint8_t>;
 
+template <>
+struct BaseBitSetEnableDirectIteration<FontSizes> {
+	static const bool value = true;
+};
+
 /** Mask of all possible font sizes. */
 constexpr FontSizes FONTSIZES_ALL{FS_NORMAL, FS_SMALL, FS_LARGE, FS_MONO};
 /** Mask of font sizes required to be present. */

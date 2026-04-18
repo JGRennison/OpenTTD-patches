@@ -119,7 +119,7 @@ public:
 	static NetworkRecvStatus SendCompanyPassword(std::string_view password);
 	static NetworkRecvStatus SendSettingsPassword(std::string_view password);
 
-	static NetworkRecvStatus SendChat(NetworkAction action, DestType type, int dest, std::string_view msg, NetworkTextMessageData data);
+	static NetworkRecvStatus SendChat(NetworkAction action, NetworkChatDestinationType type, int dest, std::string_view msg, NetworkTextMessageData data);
 	static NetworkRecvStatus SendSetPassword(std::string_view password);
 	static NetworkRecvStatus SendSetName(std::string_view name);
 	static NetworkRecvStatus SendRCon(std::string_view password, std::string_view command);
