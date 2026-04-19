@@ -47,6 +47,27 @@ LoadCheckData _load_check_data;    ///< Data loaded from save during SL_LOAD_CHE
 static bool _fios_path_changed;
 static bool _savegame_sort_dirty;
 
+/** The available sorters for FiosItems. */
+enum class SavegameSorter : uint8_t {
+	Date, ///< Sort by date.
+	Name, ///< Sort by name.
+};
+
+static SavegameSorter _savegame_sorter = SavegameSorter::Date; ///< Sorter for savegames.
+static bool _savegame_sorter_ascending = false; ///< Sorter for savegames.
+
+/** Sorts the FiosItems based on the savegame sorter and order. @copydoc GUIList::Sorter */
+bool FiosItemSorter(const FiosItem &a, const FiosItem &b)
+{
+	switch (_savegame_sorter) {
+		case SavegameSorter::Date:
+			return _savegame_sorter_ascending ? FiosItemModificationDateSorter(a, b) : FiosItemModificationDateSorter(b, a);
+		case SavegameSorter::Name:
+			return _savegame_sorter_ascending ? FiosItemNameSorter(a, b) : FiosItemNameSorter(b, a);
+		default:
+			NOT_REACHED();
+	}
+}
 
 /**
  * Reset read data.
@@ -425,7 +446,7 @@ static void SortSaveGameList(FileList &file_list)
 		}
 	}
 
-	std::sort(file_list.begin() + sort_start, file_list.end() - sort_end);
+	std::sort(file_list.begin() + sort_start, file_list.end() - sort_end, FiosItemSorter);
 }
 
 struct SaveLoadWindow : public Window {
@@ -624,8 +645,8 @@ public:
 		switch (widget) {
 			case WID_SL_SORT_BYNAME:
 			case WID_SL_SORT_BYDATE:
-				if (((_savegame_sort_order & SORT_BY_NAME) != 0) == (widget == WID_SL_SORT_BYNAME)) {
-					this->DrawSortButtonState(widget, _savegame_sort_order & SORT_DESCENDING ? SBS_DOWN : SBS_UP);
+				if ((_savegame_sorter == SavegameSorter::Name) == (widget == WID_SL_SORT_BYNAME)) {
+					this->DrawSortButtonState(widget, _savegame_sorter_ascending ? SBS_UP : SBS_DOWN);
 				}
 				break;
 
@@ -754,7 +775,7 @@ public:
 				if (tr.top > tr.bottom) return;
 
 				/* NewGrf compatibility */
-				DrawString(tr, GetString(STR_SAVELOAD_DETAIL_GRFSTATUS, _load_check_data.grfconfig.empty() ? STR_NEWGRF_LIST_NONE : STR_NEWGRF_LIST_ALL_FOUND + _load_check_data.grf_compatibility));
+				DrawString(tr, GetString(STR_SAVELOAD_DETAIL_GRFSTATUS, _load_check_data.grfconfig.empty() ? STR_NEWGRF_LIST_NONE : STR_NEWGRF_LIST_ALL_FOUND + to_underlying(_load_check_data.grf_compatibility)));
 				tr.top += GetCharacterHeight(FS_NORMAL);
 			}
 			if (tr.top > tr.bottom) return;
@@ -817,16 +838,16 @@ public:
 	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
-			case WID_SL_SORT_BYNAME: // Sort save names by name
-				_savegame_sort_order = (_savegame_sort_order == SORT_BY_NAME) ?
-					SORT_BY_NAME | SORT_DESCENDING : SORT_BY_NAME;
+			case WID_SL_SORT_BYNAME: // Sort save games by name
+				_savegame_sorter_ascending = _savegame_sorter != SavegameSorter::Name || !_savegame_sorter_ascending;
+				_savegame_sorter = SavegameSorter::Name;
 				_savegame_sort_dirty = true;
 				this->SetDirty();
 				break;
 
-			case WID_SL_SORT_BYDATE: // Sort save names by date
-				_savegame_sort_order = (_savegame_sort_order == SORT_BY_DATE) ?
-					SORT_BY_DATE | SORT_DESCENDING : SORT_BY_DATE;
+			case WID_SL_SORT_BYDATE: // Sort save games by date
+				_savegame_sorter_ascending = _savegame_sorter != SavegameSorter::Date || !_savegame_sorter_ascending;
+				_savegame_sorter = SavegameSorter::Date;
 				_savegame_sort_dirty = true;
 				this->SetDirty();
 				break;
@@ -874,7 +895,7 @@ public:
 				} else if (this->abstract_filetype == FT_TOWN_DATA) {
 					this->Close();
 					LoadTownData();
-				} else if (!_load_check_data.HasNewGrfs() || _load_check_data.grf_compatibility != GLC_NOT_FOUND || _settings_client.gui.UserIsAllowedToChangeNewGRFs()) {
+				} else if (!_load_check_data.HasNewGrfs() || _load_check_data.grf_compatibility != GRFListCompatibility::NotFound || _settings_client.gui.UserIsAllowedToChangeNewGRFs()) {
 					_switch_mode = (_game_mode == GM_EDITOR) ? SM_LOAD_SCENARIO : SM_LOAD_GAME;
 					ClearErrorMessages();
 					this->Close();
@@ -1140,12 +1161,12 @@ public:
 					case FT_SCENARIO: {
 						bool disabled = this->selected == nullptr || _load_check_data.HasErrors();
 						if (!_settings_client.gui.UserIsAllowedToChangeNewGRFs()) {
-							disabled |= _load_check_data.HasNewGrfs() && _load_check_data.grf_compatibility == GLC_NOT_FOUND;
+							disabled |= _load_check_data.HasNewGrfs() && _load_check_data.grf_compatibility == GRFListCompatibility::NotFound;
 						}
 						this->SetWidgetDisabledState(WID_SL_LOAD_BUTTON, disabled);
 						this->SetWidgetDisabledState(WID_SL_NEWGRF_INFO, !_load_check_data.HasNewGrfs());
 						this->SetWidgetDisabledState(WID_SL_MISSING_NEWGRFS,
-								!_load_check_data.HasNewGrfs() || _load_check_data.grf_compatibility == GLC_ALL_GOOD);
+								!_load_check_data.HasNewGrfs() || _load_check_data.grf_compatibility == GRFListCompatibility::AllGood);
 						break;
 					}
 

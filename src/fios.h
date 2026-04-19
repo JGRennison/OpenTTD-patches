@@ -31,7 +31,6 @@ struct FiosItem {
 	uint64_t mtime;
 	EncodedString title;
 	std::string name;
-	bool operator< (const FiosItem &other) const;
 };
 
 /** List of file information. */
@@ -40,16 +39,9 @@ public:
 	void BuildFileList(AbstractFileType abstract_filetype, SaveLoadOperation fop, bool show_dirs);
 	const FiosItem *FindItem(std::string_view file);
 };
-
-enum SortingBits : uint8_t {
-	SORT_ASCENDING  = 0,
-	SORT_DESCENDING = 1,
-	SORT_BY_DATE    = 0,
-	SORT_BY_NAME    = 2
-};
-DECLARE_ENUM_AS_BIT_SET(SortingBits)
-
-extern SortingBits _savegame_sort_order;
+bool FiosItemSorter(const FiosItem &a, const FiosItem &b);
+bool FiosItemNameSorter(const FiosItem &a, const FiosItem &b);
+bool FiosItemModificationDateSorter(const FiosItem &a, const FiosItem &b);
 
 struct FiosOrderListInfo {
 	const Vehicle * const veh;

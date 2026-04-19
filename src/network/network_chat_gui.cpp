@@ -272,9 +272,9 @@ static void SendChat(std::string_view buf, NetworkChatDestinationType type, int 
 	if (buf.empty()) return;
 	NetworkAction action;
 	switch (type) {
-		case NetworkChatDestinationType::Broadcast: action = NETWORK_ACTION_CHAT; break;
-		case NetworkChatDestinationType::Team: action = NETWORK_ACTION_CHAT_COMPANY; break;
-		case NetworkChatDestinationType::Client: action = NETWORK_ACTION_CHAT_CLIENT; break;
+		case NetworkChatDestinationType::Broadcast: action = NetworkAction::ChatBroadcast; break;
+		case NetworkChatDestinationType::Team: action = NetworkAction::ChatTeam; break;
+		case NetworkChatDestinationType::Client: action = NetworkAction::ChatClient; break;
 		default: NOT_REACHED();
 	}
 	if (!_network_server) {

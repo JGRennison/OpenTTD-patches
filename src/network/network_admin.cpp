@@ -474,7 +474,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::SendChat(NetworkAction action
 {
 	auto p = std::make_unique<Packet>(this, ADMIN_PACKET_SERVER_CHAT);
 
-	p->Send_uint8(action);
+	p->Send_uint8(to_underlying(action));
 	p->Send_uint8(to_underlying(desttype));
 	p->Send_uint32(client_id);
 	p->Send_string(msg);
@@ -795,17 +795,17 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::Receive_ADMIN_CHAT(Packet &p)
 {
 	if (this->status <= ADMIN_STATUS_AUTHENTICATE) return this->SendError(NetworkErrorCode::NotExpected);
 
-	NetworkAction action = (NetworkAction)p.Recv_uint8();
+	NetworkAction action = static_cast<NetworkAction>(p.Recv_uint8());
 	NetworkChatDestinationType desttype = static_cast<NetworkChatDestinationType>(p.Recv_uint8());
 	int dest = p.Recv_uint32();
 
 	std::string msg = p.Recv_string(NETWORK_CHAT_LENGTH);
 
 	switch (action) {
-		case NETWORK_ACTION_CHAT:
-		case NETWORK_ACTION_CHAT_CLIENT:
-		case NETWORK_ACTION_CHAT_COMPANY:
-		case NETWORK_ACTION_SERVER_MESSAGE:
+		case NetworkAction::ChatBroadcast:
+		case NetworkAction::ChatClient:
+		case NetworkAction::ChatTeam:
+		case NetworkAction::ServerMessage:
 			NetworkServerSendChat(action, desttype, dest, msg, _network_own_client_id, 0, true);
 			break;
 
@@ -865,6 +865,10 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::Receive_ADMIN_JOIN_SECURE(Pac
 	return this->SendAuthRequest();
 }
 
+/**
+ * Send the client a request to authenticate.
+ * @return The state the network should have.
+ */
 NetworkRecvStatus ServerNetworkAdminSocketHandler::SendAuthRequest()
 {
 	this->status = ADMIN_STATUS_AUTHENTICATE;
@@ -879,6 +883,10 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::SendAuthRequest()
 	return NETWORK_RECV_STATUS_OKAY;
 }
 
+/**
+ * Send the client the message to enable encryption.
+ * @return The state the network should have.
+ */
 NetworkRecvStatus ServerNetworkAdminSocketHandler::SendEnableEncryption()
 {
 	if (this->status != ADMIN_STATUS_AUTHENTICATE) return this->SendError(NetworkErrorCode::NotExpected);

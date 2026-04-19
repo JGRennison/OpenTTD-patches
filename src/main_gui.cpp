@@ -64,9 +64,9 @@ void CcGiveMoney(const CommandCost &result, Money money, CompanyID dest_company)
 	uint64_t auxdata = (uint64_t)dest_company.base() | (((uint64_t) _local_company.base()) << 16);
 
 	if (!_network_server) {
-		NetworkClientSendChat(NETWORK_ACTION_GIVE_MONEY, NetworkChatDestinationType::BroadcastSelfSend, dest_company.base(), msg, NetworkTextMessageData(result.GetCost(), auxdata));
+		NetworkClientSendChat(NetworkAction::GiveMoney, NetworkChatDestinationType::BroadcastSelfSend, dest_company.base(), msg, NetworkTextMessageData(result.GetCost(), auxdata));
 	} else {
-		NetworkServerSendChat(NETWORK_ACTION_GIVE_MONEY, NetworkChatDestinationType::BroadcastSelfSend, dest_company.base(), msg, CLIENT_ID_SERVER, NetworkTextMessageData(result.GetCost(), auxdata));
+		NetworkServerSendChat(NetworkAction::GiveMoney, NetworkChatDestinationType::BroadcastSelfSend, dest_company.base(), msg, CLIENT_ID_SERVER, NetworkTextMessageData(result.GetCost(), auxdata));
 	}
 }
 

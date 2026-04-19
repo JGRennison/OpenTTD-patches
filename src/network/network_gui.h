@@ -40,6 +40,7 @@ struct NetworkCompanyInfo : NetworkCompanyStats {
 	std::string clients;      ///< The clients that control this company (Name1, name2, ..)
 };
 
+/** Reasons to close the window that opts you in for relaying the network game. */
 enum NetworkRelayWindowCloseData : uint8_t {
 	NRWCD_UNHANDLED = 0, ///< Relay request is unhandled.
 	NRWCD_HANDLED = 1, ///< Relay request is handled, either by user or by timeout.

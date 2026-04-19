@@ -36,7 +36,7 @@ static const uint32_t FIND_SERVER_EXTENDED_TOKEN = 0x2A49582A;
 #define ENABLE_NETWORK_SYNC_EVERY_FRAME
 #endif /* RANDOM_DEBUG */
 
-typedef class ServerNetworkGameSocketHandler NetworkClientSocket;
+using NetworkClientSocket = class ServerNetworkGameSocketHandler; ///< @copydoc ServerNetworkGameSocketHandler
 
 /** Status of the clients during joining. */
 enum class NetworkJoinStatus : uint8_t {

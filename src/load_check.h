@@ -40,7 +40,7 @@ struct LoadCheckData {
 
 	GRFConfigList grfconfig{};                              ///< NewGrf configuration from save.
 	bool want_grf_compatibility = true;
-	GRFListCompatibility grf_compatibility = GLC_NOT_FOUND; ///< Summary state of NewGrfs, whether missing files or only compatible found.
+	GRFListCompatibility grf_compatibility = GRFListCompatibility::NotFound; ///< Summary state of NewGrfs, whether missing files or only compatible found.
 
 	std::vector<LoggedAction> gamelog_actions;              ///< Gamelog actions
 
