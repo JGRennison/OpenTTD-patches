@@ -7632,6 +7632,8 @@ static CommandCost CmdTemplateReplaceVehicle(DoCommandFlags flags, Train *incomi
 	RegisterGameEvents(GEF_TBTR_REPLACEMENT);
 
 	if (need_replacement) {
+		const bool old_driving_backwards = incoming->vehicle_flags.Test(VehicleFlag::DrivingBackwards);
+
 		// step 1: generate primary for newchain and generate remainder_chain
 		// 1. primary of incoming might already fit the template
 		//    leave incoming's primary as is and move the rest to a free chain = remainder_chain
@@ -7773,6 +7775,12 @@ static CommandCost CmdTemplateReplaceVehicle(DoCommandFlags flags, Train *incomi
 			if (!refit_to_template && new_part != nullptr) {
 				refit_unit(new_part, store_refit_ct, store_refit_csubt);
 			}
+		}
+
+		if (new_chain != nullptr && old_driving_backwards && !new_chain->vehicle_flags.Test(VehicleFlag::DrivingBackwards) &&
+				(_settings_game.difficulty.train_flip_reverse_allowed == TrainFlipReversingAllowed::None || new_chain->Last()->CanLeadTrain())) {
+			new_chain->vehicle_flags.Set(VehicleFlag::DrivingBackwards);
+			new_chain->ConsistChanged(CCF_ARRANGE);
 		}
 	} else {
 		/* no replacement done */

@@ -720,6 +720,7 @@ static CommandCost ReplaceChain(Vehicle **chain, DoCommandFlags flags, bool wago
 	if (old_head->type == VEH_TRAIN) {
 		/* Store the length of the old vehicle chain, rounded up to whole tiles */
 		uint16_t old_total_length = CeilDiv(Train::From(old_head)->gcache.cached_total_length, TILE_SIZE) * TILE_SIZE;
+		bool old_driving_backwards = old_head->vehicle_flags.Test(VehicleFlag::DrivingBackwards);
 
 		std::vector<ReplaceChainItem> replacements;
 
@@ -853,6 +854,12 @@ static CommandCost ReplaceChain(Vehicle **chain, DoCommandFlags flags, bool wago
 				}
 
 				if (flags.Test(DoCommandFlag::Execute)) CheckCargoCapacity(new_head);
+
+				if (flags.Test(DoCommandFlag::Execute) && old_driving_backwards && !new_head->vehicle_flags.Test(VehicleFlag::DrivingBackwards) &&
+						(_settings_game.difficulty.train_flip_reverse_allowed == TrainFlipReversingAllowed::None || Train::From(new_head)->Last()->CanLeadTrain())) {
+					new_head->vehicle_flags.Set(VehicleFlag::DrivingBackwards);
+					Train::From(new_head)->ConsistChanged(CCF_ARRANGE);
+				}
 			}
 
 			/* If we are not in DoCommandFlag::Execute undo everything, i.e. rearrange old vehicles.
