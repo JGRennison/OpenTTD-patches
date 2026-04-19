@@ -409,20 +409,18 @@ static constexpr NWidgetPart _nested_load_orderlist_dialog_widgets[] = {
 };
 
 /** Text colours of #DetailedFileType fios entries in the window. */
-static const TextColour _fios_colours[] = {
-	TC_LIGHT_BROWN,  // DFT_OLD_GAME_FILE
-	TC_ORANGE,       // DFT_GAME_FILE
-	TC_YELLOW,       // DFT_HEIGHTMAP_BMP
-	TC_ORANGE,       // DFT_HEIGHTMAP_PNG
-	TC_LIGHT_BROWN,  // DFT_TOWN_DATA_JSON
-	TC_WHITE,        // DFT_ORDERLIST_JSON
-	TC_LIGHT_BLUE,   // DFT_FIOS_DRIVE
-	TC_DARK_GREEN,   // DFT_FIOS_PARENT
-	TC_DARK_GREEN,   // DFT_FIOS_DIR
-	TC_ORANGE,       // DFT_FIOS_DIRECT
+static const EnumClassIndexContainer<std::array<TextColour, to_underlying(DetailedFileType::End)>, DetailedFileType> _fios_colours = {
+	TC_LIGHT_BROWN, // DetailedFileType::OldGameFile
+	TC_ORANGE, // DetailedFileType::GameFile
+	TC_YELLOW, // DetailedFileType::HeightmapBmp
+	TC_ORANGE, // DetailedFileType::HeightmapPng
+	TC_LIGHT_BROWN, // DetailedFileType::TownDataJson
+	TC_WHITE, // DetailedFileType::OrderlistJson
+	TC_LIGHT_BLUE, // DetailedFileType::FiosDrive
+	TC_DARK_GREEN, // DetailedFileType::FiosParent
+	TC_DARK_GREEN, // DetailedFileType::FiosDirectory
+	TC_ORANGE, // DetailedFileType::FiosDirect
 };
-/* This should align with the DetailedFileType enum defined in fileio_type.h */
-static_assert(std::size(_fios_colours) == DFT_END);
 
 /**
  * Sort the collected list save games prior to displaying it in the save/load gui.
@@ -439,9 +437,9 @@ static void SortSaveGameList(FileList &file_list)
 	 */
 	for (const auto &item : file_list) {
 		switch (item.type.detailed) {
-			case DFT_FIOS_DIR:    sort_start++; break;
-			case DFT_FIOS_PARENT: sort_start++; break;
-			case DFT_FIOS_DRIVE:  sort_end++;   break;
+			case DetailedFileType::FiosDirectory: sort_start++; break;
+			case DetailedFileType::FiosParent: sort_start++; break;
+			case DetailedFileType::FiosDrive: sort_end++; break;
 			default: break;
 		}
 	}
@@ -491,7 +489,7 @@ private:
 			} else {
 				save_load_window->InvalidateData(SLIWD_RESCAN_FILES);
 				/* Reset file name to current date on successful delete */
-				if (save_load_window->abstract_filetype == FT_SAVEGAME) save_load_window->GenerateFileName();
+				if (save_load_window->abstract_filetype == AbstractFileType::Savegame) save_load_window->GenerateFileName();
 			}
 		}
 	}
@@ -519,21 +517,21 @@ public:
 	SaveLoadWindow(WindowDesc &desc, AbstractFileType abstract_filetype, SaveLoadOperation fop, std::optional<FiosOrderListInfo> order_list_info = std::nullopt)
 			: Window(desc), order_list_info(order_list_info), filename_editbox(64), abstract_filetype(abstract_filetype), fop(fop), filter_editbox(EDITBOX_MAX_SIZE)
 	{
-		assert(this->fop == SLO_SAVE || this->fop == SLO_LOAD);
+		assert(this->fop == SaveLoadOperation::Save || this->fop == SaveLoadOperation::Load);
 
 		/* For saving, construct an initial file name. */
-		if (this->fop == SLO_SAVE) {
+		if (this->fop == SaveLoadOperation::Save) {
 			switch (this->abstract_filetype) {
-				case FT_SAVEGAME:
+				case AbstractFileType::Savegame:
 					this->GenerateFileName();
 					break;
 
-				case FT_ORDERLIST:
+				case AbstractFileType::Orderlist:
 					this->GenerateOrderListName();
 					break;
 
-				case FT_SCENARIO:
-				case FT_HEIGHTMAP:
+				case AbstractFileType::Scenario:
+				case AbstractFileType::Heightmap:
 					this->filename_editbox.text.Assign("UNNAMED");
 					break;
 
@@ -546,30 +544,30 @@ public:
 		this->filename_editbox.ok_button = WID_SL_SAVE_GAME;
 
 		this->CreateNestedTree();
-		if (this->fop == SLO_LOAD && this->abstract_filetype == FT_SAVEGAME) {
+		if (this->fop == SaveLoadOperation::Load && this->abstract_filetype == AbstractFileType::Savegame) {
 			this->GetWidget<NWidgetStacked>(WID_SL_CONTENT_DOWNLOAD_SEL)->SetDisplayedPlane(SZSP_HORIZONTAL);
 		}
 
 		/* Select caption string of the window. */
 		StringID caption_string;
 		switch (this->abstract_filetype) {
-			case FT_SAVEGAME:
-				caption_string = (this->fop == SLO_SAVE) ? STR_SAVELOAD_SAVE_CAPTION : STR_SAVELOAD_LOAD_CAPTION;
+			case AbstractFileType::Savegame:
+				caption_string = (this->fop == SaveLoadOperation::Save) ? STR_SAVELOAD_SAVE_CAPTION : STR_SAVELOAD_LOAD_CAPTION;
 				break;
 
-			case FT_SCENARIO:
-				caption_string = (this->fop == SLO_SAVE) ? STR_SAVELOAD_SAVE_SCENARIO : STR_SAVELOAD_LOAD_SCENARIO;
+			case AbstractFileType::Scenario:
+				caption_string = (this->fop == SaveLoadOperation::Save) ? STR_SAVELOAD_SAVE_SCENARIO : STR_SAVELOAD_LOAD_SCENARIO;
 				break;
 
-			case FT_HEIGHTMAP:
-				caption_string = (this->fop == SLO_SAVE) ? STR_SAVELOAD_SAVE_HEIGHTMAP : STR_SAVELOAD_LOAD_HEIGHTMAP;
+			case AbstractFileType::Heightmap:
+				caption_string = (this->fop == SaveLoadOperation::Save) ? STR_SAVELOAD_SAVE_HEIGHTMAP : STR_SAVELOAD_LOAD_HEIGHTMAP;
 				break;
 
-			case FT_ORDERLIST:
-				caption_string = (this->fop == SLO_SAVE) ? STR_SAVELOAD_SAVE_ORDERLIST : STR_SAVELOAD_LOAD_ORDERLIST;
+			case AbstractFileType::Orderlist:
+				caption_string = (this->fop == SaveLoadOperation::Save) ? STR_SAVELOAD_SAVE_ORDERLIST : STR_SAVELOAD_LOAD_ORDERLIST;
 				break;
 
-			case FT_TOWN_DATA:
+			case AbstractFileType::TownData:
 				caption_string = STR_SAVELOAD_LOAD_TOWN_DATA; // It's not currently possible to save town data.
 				break;
 
@@ -599,21 +597,21 @@ public:
 		/* Select the initial directory. */
 		o_dir.type = FIOS_TYPE_DIRECT;
 		switch (this->abstract_filetype) {
-			case FT_SAVEGAME:
-				o_dir.name = FioFindDirectory(SAVE_DIR);
+			case AbstractFileType::Savegame:
+				o_dir.name = FioFindDirectory(Subdirectory::Save);
 				break;
 
-			case FT_SCENARIO:
-				o_dir.name = FioFindDirectory(SCENARIO_DIR);
+			case AbstractFileType::Scenario:
+				o_dir.name = FioFindDirectory(Subdirectory::Scenario);
 				break;
 
-			case FT_HEIGHTMAP:
-			case FT_TOWN_DATA:
-				o_dir.name = FioFindDirectory(HEIGHTMAP_DIR);
+			case AbstractFileType::Heightmap:
+			case AbstractFileType::TownData:
+				o_dir.name = FioFindDirectory(Subdirectory::Heightmap);
 				break;
 
-			case FT_ORDERLIST:
-				o_dir.name = FioFindDirectory(ORDERLIST_DIR);
+			case AbstractFileType::Orderlist:
+				o_dir.name = FioFindDirectory(Subdirectory::Orderlist);
 				break;
 
 			default:
@@ -621,7 +619,7 @@ public:
 		}
 
 		switch (this->fop) {
-			case SLO_SAVE:
+			case SaveLoadOperation::Save:
 				/* Focus the edit box by default in the save window */
 				this->SetFocusedWidget(WID_SL_SAVE_OSK_TITLE);
 				break;
@@ -730,7 +728,7 @@ public:
 			tr.top = DrawStringMultiLine(tr, GetString(_load_check_data.error, _load_check_data.error_msg), TC_RED);
 		} else {
 			/* Warning if save unique id differ when saving */
-			if (this->fop == SLO_SAVE) {
+			if (this->fop == SaveLoadOperation::Save) {
 				if (_load_check_data.settings.game_creation.generation_unique_id == 0) {
 					DrawString(tr.left, tr.right, tr.bottom - GetCharacterHeight(FS_NORMAL), STR_SAVELOAD_UNKNOWN_ID);
 					tr.bottom -= GetCharacterHeight(FS_NORMAL);
@@ -763,14 +761,14 @@ public:
 			if (tr.top > tr.bottom) return;
 
 			/* Hide current date for scenarios */
-			if (this->abstract_filetype != FT_SCENARIO) {
+			if (this->abstract_filetype != AbstractFileType::Scenario) {
 				/* Current date */
 				DrawString(tr, GetString(STR_NETWORK_SERVER_LIST_CURRENT_DATE, _load_check_data.current_date));
 				tr.top += GetCharacterHeight(FS_NORMAL);
 			}
 
 			/* Hide the NewGRF stuff when saving. We also hide the button. */
-			if (this->fop == SLO_LOAD && (this->abstract_filetype == FT_SAVEGAME || this->abstract_filetype == FT_SCENARIO)) {
+			if (this->fop == SaveLoadOperation::Load && (this->abstract_filetype == AbstractFileType::Savegame || this->abstract_filetype == AbstractFileType::Scenario)) {
 				tr.top += WidgetDimensions::scaled.vsep_normal;
 				if (tr.top > tr.bottom) return;
 
@@ -781,7 +779,7 @@ public:
 			if (tr.top > tr.bottom) return;
 
 			/* Hide the company stuff for scenarios */
-			if (this->abstract_filetype != FT_SCENARIO) {
+			if (this->abstract_filetype != AbstractFileType::Scenario) {
 				tr.top += WidgetDimensions::scaled.vsep_wide;
 				if (tr.top > tr.bottom) return;
 
@@ -862,16 +860,16 @@ public:
 
 				_file_to_saveload.Set(*this->selected);
 
-				if (this->abstract_filetype == FT_HEIGHTMAP) {
+				if (this->abstract_filetype == AbstractFileType::Heightmap) {
 					this->Close();
 					ShowHeightmapLoad();
-				} else if (this->abstract_filetype == FT_ORDERLIST) {
+				} else if (this->abstract_filetype == AbstractFileType::Orderlist) {
 					auto callback = [](Window *w, bool confirmed) -> void {
 						if (!confirmed) return;
 						SaveLoadWindow *slo = (SaveLoadWindow *)w;
 						const FiosOrderListInfo &info = *slo->order_list_info;
 
-						auto file = FioFOpenFile(slo->selected->name, "rb", NO_DIRECTORY);
+						auto file = FioFOpenFile(slo->selected->name, "rb", Subdirectory::None);
 						if (file.has_value()) {
 							std::optional<UniqueBuffer<uint8_t>> buffer = ReadFileToBuffer(*file, 1 << 20);
 							if (buffer.has_value()) {
@@ -892,7 +890,7 @@ public:
 					} else {
 						callback(this, true);
 					}
-				} else if (this->abstract_filetype == FT_TOWN_DATA) {
+				} else if (this->abstract_filetype == AbstractFileType::TownData) {
 					this->Close();
 					LoadTownData();
 				} else if (!_load_check_data.HasNewGrfs() || _load_check_data.grf_compatibility != GRFListCompatibility::NotFound || _settings_client.gui.UserIsAllowedToChangeNewGRFs()) {
@@ -935,25 +933,26 @@ public:
 						this->selected = file;
 						_load_check_data.Clear();
 
-						if (file->type.detailed == DFT_GAME_FILE) {
+						if (file->type.detailed == DetailedFileType::GameFile) {
 							/* Other detailed file types cannot be checked before. */
-							SaveOrLoad(file->name, SLO_CHECK, DFT_GAME_FILE, NO_DIRECTORY, false);
+							SaveOrLoad(file->name, SaveLoadOperation::Check, DetailedFileType::GameFile, Subdirectory::None, false);
 						}
 
 						this->InvalidateData(SLIWD_SELECTION_CHANGES);
 					}
-					if (this->fop == SLO_SAVE) {
+					if (this->fop == SaveLoadOperation::Save) {
 						/* Copy clicked name to editbox */
 						this->filename_editbox.text.Assign(file->title.GetDecodedString());
 						this->SetWidgetDirty(WID_SL_SAVE_OSK_TITLE);
 					}
 				} else if (!_load_check_data.HasErrors()) {
 					this->selected = file;
-					if (this->fop == SLO_LOAD) {
-						if (this->abstract_filetype == FT_SAVEGAME || this->abstract_filetype == FT_SCENARIO || this->abstract_filetype == FT_ORDERLIST || this->abstract_filetype == FT_TOWN_DATA) {
+					if (this->fop == SaveLoadOperation::Load) {
+						if (this->abstract_filetype == AbstractFileType::Savegame || this->abstract_filetype == AbstractFileType::Scenario ||
+								this->abstract_filetype == AbstractFileType::Orderlist || this->abstract_filetype == AbstractFileType::TownData) {
 							this->OnClick(pt, WID_SL_LOAD_BUTTON, 1);
 						} else {
-							assert(this->abstract_filetype == FT_HEIGHTMAP);
+							assert(this->abstract_filetype == AbstractFileType::Heightmap);
 							_file_to_saveload.Set(*file);
 
 							this->Close();
@@ -968,11 +967,11 @@ public:
 				if (!_network_available) {
 					ShowErrorMessage(GetEncodedString(STR_NETWORK_ERROR_NOTAVAILABLE), {}, WL_ERROR);
 				} else {
-					assert(this->fop == SLO_LOAD);
+					assert(this->fop == SaveLoadOperation::Load);
 					switch (this->abstract_filetype) {
 						default: NOT_REACHED();
-						case FT_SCENARIO:  ShowNetworkContentListWindow(nullptr, CONTENT_TYPE_SCENARIO);  break;
-						case FT_HEIGHTMAP: ShowNetworkContentListWindow(nullptr, CONTENT_TYPE_HEIGHTMAP); break;
+						case AbstractFileType::Scenario: ShowNetworkContentListWindow(nullptr, CONTENT_TYPE_SCENARIO); break;
+						case AbstractFileType::Heightmap: ShowNetworkContentListWindow(nullptr, CONTENT_TYPE_HEIGHTMAP); break;
 					}
 				}
 				break;
@@ -1019,17 +1018,17 @@ public:
 	void OnTimeout() override
 	{
 		/* Widgets WID_SL_DELETE_SELECTION and WID_SL_SAVE_GAME only exist when saving to a file. */
-		if (this->fop != SLO_SAVE) return;
+		if (this->fop != SaveLoadOperation::Save) return;
 
 		if (this->IsWidgetLowered(WID_SL_DELETE_SELECTION)) { // Delete button clicked
 			ShowQuery(GetEncodedString(STR_SAVELOAD_DELETE_TITLE), GetEncodedString(STR_SAVELOAD_DELETE_WARNING),
 					this, SaveLoadWindow::DeleteFileConfirmationCallback);
 		} else if (this->IsWidgetLowered(WID_SL_SAVE_GAME)) { // Save button clicked
-			if (this->abstract_filetype == FT_SAVEGAME || this->abstract_filetype == FT_SCENARIO) {
+			if (this->abstract_filetype == AbstractFileType::Savegame || this->abstract_filetype == AbstractFileType::Scenario) {
 				_file_to_saveload.name = FiosMakeSavegameName(this->filename_editbox.text.GetText().c_str());
 				const bool known_id = _load_check_data.settings.game_creation.generation_unique_id != 0;
 				const bool different_id = known_id && _load_check_data.settings.game_creation.generation_unique_id != _settings_game.game_creation.generation_unique_id;
-				const bool file_exists = FioCheckFileExists(_file_to_saveload.name, Subdirectory::SAVE_DIR);
+				const bool file_exists = FioCheckFileExists(_file_to_saveload.name, Subdirectory::Save);
 				if (_settings_client.gui.savegame_overwrite_confirm >= 1 && different_id && file_exists) {
 					/* The save has a different id to the current game */
 					/* Show a caption box asking whether the user is sure to overwrite the save */
@@ -1061,7 +1060,7 @@ public:
 				} else {
 					_switch_mode = SM_SAVE_GAME;
 				}
-			} else if (this->abstract_filetype == FT_ORDERLIST) {
+			} else if (this->abstract_filetype == AbstractFileType::Orderlist) {
 				auto fh = FileHandle::Open(FiosMakeOrderListName(this->filename_editbox.text.GetText().c_str()), "w");
 				if (fh.has_value()) {
 					std::string data = OrderListToJSONString(this->order_list_info->veh->orders);
@@ -1071,7 +1070,7 @@ public:
 				return;
 			} else {
 				_file_to_saveload.name = FiosMakeHeightmapName(this->filename_editbox.text.GetText().c_str());
-				if (_settings_client.gui.savegame_overwrite_confirm >= 1 && FioCheckFileExists(_file_to_saveload.name, Subdirectory::SAVE_DIR)) {
+				if (_settings_client.gui.savegame_overwrite_confirm >= 1 && FioCheckFileExists(_file_to_saveload.name, Subdirectory::Save)) {
 					ShowQuery(GetEncodedString(STR_SAVELOAD_OVERWRITE_TITLE), GetEncodedString(STR_SAVELOAD_OVERWRITE_WARNING),
 							this, SaveLoadWindow::SaveHeightmapConfirmationCallback);
 				} else {
@@ -1147,18 +1146,18 @@ public:
 				/* Selection changes */
 				if (!gui_scope) break;
 
-				if (this->fop == SLO_SAVE) this->SetWidgetDisabledState(WID_SL_DELETE_SELECTION, this->selected == nullptr);
+				if (this->fop == SaveLoadOperation::Save) this->SetWidgetDisabledState(WID_SL_DELETE_SELECTION, this->selected == nullptr);
 
-				if (this->fop != SLO_LOAD) break;
+				if (this->fop != SaveLoadOperation::Load) break;
 
 				switch (this->abstract_filetype) {
-					case FT_HEIGHTMAP:
-					case FT_TOWN_DATA:
+					case AbstractFileType::Heightmap:
+					case AbstractFileType::TownData:
 						this->SetWidgetDisabledState(WID_SL_LOAD_BUTTON, this->selected == nullptr || _load_check_data.HasErrors());
 						break;
 
-					case FT_SAVEGAME:
-					case FT_SCENARIO: {
+					case AbstractFileType::Savegame:
+					case AbstractFileType::Scenario: {
 						bool disabled = this->selected == nullptr || _load_check_data.HasErrors();
 						if (!_settings_client.gui.UserIsAllowedToChangeNewGRFs()) {
 							disabled |= _load_check_data.HasNewGrfs() && _load_check_data.grf_compatibility == GRFListCompatibility::NotFound;
@@ -1252,9 +1251,9 @@ void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fo
 {
 	CloseWindowById(WC_SAVELOAD, 0);
 
-	if (fop == SLO_SAVE) {
+	if (fop == SaveLoadOperation::Save) {
 		switch (abstract_filetype) {
-			case FT_ORDERLIST:
+			case AbstractFileType::Orderlist:
 				if (order_list_info.has_value()) {
 					new SaveLoadWindow(_save_orderlist_dialog_desc, abstract_filetype, fop, order_list_info);
 				}
@@ -1266,15 +1265,15 @@ void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fo
 	} else {
 		/* Dialogue for loading a file. */
 		switch (abstract_filetype) {
-			case FT_HEIGHTMAP:
+			case AbstractFileType::Heightmap:
 				new SaveLoadWindow(_load_heightmap_dialog_desc, abstract_filetype, fop);
 				break;
 
-			case FT_TOWN_DATA:
+			case AbstractFileType::TownData:
 				new SaveLoadWindow(_load_town_data_dialog_desc, abstract_filetype, fop);
 				break;
 
-			case FT_ORDERLIST:
+			case AbstractFileType::Orderlist:
 				if (order_list_info.has_value()) {
 					new SaveLoadWindow(_load_orderlist_dialog_desc, abstract_filetype, fop, order_list_info);
 				}

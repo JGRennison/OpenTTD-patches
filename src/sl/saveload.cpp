@@ -4422,7 +4422,7 @@ SaveOrLoadResult LoadWithFilter(std::shared_ptr<LoadFilter> reader)
 SaveOrLoadResult SaveOrLoad(const std::string &filename, SaveLoadOperation fop, DetailedFileType dft, Subdirectory sb, bool threaded, SaveModeFlags save_flags)
 {
 	/* An instance of saving is already active, so don't go saving again */
-	if (_sl.saveinprogress && fop == SLO_SAVE && dft == DFT_GAME_FILE && threaded) {
+	if (_sl.saveinprogress && fop == SaveLoadOperation::Save && dft == DetailedFileType::GameFile && threaded) {
 		/* if not an autosave, but a user action, show error message */
 		if (!_do_autosave) ShowErrorMessage(GetEncodedString(STR_ERROR_SAVE_STILL_IN_PROGRESS), {}, WL_ERROR);
 		return SL_OK;
@@ -4431,7 +4431,7 @@ SaveOrLoadResult SaveOrLoad(const std::string &filename, SaveLoadOperation fop, 
 
 	try {
 		/* Load a TTDLX or TTDPatch game */
-		if (fop == SLO_LOAD && dft == DFT_OLD_GAME_FILE) {
+		if (fop == SaveLoadOperation::Load && dft == DetailedFileType::OldGameFile) {
 			ResetSaveloadData();
 
 			InitializeGame(256, 256, true, true); // set a mapsize of 256x256 for TTDPatch games or it might get confused
@@ -4458,17 +4458,17 @@ SaveOrLoadResult SaveOrLoad(const std::string &filename, SaveLoadOperation fop, 
 			return SL_OK;
 		}
 
-		assert(dft == DFT_GAME_FILE);
+		assert(dft == DetailedFileType::GameFile);
 		switch (fop) {
-			case SLO_CHECK:
+			case SaveLoadOperation::Check:
 				_sl.action = SLA_LOAD_CHECK;
 				break;
 
-			case SLO_LOAD:
+			case SaveLoadOperation::Load:
 				_sl.action = SLA_LOAD;
 				break;
 
-			case SLO_SAVE:
+			case SaveLoadOperation::Save:
 				_sl.action = SLA_SAVE;
 				break;
 
@@ -4480,23 +4480,23 @@ SaveOrLoadResult SaveOrLoad(const std::string &filename, SaveLoadOperation fop, 
 		std::string temp_save_filename;
 		std::string temp_save_filename_suffix;
 
-		if (fop == SLO_SAVE) {
+		if (fop == SaveLoadOperation::Save) {
 			temp_save_filename_suffix = fmt::format(".tmp-{:08x}", InteractiveRandom());
 			fh = FioFOpenFile(filename + temp_save_filename_suffix, "wb", sb, nullptr, &temp_save_filename);
 		} else {
 			fh = FioFOpenFile(filename, "rb", sb);
 
 			/* Make it a little easier to load savegames from the console */
-			if (!fh.has_value()) fh = FioFOpenFile(filename, "rb", SAVE_DIR);
-			if (!fh.has_value()) fh = FioFOpenFile(filename, "rb", BASE_DIR);
-			if (!fh.has_value()) fh = FioFOpenFile(filename, "rb", SCENARIO_DIR);
+			if (!fh.has_value()) fh = FioFOpenFile(filename, "rb", Subdirectory::Save);
+			if (!fh.has_value()) fh = FioFOpenFile(filename, "rb", Subdirectory::Base);
+			if (!fh.has_value()) fh = FioFOpenFile(filename, "rb", Subdirectory::Scenario);
 		}
 
 		if (!fh.has_value()) {
-			SlError(fop == SLO_SAVE ? STR_GAME_SAVELOAD_ERROR_FILE_NOT_WRITEABLE : STR_GAME_SAVELOAD_ERROR_FILE_NOT_READABLE);
+			SlError(fop == SaveLoadOperation::Save ? STR_GAME_SAVELOAD_ERROR_FILE_NOT_WRITEABLE : STR_GAME_SAVELOAD_ERROR_FILE_NOT_READABLE);
 		}
 
-		if (fop == SLO_SAVE) { // SAVE game
+		if (fop == SaveLoadOperation::Save) { // SAVE game
 			if (temp_save_filename.size() <= temp_save_filename_suffix.size()) SlError(STR_GAME_SAVELOAD_ERROR_FILE_NOT_WRITEABLE, "Failed to get temporary file name");
 			Debug(desync, 1, "save: {}; {}", debug_date_dumper().HexDate(), filename);
 			if (!_settings_client.gui.threaded_saves) threaded = false;
@@ -4505,18 +4505,18 @@ SaveOrLoadResult SaveOrLoad(const std::string &filename, SaveLoadOperation fop, 
 		}
 
 		/* LOAD game */
-		assert(fop == SLO_LOAD || fop == SLO_CHECK);
+		assert(fop == SaveLoadOperation::Load || fop == SaveLoadOperation::Check);
 		Debug(desync, 1, "load: {}", filename);
-		return DoLoad(std::make_shared<FileReader>(std::move(*fh)), fop == SLO_CHECK);
+		return DoLoad(std::make_shared<FileReader>(std::move(*fh)), fop == SaveLoadOperation::Check);
 	} catch (...) {
 		/* This code may be executed both for old and new save games. */
 		ClearSaveLoadState();
 
 		/* Skip the "colour" character */
-		if (fop != SLO_CHECK) Debug(sl, 0, "{}{}", strip_leading_colours(GetSaveLoadErrorType().GetDecodedString()), GetSaveLoadErrorMessage().GetDecodedString());
+		if (fop != SaveLoadOperation::Check) Debug(sl, 0, "{}{}", strip_leading_colours(GetSaveLoadErrorType().GetDecodedString()), GetSaveLoadErrorMessage().GetDecodedString());
 
 		/* A saver/loader exception!! reinitialize all variables to prevent crash! */
-		return (fop == SLO_LOAD) ? SL_REINIT : SL_ERROR;
+		return (fop == SaveLoadOperation::Load) ? SL_REINIT : SL_ERROR;
 	}
 }
 
@@ -4536,13 +4536,13 @@ void DoAutoOrNetsave(FiosNumberedSaveName &counter, bool threaded, FiosNumberedS
 		if (lt_counter != nullptr && counter.GetLastNumber() == 0) {
 			std::string lt_path = lt_counter->FilenameUsingMaxSaves(_settings_client.gui.max_num_lt_autosaves);
 			Debug(sl, 2, "Renaming autosave '{}' to long-term file '{}'", filename, lt_path);
-			std::string dir = FioFindDirectory(AUTOSAVE_DIR);
+			std::string dir = FioFindDirectory(Subdirectory::Autosave);
 			FioRenameFile(dir + filename, dir + lt_path);
 		}
 	}
 
 	Debug(sl, 2, "Autosaving to '{}'", filename);
-	if (SaveOrLoad(filename, SLO_SAVE, DFT_GAME_FILE, AUTOSAVE_DIR, threaded, SMF_ZSTD_OK) != SL_OK) {
+	if (SaveOrLoad(filename, SaveLoadOperation::Save, DetailedFileType::GameFile, Subdirectory::Autosave, threaded, SMF_ZSTD_OK) != SL_OK) {
 		ShowErrorMessage(GetEncodedString(STR_ERROR_AUTOSAVE_FAILED), {}, WL_ERROR);
 	}
 }
@@ -4551,7 +4551,7 @@ void DoAutoOrNetsave(FiosNumberedSaveName &counter, bool threaded, FiosNumberedS
 /** Do a save when exiting the game (_settings_client.gui.autosave_on_exit) */
 void DoExitSave()
 {
-	SaveOrLoad("exit.sav", SLO_SAVE, DFT_GAME_FILE, AUTOSAVE_DIR, true, SMF_ZSTD_OK);
+	SaveOrLoad("exit.sav", SaveLoadOperation::Save, DetailedFileType::GameFile, Subdirectory::Autosave, true, SMF_ZSTD_OK);
 }
 
 /**
@@ -4605,8 +4605,8 @@ std::string GenerateDefaultSaveName()
  */
 void FileToSaveLoad::SetMode(const FiosType &ft, SaveLoadOperation fop)
 {
-	if (ft.abstract == FT_INVALID || ft.abstract == FT_NONE) {
-		this->file_op = SLO_INVALID;
+	if (ft.abstract == AbstractFileType::Invalid || ft.abstract == AbstractFileType::None) {
+		this->file_op = SaveLoadOperation::Invalid;
 		this->ftype = FIOS_TYPE_INVALID;
 		return;
 	}
@@ -4628,7 +4628,7 @@ void FileToSaveLoad::Set(const FiosItem &item)
 
 bool SaveLoadFileTypeIsScenario()
 {
-	return _file_to_saveload.ftype.abstract == FT_SCENARIO;
+	return _file_to_saveload.ftype.abstract == AbstractFileType::Scenario;
 }
 
 void SlUnreachablePlaceholder()

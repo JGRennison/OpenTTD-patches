@@ -237,7 +237,7 @@ static void _GenerateWorld()
 
 		if (GetDebugLevel(DebugLevelID::desync) > 0) {
 			std::string name = fmt::format("dmp_cmds_{:08x}_{:08x}.sav", _settings_game.game_creation.generation_seed, EconTime::CurDate());
-			SaveOrLoad(name, SLO_SAVE, DFT_GAME_FILE, AUTOSAVE_DIR, false, SMF_ZSTD_OK);
+			SaveOrLoad(name, SaveLoadOperation::Save, DetailedFileType::GameFile, Subdirectory::Autosave, false, SMF_ZSTD_OK);
 		}
 	} catch (AbortGenerateWorldSignal&) {
 		CleanupGeneration();
@@ -422,7 +422,7 @@ void LoadTownData()
 {
 	/* Load the JSON file as a string initially. We'll parse it soon. */
 	size_t filesize;
-	auto f = FioFOpenFile(_file_to_saveload.name, "rb", HEIGHTMAP_DIR, &filesize);
+	auto f = FioFOpenFile(_file_to_saveload.name, "rb", Subdirectory::Heightmap, &filesize);
 
 	if (!f.has_value()) {
 		ShowErrorMessage(GetEncodedString(STR_TOWN_DATA_ERROR_LOAD_FAILED),

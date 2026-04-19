@@ -86,7 +86,7 @@ void ScriptInstance::Initialize(const std::string &main_script, const std::strin
 
 		if (this->script_type == ScriptType::GS) {
 			if (instance_name == "BeeRewardClass") {
-				this->LoadCompatibilityScript("brgs", GAME_DIR);
+				this->LoadCompatibilityScript("brgs", Subdirectory::Gs);
 			}
 		}
 

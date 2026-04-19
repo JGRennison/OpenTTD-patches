@@ -1119,10 +1119,10 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::Receive_SERVER_MAP_DONE(Packet
 	ClearErrorMessages();
 
 	/* Set the abstract filetype. This is read during savegame load. */
-	_file_to_saveload.SetMode(FIOS_TYPE_FILE, SLO_LOAD);
+	_file_to_saveload.SetMode(FIOS_TYPE_FILE, SaveLoadOperation::Load);
 
 	std::string error_detail;
-	bool load_success = SafeLoad({}, SLO_LOAD, DFT_GAME_FILE, GM_NORMAL, NO_DIRECTORY, std::move(this->savegame), &error_detail);
+	bool load_success = SafeLoad({}, SaveLoadOperation::Load, DetailedFileType::GameFile, GM_NORMAL, Subdirectory::None, std::move(this->savegame), &error_detail);
 	this->savegame = nullptr;
 
 	/* Long savegame loads shouldn't affect the lag calculation! */

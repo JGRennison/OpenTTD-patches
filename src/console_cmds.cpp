@@ -145,7 +145,7 @@ public:
 	void ValidateFileList(bool force_reload = false)
 	{
 		if (force_reload || !this->file_list_valid) {
-			this->BuildFileList(this->abstract_filetype, SLO_LOAD, this->show_dirs);
+			this->BuildFileList(this->abstract_filetype, SaveLoadOperation::Load, this->show_dirs);
 			this->file_list_valid = true;
 		}
 	}
@@ -155,9 +155,9 @@ public:
 	bool file_list_valid = false; ///< If set, the file list is valid.
 };
 
-static ConsoleFileList _console_file_list_savegame{FT_SAVEGAME, true}; ///< File storage cache for savegames.
-static ConsoleFileList _console_file_list_scenario{FT_SCENARIO, false}; ///< File storage cache for scenarios.
-static ConsoleFileList _console_file_list_heightmap{FT_HEIGHTMAP, false}; ///< File storage cache for heightmaps.
+static ConsoleFileList _console_file_list_savegame{AbstractFileType::Savegame, true}; ///< File storage cache for savegames.
+static ConsoleFileList _console_file_list_scenario{AbstractFileType::Scenario, false}; ///< File storage cache for scenarios.
+static ConsoleFileList _console_file_list_heightmap{AbstractFileType::Heightmap, false}; ///< File storage cache for heightmaps.
 
 /****************
  * command hooks
@@ -521,7 +521,7 @@ static bool ConSave(std::span<std::string_view> argv)
 		std::string filename = fmt::format("{}.sav", argv[1]);
 		IConsolePrint(CC_DEFAULT, "Saving map...");
 
-		if (SaveOrLoad(filename, SLO_SAVE, DFT_GAME_FILE, SAVE_DIR) != SL_OK) {
+		if (SaveOrLoad(filename, SaveLoadOperation::Save, DetailedFileType::GameFile, Subdirectory::Save) != SL_OK) {
 			IConsolePrint(CC_ERROR, "Saving map failed.");
 		} else {
 			IConsolePrint(CC_INFO, "Map successfully saved to '{}'.", filename);
@@ -563,7 +563,7 @@ static bool ConLoad(std::span<std::string_view> argv)
 	_console_file_list_savegame.ValidateFileList();
 	const FiosItem *item = _console_file_list_savegame.FindItem(file);
 	if (item != nullptr) {
-		if (item->type.abstract == FT_SAVEGAME) {
+		if (item->type.abstract == AbstractFileType::Savegame) {
 			_switch_mode = SM_LOAD_GAME;
 			_file_to_saveload.Set(*item);
 		} else {
@@ -590,7 +590,7 @@ static bool ConLoadScenario(std::span<std::string_view> argv)
 	_console_file_list_scenario.ValidateFileList();
 	const FiosItem *item = _console_file_list_scenario.FindItem(file);
 	if (item != nullptr) {
-		if (item->type.abstract == FT_SCENARIO) {
+		if (item->type.abstract == AbstractFileType::Scenario) {
 			_switch_mode = SM_LOAD_GAME;
 			_file_to_saveload.Set(*item);
 		} else {
@@ -617,7 +617,7 @@ static bool ConLoadHeightmap(std::span<std::string_view> argv)
 	_console_file_list_heightmap.ValidateFileList();
 	const FiosItem *item = _console_file_list_heightmap.FindItem(file);
 	if (item != nullptr) {
-		if (item->type.abstract == FT_HEIGHTMAP) {
+		if (item->type.abstract == AbstractFileType::Heightmap) {
 			_switch_mode = SM_START_HEIGHTMAP;
 			_file_to_saveload.Set(*item);
 		} else {
@@ -644,7 +644,7 @@ static bool ConRemove(std::span<std::string_view> argv)
 	_console_file_list_savegame.ValidateFileList();
 	const FiosItem *item = _console_file_list_savegame.FindItem(file);
 	if (item != nullptr) {
-		if (item->type.abstract == FT_SAVEGAME) {
+		if (item->type.abstract == AbstractFileType::Savegame) {
 			if (!FioRemove(item->name)) {
 				IConsolePrint(CC_ERROR, "Failed to delete '{}'.", item->name);
 			}
@@ -723,9 +723,9 @@ static bool ConChangeDirectory(std::span<std::string_view> argv)
 	const FiosItem *item = _console_file_list_savegame.FindItem(file);
 	if (item != nullptr) {
 		switch (item->type.detailed) {
-			case DFT_FIOS_DIR:
-			case DFT_FIOS_DRIVE:
-			case DFT_FIOS_PARENT:
+			case DetailedFileType::FiosDirectory:
+			case DetailedFileType::FiosDrive:
+			case DetailedFileType::FiosParent:
 				FiosBrowseTo(item);
 				break;
 			default: IConsolePrint(CC_ERROR, "{}: Not a directory.", file);
@@ -1412,7 +1412,7 @@ static bool ConExec(std::span<std::string_view> argv)
 
 	if (argv.size() < 2) return false;
 
-	auto script_file = FioFOpenFile(argv[1], "r", BASE_DIR);
+	auto script_file = FioFOpenFile(argv[1], "r", Subdirectory::Base);
 
 	if (!script_file.has_value()) {
 		if (argv.size() == 2 || argv[2] != "0") IConsolePrint(CC_ERROR, "Script file '{}' not found.", argv[1]);
@@ -1459,7 +1459,7 @@ static bool ConSchedule(std::span<std::string_view> argv)
 	}
 
 	/* Check if the file exists. It might still go away later, but helpful to show an error now. */
-	if (!FioCheckFileExists(argv[2], BASE_DIR)) {
+	if (!FioCheckFileExists(argv[2], Subdirectory::Base)) {
 		IConsolePrint(CC_ERROR, "Script file '{}' not found.", argv[2]);
 		return true;
 	}
@@ -1612,7 +1612,7 @@ static bool ConReload(std::span<std::string_view> argv)
 		return true;
 	}
 
-	if (_file_to_saveload.ftype.abstract == FT_NONE || _file_to_saveload.ftype.abstract == FT_INVALID) {
+	if (_file_to_saveload.ftype.abstract == AbstractFileType::None || _file_to_saveload.ftype.abstract == AbstractFileType::Invalid) {
 		IConsolePrint(CC_ERROR, "No game loaded to reload.");
 		return true;
 	}
@@ -2896,19 +2896,19 @@ static bool ConListDirs(std::span<std::string_view> argv)
 	};
 	static const SubdirNameMap subdir_name_map[] = {
 		/* Game data directories */
-		{ "baseset", BASESET_DIR, false },
-		{ "newgrf", NEWGRF_DIR, false },
-		{ "ai", AI_DIR, false },
-		{ "ailib", AI_LIBRARY_DIR, false },
-		{ "gs", GAME_DIR, false },
-		{ "gslib", GAME_LIBRARY_DIR, false },
-		{ "scenario", SCENARIO_DIR, false },
-		{ "heightmap", HEIGHTMAP_DIR, false },
+		{ "baseset", Subdirectory::Baseset, false },
+		{ "newgrf", Subdirectory::NewGrf, false },
+		{ "ai", Subdirectory::Ai, false },
+		{ "ailib", Subdirectory::AiLibrary, false },
+		{ "gs", Subdirectory::Gs, false },
+		{ "gslib", Subdirectory::GsLibrary, false },
+		{ "scenario", Subdirectory::Scenario, false },
+		{ "heightmap", Subdirectory::Heightmap, false },
 		/* Default save locations for user data */
-		{ "save", SAVE_DIR, true },
-		{ "autosave", AUTOSAVE_DIR, true },
-		{ "screenshot", SCREENSHOT_DIR, true },
-		{ "social_integration", SOCIAL_INTEGRATION_DIR, true },
+		{ "save", Subdirectory::Save, true },
+		{ "autosave", Subdirectory::Autosave, true },
+		{ "screenshot", Subdirectory::Screenshot, true },
+		{ "social_integration", Subdirectory::SocialIntegration, true },
 	};
 
 	if (argv.size() != 2) {

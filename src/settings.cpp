@@ -118,7 +118,7 @@ private:
 public:
 	ConfigIniFile(const std::string &filename, std::string *save = nullptr) : IniFile(list_group_names)
 	{
-		this->LoadFromDisk(filename, NO_DIRECTORY, save);
+		this->LoadFromDisk(filename, Subdirectory::None, save);
 	}
 };
 
@@ -1182,7 +1182,7 @@ static GRFConfigList GRFLoadConfig(const IniFile &ini, std::string_view grpname,
 					const GRFConfig *s = FindGRFConfig(grfid, FGCM_EXACT, &md5sum);
 					if (s != nullptr) c = std::make_unique<GRFConfig>(*s);
 				}
-				if (c == nullptr && !FioCheckFileExists(std::string(item_name), NEWGRF_DIR)) {
+				if (c == nullptr && !FioCheckFileExists(std::string(item_name), Subdirectory::NewGrf)) {
 					const GRFConfig *s = FindGRFConfig(grfid, FGCM_NEWEST_VALID);
 					if (s != nullptr) c = std::make_unique<GRFConfig>(*s);
 				}

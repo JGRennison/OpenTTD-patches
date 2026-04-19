@@ -338,15 +338,15 @@ struct SelectGameWindow : public Window {
 				break;
 			case WID_SGI_LOAD_GAME:
 				_is_network_server = false;
-				ShowSaveLoadDialog(FT_SAVEGAME, SLO_LOAD);
+				ShowSaveLoadDialog(AbstractFileType::Savegame, SaveLoadOperation::Load);
 				break;
 			case WID_SGI_PLAY_SCENARIO:
 				_is_network_server = false;
-				ShowSaveLoadDialog(FT_SCENARIO, SLO_LOAD);
+				ShowSaveLoadDialog(AbstractFileType::Scenario, SaveLoadOperation::Load);
 				break;
 			case WID_SGI_PLAY_HEIGHTMAP:
 				_is_network_server = false;
-				ShowSaveLoadDialog(FT_HEIGHTMAP,SLO_LOAD);
+				ShowSaveLoadDialog(AbstractFileType::Heightmap,SaveLoadOperation::Load);
 				break;
 			case WID_SGI_EDIT_SCENARIO:
 				_is_network_server = false;
@@ -531,9 +531,9 @@ struct TraditionalSelectGameWindow : public Window {
 				}
 				break;
 
-			case WID_SGI_LOAD_GAME:      ShowSaveLoadDialog(FT_SAVEGAME, SLO_LOAD); break;
-			case WID_SGI_PLAY_SCENARIO:  ShowSaveLoadDialog(FT_SCENARIO, SLO_LOAD); break;
-			case WID_SGI_PLAY_HEIGHTMAP: ShowSaveLoadDialog(FT_HEIGHTMAP,SLO_LOAD); break;
+			case WID_SGI_LOAD_GAME:      ShowSaveLoadDialog(AbstractFileType::Savegame, SaveLoadOperation::Load); break;
+			case WID_SGI_PLAY_SCENARIO:  ShowSaveLoadDialog(AbstractFileType::Scenario, SaveLoadOperation::Load); break;
+			case WID_SGI_PLAY_HEIGHTMAP: ShowSaveLoadDialog(AbstractFileType::Heightmap, SaveLoadOperation::Load); break;
 			case WID_SGI_EDIT_SCENARIO:  StartScenarioEditor(); break;
 
 			case WID_SGI_PLAY_NETWORK:

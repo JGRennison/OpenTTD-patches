@@ -116,7 +116,7 @@ void debug_print_intl(DebugLevelID dbg, int8_t level, const char *buf, size_t pr
 {
 
 	if (dbg == DebugLevelID::desync) {
-		static std::optional<FileHandle> f = FioFOpenFile("commands-out.log", "wb", AUTOSAVE_DIR);
+		static std::optional<FileHandle> f = FioFOpenFile("commands-out.log", "wb", Subdirectory::Autosave);
 		if (f.has_value()) {
 			fmt_print_no_system_error(*f, "{}{}", log_prefix().GetLogPrefix(true), buf + prefix_size);
 			fflush(*f);
@@ -133,7 +133,7 @@ void debug_print_intl(DebugLevelID dbg, int8_t level, const char *buf, size_t pr
 			int pid = getpid();
 			for(;;) {
 				std::string fn = fmt::format("random-out-{}-{}.log", pid, num);
-				f = FioFOpenFile(fn.c_str(), "wx", AUTOSAVE_DIR);
+				f = FioFOpenFile(fn.c_str(), "wx", Subdirectory::Autosave);
 				if (!f.has_value() && errno == EEXIST) {
 					num++;
 					continue;
@@ -142,7 +142,7 @@ void debug_print_intl(DebugLevelID dbg, int8_t level, const char *buf, size_t pr
 			}
 		}
 #else
-		static std::optional<FileHandle> f = FioFOpenFile("random-out.log", "wb", AUTOSAVE_DIR);
+		static std::optional<FileHandle> f = FioFOpenFile("random-out.log", "wb", Subdirectory::Autosave);
 #endif
 		if (f.has_value()) {
 			fputs(buf + prefix_size, *f);

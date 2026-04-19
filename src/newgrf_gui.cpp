@@ -570,7 +570,7 @@ struct NewGRFTextfileWindow : public TextfileWindow {
 
 		auto textfile = this->grf_config->GetTextfile(file_type);
 		if (textfile.has_value()) {
-			this->LoadTextfile(textfile.value(), NEWGRF_DIR);
+			this->LoadTextfile(textfile.value(), Subdirectory::NewGrf);
 		}
 	}
 

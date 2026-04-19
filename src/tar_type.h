@@ -10,12 +10,11 @@
 #ifndef TAR_TYPE_H
 #define TAR_TYPE_H
 
+#include "fileio_type.h"
+#include "core/enum_type.hpp"
 #include <map>
 #include <string>
 #include <array>
-
-#include "fileio_type.h"
-
 
 struct TarFileListEntry {
 	std::string tar_filename;
@@ -23,9 +22,9 @@ struct TarFileListEntry {
 	size_t position;
 };
 
-typedef std::map<std::string, std::string> TarList; ///< Map of tar file to tar directory.
-typedef std::map<std::string, TarFileListEntry> TarFileList;
-extern std::array<TarList, NUM_SUBDIRS> _tar_list;
-extern TarFileList _tar_filelist[NUM_SUBDIRS];
+using TarList = std::map<std::string, std::string>; ///< Map of tar file to tar directory.
+using TarFileList = std::map<std::string, TarFileListEntry>;
+extern EnumClassIndexContainer<std::array<TarList, to_underlying(Subdirectory::End)>, Subdirectory> _tar_list;
+extern EnumClassIndexContainer<std::array<TarFileList, to_underlying(Subdirectory::End)>, Subdirectory> _tar_filelist;
 
 #endif /* TAR_TYPE_H */

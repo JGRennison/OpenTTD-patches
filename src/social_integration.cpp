@@ -64,7 +64,7 @@ public:
 		const char *extension = "-social.so";
 #endif
 
-		this->FileScanner::Scan(extension, SOCIAL_INTEGRATION_DIR, false);
+		this->FileScanner::Scan(extension, Subdirectory::SocialIntegration, false);
 	}
 
 	bool AddFile(const std::string &filename, size_t basepath_length, const std::string &) override

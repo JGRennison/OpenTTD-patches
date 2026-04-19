@@ -1099,19 +1099,19 @@ struct NetworkStartServerWindow : public Window {
 			case WID_NSS_LOAD_GAME:
 				if (!CheckServerName()) return;
 				_is_network_server = true;
-				ShowSaveLoadDialog(FT_SAVEGAME, SLO_LOAD);
+				ShowSaveLoadDialog(AbstractFileType::Savegame, SaveLoadOperation::Load);
 				break;
 
 			case WID_NSS_PLAY_SCENARIO:
 				if (!CheckServerName()) return;
 				_is_network_server = true;
-				ShowSaveLoadDialog(FT_SCENARIO, SLO_LOAD);
+				ShowSaveLoadDialog(AbstractFileType::Scenario, SaveLoadOperation::Load);
 				break;
 
 			case WID_NSS_PLAY_HEIGHTMAP:
 				if (!CheckServerName()) return;
 				_is_network_server = true;
-				ShowSaveLoadDialog(FT_HEIGHTMAP, SLO_LOAD);
+				ShowSaveLoadDialog(AbstractFileType::Heightmap, SaveLoadOperation::Load);
 				break;
 		}
 	}

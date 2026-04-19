@@ -49,7 +49,7 @@ void GameInstance::RegisterAPI()
 	/* Register all classes */
 	SQGS_RegisterAll(*this->engine);
 
-	if (!this->LoadCompatibilityScripts(GAME_DIR, GameInfo::ApiVersions)) this->Died();
+	if (!this->LoadCompatibilityScripts(Subdirectory::Gs, GameInfo::ApiVersions)) this->Died();
 
 	if (this->IsAlive()) RegisterGameTranslation(*this->engine);
 }

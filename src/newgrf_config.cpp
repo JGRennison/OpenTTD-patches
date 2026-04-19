@@ -613,7 +613,7 @@ public:
 		CalcGRFMD5ThreadingStart();
 		GRFFileScanner fs;
 		fs.grfs.clear();
-		int ret = fs.Scan(".grf", NEWGRF_DIR);
+		int ret = fs.Scan(".grf", Subdirectory::NewGrf);
 		CalcGRFMD5ThreadingEnd();
 
 		for (std::unique_ptr<GRFConfig> &c : fs.grfs) {
@@ -762,5 +762,5 @@ std::string GRFBuildParamList(const GRFConfig &c)
  */
 std::optional<std::string> GRFConfig::GetTextfile(TextfileType type) const
 {
-	return ::GetTextfile(type, NEWGRF_DIR, this->filename);
+	return ::GetTextfile(type, Subdirectory::NewGrf, this->filename);
 }

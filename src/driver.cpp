@@ -128,7 +128,7 @@ bool DriverFactoryBase::SelectDriverImpl(const std::string &name, Driver::Type t
 					/* Check if we have already tried this driver in last run.
 					 * If it is here, it most likely means we crashed. So skip
 					 * hardware acceleration. */
-					auto filename = FioFindFullPath(BASE_DIR, HWACCELERATION_TEST_FILE);
+					auto filename = FioFindFullPath(Subdirectory::Base, HWACCELERATION_TEST_FILE);
 					if (!filename.empty()) {
 						FioRemove(filename);
 
@@ -141,7 +141,7 @@ bool DriverFactoryBase::SelectDriverImpl(const std::string &name, Driver::Type t
 					}
 
 					/* Write empty file to note we are attempting hardware acceleration. */
-					FioFOpenFile(HWACCELERATION_TEST_FILE, "w", BASE_DIR);
+					FioFOpenFile(HWACCELERATION_TEST_FILE, "w", Subdirectory::Base);
 				}
 
 				/* Keep old driver in case we need to switch back, or may still need to process an OS callback. */
@@ -211,7 +211,7 @@ void DriverFactoryBase::MarkVideoDriverOperational()
 	/* As part of the detection whether the GPU driver crashes the game,
 	 * and as we are operational now, remove the hardware acceleration
 	 * test-file. */
-	auto filename = FioFindFullPath(BASE_DIR, HWACCELERATION_TEST_FILE);
+	auto filename = FioFindFullPath(Subdirectory::Base, HWACCELERATION_TEST_FILE);
 	if (!filename.empty()) FioRemove(filename);
 }
 

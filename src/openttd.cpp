@@ -492,7 +492,7 @@ static void LoadIntroGame(bool load_newgrfs = true)
 	SetupColoursAndInitialWindow();
 
 	/* Load the default opening screen savegame */
-	if (SaveOrLoad("opntitle.dat", SLO_LOAD, DFT_GAME_FILE, BASESET_DIR) != SL_OK) {
+	if (SaveOrLoad("opntitle.dat", SaveLoadOperation::Load, DetailedFileType::GameFile, Subdirectory::Baseset) != SL_OK) {
 		GenerateWorld(GWM_EMPTY, 64, 64); // if failed loading, make empty world.
 		SetLocalCompany(COMPANY_SPECTATOR);
 	} else {
@@ -763,23 +763,23 @@ int openttd_main(std::span<char * const> arguments)
 				if (t != std::string::npos) {
 					extension = _file_to_saveload.name.substr(t);
 				}
-				FiosType ft = FiosGetSavegameListCallback(SLO_LOAD, _file_to_saveload.name, extension.c_str(), nullptr, nullptr);
+				FiosType ft = FiosGetSavegameListCallback(SaveLoadOperation::Load, _file_to_saveload.name, extension.c_str(), nullptr, nullptr);
 				if (ft == FIOS_TYPE_INVALID) {
-					ft = FiosGetScenarioListCallback(SLO_LOAD, _file_to_saveload.name, extension.c_str(), nullptr, nullptr);
+					ft = FiosGetScenarioListCallback(SaveLoadOperation::Load, _file_to_saveload.name, extension.c_str(), nullptr, nullptr);
 				}
 				if (ft == FIOS_TYPE_INVALID) {
-					ft = FiosGetHeightmapListCallback(SLO_LOAD, _file_to_saveload.name, extension.c_str(), nullptr, nullptr);
+					ft = FiosGetHeightmapListCallback(SaveLoadOperation::Load, _file_to_saveload.name, extension.c_str(), nullptr, nullptr);
 				}
 
 				/* Allow for '-e' before or after '-g'. */
 				switch (ft.abstract) {
-					case FT_SAVEGAME: _switch_mode = (_switch_mode == SM_EDITOR ? SM_LOAD_SCENARIO : SM_LOAD_GAME); break;
-					case FT_SCENARIO: _switch_mode = (_switch_mode == SM_EDITOR ? SM_LOAD_SCENARIO : SM_LOAD_GAME); break;
-					case FT_HEIGHTMAP: _switch_mode = (_switch_mode == SM_EDITOR ? SM_LOAD_HEIGHTMAP : SM_START_HEIGHTMAP); break;
+					case AbstractFileType::Savegame: _switch_mode = (_switch_mode == SM_EDITOR ? SM_LOAD_SCENARIO : SM_LOAD_GAME); break;
+					case AbstractFileType::Scenario: _switch_mode = (_switch_mode == SM_EDITOR ? SM_LOAD_SCENARIO : SM_LOAD_GAME); break;
+					case AbstractFileType::Heightmap: _switch_mode = (_switch_mode == SM_EDITOR ? SM_LOAD_HEIGHTMAP : SM_START_HEIGHTMAP); break;
 					default: break;
 				}
 
-				_file_to_saveload.SetMode(ft, SLO_LOAD);
+				_file_to_saveload.SetMode(ft, SaveLoadOperation::Load);
 				break;
 			}
 
@@ -798,12 +798,12 @@ int openttd_main(std::span<char * const> arguments)
 
 			char title[80];
 			title[0] = '\0';
-			FiosGetSavegameListCallback(SLO_LOAD, mgo.opt, strrchr(mgo.opt, '.'), title, lastof(title));
+			FiosGetSavegameListCallback(SaveLoadOperation::Load, mgo.opt, strrchr(mgo.opt, '.'), title, lastof(title));
 
 			_load_check_data.Clear();
 			if (i == 'K') _load_check_data.want_debug_data = true;
 			_load_check_data.want_grf_compatibility = false;
-			SaveOrLoadResult res = SaveOrLoad(mgo.opt, SLO_CHECK, DFT_GAME_FILE, SAVE_DIR, false);
+			SaveOrLoadResult res = SaveOrLoad(mgo.opt, SaveLoadOperation::Check, DetailedFileType::GameFile, Subdirectory::Save, false);
 			if (res != SL_OK || _load_check_data.HasErrors()) {
 				fprintf(stderr, "Failed to open savegame\n");
 				if (_load_check_data.HasErrors()) {
@@ -1195,7 +1195,7 @@ static void MakeNewGame(bool from_heightmap, bool reset_settings)
 	_game_mode = GM_NORMAL;
 	if (!from_heightmap) {
 		/* "reload" command needs to know what mode we were in. */
-		_file_to_saveload.SetMode(FIOS_TYPE_INVALID, SLO_INVALID);
+		_file_to_saveload.SetMode(FIOS_TYPE_INVALID, SaveLoadOperation::Invalid);
 	}
 
 	ResetGRFConfig(true);
@@ -1217,7 +1217,7 @@ static void MakeNewEditorWorld()
 {
 	_game_mode = GM_EDITOR;
 	/* "reload" command needs to know what mode we were in. */
-	_file_to_saveload.SetMode(FIOS_TYPE_INVALID, SLO_INVALID);
+	_file_to_saveload.SetMode(FIOS_TYPE_INVALID, SaveLoadOperation::Invalid);
 
 	ResetGRFConfig(true);
 
@@ -1231,7 +1231,7 @@ static void MakeNewEditorWorld()
  * If loading fails due to corrupt savegame, bad version, etc. go back to
  * a previous correct state. In the menu for example load the intro game again.
  * @param filename file to be loaded
- * @param fop mode of loading, always SLO_LOAD
+ * @param fop mode of loading, always SaveLoadOperation::Load
  * @param dft Type of file that is going to be loaded.
  * @param newgm switch to this mode of loading fails due to some unknown error
  * @param subdir default directory to look for filename, set to 0 if not needed
@@ -1242,8 +1242,8 @@ static void MakeNewEditorWorld()
 bool SafeLoad(const std::string &filename, SaveLoadOperation fop, DetailedFileType dft, GameMode newgm, Subdirectory subdir,
 		std::shared_ptr<struct LoadFilter> lf = nullptr, std::string *error_detail = nullptr)
 {
-	assert(fop == SLO_LOAD);
-	assert(dft == DFT_GAME_FILE || (lf == nullptr && dft == DFT_OLD_GAME_FILE));
+	assert(fop == SaveLoadOperation::Load);
+	assert(dft == DetailedFileType::GameFile || (lf == nullptr && dft == DetailedFileType::OldGameFile));
 	GameMode ogm = _game_mode;
 
 	_game_mode = newgm;
@@ -1374,12 +1374,12 @@ void SwitchToMode(SwitchMode new_mode)
 			break;
 
 		case SM_RELOADGAME: // Reload with what-ever started the game
-			if (_file_to_saveload.ftype.abstract == FT_SAVEGAME || _file_to_saveload.ftype.abstract == FT_SCENARIO) {
+			if (_file_to_saveload.ftype.abstract == AbstractFileType::Savegame || _file_to_saveload.ftype.abstract == AbstractFileType::Scenario) {
 				/* Reload current savegame/scenario */
 				_switch_mode = _game_mode == GM_EDITOR ? SM_LOAD_SCENARIO : SM_LOAD_GAME;
 				SwitchToMode(_switch_mode);
 				break;
-			} else if (_file_to_saveload.ftype.abstract == FT_HEIGHTMAP) {
+			} else if (_file_to_saveload.ftype.abstract == AbstractFileType::Heightmap) {
 				/* Restart current heightmap */
 				_switch_mode = _game_mode == GM_EDITOR ? SM_LOAD_HEIGHTMAP : SM_RESTART_HEIGHTMAP;
 				SwitchToMode(_switch_mode);
@@ -1404,10 +1404,10 @@ void SwitchToMode(SwitchMode new_mode)
 			ResetGRFConfig(true);
 			ResetWindowSystem();
 
-			if (!SafeLoad(_file_to_saveload.name, _file_to_saveload.file_op, _file_to_saveload.ftype.detailed, GM_NORMAL, NO_DIRECTORY)) {
+			if (!SafeLoad(_file_to_saveload.name, _file_to_saveload.file_op, _file_to_saveload.ftype.detailed, GM_NORMAL, Subdirectory::None)) {
 				ShowErrorMessage(GetSaveLoadErrorType(), GetSaveLoadErrorMessage(), WL_CRITICAL);
 			} else {
-				if (_file_to_saveload.ftype.abstract == FT_SCENARIO) {
+				if (_file_to_saveload.ftype.abstract == AbstractFileType::Scenario) {
 					OnStartScenario();
 				}
 				OnStartGame(_network_dedicated);
@@ -1441,7 +1441,7 @@ void SwitchToMode(SwitchMode new_mode)
 			break;
 
 		case SM_LOAD_SCENARIO: { // Load scenario from scenario editor
-			if (SafeLoad(_file_to_saveload.name, _file_to_saveload.file_op, _file_to_saveload.ftype.detailed, GM_EDITOR, NO_DIRECTORY)) {
+			if (SafeLoad(_file_to_saveload.name, _file_to_saveload.file_op, _file_to_saveload.ftype.detailed, GM_EDITOR, Subdirectory::None)) {
 				SetLocalCompany(OWNER_NONE);
 				GenerateSavegameId();
 				_settings_newgame.game_creation.starting_year = CalTime::CurYear();
@@ -1484,7 +1484,7 @@ void SwitchToMode(SwitchMode new_mode)
 			/* Make network saved games on pause compatible to singleplayer mode */
 			SaveModeFlags flags = SMF_NONE;
 			if (_game_mode == GM_EDITOR) flags |= SMF_SCENARIO;
-			if (SaveOrLoad(_file_to_saveload.name, SLO_SAVE, DFT_GAME_FILE, NO_DIRECTORY, true, flags) != SL_OK) {
+			if (SaveOrLoad(_file_to_saveload.name, SaveLoadOperation::Save, DetailedFileType::GameFile, Subdirectory::None, true, flags) != SL_OK) {
 				ShowErrorMessage(GetSaveLoadErrorType(), GetSaveLoadErrorMessage(), WL_ERROR);
 			} else {
 				CloseWindowById(WC_SAVELOAD, 0);
@@ -1581,7 +1581,7 @@ void StateGameLoop()
 		if (GetDebugLevel(DebugLevelID::desync) > 2 && DateDetail::_tick_skip_counter == 0 && EconTime::CurDateFract() == 0 && (EconTime::CurDate().base() & 0x1F) == 0) {
 			/* Save the desync savegame if needed. */
 			std::string name = fmt::format("dmp_cmds_{:08x}_{:08x}.sav", _settings_game.game_creation.generation_seed, EconTime::CurDate());
-			SaveOrLoad(name, SLO_SAVE, DFT_GAME_FILE, AUTOSAVE_DIR, false);
+			SaveOrLoad(name, SaveLoadOperation::Save, DetailedFileType::GameFile, Subdirectory::Autosave, false);
 		}
 
 		CheckCaches(false, nullptr, CHECK_CACHE_ALL | CHECK_CACHE_EMIT_LOG);

@@ -450,7 +450,7 @@ static void ProcessIniFile(const char *fname)
 	static const IniLoadFile::IniGroupNameList seq_groups = {PREAMBLE_GROUP_NAME, TABLESTART_GROUP_NAME, POSTAMBLE_GROUP_NAME};
 
 	SettingsIniFile ini{{}, seq_groups};
-	ini.LoadFromDisk(fname, NO_DIRECTORY);
+	ini.LoadFromDisk(fname, Subdirectory::None);
 
 	_table_list_output.Clear();
 

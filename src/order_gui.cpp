@@ -3949,10 +3949,10 @@ public:
 				switch (index) {
 					case 0: this->OrderClick_ReverseOrderList(ReverseOrderOperation::Reverse); break;
 					case 1: this->OrderClick_ReverseOrderList(ReverseOrderOperation::AppendReversed); break;
-					case 2: ShowSaveLoadDialog(FT_ORDERLIST, SLO_SAVE, FiosOrderListInfo(this->GetVehicle())); break;
-					case 3: ShowSaveLoadDialog(FT_ORDERLIST, SLO_LOAD, FiosOrderListInfo(this->GetVehicle())); break;
-					case 4: ShowSaveLoadDialog(FT_ORDERLIST, SLO_LOAD, FiosOrderListInfo(this->GetVehicle(), this->GetVehicle()->GetNumOrders())); break;
-					case 5: ShowSaveLoadDialog(FT_ORDERLIST, SLO_LOAD, FiosOrderListInfo(this->GetVehicle(), this->GetVehicle()->GetNumOrders(), true)); break;
+					case 2: ShowSaveLoadDialog(AbstractFileType::Orderlist, SaveLoadOperation::Save, FiosOrderListInfo(this->GetVehicle())); break;
+					case 3: ShowSaveLoadDialog(AbstractFileType::Orderlist, SaveLoadOperation::Load, FiosOrderListInfo(this->GetVehicle())); break;
+					case 4: ShowSaveLoadDialog(AbstractFileType::Orderlist, SaveLoadOperation::Load, FiosOrderListInfo(this->GetVehicle(), this->GetVehicle()->GetNumOrders())); break;
+					case 5: ShowSaveLoadDialog(AbstractFileType::Orderlist, SaveLoadOperation::Load, FiosOrderListInfo(this->GetVehicle(), this->GetVehicle()->GetNumOrders(), true)); break;
 					default: NOT_REACHED();
 				}
 				break;
@@ -3984,11 +3984,11 @@ public:
 						break;
 
 					case 0x400:
-						ShowSaveLoadDialog(FT_ORDERLIST, SLO_LOAD, FiosOrderListInfo(this->GetVehicle(), this->OrderGetSel()));
+						ShowSaveLoadDialog(AbstractFileType::Orderlist, SaveLoadOperation::Load, FiosOrderListInfo(this->GetVehicle(), this->OrderGetSel()));
 						break;
 
 					case 0x401:
-						ShowSaveLoadDialog(FT_ORDERLIST, SLO_LOAD, FiosOrderListInfo(this->GetVehicle(), this->OrderGetSel(), true));
+						ShowSaveLoadDialog(AbstractFileType::Orderlist, SaveLoadOperation::Load, FiosOrderListInfo(this->GetVehicle(), this->OrderGetSel(), true));
 						break;
 
 					default:

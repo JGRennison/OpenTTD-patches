@@ -2833,7 +2833,7 @@ static void GetLanguageList(const char *path)
 void InitializeLanguagePacks()
 {
 	for (Searchpath sp : _valid_searchpaths) {
-		std::string path = FioGetDirectory(sp, LANG_DIR);
+		std::string path = FioGetDirectory(sp, Subdirectory::Lang);
 		GetLanguageList(path.c_str());
 	}
 	if (_languages.empty()) UserError("No available language packs (invalid versions?)");
