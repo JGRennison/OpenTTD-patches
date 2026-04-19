@@ -8064,8 +8064,8 @@ void Train::UpdateTrainSpeedAdaptationLimitInternal(uint16_t speed)
  */
 CommandCost CmdSetTrainSpeedRestriction(DoCommandFlags flags, VehicleID veh_id, uint16_t speed)
 {
-	Vehicle *v = Vehicle::GetIfValid(veh_id);
-	if (v == nullptr || v->type != VEH_TRAIN || !v->IsPrimaryVehicle()) return CMD_ERROR;
+	Train *v = Train::GetIfValid(veh_id);
+	if (v == nullptr || !v->IsPrimaryVehicle()) return CMD_ERROR;
 
 	CommandCost ret = CheckVehicleControlAllowed(v);
 	if (ret.Failed()) return ret;
@@ -8073,14 +8073,13 @@ CommandCost CmdSetTrainSpeedRestriction(DoCommandFlags flags, VehicleID veh_id, 
 	if (v->vehstatus.Test(VehState::Crashed)) return CommandCost(STR_ERROR_VEHICLE_IS_DESTROYED);
 
 	if (flags.Test(DoCommandFlag::Execute)) {
-		Train *t = Train::From(v);
-		if (t->flags.Test(VehicleRailFlag::PendingSpeedRestriction)) {
-			_pending_speed_restriction_change_map.erase(t->index);
-			t->flags.Reset(VehicleRailFlag::PendingSpeedRestriction);
+		if (v->flags.Test(VehicleRailFlag::PendingSpeedRestriction)) {
+			_pending_speed_restriction_change_map.erase(v->index);
+			v->flags.Reset(VehicleRailFlag::PendingSpeedRestriction);
 		}
-		t->speed_restriction = speed;
+		v->speed_restriction = speed;
 
-		SetWindowDirty(WC_VEHICLE_DETAILS, t->index);
+		SetWindowDirty(WC_VEHICLE_DETAILS, v->index);
 	}
 	return CommandCost();
 }
