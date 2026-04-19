@@ -303,7 +303,7 @@ private:
 	void ExecutePathfindTraceRestrictProgram(const TraceRestrictProgram *prog, Node &n, TileIndex tile, Trackdir trackdir, TraceRestrictProgramResult &out)
 	{
 		TraceRestrictProgramInput input(tile, trackdir, &TraceRestrictPreviousSignalCallback, &n, this->tracerestrict_flags);
-		if ((prog->actions_used_flags & TRPAUF_DRIVE_DIR_CONDITIONALS) && Yapf().HasReverseOrigin()) {
+		if (prog->actions_used_flags & TRPAUF_DRIVE_DIR_CONDITIONALS) {
 			Node *root = &n;
 			while (root->parent != nullptr) {
 				if (root->flags_u.flags_s.teleport || root->segment->end_segment_reason.Test(EndSegmentReason::Depot)) {
@@ -314,7 +314,7 @@ private:
 			}
 
 			/* Check if it was reversed origin. */
-			if (root->cost != 0) input.input_flags.Flip(TraceRestrictProgramInputFlag::InvertDrivingDirection);
+			if (root->cost != 0 && Yapf().HasReverseOrigin()) input.input_flags.Flip(TraceRestrictProgramInputFlag::InvertDrivingDirection);
 		}
 		prog->Execute(Yapf().GetVehicle(), input, out);
 	}
