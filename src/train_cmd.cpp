@@ -1084,7 +1084,7 @@ static void AdvanceLookAheadPosition(Train *v)
 	while (!v->lookahead->items.empty() && v->lookahead->items.front().end < v->lookahead->current_position) {
 		if (v->lookahead->items.front().type == TRLIT_STATION) {
 			int trim_position = v->lookahead->current_position - 4;
-			for (const Train *u = v; u != nullptr; u = u->Next()) {
+			for (const Train *u = v->GetMovingFront(); u != nullptr; u = u->GetMovingNext()) {
 				if (u->flags.Test(VehicleRailFlag::BeyondPlatformEnd)) {
 					trim_position -= u->gcache.cached_veh_length;
 				} else {
