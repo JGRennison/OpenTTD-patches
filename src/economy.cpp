@@ -1891,7 +1891,7 @@ static void ReserveConsist(Station *st, Vehicle *u, CargoArray *consist_capleft,
 	 * In that case, only reserve if it's a fixed refit and the equivalent of "articulated chain"
 	 * a vehicle belongs to already has the right cargo. */
 	bool must_reserve = !u->current_order.IsRefit() || u->cargo_payment == nullptr;
-	for (Vehicle *v = u; v != nullptr; v = v->Next()) {
+	for (Vehicle *v = u->GetMovingFront(); v != nullptr; v = v->GetMovingNext()) {
 		assert(v->cargo_cap >= v->cargo.RemainingCount());
 
 		/* Exclude various ways in which the vehicle might not be the head of an equivalent of

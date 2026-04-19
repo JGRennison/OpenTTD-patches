@@ -4762,7 +4762,7 @@ static VehicleEnterTileStates VehicleEnterTile_Rail(Vehicle *u, TileIndex tile, 
 			Train *consist = v->First();
 			if (consist->current_order.IsType(OT_LOADING_ADVANCE)) {
 				abort_load_through(consist, true);
-			} else if (consist->flags.Test(VehicleRailFlag::BeyondPlatformEnd)) {
+			} else if (v->GetMovingFront()->flags.Test(VehicleRailFlag::BeyondPlatformEnd)) {
 				abort_load_through(consist, false);
 			}
 			consist->flags.Set(VehicleRailFlag::ConsistSpeedReduction);
