@@ -18,6 +18,7 @@
 #include "core/string_consumer.hpp"
 #include "strings_func.h"
 #include "vehicle_base.h"
+#include "vehicle_func.h"
 #include "string_func.h"
 #include "string_func_extra.h"
 #include "spritecache.h"
@@ -91,7 +92,7 @@ static void SetScheduleStartDateCallback(const Window *w, StateTicks date, void 
 static void ScheduleAddIntl(VehicleID veh, uint schedule_index, StateTicks date, uint extra_slots, uint offset, uint16_t slot_flags, DispatchSlotRouteID route_id, bool wrap_mode = false)
 {
 	Vehicle *v = Vehicle::GetIfValid(veh);
-	if (v == nullptr || !v->IsPrimaryVehicle() || schedule_index >= v->orders->GetScheduledDispatchScheduleCount()) return;
+	if (v == nullptr || !IsCompanyBuildableVehicleType(v) || !v->IsPrimaryVehicle() || schedule_index >= v->orders->GetScheduledDispatchScheduleCount()) return;
 
 	const DispatchSchedule &ds = v->orders->GetDispatchScheduleByIndex(schedule_index);
 

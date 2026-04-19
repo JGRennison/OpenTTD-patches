@@ -1051,6 +1051,7 @@ void ReleaseDisasterVehicleTargetingVehicle(VehicleID vehicle)
 	if (v == nullptr) return;
 
 	/* primary disaster vehicles that have chosen target */
+	assert(v->type == VEH_DISASTER);
 	assert(v->subtype == ST_SMALL_UFO);
 	assert(v->state != 0);
 

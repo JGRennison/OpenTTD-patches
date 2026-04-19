@@ -3878,7 +3878,7 @@ void CcStartStopVehicle(const CommandCost &result, VehicleID veh_id, bool evalua
 	if (result.Failed()) return;
 
 	const Vehicle *v = Vehicle::GetIfValid(veh_id);
-	if (v == nullptr || !v->IsPrimaryVehicle()) return;
+	if (v == nullptr || !IsCompanyBuildableVehicleType(v) || !v->IsPrimaryVehicle()) return;
 
 	StringID msg = v->vehstatus.Test(VehState::Stopped) ? STR_VEHICLE_COMMAND_STOPPED : STR_VEHICLE_COMMAND_STARTED;
 	Vehicle *moving_front = v->GetMovingFront();
