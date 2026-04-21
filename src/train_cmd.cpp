@@ -3607,28 +3607,16 @@ static bool CheckTrainStayInDepot(Train *v)
 				u->y_pos = y;
 				u->vehicle_flags.Set(VehicleFlag::DrivingBackwards, driving_backwards);
 
-				/* Set TCF_MOVING_UNIT_START flags according to movement direction. */
-				u->tcache.cached_tflags &= ~TCF_MOVING_UNIT_START;
-				if (driving_backwards) {
-					u->tcache.cached_tflags |= (u->Next() == nullptr || !u->Next()->IsArticulatedPart()) ? TCF_MOVING_UNIT_START : TCF_NONE;
-				} else {
-					u->tcache.cached_tflags |= !u->IsArticulatedPart() ? TCF_MOVING_UNIT_START : TCF_NONE;
-				}
-
 				u->UpdatePosition();
 				u->Vehicle::UpdateViewport(false);
 			}
 
-			if (driving_backwards && !v->Last()->CanLeadTrain()) {
-				v->tcache.cached_tflags |= TCF_NO_DRIVING_CAB;
-			} else {
-				v->tcache.cached_tflags &= ~TCF_NO_DRIVING_CAB;
-			}
 			if (preserve_direction) {
 				v->flags.Flip(VehicleRailFlag::Reversed);
 			} else {
 				v->flags.Reset(VehicleRailFlag::Reversed);
 			}
+			v->ConsistChanged(CCF_TRACK);
 
 			InvalidateWindowData(WC_VEHICLE_DEPOT, depot_tile.base());
 			InvalidateWindowData(WC_VEHICLE_DEPOT, behind_depot_tile.base());
