@@ -5636,7 +5636,7 @@ static void HandleSignalBehindTrain(Train *v, int signal_number)
 	const uint simulated_wormhole_signals = GetTunnelBridgeSignalSimulationSpacing(v->tile);
 
 	TileIndex tile;
-	switch (v->direction) {
+	switch (v->GetMovingDirection()) {
 		default: NOT_REACHED();
 		case DIR_NE: tile = TileVirtXY(v->x_pos + (TILE_SIZE * simulated_wormhole_signals), v->y_pos); break;
 		case DIR_SE: tile = TileVirtXY(v->x_pos, v->y_pos - (TILE_SIZE * simulated_wormhole_signals) ); break;
