@@ -459,14 +459,6 @@ struct NetworkChatWindow : public Window {
 	{
 		if (widget != WID_NC_DESTINATION) return this->Window::GetWidgetString(widget, stringid);
 
-		static const StringID chat_captions[] = {
-			STR_NETWORK_CHAT_ALL_CAPTION,
-			STR_NETWORK_CHAT_COMPANY_CAPTION,
-			STR_NETWORK_CHAT_CLIENT_CAPTION,
-			STR_NULL
-		};
-		assert((uint)this->dtype < lengthof(chat_captions));
-
 		if (this->dtype == NetworkChatDestinationType::Client) {
 			return GetString(STR_NETWORK_CHAT_CLIENT_CAPTION, NetworkClientInfo::GetByClientID(static_cast<ClientID>(this->dest))->client_name);
 		}
