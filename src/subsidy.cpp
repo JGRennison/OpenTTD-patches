@@ -356,7 +356,7 @@ bool FindSubsidyIndustryCargoRoute()
 	assert(cargo_num == 0); // indicates loop didn't break as intended
 
 	auto is_usable_distribution_mode = [](DistributionType mode) -> bool {
-		return mode != DistributionType::AsymmetricEqual || mode != DistributionType::AsymmetricNearest;
+		return mode != DistributionType::AsymmetricEqual && mode != DistributionType::AsymmetricNearest;
 	};
 
 	/* Quit if no production in this industry
