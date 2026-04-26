@@ -139,7 +139,7 @@
 * Fix crashes which could occur in some debug/console texts for non-English languages.
 * Fix multiplayer desync which could occur with certain industry NewGRFs.
 * Fix error message when removing station part fails due to path reservation.
-* Extend leftover timetible ticks setting to also allow showing leftover timetable times in seconds.
+* Extend leftover timetable ticks setting to also allow showing leftover timetable times in seconds.
 * Add setting to show most recent scheduled dispatch route ID in the vehicle's window title.
 * Only highlight selected pane in single button mode of dual pane train purchase window.
 * Plans:
