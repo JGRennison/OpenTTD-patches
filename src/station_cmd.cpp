@@ -4109,7 +4109,7 @@ static VehicleEnterTileStates VehicleEnterTile_Station(Vehicle *v, TileIndex til
 								consist->index,
 								IsRailWaypointTile(tile) ? STR_WAYPOINT_NAME : STR_STATION_NAME,
 								station_id);
-						AddNewsItem(std::move(msg), NewsType::Advice, NewsStyle::Small, {NewsFlag::InColour, NewsFlag::VehicleParam0}, v->index, station_id);
+						AddNewsItem(std::move(msg), NewsType::Advice, NewsStyle::Small, {NewsFlag::InColour, NewsFlag::VehicleParam0}, consist->index, station_id);
 					}
 					for (Train *u = consist; u != nullptr; u = u->Next()) {
 						u->flags.Reset(VehicleRailFlag::BeyondPlatformEnd);
