@@ -2573,15 +2573,13 @@ STR_NETWORK_CONNECTING_WAITING                                  :{BLACK}{NUM} ig
 STR_NETWORK_CONNECTING_DOWNLOADING_1                            :{BLACK}{BYTES} preuzeto do sada
 STR_NETWORK_CONNECTING_DOWNLOADING_2                            :{BLACK}{BYTES} / {BYTES} preuzeto do sada
 
-###length 8
+###length 6
 STR_NETWORK_CONNECTING_1                                        :{BLACK}(1/6) Spajam se...
 STR_NETWORK_CONNECTING_2                                        :{BLACK}(2/6) Čekam odobrenje...
 STR_NETWORK_CONNECTING_3                                        :{BLACK}(3/6) Čekam...
 STR_NETWORK_CONNECTING_4                                        :{BLACK}(4/6) Preuzimam teren...
 STR_NETWORK_CONNECTING_5                                        :{BLACK}(5/6) Obrađujem podatke...
 STR_NETWORK_CONNECTING_6                                        :{BLACK}(6/6) Prijavljujem se...
-STR_NETWORK_CONNECTING_SPECIAL_1                                :{BLACK}Preuzimanje podataka o igri...
-STR_NETWORK_CONNECTING_SPECIAL_2                                :{BLACK}Preuzimanje podataka o preduzećima...
 
 STR_NETWORK_CONNECTION_DISCONNECT                               :{BLACK}Isključenje
 
@@ -4556,7 +4554,6 @@ STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR                     :{BLACK}Ovogodi�
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_MIN_PERFORMANCE     :{BLACK}Ovogodišnja zarada: {LTBLUE}{CURRENCY_LONG} (prošlogodišnja: {CURRENCY_LONG}) {BLACK}Najlošiji učinak: {LTBLUE}{POWER_TO_WEIGHT}
 STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD                 :{BLACK}Profit trenutnog perioda: {LTBLUE}{CURRENCY_LONG} (protekli period: {CURRENCY_LONG})
 STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD_MIN_PERFORMANCE :{BLACK}Profit trenutnog perioda: {LTBLUE}{CURRENCY_LONG} (protekli period: {CURRENCY_LONG}) {BLACK}Min. performanse: {LTBLUE}{POWER_TO_WEIGHT}
-STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}Pouzdanost: {LTBLUE}{COMMA}%  {BLACK}Kvarova od poslednjeg servisa: {LTBLUE}{COMMA}
 
 STR_VEHICLE_INFO_BUILT_VALUE                                    :{LTBLUE}{ENGINE} {BLACK}Kupljen: {LTBLUE}{NUM}{BLACK} Vrednost: {LTBLUE}{CURRENCY_LONG}
 STR_VEHICLE_INFO_NO_CAPACITY                                    :{BLACK}Nosivost: {LTBLUE}Nula{STRING}
@@ -4686,7 +4683,7 @@ STR_ORDER_HANGAR_ACTION_TOOLTIP                                 :{BLACK}Odabira 
 STR_ORDER_CONDITIONAL_VARIABLE_TOOLTIP                          :{BLACK}Skok na osnovu podatka o vozilu
 
 # Conditional order variables, must follow order of OrderConditionVariable enum
-###length 8
+###length 9
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE                           :Procenat natovarenog
 STR_ORDER_CONDITIONAL_RELIABILITY                               :Pouzdanost
 STR_ORDER_CONDITIONAL_MAX_SPEED                                 :Najveća brzina

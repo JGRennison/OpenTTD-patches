@@ -2487,15 +2487,13 @@ STR_NETWORK_CONNECTING_WAITING                                  :{BLACK}{NUM} m�
 STR_NETWORK_CONNECTING_DOWNLOADING_1                            :{BLACK}đã tải được {BYTES}
 STR_NETWORK_CONNECTING_DOWNLOADING_2                            :{BLACK}đã tải xong {BYTES} / {BYTES}
 
-###length 8
+###length 6
 STR_NETWORK_CONNECTING_1                                        :{BLACK}(1/6) Tạo kết nối..
 STR_NETWORK_CONNECTING_2                                        :{BLACK}(2/6) Xác thực..
 STR_NETWORK_CONNECTING_3                                        :{BLACK}(3/6) Đợi..
 STR_NETWORK_CONNECTING_4                                        :{BLACK}(4/6) Tải bản đồ..
 STR_NETWORK_CONNECTING_5                                        :{BLACK}(5/6) Xử lý..
 STR_NETWORK_CONNECTING_6                                        :{BLACK}(6/6) Đăng nhập..
-STR_NETWORK_CONNECTING_SPECIAL_1                                :{BLACK}Tải thông tin ván chơi..
-STR_NETWORK_CONNECTING_SPECIAL_2                                :{BLACK}Tải thông tin công ty..
 
 STR_NETWORK_CONNECTION_DISCONNECT                               :{BLACK}Ngắt kết nối
 
@@ -4587,7 +4585,6 @@ STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR                     :{BLACK}Lợi nh
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_MIN_PERFORMANCE     :{BLACK}Lợi nhuận năm nay: {LTBLUE}{CURRENCY_LONG} (năm ngoái: {CURRENCY_LONG}) {BLACK}Hiệu suất tối thiểu: {LTBLUE}{POWER_TO_WEIGHT}
 STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD                 :{BLACK}Lợi nhuận kỳ này: {LTBLUE}{CURRENCY_LONG} (kỳ trước: {CURRENCY_LONG})
 STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD_MIN_PERFORMANCE :{BLACK}Lợi nhuận kỳ này: {LTBLUE}{CURRENCY_LONG} (kỳ trước: {CURRENCY_LONG}) {BLACK}Hiệu suất tối thiểu: {LTBLUE}{POWER_TO_WEIGHT}
-STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}Độ tin cậy: {LTBLUE}{COMMA}%  {BLACK}Hỏng hóc kể từ lần bảo trì cuối: {LTBLUE}{COMMA}
 
 STR_VEHICLE_INFO_BUILT_VALUE                                    :{LTBLUE}{ENGINE} {BLACK}Mua lúc: {LTBLUE}{NUM}{BLACK} Giá trị: {LTBLUE}{CURRENCY_LONG}
 STR_VEHICLE_INFO_NO_CAPACITY                                    :{BLACK}Sức chứa: {LTBLUE}Không{STRING}
@@ -4727,7 +4724,7 @@ STR_ORDER_HANGAR_ACTION_TOOLTIP                                 :{BLACK}Chọn m
 STR_ORDER_CONDITIONAL_VARIABLE_TOOLTIP                          :{BLACK}Dữ kiện của phương tiện để xác định
 
 # Conditional order variables, must follow order of OrderConditionVariable enum
-###length 8
+###length 9
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE                           :Tiến độ bốc xếp
 STR_ORDER_CONDITIONAL_RELIABILITY                               :Độ tin cậy
 STR_ORDER_CONDITIONAL_MAX_SPEED                                 :Tốc độ tối đa

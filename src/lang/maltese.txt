@@ -816,7 +816,7 @@ STR_NETWORK_SERVER_LIST_MAP_SIZE_SHORT                          :{BLACK}{COMMA}x
 STR_NETWORK_CONNECTING_DOWNLOADING_1                            :{BLACK}{BYTES} imnizzlin s'issa
 STR_NETWORK_CONNECTING_DOWNLOADING_2                            :{BLACK}{BYTES} / {BYTES} imnizzlin s'issa
 
-###length 8
+###length 6
 
 
 
@@ -1304,7 +1304,7 @@ STR_ORDER_INDEX                                                 :{COMMA}:{NBSP}
 
 
 # Conditional order variables, must follow order of OrderConditionVariable enum
-###length 8
+###length 9
 ###next-name-looks-similar
 
 

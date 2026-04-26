@@ -2491,15 +2491,13 @@ STR_NETWORK_CONNECTING_WAITING                                  :{BLACK}{NUM} kl
 STR_NETWORK_CONNECTING_DOWNLOADING_1                            :{BLACK}Līdz šim lejupielādēti {BYTES}
 STR_NETWORK_CONNECTING_DOWNLOADING_2                            :{BLACK}{BYTES} / {BYTES} lejuplādēti līdz šim
 
-###length 8
+###length 6
 STR_NETWORK_CONNECTING_1                                        :{BLACK}(1/6) Savienojas...
 STR_NETWORK_CONNECTING_2                                        :{BLACK}(2/6) Autorizējas...
 STR_NETWORK_CONNECTING_3                                        :{BLACK}(3/6) Gaida...
 STR_NETWORK_CONNECTING_4                                        :{BLACK}(4/6) Lejupielādē karti...
 STR_NETWORK_CONNECTING_5                                        :{BLACK}(5/6) Apstrādā datus...
 STR_NETWORK_CONNECTING_6                                        :{BLACK}(6/6) Reģistrējas...
-STR_NETWORK_CONNECTING_SPECIAL_1                                :{BLACK}Pieņem spēles informāciju...
-STR_NETWORK_CONNECTING_SPECIAL_2                                :{BLACK}Pieņem uzņēmuma informāciju...
 
 STR_NETWORK_CONNECTION_DISCONNECT                               :{BLACK}Atvienoties
 
@@ -4604,7 +4602,6 @@ STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR                     :{BLACK}Peļņa 
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_MIN_PERFORMANCE     :{BLACK}Peļņa šogad: {LTBLUE}{CURRENCY_LONG} (pagājušajā gadā: {CURRENCY_LONG}) {BLACK}Min. veiktspēja: {LTBLUE}{POWER_TO_WEIGHT}
 STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD                 :{BLACK}Peļņa šajā periodā: {LTBLUE}{CURRENCY_LONG} (pēdējais periods: {CURRENCY_LONG})
 STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD_MIN_PERFORMANCE :{BLACK}Peļņa šajā periodā: {LTBLUE}{CURRENCY_LONG} (pēdējais periods: {CURRENCY_LONG}) {BLACK}Min. veiktspēja: {LTBLUE}{POWER_TO_WEIGHT}
-STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}Drošums: {LTBLUE}{COMMA}%  {BLACK}Ķibeles kopš pēdējās apkopes: {LTBLUE}{COMMA}
 
 STR_VEHICLE_INFO_BUILT_VALUE                                    :{LTBLUE}{ENGINE} {BLACK}Uzbūvēts: {LTBLUE}{NUM}{BLACK} Vērtība: {LTBLUE}{CURRENCY_LONG}
 STR_VEHICLE_INFO_NO_CAPACITY                                    :{BLACK}Ietilpība: {LTBLUE}Nav{STRING}
@@ -4744,7 +4741,7 @@ STR_ORDER_HANGAR_ACTION_TOOLTIP                                 :{BLACK}Atlasiet
 STR_ORDER_CONDITIONAL_VARIABLE_TOOLTIP                          :{BLACK}Vehicle data to base jumping on
 
 # Conditional order variables, must follow order of OrderConditionVariable enum
-###length 8
+###length 9
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE                           :Iekraušanas procenti
 STR_ORDER_CONDITIONAL_RELIABILITY                               :Uzticamība
 STR_ORDER_CONDITIONAL_MAX_SPEED                                 :Maksimālais ātrums

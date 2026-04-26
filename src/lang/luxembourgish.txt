@@ -2489,15 +2489,13 @@ STR_NETWORK_CONNECTING_WAITING                                  :{BLACK}{NUM} Sp
 STR_NETWORK_CONNECTING_DOWNLOADING_1                            :{BLACK}{BYTES} souwäit erofgelueden
 STR_NETWORK_CONNECTING_DOWNLOADING_2                            :{BLACK}{BYTES} / {BYTES} erofgelueden
 
-###length 8
+###length 6
 STR_NETWORK_CONNECTING_1                                        :{BLACK}(1/6) Connectéiert...
 STR_NETWORK_CONNECTING_2                                        :{BLACK}(2/6) Authoriséiert...
 STR_NETWORK_CONNECTING_3                                        :{BLACK}(3/6) Waarden...
 STR_NETWORK_CONNECTING_4                                        :{BLACK}(4/6) Kaart eroflueden...
 STR_NETWORK_CONNECTING_5                                        :{BLACK}(5/6) Daten verarbëschten...
 STR_NETWORK_CONNECTING_6                                        :{BLACK}(6/6) Registréierung...
-STR_NETWORK_CONNECTING_SPECIAL_1                                :{BLACK}Ruffen d'Spillinfo of..
-STR_NETWORK_CONNECTING_SPECIAL_2                                :{BLACK}Ruffen d'Firmeninfos of...
 
 STR_NETWORK_CONNECTION_DISCONNECT                               :{BLACK}Verbindung trennen
 
@@ -4593,7 +4591,6 @@ STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR                     :{BLACK}Profit d
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_MIN_PERFORMANCE     :{BLACK}Profit dëst Joer: {LTBLUE}{CURRENCY_LONG} (lescht Joer: {CURRENCY_LONG}) {BLACK}Min. Leeschtung: {LTBLUE}{POWER_TO_WEIGHT}
 STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD                 :{BLACK}Profit des Period: {LTBLUE}{CURRENCY_LONG} (Lescht Period: {CURRENCY_LONG})
 STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD_MIN_PERFORMANCE :{BLACK}Profit des Period: {LTBLUE}{CURRENCY_LONG} (Lescht Period: {CURRENCY_LONG}) {BLACK}Min. Leeschtung: {LTBLUE}{POWER_TO_WEIGHT}
-STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}Zouverlässegkeet: {LTBLUE}{COMMA}%  {BLACK}Pannen säit leschter Revisioun: {LTBLUE}{COMMA}
 
 STR_VEHICLE_INFO_BUILT_VALUE                                    :{LTBLUE}{ENGINE} {BLACK}Gebaut: {LTBLUE}{NUM}{BLACK} Wäert: {LTBLUE}{CURRENCY_LONG}
 STR_VEHICLE_INFO_NO_CAPACITY                                    :{BLACK}Kapazitéit: {LTBLUE}Keng{STRING}
@@ -4733,7 +4730,7 @@ STR_ORDER_HANGAR_ACTION_TOOLTIP                                 :{BLACK}Wiel d'A
 STR_ORDER_CONDITIONAL_VARIABLE_TOOLTIP                          :{BLACK}Gefierdaten als Basis fir den Optragssprong
 
 # Conditional order variables, must follow order of OrderConditionVariable enum
-###length 8
+###length 9
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE                           :Prozent gelueden
 STR_ORDER_CONDITIONAL_RELIABILITY                               :Zouverlässegkeet
 STR_ORDER_CONDITIONAL_MAX_SPEED                                 :Maximal Geschwindegkeet
@@ -5261,6 +5258,7 @@ STR_ERROR_CAN_T_MOVE_VEHICLE                                    :{WHITE}Kann d'G
 STR_ERROR_REAR_ENGINE_FOLLOW_FRONT                              :{WHITE}D'hënnescht Maschinn geet ëmmer der viischter no.
 STR_ERROR_UNABLE_TO_FIND_ROUTE_TO                               :Kann de Wee an de Schapp net fannen
 STR_ERROR_UNABLE_TO_FIND_LOCAL_DEPOT                            :Kann de Schapp net fannen
+STR_ERROR_UNABLE_TO_FIND_LOCAL_HANGAR                           :ka lokalen Hangar net fannen
 
 STR_ERROR_DEPOT_WRONG_DEPOT_TYPE                                :Falschen Schapp-Typ
 

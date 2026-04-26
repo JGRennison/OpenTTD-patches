@@ -1354,8 +1354,13 @@ STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :Høy
 STR_CONFIG_SETTING_RECESSIONS                                   :Resesjoner: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Hvis aktivert, lavkonjunkturer kan forekomme innimellom. Under en lavkonjunktur vil all produksjon være betydelig lavere (den returnerer til tidligere nivå når lavkonjunktur er over)
 
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE                           :La tog vende når de rygger: {STRING}
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE_HELPTEXT                  :Velg hvor tog kan vende for å snu retning. "Alle" lar tog vende hvor som helst. "Slutten på linjen" lar ikke tog vende på stasjoner hvis det er mulig å fortsette. "Ingen" lar ikke tog vende og vil rygge ved behov, men med redusert hastighet hvis den bakerste vognen mangler førerkabin
 
 ###length 3
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE_ALL                       :Alle
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE_END_OF_LINE_ONLY          :Slutten på linjen
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE_NONE                      :Ingen
 
 STR_CONFIG_SETTING_DISASTERS                                    :Katastrofer: {STRING}
 STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :Aktiver/inaktiver katastrofer som tidvis kan blokkere eller ødelegge kjøretøy og infrastruktur
@@ -1908,6 +1913,8 @@ STR_CONFIG_SETTING_STATION_LENGTH_LOADING_PENALTY_HELPTEXT      :Når aktivert v
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS                             :Aktiver fartsgrenser for vogner: {STRING}
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS_HELPTEXT                    :Når aktivert, brukes også fartsgrenser til vogner for å avgjøre topphastigheten til et tog
 
+STR_CONFIG_SETTING_AIRCRAFT_RANGE                               :Aktiver største rekkevide for luftfartøy: {STRING}
+STR_CONFIG_SETTING_AIRCRAFT_RANGE_HELPTEXT                      :Når aktivert, NewGRFer vil kunne begrense et luftfartøys største rekkevidde
 
 STR_CONFIG_SETTING_DISABLE_ELRAILS                              :Deaktiver elektriske spor: {STRING}
 STR_CONFIG_SETTING_DISABLE_ELRAILS_HELPTEXT                     :Aktivering av denne innstillingen deaktiverer kravet om å elektrifisere spor for å tillate at elektriske motorer kan kjøre på dem
@@ -2490,15 +2497,13 @@ STR_NETWORK_CONNECTING_WAITING                                  :{BLACK}{NUM} kl
 STR_NETWORK_CONNECTING_DOWNLOADING_1                            :{BLACK}{BYTES} nedlastet hittil
 STR_NETWORK_CONNECTING_DOWNLOADING_2                            :{BLACK}{BYTES} / {BYTES} nedlastet hittil
 
-###length 8
+###length 6
 STR_NETWORK_CONNECTING_1                                        :{BLACK}(1/6) Kobler til...
 STR_NETWORK_CONNECTING_2                                        :{BLACK}(2/6) Godkjenner...
 STR_NETWORK_CONNECTING_3                                        :{BLACK}(3/6) Venter...
 STR_NETWORK_CONNECTING_4                                        :{BLACK}(4/6) Laster ned kart...
 STR_NETWORK_CONNECTING_5                                        :{BLACK}(5/6) Behandler data...
 STR_NETWORK_CONNECTING_6                                        :{BLACK}(6/6) Registrerer...
-STR_NETWORK_CONNECTING_SPECIAL_1                                :{BLACK}Henter spillinformasjon...
-STR_NETWORK_CONNECTING_SPECIAL_2                                :{BLACK}Henter selskapsinformasjon...
 
 STR_NETWORK_CONNECTION_DISCONNECT                               :{BLACK}Koble fra
 
@@ -4581,8 +4586,8 @@ STR_VEHICLE_DETAILS_ROAD_VEHICLE_RENAME                         :{BLACK}Navngi k
 STR_VEHICLE_DETAILS_SHIP_RENAME                                 :{BLACK}Navngi skip
 STR_VEHICLE_DETAILS_AIRCRAFT_RENAME                             :{BLACK}Navngi luftfartøy
 
-STR_VEHICLE_INFO_AGE                                            :{COMMA} år ({COMMA})
-STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} år ({COMMA})
+STR_VEHICLE_INFO_AGE                                            :{COMMA} år (levetid: {COMMA} år)
+STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} år (levetid: {COMMA} år)
 STR_VEHICLE_INFO_AGE_RUNNING_COST_YR                            :{BLACK}Alder: {LTBLUE}{STRING}{BLACK} Driftskostnader: {LTBLUE}{CURRENCY_LONG}/år
 STR_VEHICLE_INFO_AGE_RUNNING_COST_PERIOD                        :{BLACK}Alder: {LTBLUE}{STRING}{BLACK} Driftskostnader: {LTBLUE}{CURRENCY_LONG}/periode
 
@@ -4596,7 +4601,7 @@ STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR                     :{BLACK}Fortjene
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_MIN_PERFORMANCE     :{BLACK}Fortjeneste dette år: {LTBLUE}{CURRENCY_LONG} (forrige år: {CURRENCY_LONG}) {BLACK}Min. ytelse: {LTBLUE}{POWER_TO_WEIGHT}
 STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD                 :{BLACK}Fortjeneste denne perioden: {LTBLUE}{CURRENCY_LONG} (forrige periode: {CURRENCY_LONG})
 STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD_MIN_PERFORMANCE :{BLACK}Fortjeneste denne perioden: {LTBLUE}{CURRENCY_LONG} (forrige periode: {CURRENCY_LONG}) {BLACK}Minste ytelse: {LTBLUE}{POWER_TO_WEIGHT}
-STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}Pålitelighet: {LTBLUE}{COMMA}{NBSP}%  {BLACK}Havarier siden siste vedlikehold: {LTBLUE}{COMMA}
+STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}Pålitelighet: {LTBLUE}{COMMA}% (maks: {COMMA}%) {BLACK}Havarier siden siste vedlikehold: {LTBLUE}{COMMA}
 
 STR_VEHICLE_INFO_BUILT_VALUE                                    :{LTBLUE}{ENGINE} {BLACK}Bygget: {LTBLUE}{NUM}{BLACK} Verdi: {LTBLUE}{CURRENCY_LONG}
 STR_VEHICLE_INFO_NO_CAPACITY                                    :{BLACK}Kapasitet: {LTBLUE}Ingen{STRING}
@@ -4736,7 +4741,7 @@ STR_ORDER_HANGAR_ACTION_TOOLTIP                                 :{BLACK}Velg hvi
 STR_ORDER_CONDITIONAL_VARIABLE_TOOLTIP                          :{BLACK}Kjøretøydata å basere hopp på
 
 # Conditional order variables, must follow order of OrderConditionVariable enum
-###length 8
+###length 9
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE                           :Lastprosent
 STR_ORDER_CONDITIONAL_RELIABILITY                               :Pålitelighet
 STR_ORDER_CONDITIONAL_MAX_SPEED                                 :Topphastighet
@@ -4745,6 +4750,7 @@ STR_ORDER_CONDITIONAL_REQUIRES_SERVICE                          :Trenger vedlike
 STR_ORDER_CONDITIONAL_UNCONDITIONALLY                           :Alltid
 STR_ORDER_CONDITIONAL_REMAINING_LIFETIME                        :Gjenstående levetid (år)
 STR_ORDER_CONDITIONAL_MAX_RELIABILITY                           :Største pålitelighet
+STR_ORDER_CONDITIONAL_DRIVING_BACKWARDS                         :Kjører baklengs
 ###next-name-looks-similar
 
 STR_ORDER_CONDITIONAL_COMPARATOR_TOOLTIP                        :{BLACK}Hvordan sammenligne kjøretøyets data til den gitte verdi
@@ -5264,6 +5270,7 @@ STR_ERROR_CAN_T_MOVE_VEHICLE                                    :Kan ikke flytte
 STR_ERROR_REAR_ENGINE_FOLLOW_FRONT                              :bakre lokomotiv vil alltid følge fremre lokomotiv
 STR_ERROR_UNABLE_TO_FIND_ROUTE_TO                               :finner ingen rute til nærmeste garasje/stall/hangar/dokk
 STR_ERROR_UNABLE_TO_FIND_LOCAL_DEPOT                            :kan ikke finne en garasje/stall/hangar/dokk i nærheten
+STR_ERROR_UNABLE_TO_FIND_LOCAL_HANGAR                           :kunne ikke finne lokal hangar
 
 STR_ERROR_DEPOT_WRONG_DEPOT_TYPE                                :feil type garasje/stall/hangar/dokk
 

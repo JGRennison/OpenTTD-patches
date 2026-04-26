@@ -1732,8 +1732,13 @@ STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :Wysokie
 STR_CONFIG_SETTING_RECESSIONS                                   :Kryzys: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Jeśli włączone, kryzys może występować okresowo. Podczas kryzysu produkcja jest znacznie niższa (powraca do poprzedniego poziomu, kiedy kryzys się kończy)
 
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE                           :Pozwól pociągom obrócić się przy zawracaniu: {STRING}
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE_HELPTEXT                  :Wybierz kiedy pociągi mogą obrócić się, aby zmienić kierunek jazdy. Z ustawnieniem "Wszędzie", pociągi mogą obrócić się wszędzie. Z "Tylko koniec toru", pociągi nie obrócą się na stacjach, jeśli jest możliwa trasa na przód. Z "Nigdzie", pociągi nie będą mogły się obracać i cofać jeżeli będzie to potrzebne, lecz w zwolnionym tempie, gdy tylni pojazd nie ma kabiny maszynisty.
 
 ###length 3
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE_ALL                       :Wszędzie
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE_END_OF_LINE_ONLY          :Tylko koniec toru
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE_NONE                      :Nigdzie
 
 STR_CONFIG_SETTING_DISASTERS                                    :Katastrofy: {STRING}
 STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :Ustaw katastrofy, które mogą okazjonalnie zablokować lub zniszczyć pojazdy albo infrastrukturę
@@ -2286,6 +2291,8 @@ STR_CONFIG_SETTING_STATION_LENGTH_LOADING_PENALTY_HELPTEXT      :Kiedy włączon
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS                             :Włącz limity prędkości wagonów: {STRING}
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS_HELPTEXT                    :Kiedy włączone, użyj także ograniczenia prędkości dla wagonów do obliczenia maksymalnej prędkości pociągu
 
+STR_CONFIG_SETTING_AIRCRAFT_RANGE                               :Włącz maksymalny zasięg samolotu: {STRING}
+STR_CONFIG_SETTING_AIRCRAFT_RANGE_HELPTEXT                      :Kiedy włączone, NewGRF-y będą mogły ograniczyć maksymalny zasięg samolotów
 
 STR_CONFIG_SETTING_DISABLE_ELRAILS                              :Tylko jeden rodzaj torów: {STRING}
 STR_CONFIG_SETTING_DISABLE_ELRAILS_HELPTEXT                     :Przy włączonym ustawieniu nie jest już wymagane elektryfikowanie torów, aby elektrowozy mogły po nich jeździć
@@ -2868,15 +2875,13 @@ STR_NETWORK_CONNECTING_WAITING                                  :{BLACK}{NUM} kl
 STR_NETWORK_CONNECTING_DOWNLOADING_1                            :{BLACK}Dotychczas pobrano {BYTES}
 STR_NETWORK_CONNECTING_DOWNLOADING_2                            :{BLACK}{BYTES} / {BYTES} dotąd pobranych
 
-###length 8
+###length 6
 STR_NETWORK_CONNECTING_1                                        :{BLACK}(1/6) Łączenie...
 STR_NETWORK_CONNECTING_2                                        :{BLACK}(2/6) Autoryzacja...
 STR_NETWORK_CONNECTING_3                                        :{BLACK}(3/6) Oczekiwanie...
 STR_NETWORK_CONNECTING_4                                        :{BLACK}(4/6) Pobieranie mapy...
 STR_NETWORK_CONNECTING_5                                        :{BLACK}(5/6) Przetwarzanie danych...
 STR_NETWORK_CONNECTING_6                                        :{BLACK}(6/6) Rejestracja...
-STR_NETWORK_CONNECTING_SPECIAL_1                                :{BLACK}Uzyskiwanie informacji o grze...
-STR_NETWORK_CONNECTING_SPECIAL_2                                :{BLACK}Uzyskiwanie informacji o firmach...
 
 STR_NETWORK_CONNECTION_DISCONNECT                               :{BLACK}Rozłącz
 
@@ -4965,8 +4970,8 @@ STR_VEHICLE_DETAILS_ROAD_VEHICLE_RENAME                         :{BLACK}Zmień n
 STR_VEHICLE_DETAILS_SHIP_RENAME                                 :{BLACK}Zmień nazwę statku
 STR_VEHICLE_DETAILS_AIRCRAFT_RENAME                             :{BLACK}Zmień nazwę samolotu
 
-STR_VEHICLE_INFO_AGE                                            :{COMMA} {P rok lata lat} ({COMMA})
-STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} {P rok lata lat} ({COMMA})
+STR_VEHICLE_INFO_AGE                                            :{COMMA} {P rok lata lat} (żywotność: {COMMA} {P rok lata lat})
+STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} {P rok lata lat} (żywotność: {COMMA} {P rok lata lat})
 STR_VEHICLE_INFO_AGE_RUNNING_COST_YR                            :{BLACK}Wiek: {LTBLUE}{STRING}{BLACK} Koszt utrzymania: {LTBLUE}{CURRENCY_LONG}/rok
 STR_VEHICLE_INFO_AGE_RUNNING_COST_PERIOD                        :{BLACK}Wiek: {LTBLUE}{STRING}{BLACK} Koszt utrzymania: {LTBLUE}{CURRENCY_LONG}/okres
 
@@ -4980,7 +4985,7 @@ STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR                     :{BLACK}Zysk w t
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_MIN_PERFORMANCE     :{BLACK}Zysk w tym roku: {LTBLUE}{CURRENCY_LONG} (poprzedni rok: {CURRENCY_LONG}) {BLACK}Min. wydajność: {LTBLUE}{POWER_TO_WEIGHT}
 STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD                 :{BLACK}Zysk w tym okresie: {LTBLUE}{CURRENCY_LONG} (w poprzednim okresie: {CURRENCY_LONG})
 STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD_MIN_PERFORMANCE :{BLACK}Zysk w tym okresie: {LTBLUE}{CURRENCY_LONG} (w poprzednim okresie: {CURRENCY_LONG}) {BLACK}Min. wydajność: {LTBLUE}{POWER_TO_WEIGHT}
-STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}Niezawodność: {LTBLUE}{COMMA}%  {BLACK}Awarie od ostatniego serwisowania: {LTBLUE}{COMMA}
+STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}Niezawodność: {LTBLUE}{COMMA}% (maks.: {COMMA}%) {BLACK}Awarie od ostatniego serwisowania: {LTBLUE}{COMMA}
 
 STR_VEHICLE_INFO_BUILT_VALUE                                    :{LTBLUE}{ENGINE} {BLACK}Zakupiony: {LTBLUE}{NUM}{BLACK} Wartość: {LTBLUE}{CURRENCY_LONG}
 STR_VEHICLE_INFO_NO_CAPACITY                                    :{BLACK}Ładowność: {LTBLUE}żadna{STRING}
@@ -5120,7 +5125,7 @@ STR_ORDER_HANGAR_ACTION_TOOLTIP                                 :{BLACK}Wybierz 
 STR_ORDER_CONDITIONAL_VARIABLE_TOOLTIP                          :{BLACK}Dane pojazdu wykorzystane w warunku
 
 # Conditional order variables, must follow order of OrderConditionVariable enum
-###length 8
+###length 9
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE                           :Procent załadowania
 STR_ORDER_CONDITIONAL_RELIABILITY                               :Niezawodność
 STR_ORDER_CONDITIONAL_MAX_SPEED                                 :Prędkość maksymalna
@@ -5129,6 +5134,7 @@ STR_ORDER_CONDITIONAL_REQUIRES_SERVICE                          :Wymaga serwisow
 STR_ORDER_CONDITIONAL_UNCONDITIONALLY                           :Zawsze
 STR_ORDER_CONDITIONAL_REMAINING_LIFETIME                        :Pozostały czas życia (w latach)
 STR_ORDER_CONDITIONAL_MAX_RELIABILITY                           :Maksymalna niezawodność
+STR_ORDER_CONDITIONAL_DRIVING_BACKWARDS                         :Jadąc tyłem
 ###next-name-looks-similar
 
 STR_ORDER_CONDITIONAL_COMPARATOR_TOOLTIP                        :{BLACK}Jak porównać dane pojazdu z zadaną wartością
@@ -5648,6 +5654,7 @@ STR_ERROR_CAN_T_MOVE_VEHICLE                                    :Nie można prze
 STR_ERROR_REAR_ENGINE_FOLLOW_FRONT                              :tylna lokomotywa zawsze porusza się razem z przednią
 STR_ERROR_UNABLE_TO_FIND_ROUTE_TO                               :nie można znaleźć drogi do najbliższych warsztatów
 STR_ERROR_UNABLE_TO_FIND_LOCAL_DEPOT                            :nie można znaleźć zajezdni
+STR_ERROR_UNABLE_TO_FIND_LOCAL_HANGAR                           :nie można znaleźć lokalnego hangaru
 
 STR_ERROR_DEPOT_WRONG_DEPOT_TYPE                                :zły typ zajezdni
 

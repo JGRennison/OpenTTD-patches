@@ -2487,15 +2487,13 @@ STR_NETWORK_CONNECTING_WAITING                                  :{BLACK}{NUM} kl
 STR_NETWORK_CONNECTING_DOWNLOADING_1                            :{BLACK}{BYTES} hentet indtil videre
 STR_NETWORK_CONNECTING_DOWNLOADING_2                            :{BLACK}{BYTES} / {BYTES} hentet indtil videre
 
-###length 8
+###length 6
 STR_NETWORK_CONNECTING_1                                        :{BLACK}(1/6) Tilslutter..
 STR_NETWORK_CONNECTING_2                                        :{BLACK}(2/6) Godkender..
 STR_NETWORK_CONNECTING_3                                        :{BLACK}(3/6) Venter..
 STR_NETWORK_CONNECTING_4                                        :{BLACK}(4/6) Henter kort..
 STR_NETWORK_CONNECTING_5                                        :{BLACK}(5/6) Behandler data..
 STR_NETWORK_CONNECTING_6                                        :{BLACK}(6/6) Registrerer..
-STR_NETWORK_CONNECTING_SPECIAL_1                                :{BLACK}Henter spil-info..
-STR_NETWORK_CONNECTING_SPECIAL_2                                :{BLACK}Henter selskabsinfo..
 
 STR_NETWORK_CONNECTION_DISCONNECT                               :{BLACK}Afbryd forbindelse
 
@@ -4593,7 +4591,6 @@ STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR                     :{BLACK}Overskud
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_MIN_PERFORMANCE     :{BLACK}Årets resultat: {LTBLUE}{CURRENCY_LONG} (sidste år: {CURRENCY_LONG}) {BLACK}Mindste ydeevne: {LTBLUE}{POWER_TO_WEIGHT}
 STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD                 :{BLACK}Profit denne periode: {LTBLUE}{CURRENCY_LONG} (sidste periode: {CURRENCY_LONG})
 STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD_MIN_PERFORMANCE :{BLACK}Profit denne periode: {LTBLUE}{CURRENCY_LONG} (sidste periode: {CURRENCY_LONG}) {BLACK}Min. ydeevne: {LTBLUE}{POWER_TO_WEIGHT}
-STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}Pålidelighed: {LTBLUE}{COMMA}%  {BLACK}Nedbrud siden sidste service: {LTBLUE}{COMMA}
 
 STR_VEHICLE_INFO_BUILT_VALUE                                    :{LTBLUE}{ENGINE} {BLACK}Bygget: {LTBLUE}{NUM}{BLACK} Værdi: {LTBLUE}{CURRENCY_LONG}
 STR_VEHICLE_INFO_NO_CAPACITY                                    :{BLACK}Kapacitet: {LTBLUE}Ingen{STRING}
@@ -4733,7 +4730,7 @@ STR_ORDER_HANGAR_ACTION_TOOLTIP                                 :{BLACK}Vælg de
 STR_ORDER_CONDITIONAL_VARIABLE_TOOLTIP                          :{BLACK}Data som ordrespring baseres på
 
 # Conditional order variables, must follow order of OrderConditionVariable enum
-###length 8
+###length 9
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE                           :Last-procentdel
 STR_ORDER_CONDITIONAL_RELIABILITY                               :Pålidelighed
 STR_ORDER_CONDITIONAL_MAX_SPEED                                 :Tophastighed

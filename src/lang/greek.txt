@@ -2583,15 +2583,13 @@ STR_NETWORK_CONNECTING_WAITING                                  :{BLACK}{NUM} σ
 STR_NETWORK_CONNECTING_DOWNLOADING_1                            :{BLACK}{BYTES} κατέβηκαν μέχρι τώρα
 STR_NETWORK_CONNECTING_DOWNLOADING_2                            :{BLACK}{BYTES} / {BYTES} κατέβηκαν μέχρι τώρα
 
-###length 8
+###length 6
 STR_NETWORK_CONNECTING_1                                        :{BLACK}(1/6) Σύνδεση...
 STR_NETWORK_CONNECTING_2                                        :{BLACK}(2/6) Εξουσιοδότηση...
 STR_NETWORK_CONNECTING_3                                        :{BLACK}(3/6) Αναμονή...
 STR_NETWORK_CONNECTING_4                                        :{BLACK}(4/6) Λήψη χάρτη...
 STR_NETWORK_CONNECTING_5                                        :{BLACK}(5/6) Επεξεργασία δεδομένων...
 STR_NETWORK_CONNECTING_6                                        :{BLACK}(6/6) Καταχώρηση...
-STR_NETWORK_CONNECTING_SPECIAL_1                                :{BLACK}Ανεύρεση πληροφοριών του παιχνιδιού...
-STR_NETWORK_CONNECTING_SPECIAL_2                                :{BLACK}Ανεύρεση πληροφοριών της εταιρείας...
 
 STR_NETWORK_CONNECTION_DISCONNECT                               :{BLACK}Αποσύνδεση
 
@@ -4682,8 +4680,8 @@ STR_VEHICLE_DETAILS_ROAD_VEHICLE_RENAME                         :{BLACK}Ονομ
 STR_VEHICLE_DETAILS_SHIP_RENAME                                 :{BLACK}Ονομασία πλοίου
 STR_VEHICLE_DETAILS_AIRCRAFT_RENAME                             :{BLACK}Ονομασία αεροσκάφους
 
-STR_VEHICLE_INFO_AGE                                            :{COMMA} χρόν{P ος ια} ({COMMA})
-STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} χρόν{P ος ια} ({COMMA})
+STR_VEHICLE_INFO_AGE                                            :{COMMA} χρόν{P ος ια} (ζωής: {COMMA} έτ{P "ος" η})
+STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} χρόν{P ος ια} (ζωής: {COMMA} έτ{P "ος" η})
 STR_VEHICLE_INFO_AGE_RUNNING_COST_YR                            :{BLACK}Ηλικία: {LTBLUE}{STRING}{BLACK}   Λειτουργικό Κόστος: {LTBLUE}{CURRENCY_LONG}/έτος
 STR_VEHICLE_INFO_AGE_RUNNING_COST_PERIOD                        :{BLACK}Ηλικία: {LTBLUE}{STRING}{BLACK}   Λειτουργικό Κόστος: {LTBLUE}{CURRENCY_LONG}/περίοδο
 
@@ -4697,7 +4695,7 @@ STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR                     :{BLACK}Φετι
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_MIN_PERFORMANCE     :{BLACK}Φετινό κέρδος: {LTBLUE}{CURRENCY_LONG} (Περσινό: {CURRENCY_LONG}) {BLACK}Ελάχ. απόδοση: {LTBLUE}{POWER_TO_WEIGHT}
 STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD                 :{BLACK}Κέρδος αυτή την περίοδο: {LTBLUE}{CURRENCY_LONG} (τελευταίας περιόδου: {CURRENCY_LONG})
 STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD_MIN_PERFORMANCE :{BLACK}Κέρδος αυτή την περίοδο: {LTBLUE}{CURRENCY_LONG} (τελευταίας περιόδου: {CURRENCY_LONG}) {BLACK}Ελάχ. απόδοση: {LTBLUE}{POWER_TO_WEIGHT}
-STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}Αξιοπιστία: {LTBLUE}{COMMA}%  {BLACK}Βλάβες μετά από την τελευταία επισκευή: {LTBLUE}{COMMA}
+STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}Αξιοπιστία: {LTBLUE}{COMMA}%  (μέγιστο: {COMMA}%) {BLACK}Βλάβες μετά από την τελευταία επισκευή: {LTBLUE}{COMMA}
 
 STR_VEHICLE_INFO_BUILT_VALUE                                    :{LTBLUE}{ENGINE} {BLACK}Κατασκευή: {LTBLUE}{NUM}{BLACK} Αξία: {LTBLUE}{CURRENCY_LONG}
 STR_VEHICLE_INFO_NO_CAPACITY                                    :{BLACK}Χωρητικότητα: {LTBLUE}Τίποτα{STRING}
@@ -4837,7 +4835,7 @@ STR_ORDER_HANGAR_ACTION_TOOLTIP                                 :{BLACK}Επιλ
 STR_ORDER_CONDITIONAL_VARIABLE_TOOLTIP                          :{BLACK}Δεδομένα οχήματος για να βασιστεί το άλμα
 
 # Conditional order variables, must follow order of OrderConditionVariable enum
-###length 8
+###length 9
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE                           :{G=n}Ποσοστό φόρτωσης
 STR_ORDER_CONDITIONAL_RELIABILITY                               :{G=f}Αξιοπιστία
 STR_ORDER_CONDITIONAL_MAX_SPEED                                 :Μέγιστη ταχύτητα
@@ -5365,6 +5363,7 @@ STR_ERROR_CAN_T_MOVE_VEHICLE                                    :Δεν μπορ
 STR_ERROR_REAR_ENGINE_FOLLOW_FRONT                              :η πίσω μηχανή θα ακολουθεί πάντα την αντίστοιχη μπροστινή
 STR_ERROR_UNABLE_TO_FIND_ROUTE_TO                               :αδύνατο να βρεθεί διαδρομή προς το τοπικό αμαξοστάσιο
 STR_ERROR_UNABLE_TO_FIND_LOCAL_DEPOT                            :αδύνατο να βρεθεί τοπικό αμαξοστάσιο
+STR_ERROR_UNABLE_TO_FIND_LOCAL_HANGAR                           :αδύνατο να βρεθεί τοπικό υπόστεγο
 
 STR_ERROR_DEPOT_WRONG_DEPOT_TYPE                                :λάθος τύπος αμαξοστάσιου
 

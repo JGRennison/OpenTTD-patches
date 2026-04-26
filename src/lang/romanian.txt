@@ -2440,15 +2440,13 @@ STR_NETWORK_CONNECTING_WAITING                                  :{BLACK}{NUM} {P
 STR_NETWORK_CONNECTING_DOWNLOADING_1                            :{BLACK}{BYTES} descărcat până acum
 STR_NETWORK_CONNECTING_DOWNLOADING_2                            :{BLACK}{BYTES} / {BYTES} descărcați până acum
 
-###length 8
+###length 6
 STR_NETWORK_CONNECTING_1                                        :{BLACK}(1/6) Conectare...
 STR_NETWORK_CONNECTING_2                                        :{BLACK}(2/6) Autorizare...
 STR_NETWORK_CONNECTING_3                                        :{BLACK}(3/6) Așteptați...
 STR_NETWORK_CONNECTING_4                                        :{BLACK}(4/6) Descărcare hartă...
 STR_NETWORK_CONNECTING_5                                        :{BLACK}(5/6) Prelucrare date...
 STR_NETWORK_CONNECTING_6                                        :{BLACK}(6/6) Înregistrare...
-STR_NETWORK_CONNECTING_SPECIAL_1                                :{BLACK}Preluare informații joc...
-STR_NETWORK_CONNECTING_SPECIAL_2                                :{BLACK}Preluare informații companie...
 
 STR_NETWORK_CONNECTION_DISCONNECT                               :{BLACK}Deconectare
 
@@ -4460,7 +4458,6 @@ STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR                     :{BLACK}Profit p
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_MIN_PERFORMANCE     :{BLACK}Profit anul curent: {LTBLUE}{CURRENCY_LONG} (anul trecut: {CURRENCY_LONG}) {BLACK}performanta minima: {LTBLUE}{POWER_TO_WEIGHT}
 STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD                 :{BLACK}Profit perioada curentă: {LTBLUE}{CURRENCY_LONG} (ultima perioadă: {CURRENCY_LONG})
 STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD_MIN_PERFORMANCE :{BLACK}Profit perioada curentă: {LTBLUE}{CURRENCY_LONG} (ultima perioadă: {CURRENCY_LONG}) {BLACK}Performanță minimă: {LTBLUE}{POWER_TO_WEIGHT}
-STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}Eficiență: {LTBLUE}{COMMA}%  {BLACK}Defecțiuni de la ultimul service: {LTBLUE}{COMMA}
 
 STR_VEHICLE_INFO_BUILT_VALUE                                    :{LTBLUE}{ENGINE} {BLACK}Construit: {LTBLUE}{NUM}{BLACK} Valoare: {LTBLUE}{CURRENCY_LONG}
 STR_VEHICLE_INFO_NO_CAPACITY                                    :{BLACK}Capacitate: {LTBLUE}Nimic{STRING}
@@ -4600,7 +4597,7 @@ STR_ORDER_HANGAR_ACTION_TOOLTIP                                 :{BLACK}Selecta�
 STR_ORDER_CONDITIONAL_VARIABLE_TOOLTIP                          :{BLACK}Datele vehiculului pe care se bazează
 
 # Conditional order variables, must follow order of OrderConditionVariable enum
-###length 8
+###length 9
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE                           :Procentaj încărcare
 STR_ORDER_CONDITIONAL_RELIABILITY                               :Eficiență
 STR_ORDER_CONDITIONAL_MAX_SPEED                                 :Viteză maximă

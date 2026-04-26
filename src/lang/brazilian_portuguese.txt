@@ -1353,8 +1353,13 @@ STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :Altos
 STR_CONFIG_SETTING_RECESSIONS                                   :Recessões: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Se ativado, recessões podem ocorrer periodicamente. Durante uma recessão, toda a produção é significativamente menor (ela retorna ao nível anterior quando a recessão termina)
 
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE                           :Permitir que os trens invertam a direção: {STRING}
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE_HELPTEXT                  :Escolha onde os trens podem virar para inverter a direção. Com a opção “Todos”, os trens podem virar em qualquer lugar. Com a opção “Apenas no fim da linha”, os trens não invertem a direção nas estações se for possível seguir em frente. Com a opção “Nenhum”, os trens não poderão inverter e seguirão de ré se necessário, mas a velocidade será reduzida se não houver cabine de comando no vagão traseiro
 
 ###length 3
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE_ALL                       :Todos
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE_END_OF_LINE_ONLY          :Apenas no fim da linha
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE_NONE                      :Nenhum
 
 STR_CONFIG_SETTING_DISASTERS                                    :Desastres: {STRING}
 STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :Ativar desastres que podem, ocasionalmente, bloquear ou destruir veículos ou infraestrutura
@@ -2491,15 +2496,13 @@ STR_NETWORK_CONNECTING_WAITING                                  :{BLACK}{NUM} cl
 STR_NETWORK_CONNECTING_DOWNLOADING_1                            :{BLACK}{BYTES} obtidos até agora
 STR_NETWORK_CONNECTING_DOWNLOADING_2                            :{BLACK}{BYTES} / {BYTES} obtidos até agora
 
-###length 8
+###length 6
 STR_NETWORK_CONNECTING_1                                        :{BLACK}(1/6) Conectando...
 STR_NETWORK_CONNECTING_2                                        :{BLACK}(2/6) Autorizando...
 STR_NETWORK_CONNECTING_3                                        :{BLACK}(3/6) Aguardando...
 STR_NETWORK_CONNECTING_4                                        :{BLACK}(4/6) Obtendo mapa...
 STR_NETWORK_CONNECTING_5                                        :{BLACK}(5/6) Processando dados...
 STR_NETWORK_CONNECTING_6                                        :{BLACK}(6/6) Registrando...
-STR_NETWORK_CONNECTING_SPECIAL_1                                :{BLACK}Obtendo informações do jogo...
-STR_NETWORK_CONNECTING_SPECIAL_2                                :{BLACK}Obtendo informações das empresas...
 
 STR_NETWORK_CONNECTION_DISCONNECT                               :{BLACK}Desconectar
 
@@ -4582,8 +4585,8 @@ STR_VEHICLE_DETAILS_ROAD_VEHICLE_RENAME                         :{BLACK}Renomear
 STR_VEHICLE_DETAILS_SHIP_RENAME                                 :{BLACK}Renomear embarcação
 STR_VEHICLE_DETAILS_AIRCRAFT_RENAME                             :{BLACK}Renomear aeronave
 
-STR_VEHICLE_INFO_AGE                                            :{COMMA} ano{P "" s} ({COMMA})
-STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} ano{P "" s} ({COMMA})
+STR_VEHICLE_INFO_AGE                                            :{COMMA} ano{P "" s} (tempo de vida útil: {COMMA} ano{P "" s})
+STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} ano{P "" s} (tempo de vida útil: {COMMA} ano{P "" s})
 STR_VEHICLE_INFO_AGE_RUNNING_COST_YR                            :{BLACK}Idade: {LTBLUE}{STRING}{BLACK}   Custo Operacional: {LTBLUE}{CURRENCY_LONG}/ano
 STR_VEHICLE_INFO_AGE_RUNNING_COST_PERIOD                        :{BLACK}Idade: {LTBLUE}{STRING}{BLACK}   Custo Operacional: {LTBLUE}{CURRENCY_LONG}/período
 
@@ -4597,7 +4600,7 @@ STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR                     :{BLACK}Lucro ne
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_MIN_PERFORMANCE     :{BLACK}Lucro neste ano: {LTBLUE}{CURRENCY_LONG} (último ano: {CURRENCY_LONG}) {BLACK}Desempenho mín.: {LTBLUE}{POWER_TO_WEIGHT}
 STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD                 :{BLACK}Lucro neste período: {LTBLUE}{CURRENCY_LONG} (último período: {CURRENCY_LONG})
 STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD_MIN_PERFORMANCE :{BLACK}Lucro neste período: {LTBLUE}{CURRENCY_LONG} (último período: {CURRENCY_LONG}) {BLACK}Desempenho mín.: {LTBLUE}{POWER_TO_WEIGHT}
-STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}Confiabilidade: {LTBLUE}{COMMA}%  {BLACK}Quebras desde a última manutenção: {LTBLUE}{COMMA}
+STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}Confiabilidade: {LTBLUE}{COMMA}% (max: {COMMA}%)  {BLACK}Avarias desde a última manutenção: {LTBLUE}{COMMA}
 
 STR_VEHICLE_INFO_BUILT_VALUE                                    :{LTBLUE}{ENGINE} {BLACK}Construído: {LTBLUE}{NUM}{BLACK} Valor: {LTBLUE}{CURRENCY_LONG}
 STR_VEHICLE_INFO_NO_CAPACITY                                    :{BLACK}Capacidade: {LTBLUE}Nenhuma{STRING}
@@ -4737,7 +4740,7 @@ STR_ORDER_HANGAR_ACTION_TOOLTIP                                 :{BLACK}Escolher
 STR_ORDER_CONDITIONAL_VARIABLE_TOOLTIP                          :{BLACK}Dados do veículo para basear o salto de ordem
 
 # Conditional order variables, must follow order of OrderConditionVariable enum
-###length 8
+###length 9
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE                           :Porcentagem de carga
 STR_ORDER_CONDITIONAL_RELIABILITY                               :Confiabilidade
 STR_ORDER_CONDITIONAL_MAX_SPEED                                 :Velocidade máxima
@@ -4746,6 +4749,7 @@ STR_ORDER_CONDITIONAL_REQUIRES_SERVICE                          :Precisa de manu
 STR_ORDER_CONDITIONAL_UNCONDITIONALLY                           :Sempre
 STR_ORDER_CONDITIONAL_REMAINING_LIFETIME                        :Tempo de vida útil restante (anos)
 STR_ORDER_CONDITIONAL_MAX_RELIABILITY                           :Confiabilidade máxima
+STR_ORDER_CONDITIONAL_DRIVING_BACKWARDS                         :Dirigindo em marcha à ré
 ###next-name-looks-similar
 
 STR_ORDER_CONDITIONAL_COMPARATOR_TOOLTIP                        :{BLACK}Como comparar os dados do veículo com o valor que foi passado
@@ -5265,6 +5269,7 @@ STR_ERROR_CAN_T_MOVE_VEHICLE                                    :Não é possív
 STR_ERROR_REAR_ENGINE_FOLLOW_FRONT                              :a locomotiva traseira sempre seguirá a sua equivalente dianteira
 STR_ERROR_UNABLE_TO_FIND_ROUTE_TO                               :não é possível encontrar uma rota para depósito local
 STR_ERROR_UNABLE_TO_FIND_LOCAL_DEPOT                            :não é possível encontrar depósito local
+STR_ERROR_UNABLE_TO_FIND_LOCAL_HANGAR                           :não é possível encontrar o hangar local
 
 STR_ERROR_DEPOT_WRONG_DEPOT_TYPE                                :tipo de depósito errado
 

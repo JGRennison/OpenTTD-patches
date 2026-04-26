@@ -2488,15 +2488,13 @@ STR_NETWORK_CONNECTING_WAITING                                  :{BLACK}{NUM} gw
 STR_NETWORK_CONNECTING_DOWNLOADING_1                            :{BLACK}{BYTES} wedi'i lawrlwytho hyd yn hyn
 STR_NETWORK_CONNECTING_DOWNLOADING_2                            :{BLACK}{BYTES} / {BYTES} wedi eu llwytho i lawr hyd yn hyn
 
-###length 8
+###length 6
 STR_NETWORK_CONNECTING_1                                        :{BLACK}(1/6) Wrthi'n cysylltu...
 STR_NETWORK_CONNECTING_2                                        :{BLACK}(2/6) Wrthi'n awdurdodi...
 STR_NETWORK_CONNECTING_3                                        :{BLACK}(3/6) Wrthi'n aros...
 STR_NETWORK_CONNECTING_4                                        :{BLACK}(4/6) Wrthi'n llawrlwytho map...
 STR_NETWORK_CONNECTING_5                                        :{BLACK}(5/6) Wrthi'n prosesu data..
 STR_NETWORK_CONNECTING_6                                        :{BLACK}(6/6) Cofrestru...
-STR_NETWORK_CONNECTING_SPECIAL_1                                :{BLACK}Estyn gwybodaeth gêm...
-STR_NETWORK_CONNECTING_SPECIAL_2                                :{BLACK}Estyn gwybodaeth cwmnïau...
 
 STR_NETWORK_CONNECTION_DISCONNECT                               :{BLACK}Datgysylltu
 
@@ -4579,8 +4577,8 @@ STR_VEHICLE_DETAILS_ROAD_VEHICLE_RENAME                         :{BLACK}Enwi cer
 STR_VEHICLE_DETAILS_SHIP_RENAME                                 :{BLACK}Enwi llong
 STR_VEHICLE_DETAILS_AIRCRAFT_RENAME                             :{BLACK}Enwi awyren
 
-STR_VEHICLE_INFO_AGE                                            :{COMMA} blwyddyn ({COMMA})
-STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} blwyddyn ({COMMA})
+STR_VEHICLE_INFO_AGE                                            :{COMMA} blwyddyn{P "" ""} (bywyd: {COMMA} blwyddyn{P "" ""})
+STR_VEHICLE_INFO_AGE_RED                                        :{RED}{COMMA} blwyddyn{P "" ""} (bywyd: {COMMA} blwyddyn{P "" ""})
 STR_VEHICLE_INFO_AGE_RUNNING_COST_YR                            :{BLACK}Oed: {LTBLUE}{STRING}{BLACK}   Cost Rhedeg: {LTBLUE}{CURRENCY_LONG}/blwyddyn
 STR_VEHICLE_INFO_AGE_RUNNING_COST_PERIOD                        :{BLACK}Oed: {LTBLUE}{STRING}{BLACK}   Cost Rhedeg: {LTBLUE}{CURRENCY_LONG}/cyfnod
 
@@ -4594,7 +4592,7 @@ STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR                     :{BLACK}Elw elen
 STR_VEHICLE_INFO_PROFIT_THIS_YEAR_LAST_YEAR_MIN_PERFORMANCE     :{BLACK}Elw eleni: {LTBLUE}{CURRENCY_LONG} (Elw llynedd : {CURRENCY_LONG}) {BLACK}Perfformiad isafsymol: {LTBLUE}{POWER_TO_WEIGHT}
 STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD                 :Elw y cyfnod yma: {LTBLUE}{CURRENCY_LONG} (cyfnod diwethaf: {CURRENCY_LONG})
 STR_VEHICLE_INFO_PROFIT_THIS_PERIOD_LAST_PERIOD_MIN_PERFORMANCE :{BLACK}Elw'r cyfnod yma: {LTBLUE}{CURRENCY_LONG} (cyfnod diwethaf: {CURRENCY_LONG}) {BLACK}Perfformiad isaf:: {LTBLUE}{POWER_TO_WEIGHT}
-STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}Dibynadwyedd: {LTBLUE}{COMMA}%  {BLACK}Toriadau ers gwasanaeth olaf: {LTBLUE}{COMMA}
+STR_VEHICLE_INFO_RELIABILITY_BREAKDOWNS                         :{BLACK}Dibynadwyedd: {LTBLUE}{COMMA}% (max: {COMMA}%) {BLACK}Toriadau ers gwasanaeth olaf: {LTBLUE}{COMMA}
 
 STR_VEHICLE_INFO_BUILT_VALUE                                    :{LTBLUE}{ENGINE} {BLACK}Codi: {LTBLUE}{NUM}{BLACK} Pris: {LTBLUE}{CURRENCY_LONG}
 STR_VEHICLE_INFO_NO_CAPACITY                                    :{BLACK}Cynhwysedd: {LTBLUE}Dim{STRING}
@@ -4734,7 +4732,7 @@ STR_ORDER_HANGAR_ACTION_TOOLTIP                                 :{BLACK}Dewis y 
 STR_ORDER_CONDITIONAL_VARIABLE_TOOLTIP                          :{BLACK}Data cerbyd i seilio'r naid arno
 
 # Conditional order variables, must follow order of OrderConditionVariable enum
-###length 8
+###length 9
 STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE                           :Canran llwyth
 STR_ORDER_CONDITIONAL_RELIABILITY                               :Dibynadwyedd
 STR_ORDER_CONDITIONAL_MAX_SPEED                                 :Cyflymder uchaf
