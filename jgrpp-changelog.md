@@ -2,6 +2,13 @@
 
 * * *
 
+### v0.72.0 (2026-04-26)
+* Fix crash which could occur in some cases when a delayed multiplayer command was received for a vehicle which had already been sold/deleted.
+* Fix incorrect waiting average values in graphs for industries using stockpiling.
+* From vanilla: Trains with an engine on the rear can drive backwards when reversing.
+* Routing restrictions: Add status conditions for trains driving backwards.
+* Bump trunk base from commit 0b3c448ea1e0faab3e3eea0049186f4e8ed01ffd to commit 6dce7fdca30e1fc1fc75b6c9e4fe04de96777619.
+
 ### v0.71.2 (2026-04-07)
 * Fix incorrect text in station rating tooltip and bridge too low error messages.
 * Fix vehicle viewport rendering issues which could occur in some special cases.
