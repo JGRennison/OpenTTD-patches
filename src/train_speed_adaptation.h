@@ -21,12 +21,7 @@ struct SignalSpeedKey {
 	uint16_t signal_track;
 	Trackdir last_passing_train_dir;
 
-	bool operator==(const SignalSpeedKey& other) const
-	{
-		return signal_tile == other.signal_tile &&
-			signal_track == other.signal_track &&
-			last_passing_train_dir == other.last_passing_train_dir;
-	}
+	bool operator==(const SignalSpeedKey& other) const = default;
 
 	bool operator<(const SignalSpeedKey& other) const
 	{
