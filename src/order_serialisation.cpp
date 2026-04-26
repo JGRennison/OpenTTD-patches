@@ -59,7 +59,7 @@ struct OrderSerialisationFieldNames {
 	struct Schedules {
 		static constexpr char OBJKEY[] = "schedules";
 
-		/** <array<int|object>>, when item is an int the value rapresents the offset, when it's an object the offset can be found in the apropriate field */
+		/** <array<int|object>>, when item is an int the value represents the offset, when it's an object the offset can be found in the appropriate field */
 		struct Slots {
 			static constexpr char OBJKEY[]      = "slots";
 

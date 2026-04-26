@@ -80,7 +80,7 @@ void PayDailyTrackSharingFee(Train *v)
  * Check whether a vehicle is in an allowed position.
  * @param v     The vehicle to check.
  * @param owner Owner whose infrastructure is not allowed, because the company will be removed. Ignored if INVALID_OWNER.
- * @return      True if the vehicle is compeletely in an allowed position.
+ * @return      True if the vehicle is completely in an allowed position.
  */
 static bool VehiclePositionIsAllowed(const Vehicle *v, Owner owner = INVALID_OWNER)
 {

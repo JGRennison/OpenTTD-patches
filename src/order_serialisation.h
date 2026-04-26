@@ -19,7 +19,7 @@
 #include <string_view>
 
 enum JsonOrderImportErrorType : uint8_t {
-	JOIET_OK,           ///< Used to suppress errors / check no error occured
+	JOIET_OK,           ///< Used to suppress errors / check no error occurred
 	JOIET_MINOR,        ///< A cosmetic attribute of the order was malformed
 	JOIET_MAJOR,        ///< An important part of the order was malformed, but it was not strictly required for creating the order
 	JOIET_CRITICAL,     ///< Makes building an order completely impossible, in these cases the order is replaced by a label

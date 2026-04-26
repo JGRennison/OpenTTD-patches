@@ -4498,7 +4498,7 @@ static inline void ClampViewportToMap(const Viewport *vp, int *scroll_x, int *sc
 
 
 /**
- * Clamp the smooth scroll to a maxmimum speed and distance based on time elapsed.
+ * Clamp the smooth scroll to a maximum speed and distance based on time elapsed.
  *
  * Every 30ms, we move 1/4th of the distance, to give a smooth movement experience.
  * But we never go over the max_scroll speed.
@@ -6244,7 +6244,7 @@ static bool FindPolyline(const Point &pt, const LineSnapPoint &start, PolylineIn
 		/* in the first place, choose this line whose first segment ends up closer
 		 * to the mouse point (thus the second segment is shorter) */
 		int cmp = ortho_len2 - diag_len2;
-		/* if equeal, choose the shorter line */
+		/* if equal, choose the shorter line */
 		if (cmp == 0) cmp = ortho_len - diag_len;
 		/* finally look at small "units" and choose the line which is closer to the mouse point */
 		if (cmp == 0) cmp = std::min(abs(we), abs(ns)) - std::min(abs(x), abs(y));

@@ -7,7 +7,7 @@
 
 /** @file command_serialisation.h Internal template implementations related to command serialisation.
  *
- * Generally only needed by command_table.cpp and non-trivial commmand payload implementations.
+ * Generally only needed by command_table.cpp and non-trivial command payload implementations.
  */
 
 #ifndef COMMAND_SERIALISATION_H

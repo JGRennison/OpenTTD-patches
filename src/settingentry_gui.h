@@ -210,7 +210,7 @@ struct SettingsContainer {
 struct SettingsPage : BaseSettingEntry, SettingsContainer {
 	StringID title;     ///< Title of the sub-page
 	bool folded;        ///< Sub-page is folded (not visible except for its title)
-	std::function<bool()> hide_callback; ///< optional callback, returns true if this shouldbe hidden
+	std::function<bool()> hide_callback; ///< optional callback, returns true if this should be hidden
 
 	SettingsPage(StringID title);
 

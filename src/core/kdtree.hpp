@@ -338,7 +338,7 @@ class Kdtree {
 	 * Debugging function, counts number of occurrences of an element regardless of its correct position in the tree.
 	 * @param element The element to look for.
 	 * @param node_idx The root to start searching from.
-	 * @return The number of occurences.
+	 * @return The number of occurrences.
 	 */
 	size_t CountValue(const T &element, size_t node_idx) const
 	{
@@ -450,7 +450,7 @@ public:
 	 * Insert a single element in the tree.
 	 * Repeatedly inserting single elements may cause the tree to become unbalanced.
 	 * Undefined behaviour if the element already exists in the tree.
-	 * @param element The elemnt to add.
+	 * @param element The element to add.
 	 */
 	void Insert(const T &element)
 	{

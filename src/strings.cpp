@@ -1620,7 +1620,7 @@ static void FormatString(StringBuilder builder, std::string_view str_arg, String
 				}
 
 				case SCC_GENDER_LIST: { // {G 0 Der Die Das}
-					if (run_mode == FormatStringRunMode::DryRun) dry_run_gender_read_count++; // Record that a gender read occured, for dry run handling.
+					if (run_mode == FormatStringRunMode::DryRun) dry_run_gender_read_count++; // Record that a gender read occurred, for dry run handling.
 
 					/* First read the meta data from the language file. */
 					size_t offset = ref_param_offset + consumer.ReadUint8();

@@ -603,7 +603,7 @@ void ResetNewGRFData()
 	/* Reset price base data */
 	ResetPriceBaseMultipliers();
 
-	/* Reset the curencies array */
+	/* Reset the currencies array */
 	ResetCurrencies();
 
 	/* Reset the house array */

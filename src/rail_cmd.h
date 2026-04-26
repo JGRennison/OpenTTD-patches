@@ -28,7 +28,7 @@ enum class BuildSignalFlags : uint8_t {
 	None                   = 0,         ///< No flag set.
 	Convert                = (1U << 0), ///< Convert the present signal type and variant.
 	CtrlPressed            = (1U << 1), ///< Override signal/semaphore, or pre/exit/combo signal or toggle variant (CTRL-toggle)
-	SkipExisting           = (1U << 2), ///< Don't modify an existing signal but don't fail either. Otherewise always set new signal type.
+	SkipExisting           = (1U << 2), ///< Don't modify an existing signal but don't fail either. Otherwise always set new signal type.
 	PermitBidiTunnelBridge = (1U << 3), ///< Permit creation of/conversion to bidirectionally signalled bridges/tunnels.
 };
 DECLARE_ENUM_AS_BIT_SET(BuildSignalFlags)

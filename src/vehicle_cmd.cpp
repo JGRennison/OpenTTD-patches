@@ -464,7 +464,7 @@ static CommandCost RefitVehicle(Vehicle *v, bool only_this, uint8_t num_vehicles
 		CommandCost refit_cost = GetRefitCost(v, v->engine_type, new_cargo_type, actual_subtype, &auto_refit_allowed);
 		if (auto_refit && !flags.Test(DoCommandFlag::QueryCost) && !auto_refit_allowed) {
 			/* Sorry, auto-refitting not allowed, subtract the cargo amount again from the total.
-			 * When querrying cost/capacity (for example in order refit GUI), we always assume 'allowed'.
+			 * When querying cost/capacity (for example in order refit GUI), we always assume 'allowed'.
 			 * It is not predictable. */
 			total_capacity -= amount;
 			total_mail_capacity -= mail_capacity;

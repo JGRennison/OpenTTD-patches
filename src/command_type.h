@@ -307,7 +307,7 @@ public:
 		this->flags &= ~CCIF_SUCCESS;
 		this->message = message;
 
-		/* Cleary any extra message */
+		/* Clear any extra message */
 		if (this->GetInlineType() == CommandCostInlineType::ExtraMsg) {
 			this->SetInlineType(CommandCostInlineType::None);
 		} else if (this->GetInlineType() == CommandCostInlineType::AuxiliaryData) {

@@ -655,7 +655,7 @@ public:
 	inline TimetableTicks GetTravelTime() const { return this->travel_time; }
 
 	/**
-	 * Get the maxmimum speed in km-ish/h a vehicle is allowed to reach on the way to the
+	 * Get the maximum speed in km-ish/h a vehicle is allowed to reach on the way to the
 	 * destination.
 	 * @return maximum speed.
 	 */
@@ -698,7 +698,7 @@ public:
 	inline void SetTravelTime(TimetableTicks time) { this->travel_time = time; }
 
 	/**
-	 * Set the maxmimum speed in km-ish/h a vehicle is allowed to reach on the way to the
+	 * Set the maximum speed in km-ish/h a vehicle is allowed to reach on the way to the
 	 * destination.
 	 * @param speed Speed to be set.
 	 */

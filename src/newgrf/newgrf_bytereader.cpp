@@ -27,7 +27,7 @@ uint32_t ByteReader::PeekDWord()
 
 /**
  * Read a string.
- * @returns Sting read from the buffer.
+ * @returns String read from the buffer.
  */
 std::string_view ByteReader::ReadString()
 {

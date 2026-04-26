@@ -2579,7 +2579,7 @@ HouseZones GetClimateMaskForLandscape()
 }
 
 /**
- * Scout arround the original tile to find a better place for town
+ * Scout around the original tile to find a better place for town
  * @param tile The original tile
  * @param city Are we building a city?
  * @param layout The road layout to build.
@@ -2595,7 +2595,7 @@ static TileIndex BetterTownPlacementTile(TileIndex tile, bool city, TownLayout l
 	};
 	std::vector<CandidateTile> candidates;
 
-	/* Look arround for a better place */
+	/* Look around for a better place */
 	for (TileIndex test_tile : SpiralTileSequence(tile, _settings_game.game_creation.better_town_placement_radius, 1, 1)) {
 		if (!(IsTileType(test_tile, TileType::Clear) || IsTileType(test_tile, TileType::Trees)) || !IsTileFlat(test_tile) || !IsTileAlignedToGrid(test_tile, layout)) continue;
 
@@ -4281,7 +4281,7 @@ static void UpdateTownRating(Town *t)
 
 /**
  * Updates town grow counter after growth rate change.
- * Preserves relative house builting progress whenever it can.
+ * Preserves relative house building progress whenever it can.
  * @param t The town to calculate grow counter for
  * @param prev_growth_rate Town growth rate before it changed (one that was used with grow counter to be updated)
  */

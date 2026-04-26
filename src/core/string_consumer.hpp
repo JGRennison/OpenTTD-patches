@@ -666,7 +666,7 @@ public:
 	[[nodiscard]] size_type FindCharNotIn(std::string_view chars) const;
 
 	/**
-	 * Find first occurence of any 8-bit char in 'chars'.
+	 * Find first occurrence of any 8-bit char in 'chars'.
 	 * @return Offset from current reader position. 'npos' if no match found.
 	 */
 	[[nodiscard]] size_type FindCharIn(StringConsumerControlCharFilter chars) const
@@ -677,7 +677,7 @@ public:
 	}
 
 	/**
-	 * Find first occurence of any 8-bit char not in 'chars'.
+	 * Find first occurrence of any 8-bit char not in 'chars'.
 	 * @return Offset from current reader position. 'npos' if no match found.
 	 */
 	[[nodiscard]] size_type FindCharNotIn(StringConsumerControlCharFilter chars) const
@@ -688,7 +688,7 @@ public:
 	}
 
 	/**
-	 * Find first occurence of any 8-bit char matching the predicate.
+	 * Find first occurrence of any 8-bit char matching the predicate.
 	 * @return Offset from current reader position. 'npos' if no match found.
 	 */
 	template <typename F>
@@ -700,7 +700,7 @@ public:
 	}
 
 	/**
-	 * Find first occurence of any 8-bit char not matching the predicate.
+	 * Find first occurrence of any 8-bit char not matching the predicate.
 	 * @return Offset from current reader position. 'npos' if no match found.
 	 */
 	template <typename F>

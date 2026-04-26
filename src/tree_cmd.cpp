@@ -150,7 +150,7 @@ static void PlantTreesOnTile(TileIndex tile, TreeType treetype, uint count, Tree
 static uint8_t _previous_trees_around_snow_line_range = 255;
 
 /**
- * Array of probabilities for artic trees to appear,
+ * Array of probabilities for arctic trees to appear,
  * by normalised distance from snow line
  */
 static std::vector<uint8_t> _arctic_tree_occurance;

@@ -201,7 +201,7 @@ struct TileIndexIntegerMixin {
  * This type represents an absolute tile ID, TileIndexDiff is used for relative values.
  *
  * Subtracting a TileIndex from another TileIndex results in a TileIndexDiff.
- * Adding a TileIndex to another TileIndex is not allowd.
+ * Adding a TileIndex to another TileIndex is not allowed.
  *
  * TileIndex - TileIndex --> TileIndexDiff
  * TileIndex + TileIndex --> delete

@@ -4674,7 +4674,7 @@ public:
 		}
 	}
 
-	/** Selects apropriate plane for current state of the shown vehicle. */
+	/** Selects appropriate plane for current state of the shown vehicle. */
 	void UpdatePlanes()
 	{
 		const Vehicle *v = Vehicle::Get(this->window_number);

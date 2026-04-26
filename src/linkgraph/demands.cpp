@@ -201,7 +201,7 @@ public:
 private:
 	uint supply_sum;      ///< Sum of all supplies in the component.
 	uint demand_per_node; ///< Mean demand associated with each node.
-	uint missing_supply;  ///< Suppply/demand adjustment for in AdjustDemandNodes.
+	uint missing_supply;  ///< Supply/demand adjustment for in AdjustDemandNodes.
 };
 
 /**

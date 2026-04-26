@@ -276,7 +276,7 @@ public:
 
 	/**
 	 * Does this blitter require a separate animation buffer from the video backend?
-	 * @return \c true when the backend usees a separate buffer for animation.
+	 * @return \c true when the backend uses a separate buffer for animation.
 	 */
 	virtual bool NeedsAnimationBuffer()
 	{

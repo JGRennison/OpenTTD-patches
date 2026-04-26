@@ -627,7 +627,7 @@ void ResetCompanyLivery(Company *c)
 /**
  * Create a new company and sets all company variables default values
  *
- * @param flags oepration flags
+ * @param flags operation flags
  * @param company CompanyID to use for the new company
  * @return the company struct
  */
