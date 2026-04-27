@@ -49,6 +49,7 @@ struct BaseSetVersionPrinter {
 };
 
 struct BaseSetBase {
+	/** Mapping of translations: language -> string. */
 	typedef std::vector<std::pair<std::string, std::string>> TranslatedStrings;
 
 	std::string name;              ///< The name of the base set
@@ -112,6 +113,11 @@ struct BaseSet : public BaseSetBase {
 	const IniItem *GetMandatoryItem(std::string_view full_filename, const IniGroup &group, std::string_view name) const;
 
 	bool FillSetDetails(const IniFile &ini, const std::string &path, const std::string &full_filename, bool allow_empty_filename = true);
+
+	/**
+	 * Copy settings from the given set into this set when they are compatible.
+	 * @param src The location to copy settings from.
+	 */
 	void CopyCompatibleConfig([[maybe_unused]] const T &src) {}
 
 	/**

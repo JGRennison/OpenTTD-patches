@@ -26,7 +26,7 @@ protected:
 	TileIndex origin_tile; ///< origin tile
 	TrackdirBits origin_trackdirs; ///< origin trackdir mask
 
-	/** to access inherited path finder */
+	/** @copydoc CYapfBaseT::Yapf */
 	inline Tpf &Yapf()
 	{
 		/* use two lines to avoid false-positive Undefined Behavior Sanitizer warnings when alignof(Tpf) > alignof(*this) and *this does not meet alignof(Tpf) */
@@ -35,7 +35,11 @@ protected:
 	}
 
 public:
-	/** Set origin tile / trackdir mask */
+	/**
+	 * Set origin tile / trackdir mask.
+	 * @param tile The start tile.
+	 * @param trackdirs The start track directions.
+	 */
 	void SetOrigin(TileIndex tile, TrackdirBits trackdirs)
 	{
 		this->origin_tile = tile;
@@ -79,13 +83,21 @@ protected:
 	}
 
 public:
-	/** set origin (tiles, trackdirs, etc.) */
-	void SetOrigin(TileIndex tile, Trackdir td, TileIndex tiler = INVALID_TILE, Trackdir tdr = INVALID_TRACKDIR, int reverse_penalty = 0)
+	/**
+	 * Set origin (tiles, trackdirs, etc.).
+	 * @param forward_tile The start tile when going forward.
+	 * @param forward_td The track direction when going forward.
+	 * @param reverse_tile The start tile when going backward.
+	 * @param reverse_td The track direction when going backward.
+	 * @param reverse_penalty The penalty for reversing.
+	 */
+	void SetOrigin(TileIndex forward_tile, Trackdir forward_td, TileIndex reverse_tile = INVALID_TILE,
+			Trackdir reverse_td = INVALID_TRACKDIR, int reverse_penalty = 0)
 	{
-		this->origin_tile = tile;
-		this->origin_td = td;
-		this->reverse_tile = tiler;
-		this->reverse_td = tdr;
+		this->origin_tile = forward_tile;
+		this->origin_td = forward_td;
+		this->reverse_tile = reverse_tile;
+		this->reverse_td = reverse_td;
 		this->reverse_penalty = reverse_penalty;
 	}
 

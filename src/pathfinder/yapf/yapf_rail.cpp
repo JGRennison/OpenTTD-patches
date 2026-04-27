@@ -75,7 +75,7 @@ public:
 	typedef typename Types::NodeList::Item Node; ///< this will be our node type
 
 protected:
-	/** to access inherited pathfinder */
+	/** @copydoc CYapfBaseT::Yapf */
 	inline Tpf &Yapf()
 	{
 		return *static_cast<Tpf *>(this);
@@ -99,7 +99,12 @@ private:
 		return true;
 	}
 
-	/** Reserve a railway platform. Tile contains the failed tile on abort. */
+	/**
+	 * Reserve a railway platform. Tile contains the failed tile on abort.
+	 * @param tile The start tile.
+	 * @param dir The direction to reserve further tiles in.
+	 * @return \c true iff reservation succeeded.
+	 */
 	bool ReserveRailStationPlatform(TileIndex &tile, DiagDirection dir)
 	{
 		TileIndex     start = tile;
@@ -119,7 +124,12 @@ private:
 		return true;
 	}
 
-	/** Try to reserve a single track/platform. */
+	/**
+	 * Reserve a single track/platform.
+	 * @param tile The start tile.
+	 * @param td The track direction that is to be reserved.
+	 * @return \c true iff reservation succeeded.
+	 */
 	bool ReserveSingleTrack(TileIndex tile, Trackdir td)
 	{
 		if (IsRailStationTile(tile)) {
@@ -146,7 +156,12 @@ private:
 		return tile != this->res_dest_tile || td != this->res_dest_td;
 	}
 
-	/** Unreserve a single track/platform. Stops when the previous failure is reached. */
+	/**
+	 * Unreserve a single track/platform. Stops when the previous failure is reached.
+	 * @param tile The start tile.
+	 * @param td The track direction that is to be unreserved.
+	 * @return \c true iff the unreservation succeeded.
+	 */
 	bool UnreserveSingleTrack(TileIndex tile, Trackdir td)
 	{
 		if (IsRailStationTile(tile)) {
@@ -163,7 +178,12 @@ private:
 	}
 
 public:
-	/** Set the target to where the reservation should be extended. */
+	/**
+	 * Set the target to where the reservation should be extended.
+	 * @param node The destination node.
+	 * @param tile The destination tile.
+	 * @param td The destination track direction.
+	 */
 	inline void SetReservationTarget(Node *node, TileIndex tile, Trackdir td)
 	{
 		this->res_dest_node = node;
@@ -173,6 +193,7 @@ public:
 
 	/**
 	 * Check the node for a possible reservation target.
+	 * @param node The node to check.
 	 * Return true if found.
 	 */
 	inline bool FindSafePositionOnNode(Node *node)
@@ -195,7 +216,12 @@ public:
 		}
 	}
 
-	/** Try to reserve the path till the reservation target. */
+	/**
+	 * Try to reserve the path till the reservation target.
+	 * @param target End location of the reservation.
+	 * @param origin Start location of the reservation.
+	 * @return \c true iff the path could be reserved.
+	 */
 	bool TryReservePath(PBSTileInfo *target, TileIndex origin)
 	{
 		this->res_fail_tile = INVALID_TILE;
@@ -363,18 +389,14 @@ public:
 	typedef typename Node::Key Key; ///< key to hash tables
 
 protected:
-	/** to access inherited path finder */
+	/** @copydoc CYapfBaseT::Yapf */
 	inline Tpf &Yapf()
 	{
 		return *static_cast<Tpf *>(this);
 	}
 
 public:
-	/**
-	 * Called by YAPF to move from the given node to the next tile. For each
-	 *  reachable trackdir on the new tile creates new node, initializes it
-	 *  and adds it to the open list by calling Yapf().AddNewNode(n)
-	 */
+	/** @copydoc CYapfBaseT::PfFollowNodeFunc */
 	inline void PfFollowNode(Node &old_node)
 	{
 		const Train *v = Yapf().GetVehicle();
@@ -403,7 +425,7 @@ public:
 		}
 	}
 
-	/** return debug report character to identify the transportation type */
+	/** @copydoc CYapfBaseT::TransportTypeCharFunc */
 	inline char TransportTypeChar() const
 	{
 		return 't';
@@ -474,18 +496,14 @@ public:
 	typedef typename Node::Key Key; ///< key to hash tables
 
 protected:
-	/** to access inherited path finder */
+	/** @copydoc CYapfBaseT::Yapf */
 	inline Tpf &Yapf()
 	{
 		return *static_cast<Tpf *>(this);
 	}
 
 public:
-	/**
-	 * Called by YAPF to move from the given node to the next tile. For each
-	 *  reachable trackdir on the new tile creates new node, initializes it
-	 *  and adds it to the open list by calling Yapf().AddNewNode(n)
-	 */
+	/** @copydoc CYapfBaseT::PfFollowNodeFunc */
 	inline void PfFollowNode(Node &old_node)
 	{
 		TrackFollower follower{Yapf().GetVehicle(), Yapf().GetCompatibleRailTypes()};
@@ -494,7 +512,7 @@ public:
 		}
 	}
 
-	/** Return debug report character to identify the transportation type */
+	/** @copydoc CYapfBaseT::TransportTypeCharFunc */
 	inline char TransportTypeChar() const
 	{
 		return 't';
@@ -564,18 +582,14 @@ public:
 	typedef typename Node::Key Key; ///< key to hash tables
 
 protected:
-	/** to access inherited path finder */
+	/** @copydoc CYapfBaseT::Yapf */
 	inline Tpf &Yapf()
 	{
 		return *static_cast<Tpf *>(this);
 	}
 
 public:
-	/**
-	 * Called by YAPF to move from the given node to the next tile. For each
-	 *  reachable trackdir on the new tile creates new node, initializes it
-	 *  and adds it to the open list by calling Yapf().AddNewNode(n)
-	 */
+	/** @copydoc CYapfBaseT::PfFollowNodeFunc */
 	inline void PfFollowNode(Node &old_node)
 	{
 		const Train *v = Yapf().GetVehicle();
@@ -604,7 +618,7 @@ public:
 		}
 	}
 
-	/** return debug report character to identify the transportation type */
+	/** @copydoc CYapfBaseT::TransportTypeCharFunc */
 	inline char TransportTypeChar() const
 	{
 		return 't';
@@ -759,6 +773,7 @@ struct CYapfRailBase : CYapfT<Types> {
 	 * the branch would not be pruned, the rail type change location would
 	 * remain the best intermediate node, and thus the vehicle would still
 	 * go towards the red EOL signal.
+	 * @param n The node to start pruning at.
 	 */
 	void PruneIntermediateNodeBranch(Node *n)
 	{

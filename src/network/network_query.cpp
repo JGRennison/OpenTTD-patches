@@ -85,18 +85,18 @@ void QueryNetworkGameSocketHandler::Send()
  */
 NetworkRecvStatus QueryNetworkGameSocketHandler::SendGameInfo()
 {
-	auto p = std::make_unique<Packet>(this, PACKET_CLIENT_GAME_INFO);
+	auto p = std::make_unique<Packet>(this, PacketGameType::ClientGameInfo);
 	p->Send_uint32(FIND_SERVER_EXTENDED_TOKEN);
-	p->Send_uint8(PACKET_SERVER_GAME_INFO_EXTENDED);       // reply type
-	p->Send_uint16(1);                                     // flags
-	p->Send_uint16(1);                                     // version (original field, bug workaround)
-	p->Send_uint16(SERVER_GAME_INFO_EXTENDED_MAX_VERSION); // version (enabled by flag bit 0)
+	p->Send_uint8(to_underlying(PacketGameType::ServerGameInfoExtended)); // reply type
+	p->Send_uint16(1);                                                    // flags
+	p->Send_uint16(1);                                                    // version (original field, bug workaround)
+	p->Send_uint16(SERVER_GAME_INFO_EXTENDED_MAX_VERSION);                // version (enabled by flag bit 0)
 	this->SendPacket(std::move(p));
 
 	return NETWORK_RECV_STATUS_OKAY;
 }
 
-NetworkRecvStatus QueryNetworkGameSocketHandler::Receive_SERVER_FULL(Packet &)
+NetworkRecvStatus QueryNetworkGameSocketHandler::ReceiveServerFull(Packet &)
 {
 	NetworkGame *item = NetworkGameListAddItem(this->connection_string);
 	item->status = NGLS_FULL;
@@ -107,7 +107,7 @@ NetworkRecvStatus QueryNetworkGameSocketHandler::Receive_SERVER_FULL(Packet &)
 	return NETWORK_RECV_STATUS_CLOSE_QUERY;
 }
 
-NetworkRecvStatus QueryNetworkGameSocketHandler::Receive_SERVER_BANNED(Packet &)
+NetworkRecvStatus QueryNetworkGameSocketHandler::ReceiveServerBanned(Packet &)
 {
 	NetworkGame *item = NetworkGameListAddItem(this->connection_string);
 	item->status = NGLS_BANNED;
@@ -118,7 +118,7 @@ NetworkRecvStatus QueryNetworkGameSocketHandler::Receive_SERVER_BANNED(Packet &)
 	return NETWORK_RECV_STATUS_CLOSE_QUERY;
 }
 
-NetworkRecvStatus QueryNetworkGameSocketHandler::Receive_SERVER_GAME_INFO(Packet &p)
+NetworkRecvStatus QueryNetworkGameSocketHandler::ReceiveServerGameInfo(Packet &p)
 {
 	NetworkGame *item = NetworkGameListAddItem(this->connection_string);
 
@@ -137,7 +137,7 @@ NetworkRecvStatus QueryNetworkGameSocketHandler::Receive_SERVER_GAME_INFO(Packet
 	return NETWORK_RECV_STATUS_CLOSE_QUERY;
 }
 
-NetworkRecvStatus QueryNetworkGameSocketHandler::Receive_SERVER_GAME_INFO_EXTENDED(Packet &p)
+NetworkRecvStatus QueryNetworkGameSocketHandler::ReceiveServerGameInfoExtended(Packet &p)
 {
 	NetworkGame *item = NetworkGameListAddItem(this->connection_string);
 
@@ -156,7 +156,7 @@ NetworkRecvStatus QueryNetworkGameSocketHandler::Receive_SERVER_GAME_INFO_EXTEND
 	return NETWORK_RECV_STATUS_CLOSE_QUERY;
 }
 
-NetworkRecvStatus QueryNetworkGameSocketHandler::Receive_SERVER_ERROR(Packet &p)
+NetworkRecvStatus QueryNetworkGameSocketHandler::ReceiveServerError(Packet &p)
 {
 	NetworkErrorCode error = static_cast<NetworkErrorCode>(p.Recv_uint8());
 

@@ -102,7 +102,7 @@ static const uint NETWORK_SECRET_KEY_LENGTH = 32 * 2 + 1;
 static const uint NETWORK_PUBLIC_KEY_LENGTH = 32 * 2 + 1;
 
 /**
- * Maximum version supported in PACKET_SERVER_GAME_INFO_EXTENDED
+ * Maximum version supported in PacketGameType::ServerGameInfoExtended
  */
 static const uint8_t SERVER_GAME_INFO_EXTENDED_MAX_VERSION = 2;
 

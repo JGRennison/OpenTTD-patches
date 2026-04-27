@@ -38,32 +38,47 @@ public:
 		this->new_node = nullptr;
 	}
 
-	/** return number of open nodes */
+	/**
+	 * Get open node count.
+	 * @return Number of open nodes.
+	 */
 	inline int OpenCount()
 	{
 		return (int)this->open_nodes.Count();
 	}
 
-	/** return number of closed nodes */
+	/**
+	 * Get closed node count.
+	 * @return Number of closed nodes.
+	 */
 	inline int ClosedCount()
 	{
 		return (int)this->closed_nodes.Count();
 	}
 
-	/** return the total number of nodes. */
+	/**
+	 * Get the total node count.
+	 * @return The total number of nodes.
+	 */
 	inline int TotalCount()
 	{
 		return this->items.Length();
 	}
 
-	/** allocate new data item from items */
+	/**
+	 * Allocate new data item from items.
+	 * @return The allocated node.
+	 */
 	inline Titem &CreateNewNode()
 	{
 		if (this->new_node == nullptr) this->new_node = this->items.New();
 		return *this->new_node;
 	}
 
-	/** Notify the nodelist that we don't want to discard the given node. */
+	/**
+	 * Notify the nodelist that we don't want to discard the given node.
+	 * @param item The new best node.
+	 */
 	inline void FoundBestNode(Titem &item)
 	{
 		/* for now it is enough to invalidate new_node if it is our given node */
@@ -73,7 +88,10 @@ public:
 		/* TODO: do we need to store best nodes found in some extra list/array? Probably not now. */
 	}
 
-	/** insert given item as open node (into open_nodes and open_queue) */
+	/**
+	 * Insert given item as open node (into open_nodes and open_queue).
+	 * @param item The node to add.
+	 */
 	inline void InsertOpenNode(Titem &item)
 	{
 		dbg_assert(this->closed_nodes.Find(item.GetKey()) == nullptr);
@@ -84,7 +102,10 @@ public:
 		}
 	}
 
-	/** return the best open node */
+	/**
+	 * Get the open node at the begin of the open queue.
+	 * @return The best open node, or \c nullptr when there isn't any.
+	 */
 	inline Titem *GetBestOpenNode()
 	{
 		if (!this->open_queue.IsEmpty()) {
@@ -93,7 +114,10 @@ public:
 		return nullptr;
 	}
 
-	/** remove and return the best open node */
+	/**
+	 * Remove and return the best open node.
+	 * @return The best open node, or \c nullptr when there isn't any.
+	 */
 	inline Titem *PopBestOpenNode()
 	{
 		if (!this->open_queue.IsEmpty()) {
@@ -120,13 +144,21 @@ public:
 		return this->open_nodes.Pop(key);
 	}
 
-	/** return the open node specified by a key or nullptr if not found */
+	/**
+	 * Find an open node by key.
+	 * @param key The key to look for.
+	 * @return The open node specified by a key or \c nullptr if not found.
+	 */
 	inline Titem *FindOpenNode(const Key &key)
 	{
 		return this->open_nodes.Find(key);
 	}
 
-	/** remove and return the open node specified by a key */
+	/**
+	 * Find and remove an open node by key.
+	 * @param key The key to look for.
+	 * @return The open node specified by a key.
+	 */
 	inline Titem &PopOpenNode(const Key &key)
 	{
 		Titem &item = this->open_nodes.Pop(key);
@@ -135,20 +167,30 @@ public:
 		return item;
 	}
 
-	/** close node */
+	/**
+	 * Insert the given item into the closed nodes set.
+	 * @param item The item to add.
+	 */
 	inline void InsertClosedNode(Titem &item)
 	{
 		dbg_assert(this->open_nodes.Find(item.GetKey()) == nullptr);
 		this->closed_nodes.Push(item);
 	}
 
-	/** return the closed node specified by a key or nullptr if not found */
+	/**
+	 * Find a closed node by its key.
+	 * @param key The key to look for.
+	 * @return The closed node specified by a key or \c nullptr if not found.
+	 */
 	inline Titem *FindClosedNode(const Key &key)
 	{
 		return this->closed_nodes.Find(key);
 	}
 
-	/** Helper for creating output of this array. */
+	/**
+	 * Helper for creating output of this array.
+	 * @param dmp The data to dump.
+	 */
 	template <class D>
 	void Dump(D &dmp) const
 	{

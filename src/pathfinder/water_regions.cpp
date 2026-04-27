@@ -374,6 +374,7 @@ static WaterRegionReference GetUpdatedWaterRegion(TileIndex tile)
 /**
  * Returns the index of the water region.
  * @param water_region The water region to return the index for.
+ * @return The index of the region.
  */
 static WaterRegionIndex GetWaterRegionIndex(const WaterRegionDesc &water_region)
 {
@@ -383,6 +384,7 @@ static WaterRegionIndex GetWaterRegionIndex(const WaterRegionDesc &water_region)
 /**
  * Calculates a number that uniquely identifies the provided water region patch.
  * @param water_region_patch The Water region to calculate the hash for.
+ * @return The calculated hash.
  */
 uint32_t CalculateWaterRegionPatchHash(const WaterRegionPatchDesc &water_region_patch)
 {
@@ -402,6 +404,7 @@ TileIndex GetWaterRegionCenterTile(const WaterRegionDesc &water_region)
 /**
  * Returns basic water region information for the provided tile.
  * @param tile The tile for which the information will be calculated.
+ * @return The region information.
  */
 WaterRegionDesc GetWaterRegionInfo(TileIndex tile)
 {
@@ -411,6 +414,7 @@ WaterRegionDesc GetWaterRegionInfo(TileIndex tile)
 /**
  * Returns basic water region patch information for the provided tile.
  * @param tile The tile for which the information will be calculated.
+ * @return Information about the patches of a region.
  */
 WaterRegionPatchDesc GetWaterRegionPatchInfo(TileIndex tile)
 {

@@ -172,8 +172,10 @@ public:
 		VisitWaterRegionPatchNeighbours(old_node.key.water_region_patch, visit_func);
 	}
 
+	/** @copydoc CYapfBaseT::TransportTypeCharFunc */
 	inline char TransportTypeChar() const { return '^'; }
 
+	/** @copydoc YapfShipFindWaterRegionPath */
 	static std::vector<WaterRegionPatchDesc> FindWaterRegionPath(const Ship *v, TileIndex start_tile, int max_returned_path_length)
 	{
 		const WaterRegionPatchDesc start_water_region_patch = GetWaterRegionPatchInfo(start_tile);

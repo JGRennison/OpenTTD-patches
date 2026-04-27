@@ -78,7 +78,13 @@ DECLARE_ENUM_AS_BIT_SET(SpriteGroupFlags)
 /* Common wrapper for all the different sprite group types */
 struct SpriteGroup : SpriteGroupPool::PoolItem<&_spritegroup_pool> {
 protected:
+	/**
+	 * Create the SpriteGroup.
+	 * @param index Index of the sprite group within the pool.
+	 * @param type Sprite group type.
+	 */
 	SpriteGroup(SpriteGroupID index, SpriteGroupType type) : PoolItemBase(index), type(type) {}
+
 	/**
 	 * Resolves a callback or rerandomisation callback to a NewGRF.
 	 * @param object Information needed to resolve the group.
@@ -105,6 +111,10 @@ public:
  */
 template <class T>
 struct SpecializedSpriteGroup : public SpriteGroup {
+	/**
+	 * Create the SpecializedSpriteGroup.
+	 * @param index Index of the sprite group within the pool.
+	 */
 	inline SpecializedSpriteGroup(SpriteGroupID index) : SpriteGroup(index, T::TYPE) {}
 
 	/**
@@ -121,11 +131,14 @@ struct SpecializedSpriteGroup : public SpriteGroup {
 };
 
 
-/* 'Real' sprite groups contain a list of other result or callback sprite
- * groups. */
+/** 'Real' sprite groups contain a list of other result or callback sprite groups. */
 struct RealSpriteGroup final : SpecializedSpriteGroup<RealSpriteGroup> {
 	static constexpr SpriteGroupType TYPE = SGT_REAL;
 
+	/**
+	 * Create the RealSpriteGroup.
+	 * @param index Index of the sprite group within the pool.
+	 */
 	RealSpriteGroup(SpriteGroupID index) : SpecializedSpriteGroup<RealSpriteGroup>(index) {}
 
 	/* Loaded = in motion, loading = not moving
