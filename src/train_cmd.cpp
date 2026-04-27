@@ -882,6 +882,7 @@ int PredictStationStoppingLocation(const Train *v, const Order *order, int stati
 			stop = station_length;
 			break;
 	}
+	if (v->IsDrivingBackwards()) adjust--;
 	return stop + adjust;
 }
 
