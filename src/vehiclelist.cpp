@@ -85,9 +85,8 @@ void BuildDepotVehicleList(VehicleType type, TileIndex tile, VehicleList *engine
 
 		if (type == VEH_TRAIN) {
 			const Train *t = Train::From(v);
-			if (t->IsArticulatedPart()) continue;
 			if (wagons != nullptr && t->First()->IsFreeWagon()) {
-				if (individual_wagons || t->IsFreeWagon()) wagons->push_back(t);
+				if (!t->IsArticulatedPart() && (individual_wagons || t->IsFreeWagon())) wagons->push_back(t);
 				continue;
 			}
 		}
