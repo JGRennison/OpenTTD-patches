@@ -26,17 +26,17 @@
  */
 static ChangeInfoResult SoundEffectChangeInfo(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
 {
-	ChangeInfoResult ret = CIR_SUCCESS;
+	ChangeInfoResult ret = ChangeInfoResult::Success;
 	if (first == last) return ret;
 
 	if (_cur_gps.grffile->sound_offset == 0) {
 		GrfMsg(1, "SoundEffectChangeInfo: No effects defined, skipping");
-		return CIR_INVALID_ID;
+		return ChangeInfoResult::InvalidId;
 	}
 
 	if (last - ORIGINAL_SAMPLE_COUNT > _cur_gps.grffile->num_sounds) {
 		GrfMsg(1, "SoundEffectChangeInfo: Attempting to change undefined sound effect ({}), max ({}). Ignoring.", last, ORIGINAL_SAMPLE_COUNT + _cur_gps.grffile->num_sounds);
-		return CIR_INVALID_ID;
+		return ChangeInfoResult::InvalidId;
 	}
 
 	for (uint id = first; id < last; ++id) {
@@ -74,5 +74,5 @@ static ChangeInfoResult SoundEffectChangeInfo(uint first, uint last, int prop, c
 	return ret;
 }
 
-template <> ChangeInfoResult GrfChangeInfoHandler<GSF_SOUNDFX>::Reserve(uint, uint, int, const GRFFilePropertyRemapEntry *, ByteReader &) { return CIR_UNHANDLED; }
+template <> ChangeInfoResult GrfChangeInfoHandler<GSF_SOUNDFX>::Reserve(uint, uint, int, const GRFFilePropertyRemapEntry *, ByteReader &) { return ChangeInfoResult::Unhandled; }
 template <> ChangeInfoResult GrfChangeInfoHandler<GSF_SOUNDFX>::Activation(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf) { return SoundEffectChangeInfo(first, last, prop, mapping_entry, buf); }

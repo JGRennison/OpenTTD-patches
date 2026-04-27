@@ -2967,7 +2967,7 @@ static void TileLoop_TunnelBridge(TileIndex tile)
 		}
 
 		case LandscapeType::Tropic:
-			snow_or_desert = (GetTropicZone(tile) == TROPICZONE_DESERT);
+			snow_or_desert = (GetTropicZone(tile) == TropicZone::Desert);
 			break;
 
 		default:

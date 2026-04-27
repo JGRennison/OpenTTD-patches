@@ -3965,7 +3965,7 @@ static SaveOrLoadResult SaveFileToDisk(bool threaded)
 		 * cancelled due to a client disconnecting. */
 		if (_sl.error_str != STR_NETWORK_ERROR_LOSTCONNECTION) {
 			/* Skip the "colour" character */
-			Debug(sl, 0, "{}{}", strip_leading_colours(GetSaveLoadErrorType().GetDecodedString()), GetSaveLoadErrorMessage().GetDecodedString());
+			Debug(sl, 0, "{} {}", strip_leading_colours(GetSaveLoadErrorType().GetDecodedString()), GetSaveLoadErrorMessage().GetDecodedString());
 			asfp = SaveFileError;
 		}
 

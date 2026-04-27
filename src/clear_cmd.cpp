@@ -188,7 +188,7 @@ static void DrawTile_Clear(TileInfo *ti, DrawTileProcParams params)
 
 		case ClearGround::Rocks:
 			if (!params.no_ground_tiles) {
-				if (GetTropicZone(ti->tile) == TROPICZONE_DESERT) {
+				if (GetTropicZone(ti->tile) == TropicZone::Desert) {
 					DrawGroundSprite(_clear_land_sprites_snow_desert[GetClearDensity(ti->tile)] + SlopeToSpriteOffset(ti->tileh), PAL_NONE);
 					DrawGroundSprite(SPR_OVERLAY_ROCKS_BASE + SlopeToSpriteOffset(ti->tileh), PAL_NONE);
 				} else {
@@ -320,7 +320,7 @@ static inline bool NeighbourIsNormal(TileIndex tile)
 	for (DiagDirection dir = DIAGDIR_BEGIN; dir < DIAGDIR_END; dir++) {
 		TileIndex t = tile + TileOffsByDiagDir(dir);
 		if (!IsValidTile(t)) continue;
-		if (GetTropicZone(t) != TROPICZONE_DESERT) return true;
+		if (GetTropicZone(t) != TropicZone::Desert) return true;
 		if (HasTileWaterClass(t) && GetWaterClass(t) == WaterClass::Sea) return true;
 	}
 	return false;
@@ -336,7 +336,7 @@ static void TileLoopClearDesert(TileIndex tile)
 
 	/* Expected desert level - 0 if it shouldn't be desert */
 	uint expected = 0;
-	if (GetTropicZone(tile) == TROPICZONE_DESERT) {
+	if (GetTropicZone(tile) == TropicZone::Desert) {
 		expected = NeighbourIsNormal(tile) ? 1 : 3;
 	}
 

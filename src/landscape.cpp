@@ -839,7 +839,7 @@ void InitializeLandscape()
 		for (uint x = _settings_game.construction.freeform_edges ? 1 : 0; x < Map::MaxX(); x++) {
 			MakeClear(TileXY(x, y), ClearGround::Grass, 3);
 			SetTileHeight(TileXY(x, y), 0);
-			SetTropicZone(TileXY(x, y), TROPICZONE_NORMAL);
+			SetTropicZone(TileXY(x, y), TropicZone::Normal);
 			ClearBridgeMiddle(TileXY(x, y));
 		}
 	}
@@ -1019,7 +1019,7 @@ static void CreateDesertOrRainForest(uint desert_tropic_line)
 			return (t != INVALID_TILE && (TileHeight(t) >= desert_tropic_line || IsTileType(t, TileType::Water)));
 		});
 		if (ok) {
-			SetTropicZone(tile, TROPICZONE_DESERT);
+			SetTropicZone(tile, TropicZone::Rainforest);
 		}
 	}
 
@@ -1038,7 +1038,7 @@ static void CreateDesertOrRainForest(uint desert_tropic_line)
 			return (t != INVALID_TILE && IsTileType(t, TileType::Clear) && IsClearGround(t, ClearGround::Desert));
 		});
 		if (ok) {
-			SetTropicZone(tile, TROPICZONE_RAINFOREST);
+			SetTropicZone(tile, TropicZone::Rainforest);
 		}
 	}
 }
@@ -1056,7 +1056,7 @@ static bool FindSpring(TileIndex tile)
 	if (!IsTileFlat(tile, &reference_height) || IsWaterTile(tile)) return false;
 
 	/* In the tropics rivers start in the rainforest. */
-	if (_settings_game.game_creation.landscape == LandscapeType::Tropic && GetTropicZone(tile) != TROPICZONE_RAINFOREST && !_settings_game.game_creation.lakes_allowed_in_deserts) return false;
+	if (_settings_game.game_creation.landscape == LandscapeType::Tropic && GetTropicZone(tile) != TropicZone::Rainforest && !_settings_game.game_creation.lakes_allowed_in_deserts) return false;
 
 	/* Rivers begin where water flows off hillsides and collects at the bottom. */
 	uint max_hill_distance = 1;
@@ -1111,7 +1111,7 @@ struct MakeLakeData {
 static void MakeLakeHandler(TileIndex tile, const MakeLakeData *data)
 {
 	if (!IsValidTile(tile) || TileHeight(tile) != data->height || !IsTileFlat(tile)) return;
-	if (_settings_game.game_creation.landscape == LandscapeType::Tropic && GetTropicZone(tile) == TROPICZONE_DESERT && !_settings_game.game_creation.lakes_allowed_in_deserts) return;
+	if (_settings_game.game_creation.landscape == LandscapeType::Tropic && GetTropicZone(tile) == TropicZone::Desert && !_settings_game.game_creation.lakes_allowed_in_deserts) return;
 
 	/* Offset from centre tile */
 	const int64_t x_delta = (int)TileX(tile) - (int)TileX(data->centre);
@@ -1185,7 +1185,7 @@ static void MakeLake(TileIndex lake_centre, uint height_lake)
 static bool IsValidRiverTerminusTile(TileIndex tile, uint height)
 {
 	if (!IsValidTile(tile) || TileHeight(tile) != height || !IsTileFlat(tile)) return false;
-	if (_settings_game.game_creation.landscape == LandscapeType::Tropic && GetTropicZone(tile) == TROPICZONE_DESERT) return false;
+	if (_settings_game.game_creation.landscape == LandscapeType::Tropic && GetTropicZone(tile) == TropicZone::Desert) return false;
 
 	return true;
 }
@@ -1486,7 +1486,7 @@ static bool FlowRiver(TileIndex spring, TileIndex begin, uint min_river_length)
 				/* We don't want the lake at the entry of the valley. */
 				lake_centre != begin &&
 				/* We don't want lakes in the desert. */
-				(_settings_game.game_creation.landscape != LandscapeType::Tropic || _settings_game.game_creation.lakes_allowed_in_deserts || GetTropicZone(lake_centre) != TROPICZONE_DESERT) &&
+				(_settings_game.game_creation.landscape != LandscapeType::Tropic || _settings_game.game_creation.lakes_allowed_in_deserts || GetTropicZone(lake_centre) != TropicZone::Desert) &&
 				/* We only want a lake if the river is long enough. */
 				DistanceManhattan(spring, lake_centre) > min_river_length) {
 			end = lake_centre;

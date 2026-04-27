@@ -1259,7 +1259,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 					bool compatible = c->flags.Test(GRFConfigFlag::Compatible);
 					if (c->status != GRFStatus::NotFound && !compatible) continue;
 
-					const GRFConfig *f = FindGRFConfig(c->ident.grfid, FGCM_EXACT, compatible ? &c->original_md5sum : &c->ident.md5sum);
+					const GRFConfig *f = FindGRFConfig(c->ident.grfid, FindGRFConfigMode::Exact, compatible ? &c->original_md5sum : &c->ident.md5sum);
 					if (f == nullptr || f->flags.Test(GRFConfigFlag::Invalid)) continue;
 
 					c = std::make_unique<GRFConfig>(*f);
@@ -1503,7 +1503,7 @@ private:
 			if (_settings_client.gui.newgrf_show_old_versions) {
 				this->avails.push_back(c.get());
 			} else {
-				const GRFConfig *best = FindGRFConfig(c->ident.grfid, c->flags.Test(GRFConfigFlag::Invalid) ? FGCM_NEWEST : FGCM_NEWEST_VALID);
+				const GRFConfig *best = FindGRFConfig(c->ident.grfid, c->flags.Test(GRFConfigFlag::Invalid) ? FindGRFConfigMode::Newest : FindGRFConfigMode::NewestValid);
 				/* Never triggers; FindGRFConfig returns either c, or a newer version of c. */
 				assert(best != nullptr);
 
@@ -1590,14 +1590,14 @@ void ShowMissingContentWindow(const GRFConfigList &list)
 		if (c->status != GRFStatus::NotFound && !c->flags.Test(GRFConfigFlag::Compatible)) continue;
 
 		auto ci = std::make_unique<ContentInfo>();
-		ci->type = CONTENT_TYPE_NEWGRF;
+		ci->type = ContentType::NewGRF;
 		ci->state = ContentInfo::State::DoesNotExist;
 		ci->name = c->GetName();
 		ci->unique_id = std::byteswap(c->ident.grfid);
 		ci->md5sum = c->flags.Test(GRFConfigFlag::Compatible) ? c->original_md5sum : c->ident.md5sum;
 		cv.push_back(std::move(ci));
 	}
-	ShowNetworkContentListWindow(cv.empty() ? nullptr : &cv, CONTENT_TYPE_NEWGRF);
+	ShowNetworkContentListWindow(cv.empty() ? nullptr : &cv, ContentType::NewGRF);
 }
 
 Listing NewGRFWindow::last_sorting     = {false, 0};

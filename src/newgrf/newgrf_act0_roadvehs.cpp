@@ -30,11 +30,11 @@
  */
 static ChangeInfoResult RoadVehicleChangeInfo(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
 {
-	ChangeInfoResult ret = CIR_SUCCESS;
+	ChangeInfoResult ret = ChangeInfoResult::Success;
 
 	for (uint id = first; id < last; ++id) {
 		Engine *e = GetNewEngine(_cur_gps.grffile, VEH_ROAD, id);
-		if (e == nullptr) return CIR_INVALID_ID; // No engine could be allocated, so neither can any next vehicles
+		if (e == nullptr) return ChangeInfoResult::InvalidId; // No engine could be allocated, so neither can any next vehicles
 
 		EngineInfo *ei = &e->info;
 		RoadVehicleInfo *rvi = &e->VehInfo<RoadVehicleInfo>();
@@ -235,5 +235,5 @@ static ChangeInfoResult RoadVehicleChangeInfo(uint first, uint last, int prop, c
 	return ret;
 }
 
-template <> ChangeInfoResult GrfChangeInfoHandler<GSF_ROADVEHICLES>::Reserve(uint, uint, int, const GRFFilePropertyRemapEntry *, ByteReader &) { return CIR_UNHANDLED; }
+template <> ChangeInfoResult GrfChangeInfoHandler<GSF_ROADVEHICLES>::Reserve(uint, uint, int, const GRFFilePropertyRemapEntry *, ByteReader &) { return ChangeInfoResult::Unhandled; }
 template <> ChangeInfoResult GrfChangeInfoHandler<GSF_ROADVEHICLES>::Activation(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf) { return RoadVehicleChangeInfo(first, last, prop, mapping_entry, buf); }

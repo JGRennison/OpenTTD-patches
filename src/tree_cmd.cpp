@@ -233,8 +233,8 @@ static TreeType GetRandomTreeType(TileIndex tile, uint seed)
 		}
 		case LandscapeType::Tropic:
 			switch (GetTropicZone(tile)) {
-				case TROPICZONE_NORMAL:  return static_cast<TreeType>(seed * TREE_COUNT_SUB_TROPICAL / 256 + TREE_SUB_TROPICAL);
-				case TROPICZONE_DESERT:  return static_cast<TreeType>((seed > 12) ? TREE_INVALID : TREE_CACTUS);
+				case TropicZone::Normal: return static_cast<TreeType>(seed * TREE_COUNT_SUB_TROPICAL / 256 + TREE_SUB_TROPICAL);
+				case TropicZone::Desert: return static_cast<TreeType>((seed > 12) ? TREE_INVALID : TREE_CACTUS);
 				default:                 return static_cast<TreeType>(seed * TREE_COUNT_RAINFOREST / 256 + TREE_RAINFOREST);
 			}
 
@@ -557,7 +557,7 @@ void PlaceTreesRandomly()
 
 			IncreaseGeneratingWorldProgress(GWP_TREE);
 
-			if (GetTropicZone(tile) == TROPICZONE_RAINFOREST && CanPlantTreesOnTile(tile, false)) {
+			if (GetTropicZone(tile) == TropicZone::Rainforest && CanPlantTreesOnTile(tile, false)) {
 				PlaceTree(tile, r);
 			}
 		} while (--i);
@@ -643,7 +643,7 @@ void PlaceTreeGroupAroundTile(TileIndex tile, TreeTypes tree_types, uint radius,
 
 	if (_game_mode == GM_EDITOR && HasExactlyOneBit(tree_types) && IsInsideMM(*tree_types.IterateSetBits().begin(), TREE_RAINFOREST, TREE_CACTUS)) {
 		for (TileIndex t : TileArea(tile).Expand(radius)) {
-			if (GetTileType(t) != TileType::Void && DistanceSquare(tile, t) < radius * radius) SetTropicZone(t, TROPICZONE_RAINFOREST);
+			if (GetTileType(t) != TileType::Void && DistanceSquare(tile, t) < radius * radius) SetTropicZone(t, TropicZone::Rainforest);
 		}
 	}
 }
@@ -748,11 +748,11 @@ struct CmdPlantTreeHelper {
 				/* Be a bit picky about which trees go where. */
 				if (_settings_game.game_creation.landscape == LandscapeType::Tropic && treetype != TREE_INVALID && (
 						/* No cacti outside the desert */
-						(treetype == TREE_CACTUS && GetTropicZone(tile) != TROPICZONE_DESERT) ||
+						(treetype == TREE_CACTUS && GetTropicZone(tile) != TropicZone::Desert) ||
 						/* No rain forest trees outside the rainforest, except in the editor mode where it makes those tiles rainforest tile */
-						(IsInsideMM(treetype, TREE_RAINFOREST, TREE_CACTUS) && GetTropicZone(tile) != TROPICZONE_RAINFOREST && _game_mode != GM_EDITOR) ||
+						(IsInsideMM(treetype, TREE_RAINFOREST, TREE_CACTUS) && GetTropicZone(tile) != TropicZone::Rainforest && _game_mode != GM_EDITOR) ||
 						/* And no subtropical trees in the desert/rainforest */
-						(IsInsideMM(treetype, TREE_SUB_TROPICAL, TREE_TOYLAND) && GetTropicZone(tile) != TROPICZONE_NORMAL))) {
+						(IsInsideMM(treetype, TREE_SUB_TROPICAL, TREE_TOYLAND) && GetTropicZone(tile) != TropicZone::Normal))) {
 					this->msg = STR_ERROR_TREE_WRONG_TERRAIN_FOR_TREE_TYPE;
 					break;
 				}
@@ -818,7 +818,7 @@ struct CmdPlantTreeHelper {
 
 					/* When planting rainforest-trees, set tropiczone to rainforest in editor. */
 					if (_game_mode == GM_EDITOR && IsInsideMM(treetype, TREE_RAINFOREST, TREE_CACTUS)) {
-						SetTropicZone(tile, TROPICZONE_RAINFOREST);
+						SetTropicZone(tile, TropicZone::Rainforest);
 					}
 				}
 
@@ -1164,14 +1164,14 @@ static void GetTileDesc_Trees(TileIndex tile, TileDesc &td)
 static void TileLoopTreesDesert(TileIndex tile)
 {
 	switch (GetTropicZone(tile)) {
-		case TROPICZONE_DESERT:
+		case TropicZone::Desert:
 			if (GetTreeGround(tile) != TreeGround::SnowOrDesert) {
 				SetTreeGroundDensity(tile, TreeGround::SnowOrDesert, 3);
 				MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE_NON_VEG);
 			}
 			break;
 
-		case TROPICZONE_RAINFOREST: {
+		case TropicZone::Rainforest: {
 			static const SoundFx forest_sounds[] = {
 				SND_42_RAINFOREST_1,
 				SND_43_RAINFOREST_2,
@@ -1236,10 +1236,10 @@ static bool TreesOnTileCanSpread(TileIndex tile)
 	/* Desert and rainforest trees need special handling. */
 	if (_settings_game.game_creation.landscape == LandscapeType::Tropic) {
 		switch (GetTropicZone(tile)) {
-			case TROPICZONE_DESERT:
+			case TropicZone::Desert:
 				/* Cacti never spread. */
 				return false;
-			case TROPICZONE_RAINFOREST:
+			case TropicZone::Rainforest:
 				return (_settings_game.construction.extra_tree_placement == ETP_SPREAD_ALL || _settings_game.construction.extra_tree_placement == ETP_SPREAD_RAINFOREST);
 			default:
 				return _settings_game.construction.extra_tree_placement == ETP_SPREAD_ALL;
@@ -1307,7 +1307,7 @@ static void TileLoop_Trees(TileIndex tile)
 		case TreeGrowthStage::Grown: // regular sized tree
 			if (_settings_game.game_creation.landscape == LandscapeType::Tropic &&
 					GetTreeType(tile) != TREE_CACTUS &&
-					GetTropicZone(tile) == TROPICZONE_DESERT) {
+					GetTropicZone(tile) == TropicZone::Desert) {
 				AddTreeGrowth(tile, 1);
 			} else {
 				uint mode = GB(Random(), 0, 3);
@@ -1440,7 +1440,7 @@ static void PlantRandomTree(bool rainforest)
 	uint32_t r = Random();
 	TileIndex tile = RandomTileSeed(r);
 
-	if (rainforest && GetTropicZone(tile) != TROPICZONE_RAINFOREST) return;
+	if (rainforest && GetTropicZone(tile) != TropicZone::Rainforest) return;
 	if (!CanPlantTreesOnTile(tile, false)) return;
 
 	TreeType tree = GetRandomTreeType(tile, GB(r, 24, 8));

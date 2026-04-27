@@ -522,7 +522,7 @@ static inline uint32_t GetSmallMapVegetationPixels(TileIndex tile, TileType t)
 		case TileType::Clear:
 			if (IsClearGround(tile, ClearGround::Grass)) {
 				if (GetClearDensity(tile) < 3) return MKCOLOUR_XXXX(PC_BARE_LAND);
-				if (GetTropicZone(tile) == TROPICZONE_RAINFOREST) return MKCOLOUR_XXXX(PC_RAINFOREST);
+				if (GetTropicZone(tile) == TropicZone::Rainforest) return MKCOLOUR_XXXX(PC_RAINFOREST);
 			}
 			return _vegetation_clear_bits[IsSnowTile(tile) ? ClearGround::Snow : GetClearGround(tile)];
 
@@ -533,7 +533,7 @@ static inline uint32_t GetSmallMapVegetationPixels(TileIndex tile, TileType t)
 			if (GetTreeGround(tile) == TreeGround::SnowOrDesert || GetTreeGround(tile) == TreeGround::RoughSnow) {
 				return (_settings_game.game_creation.landscape == LandscapeType::Arctic) ? MKCOLOUR_XYYX(PC_LIGHT_BLUE, PC_TREES) : MKCOLOUR_XYYX(PC_ORANGE, PC_TREES);
 			}
-			return (GetTropicZone(tile) == TROPICZONE_RAINFOREST) ? MKCOLOUR_XYYX(PC_RAINFOREST, PC_TREES) : MKCOLOUR_XYYX(PC_GRASS_LAND, PC_TREES);
+			return (GetTropicZone(tile) == TropicZone::Rainforest) ? MKCOLOUR_XYYX(PC_RAINFOREST, PC_TREES) : MKCOLOUR_XYYX(PC_GRASS_LAND, PC_TREES);
 
 		case TileType::Object: {
 			if (!GetObjectHasViewportMapViewOverride(tile)) return ApplyMask(MKCOLOUR_XXXX(PC_GRASS_LAND), _smallmap_vehicles_andor[t]);
@@ -550,7 +550,7 @@ static inline uint32_t GetSmallMapVegetationPixels(TileIndex tile, TileType t)
 							switch (GetObjectGroundType(tile)) {
 								case OBJECT_GROUND_GRASS:
 									if (GetObjectGroundDensity(tile) < 3) return MKCOLOUR_XXXX(PC_BARE_LAND);
-									if (GetTropicZone(tile) == TROPICZONE_RAINFOREST) return MKCOLOUR_XXXX(PC_RAINFOREST);
+									if (GetTropicZone(tile) == TropicZone::Rainforest) return MKCOLOUR_XXXX(PC_RAINFOREST);
 									return _vegetation_clear_bits[ClearGround::Grass];
 
 								case OBJECT_GROUND_SNOW_DESERT:
@@ -570,7 +570,7 @@ static inline uint32_t GetSmallMapVegetationPixels(TileIndex tile, TileType t)
 					}
 					break;
 				case OVMT_GRASS:
-					if (GetTropicZone(tile) == TROPICZONE_RAINFOREST) return MKCOLOUR_XXXX(PC_RAINFOREST);
+					if (GetTropicZone(tile) == TropicZone::Rainforest) return MKCOLOUR_XXXX(PC_RAINFOREST);
 					return _vegetation_clear_bits[ClearGround::Grass];
 				case OVMT_ROUGH:
 					return _vegetation_clear_bits[ClearGround::Rough];
@@ -587,7 +587,7 @@ static inline uint32_t GetSmallMapVegetationPixels(TileIndex tile, TileType t)
 					if (tg == TreeGround::SnowOrDesert || tg == TreeGround::RoughSnow) {
 						return (_settings_game.game_creation.landscape == LandscapeType::Arctic) ? MKCOLOUR_XYYX(PC_LIGHT_BLUE, PC_TREES) : MKCOLOUR_XYYX(PC_ORANGE, PC_TREES);
 					}
-					return (GetTropicZone(tile) == TROPICZONE_RAINFOREST) ? MKCOLOUR_XYYX(PC_RAINFOREST, PC_TREES) : MKCOLOUR_XYYX(PC_GRASS_LAND, PC_TREES);
+					return (GetTropicZone(tile) == TropicZone::Rainforest) ? MKCOLOUR_XYYX(PC_RAINFOREST, PC_TREES) : MKCOLOUR_XYYX(PC_GRASS_LAND, PC_TREES);
 				}
 				case OVMT_HOUSE:
 					t = TileType::House;

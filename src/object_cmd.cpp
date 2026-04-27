@@ -921,7 +921,7 @@ static inline bool NeighbourIsNormal(TileIndex tile)
 	for (DiagDirection dir = DIAGDIR_BEGIN; dir < DIAGDIR_END; dir++) {
 		TileIndex t = tile + TileOffsByDiagDir(dir);
 		if (!IsValidTile(t)) continue;
-		if (GetTropicZone(t) != TROPICZONE_DESERT) return true;
+		if (GetTropicZone(t) != TropicZone::Desert) return true;
 		if (HasTileWaterClass(t) && GetWaterClass(t) == WaterClass::Sea) return true;
 	}
 	return false;
@@ -935,7 +935,7 @@ static void TileLoopObjectGroundDesert(TileIndex tile)
 
 	/* Expected desert level - 0 if it shouldn't be desert */
 	uint expected = 0;
-	if (GetTropicZone(tile) == TROPICZONE_DESERT) {
+	if (GetTropicZone(tile) == TropicZone::Desert) {
 		expected = NeighbourIsNormal(tile) ? 1 : 3;
 	}
 

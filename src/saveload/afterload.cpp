@@ -2951,7 +2951,7 @@ bool AfterLoadGame()
 	if (IsSavegameVersionBefore(SLV_141)) {
 		for (TileIndex t(0); t < map_size; t++) {
 			/* Reset tropic zone for VOID tiles, they shall not have any. */
-			if (IsTileType(t, TileType::Void)) SetTropicZone(t, TROPICZONE_NORMAL);
+			if (IsTileType(t, TileType::Void)) SetTropicZone(t, TropicZone::Normal);
 		}
 
 		/* We need to properly number/name the depots.

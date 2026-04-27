@@ -109,7 +109,7 @@ static void PrintGrfInfo(format_target &buffer, uint grfid, const MD5Hash *md5su
 	if (gc != nullptr) {
 		buffer.format(", filename: {} (md5sum matches)", gc->filename);
 	} else {
-		gc = FindGRFConfig(grfid, FGCM_ANY);
+		gc = FindGRFConfig(grfid, FindGRFConfigMode::Any);
 		if (gc != nullptr) {
 			buffer.format(", filename: {} (matches GRFID only)", gc->filename);
 		} else {
@@ -226,7 +226,7 @@ void GamelogPrint(format_target &buffer)
 
 				case GLCT_GRFADD: {
 					/* A NewGRF got added to the game, either at the start of the game (never an issue), or later on when it could be an issue. */
-					const GRFConfig *gc = FindGRFConfig(lc->grfadd.grfid, FGCM_EXACT, &lc->grfadd.md5sum);
+					const GRFConfig *gc = FindGRFConfig(lc->grfadd.grfid, FindGRFConfigMode::Exact, &lc->grfadd.md5sum);
 					buffer.append("Added NewGRF: ");
 					PrintGrfInfo(buffer, lc->grfadd.grfid, &lc->grfadd.md5sum, gc);
 					auto gm = grf_names.find(lc->grfrem.grfid);
@@ -255,7 +255,7 @@ void GamelogPrint(format_target &buffer)
 
 				case GLCT_GRFCOMPAT: {
 					/* Another version of the same NewGRF got loaded. */
-					const GRFConfig *gc = FindGRFConfig(lc->grfadd.grfid, FGCM_EXACT, &lc->grfadd.md5sum);
+					const GRFConfig *gc = FindGRFConfig(lc->grfadd.grfid, FindGRFConfigMode::Exact, &lc->grfadd.md5sum);
 					buffer.append("Compatible NewGRF loaded: ");
 					PrintGrfInfo(buffer, lc->grfcompat.grfid, &lc->grfcompat.md5sum, gc);
 					if (grf_names.find(lc->grfcompat.grfid) == grf_names.end()) buffer.append(". Gamelog inconsistency: GrfID was never added!");

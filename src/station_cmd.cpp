@@ -3377,7 +3377,7 @@ bool SplitGroundSpriteForOverlay(const TileInfo *ti, SpriteID *ground, RailTrack
 				break;
 
 			case LandscapeType::Tropic:
-				snow_desert = GetTropicZone(ti->tile) == TROPICZONE_DESERT;
+				snow_desert = GetTropicZone(ti->tile) == TropicZone::Desert;
 				break;
 
 			default:
@@ -3965,7 +3965,7 @@ static void TileLoop_Station(TileIndex tile)
 					break;
 
 				case LandscapeType::Tropic:
-					if (GetTropicZone(tile) == TROPICZONE_DESERT && !IsRoadWaypointOnSnowOrDesert(tile)) {
+					if (GetTropicZone(tile) == TropicZone::Desert && !IsRoadWaypointOnSnowOrDesert(tile)) {
 						ToggleRoadWaypointOnSnowOrDesert(tile);
 						MarkTileDirtyByTile(tile, VMDF_NOT_MAP_MODE);
 					}

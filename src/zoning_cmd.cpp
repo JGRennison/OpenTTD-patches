@@ -357,9 +357,9 @@ inline SpriteID TileZoneDebugWaterRegion(TileIndex tile)
 inline SpriteID TileZoneDebugTropicZone(TileIndex tile)
 {
 	switch (GetTropicZone(tile)) {
-		case TROPICZONE_DESERT:
+		case TropicZone::Desert:
 			return SPR_ZONING_INNER_HIGHLIGHT_YELLOW;
-		case TROPICZONE_RAINFOREST:
+		case TropicZone::Rainforest:
 			return SPR_ZONING_INNER_HIGHLIGHT_LIGHT_BLUE;
 		default:
 			return ZONING_INVALID_SPRITE_ID;

@@ -51,7 +51,7 @@ static ChangeInfoResult LoadTranslationTable(uint first, uint last, ByteReader &
 {
 	if (first != 0) {
 		GrfMsg(1, "LoadTranslationTable: {} translation table must start at zero", name);
-		return CIR_INVALID_ID;
+		return ChangeInfoResult::InvalidId;
 	}
 
 	std::vector<T> &translation_table = gettable(*_cur_gps.grffile);
@@ -69,14 +69,14 @@ static ChangeInfoResult LoadTranslationTable(uint first, uint last, ByteReader &
 		override_table = translation_table;
 	}
 
-	return CIR_SUCCESS;
+	return ChangeInfoResult::Success;
 }
 
 static ChangeInfoResult LoadBadgeTranslationTable(uint first, uint last, ByteReader &buf, std::vector<BadgeID> &translation_table, std::string_view name)
 {
 	if (first != 0 && first != std::size(translation_table)) {
 		GrfMsg(1, "LoadBadgeTranslationTable: {} translation table must start at zero or {}", name, std::size(translation_table));
-		return CIR_INVALID_ID;
+		return ChangeInfoResult::InvalidId;
 	}
 
 	if (first == 0) translation_table.clear();
@@ -86,7 +86,7 @@ static ChangeInfoResult LoadBadgeTranslationTable(uint first, uint last, ByteRea
 		translation_table.push_back(GetOrCreateBadge(label).index);
 	}
 
-	return CIR_SUCCESS;
+	return ChangeInfoResult::Success;
 }
 
 /**
@@ -137,7 +137,7 @@ static ChangeInfoResult GlobalVarChangeInfo(uint first, uint last, int prop, con
 	}
 
 	/* Properties which are handled per item */
-	ChangeInfoResult ret = CIR_SUCCESS;
+	ChangeInfoResult ret = ChangeInfoResult::Success;
 	for (uint id = first; id < last; ++id) {
 		switch (prop) {
 			case 0x08: { // Cost base factor
@@ -393,7 +393,7 @@ static ChangeInfoResult GlobalVarReserveInfo(uint first, uint last, int prop, co
 	}
 
 	/* Properties which are handled per item */
-	ChangeInfoResult ret = CIR_SUCCESS;
+	ChangeInfoResult ret = ChangeInfoResult::Success;
 
 	for (uint id = first; id < last; ++id) {
 		switch (prop) {

@@ -29,7 +29,7 @@
 static ChangeInfoResult SignalsChangeInfo(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf)
 {
 	/* Properties which are handled per item */
-	ChangeInfoResult ret = CIR_SUCCESS;
+	ChangeInfoResult ret = ChangeInfoResult::Success;
 	for (uint id = first; id < last; ++id) {
 		switch (prop) {
 			case A0RPI_SIGNALS_ENABLE_PROGRAMMABLE_SIGNALS:
@@ -188,5 +188,5 @@ static ChangeInfoResult SignalsChangeInfo(uint first, uint last, int prop, const
 	return ret;
 }
 
-template <> ChangeInfoResult GrfChangeInfoHandler<GSF_SIGNALS>::Reserve(uint, uint, int, const GRFFilePropertyRemapEntry *, ByteReader &) { return CIR_UNHANDLED; }
+template <> ChangeInfoResult GrfChangeInfoHandler<GSF_SIGNALS>::Reserve(uint, uint, int, const GRFFilePropertyRemapEntry *, ByteReader &) { return ChangeInfoResult::Unhandled; }
 template <> ChangeInfoResult GrfChangeInfoHandler<GSF_SIGNALS>::Activation(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf) { return SignalsChangeInfo(first, last, prop, mapping_entry, buf); }

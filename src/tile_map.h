@@ -229,8 +229,8 @@ inline bool IsTileOwner(TileIndex tile, Owner owner)
 inline void SetTropicZone(TileIndex tile, TropicZone type)
 {
 	dbg_assert_tile(tile < Map::Size(), tile);
-	dbg_assert_tile(!IsTileType(tile, TileType::Void) || type == TROPICZONE_NORMAL, tile);
-	SB(_m[tile].type, 0, 2, type);
+	dbg_assert_tile(!IsTileType(tile, TileType::Void) || type == TropicZone::Normal, tile);
+	SB(_m[tile].type, 0, 2, to_underlying(type));
 }
 
 /**
@@ -242,7 +242,7 @@ inline void SetTropicZone(TileIndex tile, TropicZone type)
 inline TropicZone GetTropicZone(TileIndex tile)
 {
 	dbg_assert_tile(tile < Map::Size(), tile);
-	return (TropicZone)GB(_m[tile].type, 0, 2);
+	return static_cast<TropicZone>(GB(_m[tile].type, 0, 2));
 }
 
 /**
