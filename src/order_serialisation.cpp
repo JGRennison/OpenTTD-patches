@@ -44,7 +44,7 @@ struct OrderSerialisationFieldNames {
 	static constexpr char SOURCE[]                     = "source";                     ///< string      OTTD version that generated the list
 	static constexpr char VEHICLE_TYPE[]               = "vehicle-type";               ///< enum
 	static constexpr char VEHICLE_GROUP_NAME[]         = "vehicle-group-name";         ///< string      Export-only, name of group of first vehicle in the orderlist
-	static constexpr char NESTED_VEHICLE_GROUP_NAMES[] = "nested-vehicle-group-names"; ///< array<str>  Exèprt-only, names of all of the first vehicle's groups (ascending)
+	static constexpr char NESTED_VEHICLE_GROUP_NAMES[] = "nested-vehicle-group-names"; ///< array<str>  Export-only, names of all of the first vehicle's groups (ascending)
 	static constexpr char ROUTE_OVERLAY_COLOUR[]       = "route-overlay-colour";       ///< enum
 
 	struct GameProperties {
