@@ -289,17 +289,17 @@ class EnumClassIndexContainer : public Container {
 	static constexpr bool INTEGER_ALLOWED = ((Policies == EnumClassIndexContainerPolicy::AllowInteger) || ...);
 
 public:
-	Container::reference at(size_t pos) { static_assert(INTEGER_ALLOWED); return this->Container::at(pos); }
-	Container::reference at(const Index &pos) { return this->Container::at(to_underlying(pos)); }
+	constexpr Container::reference at(size_t pos) { static_assert(INTEGER_ALLOWED); return this->Container::at(pos); }
+	constexpr Container::reference at(const Index &pos) { return this->Container::at(to_underlying(pos)); }
 
-	Container::const_reference at(size_t pos) const { static_assert(INTEGER_ALLOWED); return this->Container::at(pos); }
-	Container::const_reference at(const Index &pos) const { return this->Container::at(to_underlying(pos)); }
+	constexpr Container::const_reference at(size_t pos) const { static_assert(INTEGER_ALLOWED); return this->Container::at(pos); }
+	constexpr Container::const_reference at(const Index &pos) const { return this->Container::at(to_underlying(pos)); }
 
-	Container::reference operator[](size_t pos) { static_assert(INTEGER_ALLOWED); return this->Container::operator[](pos); }
-	Container::reference operator[](const Index &pos) { return this->Container::operator[](to_underlying(pos)); }
+	constexpr Container::reference operator[](size_t pos) { static_assert(INTEGER_ALLOWED); return this->Container::operator[](pos); }
+	constexpr Container::reference operator[](const Index &pos) { return this->Container::operator[](to_underlying(pos)); }
 
-	Container::const_reference operator[](size_t pos) const { static_assert(INTEGER_ALLOWED); return this->Container::operator[](pos); }
-	Container::const_reference operator[](const Index &pos) const { return this->Container::operator[](to_underlying(pos)); }
+	constexpr Container::const_reference operator[](size_t pos) const { static_assert(INTEGER_ALLOWED); return this->Container::operator[](pos); }
+	constexpr Container::const_reference operator[](const Index &pos) const { return this->Container::operator[](to_underlying(pos)); }
 };
 
 template <typename Index>
