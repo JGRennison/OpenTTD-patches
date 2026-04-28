@@ -941,6 +941,8 @@ public:
 
 	void UpdateCargoHistory();
 
+	void CheckCargoOverflow() const;
+
 	void MoveSign(TileIndex new_xy) override;
 
 	void AfterStationTileSetChange(bool adding, StationType type);

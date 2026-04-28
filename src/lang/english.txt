@@ -902,6 +902,8 @@ STR_NEWS_INDUSTRY_CLOSURE_GENERAL                               :{BIG_FONT}{BLAC
 STR_NEWS_INDUSTRY_CLOSURE_SUPPLY_PROBLEMS                       :{BIG_FONT}{BLACK}Supply problems cause {STRING2} to announce imminent closure!
 STR_NEWS_INDUSTRY_CLOSURE_LACK_OF_TREES                         :{BIG_FONT}{BLACK}Lack of nearby trees causes {STRING2} to announce imminent closure!
 
+STR_STATION_CARGO_OVERFLOW                                      :{WHITE}{CARGO_LIST} overflowing at {STATION}
+
 STR_NEWS_EURO_INTRODUCTION                                      :{BIG_FONT}{BLACK}European Monetary Union!{}{}The Euro is introduced as the sole currency for everyday transactions in your country!
 STR_NEWS_BEGIN_OF_RECESSION                                     :{BIG_FONT}{BLACK}World Recession!{}{}Financial experts fear worst as economy slumps!
 STR_NEWS_END_OF_RECESSION                                       :{BIG_FONT}{BLACK}Recession Over!{}{}Upturn in trade gives confidence to industries as economy strengthens!

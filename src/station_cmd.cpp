@@ -518,6 +518,66 @@ void Station::UpdateCargoHistory()
 	if (update_window) InvalidateWindowData(WC_STATION_VIEW, this->index, -1);
 }
 
+static bool CheckStationCargoHistroyOverflow(const std::array<uint16_t, MAX_STATION_CARGO_HISTORY_DAYS> &history, const uint8_t history_offset)
+{
+	/* Sum of intra-day differences. This is a decent proxy
+	 * for estimating how active the station is */
+	uint32_t cumulative_diff = 0;
+
+	uint8_t index_last = ((history_offset == 0) ? MAX_STATION_CARGO_HISTORY_DAYS : history_offset) - 1;
+	uint32_t first = RXDecompressUint(history[history_offset]);
+	uint32_t last = RXDecompressUint(history[index_last]);
+	uint32_t prev = first;
+	/* If amount of cargo decreased, don't warn. */
+	if (last < first) return false;
+
+	auto advance_index = [](uint8_t index) -> uint8_t {
+		index++;
+		return index == MAX_STATION_CARGO_HISTORY_DAYS ? 0 : index;
+	};
+	for (uint8_t i = advance_index(history_offset); i != history_offset; i = advance_index(i)) {
+		uint32_t current = RXDecompressUint(history[i]);
+
+		/* If amount of cargo was 0 at some point, don't warn. */
+		if (current == 0) return false;
+		cumulative_diff += Delta(current, prev);
+		prev = current;
+	}
+
+	/* If there wasn't any change at all, don't warn.
+	 * If sum of intra-day differences is more than 33% of total waiting amount,
+	 * don't warn (regardless of change direction - the point of the warning is
+	 * specifically to warn about stations with a lot of accumulated cargo
+	 * relative to how active the station is). */
+	return (cumulative_diff != 0 && cumulative_diff * 3 < last);
+}
+
+/**
+ * Check whether cargo is overflowing
+ */
+void Station::CheckCargoOverflow() const
+{
+	/* Identify cargoes with relatively low activity and high waiting amount
+	 * and warn the player about overflowing cargoes */
+	uint storage_offset = 0;
+	CargoTypes overflowing_cargoes{};
+	for (CargoType c : this->station_cargo_history_cargoes) {
+		if (CheckStationCargoHistroyOverflow(this->station_cargo_history[storage_offset], this->station_cargo_history_offset)) {
+			overflowing_cargoes.Set(c);
+		}
+		storage_offset++;
+	}
+
+	if (overflowing_cargoes.Any()) {
+		AddNewsItem(
+				GetEncodedString(STR_STATION_CARGO_OVERFLOW, overflowing_cargoes, this->index),
+				NewsType::Acceptance,
+				NewsStyle::Small,
+				NewsFlag::InColour,
+				this->index);
+	}
+}
+
 /**
  * Update the virtual coords needed to draw the station sign.
  */
@@ -4759,6 +4819,7 @@ void StationMonthlyLoop()
 			ge.status.Set(GoodsEntry::State::LastMonth, ge.status.Test(GoodsEntry::State::CurrentMonth));
 			ge.status.Reset(GoodsEntry::State::CurrentMonth);
 		}
+		st->CheckCargoOverflow();
 	}
 }
 
