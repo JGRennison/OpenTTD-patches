@@ -66,8 +66,8 @@ public:
 	 * Road/tram types
 	 */
 	enum RoadTramTypes : uint8_t {
-		ROADTRAMTYPES_ROAD = ::RTTB_ROAD, ///< Road road types.
-		ROADTRAMTYPES_TRAM = ::RTTB_TRAM, ///< Tram road types.
+		ROADTRAMTYPES_ROAD = ::RoadTramTypes{RoadTramType::Road}.base(), ///< Road road types.
+		ROADTRAMTYPES_TRAM = ::RoadTramTypes{RoadTramType::Tram}.base(), ///< Tram road types.
 	};
 
 	/**
@@ -94,21 +94,21 @@ public:
 	enum RoadPieces {
 		/* Note: these values represent part of the in-game RoadBits enum with added shorthands to T-junctions */
 		ROADPIECES_NONE = 0,                            ///< No road pieces
-		ROADPIECES_NW = ::ROAD_NW,                      ///< North-west part
-		ROADPIECES_SW = ::ROAD_SW,                      ///< South-west part
-		ROADPIECES_SE = ::ROAD_SE,                      ///< South-east part
-		ROADPIECES_NE = ::ROAD_NE,                      ///< North-east part
-		ROADPIECES_X = ::ROAD_X,                        ///< Full road along the x-axis (south-west + north-east)
-		ROADPIECES_Y = ::ROAD_Y,                        ///< Full road along the y-axis (north-west + south-east)
-		ROADPIECES_N = ::ROAD_N,                        ///< Road at the two northern edges (corner, north-west + north-east)
-		ROADPIECES_E = ::ROAD_E,                        ///< Road at the two eastern edges (corner, north-east + south-east)
-		ROADPIECES_S = ::ROAD_S,                        ///< Road at the two southern edges (corner, south-east + south-west)
-		ROADPIECES_W = ::ROAD_W,                        ///< Road at the two western edges (corner, south-west + north-west)
-		ROADPIECES_S_NW = ROADPIECES_S | ROADPIECES_NW,   ///< T-junction, southern edges + north-west
-		ROADPIECES_W_NE = ROADPIECES_W | ROADPIECES_NE,   ///< T-junction, western edges + north-east
-		ROADPIECES_N_SE = ROADPIECES_N | ROADPIECES_SE,   ///< T-junction, northern edges + south-east
-		ROADPIECES_E_SW = ROADPIECES_E | ROADPIECES_SW,   ///< T-junction, eastern edges + south-west
-		ROADPIECES_ALL = ::ROAD_ALL,                    ///< Full 4-way crossing
+		ROADPIECES_NW = ::ROAD_NW.base(),               ///< North-west part
+		ROADPIECES_SW = ::ROAD_SW.base(),               ///< South-west part
+		ROADPIECES_SE = ::ROAD_SE.base(),               ///< South-east part
+		ROADPIECES_NE = ::ROAD_NE.base(),               ///< North-east part
+		ROADPIECES_X = ::ROAD_X.base(),                 ///< Full road along the x-axis (south-west + north-east)
+		ROADPIECES_Y = ::ROAD_Y.base(),                 ///< Full road along the y-axis (north-west + south-east)
+		ROADPIECES_N = ::ROAD_N.base(),                 ///< Road at the two northern edges (corner, north-west + north-east)
+		ROADPIECES_E = ::ROAD_E.base(),                 ///< Road at the two eastern edges (corner, north-east + south-east)
+		ROADPIECES_S = ::ROAD_S.base(),                 ///< Road at the two southern edges (corner, south-east + south-west)
+		ROADPIECES_W = ::ROAD_W.base(),                 ///< Road at the two western edges (corner, south-west + north-west)
+		ROADPIECES_S_NW = ROADPIECES_S | ROADPIECES_NW, ///< T-junction, southern edges + north-west
+		ROADPIECES_W_NE = ROADPIECES_W | ROADPIECES_NE, ///< T-junction, western edges + north-east
+		ROADPIECES_N_SE = ROADPIECES_N | ROADPIECES_SE, ///< T-junction, northern edges + south-east
+		ROADPIECES_E_SW = ROADPIECES_E | ROADPIECES_SW, ///< T-junction, eastern edges + south-west
+		ROADPIECES_ALL = ::ROAD_ALL.base(),             ///< Full 4-way crossing
 	};
 
 	/**

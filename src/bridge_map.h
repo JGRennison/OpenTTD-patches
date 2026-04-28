@@ -153,8 +153,8 @@ inline void MakeBridgeRamp(TileIndex t, Owner o, BridgeType bridgetype, DiagDire
 inline void MakeRoadBridgeRamp(TileIndex t, Owner o, Owner owner_road, Owner owner_tram, BridgeType bridgetype, DiagDirection d, RoadType road_rt, RoadType tram_rt)
 {
 	MakeBridgeRamp(t, o, bridgetype, d, TRANSPORT_ROAD);
-	SetRoadOwner(t, RTT_ROAD, owner_road);
-	if (owner_tram != OWNER_TOWN) SetRoadOwner(t, RTT_TRAM, owner_tram);
+	SetRoadOwner(t, RoadTramType::Road, owner_road);
+	if (owner_tram != OWNER_TOWN) SetRoadOwner(t, RoadTramType::Tram, owner_tram);
 	SetRoadTypes(t, road_rt, tram_rt);
 }
 
@@ -250,8 +250,8 @@ inline bool IsRoadCustomBridgeHeadTile(TileIndex t)
 inline RoadBits GetCustomBridgeHeadRoadBits(TileIndex t, RoadTramType rtt)
 {
 	assert_tile(IsBridgeTile(t), t);
-	if (!HasTileRoadType(t, rtt)) return (RoadBits) 0;
-	RoadBits bits = (GB(_m[t].m5, 0, 1) ? ROAD_Y : ROAD_X) ^ (RoadBits) GB(_m[t].m2, rtt == RTT_TRAM ? 4 : 0, 4);
+	if (!HasTileRoadType(t, rtt)) return {};
+	RoadBits bits = static_cast<RoadBits>((GB(_m[t].m5, 0, 1) ? ROAD_Y : ROAD_X).base() ^ GB(_m[t].m2, rtt == RoadTramType::Tram ? 4 : 0, 4));
 	return bits;
 }
 
@@ -263,7 +263,7 @@ inline RoadBits GetCustomBridgeHeadRoadBits(TileIndex t, RoadTramType rtt)
  */
 inline RoadBits GetCustomBridgeHeadAllRoadBits(TileIndex t)
 {
-	return GetCustomBridgeHeadRoadBits(t, RTT_ROAD) | GetCustomBridgeHeadRoadBits(t, RTT_TRAM);
+	return GetCustomBridgeHeadRoadBits(t, RoadTramType::Road) | GetCustomBridgeHeadRoadBits(t, RoadTramType::Tram);
 }
 
 /**
@@ -279,10 +279,10 @@ inline void SetCustomBridgeHeadRoadBits(TileIndex t, RoadTramType rtt, RoadBits 
 	assert_tile(IsBridgeTile(t), t);
 	if (HasTileRoadType(t, rtt)) {
 		assert(bits != ROAD_NONE);
-		SB(_m[t].m2, rtt == RTT_TRAM ? 4 : 0, 4, bits ^ (GB(_m[t].m5, 0, 1) ? ROAD_Y : ROAD_X));
+		SB(_m[t].m2, rtt == RoadTramType::Tram ? 4 : 0, 4, bits.base() ^ (GB(_m[t].m5, 0, 1) ? ROAD_Y : ROAD_X).base());
 	} else {
 		assert(bits == ROAD_NONE);
-		SB(_m[t].m2, rtt == RTT_TRAM ? 4 : 0, 4, 0);
+		SB(_m[t].m2, rtt == RoadTramType::Tram ? 4 : 0, 4, 0);
 	}
 }
 
@@ -306,7 +306,7 @@ inline void SetBridgeDisallowedRoadDirections(TileIndex t, DisallowedRoadDirecti
 {
 	assert_tile(IsRoadBridgeTile(t), t);
 	assert(drd < DRD_END);
-	SB(_m[t].m4, 6, 2, drd);
+	SB(_m[t].m4, 6, 2, drd.base());
 }
 
 /**

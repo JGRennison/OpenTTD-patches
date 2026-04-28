@@ -32,7 +32,7 @@ static ChangeInfoResult RoadTypeChangeInfo(uint first, uint last, int prop, cons
 	ChangeInfoResult ret = ChangeInfoResult::Success;
 
 	extern RoadTypeInfo _roadtypes[ROADTYPE_END];
-	const auto &type_map = (rtt == RTT_TRAM) ? _cur_gps.grffile->tramtype_map : _cur_gps.grffile->roadtype_map;
+	const auto &type_map = (rtt == RoadTramType::Tram) ? _cur_gps.grffile->tramtype_map : _cur_gps.grffile->roadtype_map;
 
 	if (last > std::size(type_map)) {
 		GrfMsg(1, "RoadTypeChangeInfo: Road type {} is invalid, max {}, ignoring", last, std::size(type_map));
@@ -165,7 +165,7 @@ static ChangeInfoResult RoadTypeReserveInfo(uint first, uint last, int prop, con
 	ChangeInfoResult ret = ChangeInfoResult::Success;
 
 	extern RoadTypeInfo _roadtypes[ROADTYPE_END];
-	auto &type_map = (rtt == RTT_TRAM) ? _cur_gps.grffile->tramtype_map : _cur_gps.grffile->roadtype_map;
+	auto &type_map = (rtt == RoadTramType::Tram) ? _cur_gps.grffile->tramtype_map : _cur_gps.grffile->roadtype_map;
 
 	if (last > std::size(type_map)) {
 		GrfMsg(1, "RoadTypeReserveInfo: Road type {} is invalid, max {}, ignoring", last, std::size(type_map));
@@ -250,8 +250,8 @@ static ChangeInfoResult RoadTypeReserveInfo(uint first, uint last, int prop, con
 	return ret;
 }
 
-template <> ChangeInfoResult GrfChangeInfoHandler<GSF_ROADTYPES>::Reserve(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf) { return RoadTypeReserveInfo(first, last, prop, mapping_entry, buf, RTT_ROAD); }
-template <> ChangeInfoResult GrfChangeInfoHandler<GSF_ROADTYPES>::Activation(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf) { return RoadTypeChangeInfo(first, last, prop, mapping_entry, buf, RTT_ROAD); }
+template <> ChangeInfoResult GrfChangeInfoHandler<GSF_ROADTYPES>::Reserve(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf) { return RoadTypeReserveInfo(first, last, prop, mapping_entry, buf, RoadTramType::Road); }
+template <> ChangeInfoResult GrfChangeInfoHandler<GSF_ROADTYPES>::Activation(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf) { return RoadTypeChangeInfo(first, last, prop, mapping_entry, buf, RoadTramType::Road); }
 
-template <> ChangeInfoResult GrfChangeInfoHandler<GSF_TRAMTYPES>::Reserve(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf) { return RoadTypeReserveInfo(first, last, prop, mapping_entry, buf, RTT_TRAM); }
-template <> ChangeInfoResult GrfChangeInfoHandler<GSF_TRAMTYPES>::Activation(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf) { return RoadTypeChangeInfo(first, last, prop, mapping_entry, buf, RTT_TRAM); }
+template <> ChangeInfoResult GrfChangeInfoHandler<GSF_TRAMTYPES>::Reserve(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf) { return RoadTypeReserveInfo(first, last, prop, mapping_entry, buf, RoadTramType::Tram); }
+template <> ChangeInfoResult GrfChangeInfoHandler<GSF_TRAMTYPES>::Activation(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf) { return RoadTypeChangeInfo(first, last, prop, mapping_entry, buf, RoadTramType::Tram); }

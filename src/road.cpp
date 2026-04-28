@@ -65,7 +65,7 @@ static bool IsPossibleCrossing(const TileIndex tile, Axis ax)
  */
 RoadBits CleanUpRoadBits(const TileIndex tile, RoadBits org_rb)
 {
-	if (!IsValidTile(tile)) return ROAD_NONE;
+	if (!IsValidTile(tile)) return {};
 	for (DiagDirection dir = DIAGDIR_BEGIN; dir < DIAGDIR_END; dir++) {
 		TileIndex neighbour_tile = TileAddByDiagDir(tile, dir);
 
@@ -73,7 +73,7 @@ RoadBits CleanUpRoadBits(const TileIndex tile, RoadBits org_rb)
 		const RoadBits target_rb = DiagDirToRoadBits(dir);
 
 		/* If the roadbit is in the current plan */
-		if (org_rb & target_rb) {
+		if (org_rb.Any(target_rb)) {
 			bool connective = false;
 			const RoadBits mirrored_rb = MirrorRoadBits(target_rb);
 
@@ -93,10 +93,10 @@ RoadBits CleanUpRoadBits(const TileIndex tile, RoadBits org_rb)
 							/* Always connective */
 							connective = true;
 						} else {
-							const RoadBits neighbour_rb = GetAnyRoadBits(neighbour_tile, RTT_ROAD) | GetAnyRoadBits(neighbour_tile, RTT_TRAM);
+							const RoadBits neighbour_rb = GetAnyRoadBits(neighbour_tile, RoadTramType::Road) | GetAnyRoadBits(neighbour_tile, RoadTramType::Tram);
 
 							/* Accept only connective tiles */
-							connective = (neighbour_rb & mirrored_rb) != ROAD_NONE;
+							connective = neighbour_rb.Any(mirrored_rb);
 						}
 						break;
 
@@ -120,7 +120,7 @@ RoadBits CleanUpRoadBits(const TileIndex tile, RoadBits org_rb)
 			}
 
 			/* If the neighbour tile is inconnective, remove the planned road connection to it */
-			if (!connective) org_rb ^= target_rb;
+			if (!connective) org_rb.Flip(target_rb);
 		}
 	}
 
@@ -808,8 +808,8 @@ static void PublicRoad_FoundEndNode(AyStar *aystar, OpenListNode *current)
 				bool need_to_build_road = true;
 
 				if (IsNormalRoadTile(tile)) {
-					const RoadBits existing_bits = GetRoadBits(tile, RTT_ROAD);
-					road_bits &= ~existing_bits;
+					const RoadBits existing_bits = GetRoadBits(tile, RoadTramType::Road);
+					road_bits.Reset(existing_bits);
 					if (road_bits == ROAD_NONE) need_to_build_road = false;
 				} else if (MayHaveRoad(tile)) {
 					/* Tile already has road which can't be modified: level crossings, depots, drive-through stops, etc */

@@ -50,8 +50,8 @@ struct CompanyInfrastructure {
 
 	uint32_t GetRoadTramTotal(RoadTramType rtt) const;
 
-	inline uint32_t GetRoadTotal() const { return GetRoadTramTotal(RTT_ROAD); }
-	inline uint32_t GetTramTotal() const { return GetRoadTramTotal(RTT_TRAM); }
+	inline uint32_t GetRoadTotal() const { return this->GetRoadTramTotal(RoadTramType::Road); }
+	inline uint32_t GetTramTotal() const { return this->GetRoadTramTotal(RoadTramType::Tram); }
 
 	void Dump(struct format_target &buffer) const;
 

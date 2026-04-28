@@ -522,8 +522,8 @@ static void FixOwnerOfRailTrack(TileIndex t)
 
 	if (IsLevelCrossingTile(t)) {
 		/* else change the crossing to normal road (road vehicles won't care) */
-		Owner road = GetRoadOwner(t, RTT_ROAD);
-		Owner tram = GetRoadOwner(t, RTT_TRAM);
+		Owner road = GetRoadOwner(t, RoadTramType::Road);
+		Owner tram = GetRoadOwner(t, RoadTramType::Tram);
 		RoadBits bits = GetCrossingRoadBits(t);
 		bool hasroad = HasBit(_me[t].m7, 6);
 		bool hastram = HasBit(_me[t].m7, 7);
@@ -531,10 +531,10 @@ static void FixOwnerOfRailTrack(TileIndex t)
 		/* MakeRoadNormal */
 		SetTileType(t, TileType::Road);
 		SetTileOwner(t, road);
-		_m[t].m3 = (hasroad ? bits : 0);
-		_m[t].m5 = (hastram ? bits : 0) | to_underlying(RoadTileType::Normal) << 6;
+		_m[t].m3 = (hasroad ? bits.base() : 0);
+		_m[t].m5 = (hastram ? bits.base() : 0) | to_underlying(RoadTileType::Normal) << 6;
 		SB(_me[t].m6, 2, 4, 0);
-		SetRoadOwner(t, RTT_TRAM, tram);
+		SetRoadOwner(t, RoadTramType::Tram, tram);
 		return;
 	}
 
@@ -1486,10 +1486,10 @@ bool AfterLoadGame()
 							SetTileType(t, TileType::Road);
 							_m[t].m2 = town.base();
 							_m[t].m3 = 0;
-							_m[t].m5 = (axis == AXIS_X ? ROAD_Y : ROAD_X) | to_underlying(RoadTileType::Normal) << 6;
+							_m[t].m5 = (axis == AXIS_X ? ROAD_Y : ROAD_X).base() | to_underlying(RoadTileType::Normal) << 6;
 							SB(_me[t].m6, 2, 4, 0);
 							_me[t].m7 = 1 << 6;
-							SetRoadOwner(t, RTT_TRAM, OWNER_NONE);
+							SetRoadOwner(t, RoadTramType::Tram, OWNER_NONE);
 						}
 					} else {
 						if (GB(_m[t].m5, 3, 2) == 0) {
@@ -1677,12 +1677,12 @@ bool AfterLoadGame()
 		/* fix any mismatched road/tram bits */
 		for (TileIndex t(0); t < map_size; t++) {
 			if (IsBridgeTile(t) && GetTunnelBridgeTransportType(t) == TRANSPORT_ROAD) {
-				for (RoadTramType rtt : { RTT_TRAM, RTT_ROAD }) {
+				for (RoadTramType rtt : { RoadTramType::Tram, RoadTramType::Road }) {
 					RoadType rt = GetRoadType(t, rtt);
 					if (rt == INVALID_ROADTYPE) continue;
 					RoadBits rb = GetCustomBridgeHeadRoadBits(t, rtt);
 					DiagDirection dir = GetTunnelBridgeDirection(t);
-					if (!(rb & DiagDirToRoadBits(dir))) continue;
+					if ((rb & DiagDirToRoadBits(dir)).None()) continue;
 
 					if (HasAtMostOneBit(rb)) {
 						Debug(misc, 0, "Fixing road bridge head state (case A) at tile 0x{:X}", t);
@@ -1704,7 +1704,7 @@ bool AfterLoadGame()
 					}
 
 					RoadBits end_rb = GetCustomBridgeHeadRoadBits(end, rtt);
-					if (!(end_rb & DiagDirToRoadBits(ReverseDiagDir(dir)))) {
+					if ((end_rb & DiagDirToRoadBits(ReverseDiagDir(dir))).None()) {
 						Debug(misc, 0, "Fixing road bridge head state (case D) at tile 0x{:X} -> 0x{:X}", t, end);
 						end_rb |= DiagDirToRoadBits(ReverseDiagDir(dir));
 						if (HasAtMostOneBit(end_rb)) end_rb |= DiagDirToRoadBits(dir);
@@ -2389,7 +2389,7 @@ bool AfterLoadGame()
 				}
 			} else if (IsTileType(t, TileType::Road)) {
 				/* works for all RoadTileType */
-				for (RoadTramType rtt : _roadtramtypes) {
+				for (RoadTramType rtt : ROADTRAMTYPES_ALL) {
 					/* update even non-existing road types to update tile owner too */
 					Owner o = GetRoadOwner(t, rtt);
 					if (o < MAX_COMPANIES && !Company::IsValidID(o)) SetRoadOwner(t, rtt, OWNER_NONE);
@@ -3495,8 +3495,8 @@ bool AfterLoadGame()
 		for (TileIndex t(0); t < map_size; t++) {
 			if (!IsBayRoadStopTile(t)) continue;
 			Owner o = GetTileOwner(t);
-			SetRoadOwner(t, RTT_ROAD, o);
-			SetRoadOwner(t, RTT_TRAM, o);
+			SetRoadOwner(t, RoadTramType::Road, o);
+			SetRoadOwner(t, RoadTramType::Tram, o);
 		}
 	}
 

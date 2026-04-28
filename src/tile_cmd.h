@@ -13,6 +13,7 @@
 #include "core/enum_type.hpp"
 #include "core/geometry_type.hpp"
 #include "command_type.h"
+#include "road_type.h"
 #include "vehicle_type.h"
 #include "cargo_type.h"
 #include "track_type.h"
@@ -232,11 +233,23 @@ enum TileTrackStatusSubMode {
 	TTSSM_NO_RED_SIGNALS      = 0x10000,
 };
 
+enum class RoadTramType : uint8_t;
+
 TrackStatus GetTileTrackStatus(TileIndex tile, TransportType mode, uint sub_mode, DiagDirection side = INVALID_DIAGDIR);
+
+inline TrackStatus GetTileTrackStatus(TileIndex tile, TransportType mode, RoadTramType sub_mode, DiagDirection side = INVALID_DIAGDIR)
+{
+	return GetTileTrackStatus(tile, mode, to_underlying(sub_mode), side);
+}
 
 inline TrackdirBits GetTileTrackdirBits(TileIndex tile, TransportType mode, uint sub_mode, DiagDirection side = INVALID_DIAGDIR)
 {
 	return TrackStatusToTrackdirBits(GetTileTrackStatus(tile, mode, sub_mode | TTSSM_NO_RED_SIGNALS, side));
+}
+
+inline TrackdirBits GetTileTrackdirBits(TileIndex tile, TransportType mode, RoadTramType sub_mode, DiagDirection side = INVALID_DIAGDIR)
+{
+	return GetTileTrackdirBits(tile, mode, to_underlying(sub_mode), side);
 }
 
 VehicleEnterTileStates VehicleEnterTile(Vehicle *v, TileIndex tile, int x, int y);

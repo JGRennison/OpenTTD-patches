@@ -3076,7 +3076,7 @@ UnitID GetFreeUnitNumber(VehicleType type)
  * @return true if there is any reason why you may build
  *         the infrastructure for the given vehicle type
  */
-bool CanBuildVehicleInfrastructure(VehicleType type, uint8_t subtype)
+bool CanBuildVehicleInfrastructure(VehicleType type, RoadTramType subtype)
 {
 	assert(IsCompanyBuildableVehicleType(type));
 
@@ -3089,7 +3089,7 @@ bool CanBuildVehicleInfrastructure(VehicleType type, uint8_t subtype)
 			max = _settings_game.vehicle.max_trains;
 			break;
 		case VEH_ROAD:
-			if (!HasAnyRoadTypesAvail(_local_company, (RoadTramType)subtype)) return false;
+			if (!HasAnyRoadTypesAvail(_local_company, subtype)) return false;
 			max = _settings_game.vehicle.max_roadveh;
 			break;
 		case VEH_SHIP:     max = _settings_game.vehicle.max_ships; break;
@@ -3101,7 +3101,7 @@ bool CanBuildVehicleInfrastructure(VehicleType type, uint8_t subtype)
 	if (max > 0) {
 		/* Can we actually build the vehicle type? */
 		for (const Engine *e : Engine::IterateType(type)) {
-			if (type == VEH_ROAD && GetRoadTramType(e->VehInfo<RoadVehicleInfo>().roadtype) != (RoadTramType)subtype) continue;
+			if (type == VEH_ROAD && GetRoadTramType(e->VehInfo<RoadVehicleInfo>().roadtype) != subtype) continue;
 			if (e->company_avail.Test(_local_company)) return true;
 		}
 		return false;
@@ -3109,7 +3109,7 @@ bool CanBuildVehicleInfrastructure(VehicleType type, uint8_t subtype)
 
 	/* We should be able to build infrastructure when we have the actual vehicle type */
 	for (const Vehicle *v : Vehicle::IterateType(type)) {
-		if (type == VEH_ROAD && GetRoadTramType(RoadVehicle::From(v)->roadtype) != (RoadTramType)subtype) continue;
+		if (type == VEH_ROAD && GetRoadTramType(RoadVehicle::From(v)->roadtype) != subtype) continue;
 		if (v->owner == _local_company) return true;
 	}
 

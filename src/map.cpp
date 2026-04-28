@@ -607,8 +607,8 @@ void DumpMapStats(format_target &buffer)
 				if (IsTunnelBridgeRestrictedSignal(t)) restricted_signals++;
 			}
 			if (GetTunnelBridgeTransportType(t) == TRANSPORT_ROAD) {
-				if (HasTileRoadType(t, RTT_ROAD)) bucket |= TBB_ROAD;
-				if (HasTileRoadType(t, RTT_TRAM)) bucket |= TBB_TRAM;
+				if (HasTileRoadType(t, RoadTramType::Road)) bucket |= TBB_ROAD;
+				if (HasTileRoadType(t, RoadTramType::Tram)) bucket |= TBB_TRAM;
 			}
 			if (GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL) bucket |= TBB_RAIL;
 			if (GetTunnelBridgeTransportType(t) == TRANSPORT_WATER) bucket |= TBB_WATER;

@@ -357,13 +357,13 @@ static Money TunnelBridgeClearCost(TileIndex tile, Price base_price)
 			RoadType tram_rt = GetRoadTypeTram(tile);
 
 			auto check_rtt = [&](RoadTramType rtt) -> bool {
-				return IsTunnel(tile) || DiagDirToRoadBits(GetTunnelBridgeDirection(tile)) & GetCustomBridgeHeadRoadBits(tile, rtt);
+				return IsTunnel(tile) || DiagDirToRoadBits(GetTunnelBridgeDirection(tile)).Any(GetCustomBridgeHeadRoadBits(tile, rtt));
 			};
 
-			if (road_rt != INVALID_ROADTYPE && check_rtt(RTT_ROAD)) {
+			if (road_rt != INVALID_ROADTYPE && check_rtt(RoadTramType::Road)) {
 				base_cost += 2 * RoadClearCost(road_rt);
 			}
-			if (tram_rt != INVALID_ROADTYPE && check_rtt(RTT_TRAM)) {
+			if (tram_rt != INVALID_ROADTYPE && check_rtt(RoadTramType::Tram)) {
 				base_cost += 2 * RoadClearCost(tram_rt);
 			}
 		} break;
@@ -791,16 +791,16 @@ CommandCost CmdBuildBridge(DoCommandFlags flags, TileIndex tile_end, TileIndex t
 					if (RoadTypeIsTram(roadtype)) tram_rt = roadtype;
 					if (is_new_owner) {
 						/* Also give unowned present roadtypes to new owner */
-						if (hasroad && GetRoadOwner(t, RTT_ROAD) == OWNER_NONE) hasroad = false;
-						if (hastram && GetRoadOwner(t, RTT_TRAM) == OWNER_NONE) hastram = false;
+						if (hasroad && GetRoadOwner(t, RoadTramType::Road) == OWNER_NONE) hasroad = false;
+						if (hastram && GetRoadOwner(t, RoadTramType::Tram) == OWNER_NONE) hastram = false;
 					}
 
-					Owner owner_road = hasroad ? GetRoadOwner(t, RTT_ROAD) : company;
-					Owner owner_tram = hastram ? GetRoadOwner(t, RTT_TRAM) : company;
+					Owner owner_road = hasroad ? GetRoadOwner(t, RoadTramType::Road) : company;
+					Owner owner_tram = hastram ? GetRoadOwner(t, RoadTramType::Tram) : company;
 
 					if (is_upgrade) {
-						RoadBits road_bits = GetCustomBridgeHeadRoadBits(t, RTT_ROAD);
-						RoadBits tram_bits = GetCustomBridgeHeadRoadBits(t, RTT_TRAM);
+						RoadBits road_bits = GetCustomBridgeHeadRoadBits(t, RoadTramType::Road);
+						RoadBits tram_bits = GetCustomBridgeHeadRoadBits(t, RoadTramType::Tram);
 						MakeRoadBridgeRamp(t, owner, owner_road, owner_tram, bridge_type, d, road_rt, tram_rt);
 						auto add_road_bits = [roadtype, d, t](RoadTramType rtt, RoadBits bits, RoadType build_rt) {
 							if (GetRoadTramType(roadtype) == rtt) {
@@ -809,8 +809,8 @@ CommandCost CmdBuildBridge(DoCommandFlags flags, TileIndex tile_end, TileIndex t
 							}
 							if (build_rt != INVALID_ROADTYPE) SetCustomBridgeHeadRoadBits(t, rtt, bits);
 						};
-						add_road_bits(RTT_ROAD, road_bits, road_rt);
-						add_road_bits(RTT_TRAM, tram_bits, tram_rt);
+						add_road_bits(RoadTramType::Road, road_bits, road_rt);
+						add_road_bits(RoadTramType::Tram, tram_bits, tram_rt);
 					} else {
 						MakeRoadBridgeRamp(t, owner, owner_road, owner_tram, bridge_type, d, road_rt, tram_rt);
 					}
@@ -867,7 +867,7 @@ CommandCost CmdBuildBridge(DoCommandFlags flags, TileIndex tile_end, TileIndex t
 		switch (transport_type) {
 			case TRANSPORT_ROAD: {
 				cost.AddCost(bridge_len * 2 * RoadBuildCost(roadtype));
-				if (is_upgrade && DiagDirToRoadBits(GetTunnelBridgeDirection(tile_start)) & GetCustomBridgeHeadRoadBits(tile_start, OtherRoadTramType(GetRoadTramType(roadtype)))) {
+				if (is_upgrade && DiagDirToRoadBits(GetTunnelBridgeDirection(tile_start)).Any(GetCustomBridgeHeadRoadBits(tile_start, OtherRoadTramType(GetRoadTramType(roadtype))))) {
 					cost.AddCost(bridge_len * 2 * RoadBuildCost(GetRoadType(tile_start, OtherRoadTramType(GetRoadTramType(roadtype)))));
 				}
 				break;
@@ -1226,8 +1226,8 @@ static inline CommandCost CheckAllowRemoveTunnelBridge(TileIndex tile)
 			Owner road_owner = _current_company;
 			Owner tram_owner = _current_company;
 
-			if (road_rt != INVALID_ROADTYPE) road_owner = GetRoadOwner(tile, RTT_ROAD);
-			if (tram_rt != INVALID_ROADTYPE) tram_owner = GetRoadOwner(tile, RTT_TRAM);
+			if (road_rt != INVALID_ROADTYPE) road_owner = GetRoadOwner(tile, RoadTramType::Road);
+			if (tram_rt != INVALID_ROADTYPE) tram_owner = GetRoadOwner(tile, RoadTramType::Tram);
 
 			/* We can remove unowned road and if the town allows it */
 			if (road_owner == OWNER_TOWN && _current_company != OWNER_TOWN && !(_settings_game.construction.extra_dynamite || _cheats.magic_bulldozer.value)) {
@@ -1357,11 +1357,11 @@ static CommandCost DoClearTunnel(TileIndex tile, DoCommandFlags flags)
 			}
 		} else {
 			/* A full diagonal road tile has two road bits. */
-			UpdateCompanyRoadInfrastructure(GetRoadTypeRoad(tile), GetRoadOwner(tile, RTT_ROAD), -(int)(len * 2 * TUNNELBRIDGE_TRACKBIT_FACTOR));
-			UpdateCompanyRoadInfrastructure(GetRoadTypeTram(tile), GetRoadOwner(tile, RTT_TRAM), -(int)(len * 2 * TUNNELBRIDGE_TRACKBIT_FACTOR));
+			UpdateCompanyRoadInfrastructure(GetRoadTypeRoad(tile), GetRoadOwner(tile, RoadTramType::Road), -(int)(len * 2 * TUNNELBRIDGE_TRACKBIT_FACTOR));
+			UpdateCompanyRoadInfrastructure(GetRoadTypeTram(tile), GetRoadOwner(tile, RoadTramType::Tram), -(int)(len * 2 * TUNNELBRIDGE_TRACKBIT_FACTOR));
 			if (RoadLayoutChangeNotificationEnabled(false)) {
-				NotifyRoadLayoutChangedIfSimpleTunnelBridgeNonLeaf(tile, endtile, GetTunnelBridgeDirection(tile), RTT_ROAD);
-				NotifyRoadLayoutChangedIfSimpleTunnelBridgeNonLeaf(tile, endtile, GetTunnelBridgeDirection(tile), RTT_TRAM);
+				NotifyRoadLayoutChangedIfSimpleTunnelBridgeNonLeaf(tile, endtile, GetTunnelBridgeDirection(tile), RoadTramType::Road);
+				NotifyRoadLayoutChangedIfSimpleTunnelBridgeNonLeaf(tile, endtile, GetTunnelBridgeDirection(tile), RoadTramType::Tram);
 			}
 
 			delete Tunnel::GetByTile(tile);
@@ -1481,8 +1481,8 @@ static CommandCost DoClearBridge(TileIndex tile, DoCommandFlags flags)
 				if (IsRoadCustomBridgeHead(tile) || IsRoadCustomBridgeHead(endtile)) {
 					NotifyRoadLayoutChanged();
 				} else {
-					if (HasRoadTypeRoad(tile)) NotifyRoadLayoutChangedIfSimpleTunnelBridgeNonLeaf(tile, endtile, direction, RTT_ROAD);
-					if (HasRoadTypeTram(tile)) NotifyRoadLayoutChangedIfSimpleTunnelBridgeNonLeaf(tile, endtile, direction, RTT_TRAM);
+					if (HasRoadTypeRoad(tile)) NotifyRoadLayoutChangedIfSimpleTunnelBridgeNonLeaf(tile, endtile, direction, RoadTramType::Road);
+					if (HasRoadTypeTram(tile)) NotifyRoadLayoutChangedIfSimpleTunnelBridgeNonLeaf(tile, endtile, direction, RoadTramType::Tram);
 				}
 			}
 			update_road = true;
@@ -1698,8 +1698,8 @@ static void DrawBridgeRoadBits(TileIndex head_tile, int x, int y, int z, int off
 	RoadType tram_rt = GetRoadTypeTram(head_tile);
 	if (IsRoadCustomBridgeHeadTile(head_tile)) {
 		RoadBits entrance_bit = DiagDirToRoadBits(GetTunnelBridgeDirection(head_tile));
-		if (road_rt != INVALID_ROADTYPE && !(GetCustomBridgeHeadRoadBits(head_tile, RTT_ROAD) & entrance_bit)) road_rt = INVALID_ROADTYPE;
-		if (tram_rt != INVALID_ROADTYPE && !(GetCustomBridgeHeadRoadBits(head_tile, RTT_TRAM) & entrance_bit)) tram_rt = INVALID_ROADTYPE;
+		if (road_rt != INVALID_ROADTYPE && !GetCustomBridgeHeadRoadBits(head_tile, RoadTramType::Road).Any(entrance_bit)) road_rt = INVALID_ROADTYPE;
+		if (tram_rt != INVALID_ROADTYPE && !GetCustomBridgeHeadRoadBits(head_tile, RoadTramType::Tram).Any(entrance_bit)) tram_rt = INVALID_ROADTYPE;
 	}
 	const RoadTypeInfo *road_rti = road_rt == INVALID_ROADTYPE ? nullptr : GetRoadTypeInfo(road_rt);
 	const RoadTypeInfo *tram_rti = tram_rt == INVALID_ROADTYPE ? nullptr : GetRoadTypeInfo(tram_rt);
@@ -1794,7 +1794,7 @@ static void DrawBridgeRoadBits(TileIndex head_tile, int x, int y, int z, int off
 				z_offset = TILE_HEIGHT / 2;
 			}
 			static constexpr uint8_t is_x_axis = 0x16;
-			AddSortableSpriteToDraw(oneway + drd - 1 + (HasBit(is_x_axis, offset) ? 0 : 3), PAL_NONE,
+			AddSortableSpriteToDraw(oneway + drd.base() - 1 + (HasBit(is_x_axis, offset) ? 0 : 3), PAL_NONE,
 					x + 8, y + 8, z + z_offset, back_bounds[offset], false);
 		}
 	}
@@ -2804,13 +2804,13 @@ static void GetTileDesc_TunnelBridge(TileIndex tile, TileDesc &td)
 			const RoadTypeInfo *rti = GetRoadTypeInfo(road_rt);
 			td.roadtype = rti->strings.name;
 			td.road_speed = rti->max_speed / 2;
-			road_owner = GetRoadOwner(tile, RTT_ROAD);
+			road_owner = GetRoadOwner(tile, RoadTramType::Road);
 		}
 		if (tram_rt != INVALID_ROADTYPE) {
 			const RoadTypeInfo *rti = GetRoadTypeInfo(tram_rt);
 			td.tramtype = rti->strings.name;
 			td.tram_speed = rti->max_speed / 2;
-			tram_owner = GetRoadOwner(tile, RTT_TRAM);
+			tram_owner = GetRoadOwner(tile, RoadTramType::Tram);
 		}
 
 		/* Is there a mix of owners? */
@@ -3047,7 +3047,7 @@ extern const TrackBits _road_trackbits[16];
 static TrackStatus GetTileTrackStatus_TunnelBridge(TileIndex tile, TransportType mode, uint sub_mode, DiagDirection side)
 {
 	TransportType transport_type = GetTunnelBridgeTransportType(tile);
-	if (transport_type != mode || (transport_type == TRANSPORT_ROAD && !HasTileRoadType(tile, (RoadTramType)GB(sub_mode, 0, 8)))) return 0;
+	if (transport_type != mode || (transport_type == TRANSPORT_ROAD && !HasTileRoadType(tile, static_cast<RoadTramType>(GB(sub_mode, 0, 8))))) return 0;
 
 	DiagDirection dir = GetTunnelBridgeDirection(tile);
 
@@ -3055,13 +3055,13 @@ static TrackStatus GetTileTrackStatus_TunnelBridge(TileIndex tile, TransportType
 
 	TrackBits bits;
 	if (mode == TRANSPORT_ROAD && IsRoadCustomBridgeHeadTile(tile)) {
-		bits = _road_trackbits[GetCustomBridgeHeadRoadBits(tile, (RoadTramType)GB(sub_mode, 0, 8))];
+		bits = _road_trackbits[GetCustomBridgeHeadRoadBits(tile, static_cast<RoadTramType>(GB(sub_mode, 0, 8))).base()];
 	} else {
 		bits = (mode == TRANSPORT_RAIL) ? GetTunnelBridgeTrackBits(tile) : DiagDirToDiagTrackBits(dir);
 	}
 
 	DisallowedRoadDirections drd = DRD_NONE;
-	if (mode == TRANSPORT_ROAD && (RoadTramType)GB(sub_mode, 0, 8) == RTT_ROAD) {
+	if (mode == TRANSPORT_ROAD && static_cast<RoadTramType>(GB(sub_mode, 0, 8)) == RoadTramType::Road) {
 		RoadCachedOneWayState rcows = GetRoadCachedOneWayState(tile);
 		switch (rcows) {
 			case RCOWS_NORMAL:
@@ -3075,8 +3075,8 @@ static TrackStatus GetTileTrackStatus_TunnelBridge(TileIndex tile, TransportType
 				NOT_REACHED();
 		}
 	}
-	const uint drd_to_multiplier[DRD_END] = { 0x101, 0x100, 0x1, 0x0 };
-	return CombineTrackStatus((TrackdirBits)(bits * drd_to_multiplier[drd]), TRACKDIR_BIT_NONE);
+	const uint drd_to_multiplier[DRD_END.base()] = { 0x101, 0x100, 0x1, 0x0 };
+	return CombineTrackStatus((TrackdirBits)(bits * drd_to_multiplier[drd.base()]), TRACKDIR_BIT_NONE);
 }
 
 static void UpdateRoadTunnelBridgeInfrastructure(TileIndex begin, TileIndex end, bool add) {
@@ -3085,7 +3085,7 @@ static void UpdateRoadTunnelBridgeInfrastructure(TileIndex begin, TileIndex end,
 	const uint half_len = half_middle_len + (2 * TUNNELBRIDGE_TRACKBIT_FACTOR);
 
 	for (TileIndex t : { begin, end }) {
-		for (RoadTramType rtt : _roadtramtypes) {
+		for (RoadTramType rtt : ROADTRAMTYPES_ALL) {
 			RoadType rt = GetRoadType(t, rtt);
 			if (rt == INVALID_ROADTYPE) continue;
 			Company * const c = Company::GetIfValid(GetRoadOwner(t, rtt));
@@ -3094,7 +3094,7 @@ static void UpdateRoadTunnelBridgeInfrastructure(TileIndex begin, TileIndex end,
 				if (IsBridge(t)) {
 					const RoadBits bits = GetCustomBridgeHeadRoadBits(t, rtt);
 					infra += CountBits(bits) * TUNNELBRIDGE_TRACKBIT_FACTOR;
-					if (bits & DiagDirToRoadBits(GetTunnelBridgeDirection(t))) {
+					if (bits.Any(DiagDirToRoadBits(GetTunnelBridgeDirection(t)))) {
 						infra += half_middle_len;
 					}
 				} else {
@@ -3188,7 +3188,7 @@ static void ChangeTileOwner_TunnelBridge(TileIndex tile, Owner old_owner, Owner 
 		/* Only execute this for one of the two ends */
 		SubtractRoadTunnelBridgeInfrastructure(tile, other_end);
 
-		for (RoadTramType rtt : _roadtramtypes) {
+		for (RoadTramType rtt : ROADTRAMTYPES_ALL) {
 			/* Update all roadtypes, no matter if they are present */
 			if (GetRoadOwner(tile, rtt) == old_owner) {
 				SetRoadOwner(tile, rtt, new_owner == INVALID_OWNER ? OWNER_NONE : new_owner);
@@ -3402,9 +3402,9 @@ static VehicleEnterTileStates VehicleEnterTile_TunnelBridge(Vehicle *v, TileInde
 					RoadVehicle *rv = RoadVehicle::From(v);
 					if (IsRoadCustomBridgeHeadTile(tile)) {
 						RoadBits bits = ROAD_NONE;
-						if (HasRoadTypeRoad(tile) && rv->compatible_roadtypes.Test(GetRoadTypeRoad(tile))) bits |= GetCustomBridgeHeadRoadBits(tile, RTT_ROAD);
-						if (HasRoadTypeTram(tile) && rv->compatible_roadtypes.Test(GetRoadTypeTram(tile))) bits |= GetCustomBridgeHeadRoadBits(tile, RTT_TRAM);
-						if (!(bits & DiagDirToRoadBits(GetTunnelBridgeDirection(tile)))) return {};
+						if (HasRoadTypeRoad(tile) && rv->compatible_roadtypes.Test(GetRoadTypeRoad(tile))) bits |= GetCustomBridgeHeadRoadBits(tile, RoadTramType::Road);
+						if (HasRoadTypeTram(tile) && rv->compatible_roadtypes.Test(GetRoadTypeTram(tile))) bits |= GetCustomBridgeHeadRoadBits(tile, RoadTramType::Tram);
+						if (!bits.Any(DiagDirToRoadBits(GetTunnelBridgeDirection(tile)))) return {};
 					}
 					rv->InvalidateImageCache();
 					rv->state = RVSB_WORMHOLE;

@@ -390,7 +390,7 @@ inline bool IsOneWaySideJunctionRoadTile(TileIndex tile)
 
 static bool MayReverseOnOneWayRoadTile(TileIndex tile, DiagDirection dir)
 {
-	TrackdirBits bits = GetTileTrackdirBits(tile, TRANSPORT_ROAD, RTT_ROAD);
+	TrackdirBits bits = GetTileTrackdirBits(tile, TRANSPORT_ROAD, RoadTramType::Road);
 	return bits & DiagdirReachesTrackdirs(ReverseDiagDir(dir));
 }
 
@@ -930,7 +930,7 @@ static bool EnumFindVehBlockingOvertakeBehind(const RoadVehicle *v, const Overta
 static bool CheckRoadInfraUnsuitableForOvertaking(OvertakeData *od)
 {
 	if (!HasTileAnyRoadType(od->tile, od->v->compatible_roadtypes)) return true;
-	TrackStatus ts = GetTileTrackStatus(od->tile, TRANSPORT_ROAD, ((od->v->roadtype + 1) << 8) | GetRoadTramType(od->v->roadtype));
+	TrackStatus ts = GetTileTrackStatus(od->tile, TRANSPORT_ROAD, ((od->v->roadtype + 1) << 8) | to_underlying(GetRoadTramType(od->v->roadtype)));
 	TrackdirBits trackdirbits = TrackStatusToTrackdirBits(ts);
 	TrackdirBits red_signals = TrackStatusToRedSignals(ts); // barred level crossing
 	TrackBits trackbits = TrackdirBitsToTrackBits(trackdirbits);
@@ -1132,11 +1132,11 @@ static void RoadVehCheckOvertake(RoadVehicle *v, RoadVehicle *u)
 	for (; behind_tile_count > 0; behind_tile_count--, behind_check_tile -= check_tile_diff) {
 		od.tile = behind_check_tile;
 		if (behind_tile_count == 1) {
-			RoadBits rb = GetAnyRoadBits(behind_check_tile, RTT_ROAD);
+			RoadBits rb = GetAnyRoadBits(behind_check_tile, RoadTramType::Road);
 			auto check_overtake_behind = [&](const RoadVehicle *v) {
 				return EnumFindVehBlockingOvertakeBehind(v, &od);
 			};
-			if ((rb & DiagDirToRoadBits(dir)) && HasVehicleOnTile<VEH_ROAD>(behind_check_tile, check_overtake_behind)) return;
+			if ((rb & DiagDirToRoadBits(dir)).Any() && HasVehicleOnTile<VEH_ROAD>(behind_check_tile, check_overtake_behind)) return;
 		} else {
 			if (CheckRoadInfraUnsuitableForOvertaking(&od)) return;
 			if (IsTileType(behind_check_tile, TileType::TunnelBridge)) {
@@ -1190,7 +1190,7 @@ static Trackdir RoadFindPathToDest(RoadVehicle *v, TileIndex tile, DiagDirection
 {
 	bool path_found = true;
 
-	TrackStatus ts = GetTileTrackStatus(tile, TRANSPORT_ROAD, ((v->roadtype + 1) << 8) | GetRoadTramType(v->roadtype));
+	TrackStatus ts = GetTileTrackStatus(tile, TRANSPORT_ROAD, ((v->roadtype + 1) << 8) | to_underlying(GetRoadTramType(v->roadtype)));
 	TrackdirBits red_signals = TrackStatusToRedSignals(ts); // crossing
 	TrackdirBits trackdirs = TrackStatusToTrackdirBits(ts);
 
@@ -1247,10 +1247,10 @@ static Trackdir RoadFindPathToDest(RoadVehicle *v, TileIndex tile, DiagDirection
 		if (RoadTypeIsTram(v->roadtype)) {
 			/* Trams may only reverse on a tile if it contains at least the straight
 			 * trackbits or when it is a valid turning tile (i.e. one roadbit) */
-			RoadBits rb = GetAnyRoadBits(tile, RTT_TRAM);
+			RoadBits rb = GetAnyRoadBits(tile, RoadTramType::Tram);
 			RoadBits straight = AxisToRoadBits(DiagDirToAxis(enterdir));
-			reverse = ((rb & straight) == straight) ||
-			          (rb == DiagDirToRoadBits(enterdir));
+			reverse = rb.All(straight) ||
+			          rb == DiagDirToRoadBits(enterdir);
 		}
 		if (reverse) {
 			v->reverse_ctr = 0;
@@ -1421,12 +1421,18 @@ static Trackdir FollowPreviousRoadVehicle(const RoadVehicle *v, const RoadVehicl
 
 	/* Do some sanity checking. */
 	static const RoadBits required_roadbits[] = {
-		ROAD_X,            ROAD_Y,            ROAD_NW | ROAD_NE, ROAD_SW | ROAD_SE,
-		ROAD_NW | ROAD_SW, ROAD_NE | ROAD_SE, ROAD_X,            ROAD_Y
+		ROAD_X,
+		ROAD_Y,
+		{RoadBit::NW, RoadBit::NE},
+		{RoadBit::SW, RoadBit::SE},
+		{RoadBit::NW, RoadBit::SW},
+		{RoadBit::NE, RoadBit::SE},
+		ROAD_X,
+		ROAD_Y,
 	};
 	RoadBits required = required_roadbits[dir & 0x07];
 
-	if ((required & GetAnyRoadBits(tile, GetRoadTramType(v->roadtype), false)) == ROAD_NONE) {
+	if (!required.Any(GetAnyRoadBits(tile, GetRoadTramType(v->roadtype), false))) {
 		dir = INVALID_TRACKDIR;
 	}
 
@@ -1446,7 +1452,7 @@ static bool CanBuildTramTrackOnTile(CompanyID c, TileIndex t, RoadType rt, RoadB
 	/* The 'current' company is not necessarily the owner of the vehicle. */
 	Backup<CompanyID> cur_company(_current_company, c, FILE_LINE);
 
-	CommandCost ret = Command<Commands::BuildRoad>::Do(DoCommandFlag::NoWater, t, r, rt, DRD_NONE, TownID::Invalid(), BuildRoadFlags::None);
+	CommandCost ret = Command<Commands::BuildRoad>::Do(DoCommandFlag::NoWater, t, r, rt, {}, TownID::Invalid(), BuildRoadFlags::None);
 
 	cur_company.Restore();
 	return ret.Succeeded();
@@ -1784,9 +1790,9 @@ again:
 				}
 				auto tile_turn_ok = [&]() -> bool {
 					if (IsNormalRoadTile(tile)) {
-						return !HasRoadWorks(tile) && HasTileAnyRoadType(tile, v->compatible_roadtypes) && (needed & GetRoadBits(tile, RTT_TRAM)) != ROAD_NONE;
+						return !HasRoadWorks(tile) && HasTileAnyRoadType(tile, v->compatible_roadtypes) && (needed & GetRoadBits(tile, RoadTramType::Tram)) != ROAD_NONE;
 					} else if (IsRoadCustomBridgeHeadTile(tile)) {
-						return HasTileAnyRoadType(tile, v->compatible_roadtypes) && (needed & GetCustomBridgeHeadRoadBits(tile, RTT_TRAM) & ~DiagDirToRoadBits(GetTunnelBridgeDirection(tile))) != ROAD_NONE;
+						return HasTileAnyRoadType(tile, v->compatible_roadtypes) && (needed & GetCustomBridgeHeadRoadBits(tile, RoadTramType::Tram) & ~DiagDirToRoadBits(GetTunnelBridgeDirection(tile))) != ROAD_NONE;
 					} else {
 						return false;
 					}
@@ -1802,7 +1808,7 @@ again:
 					 *   going to cause the tram to split up.
 					 * - Or the front of the tram can drive over the next tile.
 					 */
-				} else if (!v->IsFrontEngine() || !CanBuildTramTrackOnTile(v->owner, tile, v->roadtype, needed) || ((~needed & GetAnyRoadBits(v->tile, RTT_TRAM, false)) == ROAD_NONE)) {
+				} else if (!v->IsFrontEngine() || !CanBuildTramTrackOnTile(v->owner, tile, v->roadtype, needed) || GetAnyRoadBits(v->tile, RoadTramType::Tram, false).Reset(needed).Any()) {
 					/*
 					 * Taking the 'small' corner for trams only happens when:
 					 * - We are not the from vehicle of an articulated tram.
@@ -1914,7 +1920,7 @@ again:
 		Trackdir dir;
 		uint turn_around_start_frame = RVC_TURN_AROUND_START_FRAME;
 
-		if (RoadTypeIsTram(v->roadtype) && !IsRoadDepotTile(v->tile) && HasExactlyOneBit(GetAnyRoadBits(v->tile, RTT_TRAM, false))) {
+		if (RoadTypeIsTram(v->roadtype) && !IsRoadDepotTile(v->tile) && HasExactlyOneBit(GetAnyRoadBits(v->tile, RoadTramType::Tram, false))) {
 			/*
 			 * The tram is turning around with one tram 'roadbit'. This means that
 			 * it is using the 'big' corner 'drive data'. However, to support the

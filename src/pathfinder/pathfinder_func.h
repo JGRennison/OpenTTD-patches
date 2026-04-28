@@ -63,17 +63,17 @@ inline TrackdirBits GetTrackdirBitsForRoad(TileIndex tile, RoadTramType rtt)
 {
 	TrackdirBits bits = GetTileTrackdirBits(tile, TRANSPORT_ROAD, rtt);
 
-	if (rtt == RTT_TRAM && bits == TRACKDIR_BIT_NONE) {
+	if (rtt == RoadTramType::Tram && bits == TRACKDIR_BIT_NONE) {
 		if (IsNormalRoadTile(tile)) {
-			RoadBits rb = GetRoadBits(tile, RTT_TRAM);
-			switch (rb) {
-				case ROAD_NE:
-				case ROAD_SW:
+			RoadBits rb = GetRoadBits(tile, RoadTramType::Tram);
+			switch (rb.base()) {
+				case ROAD_NE.base():
+				case ROAD_SW.base():
 					bits = TRACKDIR_BIT_X_NE | TRACKDIR_BIT_X_SW;
 					break;
 
-				case ROAD_NW:
-				case ROAD_SE:
+				case ROAD_NW.base():
+				case ROAD_SE.base():
 					bits = TRACKDIR_BIT_Y_NW | TRACKDIR_BIT_Y_SE;
 					break;
 

@@ -101,7 +101,7 @@ uint32_t RoadStopScopeResolver::GetNearbyRoadStopsInfo(uint32_t parameter, RoadS
 		res |= 1 << (ssl.grfid != grfid ? 9 : 8);
 	}
 	if (IsDriveThroughStopTile(nearby_tile)) {
-		res |= (GetDriveThroughStopDisallowedRoadDirections(nearby_tile) << 21);
+		res |= (GetDriveThroughStopDisallowedRoadDirections(nearby_tile).base() << 21);
 	}
 
 	switch (mode) {
@@ -147,10 +147,10 @@ uint32_t RoadStopScopeResolver::GetVariable(uint16_t variable, uint32_t paramete
 		case 0x42: return this->tile == INVALID_TILE ? 0 : (GetTileSlope(this->tile) << 8 | GetTerrainType(this->tile, TCX_NORMAL));
 
 		/* Road type */
-		case 0x43: return get_road_type_variable(RTT_ROAD);
+		case 0x43: return get_road_type_variable(RoadTramType::Road);
 
 		/* Tram type */
-		case 0x44: return get_road_type_variable(RTT_TRAM);
+		case 0x44: return get_road_type_variable(RoadTramType::Tram);
 
 		/* Town zone and Manhattan distance of closest town */
 		case 0x45: {
@@ -177,7 +177,7 @@ uint32_t RoadStopScopeResolver::GetVariable(uint16_t variable, uint32_t paramete
 			uint32_t result = 0;
 			if (this->tile != INVALID_TILE) {
 				if (IsDriveThroughStopTile(this->tile)) {
-					result |= GetDriveThroughStopDisallowedRoadDirections(this->tile);
+					result |= GetDriveThroughStopDisallowedRoadDirections(this->tile).base();
 					RoadCachedOneWayState rcows = GetRoadCachedOneWayState(this->tile);
 					if (rcows <= RCOWS_NO_ACCESS) result |= (rcows << 2);
 				}
@@ -258,14 +258,14 @@ uint32_t RoadStopScopeResolver::GetVariable(uint16_t variable, uint32_t paramete
 
 			if (!IsNormalRoadTile(nearby_tile)) return 0xFFFFFFFF;
 
-			RoadBits road = GetRoadBits(nearby_tile, RTT_ROAD);
-			RoadBits tram = GetRoadBits(nearby_tile, RTT_TRAM);
+			RoadBits road = GetRoadBits(nearby_tile, RoadTramType::Road);
+			RoadBits tram = GetRoadBits(nearby_tile, RoadTramType::Tram);
 			Slope tileh = GetTileSlope(nearby_tile);
 			extern uint GetRoadSpriteOffset(Slope slope, RoadBits bits);
-			uint road_offset = (road == 0) ? 0xFF : GetRoadSpriteOffset(tileh, road);
-			uint tram_offset = (tram == 0) ? 0xFF : GetRoadSpriteOffset(tileh, tram);
+			uint road_offset = (road.None()) ? 0xFF : GetRoadSpriteOffset(tileh, road);
+			uint tram_offset = (tram.None()) ? 0xFF : GetRoadSpriteOffset(tileh, tram);
 
-			return (tram_offset << 16) | (road_offset << 8) | (tram << 4) | (road);
+			return (tram_offset << 16) | (road_offset << 8) | (tram.base() << 4) | (road.base());
 		}
 
 		case 0x7A: return GetBadgeVariableResult(*this->ro.grffile, this->roadstopspec->badges, parameter);

@@ -547,7 +547,7 @@ struct PublicRoadsWindow : Window {
 				break;
 
 			case WID_PR_PUBLIC_ROADS_TYPE_DROPDOWN: { // Select public road type
-				auto road_types = GetScenRoadTypeDropDownList(RTTB_ROAD, false, true);
+				auto road_types = GetScenRoadTypeDropDownList(RoadTramType::Road, false, true);
 				auto road_types_list = DropDownList{};
 				auto town_road = GetTownRoadType();
 				/* Check if the town road is an available road type. */
@@ -625,7 +625,7 @@ struct PublicRoadsWindow : Window {
 		if (widget != WID_PR_PUBLIC_ROADS_TYPE_DROPDOWN) return;
 
 		// max height of each roadtype
-		auto entries = GetScenRoadTypeDropDownList(RTTB_ROAD, false, true);
+		auto entries = GetScenRoadTypeDropDownList(RoadTramType::Road, false, true);
 		for (auto e = entries.begin(); e < entries.end(); e++)
 			size.height = std::max(size.height, e->get()->Height());
 		// just use the width of the dropdown list

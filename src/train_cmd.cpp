@@ -6773,7 +6773,7 @@ static bool TrainCheckIfLineEnds(Train *moving_front, bool reverse)
 	TileIndex tile = moving_front->tile + TileOffsByDiagDir(dir);
 
 	/* Determine the track status on the next tile */
-	TrackStatus ts = GetTileTrackStatus(tile, TRANSPORT_RAIL, 0, ReverseDiagDir(dir));
+	TrackStatus ts = GetTileTrackStatus(tile, TRANSPORT_RAIL, RoadTramType::Invalid, ReverseDiagDir(dir));
 	TrackdirBits reachable_trackdirs = DiagdirReachesTrackdirs(dir);
 
 	TrackdirBits trackdirbits = TrackStatusToTrackdirBits(ts) & reachable_trackdirs;

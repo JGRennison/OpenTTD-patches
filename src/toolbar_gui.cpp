@@ -950,7 +950,7 @@ static CallBackFunction MenuClickBuildRail(int index)
 
 static CallBackFunction ToolbarBuildRoadClick(Window *w)
 {
-	ShowDropDownList(w, GetRoadTypeDropDownList(RTTB_ROAD), _last_built_roadtype, WID_TN_ROADS, 140, GetToolbarDropDownOptions(DropDownOption::Filterable), &_roadtype_filter);
+	ShowDropDownList(w, GetRoadTypeDropDownList(RoadTramType::Road), _last_built_roadtype, WID_TN_ROADS, 140, GetToolbarDropDownOptions(DropDownOption::Filterable), &_roadtype_filter);
 	return CallBackFunction::None;
 }
 
@@ -971,7 +971,7 @@ static CallBackFunction MenuClickBuildRoad(int index)
 
 static CallBackFunction ToolbarBuildTramClick(Window *w)
 {
-	ShowDropDownList(w, GetRoadTypeDropDownList(RTTB_TRAM), _last_built_tramtype, WID_TN_TRAMS, 140, GetToolbarDropDownOptions(DropDownOption::Filterable), &_tramtype_filter);
+	ShowDropDownList(w, GetRoadTypeDropDownList(RoadTramType::Tram), _last_built_tramtype, WID_TN_TRAMS, 140, GetToolbarDropDownOptions(DropDownOption::Filterable), &_tramtype_filter);
 	return CallBackFunction::None;
 }
 
@@ -1134,10 +1134,10 @@ static void ShowBuildRoadToolbarFromTile(TileIndex tile)
 {
 	if (HasRoadTypeRoad(tile)) {
 		_last_built_roadtype = GetRoadTypeRoad(tile);
-		CreateRoadTramToolbarForRoadType(_last_built_roadtype, RTT_ROAD);
+		CreateRoadTramToolbarForRoadType(_last_built_roadtype, RoadTramType::Road);
 	} else {
 		_last_built_tramtype = GetRoadTypeTram(tile);
-		CreateRoadTramToolbarForRoadType(_last_built_tramtype, RTT_TRAM);
+		CreateRoadTramToolbarForRoadType(_last_built_tramtype, RoadTramType::Tram);
 	}
 }
 
@@ -1164,7 +1164,7 @@ static void UsePickerTool(TileIndex tile)
 				case StationType::Truck:
 				case StationType::Bus:
 				case StationType::RoadWaypoint:
-					ShowBuildRoadStopPickerAndSelect(station_type, GetRoadStopSpec(tile), HasRoadTypeRoad(tile) ? RTT_ROAD : RTT_TRAM);
+					ShowBuildRoadStopPickerAndSelect(station_type, GetRoadStopSpec(tile), HasRoadTypeRoad(tile) ? RoadTramType::Road : RoadTramType::Tram);
 					break;
 
 				case StationType::Dock:
@@ -1475,7 +1475,7 @@ static CallBackFunction ToolbarScenGenIndustry(Window *w)
 
 static CallBackFunction ToolbarScenBuildRoadClick(Window *w)
 {
-	ShowDropDownList(w, GetScenRoadTypeDropDownList(RTTB_ROAD, true), _last_built_roadtype, WID_TE_ROADS, 140, GetToolbarDropDownOptions(DropDownOption::Filterable), &_roadtype_filter);
+	ShowDropDownList(w, GetScenRoadTypeDropDownList(RoadTramType::Road, true), _last_built_roadtype, WID_TE_ROADS, 140, GetToolbarDropDownOptions(DropDownOption::Filterable), &_roadtype_filter);
 	return CallBackFunction::None;
 }
 
@@ -1494,7 +1494,7 @@ static CallBackFunction ToolbarScenBuildRoad(int index)
 
 static CallBackFunction ToolbarScenBuildTramClick(Window *w)
 {
-	ShowDropDownList(w, GetScenRoadTypeDropDownList(RTTB_TRAM, true), _last_built_tramtype, WID_TE_TRAMS, 140, GetToolbarDropDownOptions(DropDownOption::Filterable), &_tramtype_filter);
+	ShowDropDownList(w, GetScenRoadTypeDropDownList(RoadTramType::Tram, true), _last_built_tramtype, WID_TE_TRAMS, 140, GetToolbarDropDownOptions(DropDownOption::Filterable), &_tramtype_filter);
 	return CallBackFunction::None;
 }
 
@@ -2630,8 +2630,8 @@ struct ScenarioEditorToolbarWindow : Window {
 
 		this->SetWidgetDisabledState(WID_TE_DATE_BACKWARD, _settings_game.game_creation.starting_year <= CalTime::MIN_YEAR);
 		this->SetWidgetDisabledState(WID_TE_DATE_FORWARD, _settings_game.game_creation.starting_year >= CalTime::MAX_YEAR);
-		this->SetWidgetDisabledState(WID_TE_ROADS, !GetRoadTypes(true).Any(GetMaskForRoadTramType(RTT_ROAD)));
-		this->SetWidgetDisabledState(WID_TE_TRAMS, !GetRoadTypes(true).Any(GetMaskForRoadTramType(RTT_TRAM)));
+		this->SetWidgetDisabledState(WID_TE_ROADS, !GetRoadTypes(true).Any(GetMaskForRoadTramType(RoadTramType::Road)));
+		this->SetWidgetDisabledState(WID_TE_TRAMS, !GetRoadTypes(true).Any(GetMaskForRoadTramType(RoadTramType::Tram)));
 
 		this->DrawWidgets();
 	}

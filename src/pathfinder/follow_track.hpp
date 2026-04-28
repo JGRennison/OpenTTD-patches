@@ -107,12 +107,12 @@ struct CFollowTrackT {
 
 		const bool is_bridge = IsRoadCustomBridgeHeadTile(tile);
 		if (is_bridge || IsNormalRoadTile(tile)) {
-			RoadBits rb = is_bridge ? GetCustomBridgeHeadRoadBits(tile, RTT_TRAM) : GetRoadBits(tile, RTT_TRAM);
-			switch (rb) {
-				case ROAD_NW: return DIAGDIR_NW;
-				case ROAD_SW: return DIAGDIR_SW;
-				case ROAD_SE: return DIAGDIR_SE;
-				case ROAD_NE: return DIAGDIR_NE;
+			RoadBits rb = is_bridge ? GetCustomBridgeHeadRoadBits(tile, RoadTramType::Tram) : GetRoadBits(tile, RoadTramType::Tram);
+			switch (rb.base()) {
+				case ROAD_NW.base(): return DIAGDIR_NW;
+				case ROAD_SW.base(): return DIAGDIR_SW;
+				case ROAD_SE.base(): return DIAGDIR_SE;
+				case ROAD_NE.base(): return DIAGDIR_NE;
 				default: break;
 			}
 		}
@@ -134,7 +134,7 @@ struct CFollowTrackT {
 
 		dbg_assert_tile([&]() {
 			if (this->IsTram() && GetSingleTramBit(this->old_tile) != INVALID_DIAGDIR) return true; // Skip the check for single tram bits
-			const uint sub_mode = (IsRoadTT() && this->veh != nullptr) ? (this->IsTram() ? RTT_TRAM : RTT_ROAD) : 0;
+			const uint sub_mode = (IsRoadTT() && this->veh != nullptr) ? to_underlying(this->IsTram() ? RoadTramType::Tram : RoadTramType::Road) : 0;
 			const TrackdirBits old_tile_valid_dirs = GetTileTrackdirBits(this->old_tile, TT(), sub_mode);
 			return (old_tile_valid_dirs & TrackdirToTrackdirBits(this->old_td)) != TRACKDIR_BIT_NONE;
 		}(), this->old_tile);
@@ -255,7 +255,7 @@ protected:
 		if (IsRailTT() && IsPlainRailTile(this->new_tile)) {
 			this->new_td_bits = (TrackdirBits)(GetTrackBits(this->new_tile) * 0x101);
 		} else if (IsRoadTT()) {
-			this->new_td_bits = GetTrackdirBitsForRoad(this->new_tile, this->IsTram() ? RTT_TRAM : RTT_ROAD);
+			this->new_td_bits = GetTrackdirBitsForRoad(this->new_tile, this->IsTram() ? RoadTramType::Tram : RoadTramType::Road);
 		} else {
 			this->new_td_bits = GetTileTrackdirBits(this->new_tile, TT(), 0);
 		}
@@ -392,7 +392,7 @@ protected:
 					return false;
 				}
 				if (!this->is_bridge && IsRoadTT() && IsRoadCustomBridgeHeadTile(this->new_tile)) {
-					if (!(DiagDirToRoadBits(ReverseDiagDir(this->exitdir)) & GetCustomBridgeHeadRoadBits(this->new_tile, this->IsTram() ? RTT_TRAM : RTT_ROAD))) {
+					if ((DiagDirToRoadBits(ReverseDiagDir(this->exitdir)) & GetCustomBridgeHeadRoadBits(this->new_tile, this->IsTram() ? RoadTramType::Tram : RoadTramType::Road)).None()) {
 						this->err = EC_NO_WAY;
 						return false;
 					}

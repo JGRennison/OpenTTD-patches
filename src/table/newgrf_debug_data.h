@@ -2358,7 +2358,7 @@ private:
 			if (type == INVALID_ROADTYPE) return;
 
 			const RoadTypeInfo* rti = GetRoadTypeInfo(type);
-			output.Print("  {} Type: {} ({})", rtt == RTT_TRAM ? "Tram" : "Road", type, label_dumper().RoadTypeLabel(type));
+			output.Print("  {} Type: {} ({})", rtt == RoadTramType::Tram ? "Tram" : "Road", type, label_dumper().RoadTypeLabel(type));
 			output.Print("    Flags: {}{}{}{}{}",
 					rti->flags.Test(RoadTypeFlag::Catenary)        ? 'c' : '-',
 					rti->flags.Test(RoadTypeFlag::NoLevelCrossing) ? 'l' : '-',
@@ -2372,22 +2372,23 @@ private:
 					rti->extra_flags.Test(RoadTypeExtraFlag::NoTrainCollision)   ? 'c' : '-');
 			output.Print("    Collision mode: {}", rti->collision_mode);
 
-			output.register_next_line_click_flag_toggle((1 << rtt));
-			output.Print("    [{}] Powered: 0x{:X}", (output.flags & (1 << rtt)) ? '-' : '+', rti->powered_roadtypes);
-			if (output.flags & (1 << rtt)) {
+			const uint rtt_click_flag = RoadTramTypes{rtt}.base();
+			output.register_next_line_click_flag_toggle(rtt_click_flag);
+			output.Print("    [{}] Powered: 0x{:X}", (output.flags & rtt_click_flag) ? '-' : '+', rti->powered_roadtypes);
+			if (output.flags & rtt_click_flag) {
 				DumpRoadTypeList(output, "      ", rti->powered_roadtypes);
 			}
 			PrintTypeLabels(output, "    ", rti->label, (const uint32_t*) rti->alternate_labels.data(), rti->alternate_labels.size());
 			output.Print("    Cost multiplier: {}/8, Maintenance multiplier: {}/8", rti->cost_multiplier, rti->maintenance_multiplier);
 		};
-		writeInfo(RTT_ROAD);
-		writeInfo(RTT_TRAM);
+		writeInfo(RoadTramType::Road);
+		writeInfo(RoadTramType::Tram);
 	}
 
 	/* virtual */ void SpriteDump(uint index, SpriteGroupDumper &dumper) const override
 	{
 		TileIndex tile{index};
-		for (RoadTramType rtt : { RTT_ROAD, RTT_TRAM }) {
+		for (RoadTramType rtt : { RoadTramType::Road, RoadTramType::Tram }) {
 			RoadType rt = GetRoadType(tile, rtt);
 			if (rt == INVALID_ROADTYPE) continue;
 
@@ -2420,14 +2421,14 @@ static const NIFeature _nif_roadtype = {
 	{},
 	{},
 	_niv_roadtypes,
-	std::make_unique<NIHRoadType>(RTT_ROAD),
+	std::make_unique<NIHRoadType>(RoadTramType::Road),
 };
 
 static const NIFeature _nif_tramtype = {
 	{},
 	{},
 	_niv_roadtypes,
-	std::make_unique<NIHRoadType>(RTT_TRAM),
+	std::make_unique<NIHRoadType>(RoadTramType::Tram),
 };
 
 #define NICRS(cb_id, bit) NIC(cb_id, RoadStopSpec, callback_mask, bit)

@@ -298,7 +298,7 @@ inline void SetDriveThroughStopDisallowedRoadDirections(TileIndex t, DisallowedR
 {
 	dbg_assert_tile(IsDriveThroughStopTile(t), t);
 	dbg_assert(drd < DRD_END);
-	SB(_m[t].m3, 0, 2, drd);
+	SB(_m[t].m3, 0, 2, drd.base());
 }
 
 /**
@@ -802,8 +802,8 @@ inline void MakeRoadStop(TileIndex t, Owner o, StationID sid, RoadStopType rst, 
 {
 	MakeStation(t, o, sid, (rst == RoadStopType::Bus ? StationType::Bus : StationType::Truck), d);
 	SetRoadTypes(t, road_rt, tram_rt);
-	SetRoadOwner(t, RTT_ROAD, o);
-	SetRoadOwner(t, RTT_TRAM, o);
+	SetRoadOwner(t, RoadTramType::Road, o);
+	SetRoadOwner(t, RoadTramType::Tram, o);
 }
 
 /**
@@ -822,8 +822,8 @@ inline void MakeDriveThroughRoadStop(TileIndex t, Owner station, Owner road, Own
 {
 	MakeStation(t, station, sid, rst, GFX_TRUCK_BUS_DRIVETHROUGH_OFFSET + a);
 	SetRoadTypes(t, road_rt, tram_rt);
-	SetRoadOwner(t, RTT_ROAD, road);
-	SetRoadOwner(t, RTT_TRAM, tram);
+	SetRoadOwner(t, RoadTramType::Road, road);
+	SetRoadOwner(t, RoadTramType::Tram, tram);
 }
 
 /**

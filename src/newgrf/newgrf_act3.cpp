@@ -518,7 +518,7 @@ static void RailTypeMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 
 static void RoadTypeMapSpriteGroup(ByteReader &buf, uint8_t idcount, RoadTramType rtt)
 {
-	std::array<RoadType, ROADTYPE_END> &type_map = (rtt == RTT_TRAM) ? _cur_gps.grffile->tramtype_map : _cur_gps.grffile->roadtype_map;
+	std::array<RoadType, ROADTYPE_END> &type_map = (rtt == RoadTramType::Tram) ? _cur_gps.grffile->tramtype_map : _cur_gps.grffile->roadtype_map;
 
 	TempBufferST<uint8_t> roadtypes(idcount);
 	for (uint i = 0; i < idcount; i++) {
@@ -861,11 +861,11 @@ static void FeatureMapSpriteGroup(ByteReader &buf)
 			break;
 
 		case GSF_ROADTYPES:
-			RoadTypeMapSpriteGroup(buf, idcount, RTT_ROAD);
+			RoadTypeMapSpriteGroup(buf, idcount, RoadTramType::Road);
 			break;
 
 		case GSF_TRAMTYPES:
-			RoadTypeMapSpriteGroup(buf, idcount, RTT_TRAM);
+			RoadTypeMapSpriteGroup(buf, idcount, RoadTramType::Tram);
 			break;
 
 		case GSF_AIRPORTTILES:
