@@ -2544,7 +2544,6 @@ static void StartWindowDrag(Window *w)
 	_drag_delta.x = w->left - _cursor.pos.x;
 	_drag_delta.y = w->top  - _cursor.pos.y;
 
-	CloseWindowById(WC_DROPDOWN_MENU, 0);
 	ReorderWindowToFront(w);
 }
 
@@ -2562,7 +2561,6 @@ static void StartWindowSizing(Window *w, bool to_left)
 	_drag_delta.x = _cursor.pos.x;
 	_drag_delta.y = _cursor.pos.y;
 
-	CloseWindowById(WC_DROPDOWN_MENU, 0);
 	ReorderWindowToFront(w);
 }
 
