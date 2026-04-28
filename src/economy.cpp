@@ -96,7 +96,7 @@ typedef std::vector<Industry *> SmallIndustryList;
 /**
  * Score info, values used for computing the detailed performance rating.
  */
-const EnumClassIndexContainer<std::array<ScoreInfo, to_underlying(ScoreID::End)>, ScoreID> _score_info = {
+const EnumIndexArray<ScoreInfo, ScoreID, ScoreID::End> _score_info = {
 	ScoreInfo(100, 120), // ScoreID::Vehicles
 	ScoreInfo(100, 80), // ScoreID::Stations
 	ScoreInfo(100, 10000), // ScoreID::MinProfit
@@ -109,7 +109,7 @@ const EnumClassIndexContainer<std::array<ScoreInfo, to_underlying(ScoreID::End)>
 	ScoreInfo(0, 0), // ScoreID::Total
 };
 
-TypedIndexContainer<std::array<EnumClassIndexContainer<std::array<int64_t, to_underlying(ScoreID::End)>, ScoreID>, MAX_COMPANIES>, CompanyID> _score_part;
+TypedIndexContainer<std::array<EnumIndexArray<int64_t, ScoreID, ScoreID::End>, MAX_COMPANIES>, CompanyID> _score_part;
 Economy _economy;
 Prices _price;
 Money _additional_cash_required;

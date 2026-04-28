@@ -498,7 +498,7 @@ static inline uint32_t GetSmallMapLinkStatsPixels(TileIndex tile, TileType t)
 	return _smallmap_show_heightmap ? GetSmallMapContoursPixels(tile, t) : GetSmallMapRoutesPixels(tile, t);
 }
 
-static constexpr EnumClassIndexContainer<std::array<uint32_t, to_underlying(ClearGround::MaxSize)>, ClearGround> _vegetation_clear_bits = {
+static constexpr EnumIndexArray<uint32_t, ClearGround, ClearGround::MaxSize> _vegetation_clear_bits = {
 	MKCOLOUR_XXXX(PC_GRASS_LAND), ///< full grass
 	MKCOLOUR_XXXX(PC_ROUGH_LAND), ///< rough land
 	MKCOLOUR_XXXX(PC_GREY),       ///< rocks

@@ -421,7 +421,7 @@ extern std::string _config_file;
 
 void DetermineBasePaths(const char *exe)
 {
-	extern EnumClassIndexContainer<std::array<std::string, to_underlying(Searchpath::End)>, Searchpath> _searchpaths;
+	extern EnumIndexArray<std::string, Searchpath, Searchpath::End> _searchpaths;
 
 	wchar_t path[MAX_PATH];
 #ifdef WITH_PERSONAL_DIR

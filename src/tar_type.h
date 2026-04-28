@@ -24,7 +24,7 @@ struct TarFileListEntry {
 
 using TarList = std::map<std::string, std::string>; ///< Map of tar file to tar directory.
 using TarFileList = std::map<std::string, TarFileListEntry>;
-extern EnumClassIndexContainer<std::array<TarList, to_underlying(Subdirectory::End)>, Subdirectory> _tar_list;
-extern EnumClassIndexContainer<std::array<TarFileList, to_underlying(Subdirectory::End)>, Subdirectory> _tar_filelist;
+extern EnumIndexArray<TarList, Subdirectory, Subdirectory::End> _tar_list;
+extern EnumIndexArray<TarFileList, Subdirectory, Subdirectory::End> _tar_filelist;
 
 #endif /* TAR_TYPE_H */

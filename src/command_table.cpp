@@ -193,7 +193,7 @@ inline constexpr CommandInfo CommandFromTrait() noexcept
 
 template <typename T, T... i>
 inline constexpr auto MakeCommandsFromTraits(std::integer_sequence<T, i...>) noexcept {
-	return EnumClassIndexContainer<std::array<CommandInfo, sizeof...(i)>, Commands>{{ CommandFromTrait<static_cast<Commands>(i)>()... }};
+	return EnumIndexArray<CommandInfo, Commands, sizeof...(i)>{{ CommandFromTrait<static_cast<Commands>(i)>()... }};
 }
 
 /**
@@ -201,7 +201,7 @@ inline constexpr auto MakeCommandsFromTraits(std::integer_sequence<T, i...>) noe
  *
  * This table contains the CommandInfo for all possible commands.
  */
-const EnumClassIndexContainer<std::array<CommandInfo, to_underlying(Commands::End)>, Commands> _command_proc_table = MakeCommandsFromTraits(std::make_integer_sequence<std::underlying_type_t<Commands>, to_underlying(Commands::End)>{});
+const EnumIndexArray<CommandInfo, Commands, Commands::End> _command_proc_table = MakeCommandsFromTraits(std::make_integer_sequence<std::underlying_type_t<Commands>, to_underlying(Commands::End)>{});
 
 /**
  * Set client ID for this command payload using the field returned by Payload::GetClientIDField().

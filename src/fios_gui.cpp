@@ -409,7 +409,7 @@ static constexpr NWidgetPart _nested_load_orderlist_dialog_widgets[] = {
 };
 
 /** Text colours of #DetailedFileType fios entries in the window. */
-static const EnumClassIndexContainer<std::array<TextColour, to_underlying(DetailedFileType::End)>, DetailedFileType> _fios_colours = {
+static const EnumIndexArray<TextColour, DetailedFileType, DetailedFileType::End> _fios_colours = {
 	TC_LIGHT_BROWN, // DetailedFileType::OldGameFile
 	TC_ORANGE, // DetailedFileType::GameFile
 	TC_YELLOW, // DetailedFileType::HeightmapBmp

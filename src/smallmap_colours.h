@@ -45,7 +45,7 @@ inline uint32_t ApplyMask(uint32_t colour, const AndOr &mask)
 	return (colour & mask.mand) | mask.mor;
 }
 
-extern const EnumClassIndexContainer<std::array<AndOr, to_underlying(TileType::End) + 1>, TileType> _smallmap_contours_andor;
-extern const EnumClassIndexContainer<std::array<AndOr, to_underlying(TileType::End) + 1>, TileType> _smallmap_vehicles_andor;
+extern const EnumIndexArray<AndOr, TileType, to_underlying(TileType::End) + 1> _smallmap_contours_andor;
+extern const EnumIndexArray<AndOr, TileType, to_underlying(TileType::End) + 1> _smallmap_vehicles_andor;
 
 #endif /* SMALLMAP_COLOURS_H */

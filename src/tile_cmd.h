@@ -222,7 +222,7 @@ struct TileTypeProcs {
 	TerraformTileProc *terraform_tile_proc;                       ///< Called when a terraforming operation is about to take place
 };
 
-extern const EnumClassIndexContainer<std::array<const TileTypeProcs *, to_underlying(TileType::MaxSize)>, TileType> _tile_type_procs;
+extern const EnumIndexArray<const TileTypeProcs *, TileType, TileType::MaxSize> _tile_type_procs;
 
 int GetSlopePixelZ_MaxZ(TileIndex tile, uint x, uint y, bool ground_vehicle);
 

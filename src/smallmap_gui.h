@@ -22,7 +22,7 @@
 
 static const int NUM_NO_COMPANY_ENTRIES = 4; ///< Number of entries in the owner legend that are not companies.
 
-extern const EnumClassIndexContainer<std::array<uint8_t, to_underlying(TileType::End) + 1>, TileType> _tiletype_importance;
+extern const EnumIndexArray<uint8_t, TileType, to_underlying(TileType::End) + 1> _tiletype_importance;
 
 /* set up the cargos to be displayed in the smallmap's route legend */
 void BuildLinkStatsLegend();

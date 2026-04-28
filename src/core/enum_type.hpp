@@ -11,6 +11,7 @@
 #define ENUM_TYPE_HPP
 
 #include "base_bitset_type.hpp"
+#include <array>
 
 /**
  * Implementation of std::to_underlying (from C++23)
@@ -300,5 +301,25 @@ public:
 	Container::const_reference operator[](size_t pos) const { static_assert(INTEGER_ALLOWED); return this->Container::operator[](pos); }
 	Container::const_reference operator[](const Index &pos) const { return this->Container::operator[](to_underlying(pos)); }
 };
+
+template <typename Index>
+constexpr size_t EnumIndexArraySize(auto size)
+{
+	if constexpr (std::is_same_v<Index, decltype(size)>) {
+		return to_underlying(size);
+	} else {
+		return size;
+	}
+}
+
+/**
+ * A typedef for EnumClassIndexContainer using std::array as the backing container type.
+ * @tparam T std::array value type.
+ * @tparam Index The enum class to use for indexing.
+ * @tparam N The std::array size.
+ * @tparam Policies Optional policies to apply.
+ */
+template <typename T, typename Index, auto N, EnumClassIndexContainerPolicy... Policies>
+using EnumIndexArray = EnumClassIndexContainer<std::array<T, EnumIndexArraySize<Index>(N)>, Index, Policies...>;
 
 #endif /* ENUM_TYPE_HPP */
