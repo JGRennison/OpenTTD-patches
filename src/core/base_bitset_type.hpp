@@ -219,6 +219,16 @@ public:
 		return Timpl{static_cast<Tstorage>(this->data & other.data)};
 	}
 
+	inline constexpr Timpl operator ^(const Timpl &other) const
+	{
+		return Timpl{static_cast<Tstorage>(this->data ^ other.data)};
+	}
+
+	inline constexpr Timpl operator ~() const
+	{
+		return Timpl{static_cast<Tstorage>((~this->data) & Tmask)};
+	}
+
 	inline constexpr Timpl &operator |=(const Timpl &other)
 	{
 		this->data |= other.data;
@@ -228,6 +238,12 @@ public:
 	inline constexpr Timpl &operator &=(const Timpl &other)
 	{
 		this->data &= other.data;
+		return static_cast<Timpl&>(*this);
+	}
+
+	inline constexpr Timpl &operator ^=(const Timpl &other)
+	{
+		this->data ^= other.data;
 		return static_cast<Timpl&>(*this);
 	}
 
