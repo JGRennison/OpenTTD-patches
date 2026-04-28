@@ -489,7 +489,7 @@ struct NewGRFInspectWindow final : Window {
 				assert(this->HasChainIndex());
 				GrfSpecFeature f = this->target_id.grf_feature;
 				if (f == GSF_SHIPS) {
-					size.height = GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical();
+					size.height = GetCharacterHeight(FontSize::Normal) + WidgetDimensions::scaled.framerect.Vertical();
 					break;
 				}
 				size.height = std::max(size.height, GetVehicleImageCellSize((VehicleType)(VEH_TRAIN + (f - GSF_TRAINS)), EIT_IN_DEPOT).height + 2 + WidgetDimensions::scaled.bevel.Vertical());
@@ -497,7 +497,7 @@ struct NewGRFInspectWindow final : Window {
 			}
 
 			case WID_NGRFI_MAINPANEL:
-				fill.height = resize.height = std::max(11, GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal);
+				fill.height = resize.height = std::max(11, GetCharacterHeight(FontSize::Normal) + WidgetDimensions::scaled.vsep_normal);
 				resize.width  = 1;
 
 				size.height = 5 * resize.height + WidgetDimensions::scaled.frametext.Vertical();
@@ -1575,7 +1575,7 @@ struct SpriteAlignerWindow : Window {
 					d = maxdim(d, GetStringBoundingBox(GetString(STR_SPRITE_ALIGNER_SPRITE, spritefile->GetSimplifiedFilename(), GetParamMaxDigits(6))));
 				}
 				size.width = d.width + padding.width;
-				fill.height = resize.height = GetCharacterHeight(FS_NORMAL) + padding.height;
+				fill.height = resize.height = GetCharacterHeight(FontSize::Normal) + padding.height;
 				resize.width = 1;
 				break;
 			}

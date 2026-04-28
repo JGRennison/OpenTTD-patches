@@ -257,14 +257,14 @@ public:
 			case TRW_WIDGET_TOP_MATRIX: {
 				Dimension fold_dim = maxdim(GetSpriteSize(SPR_CIRCLE_FOLDED), GetSpriteSize(SPR_CIRCLE_UNFOLDED));
 				this->fold_sprite_dim = fold_dim;
-				resize.height = this->top_matrix_step_height = std::max<uint>(GetCharacterHeight(FS_NORMAL), fold_dim.height) + WidgetDimensions::scaled.matrix.Vertical();
+				resize.height = this->top_matrix_step_height = std::max<uint>(GetCharacterHeight(FontSize::Normal), fold_dim.height) + WidgetDimensions::scaled.matrix.Vertical();
 				size.height = 8 * resize.height;
 				break;
 			}
 
 			case TRW_WIDGET_BOTTOM_MATRIX: {
-				int base_resize = GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.matrix.Vertical();
-				int target_resize = WidgetDimensions::scaled.matrix.top + GetCharacterHeight(FS_NORMAL) + ScaleGUITrad(GetVehicleHeight(VEH_TRAIN));
+				int base_resize = GetCharacterHeight(FontSize::Normal) + WidgetDimensions::scaled.matrix.Vertical();
+				int target_resize = WidgetDimensions::scaled.matrix.top + GetCharacterHeight(FontSize::Normal) + ScaleGUITrad(GetVehicleHeight(VEH_TRAIN));
 				this->bottom_matrix_item_size = resize.height = CeilT<int>(target_resize, base_resize);
 				size.height = 4 * resize.height;
 
@@ -298,7 +298,7 @@ public:
 				break;
 			}
 			case TRW_WIDGET_TMPL_CONFIG_HEADER:
-				size.height = GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical();
+				size.height = GetCharacterHeight(FontSize::Normal) + WidgetDimensions::scaled.framerect.Vertical();
 				break;
 
 			case TRW_WIDGET_TMPL_BUTTONS_CONFIG_RIGHTPANEL:
@@ -369,13 +369,13 @@ public:
 					TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_OLD_ONLY);
 		} else {
 			const TemplateVehicle *tmp = this->templates[this->selected_template_index];
-			uint height = ScaleGUITrad(8) + (3 * GetCharacterHeight(FS_NORMAL));
+			uint height = ScaleGUITrad(8) + (3 * GetCharacterHeight(FontSize::Normal));
 			CargoArray cargo_caps{};
 			uint count_columns = 0;
 			uint max_columns = 2;
 
-			if (tmp->full_weight > tmp->empty_weight || _settings_client.gui.show_train_weight_ratios_in_details) height += GetCharacterHeight(FS_NORMAL);
-			if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) height += GetCharacterHeight(FS_NORMAL);
+			if (tmp->full_weight > tmp->empty_weight || _settings_client.gui.show_train_weight_ratios_in_details) height += GetCharacterHeight(FontSize::Normal);
+			if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) height += GetCharacterHeight(FontSize::Normal);
 
 			for (const TemplateVehicle *u = tmp; u != nullptr; u = u->Next()) {
 				cargo_caps[u->cargo_type] += u->cargo_cap;
@@ -384,7 +384,7 @@ public:
 			for (CargoType i = 0; i < NUM_CARGO; ++i) {
 				if (cargo_caps[i] > 0) {
 					if (count_columns % max_columns == 0) {
-						height += GetCharacterHeight(FS_NORMAL);
+						height += GetCharacterHeight(FontSize::Normal);
 					}
 
 					++count_columns;
@@ -738,7 +738,7 @@ public:
 				DrawSprite(g->IsFolded(GroupFoldBits::TemplateReplaceView) ? SPR_CIRCLE_FOLDED : SPR_CIRCLE_UNFOLDED, PAL_NONE, x + it->indent * level_width, y + (this->top_matrix_step_height - this->fold_sprite_dim.height) / 2);
 			}
 
-			const int text_y = y + (this->top_matrix_step_height - GetCharacterHeight(FS_NORMAL)) / 2;
+			const int text_y = y + (this->top_matrix_step_height - GetCharacterHeight(FontSize::Normal)) / 2;
 			auto draw_text_str = [&](int left, int right, std::string_view str, TextColour colour, StringAlignment align) {
 				if (rtl) {
 					DrawString(r.left + (r.right - right), r.right - (left - r.left), text_y, str, colour, align);
@@ -814,16 +814,16 @@ public:
 			/* Draw the template */
 			DrawTemplate(v, r.left + ScaleGUITrad(rtl ? TRW_RIGHT_OFFSET : TRW_LEFT_OFFSET), r.right - ScaleGUITrad(rtl ? TRW_LEFT_OFFSET : TRW_RIGHT_OFFSET), y, ScaleGUITrad(15));
 
-			auto draw_text_across = [&](int left_offset, int right_offset, int y_offset, std::string_view str, TextColour colour, StringAlignment align, FontSize fontsize = FS_NORMAL) {
+			auto draw_text_across = [&](int left_offset, int right_offset, int y_offset, std::string_view str, TextColour colour, StringAlignment align, FontSize fontsize = FontSize::Normal) {
 				DrawString(r.left + (rtl ? right_offset : left_offset), r.right - (rtl ? left_offset : right_offset), y + y_offset, str, colour, align, false, fontsize);
 			};
 
-			auto draw_text_left = [&](int left_offset, int left_offset_end, int y_offset, std::string_view str, TextColour colour, StringAlignment align, FontSize fontsize = FS_NORMAL) {
+			auto draw_text_left = [&](int left_offset, int left_offset_end, int y_offset, std::string_view str, TextColour colour, StringAlignment align, FontSize fontsize = FontSize::Normal) {
 				int left = (rtl ? (r.right - left_offset_end) : (r.left + left_offset));
 				DrawString(left, left + (left_offset_end - left_offset), y + y_offset, str, colour, align, false, fontsize);
 			};
 
-			auto draw_text_right = [&](int right_offset, int right_offset_end, int y_offset, std::string_view str, TextColour colour, StringAlignment align, FontSize fontsize = FS_NORMAL) {
+			auto draw_text_right = [&](int right_offset, int right_offset_end, int y_offset, std::string_view str, TextColour colour, StringAlignment align, FontSize fontsize = FontSize::Normal) {
 				int left = (rtl ? (r.left + right_offset_end) : (r.right - right_offset));
 				DrawString(left, left + (right_offset - right_offset_end), y + y_offset, str, colour, align, false, fontsize);
 			};
@@ -851,9 +851,9 @@ public:
 			}
 
 			/* Draw the template's length in tile-units */
-			draw_text_across(0, ScaleGUITrad(4), ScaleGUITrad(2), GetString(STR_JUST_DECIMAL, v->GetRealLength(), 1), TC_BLACK, SA_RIGHT, FS_SMALL);
+			draw_text_across(0, ScaleGUITrad(4), ScaleGUITrad(2), GetString(STR_JUST_DECIMAL, v->GetRealLength(), 1), TC_BLACK, SA_RIGHT, FontSize::Small);
 
-			int bottom_edge = this->bottom_matrix_item_size - GetCharacterHeight(FS_NORMAL) - WidgetDimensions::scaled.framerect.bottom;
+			int bottom_edge = this->bottom_matrix_item_size - GetCharacterHeight(FontSize::Normal) - WidgetDimensions::scaled.framerect.bottom;
 
 			/* Buying cost */
 			draw_text_left(ScaleGUITrad(TRW_LEFT_OFFSET), ScaleGUITrad(TRW_LEFT_OFFSET) + this->buy_cost_width, bottom_edge,
@@ -917,7 +917,7 @@ public:
 		int right = (r.right - r.left) - left;
 
 		DrawString(left, right, top, GetString(STR_TMPL_TEMPLATE_OVR_RUNNING_COST, CalculateOverallTemplateDisplayRunningCost(tmp)));
-		top += GetCharacterHeight(FS_NORMAL);
+		top += GetCharacterHeight(FontSize::Normal);
 
 		/* Draw vehicle performance info */
 		const bool original_acceleration = (_settings_game.vehicle.train_acceleration_model == AM_ORIGINAL ||
@@ -926,7 +926,7 @@ public:
 				tmp->empty_weight, tmp->power, tmp->max_speed, tmp->max_te));
 
 		if (tmp->full_weight > tmp->empty_weight || _settings_client.gui.show_train_weight_ratios_in_details) {
-			top += GetCharacterHeight(FS_NORMAL);
+			top += GetCharacterHeight(FontSize::Normal);
 			std::string str;
 			if (_settings_client.gui.show_train_weight_ratios_in_details) {
 				str = GetString(STR_VEHICLE_INFO_FULL_WEIGHT_WITH_RATIOS,
@@ -948,13 +948,13 @@ public:
 			DrawString(8, right, top, str);
 		}
 		if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) {
-			top += GetCharacterHeight(FS_NORMAL);
+			top += GetCharacterHeight(FontSize::Normal);
 			DrawString(8, right, top, GetString(STR_VEHICLE_INFO_MAX_SPEED_LOADED,
 					GetTemplateVehicleEstimatedMaxAchievableSpeed(tmp, tmp->full_weight, tmp->max_speed)));
 		}
 
 		/* Draw cargo summary */
-		top += GetCharacterHeight(FS_NORMAL) * 2;
+		top += GetCharacterHeight(FontSize::Normal) * 2;
 		int count_columns = 0;
 		int max_columns = 2;
 
@@ -977,7 +977,7 @@ public:
 				x += step;
 				if (count_columns % max_columns == 0) {
 					x = 0;
-					top += GetCharacterHeight(FS_NORMAL);
+					top += GetCharacterHeight(FontSize::Normal);
 				}
 			}
 		}

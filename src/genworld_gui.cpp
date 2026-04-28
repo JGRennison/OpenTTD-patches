@@ -668,7 +668,7 @@ struct GenerateLandscapeWindow : public Window {
 
 	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
-		Dimension d{0, (uint)GetCharacterHeight(FS_NORMAL)};
+		Dimension d{0, (uint)GetCharacterHeight(FontSize::Normal)};
 		std::span<const StringID> strs;
 		switch (widget) {
 			case WID_GL_TEMPERATE: case WID_GL_ARCTIC:
@@ -1607,7 +1607,7 @@ struct GenerateProgressWindow : public Window {
 				for (uint i = 0; i < GWP_CLASS_COUNT; i++) {
 					size.width = std::max(size.width, GetStringBoundingBox(_generation_class_table[i]).width + padding.width);
 				}
-				size.height = GetCharacterHeight(FS_NORMAL) * 2 + WidgetDimensions::scaled.vsep_normal;
+				size.height = GetCharacterHeight(FontSize::Normal) * 2 + WidgetDimensions::scaled.vsep_normal;
 				break;
 		}
 	}
@@ -1620,7 +1620,7 @@ struct GenerateProgressWindow : public Window {
 				DrawFrameRect(r, COLOUR_GREY, {FrameFlag::BorderOnly, FrameFlag::Lowered});
 				Rect br = r.Shrink(WidgetDimensions::scaled.bevel);
 				DrawFrameRect(br.WithWidth(br.Width() * GenWorldStatus::percent / 100, _current_text_dir == TD_RTL), COLOUR_MAUVE, {});
-				DrawString(br.CentreToHeight(GetCharacterHeight(FS_NORMAL)), GetString(STR_GENERATION_PROGRESS, GenWorldStatus::percent), TC_FROMSTRING, SA_HOR_CENTER);
+				DrawString(br.CentreToHeight(GetCharacterHeight(FontSize::Normal)), GetString(STR_GENERATION_PROGRESS, GenWorldStatus::percent), TC_FROMSTRING, SA_HOR_CENTER);
 				break;
 			}
 
@@ -1629,7 +1629,7 @@ struct GenerateProgressWindow : public Window {
 				DrawString(r.left, r.right, r.top, GenWorldStatus::cls, TC_FROMSTRING, SA_HOR_CENTER);
 
 				/* And say where we are in that class */
-				DrawString(r.left, r.right, r.top + GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal,
+				DrawString(r.left, r.right, r.top + GetCharacterHeight(FontSize::Normal) + WidgetDimensions::scaled.vsep_normal,
 					GetString(STR_GENERATION_PROGRESS_NUM, GenWorldStatus::current, GenWorldStatus::total), TC_FROMSTRING, SA_HOR_CENTER);
 		}
 	}

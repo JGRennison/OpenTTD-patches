@@ -41,7 +41,7 @@ struct FontState {
 	};
 	ColourStack colour_stack; ///< Stack of colours to assist with colour switching.
 
-	FontState() : fontsize(FS_END), cur_colour(TC_INVALID) {}
+	FontState() : fontsize(FontSize::End), cur_colour(TC_INVALID) {}
 	FontState(TextColour colour, FontSize fontsize) : fontsize(fontsize), cur_colour(colour) {}
 
 	/**
@@ -258,7 +258,7 @@ class Layouter : public std::vector<const ParagraphLayouter::Line *> {
 		size_t hash_font_state(const FontState &fs) const noexcept
 		{
 			size_t result = 0;
-			HashCombine(result, robin_hood::hash_int(fs.fontsize << 16 | fs.cur_colour));
+			HashCombine(result, robin_hood::hash_int(to_underlying(fs.fontsize) << 16 | fs.cur_colour));
 			const auto &colour_stack = fs.colour_stack.c;
 			if (!colour_stack.empty()) {
 				HashCombine(result, robin_hood::hash_bytes(colour_stack.data(), colour_stack.size() * sizeof(colour_stack[0])));
@@ -302,11 +302,11 @@ private:
 	static void ReduceLineCache();
 
 	using FontColourMap = btree::btree_map<TextColour, std::unique_ptr<Font>>;
-	static FontColourMap fonts[FS_END];
+	static EnumIndexArray<FontColourMap, FontSize, FontSize::End> fonts; ///< The colour mapping of each of the fonts.
 public:
 	static Font *GetFont(FontSize size, TextColour colour);
 
-	Layouter(std::string_view str, int maxw = INT32_MAX, FontSize fontsize = FS_NORMAL);
+	Layouter(std::string_view str, int maxw = INT32_MAX, FontSize fontsize = FontSize::Normal);
 	Dimension GetBounds();
 	ParagraphLayouter::Position GetCharPosition(std::string_view::const_iterator ch) const;
 	ptrdiff_t GetCharAtPosition(int x, size_t line_index) const;
@@ -316,7 +316,7 @@ public:
 	static void ResetLineCache();
 };
 
-ParagraphLayouter::Position GetCharPosInString(std::string_view str, size_t pos, FontSize start_fontsize = FS_NORMAL);
-ptrdiff_t GetCharAtPosition(std::string_view str, int x, FontSize start_fontsize = FS_NORMAL);
+ParagraphLayouter::Position GetCharPosInString(std::string_view str, size_t pos, FontSize start_fontsize = FontSize::Normal);
+ptrdiff_t GetCharAtPosition(std::string_view str, int x, FontSize start_fontsize = FontSize::Normal);
 
 #endif /* GFX_LAYOUT_H */

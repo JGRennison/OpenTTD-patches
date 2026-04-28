@@ -411,7 +411,7 @@ public:
 
 	void SetupValues()
 	{
-		this->entry_height = 1 + GetCharacterHeight(FS_NORMAL) + 1 + (_settings_client.gui.departure_larger_font ? GetCharacterHeight(FS_NORMAL) : GetCharacterHeight(FS_SMALL)) + 1 + 1;
+		this->entry_height = 1 + GetCharacterHeight(FontSize::Normal) + 1 + (_settings_client.gui.departure_larger_font ? GetCharacterHeight(FontSize::Normal) : GetCharacterHeight(FontSize::Small)) + 1 + 1;
 
 		if (cached_veh_type_width == 0) {
 			cached_veh_type_width = GetStringBoundingBox(STR_DEPARTURES_TYPE_PLANE).width;
@@ -830,7 +830,7 @@ public:
 			this->ReInit();
 		}
 
-		uint new_height = 1 + GetCharacterHeight(FS_NORMAL) + 1 + (_settings_client.gui.departure_larger_font ? GetCharacterHeight(FS_NORMAL) : GetCharacterHeight(FS_SMALL)) + 1 + 1;
+		uint new_height = 1 + GetCharacterHeight(FontSize::Normal) + 1 + (_settings_client.gui.departure_larger_font ? GetCharacterHeight(FontSize::Normal) : GetCharacterHeight(FontSize::Small)) + 1 + 1;
 
 		if (new_height != this->entry_height) {
 			this->entry_height = new_height;
@@ -1082,7 +1082,7 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 	int y = r.top + 1;
 	size_t max_departures = std::min<size_t>(this->vscroll->GetPosition() + this->vscroll->GetCapacity(), this->GetScrollbarCapacity());
 
-	const int small_font_size = _settings_client.gui.departure_larger_font ? GetCharacterHeight(FS_NORMAL) : GetCharacterHeight(FS_SMALL);
+	const int small_font_size = _settings_client.gui.departure_larger_font ? GetCharacterHeight(FontSize::Normal) : GetCharacterHeight(FontSize::Small);
 
 	/* Draw the black background. */
 	GfxFillRect(r.left + 1, r.top, r.right - 1, r.bottom, PC_BLACK);
@@ -1125,7 +1125,7 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 	/* Find the maximum width of the status field */
 	int status_width = cached_status_width;
 
-	const FontSize calling_font_size = _settings_client.gui.departure_larger_font ? FS_NORMAL : FS_SMALL;
+	const FontSize calling_font_size = _settings_client.gui.departure_larger_font ? FontSize::Normal : FontSize::Small;
 
 	/* Find the width of the "Calling at:" field. */
 	int calling_at_width = (GetStringBoundingBox(STR_DEPARTURES_CALLING_AT, calling_font_size)).width;
@@ -1461,7 +1461,7 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 
 		}
 
-		int list_width = (GetStringBoundingBox(buffer, _settings_client.gui.departure_larger_font ? FS_NORMAL : FS_SMALL)).width;
+		int list_width = (GetStringBoundingBox(buffer, _settings_client.gui.departure_larger_font ? FontSize::Normal : FontSize::Small)).width;
 
 		/* Draw the whole list if it will fit. Otherwise scroll it. */
 		if (list_width < text_right - (text_left + calling_at_width + 2)) {

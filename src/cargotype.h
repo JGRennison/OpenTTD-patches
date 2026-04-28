@@ -21,30 +21,30 @@
 #include <vector>
 
 /** Town growth effect when delivering cargo. */
-enum TownAcceptanceEffect : uint8_t {
-	TAE_BEGIN = 0,
-	TAE_NONE = TAE_BEGIN, ///< Cargo has no effect.
-	TAE_PASSENGERS,       ///< Cargo behaves passenger-like.
-	TAE_MAIL,             ///< Cargo behaves mail-like.
-	TAE_GOODS,            ///< Cargo behaves goods/candy-like.
-	TAE_WATER,            ///< Cargo behaves water-like.
-	TAE_FOOD,             ///< Cargo behaves food/fizzy-drinks-like.
-	TAE_END,              ///< End of town effects.
-	NUM_TAE = TAE_END,    ///< Amount of town effects.
+enum class TownAcceptanceEffect : uint8_t {
+	Begin = 0,    ///< Used for iteration.
+	None = Begin, ///< Cargo has no effect.
+	Passengers,   ///< Cargo behaves passenger-like.
+	Mail,         ///< Cargo behaves mail-like.
+	Goods,        ///< Cargo behaves goods/candy-like.
+	Water,        ///< Cargo behaves water-like.
+	Food,         ///< Cargo behaves food/fizzy-drinks-like.
+	End,          ///< End of town effects.
 };
+DECLARE_INCREMENT_DECREMENT_OPERATORS(TownAcceptanceEffect)
 
 /** Town effect when producing cargo. */
-enum TownProductionEffect : uint8_t {
-	TPE_NONE,       ///< Town will not produce this cargo type.
-	TPE_PASSENGERS, ///< Cargo behaves passenger-like for production.
-	TPE_MAIL,       ///< Cargo behaves mail-like for production.
-	NUM_TPE,
+enum class TownProductionEffect : uint8_t {
+	None,       ///< Town will not produce this cargo type.
+	Passengers, ///< Cargo behaves passenger-like for production.
+	Mail,       ///< Cargo behaves mail-like for production.
+	End,        ///< End marker.
 
 	/**
 	 * Invalid town production effect. Used as a sentinel to indicate if a NewGRF has explicitly set an effect.
 	 * This does not 'exist' after cargo types are finalised.
 	 */
-	INVALID_TPE,
+	Invalid,
 };
 
 /** Cargo classes. */
@@ -84,9 +84,9 @@ struct CargoSpec {
 	int32_t initial_payment;               ///< Initial payment rate before inflation is applied.
 	uint8_t transit_periods[2];
 
-	bool is_freight;                                               ///< Cargo type is considered to be freight (affects train freight multiplier).
-	TownAcceptanceEffect town_acceptance_effect;                   ///< The effect that delivering this cargo type has on towns. Also affects destination of subsidies.
-	TownProductionEffect town_production_effect = INVALID_TPE;     ///< The effect on town cargo production.
+	bool is_freight;                                                             ///< Cargo type is considered to be freight (affects train freight multiplier).
+	TownAcceptanceEffect town_acceptance_effect;                                 ///< The effect that delivering this cargo type has on towns. Also affects destination of subsidies.
+	TownProductionEffect town_production_effect = TownProductionEffect::Invalid; ///< The effect on town cargo production.
 	uint16_t town_production_multiplier = TOWN_PRODUCTION_DIVISOR; ///< Town production multiplier, if commanded by TownProductionEffect.
 	CargoCallbackMasks callback_mask;                              ///< Bitmask of cargo callbacks that have to be called
 
@@ -202,10 +202,10 @@ struct CargoSpec {
 	static IterateWrapper Iterate(size_t from = 0) { return IterateWrapper(from); }
 
 	/** List of cargo specs for each Town Product Effect. */
-	static std::array<std::vector<CargoType>, NUM_TPE> town_production_cargoes;
+	static EnumIndexArray<std::vector<CargoType>, TownProductionEffect, TownProductionEffect::End> town_production_cargoes;
 
 	/** Mask of cargo IDs for each Town Product Effect. */
-	static std::array<CargoTypes, NUM_TPE> town_production_cargo_mask;
+	static EnumIndexArray<CargoTypes, TownProductionEffect, TownProductionEffect::End> town_production_cargo_mask;
 
 private:
 	static CargoSpec array[NUM_CARGO]; ///< Array holding all CargoSpecs

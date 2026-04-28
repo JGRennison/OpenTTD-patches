@@ -446,7 +446,7 @@ static void SetTextInputRect()
 	winrect.x = win.x + caret.x;
 	winrect.y = win.y + caret.y;
 	winrect.w = 1;
-	winrect.h = GetCharacterHeight(FS_NORMAL);
+	winrect.h = GetCharacterHeight(FontSize::Normal);
 
 #if defined(WITH_FCITX)
 	if (_fcitx_mode) {

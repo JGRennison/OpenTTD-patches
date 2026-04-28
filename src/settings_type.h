@@ -275,6 +275,14 @@ struct TimeSettings {
 	}
 };
 
+/** Method to open the on screen keyboard. */
+enum class OskActivation : uint8_t {
+	Disabled, ///< The OSK shall not be activated at all.
+	DoubleClick, ///< Double click on the edit box opens OSK.
+	SingleClick, ///< Single click after focus click opens OSK.
+	Immediately, ///< Focusing click already opens OSK.
+};
+
 /** Settings related to the GUI and other stuff that is not saved in the savegame. */
 struct GUISettings : public TimeSettings {
 	bool        sg_full_load_any;                                ///< new full load calculation, any cargo must be full read from pre v93 savegames
@@ -400,7 +408,7 @@ struct GUISettings : public TimeSettings {
 	bool        show_adv_tracerestrict_features;                 ///< Show advanced trace restrict features in UI
 	bool        show_progsig_ui;                                 ///< Show programmable pre-signals feature in UI
 	bool        show_noentrysig_ui;                              ///< Show no-entry signals feature in UI
-	uint8_t     osk_activation;                                  ///< Mouse gesture to trigger the OSK.
+	OskActivation osk_activation;                                ///< Mouse gesture to trigger the OSK.
 	Colours     starting_colour;                                 ///< default colour scheme for the company to start a new game with
 	Colours     starting_colour_secondary;                       ///< default secondary colour scheme for the company to start a new game with
 	bool        show_newgrf_name;                                ///< Show the name of the NewGRF in the build vehicle window

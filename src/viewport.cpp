@@ -1994,7 +1994,7 @@ static StringSpriteToDraw *ViewportAddString(ViewportDrawerDynamic *vdd, const D
 	int bottom = top + dpi->height;
 
 	bool small = flags.Test(ViewportStringFlag::Small);
-	int sign_height     = ScaleByZoom(WidgetDimensions::scaled.fullbevel.top + GetCharacterHeight(small ? FS_SMALL : FS_NORMAL) + WidgetDimensions::scaled.fullbevel.bottom, dpi->zoom);
+	int sign_height     = ScaleByZoom(WidgetDimensions::scaled.fullbevel.top + GetCharacterHeight(small ? FontSize::Small : FontSize::Normal) + WidgetDimensions::scaled.fullbevel.bottom, dpi->zoom);
 	int sign_half_width = ScaleByZoom((small ? sign->width_small : sign->width_normal) / 2, dpi->zoom);
 
 	if (bottom < sign->top ||
@@ -2028,7 +2028,7 @@ void ViewportAddString(ViewportDrawerDynamic *vdd, const DrawPixelInfo *dpi, con
 
 static Rect ExpandRectWithViewportSignMargins(Rect r, ZoomLevel zoom)
 {
-	const int fh = std::max(GetCharacterHeight(FS_NORMAL), GetCharacterHeight(FS_SMALL));
+	const int fh = std::max(GetCharacterHeight(FontSize::Normal), GetCharacterHeight(FontSize::Small));
 	const int max_tw = _viewport_sign_maxwidth / 2 + 1;
 	const int expand_y = ScaleByZoom(WidgetDimensions::scaled.fullbevel.top + fh + WidgetDimensions::scaled.fullbevel.bottom, zoom);
 	const int expand_x = ScaleByZoom(WidgetDimensions::scaled.fullbevel.left + max_tw + WidgetDimensions::scaled.fullbevel.right, zoom);
@@ -2234,7 +2234,7 @@ void ViewportSign::UpdatePosition(ZoomLevel maxzoom, int center, int top, std::s
 		}
 		AppendStringWithArgsInPlace(buffer, str_small, params);
 	}
-	this->width_small = WidgetDimensions::scaled.fullbevel.left + Align(GetStringBoundingBox(buffer, FS_SMALL).width, 2) + WidgetDimensions::scaled.fullbevel.right;
+	this->width_small = WidgetDimensions::scaled.fullbevel.left + Align(GetStringBoundingBox(buffer, FontSize::Small).width, 2) + WidgetDimensions::scaled.fullbevel.right;
 
 	this->MarkDirty(maxzoom);
 }
@@ -2251,8 +2251,8 @@ void ViewportSign::MarkDirty(ZoomLevel maxzoom) const
 
 	Rect zoomlevels[to_underlying(ZoomLevel::End)];
 
-	const uint small_height = WidgetDimensions::scaled.fullbevel.top + GetCharacterHeight(FS_SMALL) + WidgetDimensions::scaled.fullbevel.bottom + 1;
-	const uint normal_height = WidgetDimensions::scaled.fullbevel.top + GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.fullbevel.bottom + 1;
+	const uint small_height = WidgetDimensions::scaled.fullbevel.top + GetCharacterHeight(FontSize::Small) + WidgetDimensions::scaled.fullbevel.bottom + 1;
+	const uint normal_height = WidgetDimensions::scaled.fullbevel.top + GetCharacterHeight(FontSize::Normal) + WidgetDimensions::scaled.fullbevel.bottom + 1;
 
 	for (ZoomLevel zoom = ZoomLevel::Begin; zoom != ZoomLevel::End; zoom++) {
 		const ZoomLevel small_from = (maxzoom == ZoomLevel::Out2x) ? ZoomLevel::Out2x : ZoomLevel::Out4x;
@@ -2585,7 +2585,7 @@ static void ViewportDrawStrings(ViewportDrawerDynamic *vdd, ZoomLevel zoom, cons
 		int w = ss.width;
 		int x = UnScaleByZoom(ss.x, zoom);
 		int y = UnScaleByZoom(ss.y, zoom);
-		int h = WidgetDimensions::scaled.fullbevel.Vertical() + GetCharacterHeight(small ? FS_SMALL : FS_NORMAL);
+		int h = WidgetDimensions::scaled.fullbevel.Vertical() + GetCharacterHeight(small ? FontSize::Small : FontSize::Normal);
 
 		format_buffer string;
 		AppendStringInPlace(string, ss.string, ss.params[0], ss.params[1]);
@@ -2610,10 +2610,10 @@ static void ViewportDrawStrings(ViewportDrawerDynamic *vdd, ZoomLevel zoom, cons
 		if (small && ss.flags.Test(ViewportStringFlag::Shadow)) {
 			/* Shadow needs to be shifted 1 pixel. */
 			shadow_offset = WidgetDimensions::scaled.fullbevel.top;
-			DrawString(left + shadow_offset, right + shadow_offset, top, string, TC_BLACK | TC_FORCED, SA_HOR_CENTER, false, FS_SMALL);
+			DrawString(left + shadow_offset, right + shadow_offset, top, string, TC_BLACK | TC_FORCED, SA_HOR_CENTER, false, FontSize::Small);
 		}
 
-		DrawString(left, right, top - shadow_offset, string, colour, SA_HOR_CENTER, false, small ? FS_SMALL : FS_NORMAL);
+		DrawString(left, right, top - shadow_offset, string, colour, SA_HOR_CENTER, false, small ? FontSize::Small : FontSize::Normal);
 	}
 }
 
@@ -2832,7 +2832,7 @@ static void DrawRouteStep(const Viewport * const vp, const TileIndex tile, const
 	if (x >= _cur_dpi->width || (x + total_width) <= 0) return;
 	const uint step_count = list.size() > max_rank_order_type_count ? 1 : (uint)list.size();
 	pt.y -= GetSlopePixelZ(x_pos, y_pos) * ZOOM_BASE;
-	const int char_height = GetCharacterHeight(FS_SMALL) + 1;
+	const int char_height = GetCharacterHeight(FontSize::Small) + 1;
 	const int rsth = _vp_route_step_height_top + (int) step_count * char_height + _vp_route_step_height_bottom;
 	const int y = UnScaleByZoomLower(pt.y - _vdd->dpi.top,  _vdd->dpi.zoom) - rsth;
 	if (y >= _cur_dpi->height || (y + rsth) <= 0) return;
@@ -2867,7 +2867,7 @@ static void DrawRouteStep(const Viewport * const vp, const TileIndex tile, const
 	if (list.size() > max_rank_order_type_count) {
 		/* Write order overflow item */
 		DrawString(dpi_for_text.left + x_str, dpi_for_text.left + x_str + str_width - 1, dpi_for_text.top + y2,
-				GetString(STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_OVERFLOW, list.size()), TC_FROMSTRING, SA_CENTER, false, FS_SMALL);
+				GetString(STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_OVERFLOW, list.size()), TC_FROMSTRING, SA_CENTER, false, FontSize::Small);
 	} else {
 		for (RankOrderTypeList::const_iterator cit = list.begin(); cit != list.end(); cit++, y2 += char_height) {
 			StringID str = INVALID_STRING_ID;
@@ -2893,7 +2893,7 @@ static void DrawRouteStep(const Viewport * const vp, const TileIndex tile, const
 			if (str != INVALID_STRING_ID) {
 				/* Write order info */
 				DrawString(dpi_for_text.left + x_str, dpi_for_text.left + x_str + str_width - 1, dpi_for_text.top + y2,
-						GetString(STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP, cit->first, str), TC_FROMSTRING, SA_CENTER, false, FS_SMALL);
+						GetString(STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP, cit->first, str), TC_FROMSTRING, SA_CENTER, false, FontSize::Small);
 			}
 		}
 	}
@@ -2913,12 +2913,12 @@ void UpdateRouteStepSpriteSize()
 	const uint min_width = _vp_route_step_sprite_width > _vp_route_step_base_width ? _vp_route_step_sprite_width - _vp_route_step_base_width : 0;
 	uint extra = 0;
 	for (uint i = 0; i < 4; i++) {
-		uint64_t max_value = GetParamMaxDigits(i + 2, FS_SMALL);
-		const uint base_width = GetStringBoundingBox(GetString(STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP, max_value, STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_STATION), FS_SMALL).width;
+		uint64_t max_value = GetParamMaxDigits(i + 2, FontSize::Small);
+		const uint base_width = GetStringBoundingBox(GetString(STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP, max_value, STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_STATION), FontSize::Small).width;
 		if (i == 0) {
 			uint width = base_width;
 			auto process_string = [&](StringID str) {
-				width = std::max(width, GetStringBoundingBox(GetString(STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP, max_value, str), FS_SMALL).width);
+				width = std::max(width, GetStringBoundingBox(GetString(STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP, max_value, str), FontSize::Small).width);
 			};
 			process_string(STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_DEPOT);
 			process_string(STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_WAYPOINT);
@@ -4795,7 +4795,7 @@ static void MarkRouteStepDirty(const TileIndex tile, uint order_nr)
 {
 	dbg_assert(tile != INVALID_TILE);
 	const Point pt = RemapCoords2(TileX(tile) * TILE_SIZE + TILE_SIZE / 2, TileY(tile) * TILE_SIZE + TILE_SIZE / 2);
-	const int char_height = GetCharacterHeight(FS_SMALL) + 1;
+	const int char_height = GetCharacterHeight(FontSize::Small) + 1;
 	const int max_width = _vp_route_step_base_width + _vp_route_step_string_width[3];
 	const int half_width_base = (max_width / 2) + 1;
 	for (Viewport * const vp : _viewport_window_cache) {
@@ -5201,7 +5201,7 @@ static bool CheckClickOnViewportSign(const Viewport *vp, int x, int y, const Vie
 {
 	bool small = (vp->zoom >= ZoomLevel::Out4x);
 	int sign_half_width = ScaleByZoom((small ? sign->width_small : sign->width_normal) / 2, vp->zoom);
-	int sign_height = ScaleByZoom(WidgetDimensions::scaled.fullbevel.top + GetCharacterHeight(small ? FS_SMALL : FS_NORMAL) + WidgetDimensions::scaled.fullbevel.bottom, vp->zoom);
+	int sign_height = ScaleByZoom(WidgetDimensions::scaled.fullbevel.top + GetCharacterHeight(small ? FontSize::Small : FontSize::Normal) + WidgetDimensions::scaled.fullbevel.bottom, vp->zoom);
 
 	return y >= sign->top && y < sign->top + sign_height &&
 			x >= sign->center - sign_half_width && x < sign->center + sign_half_width;

@@ -279,7 +279,7 @@ private:
 		this->tiny_step_height = this->column_size[VGC_FOLD].height;
 
 		this->column_size[VGC_NAME] = maxdim(GetStringBoundingBox(STR_GROUP_DEFAULT_TRAINS + this->vli.vtype), GetStringBoundingBox(STR_GROUP_ALL_TRAINS + this->vli.vtype));
-		this->column_size[VGC_NAME].width = std::max((170u * GetCharacterHeight(FS_NORMAL)) / 10u, this->column_size[VGC_NAME].width) + WidgetDimensions::scaled.hsep_indent;
+		this->column_size[VGC_NAME].width = std::max((170u * GetCharacterHeight(FontSize::Normal)) / 10u, this->column_size[VGC_NAME].width) + WidgetDimensions::scaled.hsep_indent;
 		this->tiny_step_height = std::max(this->tiny_step_height, this->column_size[VGC_NAME].height);
 
 		this->column_size[VGC_PROTECT] = GetScaledSpriteSize(SPR_GROUP_REPLACE_PROTECT);
@@ -298,7 +298,7 @@ private:
 		this->tiny_step_height = std::max(this->tiny_step_height, this->column_size[VGC_PROFIT].height);
 
 		int num_vehicle = GetGroupNumVehicle(this->vli.company, ALL_GROUP, this->vli.vtype);
-		uint64_t max_value = GetParamMaxValue(num_vehicle, 3, FS_SMALL);
+		uint64_t max_value = GetParamMaxValue(num_vehicle, 3, FontSize::Small);
 		this->column_size[VGC_NUMBER] = GetStringBoundingBox(GetString(STR_GROUP_COUNT_WITH_SUBGROUP, max_value, max_value));
 		this->tiny_step_height = std::max(this->tiny_step_height, this->column_size[VGC_NUMBER].height);
 
@@ -430,7 +430,7 @@ private:
 		int num_vehicle_with_subgroups = GetGroupNumVehicle(this->vli.company, g_id, this->vli.vtype);
 		int num_vehicle = GroupStatistics::Get(this->vli.company, g_id, this->vli.vtype).num_vehicle;
 		if (IsAllGroupID(g_id) || IsDefaultGroupID(g_id) || num_vehicle_with_subgroups == num_vehicle) {
-			DrawString(r.WithX(this->column_rects[VGC_NUMBER]).CentreToHeight(this->column_size[VGC_NUMBER].height), GetString(STR_JUST_COMMA, num_vehicle), colour, SA_RIGHT | SA_FORCE, false, FS_SMALL);
+			DrawString(r.WithX(this->column_rects[VGC_NUMBER]).CentreToHeight(this->column_size[VGC_NUMBER].height), GetString(STR_JUST_COMMA, num_vehicle), colour, SA_RIGHT | SA_FORCE, false, FontSize::Small);
 		} else {
 			DrawString(r.WithX(this->column_rects[VGC_NUMBER]).CentreToHeight(this->column_size[VGC_NUMBER].height), GetString(STR_GROUP_COUNT_WITH_SUBGROUP, num_vehicle, num_vehicle_with_subgroups - num_vehicle), colour, SA_RIGHT | SA_FORCE);
 		}
@@ -731,15 +731,15 @@ public:
 				const int left  = r.left + WidgetDimensions::scaled.framerect.left + WidgetDimensions::scaled.vsep_wide;
 				const int right = r.right - WidgetDimensions::scaled.framerect.right - WidgetDimensions::scaled.vsep_wide;
 
-				int y = r.top + (1 + r.bottom - r.top - (3 * GetCharacterHeight(FS_NORMAL))) / 2;
+				int y = r.top + (1 + r.bottom - r.top - (3 * GetCharacterHeight(FontSize::Normal))) / 2;
 				DrawString(left, right, y, STR_GROUP_PROFIT_THIS_YEAR, TC_BLACK);
 				DrawString(left, right, y, GetString(STR_JUST_CURRENCY_LONG, this->money_this_year), TC_BLACK, SA_RIGHT);
 
-				y += GetCharacterHeight(FS_NORMAL);
+				y += GetCharacterHeight(FontSize::Normal);
 				DrawString(left, right, y, STR_GROUP_PROFIT_LAST_YEAR, TC_BLACK);
 				DrawString(left, right, y, GetString(STR_JUST_CURRENCY_LONG, this->money_last_year), TC_BLACK, SA_RIGHT);
 
-				y += GetCharacterHeight(FS_NORMAL);
+				y += GetCharacterHeight(FontSize::Normal);
 				DrawString(left, right, y, STR_GROUP_OCCUPANCY, TC_BLACK);
 				if (this->vehicles.size() > 0) {
 					DrawString(left, right, y, GetString(STR_GROUP_OCCUPANCY_VALUE, this->occupancy_ratio), TC_BLACK, SA_RIGHT);

@@ -15,7 +15,7 @@
 #include "town.h"
 #include "town_type.h"
 
-enum TownAcceptanceEffect : uint8_t;
+enum class TownAcceptanceEffect : uint8_t;
 enum TownSettingOverrideFlags : uint8_t;
 using HouseID = uint16_t;
 

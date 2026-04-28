@@ -2031,8 +2031,8 @@ class NIHTown : public NIHelper {
 			}
 		}
 
-		for (int tae = TAE_BEGIN; tae != TAE_END; tae++) {
-			static constexpr const char *names[] = {
+		for (TownAcceptanceEffect tae = TownAcceptanceEffect::Begin; tae != TownAcceptanceEffect::End; tae++) {
+			static constexpr EnumIndexArray<const char *, TownAcceptanceEffect, TownAcceptanceEffect::End> names{
 				"NONE",
 				"PASSENGERS",
 				"MAIL",
@@ -2040,14 +2040,14 @@ class NIHTown : public NIHelper {
 				"WATER",
 				"FOOD",
 			};
-			static_assert(lengthof(names) == NUM_TAE);
+			static_assert(static_cast<size_t>(TownAcceptanceEffect::Begin) == 0);
 
 			if (t->goal[tae] == TOWN_GROWTH_WINTER) {
-				output.Print("  TAE_{}: TOWN_GROWTH_WINTER", names[tae - TAE_BEGIN]);
+				output.Print("  TAE_{}: TOWN_GROWTH_WINTER", names[tae]);
 			} else if (t->goal[tae] == TOWN_GROWTH_DESERT) {
-				output.Print("  TAE_{}: TOWN_GROWTH_DESERT", names[tae - TAE_BEGIN]);
+				output.Print("  TAE_{}: TOWN_GROWTH_DESERT", names[tae]);
 			} else if (t->goal[tae] != 0) {
-				output.Print("  TAE_{}: {}", names[tae - TAE_BEGIN], t->goal[tae]);
+				output.Print("  TAE_{}: {}", names[tae], t->goal[tae]);
 			}
 		}
 	}

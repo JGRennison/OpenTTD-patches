@@ -297,7 +297,7 @@ struct MainWindow : Window
 			}
 
 			if (!_settings_client.gui.traditional_intro_menu) {
-				int text_y = this->height - GetCharacterHeight(FS_NORMAL) * 2;
+				int text_y = this->height - GetCharacterHeight(FontSize::Normal) * 2;
 				DrawString(0, this->width - 1, text_y, STR_INTRO_VERSION, TC_WHITE, SA_CENTER);
 			}
 		}

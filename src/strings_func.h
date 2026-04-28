@@ -102,11 +102,11 @@ inline char32_t GetDecimalSeparatorChar()
 	return _decimal_separator_char;
 }
 
-uint64_t GetParamMaxValue(uint64_t max_value, uint min_count = 0, FontSize size = FS_NORMAL);
-uint64_t GetParamMaxDigits(uint count, FontSize size = FS_NORMAL);
+uint64_t GetParamMaxValue(uint64_t max_value, uint min_count = 0, FontSize size = FontSize::Normal);
+uint64_t GetParamMaxDigits(uint count, FontSize size = FontSize::Normal);
 
 template <typename T, std::enable_if_t<StringParameterAsBase<T>, int> = 0>
-uint64_t GetParamMaxValue(T max_value, uint min_count = 0, FontSize size = FS_NORMAL)
+uint64_t GetParamMaxValue(T max_value, uint min_count = 0, FontSize size = FontSize::Normal)
 {
 	return GetParamMaxValue(max_value.base(), min_count, size);
 }

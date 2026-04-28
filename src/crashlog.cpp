@@ -283,10 +283,10 @@ void CrashLog::LogConfiguration(format_target_ctrl &buffer) const
 			" Medium: {}\n"
 			" Large:  {}\n"
 			" Mono:   {}\n\n",
-			log_font(FS_SMALL),
-			log_font(FS_NORMAL),
-			log_font(FS_LARGE),
-			log_font(FS_MONO)
+			log_font(FontSize::Small),
+			log_font(FontSize::Normal),
+			log_font(FontSize::Large),
+			log_font(FontSize::Monospace)
 	);
 
 	this->CrashLogFaultSectionCheckpoint(buffer);

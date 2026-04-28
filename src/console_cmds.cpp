@@ -2744,12 +2744,12 @@ static bool ConFont(std::span<std::string_view> argv)
 	}
 
 	FontSize argfs;
-	for (argfs = FS_BEGIN; argfs < FS_END; argfs++) {
+	for (argfs = FontSize::Begin; argfs < FontSize::End; argfs++) {
 		if (argv.size() > 1 && StrEqualsIgnoreCase(argv[1], FontSizeToName(argfs))) break;
 	}
 
 	/* First argument must be a FontSize. */
-	if (argv.size() > 1 && argfs == FS_END) return false;
+	if (argv.size() > 1 && argfs == FontSize::End) return false;
 
 	if (argv.size() > 2) {
 		FontCacheSubSetting *setting = GetFontCacheSubSetting(argfs);
@@ -2774,7 +2774,7 @@ static bool ConFont(std::span<std::string_view> argv)
 		SetFont(argfs, font, size);
 	}
 
-	for (FontSize fs = FS_BEGIN; fs < FS_END; fs++) {
+	for (FontSize fs = FontSize::Begin; fs < FontSize::End; fs++) {
 		FontCache *fc = FontCache::Get(fs);
 		FontCacheSubSetting *setting = GetFontCacheSubSetting(fs);
 		/* Make sure all non sprite fonts are loaded. */
@@ -3510,7 +3510,7 @@ static bool ConDumpCargoTypes(std::span<std::string_view> argv)
 	IConsolePrint(CC_DEFAULT, "    W = water");
 	IConsolePrint(CC_DEFAULT, "    F = food");
 
-	static const char tae_char[NUM_TAE] = { '-', 'P', 'M', 'G', 'W', 'F' };
+	static constexpr EnumIndexArray<char, TownAcceptanceEffect, TownAcceptanceEffect::End> tae_char{ '-', 'P', 'M', 'G', 'W', 'F' };
 
 	btree::btree_map<uint32_t, const GRFFile *> grfs;
 	for (CargoType i = 0; i < NUM_CARGO; i++) {
@@ -3549,7 +3549,7 @@ static bool ConDumpCargoTypes(std::span<std::string_view> argv)
 				spec->classes.Test(CargoClass::Potable)      ? 'e' : '-',
 				spec->classes.Test(CargoClass::NonPotable)   ? 'i' : '-',
 				spec->classes.Test(CargoClass::Special)      ? 'S' : '-',
-				tae_char[spec->town_acceptance_effect - TAE_BEGIN],
+				tae_char[spec->town_acceptance_effect],
 				std::byteswap(grfid),
 				GetStringFmtParam(spec->name)
 		);

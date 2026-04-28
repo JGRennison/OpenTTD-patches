@@ -2798,7 +2798,7 @@ public:
 					}
 					this->UpdateBackupSection();
 
-					int height_delta = BACKUP_INSTRUCTION_LINES * GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical();
+					int height_delta = BACKUP_INSTRUCTION_LINES * GetCharacterHeight(FontSize::Normal) + WidgetDimensions::scaled.framerect.Vertical();
 					height_delta += btn->current_y;
 					height_delta += std::max(btn->current_y, NWidgetLeaf::GetResizeBoxDimension().height);
 					this->ReInit(0, height_delta);
@@ -3242,7 +3242,7 @@ public:
 	{
 		switch (widget) {
 			case TR_WIDGET_INSTRUCTION_LIST:
-				resize.height = GetCharacterHeight(FS_NORMAL);
+				resize.height = GetCharacterHeight(FontSize::Normal);
 				size.height = 6 * resize.height + WidgetDimensions::scaled.framerect.Vertical();
 				break;
 
@@ -3260,7 +3260,7 @@ public:
 			}
 
 			case TR_WIDGET_BACKUP_INSTRUCTION_LIST:
-				size.height = BACKUP_INSTRUCTION_LINES * GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical();
+				size.height = BACKUP_INSTRUCTION_LINES * GetCharacterHeight(FontSize::Normal) + WidgetDimensions::scaled.framerect.Vertical();
 				break;
 		}
 	}
@@ -3281,7 +3281,7 @@ public:
 		if (widget != TR_WIDGET_INSTRUCTION_LIST && widget != TR_WIDGET_BACKUP_INSTRUCTION_LIST) return;
 
 		int y = r.top + WidgetDimensions::scaled.framerect.top;
-		int line_height = GetCharacterHeight(FS_NORMAL);
+		int line_height = GetCharacterHeight(FontSize::Normal);
 
 		const TraceRestrictProgram *prog = nullptr; // prog may remain nullptr
 		int selected;
@@ -4684,10 +4684,10 @@ private:
 		this->tiny_step_height = this->column_size[VGC_FOLD].height;
 
 		this->column_size[VGC_NAME] = GetStringBoundingBox(STR_GROUP_ALL_TRAINS);
-		this->column_size[VGC_NAME].width = std::max((170u * GetCharacterHeight(FS_NORMAL)) / 10u, this->column_size[VGC_NAME].width);
+		this->column_size[VGC_NAME].width = std::max((170u * GetCharacterHeight(FontSize::Normal)) / 10u, this->column_size[VGC_NAME].width);
 		this->tiny_step_height = std::max(this->tiny_step_height, this->column_size[VGC_NAME].height);
 
-		int64_t max_value = GetParamMaxValue(9999, 3, FS_SMALL);
+		int64_t max_value = GetParamMaxValue(9999, 3, FontSize::Small);
 		this->column_size[VGC_NUMBER] = GetStringBoundingBox(GetString(STR_TRACE_RESTRICT_SLOT_MAX_OCCUPANCY, max_value, max_value));
 		this->tiny_step_height = std::max(this->tiny_step_height, this->column_size[VGC_NUMBER].height);
 
@@ -5582,7 +5582,7 @@ private:
 		TextColour colour = ctr_id == this->selected ? TC_WHITE : TC_BLACK;
 
 		Rect r = info_area.Indent(this->value_col_width + WidgetDimensions::scaled.vsep_wide + this->public_col_width, !rtl);
-		DrawString(r.left, r.right, r.top + (this->tiny_step_height - GetCharacterHeight(FS_NORMAL)) / 2, GetString(STR_TRACE_RESTRICT_COUNTER_NAME, ctr_id), colour);
+		DrawString(r.left, r.right, r.top + (this->tiny_step_height - GetCharacterHeight(FontSize::Normal)) / 2, GetString(STR_TRACE_RESTRICT_COUNTER_NAME, ctr_id), colour);
 
 		if (ctr->flags.Test(TraceRestrictCounter::Flag::Public)) {
 			r = info_area.Indent(this->value_col_width + WidgetDimensions::scaled.vsep_wide, !rtl).WithWidth(this->public_col_width, !rtl);
@@ -5590,7 +5590,7 @@ private:
 		}
 
 		r = info_area.WithWidth(this->value_col_width, !rtl);
-		DrawString(r.left, r.right, r.top + (this->tiny_step_height - GetCharacterHeight(FS_NORMAL)) / 2, GetString(STR_JUST_COMMA, ctr->value), colour, SA_RIGHT | SA_FORCE);
+		DrawString(r.left, r.right, r.top + (this->tiny_step_height - GetCharacterHeight(FontSize::Normal)) / 2, GetString(STR_JUST_COMMA, ctr->value), colour, SA_RIGHT | SA_FORCE);
 	}
 
 public:

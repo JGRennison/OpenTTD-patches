@@ -235,12 +235,12 @@ bool FindSubsidyPassengerRoute()
 {
 	if (!Subsidy::CanAllocateItem()) return false;
 
-	if (CargoSpec::town_production_cargo_mask[TPE_PASSENGERS] == 0) return false;
+	if (CargoSpec::town_production_cargo_mask[TownProductionEffect::Passengers] == 0) return false;
 
 	/* Pick a random TPE_PASSENGER type */
-	uint32_t r = RandomRange(CountBits(CargoSpec::town_production_cargo_mask[TPE_PASSENGERS]));
+	uint32_t r = RandomRange(CountBits(CargoSpec::town_production_cargo_mask[TownProductionEffect::Passengers]));
 	CargoType cargo_type{};
-	for (CargoType c : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[TPE_PASSENGERS])) {
+	for (CargoType c : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[TownProductionEffect::Passengers])) {
 		if (r == 0) {
 			cargo_type = c;
 			break;
@@ -292,7 +292,7 @@ bool FindSubsidyTownCargoRoute()
 	}
 
 	/* Passenger subsidies are not handled here. */
-	for (CargoType c : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[TPE_PASSENGERS])) {
+	for (CargoType c : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[TownProductionEffect::Passengers])) {
 		town_cargo_produced[c] = 0;
 	}
 

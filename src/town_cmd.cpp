@@ -697,8 +697,8 @@ static void TileLoop_Town(TileIndex tile)
 		switch (_settings_game.economy.town_cargogen_mode) {
 			case TCGM_ORIGINAL:
 				/* Original (quadratic) cargo generation algorithm */
-				TownGenerateCargoOriginal(t, TPE_PASSENGERS, hs->population, stations);
-				TownGenerateCargoOriginal(t, TPE_MAIL, hs->mail_generation, stations);
+				TownGenerateCargoOriginal(t, TownProductionEffect::Passengers, hs->population, stations);
+				TownGenerateCargoOriginal(t, TownProductionEffect::Mail, hs->mail_generation, stations);
 				break;
 
 			case TCGM_BITCOUNT:
@@ -706,8 +706,8 @@ static void TileLoop_Town(TileIndex tile)
 				/* Reduce generation rate to a 1/4, using tile bits to spread out distribution.
 				 * As tick counter is incremented by 256 between each call, we ignore the lower 8 bits. */
 				if (GB(_tick_counter, 8, 2) == GB(tile.base(), 0, 2)) {
-					TownGenerateCargoBinomial(t, TPE_PASSENGERS, hs->population, stations);
-					TownGenerateCargoBinomial(t, TPE_MAIL, hs->mail_generation, stations);
+					TownGenerateCargoBinomial(t, TownProductionEffect::Passengers, hs->population, stations);
+					TownGenerateCargoBinomial(t, TownProductionEffect::Mail, hs->mail_generation, stations);
 				}
 				break;
 
@@ -811,12 +811,12 @@ static void AddProducedHouseCargo(HouseID house_id, TileIndex tile, CargoArray &
 		}
 	} else {
 		if (hs->population > 0) {
-			for (CargoType cid : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[TPE_PASSENGERS])) {
+			for (CargoType cid : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[TownProductionEffect::Passengers])) {
 				produced[cid]++;
 			}
 		}
 		if (hs->mail_generation > 0) {
-			for (CargoType cid : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[TPE_MAIL])) {
+			for (CargoType cid : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[TownProductionEffect::Mail])) {
 				produced[cid]++;
 			}
 		}
@@ -2176,7 +2176,7 @@ void UpdateTownRadii()
 
 void UpdateTownMaxPass(Town *t)
 {
-	for (CargoType cid : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[TPE_PASSENGERS])) {
+	for (CargoType cid : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[TownProductionEffect::Passengers])) {
 		uint32_t production = _town_cargo_scaler.Scale(t->cache.population >> 3);
 		if (production == 0) continue;
 
@@ -2184,7 +2184,7 @@ void UpdateTownMaxPass(Town *t)
 		supplied.history[LAST_MONTH].production = production;
 	}
 
-	for (CargoType cid : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[TPE_MAIL])) {
+	for (CargoType cid : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[TownProductionEffect::Mail])) {
 		uint32_t production = _town_cargo_scaler.Scale(t->cache.population >> 4);
 		if (production == 0) continue;
 
@@ -2229,12 +2229,12 @@ static void DoCreateTown(Town *t, TileIndex tile, uint32_t townnameparts, TownSi
 	/* Set the default cargo requirement for town growth */
 	switch (_settings_game.game_creation.landscape) {
 		case LandscapeType::Arctic:
-			if (FindFirstCargoWithTownAcceptanceEffect(TAE_FOOD) != nullptr) t->goal[TAE_FOOD] = TOWN_GROWTH_WINTER;
+			if (FindFirstCargoWithTownAcceptanceEffect(TownAcceptanceEffect::Food) != nullptr) t->goal[TownAcceptanceEffect::Food] = TOWN_GROWTH_WINTER;
 			break;
 
 		case LandscapeType::Tropic:
-			if (FindFirstCargoWithTownAcceptanceEffect(TAE_FOOD) != nullptr) t->goal[TAE_FOOD] = TOWN_GROWTH_DESERT;
-			if (FindFirstCargoWithTownAcceptanceEffect(TAE_WATER) != nullptr) t->goal[TAE_WATER] = TOWN_GROWTH_DESERT;
+			if (FindFirstCargoWithTownAcceptanceEffect(TownAcceptanceEffect::Food) != nullptr) t->goal[TownAcceptanceEffect::Food] = TOWN_GROWTH_DESERT;
+			if (FindFirstCargoWithTownAcceptanceEffect(TownAcceptanceEffect::Water) != nullptr) t->goal[TownAcceptanceEffect::Water] = TOWN_GROWTH_DESERT;
 			break;
 
 		default:
@@ -3534,7 +3534,7 @@ CommandCost CmdTownCargoGoal(DoCommandFlags flags, TownID town_id, TownAcceptanc
 {
 	if (_current_company != OWNER_DEITY) return CMD_ERROR;
 
-	if (tae < TAE_BEGIN || tae >= TAE_END) return CMD_ERROR;
+	if (tae < TownAcceptanceEffect::Begin || tae >= TownAcceptanceEffect::End) return CMD_ERROR;
 
 	Town *t = Town::GetIfValid(town_id);
 	if (t == nullptr) return CMD_ERROR;
@@ -4356,7 +4356,7 @@ static uint GetNormalGrowthRate(Town *t)
 		uint32_t inverse_m = UINT32_MAX / m;
 
 		uint32_t cargo_ratio_fix16 = 0;
-		for (auto tpe : {TPE_PASSENGERS, TPE_MAIL}) {
+		for (auto tpe : {TownProductionEffect::Passengers, TownProductionEffect::Mail}) {
 			uint32_t old_max = 0;
 			uint32_t old_act = 0;
 			for (CargoType cid : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[tpe])) {
@@ -4418,7 +4418,7 @@ static void UpdateTownGrowth(Town *t)
 
 	if (t->fund_buildings_months == 0) {
 		/* Check if all goals are reached for this town to grow (given we are not funding it) */
-		for (int i = TAE_BEGIN; i < TAE_END; i++) {
+		for (TownAcceptanceEffect i = TownAcceptanceEffect::Begin; i < TownAcceptanceEffect::End; i++) {
 			switch (t->goal[i]) {
 				case TOWN_GROWTH_WINTER:
 					if (TileHeight(t->xy) >= GetSnowLine() && t->received[i].old_act == 0 && t->cache.population > 90) return;

@@ -189,7 +189,7 @@ void DrawBadgeColumn(Rect r, int column_group, const GUIBadgeClasses &gui_classe
 }
 
 /** Drop down element that draws a list of badges. */
-template <class TBase, bool TEnd = true, FontSize TFs = FS_NORMAL>
+template <class TBase, bool TEnd = true, FontSize TFs = FontSize::Normal>
 class DropDownBadges : public TBase {
 public:
 	template <typename... Args>
@@ -294,7 +294,7 @@ public:
 };
 
 template <typename T>
-using DropDownListConditionallyShowMoney = DropDownConditionallyShowMoney<DropDownString<DropDownSpacer<T, true>, FS_SMALL, true>, T>;
+using DropDownListConditionallyShowMoney = DropDownConditionallyShowMoney<DropDownString<DropDownSpacer<T, true>, FontSize::Small, true>, T>;
 
 using DropDownListBadgeItem = DropDownBadges<DropDownListConditionallyShowMoney<DropDownListStringItem>>;
 using DropDownListBadgeIconItem = DropDownBadges<DropDownListConditionallyShowMoney<DropDownListIconItem>>;
@@ -318,7 +318,7 @@ std::unique_ptr<DropDownListItem> MakeDropDownListBadgeIconItem(const std::share
 /**
  * Drop down component that shows extra buttons to indicate that the item can be moved up or down.
  */
-template <class TBase, bool TEnd = true, FontSize TFs = FS_NORMAL>
+template <class TBase, bool TEnd = true, FontSize TFs = FontSize::Normal>
 class DropDownMover : public TBase {
 public:
 	template <typename... Args>

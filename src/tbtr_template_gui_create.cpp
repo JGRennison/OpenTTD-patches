@@ -292,7 +292,7 @@ public:
 			case TCW_NEW_TMPL_PANEL: {
 				if (this->virtual_train) {
 					DrawTrainImage(this->virtual_train, r.Shrink(TRAIN_FRONT_SPACE, 2, 25, 0), this->sel, EIT_IN_DEPOT, this->hscroll->GetPosition(), this->vehicle_over);
-					DrawString(r.left, r.right, r.top, GetString(STR_JUST_DECIMAL, CeilDiv(this->virtual_train->gcache.cached_total_length * 10, TILE_SIZE), 1), TC_BLACK, SA_RIGHT, false, FS_SMALL);
+					DrawString(r.left, r.right, r.top, GetString(STR_JUST_DECIMAL, CeilDiv(this->virtual_train->gcache.cached_total_length * 10, TILE_SIZE), 1), TC_BLACK, SA_RIGHT, false, FontSize::Small);
 				}
 				break;
 			}
@@ -321,10 +321,10 @@ public:
 					}
 					if (!buildable) {
 						DrawString(left, right, y, STR_TMPL_WARNING_VEH_UNAVAILABLE);
-						y += GetCharacterHeight(FS_NORMAL);
+						y += GetCharacterHeight(FontSize::Normal);
 					} else if (types.None()) {
 						DrawString(left, right, y, STR_TMPL_WARNING_VEH_NO_COMPATIBLE_RAIL_TYPE);
-						y += GetCharacterHeight(FS_NORMAL);
+						y += GetCharacterHeight(FontSize::Normal);
 					}
 
 					DrawString(left, right, y, GetString(STR_TMPL_TEMPLATE_OVR_MULTIPLE,
@@ -332,7 +332,7 @@ public:
 							buy_cost,
 							STR_TMPL_TEMPLATE_OVR_RUNNING_COST,
 							this->virtual_train->GetDisplayRunningCost()));
-					y += GetCharacterHeight(FS_NORMAL);
+					y += GetCharacterHeight(FontSize::Normal);
 
 					/* Draw vehicle performance info */
 					const bool original_acceleration = (_settings_game.vehicle.train_acceleration_model == AM_ORIGINAL ||
@@ -343,7 +343,7 @@ public:
 							gcache->cached_power,
 							this->virtual_train->GetDisplayMaxSpeed(),
 							gcache->cached_max_te));
-					y += GetCharacterHeight(FS_NORMAL);
+					y += GetCharacterHeight(FontSize::Normal);
 
 					uint32_t full_cargo_weight = 0;
 					for (const Train *train = this->virtual_train; train != nullptr; train = train->Next()) {
@@ -368,13 +368,13 @@ public:
 									std::monostate{},
 									std::monostate{}));
 						}
-						y += GetCharacterHeight(FS_NORMAL);
+						y += GetCharacterHeight(FontSize::Normal);
 					}
 
 					if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) {
 						DrawString(left, right, y, GetString(STR_VEHICLE_INFO_MAX_SPEED_LOADED,
 								GetTrainEstimatedMaxAchievableSpeed(this->virtual_train, gcache->cached_weight + full_cargo_weight, this->virtual_train->GetDisplayMaxSpeed())));
-						y += GetCharacterHeight(FS_NORMAL);
+						y += GetCharacterHeight(FontSize::Normal);
 					}
 
 					/* Draw cargo summary */
@@ -382,11 +382,11 @@ public:
 					for (const Train *tmp = this->virtual_train; tmp != nullptr; tmp = tmp->Next()) {
 						cargo_caps[tmp->cargo_type] += tmp->cargo_cap;
 					}
-					y += GetCharacterHeight(FS_NORMAL);
+					y += GetCharacterHeight(FontSize::Normal);
 					for (CargoType i = 0; i < NUM_CARGO; ++i) {
 						if (cargo_caps[i] > 0) {
 							DrawString(left, right, y, GetString(STR_TMPL_CARGO_SUMMARY, i, cargo_caps[i]), TC_LIGHT_BLUE, SA_LEFT);
-							y += GetCharacterHeight(FS_NORMAL);
+							y += GetCharacterHeight(FontSize::Normal);
 						}
 					}
 				}
@@ -560,7 +560,7 @@ public:
 	{
 		uint min_width = 32;
 		uint width = 0;
-		uint height = ScaleGUITrad(8) + (3 * GetCharacterHeight(FS_NORMAL));
+		uint height = ScaleGUITrad(8) + (3 * GetCharacterHeight(FontSize::Normal));
 		CargoArray cargo_caps{};
 
 		if (this->virtual_train != nullptr) {
@@ -572,13 +572,13 @@ public:
 				if (!IsEngineBuildable(train->engine_type, VEH_TRAIN, train->owner)) buildable = false;
 				full_cargo_weight += train->GetCargoWeight(train->cargo_cap);
 			}
-			if (!buildable) height += GetCharacterHeight(FS_NORMAL);
-			if (full_cargo_weight > 0 || _settings_client.gui.show_train_weight_ratios_in_details) height += GetCharacterHeight(FS_NORMAL);
-			if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) height += GetCharacterHeight(FS_NORMAL);
+			if (!buildable) height += GetCharacterHeight(FontSize::Normal);
+			if (full_cargo_weight > 0 || _settings_client.gui.show_train_weight_ratios_in_details) height += GetCharacterHeight(FontSize::Normal);
+			if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) height += GetCharacterHeight(FontSize::Normal);
 
 			for (CargoType i = 0; i < NUM_CARGO; ++i) {
 				if (cargo_caps[i] > 0) {
-					height += GetCharacterHeight(FS_NORMAL);
+					height += GetCharacterHeight(FontSize::Normal);
 				}
 			}
 		}

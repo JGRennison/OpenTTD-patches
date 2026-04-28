@@ -317,7 +317,7 @@ struct TownReceivedStructHandler final : public TypedSaveLoadStructHandler<TownR
 	{
 		size_t count = SlGetStructListLength(std::size(t->received));
 		for (size_t i = 0; i < count; i++) {
-			SlObjectLoadFiltered(&t->received[i], this->GetLoadDescription());
+			SlObjectLoadFiltered(&t->received[static_cast<TownAcceptanceEffect>(i)], this->GetLoadDescription());
 		}
 	}
 };
@@ -408,14 +408,14 @@ static const NamedSaveLoad _town_desc[] = {
 	NSL("",                                SLE_CONDNULL(2, SL_MIN_VERSION, SLV_164)), ///< pct_pass_transported / pct_mail_transported, now computed on the fly
 	NSL("",                                SLE_CONDNULL_X(3, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, SL_CHILLPP_232))),
 
-	NSL("received[TE_FOOD].old_act",       SLE_CONDVAR(Town, received[TAE_FOOD].old_act,      SLE_UINT16,                 SL_MIN_VERSION, SLV_165)),
-	NSL("received[TAE_WATER].old_act",     SLE_CONDVAR(Town, received[TAE_WATER].old_act,     SLE_UINT16,                 SL_MIN_VERSION, SLV_165)),
+	NSL("received[TE_FOOD].old_act",       SLE_CONDVAR(Town, received[TownAcceptanceEffect::Food].old_act,      SLE_UINT16,                 SL_MIN_VERSION, SLV_165)),
+	NSL("received[TAE_WATER].old_act",     SLE_CONDVAR(Town, received[TownAcceptanceEffect::Water].old_act,     SLE_UINT16,                 SL_MIN_VERSION, SLV_165)),
 	NSL("",                                SLE_CONDNULL_X(2, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, SL_CHILLPP_232))),
-	NSL("received[TE_FOOD].new_act",       SLE_CONDVAR(Town, received[TAE_FOOD].new_act,      SLE_UINT16,                 SL_MIN_VERSION, SLV_165)),
-	NSL("received[TE_WATER].new_act",      SLE_CONDVAR(Town, received[TAE_WATER].new_act,     SLE_UINT16,                 SL_MIN_VERSION, SLV_165)),
+	NSL("received[TE_FOOD].new_act",       SLE_CONDVAR(Town, received[TownAcceptanceEffect::Food].new_act,      SLE_UINT16,                 SL_MIN_VERSION, SLV_165)),
+	NSL("received[TE_WATER].new_act",      SLE_CONDVAR(Town, received[TownAcceptanceEffect::Water].new_act,     SLE_UINT16,                 SL_MIN_VERSION, SLV_165)),
 	NSL("",                                SLE_CONDNULL_X(2, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, SL_CHILLPP_232))),
 
-	NSL("goal",                            SLE_CONDARR(Town, goal, SLE_UINT32, NUM_TAE, SLV_165, SL_MAX_VERSION)),
+	NSL("goal",                            SLE_CONDARR(Town, goal, SLE_UINT32, to_underlying(TownAcceptanceEffect::End), SLV_165, SL_MAX_VERSION)),
 
 	NSL("text",                            SLE_CONDSSTR(Town, text, SLE_STR | SLF_ALLOW_CONTROL, SLV_168, SL_MAX_VERSION)),
 
@@ -498,7 +498,7 @@ static void Load_TOWN()
 	}
 
 	uint num_cargo = IsSavegameVersionBefore(SLV_EXTEND_CARGOTYPES) ? 32 : NUM_CARGO;
-	static_assert(static_cast<uint>(TAE_BEGIN) == 0 && static_cast<uint>(NUM_TAE) == 6);
+	static_assert(static_cast<size_t>(TownAcceptanceEffect::Begin) == 0 && static_cast<size_t>(TownAcceptanceEffect::End) == 6);
 
 	int index;
 	while ((index = SlIterateArray()) != -1) {
@@ -523,8 +523,8 @@ static void Load_TOWN()
 				s.history[THIS_MONTH].production = cargo_stat.new_max;
 				s.history[THIS_MONTH].transported = cargo_stat.new_act;
 			}
-			for (int i = TAE_BEGIN; i < NUM_TAE; i++) {
-				SlObjectLoadFiltered(&t->received[i], received_desc);
+			for (TownAcceptanceEffect tae = TownAcceptanceEffect::Begin; tae != TownAcceptanceEffect::End; tae++) {
+				SlObjectLoadFiltered(&t->received[tae], received_desc);
 			}
 
 			if ((!IsSavegameVersionBefore(SLV_166) && IsSavegameVersionBefore(SLV_REMOVE_TOWN_CARGO_CACHE)) || SlXvIsFeaturePresent(XSLFI_TOWN_CARGO_MATRIX)) {

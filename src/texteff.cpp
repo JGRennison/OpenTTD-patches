@@ -135,7 +135,7 @@ void DrawTextEffects(ViewportDrawerDynamic *vdd, DrawPixelInfo *dpi, bool load_t
 	if (dpi->zoom > ZoomLevel::TextEffect) return;
 
 	const int bottom_threshold = dpi->top + dpi->height;
-	const int top_threshold = dpi->top - ScaleByZoom(WidgetDimensions::scaled.framerect.Horizontal() + GetCharacterHeight(FS_NORMAL), dpi->zoom);
+	const int top_threshold = dpi->top - ScaleByZoom(WidgetDimensions::scaled.framerect.Horizontal() + GetCharacterHeight(FontSize::Normal), dpi->zoom);
 	const bool show_loading = (_settings_client.gui.loading_indicators && !load_transparent);
 
 	ViewportStringFlags flags{};

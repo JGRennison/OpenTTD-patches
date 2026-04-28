@@ -252,7 +252,7 @@ struct OrderListImportErrorsWindow : GeneralVehicleWindow
 	{
 		switch (widget) {
 			case WID_OIE_ORDER_LIST:
-				resize.height = GetCharacterHeight(FS_NORMAL);
+				resize.height = GetCharacterHeight(FontSize::Normal);
 				size.height = 6 * resize.height + padding.height;
 				break;
 		}

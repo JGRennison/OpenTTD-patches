@@ -510,12 +510,12 @@ public:
 						} else {
 							AppendStringInPlace(buf, STR_PLANS_LIST_ITEM_PLAN, list[i].plan_id + 1, p->lines.size(), p->creation_date);
 						}
-						DrawString(text_left, text_right, y + (this->resize.step_height - GetCharacterHeight(FS_NORMAL)) / 2, buf, _colour_value[p->colour].ToTextColour());
+						DrawString(text_left, text_right, y + (this->resize.step_height - GetCharacterHeight(FontSize::Normal)) / 2, buf, _colour_value[p->colour].ToTextColour());
 					} else {
 						PlanLine &pl = p->lines[list[i].line_id];
 						DrawBoolButton(btn_left, y + (this->resize.step_height - SETTING_BUTTON_HEIGHT) / 2, COLOUR_YELLOW, COLOUR_GREY, pl.visible, true);
 						std::string str = GetString(STR_PLANS_LIST_ITEM_LINE, list[i].line_id + 1, pl.tiles.size() - 1);
-						DrawString(text_left, text_right, y + (this->resize.step_height - GetCharacterHeight(FS_NORMAL)) / 2, str, TC_WHITE);
+						DrawString(text_left, text_right, y + (this->resize.step_height - GetCharacterHeight(FontSize::Normal)) / 2, str, TC_WHITE);
 					}
 					y += this->resize.step_height;
 				}
@@ -564,7 +564,7 @@ public:
 
 			case WID_PLN_LIST:
 				this->company_icon_spr_dim = GetSpriteSize(SPR_COMPANY_ICON);
-				resize.height = std::max<int>(GetCharacterHeight(FS_NORMAL), SETTING_BUTTON_HEIGHT);
+				resize.height = std::max<int>(GetCharacterHeight(FontSize::Normal), SETTING_BUTTON_HEIGHT);
 				size.height = resize.height * 5 + WidgetDimensions::scaled.framerect.Vertical();
 				break;
 

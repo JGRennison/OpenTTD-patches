@@ -14,12 +14,13 @@
 #include "gfx_type.h"
 #include "provider_manager.h"
 #include "spritecache.h"
+#include "core/enum_type.hpp"
 
 /** Glyphs are characters from a font. */
 typedef uint32_t GlyphID;
 static const GlyphID SPRITE_GLYPH = 1U << 30;
 
-extern int font_height_cache[FS_END]; ///< Cache of font heights
+extern EnumIndexArray<int, FontSize, FontSize::End> font_height_cache; ///< Cache of font heights
 
 void UpdateFontHeightCache();
 
@@ -27,7 +28,7 @@ void UpdateFontHeightCache();
 class FontCache {
 	friend class MockFontCache;
 private:
-	static std::array<std::unique_ptr<FontCache>, FS_END> caches; ///< All the font caches.
+	static EnumIndexArray<std::unique_ptr<FontCache>, FontSize, FontSize::End> caches; ///< All the font caches.
 protected:
 	std::unique_ptr<FontCache> parent; ///< The parent of this font cache.
 	const FontSize fs; ///< The size of the font.
@@ -47,9 +48,9 @@ public:
 	static void ClearFontCaches(FontSizes fontsizes);
 
 	/** Default unscaled font heights. */
-	static const int DEFAULT_FONT_HEIGHT[FS_END];
+	static const EnumIndexArray<int, FontSize, FontSize::End> DEFAULT_FONT_HEIGHT;
 	/** Default unscaled font ascenders. */
-	static const int DEFAULT_FONT_ASCENDER[FS_END];
+	static const EnumIndexArray<int, FontSize, FontSize::End> DEFAULT_FONT_ASCENDER;
 
 	static int GetDefaultFontHeight(FontSize fs);
 
@@ -140,7 +141,7 @@ public:
 	 */
 	static inline FontCache *Get(FontSize fs)
 	{
-		assert(fs < FS_END);
+		assert(fs < FontSize::End);
 		return FontCache::caches[fs].get();
 	}
 
@@ -218,10 +219,10 @@ inline FontCacheSubSetting *GetFontCacheSubSetting(FontSize fs)
 {
 	switch (fs) {
 		default: NOT_REACHED();
-		case FS_SMALL:  return &_fcsettings.small;
-		case FS_NORMAL: return &_fcsettings.medium;
-		case FS_LARGE:  return &_fcsettings.large;
-		case FS_MONO:   return &_fcsettings.mono;
+		case FontSize::Small: return &_fcsettings.small;
+		case FontSize::Normal: return &_fcsettings.medium;
+		case FontSize::Large: return &_fcsettings.large;
+		case FontSize::Monospace: return &_fcsettings.mono;
 	}
 }
 

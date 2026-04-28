@@ -2937,7 +2937,7 @@ private:
 
 	FontSize DefaultSize() override
 	{
-		return FS_NORMAL;
+		return FontSize::Normal;
 	}
 
 	std::optional<std::string_view> NextString() override

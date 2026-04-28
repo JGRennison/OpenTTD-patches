@@ -475,7 +475,7 @@ struct GameOptionsWindow : Window {
 	void OnInit() override
 	{
 		BaseSettingEntry::circle_size = maxdim(GetSpriteSize(SPR_CIRCLE_FOLDED), GetSpriteSize(SPR_CIRCLE_UNFOLDED));
-		BaseSettingEntry::line_height = std::max({static_cast<int>(BaseSettingEntry::circle_size.height), SETTING_BUTTON_HEIGHT, GetCharacterHeight(FS_NORMAL)}) + WidgetDimensions::scaled.vsep_normal;
+		BaseSettingEntry::line_height = std::max({static_cast<int>(BaseSettingEntry::circle_size.height), SETTING_BUTTON_HEIGHT, GetCharacterHeight(FontSize::Normal)}) + WidgetDimensions::scaled.vsep_normal;
 
 		this->gui_scale = _gui_scale;
 	}
@@ -762,7 +762,7 @@ struct GameOptionsWindow : Window {
 						default: NOT_REACHED();
 					}
 					DrawString(tr, str);
-					tr.top += GetCharacterHeight(FS_NORMAL);
+					tr.top += GetCharacterHeight(FontSize::Normal);
 
 					if (sd->guiproc != nullptr) {
 						SettingOnGuiCtrlData data;
@@ -771,8 +771,8 @@ struct GameOptionsWindow : Window {
 						data.val = sd->Read(ResolveObject(settings_ptr, sd));
 						if (sd->guiproc(data)) {
 							const Dimension warning_dimensions = GetSpriteSize(SPR_WARNING_SIGN);
-							const int step_height = std::max<int>(warning_dimensions.height, GetCharacterHeight(FS_NORMAL));
-							const int text_offset_y = (step_height - GetCharacterHeight(FS_NORMAL)) / 2;
+							const int step_height = std::max<int>(warning_dimensions.height, GetCharacterHeight(FontSize::Normal));
+							const int text_offset_y = (step_height - GetCharacterHeight(FontSize::Normal)) / 2;
 							const int warning_offset_y = (step_height - warning_dimensions.height) / 2;
 							const bool rtl = _current_text_dir == TD_RTL;
 
@@ -802,7 +802,7 @@ struct GameOptionsWindow : Window {
 					DrawPixelInfo tmp_dpi;
 					if (FillDrawPixelInfo(&tmp_dpi, r)) {
 						AutoRestoreBackup dpi_backup(_cur_dpi, &tmp_dpi);
-						int scrolls_pos = this->vscroll_description->GetPosition() * GetCharacterHeight(FS_NORMAL);
+						int scrolls_pos = this->vscroll_description->GetPosition() * GetCharacterHeight(FontSize::Normal);
 						DrawStringMultiLine(0, r.Width() - 1, -scrolls_pos, r.Height() - 1, sd->GetHelp(), TC_WHITE);
 					}
 				}
@@ -827,7 +827,7 @@ struct GameOptionsWindow : Window {
 	void UpdateHelpTextSize()
 	{
 		NWidgetResizeBase *wid = this->GetWidget<NWidgetResizeBase>(WID_GO_HELP_TEXT);
-		this->vscroll_description->SetCount(this->last_clicked ? CeilDiv(this->last_clicked->GetMaxHelpHeight(wid->current_x), GetCharacterHeight(FS_NORMAL)) : 0);
+		this->vscroll_description->SetCount(this->last_clicked ? CeilDiv(this->last_clicked->GetMaxHelpHeight(wid->current_x), GetCharacterHeight(FontSize::Normal)) : 0);
 	}
 
 	void SetTab(WidgetID widget)
@@ -931,12 +931,12 @@ struct GameOptionsWindow : Window {
 				for (const auto &setting_type : setting_types) {
 					size.width = std::max(size.width, GetStringBoundingBox(GetString(STR_CONFIG_SETTING_TYPE, setting_type)).width + padding.width);
 				}
-				size.height = 2 * GetCharacterHeight(FS_NORMAL);
+				size.height = 2 * GetCharacterHeight(FontSize::Normal);
 				break;
 			}
 
 			case WID_GO_HELP_TEXT:
-				size.height = NUM_DESCRIPTION_LINES * GetCharacterHeight(FS_NORMAL);
+				size.height = NUM_DESCRIPTION_LINES * GetCharacterHeight(FontSize::Normal);
 				break;
 
 			case WID_GO_RESTRICT_CATEGORY:
@@ -981,7 +981,7 @@ struct GameOptionsWindow : Window {
 
 		/* Draw the 'some search results are hidden' notice. */
 		if (this->warn_missing != WHR_NONE) {
-			DrawStringMultiLineWithClipping(panel.WithHeight(this->warn_lines * GetCharacterHeight(FS_NORMAL)),
+			DrawStringMultiLineWithClipping(panel.WithHeight(this->warn_lines * GetCharacterHeight(FontSize::Normal)),
 				GetString(warn_str, _game_settings_restrict_dropdown[this->filter.min_cat]),
 				TC_BLACK, SA_CENTER);
 		}
@@ -1799,7 +1799,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_game_options_widgets
 						NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_normal, 0),
 							NWidget(NWID_HORIZONTAL), SetPIP(0, WidgetDimensions::unscaled.hsep_wide, 0),
 								NWidget(WWT_TEXT, INVALID_COLOUR), SetStringTip(STR_GAME_OPTIONS_GUI_SCALE_FRAME), SetTextStyle(GAME_OPTIONS_LABEL),
-								NWidget(WWT_EMPTY, INVALID_COLOUR, WID_GO_GUI_SCALE), SetMinimalTextLines(1, 12 + WidgetDimensions::unscaled.vsep_normal, FS_SMALL), SetFill(1, 0), SetResize(1, 0), SetToolTip(STR_GAME_OPTIONS_GUI_SCALE_TOOLTIP),
+								NWidget(WWT_EMPTY, INVALID_COLOUR, WID_GO_GUI_SCALE), SetMinimalTextLines(1, 12 + WidgetDimensions::unscaled.vsep_normal, FontSize::Small), SetFill(1, 0), SetResize(1, 0), SetToolTip(STR_GAME_OPTIONS_GUI_SCALE_TOOLTIP),
 							EndContainer(),
 							NWidget(NWID_HORIZONTAL), SetPIP(0, WidgetDimensions::unscaled.hsep_wide, 0),
 								NWidget(WWT_BOOLBTN, GAME_OPTIONS_BACKGROUND, WID_GO_GUI_SCALE_AUTO), SetAlternateColourTip(GAME_OPTIONS_BUTTON, STR_GAME_OPTIONS_GUI_SCALE_AUTO_TOOLTIP),
@@ -1888,11 +1888,11 @@ static constexpr std::initializer_list<NWidgetPart> _nested_game_options_widgets
 					NWidget(WWT_FRAME, GAME_OPTIONS_BACKGROUND), SetStringTip(STR_GAME_OPTIONS_VOLUME), SetTextStyle(GAME_OPTIONS_FRAME), SetPIP(0, WidgetDimensions::unscaled.vsep_wide, 0),
 						NWidget(NWID_HORIZONTAL), SetPIP(0, WidgetDimensions::unscaled.hsep_wide, 0),
 							NWidget(WWT_TEXT, INVALID_COLOUR, WID_GO_TEXT_SFX_VOLUME), SetStringTip(STR_GAME_OPTIONS_SFX_VOLUME), SetTextStyle(GAME_OPTIONS_LABEL),
-							NWidget(WWT_EMPTY, INVALID_COLOUR, WID_GO_BASE_SFX_VOLUME), SetMinimalTextLines(1, 12 + WidgetDimensions::unscaled.vsep_normal, FS_SMALL), SetFill(1, 0), SetResize(1, 0), SetToolTip(STR_MUSIC_TOOLTIP_DRAG_SLIDERS_TO_SET_MUSIC),
+							NWidget(WWT_EMPTY, INVALID_COLOUR, WID_GO_BASE_SFX_VOLUME), SetMinimalTextLines(1, 12 + WidgetDimensions::unscaled.vsep_normal, FontSize::Small), SetFill(1, 0), SetResize(1, 0), SetToolTip(STR_MUSIC_TOOLTIP_DRAG_SLIDERS_TO_SET_MUSIC),
 						EndContainer(),
 						NWidget(NWID_HORIZONTAL), SetPIP(0, WidgetDimensions::unscaled.hsep_wide, 0),
 							NWidget(WWT_TEXT, INVALID_COLOUR, WID_GO_TEXT_MUSIC_VOLUME), SetStringTip(STR_GAME_OPTIONS_MUSIC_VOLUME), SetTextStyle(GAME_OPTIONS_LABEL),
-							NWidget(WWT_EMPTY, INVALID_COLOUR, WID_GO_BASE_MUSIC_VOLUME), SetMinimalTextLines(1, 12 + WidgetDimensions::unscaled.vsep_normal, FS_SMALL), SetFill(1, 0), SetResize(1, 0), SetToolTip(STR_MUSIC_TOOLTIP_DRAG_SLIDERS_TO_SET_MUSIC),
+							NWidget(WWT_EMPTY, INVALID_COLOUR, WID_GO_BASE_MUSIC_VOLUME), SetMinimalTextLines(1, 12 + WidgetDimensions::unscaled.vsep_normal, FontSize::Small), SetFill(1, 0), SetResize(1, 0), SetToolTip(STR_MUSIC_TOOLTIP_DRAG_SLIDERS_TO_SET_MUSIC),
 						EndContainer(),
 					EndContainer(),
 

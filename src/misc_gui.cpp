@@ -47,14 +47,6 @@
 
 #include "safeguards.h"
 
-/** Method to open the OSK. */
-enum OskActivation : uint8_t {
-	OSKA_DISABLED,           ///< The OSK shall not be activated at all.
-	OSKA_DOUBLE_CLICK,       ///< Double click on the edit box opens OSK.
-	OSKA_SINGLE_CLICK,       ///< Single click after focus click opens OSK.
-	OSKA_IMMEDIATELY,        ///< Focusing click already opens OSK.
-};
-
 
 static constexpr std::initializer_list<NWidgetPart> _nested_land_info_widgets = {
 	NWidget(NWID_HORIZONTAL),
@@ -87,7 +79,7 @@ public:
 		Rect ir = r.Shrink(WidgetDimensions::scaled.frametext);
 		for (size_t i = 0; i < this->landinfo_data.size(); i++) {
 			DrawString(ir, this->landinfo_data[i], i == 0 ? TC_LIGHT_BLUE : TC_FROMSTRING, SA_HOR_CENTER);
-			ir.top += GetCharacterHeight(FS_NORMAL) + (i == 0 ? WidgetDimensions::scaled.vsep_wide : WidgetDimensions::scaled.vsep_normal);
+			ir.top += GetCharacterHeight(FontSize::Normal) + (i == 0 ? WidgetDimensions::scaled.vsep_wide : WidgetDimensions::scaled.vsep_normal);
 		}
 
 		if (!this->cargo_acceptance.empty()) {
@@ -104,7 +96,7 @@ public:
 			uint width = GetStringBoundingBox(this->landinfo_data[i]).width + WidgetDimensions::scaled.frametext.Horizontal();
 			size.width = std::max(size.width, width);
 
-			size.height += GetCharacterHeight(FS_NORMAL) + (i == 0 ? WidgetDimensions::scaled.vsep_wide : WidgetDimensions::scaled.vsep_normal);
+			size.height += GetCharacterHeight(FontSize::Normal) + (i == 0 ? WidgetDimensions::scaled.vsep_wide : WidgetDimensions::scaled.vsep_normal);
 		}
 
 		if (!this->cargo_acceptance.empty()) {
@@ -158,15 +150,15 @@ public:
 
 	void OnInit() override
 	{
-		Town *t = ClosestTownFromTile(tile, _settings_game.economy.dist_local_authority);
+		Town *t = ClosestTownFromTile(this->tile, _settings_game.economy.dist_local_authority);
 
 		TileDesc td{};
 		td.owner_type[0] = STR_LAND_AREA_INFORMATION_OWNER; // At least one owner is displayed, though it might be "N/A".
 
 		CargoArray acceptance{};
 		CargoTypes always_accepted{};
-		AddAcceptedCargo(tile, acceptance, always_accepted);
-		GetTileDesc(tile, td);
+		AddAcceptedCargo(this->tile, acceptance, always_accepted);
+		GetTileDesc(this->tile, td);
 
 		this->landinfo_data.clear();
 
@@ -181,7 +173,7 @@ public:
 			if (td.owner[i] == OWNER_NONE || td.owner[i] == OWNER_WATER) {
 				this->landinfo_data.push_back(GetString(td.owner_type[i], STR_LAND_AREA_INFORMATION_OWNER_N_A, std::monostate{}));
 			} else {
-				auto params = GetParamsForOwnedBy(td.owner[i], tile);
+				auto params = GetParamsForOwnedBy(td.owner[i], this->tile);
 				this->landinfo_data.push_back(GetStringWithArgs(td.owner_type[i], params));
 			}
 		}
@@ -190,7 +182,7 @@ public:
 		Company *c = Company::GetIfValid(_local_company);
 		if (c != nullptr) {
 			assert(_current_company == _local_company);
-			CommandCost costclear = Command<Commands::LandscapeClear>::Do(DoCommandFlag::QueryCost, tile);
+			CommandCost costclear = Command<Commands::LandscapeClear>::Do(DoCommandFlag::QueryCost, this->tile);
 			if (costclear.Succeeded()) {
 				Money cost = costclear.GetCost();
 				StringID str;
@@ -209,10 +201,10 @@ public:
 		}
 
 		/* Location */
-		this->landinfo_data.push_back(GetString(STR_LAND_AREA_INFORMATION_LANDINFO_COORDS, TileX(tile), TileY(tile), GetTileZ(tile)));
+		this->landinfo_data.push_back(GetString(STR_LAND_AREA_INFORMATION_LANDINFO_COORDS, TileX(this->tile), TileY(this->tile), GetTileZ(this->tile)));
 
 		/* Tile index */
-		this->landinfo_data.push_back(GetString(STR_LAND_AREA_INFORMATION_LANDINFO_INDEX, tile, tile));
+		this->landinfo_data.push_back(GetString(STR_LAND_AREA_INFORMATION_LANDINFO_INDEX, this->tile, this->tile));
 
 		/* Local authority */
 		if (t == nullptr) {
@@ -464,7 +456,7 @@ struct AboutWindow : public Window {
 	int line_height = 0; ///< The height of a single line
 	static const int num_visible_lines = 19; ///< The number of lines visible simultaneously
 
-	static const uint TIMER_INTERVAL = 2100; ///< Scrolling interval, scaled by line text line height. This value chosen to maintain parity: 2100 / GetCharacterHeight(FS_NORMAL) = 150ms
+	static const uint TIMER_INTERVAL = 2100; ///< Scrolling interval, scaled by line text line height. This value chosen to maintain parity: 2100 / GetCharacterHeight(FontSize::Normal) = 150ms
 	GUITimer timer{};
 
 	AboutWindow() : Window(_about_desc)
@@ -487,7 +479,7 @@ struct AboutWindow : public Window {
 	{
 		if (widget != WID_A_SCROLLING_TEXT) return;
 
-		this->line_height = GetCharacterHeight(FS_NORMAL);
+		this->line_height = GetCharacterHeight(FontSize::Normal);
 
 		Dimension d;
 		d.height = this->line_height * num_visible_lines;
@@ -500,7 +492,7 @@ struct AboutWindow : public Window {
 
 		/* Set scroll interval based on required speed. To keep scrolling smooth,
 		 * the interval is adjusted rather than the distance moved. */
-		this->timer.SetInterval(TIMER_INTERVAL / GetCharacterHeight(FS_NORMAL));
+		this->timer.SetInterval(TIMER_INTERVAL / GetCharacterHeight(FontSize::Normal));
 	}
 
 	void DrawWidget(const Rect &r, WidgetID widget) const override
@@ -786,7 +778,7 @@ void QueryString::HandleEditBox(Window *w, WidgetID wid)
 
 static int GetCaretWidth()
 {
-	return GetCharacterWidth(FS_NORMAL, '_');
+	return GetCharacterWidth(FontSize::Normal, '_');
 }
 
 /**
@@ -847,14 +839,14 @@ void QueryString::DrawEditBox(const Window *w, WidgetID wid) const
 	/* If we have a marked area, draw a background highlight. */
 	if (tb->marklength != 0) GfxFillRect(fr.left + tb->markxoffs, fr.top, fr.left + tb->markxoffs + tb->marklength - 1, fr.bottom, PC_GREY);
 
-	DrawString(fr.left, fr.right, CentreBounds(fr.top, fr.bottom, GetCharacterHeight(FS_NORMAL)), tb->GetText(), TC_YELLOW);
+	DrawString(fr.left, fr.right, CentreBounds(fr.top, fr.bottom, GetCharacterHeight(FontSize::Normal)), tb->GetText(), TC_YELLOW);
 	bool focussed = w->IsWidgetGloballyFocused(wid) || IsOSKOpenedFor(w, wid);
 	if (focussed && tb->caret) {
 		int caret_width = GetCaretWidth();
 		if (rtl) {
-			DrawString(fr.right - tb->pixels + tb->caretxoffs - caret_width, fr.right - tb->pixels + tb->caretxoffs, CentreBounds(fr.top, fr.bottom, GetCharacterHeight(FS_NORMAL)), "_", TC_WHITE);
+			DrawString(fr.right - tb->pixels + tb->caretxoffs - caret_width, fr.right - tb->pixels + tb->caretxoffs, CentreBounds(fr.top, fr.bottom, GetCharacterHeight(FontSize::Normal)), "_", TC_WHITE);
 		} else {
-			DrawString(fr.left + tb->caretxoffs, fr.left + tb->caretxoffs + caret_width, CentreBounds(fr.top, fr.bottom, GetCharacterHeight(FS_NORMAL)), "_", TC_WHITE);
+			DrawString(fr.left + tb->caretxoffs, fr.left + tb->caretxoffs + caret_width, CentreBounds(fr.top, fr.bottom, GetCharacterHeight(FontSize::Normal)), "_", TC_WHITE);
 		}
 	}
 }
@@ -910,8 +902,8 @@ Rect QueryString::GetBoundingRect(const Window *w, WidgetID wid, size_t from, si
 	r = ScrollEditBoxTextRect(r, *tb);
 
 	/* Get location of first and last character. */
-	const auto p1 = GetCharPosInString(tb->GetText(), from, FS_NORMAL);
-	const auto p2 = from != to ? GetCharPosInString(tb->GetText(), to, FS_NORMAL) : p1;
+	const auto p1 = GetCharPosInString(tb->GetText(), from, FontSize::Normal);
+	const auto p2 = from != to ? GetCharPosInString(tb->GetText(), to, FontSize::Normal) : p1;
 
 	return r.WithX(Clamp(r.left + p1.left, r.left, r.right), Clamp(r.left + p2.right, r.left, r.right));
 }
@@ -965,9 +957,9 @@ void QueryString::ClickEditBox(Window *w, Point pt, WidgetID wid, int click_coun
 		return;
 	}
 
-	if (w->window_class != WC_OSK && _settings_client.gui.osk_activation != OSKA_DISABLED &&
-		(!focus_changed || _settings_client.gui.osk_activation == OSKA_IMMEDIATELY) &&
-		(click_count == 2 || _settings_client.gui.osk_activation != OSKA_DOUBLE_CLICK)) {
+	if (w->window_class != WC_OSK && _settings_client.gui.osk_activation != OskActivation::Disabled &&
+		(!focus_changed || _settings_client.gui.osk_activation == OskActivation::Immediately) &&
+		(click_count == 2 || _settings_client.gui.osk_activation != OskActivation::DoubleClick)) {
 		/* Open the OSK window */
 		ShowOnScreenKeyboard(w, wid);
 	}

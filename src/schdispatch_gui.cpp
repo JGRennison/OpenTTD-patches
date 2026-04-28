@@ -376,11 +376,11 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			}
 
 			case WID_SCHDISPATCH_SUMMARY_PANEL:
-				size.height = (6 + this->extra_line_count) * GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.framerect.Vertical() + (WidgetDimensions::scaled.vsep_wide * 2);
+				size.height = (6 + this->extra_line_count) * GetCharacterHeight(FontSize::Normal) + WidgetDimensions::scaled.framerect.Vertical() + (WidgetDimensions::scaled.vsep_wide * 2);
 				uint warning_count = this->warning_count;
 				if (warning_count > 0) {
 					const Dimension warning_dimensions = GetSpriteSize(SPR_WARNING_SIGN);
-					size.height += warning_count * std::max<int>(warning_dimensions.height, GetCharacterHeight(FS_NORMAL));
+					size.height += warning_count * std::max<int>(warning_dimensions.height, GetCharacterHeight(FontSize::Normal));
 				}
 				break;
 		}
@@ -683,7 +683,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 			}
 		}
 
-		DrawString(text_left, text_right, y + (this->resize.step_height - GetCharacterHeight(FS_NORMAL)) / 2,
+		DrawString(text_left, text_right, y + (this->resize.step_height - GetCharacterHeight(FontSize::Normal)) / 2,
 				GetString(flagged ? STR_SCHDISPATCH_DATE_WALLCLOCK_TINY_FLAGGED : STR_JUST_TT_TIME, time), colour, SA_HOR_CENTER);
 	}
 
@@ -822,7 +822,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 							prepare_str(true);
 						}
 
-						DrawString(detail_left, detail_right, y + (this->resize.step_height - GetCharacterHeight(FS_NORMAL)) / 2, str, colour);
+						DrawString(detail_left, detail_right, y + (this->resize.step_height - GetCharacterHeight(FontSize::Normal)) / 2, str, colour);
 					}
 
 					this->DrawScheduledTime(draw_time, left, right, y, colour, last, next, veh, !this->slot_display_long_mode && (flags != 0 || slot.route_id != 0));
@@ -856,7 +856,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 				auto draw_warning_generic = [&](std::string_view text, TextColour colour) {
 					const Dimension warning_dimensions = GetSpriteSize(SPR_WARNING_SIGN);
-					int step_height = std::max<int>(warning_dimensions.height, GetCharacterHeight(FS_NORMAL));
+					int step_height = std::max<int>(warning_dimensions.height, GetCharacterHeight(FontSize::Normal));
 					int left = ir.left;
 					int right = ir.right;
 					const bool rtl = (_current_text_dir == TD_RTL);
@@ -866,14 +866,14 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					} else {
 						left += (warning_dimensions.width + 10);
 					}
-					DrawString(left, right, y + (step_height - GetCharacterHeight(FS_NORMAL)) / 2, text, colour);
+					DrawString(left, right, y + (step_height - GetCharacterHeight(FontSize::Normal)) / 2, text, colour);
 					y += step_height;
 				};
 
 				if (!v->vehicle_flags.Test(VehicleFlag::ScheduledDispatch) || !this->IsScheduleSelected()) {
-					y += GetCharacterHeight(FS_NORMAL);
+					y += GetCharacterHeight(FontSize::Normal);
 					DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_SUMMARY_NOT_ENABLED);
-					y += GetCharacterHeight(FS_NORMAL) * 2;
+					y += GetCharacterHeight(FontSize::Normal) * 2;
 
 					if (v->vehicle_flags.Test(VehicleFlag::TimetableSeparation)) {
 						draw_warning_generic(GetString(STR_CANNOT_ENABLE_BECAUSE_AUTO_SEPARATION), TC_BLACK);
@@ -953,7 +953,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 						}
 
 						DrawString(ir.left, ir.right, y, buf);
-						y += GetCharacterHeight(FS_NORMAL);
+						y += GetCharacterHeight(FontSize::Normal);
 						extra_lines++;
 					}
 
@@ -974,7 +974,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 						} else {
 							DrawString(ir.left, ir.right, y, GetString(str, last_departure, STR_SCHDISPATCH_SUMMARY_DEPARTURE_DETAILS, details));
 						}
-						y += GetCharacterHeight(FS_NORMAL);
+						y += GetCharacterHeight(FontSize::Normal);
 
 						departure_time_warnings(last_departure);
 
@@ -987,7 +987,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 								const uint hours = delta.base() / 60;
 								DrawString(ir.left, ir.right, y, GetString(STR_SCHDISPATCH_MORE_THAN_N_HOURS_IN_PAST, hours));
 								extra_lines++;
-								y += GetCharacterHeight(FS_NORMAL);
+								y += GetCharacterHeight(FontSize::Normal);
 
 								set_next_departure_update(_settings_time.FromTickMinutes(target + ((hours + 1) * 60) + 1));
 							}
@@ -1025,14 +1025,14 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 						show_last_departure(record.dispatched, true, details);
 					} else {
 						DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_SUMMARY_VEHICLE_NO_LAST_DEPARTURE);
-						y += GetCharacterHeight(FS_NORMAL);
+						y += GetCharacterHeight(FontSize::Normal);
 					}
 
 					if (ds.GetScheduledDispatchLastDispatch() != INVALID_SCHEDULED_DISPATCH_OFFSET) {
 						show_last_departure(ds.GetScheduledDispatchStartTick() + ds.GetScheduledDispatchLastDispatch(), false, {});
 					} else {
 						DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_SUMMARY_NO_LAST_DEPARTURE);
-						y += GetCharacterHeight(FS_NORMAL);
+						y += GetCharacterHeight(FontSize::Normal);
 					}
 
 					const StateTicks next_departure = GetScheduledDispatchTime(ds, _state_ticks).first;
@@ -1040,7 +1040,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 						set_next_departure_update(next_departure + ds.GetScheduledDispatchDelay());
 						DrawString(ir.left, ir.right, y, GetString(STR_SCHDISPATCH_SUMMARY_NEXT_AVAILABLE_DEPARTURE, next_departure));
 					}
-					y += GetCharacterHeight(FS_NORMAL);
+					y += GetCharacterHeight(FontSize::Normal);
 
 					departure_time_warnings(next_departure);
 
@@ -1049,26 +1049,26 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					if (ds.GetScheduledDispatchReuseSlots()) {
 						DrawString(ir.left, ir.right, y, STR_SCHDISPATCH_SUMMARY_REUSE_SLOTS_ENABLED);
 						extra_lines++;
-						y += GetCharacterHeight(FS_NORMAL);
+						y += GetCharacterHeight(FontSize::Normal);
 					}
 
 					auto tt_params = GetTimetableParameters(ds.GetScheduledDispatchDuration(), true);
 					DrawString(ir.left, ir.right, y, GetString(STR_SCHDISPATCH_SUMMARY_L2, std::move(tt_params.first), std::move(tt_params.second)));
-					y += GetCharacterHeight(FS_NORMAL);
+					y += GetCharacterHeight(FontSize::Normal);
 
 					DrawString(ir.left, ir.right, y, GetString(STR_SCHDISPATCH_SUMMARY_L3, ds.GetScheduledDispatchStartTick(), ds.GetScheduledDispatchStartTick() + ds.GetScheduledDispatchDuration()));
-					y += GetCharacterHeight(FS_NORMAL);
+					y += GetCharacterHeight(FontSize::Normal);
 
 					tt_params = GetTimetableParameters(ds.GetScheduledDispatchDelay());
 					DrawString(ir.left, ir.right, y, GetString(STR_SCHDISPATCH_SUMMARY_L4, std::move(tt_params.first), std::move(tt_params.second)));
-					y += GetCharacterHeight(FS_NORMAL);
+					y += GetCharacterHeight(FontSize::Normal);
 
 					if (!ds.GetScheduledDispatchReuseSlots() && !have_conditional) {
 						const int required_vehicle = CalculateMaxRequiredVehicle(v->orders->GetTimetableTotalDuration(), ds.GetScheduledDispatchDuration(), ds.GetScheduledDispatch());
 						if (required_vehicle > 0) {
 							DrawString(ir.left, ir.right, y, GetString(STR_SCHDISPATCH_SUMMARY_L1, required_vehicle));
 							extra_lines++;
-							y += GetCharacterHeight(FS_NORMAL);
+							y += GetCharacterHeight(FontSize::Normal);
 						}
 					}
 

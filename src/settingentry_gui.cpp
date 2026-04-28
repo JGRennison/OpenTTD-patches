@@ -304,7 +304,7 @@ void SettingEntry::DrawSetting(GameSettings *settings_ptr, int left, int right, 
 		DrawArrowButtons(buttons_left, button_y, COLOUR_YELLOW, state,
 				editable && value != (sd->flags.Test(SettingFlag::GuiZeroIsSpecial) ? 0 : min_val), editable && static_cast<uint32_t>(value) != max_val);
 	}
-	this->DrawSettingString(text_left, text_right, y + (BaseSettingEntry::line_height - GetCharacterHeight(FS_NORMAL)) / 2, highlight, value);
+	this->DrawSettingString(text_left, text_right, y + (BaseSettingEntry::line_height - GetCharacterHeight(FontSize::Normal)) / 2, highlight, value);
 }
 
 void SettingEntry::DrawSettingString(uint left, uint right, int y, bool highlight, int32_t value) const
@@ -322,7 +322,7 @@ void SettingEntry::DrawSettingString(uint left, uint right, int y, bool highligh
 			const Dimension warning_dimensions = GetSpriteSize(sprite);
 			if ((int)warning_dimensions.height <= BaseSettingEntry::line_height) {
 				DrawSprite(sprite, 0, (_current_text_dir == TD_RTL) ? edge - warning_dimensions.width - 5 : edge + 5,
-						y + (((int)GetCharacterHeight(FS_NORMAL) - (int)warning_dimensions.height) / 2));
+						y + (((int)GetCharacterHeight(FontSize::Normal) - (int)warning_dimensions.height) / 2));
 			}
 		}
 	}
@@ -641,7 +641,7 @@ void SettingsPage::DrawSetting(GameSettings *, int left, int right, int y, bool)
 {
 	bool rtl = _current_text_dir == TD_RTL;
 	DrawSprite((this->folded ? SPR_CIRCLE_FOLDED : SPR_CIRCLE_UNFOLDED), PAL_NONE, rtl ? right - BaseSettingEntry::circle_size.width : left, y + (BaseSettingEntry::line_height - BaseSettingEntry::circle_size.height) / 2);
-	DrawString(rtl ? left : left + BaseSettingEntry::circle_size.width + WidgetDimensions::scaled.hsep_normal, rtl ? right - BaseSettingEntry::circle_size.width - WidgetDimensions::scaled.hsep_normal : right, y + (BaseSettingEntry::line_height - GetCharacterHeight(FS_NORMAL)) / 2, this->title, TC_ORANGE);
+	DrawString(rtl ? left : left + BaseSettingEntry::circle_size.width + WidgetDimensions::scaled.hsep_normal, rtl ? right - BaseSettingEntry::circle_size.width - WidgetDimensions::scaled.hsep_normal : right, y + (BaseSettingEntry::line_height - GetCharacterHeight(FontSize::Normal)) / 2, this->title, TC_ORANGE);
 }
 
 /**

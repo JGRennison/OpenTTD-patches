@@ -215,7 +215,7 @@ struct GoalListWindow : public Window {
 							}
 							break;
 					}
-					r.top += GetCharacterHeight(FS_NORMAL);
+					r.top += GetCharacterHeight(FontSize::Normal);
 				}
 				pos++;
 				num++;

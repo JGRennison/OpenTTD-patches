@@ -150,7 +150,7 @@ protected:
 	inline uint GetLegendHeight(uint num_columns) const
 	{
 		return WidgetDimensions::scaled.framerect.Vertical() +
-				this->GetNumberRowsLegend(num_columns) * GetCharacterHeight(FS_SMALL);
+				this->GetNumberRowsLegend(num_columns) * GetCharacterHeight(FontSize::Small);
 	}
 
 	/**

@@ -110,16 +110,16 @@ static constexpr std::initializer_list<NWidgetPart> _nested_normal_news_widgets 
 					NWidget(NWID_HORIZONTAL), SetPIPRatio(0, 1, 0),
 						NWidget(WWT_CLOSEBOX, COLOUR_WHITE, WID_N_CLOSEBOX),
 						NWidget(WWT_LABEL, INVALID_COLOUR, WID_N_DATE),
-								SetTextStyle(TC_BLACK, FS_SMALL),
+								SetTextStyle(TC_BLACK, FontSize::Small),
 								SetAlignment(SA_RIGHT | SA_TOP),
 					EndContainer(),
 				EndContainer(),
 				/* Layer 2 */
 				NWidget(WWT_EMPTY, INVALID_COLOUR, WID_N_MESSAGE),
-						SetMinimalTextLines(8, 0, FS_LARGE),
+						SetMinimalTextLines(8, 0, FontSize::Large),
 						SetMinimalSize(400, 0),
 						SetPadding(WidgetDimensions::unscaled.hsep_indent, WidgetDimensions::unscaled.vsep_wide),
-						SetTextStyle(TC_BLACK, FS_LARGE),
+						SetTextStyle(TC_BLACK, FontSize::Large),
 			EndContainer(),
 		EndContainer(),
 	EndContainer(),
@@ -146,16 +146,16 @@ static constexpr std::initializer_list<NWidgetPart> _nested_vehicle_news_widgets
 				/* Layer 2 */
 				NWidget(WWT_LABEL, INVALID_COLOUR, WID_N_VEH_TITLE),
 						SetFill(1, 1),
-						SetMinimalTextLines(2, 0, FS_LARGE),
+						SetMinimalTextLines(2, 0, FontSize::Large),
 						SetMinimalSize(400, 0),
 						SetPadding(WidgetDimensions::unscaled.hsep_indent, WidgetDimensions::unscaled.vsep_wide),
 						SetStringTip(STR_EMPTY),
-						SetTextStyle(TC_BLACK, FS_LARGE),
+						SetTextStyle(TC_BLACK, FontSize::Large),
 			EndContainer(),
 			NWidget(WWT_PANEL, COLOUR_WHITE, WID_N_VEH_BKGND), SetPadding(WidgetDimensions::unscaled.fullbevel),
 				NWidget(NWID_VERTICAL),
 					NWidget(WWT_EMPTY, INVALID_COLOUR, WID_N_VEH_NAME),
-							SetMinimalTextLines(1, 0, FS_LARGE),
+							SetMinimalTextLines(1, 0, FontSize::Large),
 							SetMinimalSize(350, 0),
 							SetPadding(WidgetDimensions::unscaled.hsep_indent, WidgetDimensions::unscaled.vsep_wide),
 							SetFill(1, 0),
@@ -163,7 +163,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_vehicle_news_widgets
 							SetMinimalSize(350, 32),
 							SetFill(1, 0),
 					NWidget(WWT_EMPTY, INVALID_COLOUR, WID_N_VEH_INFO),
-							SetMinimalTextLines(3, 0, FS_NORMAL),
+							SetMinimalTextLines(3, 0, FontSize::Normal),
 							SetMinimalSize(350, 0),
 							SetPadding(WidgetDimensions::unscaled.hsep_indent, WidgetDimensions::unscaled.vsep_wide),
 							SetFill(1, 0),
@@ -194,10 +194,10 @@ static constexpr std::initializer_list<NWidgetPart> _nested_company_news_widgets
 				/* Layer 2 */
 				NWidget(WWT_LABEL, INVALID_COLOUR, WID_N_TITLE),
 						SetFill(1, 1),
-						SetMinimalTextLines(1, 0, FS_LARGE),
+						SetMinimalTextLines(1, 0, FontSize::Large),
 						SetMinimalSize(400, 0),
 						SetPadding(WidgetDimensions::unscaled.hsep_indent, WidgetDimensions::unscaled.vsep_normal),
-						SetTextStyle(TC_BLACK, FS_LARGE),
+						SetTextStyle(TC_BLACK, FontSize::Large),
 			EndContainer(),
 			NWidget(NWID_HORIZONTAL),
 				NWidget(NWID_VERTICAL), SetPIP(0, WidgetDimensions::unscaled.vsep_normal, 0), SetPadding(2),
@@ -212,7 +212,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_company_news_widgets
 						SetFill(1, 1),
 						SetPadding(WidgetDimensions::unscaled.hsep_indent, WidgetDimensions::unscaled.vsep_wide),
 						SetMinimalSize(300, 0),
-						SetTextStyle(TC_BLACK, FS_LARGE),
+						SetTextStyle(TC_BLACK, FontSize::Large),
 			EndContainer(),
 		EndContainer(),
 	EndContainer(),
@@ -235,16 +235,16 @@ static constexpr std::initializer_list<NWidgetPart> _nested_thin_news_widgets = 
 					NWidget(NWID_HORIZONTAL), SetPIPRatio(0, 1, 0),
 						NWidget(WWT_CLOSEBOX, COLOUR_WHITE, WID_N_CLOSEBOX),
 						NWidget(WWT_LABEL, INVALID_COLOUR, WID_N_DATE),
-								SetTextStyle(TC_BLACK, FS_SMALL),
+								SetTextStyle(TC_BLACK, FontSize::Small),
 								SetAlignment(SA_RIGHT | SA_TOP),
 					EndContainer(),
 				EndContainer(),
 				/* Layer 2 */
 				NWidget(WWT_EMPTY, INVALID_COLOUR, WID_N_MESSAGE),
-						SetMinimalTextLines(3, 0, FS_LARGE),
+						SetMinimalTextLines(3, 0, FontSize::Large),
 						SetMinimalSize(400, 0),
 						SetPadding(WidgetDimensions::unscaled.hsep_indent, WidgetDimensions::unscaled.vsep_normal),
-						SetTextStyle(TC_BLACK, FS_LARGE),
+						SetTextStyle(TC_BLACK, FontSize::Large),
 			EndContainer(),
 			NWidget(NWID_VIEWPORT, INVALID_COLOUR, WID_N_VIEWPORT), SetMinimalSize(426, 70),
 					SetPadding(WidgetDimensions::unscaled.fullbevel),
@@ -285,7 +285,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_small_news_widgets =
 			NWidget(WWT_EMPTY, INVALID_COLOUR, WID_N_MESSAGE),
 					SetMinimalTextLines(2, 0),
 					SetMinimalSize(275, 0),
-					SetTextStyle(TC_WHITE, FS_NORMAL),
+					SetTextStyle(TC_WHITE, FontSize::Normal),
 		EndContainer(),
 	EndContainer(),
 };
@@ -420,7 +420,7 @@ struct NewsWindow : Window {
 
 	void OnInit() override
 	{
-		this->timer.SetInterval(TIMER_INTERVAL / GetCharacterHeight(FS_NORMAL));
+		this->timer.SetInterval(TIMER_INTERVAL / GetCharacterHeight(FontSize::Normal));
 	}
 
 	void DrawNewsBorder(const Rect &r) const
@@ -443,7 +443,7 @@ struct NewsWindow : Window {
 
 	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
-		FontSize fontsize = FS_NORMAL;
+		FontSize fontsize = FontSize::Normal;
 		std::string str;
 		switch (widget) {
 			case WID_N_CAPTION: {
@@ -517,7 +517,7 @@ struct NewsWindow : Window {
 	{
 		switch (widget) {
 			case WID_N_CAPTION:
-				DrawCaption(r, COLOUR_LIGHT_BLUE, this->owner, TC_FROMSTRING, GetString(STR_NEWS_MESSAGE_CAPTION), SA_CENTER, FS_NORMAL);
+				DrawCaption(r, COLOUR_LIGHT_BLUE, this->owner, TC_FROMSTRING, GetString(STR_NEWS_MESSAGE_CAPTION), SA_CENTER, FontSize::Normal);
 				break;
 
 			case WID_N_PANEL:
@@ -1236,7 +1236,7 @@ struct MessageHistoryWindow : Window {
 	void UpdateWidgetSize(WidgetID widget, Dimension &size, [[maybe_unused]] const Dimension &padding, [[maybe_unused]] Dimension &fill, [[maybe_unused]] Dimension &resize) override
 	{
 		if (widget == WID_MH_BACKGROUND) {
-			this->line_height = GetCharacterHeight(FS_NORMAL) + WidgetDimensions::scaled.vsep_normal;
+			this->line_height = GetCharacterHeight(FontSize::Normal) + WidgetDimensions::scaled.vsep_normal;
 			fill.height = resize.height = this->line_height;
 
 			/* Months are off-by-one, so it's actually 8. Not using
