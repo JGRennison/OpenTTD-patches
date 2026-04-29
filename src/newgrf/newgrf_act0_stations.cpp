@@ -81,7 +81,7 @@ static ChangeInfoResult StationChangeInfo(uint first, uint last, int prop, const
 						continue;
 					}
 
-					ReadSpriteLayoutSprite(buf, false, false, false, GSF_STATIONS, &dts->ground);
+					ReadSpriteLayoutSprite(buf, false, false, false, GrfSpecFeature::Stations, &dts->ground);
 					/* On error, bail out immediately. Temporary GRF data was already freed */
 					if (_cur_gps.skip_sprites < 0) return ChangeInfoResult::Disabled;
 
@@ -99,7 +99,7 @@ static ChangeInfoResult StationChangeInfo(uint first, uint last, int prop, const
 						dtss.extent.y = buf.ReadByte();
 						dtss.extent.z = buf.ReadByte();
 
-						ReadSpriteLayoutSprite(buf, false, true, false, GSF_STATIONS, &dtss.image);
+						ReadSpriteLayoutSprite(buf, false, true, false, GrfSpecFeature::Stations, &dtss.image);
 						/* On error, bail out immediately. Temporary GRF data was already freed */
 						if (_cur_gps.skip_sprites < 0) return ChangeInfoResult::Disabled;
 					}
@@ -259,7 +259,7 @@ static ChangeInfoResult StationChangeInfo(uint first, uint last, int prop, const
 					NewGRFSpriteLayout *dts = &statspec->renderdata.emplace_back();
 					uint num_building_sprites = buf.ReadByte();
 					/* On error, bail out immediately. Temporary GRF data was already freed */
-					if (ReadSpriteLayout(buf, num_building_sprites, false, GSF_STATIONS, true, false, dts)) return ChangeInfoResult::Disabled;
+					if (ReadSpriteLayout(buf, num_building_sprites, false, GrfSpecFeature::Stations, true, false, dts)) return ChangeInfoResult::Disabled;
 				}
 
 				/* Number of layouts must be even, alternating X and Y */
@@ -294,7 +294,7 @@ static ChangeInfoResult StationChangeInfo(uint first, uint last, int prop, const
 			}
 
 			case 0x1F: // Badge list
-				statspec->badges = ReadBadgeList(buf, GSF_STATIONS);
+				statspec->badges = ReadBadgeList(buf, GrfSpecFeature::Stations);
 				break;
 
 			case A0RPI_STATION_MIN_BRIDGE_HEIGHT:
@@ -328,5 +328,5 @@ static ChangeInfoResult StationChangeInfo(uint first, uint last, int prop, const
 	return ret;
 }
 
-template <> ChangeInfoResult GrfChangeInfoHandler<GSF_STATIONS>::Reserve(uint, uint, int, const GRFFilePropertyRemapEntry *, ByteReader &) { return ChangeInfoResult::Unhandled; }
-template <> ChangeInfoResult GrfChangeInfoHandler<GSF_STATIONS>::Activation(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf) { return StationChangeInfo(first, last, prop, mapping_entry, buf); }
+template <> ChangeInfoResult GrfChangeInfoHandler<GrfSpecFeature::Stations>::Reserve(uint, uint, int, const GRFFilePropertyRemapEntry *, ByteReader &) { return ChangeInfoResult::Unhandled; }
+template <> ChangeInfoResult GrfChangeInfoHandler<GrfSpecFeature::Stations>::Activation(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf) { return StationChangeInfo(first, last, prop, mapping_entry, buf); }

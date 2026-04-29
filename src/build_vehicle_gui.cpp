@@ -1083,7 +1083,7 @@ int DrawVehiclePurchaseInfo(int left, int right, int y, EngineID engine_number, 
 
 	if (refittable) y = ShowRefitOptionsList(left, right, y, engine_number);
 
-	y = DrawBadgeNameList({left, y, right, INT16_MAX}, e->badges, static_cast<GrfSpecFeature>(GSF_TRAINS + e->type));
+	y = DrawBadgeNameList({left, y, right, INT16_MAX}, e->badges, GetGrfSpecFeature(e->type));
 
 	/* Additional text from NewGRF */
 	y = ShowAdditionalText(left, right, y, engine_number);
@@ -1101,7 +1101,7 @@ int DrawVehiclePurchaseInfo(int left, int right, int y, EngineID engine_number, 
 
 static void DrawEngineBadgeColumn(const Rect &r, int column_group, const GUIBadgeClasses &badge_classes, const Engine *e, PaletteID remap)
 {
-	DrawBadgeColumn(r, column_group, badge_classes, e->badges, static_cast<GrfSpecFeature>(GSF_TRAINS + e->type), e->info.base_intro, remap);
+	DrawBadgeColumn(r, column_group, badge_classes, e->badges, GetGrfSpecFeature(e->type), e->info.base_intro, remap);
 }
 
 /**
@@ -1745,11 +1745,11 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 
 	void OnInit() override
 	{
-		this->badge_classes = GUIBadgeClasses(static_cast<GrfSpecFeature>(GSF_TRAINS + this->vehicle_type));
+		this->badge_classes = GUIBadgeClasses(GetGrfSpecFeature(this->vehicle_type));
 		this->SetCargoFilterArray();
 		this->vscroll->SetCount(this->eng_list.size());
 
-		this->badge_filters = AddBadgeDropdownFilters(this, WID_BV_BADGE_FILTER, WID_BV_BADGE_FILTER, COLOUR_GREY, static_cast<GrfSpecFeature>(GSF_TRAINS + this->vehicle_type));
+		this->badge_filters = AddBadgeDropdownFilters(this, WID_BV_BADGE_FILTER, WID_BV_BADGE_FILTER, COLOUR_GREY, GetGrfSpecFeature(this->vehicle_type));
 
 		this->widget_lookup.clear();
 		this->nested_root->FillWidgetLookup(this->widget_lookup);
@@ -1807,7 +1807,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 
 		list.clear();
 
-		BadgeTextFilter btf(this->string_filter, GSF_TRAINS);
+		BadgeTextFilter btf(this->string_filter, GrfSpecFeature::Trains);
 		BadgeDropdownFilter bdf(this->badge_filter_choices);
 
 		/* Make list of all available train engines and wagons.
@@ -1879,7 +1879,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 
 		this->eng_list.clear();
 
-		BadgeTextFilter btf(this->string_filter, GSF_ROADVEHICLES);
+		BadgeTextFilter btf(this->string_filter, GrfSpecFeature::RoadVehicles);
 		BadgeDropdownFilter bdf(this->badge_filter_choices);
 
 		for (const Engine *e : Engine::IterateType(VEH_ROAD)) {
@@ -1905,7 +1905,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		EngineID sel_id = EngineID::Invalid();
 		this->eng_list.clear();
 
-		BadgeTextFilter btf(this->string_filter, GSF_SHIPS);
+		BadgeTextFilter btf(this->string_filter, GrfSpecFeature::Ships);
 		BadgeDropdownFilter bdf(this->badge_filter_choices);
 
 		for (const Engine *e : Engine::IterateType(VEH_SHIP)) {
@@ -1933,7 +1933,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 
 		const Station *st = this->listview_mode ? nullptr : Station::GetByTile(TileIndex(this->window_number));
 
-		BadgeTextFilter btf(this->string_filter, GSF_AIRCRAFT);
+		BadgeTextFilter btf(this->string_filter, GrfSpecFeature::Aircraft);
 		BadgeDropdownFilter bdf(this->badge_filter_choices);
 
 		/* Make list of all available planes.
@@ -2340,7 +2340,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 				break;
 
 			case WID_BV_CONFIGURE_BADGES: {
-				bool reopen = HandleBadgeConfigurationDropDownClick(static_cast<GrfSpecFeature>(GSF_TRAINS + this->vehicle_type), BADGE_COLUMNS, index, click_result, this->badge_filter_choices);
+				bool reopen = HandleBadgeConfigurationDropDownClick(GetGrfSpecFeature(this->vehicle_type), BADGE_COLUMNS, index, click_result, this->badge_filter_choices);
 
 				this->ReInit();
 
@@ -2720,7 +2720,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 
 	void OnInit() override
 	{
-		this->badge_classes = GUIBadgeClasses(GSF_TRAINS);
+		this->badge_classes = GUIBadgeClasses(GrfSpecFeature::Trains);
 
 		this->SetCargoFilterArray(this->loco, _last_filter_criteria_loco);
 		this->SetCargoFilterArray(this->wagon, _last_filter_criteria_wagon);
@@ -2728,8 +2728,8 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		this->loco.vscroll->SetCount(this->loco.eng_list.size());
 		this->wagon.vscroll->SetCount(this->wagon.eng_list.size());
 
-		this->loco.badge_filters = AddBadgeDropdownFilters(this, WID_BV_BADGE_FILTER_LOCO, WID_BV_BADGE_FILTER_LOCO, COLOUR_GREY, static_cast<GrfSpecFeature>(GSF_TRAINS));
-		this->wagon.badge_filters = AddBadgeDropdownFilters(this, WID_BV_BADGE_FILTER_WAGON, WID_BV_BADGE_FILTER_WAGON, COLOUR_GREY, static_cast<GrfSpecFeature>(GSF_TRAINS));
+		this->loco.badge_filters = AddBadgeDropdownFilters(this, WID_BV_BADGE_FILTER_LOCO, WID_BV_BADGE_FILTER_LOCO, COLOUR_GREY, static_cast<GrfSpecFeature>(GrfSpecFeature::Trains));
+		this->wagon.badge_filters = AddBadgeDropdownFilters(this, WID_BV_BADGE_FILTER_WAGON, WID_BV_BADGE_FILTER_WAGON, COLOUR_GREY, static_cast<GrfSpecFeature>(GrfSpecFeature::Trains));
 
 		this->widget_lookup.clear();
 		this->nested_root->FillWidgetLookup(this->widget_lookup);
@@ -2767,7 +2767,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 
 		list.clear();
 
-		BadgeTextFilter btf(state.string_filter, GSF_TRAINS);
+		BadgeTextFilter btf(state.string_filter, GrfSpecFeature::Trains);
 		BadgeDropdownFilter bdf(state.badge_filter_choices);
 
 		/* Make list of all available train engines and wagons.
@@ -3417,7 +3417,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 
 			case WID_BV_CONFIGURE_BADGES: {
 				std::array<BadgeFilterChoices *, 2> filter_choices{ &this->loco.badge_filter_choices, &this->wagon.badge_filter_choices };
-				bool reopen = HandleBadgeConfigurationDropDownClick(static_cast<GrfSpecFeature>(GSF_TRAINS + this->vehicle_type), BADGE_COLUMNS, index, click_result, filter_choices);
+				bool reopen = HandleBadgeConfigurationDropDownClick(static_cast<GrfSpecFeature>(GrfSpecFeature::Trains + this->vehicle_type), BADGE_COLUMNS, index, click_result, filter_choices);
 
 				this->ReInit();
 

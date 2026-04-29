@@ -74,5 +74,5 @@ static ChangeInfoResult SoundEffectChangeInfo(uint first, uint last, int prop, c
 	return ret;
 }
 
-template <> ChangeInfoResult GrfChangeInfoHandler<GSF_SOUNDFX>::Reserve(uint, uint, int, const GRFFilePropertyRemapEntry *, ByteReader &) { return ChangeInfoResult::Unhandled; }
-template <> ChangeInfoResult GrfChangeInfoHandler<GSF_SOUNDFX>::Activation(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf) { return SoundEffectChangeInfo(first, last, prop, mapping_entry, buf); }
+template <> ChangeInfoResult GrfChangeInfoHandler<GrfSpecFeature::SoundEffects>::Reserve(uint, uint, int, const GRFFilePropertyRemapEntry *, ByteReader &) { return ChangeInfoResult::Unhandled; }
+template <> ChangeInfoResult GrfChangeInfoHandler<GrfSpecFeature::SoundEffects>::Activation(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf) { return SoundEffectChangeInfo(first, last, prop, mapping_entry, buf); }

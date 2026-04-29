@@ -16,6 +16,7 @@
 #include "../newgrf_commons.h"
 #include "../newgrf_config.h"
 #include "../spriteloader/sprite_file_type.hpp"
+#include "../core/enum_type.hpp"
 #include "newgrf_bytereader.h"
 
 #include "../3rdparty/cpp-btree/btree_map.h"
@@ -105,7 +106,7 @@ private:
 	};
 
 	/** Currently referenceable spritesets */
-	btree::btree_map<uint, SpriteSet> spritesets[GSF_END];
+	EnumIndexArray<btree::btree_map<uint, SpriteSet>, GrfSpecFeature, GrfSpecFeature::End> spritesets{};
 
 public:
 	/* Global state */
@@ -137,7 +138,7 @@ public:
 	 */
 	void AddSpriteSets(GrfSpecFeature feature, SpriteID first_sprite, uint first_set, uint numsets, uint numents)
 	{
-		assert(feature < GSF_END);
+		assert(feature < GrfSpecFeature::End);
 		for (uint i = 0; i < numsets; i++) {
 			SpriteSet &set = this->spritesets[feature][first_set + i];
 			set.sprite = first_sprite + i * numents;
@@ -153,7 +154,7 @@ public:
 	 */
 	bool HasValidSpriteSets(GrfSpecFeature feature) const
 	{
-		assert(feature < GSF_END);
+		assert(feature < GrfSpecFeature::End);
 		return !this->spritesets[feature].empty();
 	}
 
@@ -202,7 +203,7 @@ public:
 	 */
 	SpriteSetInfo GetSpriteSetInfo(GrfSpecFeature feature, uint set) const
 	{
-		assert(feature < GSF_END);
+		assert(feature < GrfSpecFeature::End);
 		auto iter = this->spritesets[feature].find(set);
 		return iter != this->spritesets[feature].end() ? SpriteSetInfo(iter->second) : SpriteSetInfo();
 	}

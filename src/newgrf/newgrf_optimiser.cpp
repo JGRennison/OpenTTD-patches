@@ -147,31 +147,31 @@ static bool IsExpensiveSignalVariable(uint16_t variable)
 static bool IsExpensiveVariable(uint16_t variable, GrfSpecFeature scope_feature)
 {
 	switch (scope_feature) {
-		case GSF_TRAINS:
-		case GSF_ROADVEHICLES:
-		case GSF_SHIPS:
-		case GSF_AIRCRAFT:
+		case GrfSpecFeature::Trains:
+		case GrfSpecFeature::RoadVehicles:
+		case GrfSpecFeature::Ships:
+		case GrfSpecFeature::Aircraft:
 			return IsExpensiveVehicleVariable(variable);
 
-		case GSF_STATIONS:
+		case GrfSpecFeature::Stations:
 			return IsExpensiveStationVariable(variable);
 
-		case GSF_INDUSTRIES:
+		case GrfSpecFeature::Industries:
 			return IsExpensiveIndustryVariable(variable);
 
-		case GSF_INDUSTRYTILES:
+		case GrfSpecFeature::IndustryTiles:
 			return IsExpensiveIndustryTileVariable(variable);
 
-		case GSF_OBJECTS:
+		case GrfSpecFeature::Objects:
 			return IsExpensiveObjectVariable(variable);
 
-		case GSF_ROADSTOPS:
+		case GrfSpecFeature::RoadStops:
 			return IsExpensiveRoadStopsVariable(variable);
 
-		case GSF_RAILTYPES:
+		case GrfSpecFeature::RailTypes:
 			return IsExpensiveRailtypeVariable(variable);
 
-		case GSF_SIGNALS:
+		case GrfSpecFeature::Signals:
 			return IsExpensiveSignalVariable(variable);
 
 		default:
@@ -193,7 +193,7 @@ static bool IsVariableVeryCheap(uint16_t variable, GrfSpecFeature scope_feature)
 
 static bool IsPermanentStorageLoadIndependentOfSpecialTempStorage(GrfSpecFeature feature)
 {
-	return feature != GSF_FAKE_TOWNS;
+	return feature != GrfSpecFeature::FakeTowns;
 }
 
 static bool IsVariableIndependentOfSpecialTempStorage(GrfSpecFeature feature, uint16_t variable)
@@ -1551,7 +1551,7 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const VarAction2Ad
 						/* Single load tracking can handle bool inverts */
 						state.inference |= (prev_inference & VA2AIF_SINGLE_LOAD);
 					}
-					if (info.scope_feature == GSF_OBJECTS && group->adjusts.size() >= 2) {
+					if (info.scope_feature == GrfSpecFeature::Objects && group->adjusts.size() >= 2) {
 						auto check_slope_vars = [](const DeterministicSpriteGroupAdjust &a, const DeterministicSpriteGroupAdjust &b) -> bool {
 							return a.variable == A2VRI_OBJECT_FOUNDATION_SLOPE_CHANGE && a.shift_num == 0 && (a.and_mask & 0x1F) == 0x1F &&
 									b.variable == 0x41 && b.shift_num == 8 && b.and_mask == 0x1F;
@@ -1784,7 +1784,7 @@ void OptimiseVarAction2Adjust(VarAction2OptimiseState &state, const VarAction2Ad
 				case DSGA_OP_SDIV:
 					if ((prev_inference & VA2AIF_SIGNED_NON_NEGATIVE) && adjust.variable == 0x1A && adjust.shift_num == 0 && HasExactlyOneBit(adjust.and_mask)) {
 						uint shift_count = FindFirstBit(adjust.and_mask);
-						if (group->adjusts.size() >= 3 && shift_count == 16 && info.varsize == 4 && (info.scope_feature == GSF_TRAINS || info.scope_feature == GSF_ROADVEHICLES || info.scope_feature == GSF_SHIPS)) {
+						if (group->adjusts.size() >= 3 && shift_count == 16 && info.varsize == 4 && (info.scope_feature == GrfSpecFeature::Trains || info.scope_feature == GrfSpecFeature::RoadVehicles || info.scope_feature == GrfSpecFeature::Ships)) {
 							const DeterministicSpriteGroupAdjust &prev = group->adjusts[group->adjusts.size() - 2];
 							DeterministicSpriteGroupAdjust &prev2 = group->adjusts[group->adjusts.size() - 3];
 							if (prev.operation == DSGA_OP_MUL && prev.type == DSGA_TYPE_NONE && prev.variable == 0x1A && prev.shift_num == 0 && prev.and_mask <= 0xFFFF &&
@@ -2708,9 +2708,9 @@ static bool IsVariableInlinable(uint16_t variable, GrfSpecFeature feature)
 	if (variable >= 0x7D && variable <= 0x7F) return true;
 
 	/* Perm storage */
-	if (variable == 0x7C) return feature == GSF_AIRPORTS || feature == GSF_INDUSTRIES;
+	if (variable == 0x7C) return feature == GrfSpecFeature::Airports || feature == GrfSpecFeature::Industries;
 
-	if (feature == GSF_INDUSTRIES) {
+	if (feature == GrfSpecFeature::Industries) {
 		/* Special case: allow inlining variables 67, 68, even though these are not strictly always available */
 		if (variable >= 0x67 && variable <= 0x68) return true;
 	}

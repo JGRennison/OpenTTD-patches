@@ -168,7 +168,7 @@ Town::~Town()
 
 	Source src = Source::Make<SourceType::Town>(this->index);
 	DeleteSubsidyWith(src);
-	DeleteNewGRFInspectWindow(GSF_FAKE_TOWNS, this->index.base());
+	DeleteNewGRFInspectWindow(GrfSpecFeature::FakeTowns, this->index.base());
 	CargoPacket::InvalidateAllFrom(src);
 	MarkWholeScreenDirty();
 }
@@ -3387,7 +3387,7 @@ static void DoClearTownHouseHelper(TileIndex tile, Town *t, HouseID house)
 	DoClearSquare(tile);
 	DeleteAnimatedTile(tile);
 
-	DeleteNewGRFInspectWindow(GSF_HOUSES, tile.base());
+	DeleteNewGRFInspectWindow(GrfSpecFeature::Houses, tile.base());
 }
 
 /**

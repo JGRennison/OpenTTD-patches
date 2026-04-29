@@ -43,7 +43,6 @@ void InvalidateNewGRFInspectWindow(GrfSpecFeature feature, uint index);
 void DeleteNewGRFInspectWindow(GrfSpecFeature feature, uint index);
 
 GrfSpecFeature GetGrfSpecFeature(TileIndex tile);
-GrfSpecFeature GetGrfSpecFeature(VehicleType type);
 
 void ShowSpriteAlignerWindow();
 

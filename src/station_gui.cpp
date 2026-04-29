@@ -2403,12 +2403,12 @@ struct StationViewWindow : public Window {
 
 	bool IsNewGRFInspectable() const override
 	{
-		return ::IsNewGRFInspectable(GSF_FAKE_STATION_STRUCT, this->window_number);
+		return ::IsNewGRFInspectable(GrfSpecFeature::FakeStationStruct, this->window_number);
 	}
 
 	void ShowNewGRFInspectWindow() const override
 	{
-		::ShowNewGRFInspectWindow(GSF_FAKE_STATION_STRUCT, this->window_number);
+		::ShowNewGRFInspectWindow(GrfSpecFeature::FakeStationStruct, this->window_number);
 	}
 };
 

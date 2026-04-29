@@ -134,7 +134,7 @@ uint32_t GetTrackTypesRail(RailType railtype, const GRFFile *grffile)
 
 GrfSpecFeature RailTypeResolverObject::GetFeature() const
 {
-	return GSF_RAILTYPES;
+	return GrfSpecFeature::RailTypes;
 }
 
 uint32_t RailTypeResolverObject::GetDebugID() const

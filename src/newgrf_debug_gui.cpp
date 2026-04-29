@@ -86,11 +86,11 @@ struct InspectTargetId {
 
 	constexpr InspectTargetId(GrfSpecFeature grf_feature, uint32_t feature_index) : grf_feature(grf_feature), feature_index(feature_index) {}
 
-	bool IsValid() const { return this->grf_feature != GSF_INVALID; }
+	bool IsValid() const { return this->grf_feature != GrfSpecFeature::Invalid; }
 
 	bool operator==(const InspectTargetId &) const = default;
 
-	static constexpr InspectTargetId Invalid() { return InspectTargetId(GSF_INVALID, 0); }
+	static constexpr InspectTargetId Invalid() { return InspectTargetId(GrfSpecFeature::Invalid, 0); }
 };
 
 /**
@@ -332,7 +332,7 @@ struct NIFeature {
  */
 static inline const NIFeature *GetFeature(GrfSpecFeature grf_feature)
 {
-	return grf_feature < GSF_FAKE_END ? _nifeatures[grf_feature] : nullptr;
+	return grf_feature < GrfSpecFeature::FakeEnd ? _nifeatures[grf_feature] : nullptr;
 }
 
 /** Window used for inspecting NewGRFs. */
@@ -411,7 +411,7 @@ struct NewGRFInspectWindow final : Window {
 	bool HasChainIndex() const
 	{
 		GrfSpecFeature f = this->target_id.grf_feature;
-		return f == GSF_TRAINS || f == GSF_ROADVEHICLES || f == GSF_SHIPS;
+		return f == GrfSpecFeature::Trains || f == GrfSpecFeature::RoadVehicles || f == GrfSpecFeature::Ships;
 	}
 
 	const NIFeature *GetFeature() const
@@ -488,11 +488,11 @@ struct NewGRFInspectWindow final : Window {
 			case WID_NGRFI_VEH_CHAIN: {
 				assert(this->HasChainIndex());
 				GrfSpecFeature f = this->target_id.grf_feature;
-				if (f == GSF_SHIPS) {
+				if (f == GrfSpecFeature::Ships) {
 					size.height = GetCharacterHeight(FontSize::Normal) + WidgetDimensions::scaled.framerect.Vertical();
 					break;
 				}
-				size.height = std::max(size.height, GetVehicleImageCellSize((VehicleType)(VEH_TRAIN + (f - GSF_TRAINS)), EIT_IN_DEPOT).height + 2 + WidgetDimensions::scaled.bevel.Vertical());
+				size.height = std::max(size.height, GetVehicleImageCellSize(GetVehicleType(f), EIT_IN_DEPOT).height + 2 + WidgetDimensions::scaled.bevel.Vertical());
 				break;
 			}
 
@@ -542,7 +542,7 @@ struct NewGRFInspectWindow final : Window {
 		switch (widget) {
 			case WID_NGRFI_VEH_CHAIN: {
 				const Vehicle *v = Vehicle::Get(this->GetFeatureIndex());
-				if (this->target_id.grf_feature == GSF_SHIPS) {
+				if (this->target_id.grf_feature == GrfSpecFeature::Ships) {
 					Rect ir = r.Shrink(WidgetDimensions::scaled.framerect);
 					format_buffer buffer;
 					uint count = 0;
@@ -573,7 +573,7 @@ struct NewGRFInspectWindow final : Window {
 				}
 
 				GrfSpecFeature f = this->target_id.grf_feature;
-				int h = GetVehicleImageCellSize((VehicleType)(VEH_TRAIN + (f - GSF_TRAINS)), EIT_IN_DEPOT).height;
+				int h = GetVehicleImageCellSize(GetVehicleType(f), EIT_IN_DEPOT).height;
 				int y = CentreBounds(br.top, br.bottom, h);
 				DrawVehicleImage(v->First(), br, VehicleID::Invalid(), EIT_IN_DETAILS, skip);
 
@@ -1353,7 +1353,7 @@ void ShowNewGRFInspectWindow(GrfSpecFeature feature, uint index, const uint32_t 
 	});
 	if (found) return;
 
-	WindowDesc &desc = (feature == GSF_TRAINS || feature == GSF_ROADVEHICLES || feature == GSF_SHIPS) ? _newgrf_inspect_chain_desc : _newgrf_inspect_desc;
+	WindowDesc &desc = (feature == GrfSpecFeature::Trains || feature == GrfSpecFeature::RoadVehicles || feature == GrfSpecFeature::Ships) ? _newgrf_inspect_chain_desc : _newgrf_inspect_desc;
 	NewGRFInspectWindow *w = new NewGRFInspectWindow(desc, InspectTargetId(feature, index));
 	w->SetCallerGRFID(grfid);
 }
@@ -1368,7 +1368,7 @@ void ShowNewGRFInspectWindow(GrfSpecFeature feature, uint index, const uint32_t 
  */
 void InvalidateNewGRFInspectWindow(GrfSpecFeature feature, uint index)
 {
-	if (feature == GSF_INVALID) return;
+	if (feature == GrfSpecFeature::Invalid) return;
 
 	IterateNewGRFInspectWindows(InspectTargetId(feature, index), [](NewGRFInspectWindow *w) {
 		w->InvalidateData(0, false);
@@ -1386,7 +1386,7 @@ void InvalidateNewGRFInspectWindow(GrfSpecFeature feature, uint index)
  */
 void DeleteNewGRFInspectWindow(GrfSpecFeature feature, uint index)
 {
-	if (feature == GSF_INVALID) return;
+	if (feature == GrfSpecFeature::Invalid) return;
 
 	IterateNewGRFInspectWindows(InspectTargetId(feature, index), [](NewGRFInspectWindow *w) {
 		w->Close();
@@ -1423,61 +1423,46 @@ bool IsNewGRFInspectable(GrfSpecFeature feature, uint index)
 GrfSpecFeature GetGrfSpecFeature(TileIndex tile)
 {
 	switch (GetTileType(tile)) {
-		default:              return GSF_INVALID;
+		default:
+			return GrfSpecFeature::Invalid;
 		case TileType::Clear:
-			if (GetClearGround(tile) == ClearGround::Rocks) return GSF_NEWLANDSCAPE;
-			return GSF_INVALID;
+			if (GetClearGround(tile) == ClearGround::Rocks) return GrfSpecFeature::NewLandscape;
+			return GrfSpecFeature::Invalid;
 		case TileType::Railway: {
 			extern std::vector<const GRFFile *> _new_signals_grfs;
 			if (HasSignals(tile) && !_new_signals_grfs.empty()) {
-				return GSF_SIGNALS;
+				return GrfSpecFeature::Signals;
 			}
-			return GSF_RAILTYPES;
+			return GrfSpecFeature::RailTypes;
 		}
-		case TileType::Road:         return IsLevelCrossing(tile) ? GSF_RAILTYPES : GSF_ROADTYPES;
-		case TileType::House:        return GSF_HOUSES;
-		case TileType::Industry:     return GSF_INDUSTRYTILES;
-		case TileType::Object:       return GSF_OBJECTS;
+		case TileType::Road:         return IsLevelCrossing(tile) ? GrfSpecFeature::RailTypes : GrfSpecFeature::RoadTypes;
+		case TileType::House:        return GrfSpecFeature::Houses;
+		case TileType::Industry:     return GrfSpecFeature::IndustryTiles;
+		case TileType::Object:       return GrfSpecFeature::Objects;
 
 		case TileType::Station:
 			switch (GetStationType(tile)) {
 				case StationType::Rail:
 				case StationType::RailWaypoint:
-					return GSF_STATIONS;
+					return GrfSpecFeature::Stations;
 
 				case StationType::Airport:
-					return GSF_AIRPORTTILES;
+					return GrfSpecFeature::AirportTiles;
 
 				case StationType::Bus:
 				case StationType::Truck:
 				case StationType::RoadWaypoint:
-					return GSF_ROADSTOPS;
+					return GrfSpecFeature::RoadStops;
 
 				default:
-					return GSF_INVALID;
+					return GrfSpecFeature::Invalid;
 			}
 
 		case TileType::TunnelBridge: {
-			if (IsTunnelBridgeWithSignalSimulation(tile)) return GSF_SIGNALS;
-			return GSF_INVALID;
+			if (IsTunnelBridgeWithSignalSimulation(tile)) return GrfSpecFeature::Signals;
+			return GrfSpecFeature::Invalid;
 		}
 
-	}
-}
-
-/**
- * Get the GrfSpecFeature associated with the vehicle.
- * @param type The vehicle type to get the feature from.
- * @return the GrfSpecFeature.
- */
-GrfSpecFeature GetGrfSpecFeature(VehicleType type)
-{
-	switch (type) {
-		case VEH_TRAIN:    return GSF_TRAINS;
-		case VEH_ROAD:     return GSF_ROADVEHICLES;
-		case VEH_SHIP:     return GSF_SHIPS;
-		case VEH_AIRCRAFT: return GSF_AIRCRAFT;
-		default:           return GSF_INVALID;
 	}
 }
 

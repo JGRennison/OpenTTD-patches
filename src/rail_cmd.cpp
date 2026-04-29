@@ -1010,7 +1010,7 @@ CommandCost CmdRemoveSingleRail(DoCommandFlags flags, TileIndex tile, Track trac
 				Company::Get(owner)->infrastructure.rail[GetRailType(tile)] -= LEVELCROSSING_TRACKBIT_FACTOR;
 				DirtyCompanyInfrastructureWindows(owner);
 				MakeRoadNormal(tile, GetCrossingRoadBits(tile), GetRoadTypeRoad(tile), GetRoadTypeTram(tile), GetTownIndex(tile), GetRoadOwner(tile, RoadTramType::Road), GetRoadOwner(tile, RoadTramType::Tram));
-				DeleteNewGRFInspectWindow(GSF_RAILTYPES, tile.base());
+				DeleteNewGRFInspectWindow(GrfSpecFeature::RailTypes, tile.base());
 				UpdateRoadCachedOneWayStatesAroundTile(tile);
 			}
 			break;
@@ -1082,7 +1082,7 @@ CommandCost CmdRemoveSingleRail(DoCommandFlags flags, TileIndex tile, Track trac
 					} else {
 						DoClearSquare(tile);
 					}
-					DeleteNewGRFInspectWindow(GSF_RAILTYPES, tile.base());
+					DeleteNewGRFInspectWindow(GrfSpecFeature::RailTypes, tile.base());
 				} else {
 					SetTrackBits(tile, present);
 					SetTrackReservation(tile, GetRailReservationTrackBits(tile) & present);
@@ -3108,7 +3108,7 @@ static CommandCost RemoveTrainDepot(TileIndex tile, DoCommandFlags flags)
 		AddSideToSignalBuffer(tile, dir, owner);
 		YapfNotifyTrackLayoutChange(tile, DiagDirToDiagTrack(dir));
 		if (v != nullptr) ReReserveTrainPath(v);
-		DeleteNewGRFInspectWindow(GSF_RAILTYPES, tile.base());
+		DeleteNewGRFInspectWindow(GrfSpecFeature::RailTypes, tile.base());
 	}
 
 	return CommandCost(EXPENSES_CONSTRUCTION, _price[Price::ClearDepotTrain]);

@@ -425,7 +425,7 @@ static void NewSpriteGroup(ByteReader &buf)
 
 	GrfSpecFeatureRef feature_ref = ReadFeature(buf.ReadByte());
 	GrfSpecFeature feature = feature_ref.id;
-	if (feature >= GSF_END) {
+	if (feature >= GrfSpecFeature::End) {
 		GrfMsg(1, "NewSpriteGroup: Unsupported feature {}, skipping", GetFeatureString(feature_ref));
 		return;
 	}
@@ -535,7 +535,7 @@ static void NewSpriteGroup(ByteReader &buf)
 			act_group = group;
 
 			if (stype == STYPE_DETERMINISTIC_RELATIVE || stype == STYPE_DETERMINISTIC_RELATIVE_2) {
-				group->var_scope = (feature <= GSF_AIRCRAFT) ? VSG_SCOPE_RELATIVE : VSG_SCOPE_SELF;
+				group->var_scope = (feature <= GrfSpecFeature::Aircraft) ? VSG_SCOPE_RELATIVE : VSG_SCOPE_SELF;
 				group->var_scope_count = var_scope_count;
 
 				group->size = DSG_SIZE_DWORD;
@@ -608,7 +608,7 @@ static void NewSpriteGroup(ByteReader &buf)
 					}
 				}
 
-				if (info.scope_feature == GSF_ROADSTOPS && HasBit(_cur_gps.grffile->observed_feature_tests, GFTOF_ROAD_STOPS)) {
+				if (info.scope_feature == GrfSpecFeature::RoadStops && HasBit(_cur_gps.grffile->observed_feature_tests, GFTOF_ROAD_STOPS)) {
 					if (adjust.variable == 0x68) adjust.variable = A2VRI_ROADSTOP_INFO_NEARBY_TILES_EXT;
 					if (adjust.variable == 0x7B && adjust.parameter == 0x68) adjust.parameter = A2VRI_ROADSTOP_INFO_NEARBY_TILES_EXT;
 				}
@@ -692,7 +692,7 @@ static void NewSpriteGroup(ByteReader &buf)
 			group->var_scope = HasBit(type, 1) ? VSG_SCOPE_PARENT : VSG_SCOPE_SELF;
 
 			if (HasBit(type, 2)) {
-				if (feature <= GSF_AIRCRAFT) group->var_scope = VSG_SCOPE_RELATIVE;
+				if (feature <= GrfSpecFeature::Aircraft) group->var_scope = VSG_SCOPE_RELATIVE;
 				group->var_scope_count = ParseRelativeScopeByte(buf.ReadByte());
 			}
 
@@ -737,20 +737,20 @@ static void NewSpriteGroup(ByteReader &buf)
 			}
 
 			switch (feature) {
-				case GSF_TRAINS:
-				case GSF_ROADVEHICLES:
-				case GSF_SHIPS:
-				case GSF_AIRCRAFT:
-				case GSF_STATIONS:
-				case GSF_CANALS:
-				case GSF_CARGOES:
-				case GSF_AIRPORTS:
-				case GSF_RAILTYPES:
-				case GSF_ROADTYPES:
-				case GSF_TRAMTYPES:
-				case GSF_BADGES:
-				case GSF_SIGNALS:
-				case GSF_NEWLANDSCAPE:
+				case GrfSpecFeature::Trains:
+				case GrfSpecFeature::RoadVehicles:
+				case GrfSpecFeature::Ships:
+				case GrfSpecFeature::Aircraft:
+				case GrfSpecFeature::Stations:
+				case GrfSpecFeature::Canals:
+				case GrfSpecFeature::Cargoes:
+				case GrfSpecFeature::Airports:
+				case GrfSpecFeature::RailTypes:
+				case GrfSpecFeature::RoadTypes:
+				case GrfSpecFeature::TramTypes:
+				case GrfSpecFeature::Badges:
+				case GrfSpecFeature::Signals:
+				case GrfSpecFeature::NewLandscape:
 				{
 					uint8_t num_loaded  = type;
 					uint8_t num_loading = buf.ReadByte();
@@ -828,11 +828,11 @@ static void NewSpriteGroup(ByteReader &buf)
 					break;
 				}
 
-				case GSF_HOUSES:
-				case GSF_AIRPORTTILES:
-				case GSF_OBJECTS:
-				case GSF_INDUSTRYTILES:
-				case GSF_ROADSTOPS: {
+				case GrfSpecFeature::Houses:
+				case GrfSpecFeature::AirportTiles:
+				case GrfSpecFeature::Objects:
+				case GrfSpecFeature::IndustryTiles:
+				case GrfSpecFeature::RoadStops: {
 					uint8_t num_building_sprites = std::max((uint8_t)1, type);
 
 					assert(TileLayoutSpriteGroup::CanAllocateItem());
@@ -846,7 +846,7 @@ static void NewSpriteGroup(ByteReader &buf)
 					break;
 				}
 
-				case GSF_INDUSTRIES: {
+				case GrfSpecFeature::Industries: {
 					if (type > 2) {
 						GrfMsg(1, "NewSpriteGroup: Unsupported industry production version {}, skipping", type);
 						break;
@@ -928,7 +928,7 @@ static void NewSpriteGroup(ByteReader &buf)
 					break;
 				}
 
-				case GSF_FAKE_TOWNS:
+				case GrfSpecFeature::FakeTowns:
 					act_group = NewCallbackResultSpriteGroupNoTransform(CALLBACK_FAILED);
 					break;
 

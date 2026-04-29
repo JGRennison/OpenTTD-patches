@@ -414,7 +414,7 @@ public:
 
 	void OnInit() override
 	{
-		this->badge_classes = GUIBadgeClasses{GSF_INDUSTRIES};
+		this->badge_classes = GUIBadgeClasses{GrfSpecFeature::Industries};
 
 		/* Width of the legend blob -- slightly larger than the smallmap legend blob. */
 		this->legend.height = GetCharacterHeight(FontSize::Small);
@@ -540,11 +540,11 @@ public:
 
 					Rect tr = text;
 					if (badge_column_widths.size() >= 1 && badge_column_widths[0] > 0) {
-						DrawBadgeColumn(tr.WithWidth(badge_column_widths[0], rtl), 0, this->badge_classes, indsp->badges, GSF_INDUSTRIES, std::nullopt, PAL_NONE);
+						DrawBadgeColumn(tr.WithWidth(badge_column_widths[0], rtl), 0, this->badge_classes, indsp->badges, GrfSpecFeature::Industries, std::nullopt, PAL_NONE);
 						tr = tr.Indent(badge_column_widths[0], rtl);
 					}
 					if (badge_column_widths.size() >= 2 && badge_column_widths[1] > 0) {
-						DrawBadgeColumn(tr.WithWidth(badge_column_widths[1], !rtl), 0, this->badge_classes, indsp->badges, GSF_INDUSTRIES, std::nullopt, PAL_NONE);
+						DrawBadgeColumn(tr.WithWidth(badge_column_widths[1], !rtl), 0, this->badge_classes, indsp->badges, GrfSpecFeature::Industries, std::nullopt, PAL_NONE);
 						tr = tr.Indent(badge_column_widths[1], !rtl);
 					}
 
@@ -587,7 +587,7 @@ public:
 				cargostring = this->MakeCargoListString(indsp->produced_cargo, cargo_suffix, STR_INDUSTRY_VIEW_PRODUCES_N_CARGO);
 				ir.top = DrawStringMultiLine(ir, cargostring);
 
-				ir.top = DrawBadgeNameList(ir, indsp->badges, GSF_INDUSTRIES);
+				ir.top = DrawBadgeNameList(ir, indsp->badges, GrfSpecFeature::Industries);
 
 				/* Get the additional purchase info text, if it has not already been queried. */
 				if (indsp->callback_mask.Test(IndustryCallbackMask::FundMoreText)) {
@@ -1226,12 +1226,12 @@ public:
 
 	bool IsNewGRFInspectable() const override
 	{
-		return ::IsNewGRFInspectable(GSF_INDUSTRIES, this->window_number);
+		return ::IsNewGRFInspectable(GrfSpecFeature::Industries, this->window_number);
 	}
 
 	void ShowNewGRFInspectWindow() const override
 	{
-		::ShowNewGRFInspectWindow(GSF_INDUSTRIES, this->window_number);
+		::ShowNewGRFInspectWindow(GrfSpecFeature::Industries, this->window_number);
 	}
 };
 
@@ -3273,9 +3273,9 @@ struct IndustryCargoesWindow : public Window {
 	void ShowNewGRFInspectWindow() const override
 	{
 		if (this->ind_cargo < NUM_INDUSTRYTYPES) {
-			::ShowNewGRFInspectWindow(GSF_INDUSTRIES, this->ind_cargo | (1 << 26));
+			::ShowNewGRFInspectWindow(GrfSpecFeature::Industries, this->ind_cargo | (1 << 26));
 		} else {
-			::ShowNewGRFInspectWindow(GSF_CARGOES, this->ind_cargo - NUM_INDUSTRYTYPES);
+			::ShowNewGRFInspectWindow(GrfSpecFeature::Cargoes, this->ind_cargo - NUM_INDUSTRYTYPES);
 		}
 	}
 };

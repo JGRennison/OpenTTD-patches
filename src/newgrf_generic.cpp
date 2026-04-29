@@ -41,7 +41,7 @@ struct GenericScopeResolver : public ScopeResolver {
 	 */
 	GenericScopeResolver(ResolverObject &ro, bool ai_callback)
 		: ScopeResolver(ro), cargo_type(0), default_selection(0), src_industry(0), dst_industry(0), distance(0),
-		event(), count(0), station_size(0), feature(GSF_INVALID), ai_callback(ai_callback)
+		event(), count(0), station_size(0), feature(GrfSpecFeature::Invalid), ai_callback(ai_callback)
 	{
 	}
 
@@ -89,7 +89,8 @@ struct GenericCallback {
 
 typedef std::vector<GenericCallback> GenericCallbackList;
 
-static GenericCallbackList _gcl[GSF_END];
+/** Generic callbacks for each feature. */
+static EnumIndexArray<GenericCallbackList, GrfSpecFeature, GrfSpecFeature::End> _gcl{};
 
 
 /**
@@ -111,7 +112,7 @@ void ResetGenericCallbacks()
  */
 void AddGenericCallback(GrfSpecFeature feature, const GRFFile *file, const SpriteGroup *group)
 {
-	if (feature >= lengthof(_gcl)) {
+	if (to_underlying(feature) >= std::size(_gcl)) {
 		GrfMsg(5, "AddGenericCallback: Unsupported feature {}", GetFeatureString(feature));
 		return;
 	}
@@ -168,7 +169,7 @@ GenericResolverObject::GenericResolverObject(bool ai_callback, CallbackID callba
  */
 static std::pair<const GRFFile *, uint16_t> GetGenericCallbackResult(GrfSpecFeature feature, ResolverObject &object, uint32_t param1_grfv7, uint32_t param1_grfv8)
 {
-	assert(feature < lengthof(_gcl));
+	assert(to_underlying(feature) < std::size(_gcl));
 
 	/* Test each feature callback sprite group. */
 	for (GenericCallbackList::const_reverse_iterator it = _gcl[feature].rbegin(); it != _gcl[feature].rend(); ++it) {
@@ -247,13 +248,13 @@ void AmbientSoundEffectCallback(TileIndex tile)
 
 	/* Prepare resolver object. */
 	GenericResolverObject object(false, CBID_SOUNDS_AMBIENT_EFFECT);
-	object.generic_scope.feature = GSF_SOUNDFX;
+	object.generic_scope.feature = GrfSpecFeature::SoundEffects;
 
 	uint32_t param1_v7 = to_underlying(GetTileType(tile)) << 28 | Clamp(TileHeight(tile), 0, 15) << 24 | GB(r, 16, 8) << 16 | GetTerrainType(tile);
 	uint32_t param1_v8 = to_underlying(GetTileType(tile)) << 24 | GetTileZ(tile) << 16 | GB(r, 16, 8) << 8 | (HasTileWaterClass(tile) ? to_underlying(GetWaterClass(tile)) : 0) << 3 | GetTerrainType(tile);
 
 	/* Run callback. */
-	auto callback = GetGenericCallbackResult(GSF_SOUNDFX, object, param1_v7, param1_v8);
+	auto callback = GetGenericCallbackResult(GrfSpecFeature::SoundEffects, object, param1_v7, param1_v8);
 
 	if (callback.second != CALLBACK_FAILED) PlayTileSound(callback.first, callback.second, tile);
 }
@@ -265,7 +266,7 @@ uint16_t GetTownZonesCallback(Town *t)
 
 	const uint16_t MAX_RETURN_VERSION = 0;
 
-	for (GenericCallbackList::const_reverse_iterator it = _gcl[GSF_FAKE_TOWNS].rbegin(); it != _gcl[GSF_FAKE_TOWNS].rend(); ++it) {
+	for (GenericCallbackList::const_reverse_iterator it = _gcl[GrfSpecFeature::FakeTowns].rbegin(); it != _gcl[GrfSpecFeature::FakeTowns].rend(); ++it) {
 		if (!HasBit(it->file->observed_feature_tests, GFTOF_TOWN_ZONE_CALLBACK)) continue;
 		object.grffile = it->file;
 		object.root_spritegroup = it->group;
@@ -280,7 +281,7 @@ uint16_t GetTownZonesCallback(Town *t)
 
 bool IsGetTownZonesCallbackHandlerPresent()
 {
-	for (GenericCallbackList::const_reverse_iterator it = _gcl[GSF_FAKE_TOWNS].rbegin(); it != _gcl[GSF_FAKE_TOWNS].rend(); ++it) {
+	for (GenericCallbackList::const_reverse_iterator it = _gcl[GrfSpecFeature::FakeTowns].rbegin(); it != _gcl[GrfSpecFeature::FakeTowns].rend(); ++it) {
 		if (HasBit(it->file->observed_feature_tests, GFTOF_TOWN_ZONE_CALLBACK)) return true;
 	}
 

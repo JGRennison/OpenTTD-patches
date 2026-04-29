@@ -326,7 +326,7 @@ static ChangeInfoResult RailVehicleChangeInfo(uint first, uint last, int prop, c
 				break;
 
 			case 0x33: // Badge list
-				e->badges = ReadBadgeList(buf, GSF_TRAINS);
+				e->badges = ReadBadgeList(buf, GrfSpecFeature::Trains);
 				break;
 
 			case 0x34: { // List of track types
@@ -354,5 +354,5 @@ static ChangeInfoResult RailVehicleChangeInfo(uint first, uint last, int prop, c
 	return ret;
 }
 
-template <> ChangeInfoResult GrfChangeInfoHandler<GSF_TRAINS>::Reserve(uint, uint, int, const GRFFilePropertyRemapEntry *, ByteReader &) { return ChangeInfoResult::Unhandled; }
-template <> ChangeInfoResult GrfChangeInfoHandler<GSF_TRAINS>::Activation(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf) { return RailVehicleChangeInfo(first, last, prop, mapping_entry, buf); }
+template <> ChangeInfoResult GrfChangeInfoHandler<GrfSpecFeature::Trains>::Reserve(uint, uint, int, const GRFFilePropertyRemapEntry *, ByteReader &) { return ChangeInfoResult::Unhandled; }
+template <> ChangeInfoResult GrfChangeInfoHandler<GrfSpecFeature::Trains>::Activation(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf) { return RailVehicleChangeInfo(first, last, prop, mapping_entry, buf); }

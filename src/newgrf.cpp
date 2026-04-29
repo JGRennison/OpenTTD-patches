@@ -98,8 +98,8 @@ void GrfProcessingState::ClearDataForNextFile()
 	this->nfo_line = 0;
 	this->skip_sprites = 0;
 
-	for (uint i = 0; i < GSF_END; i++) {
-		this->spritesets[i].clear();
+	for (auto &it : this->spritesets) {
+		it.clear();
 	}
 
 	this->spritegroups.clear();
@@ -435,13 +435,13 @@ GrfSpecFeatureRef ReadFeature(uint8_t raw_byte, bool allow_48)
 		if (remap.remapped_ids[raw_byte]) {
 			auto iter = remap.mapping.find(raw_byte);
 			const GRFFeatureMapRemapEntry &def = iter->second;
-			if (def.feature == GSF_ERROR_ON_USE) {
+			if (def.feature == GrfSpecFeature::ErrorOnUse) {
 				GrfMsg(0, "Error: Unimplemented mapped feature: {}, mapped to: {:02X}", def.name, raw_byte);
 				GRFError *error = DisableGrf(STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_FEATURE_ID);
 				error->data = stredup(def.name);
-				error->param_value[1] = GSF_INVALID;
+				error->param_value[1] = to_underlying(GrfSpecFeature::Invalid);
 				error->param_value[2] = raw_byte;
-			} else if (def.feature == GSF_INVALID) {
+			} else if (def.feature == GrfSpecFeature::Invalid) {
 				GrfMsg(2, "Ignoring unimplemented mapped feature: {}, mapped to: {:02X}", def.name, raw_byte);
 			}
 			return { def.feature, raw_byte };
@@ -449,45 +449,44 @@ GrfSpecFeatureRef ReadFeature(uint8_t raw_byte, bool allow_48)
 	}
 
 	GrfSpecFeature feature;
-	if (raw_byte >= GSF_REAL_FEATURE_END && !(allow_48 && raw_byte == 0x48)) {
-		feature = GSF_INVALID;
+	if (raw_byte >= to_underlying(GrfSpecFeature::RealFeatureEnd) && !(allow_48 && raw_byte == 0x48)) {
+		feature = GrfSpecFeature::Invalid;
 	} else {
 		feature = static_cast<GrfSpecFeature>(raw_byte);
 	}
 	return { feature, raw_byte };
 }
 
-static const char *_feature_names[] = {
-	"TRAINS",
-	"ROADVEHICLES",
-	"SHIPS",
-	"AIRCRAFT",
-	"STATIONS",
-	"CANALS",
-	"BRIDGES",
-	"HOUSES",
-	"GLOBALVAR",
-	"INDUSTRYTILES",
-	"INDUSTRIES",
-	"CARGOES",
-	"SOUNDFX",
-	"AIRPORTS",
-	"SIGNALS",
-	"OBJECTS",
-	"RAILTYPES",
-	"AIRPORTTILES",
-	"ROADTYPES",
-	"TRAMTYPES",
-	"ROADSTOPS",
-	"BADGES",
-	"NEWLANDSCAPE",
-	"TOWN",
+static const EnumIndexArray<const char *, GrfSpecFeature, GrfSpecFeature::End> _feature_names{
+	"Trains",
+	"RoadVehicles",
+	"Ships",
+	"Aircraft",
+	"Stations",
+	"Canals",
+	"Bridges",
+	"Houses",
+	"GlobalVar",
+	"IndustryTiles",
+	"Industries",
+	"Cargoes",
+	"SoundEffects",
+	"Airports",
+	"Signals",
+	"Objects",
+	"RailTypes",
+	"AirportTiles",
+	"RoadTypes",
+	"TramTypes",
+	"RoadStops",
+	"Badges",
+	"NewLandscape",
+	"FakeTowns",
 };
-static_assert(lengthof(_feature_names) == GSF_END);
 
 void GetFeatureStringFormatter::fmt_format_value(format_target &output) const
 {
-	if (this->feature.id < GSF_END) {
+	if (this->feature.id < GrfSpecFeature::End) {
 		output.format("0x{:02X} ({})", this->feature.raw_byte, _feature_names[this->feature.id]);
 	} else {
 		if (unlikely(HasBit(_cur_gps.grffile->ctrl_flags, GFCF_HAVE_FEATURE_ID_REMAP))) {
@@ -510,8 +509,8 @@ GetFeatureStringFormatter GetFeatureString(GrfSpecFeatureRef feature)
 
 GetFeatureStringFormatter GetFeatureString(GrfSpecFeature feature)
 {
-	uint8_t raw_byte = feature;
-	if (feature >= GSF_REAL_FEATURE_END) {
+	uint8_t raw_byte = to_underlying(feature);
+	if (feature >= GrfSpecFeature::RealFeatureEnd) {
 		for (const auto &entry : _cur_gps.grffile->feature_id_remaps.mapping) {
 			if (entry.second.feature == feature) {
 				raw_byte = entry.second.raw_id;
@@ -1046,10 +1045,10 @@ static void FinaliseEngineArray()
 		switch (e->type) {
 			case VEH_TRAIN:
 				for (RailType rt : e->VehInfo<RailVehicleInfo>().railtypes) {
-					AppendCopyableBadgeList(e->badges, GetRailTypeInfo(rt)->badges, GSF_TRAINS);
+					AppendCopyableBadgeList(e->badges, GetRailTypeInfo(rt)->badges, GrfSpecFeature::Trains);
 				}
 				break;
-			case VEH_ROAD: AppendCopyableBadgeList(e->badges, GetRoadTypeInfo(e->VehInfo<RoadVehicleInfo>().roadtype)->badges, GSF_ROADVEHICLES); break;
+			case VEH_ROAD: AppendCopyableBadgeList(e->badges, GetRoadTypeInfo(e->VehInfo<RoadVehicleInfo>().roadtype)->badges, GrfSpecFeature::RoadVehicles); break;
 			default: break;
 		}
 
@@ -1660,7 +1659,7 @@ static void ActivateOldTramDepot()
 static void FinalisePriceBaseMultipliers()
 {
 	/** Features, to which '_grf_id_overrides' applies. Currently vehicle features only. */
-	static constexpr GrfSpecFeatures override_features{GSF_TRAINS, GSF_ROADVEHICLES, GSF_SHIPS, GSF_AIRCRAFT};
+	static constexpr GrfSpecFeatures override_features{GrfSpecFeature::Trains, GrfSpecFeature::RoadVehicles, GrfSpecFeature::Ships, GrfSpecFeature::Aircraft};
 
 	/* Evaluate grf overrides */
 	int num_grfs = (uint)_grf_files.size();
@@ -1791,17 +1790,17 @@ static void FinaliseBadges()
 		for (Engine *e : Engine::Iterate()) {
 			if (e->grf_prop.grffile != &file) continue;
 			e->badges.push_back(badge->index);
-			badge->features.Set(static_cast<GrfSpecFeature>(GSF_TRAINS + e->type));
+			badge->features.Set(GetGrfSpecFeature(e->type));
 		}
 
-		AddBadgeToSpecs(file.stations, GSF_STATIONS, *badge);
-		AddBadgeToSpecs(file.housespec, GSF_HOUSES, *badge);
-		AddBadgeToSpecs(file.industryspec, GSF_INDUSTRIES, *badge);
-		AddBadgeToSpecs(file.indtspec, GSF_INDUSTRYTILES, *badge);
-		AddBadgeToSpecs(file.objectspec, GSF_OBJECTS, *badge);
-		AddBadgeToSpecs(file.airportspec, GSF_AIRPORTS, *badge);
-		AddBadgeToSpecs(file.airtspec, GSF_AIRPORTTILES, *badge);
-		AddBadgeToSpecs(file.roadstops, GSF_ROADSTOPS, *badge);
+		AddBadgeToSpecs(file.stations, GrfSpecFeature::Stations, *badge);
+		AddBadgeToSpecs(file.housespec, GrfSpecFeature::Houses, *badge);
+		AddBadgeToSpecs(file.industryspec, GrfSpecFeature::Industries, *badge);
+		AddBadgeToSpecs(file.indtspec, GrfSpecFeature::IndustryTiles, *badge);
+		AddBadgeToSpecs(file.objectspec, GrfSpecFeature::Objects, *badge);
+		AddBadgeToSpecs(file.airportspec, GrfSpecFeature::Airports, *badge);
+		AddBadgeToSpecs(file.airtspec, GrfSpecFeature::AirportTiles, *badge);
+		AddBadgeToSpecs(file.roadstops, GrfSpecFeature::RoadStops, *badge);
 	}
 
 	ApplyBadgeFeaturesToClassBadges();
@@ -2118,4 +2117,36 @@ const char *NewGRFLabelDumper::Label(uint32_t label)
 		format_to_fixed_z::format_to(this->buffer, lastof(this->buffer), "0x{:08X}", label);
 	}
 	return this->buffer;
+}
+
+/**
+ * Get the \c GrfSpecFeature associated with a \c VehicleType
+ * @param type The vehicle type.
+ * @return the \c GrfSpecFeature
+ */
+GrfSpecFeature GetGrfSpecFeature(VehicleType type)
+{
+	switch (type) {
+		case VEH_TRAIN: return GrfSpecFeature::Trains;
+		case VEH_ROAD: return GrfSpecFeature::RoadVehicles;
+		case VEH_SHIP: return GrfSpecFeature::Ships;
+		case VEH_AIRCRAFT: return GrfSpecFeature::Aircraft;
+		default: return GrfSpecFeature::Invalid;
+	}
+}
+
+/**
+ * Get the \c VehicleType associated with a \c GrfSpecFeature
+ * @param feature The feature.
+ * @return the \c VehicleType
+ */
+VehicleType GetVehicleType(GrfSpecFeature feature)
+{
+	switch (feature) {
+		case GrfSpecFeature::Trains: return VEH_TRAIN;
+		case GrfSpecFeature::RoadVehicles: return VEH_ROAD;
+		case GrfSpecFeature::Ships: return VEH_SHIP;
+		case GrfSpecFeature::Aircraft: return VEH_AIRCRAFT;
+		default: return VEH_INVALID;
+	}
 }

@@ -831,12 +831,12 @@ public:
 
 	bool IsNewGRFInspectable() const override
 	{
-		return ::IsNewGRFInspectable(GSF_FAKE_TOWNS, this->window_number);
+		return ::IsNewGRFInspectable(GrfSpecFeature::FakeTowns, this->window_number);
 	}
 
 	void ShowNewGRFInspectWindow() const override
 	{
-		::ShowNewGRFInspectWindow(GSF_FAKE_TOWNS, this->window_number);
+		::ShowNewGRFInspectWindow(GrfSpecFeature::FakeTowns, this->window_number);
 	}
 };
 
@@ -1911,7 +1911,7 @@ public:
 		STR_HOUSE_PICKER_CLASS_ZONE5,
 	};
 
-	GrfSpecFeature GetFeature() const override { return GSF_HOUSES; }
+	GrfSpecFeature GetFeature() const override { return GrfSpecFeature::Houses; }
 
 	StringID GetClassTooltip() const override { return STR_PICKER_HOUSE_CLASS_TOOLTIP; }
 	StringID GetTypeTooltip() const override { return STR_PICKER_HOUSE_TYPE_TOOLTIP; }

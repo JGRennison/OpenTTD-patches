@@ -88,7 +88,7 @@ uint32_t GetNewSignalsSideVariable()
 
 GrfSpecFeature NewSignalsResolverObject::GetFeature() const
 {
-	return GSF_SIGNALS;
+	return GrfSpecFeature::Signals;
 }
 
 /**

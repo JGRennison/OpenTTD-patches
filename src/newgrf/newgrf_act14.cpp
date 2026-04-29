@@ -532,7 +532,7 @@ struct GRFPropertyMapAction {
 		this->tag_name = tag;
 		this->descriptor = desc;
 
-		this->feature = GSF_INVALID;
+		this->feature = GrfSpecFeature::Invalid;
 		this->prop_id = -1;
 		this->ext_prop_id = -1;
 		this->name.clear();
@@ -567,7 +567,7 @@ struct GRFPropertyMapAction {
 				entry.feature = info->feature;
 				entry.raw_id = this->prop_id;
 				success = true;
-				if (entry.feature == GSF_ROADSTOPS && this->prop_id != GSF_ROADSTOPS) {
+				if (entry.feature == GrfSpecFeature::RoadStops && this->prop_id != to_underlying(GrfSpecFeature::RoadStops)) {
 					GrfMsg(3, "Enabling legacy road stops feature workarounds");
 					SetBit(_cur_gps.grffile->ctrl_flags, GFCF_ROADSTOPS_FEATURE_MAP_NON_DEFAULT_ID);
 				}
@@ -585,7 +585,7 @@ struct GRFPropertyMapAction {
 				GrfMsg(0, "Error: Unimplemented mapped {}: {}, mapped to: 0x{:02X}", this->descriptor, str, this->prop_id);
 				GRFError *error = DisableGrf(STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_FEATURE_ID);
 				error->data = stredup(str);
-				error->param_value[1] = GSF_INVALID;
+				error->param_value[1] = to_underlying(GrfSpecFeature::Invalid);
 				error->param_value[2] = this->prop_id;
 			} else {
 				const char *str_store = stredup(str);
@@ -594,7 +594,7 @@ struct GRFPropertyMapAction {
 				_cur_gps.grffile->remap_unknown_property_names.emplace_back(str_store);
 				GRFFeatureMapRemapEntry &entry = _cur_gps.grffile->feature_id_remaps.Entry(this->prop_id);
 				entry.name = str_store;
-				entry.feature = (this->fallback_mode == GPMFM_IGNORE) ? GSF_INVALID : GSF_ERROR_ON_USE;
+				entry.feature = (this->fallback_mode == GPMFM_IGNORE) ? GrfSpecFeature::Invalid : GrfSpecFeature::ErrorOnUse;
 				entry.raw_id = this->prop_id;
 			}
 		}
@@ -602,7 +602,7 @@ struct GRFPropertyMapAction {
 
 	void ExecutePropertyRemapping()
 	{
-		if (this->feature == GSF_INVALID) {
+		if (this->feature == GrfSpecFeature::Invalid) {
 			GrfMsg(2, "Action 14 {} remapping: no feature defined, doing nothing", this->descriptor);
 			return;
 		}
@@ -618,7 +618,7 @@ struct GRFPropertyMapAction {
 		const char *str = this->name.c_str();
 		extern const GRFPropertyMapDefinition _grf_action0_remappable_properties[];
 		for (const GRFPropertyMapDefinition *info = _grf_action0_remappable_properties; info->name != nullptr; info++) {
-			if ((info->feature == GSF_INVALID || info->feature == this->feature) && strcmp(info->name, str) == 0) {
+			if ((info->feature == GrfSpecFeature::Invalid || info->feature == this->feature) && strcmp(info->name, str) == 0) {
 				if (this->prop_id > 0) {
 					GRFFilePropertyRemapEntry &entry = _cur_gps.grffile->action0_property_remaps[this->feature].Entry(this->prop_id);
 					entry.name = info->name;
@@ -651,7 +651,7 @@ struct GRFPropertyMapAction {
 				GrfMsg(0, "Error: Unimplemented mapped {}: {}, feature: {}, mapped to: {:X}{}", this->descriptor, str, GetFeatureString(this->feature), mapped_to, extended);
 				GRFError *error = DisableGrf(STR_NEWGRF_ERROR_UNIMPLEMETED_MAPPED_PROPERTY);
 				error->data = stredup(str);
-				error->param_value[1] = this->feature;
+				error->param_value[1] = to_underlying(this->feature);
 				error->param_value[2] = ((this->prop_id > 0) ? 0 : 0xE0000) | mapped_to;
 			} else {
 				const char *str_store = stredup(str);
@@ -679,7 +679,7 @@ struct GRFPropertyMapAction {
 
 	void ExecuteVariableRemapping()
 	{
-		if (this->feature == GSF_INVALID) {
+		if (this->feature == GrfSpecFeature::Invalid) {
 			GrfMsg(2, "Action 14 {} remapping: no feature defined, doing nothing", this->descriptor);
 			return;
 		}
@@ -692,7 +692,7 @@ struct GRFPropertyMapAction {
 		extern const GRFVariableMapDefinition _grf_action2_remappable_variables[];
 		for (const GRFVariableMapDefinition *info = _grf_action2_remappable_variables; info->name != nullptr; info++) {
 			if (info->feature == this->feature && strcmp(info->name, str) == 0) {
-				_cur_gps.grffile->grf_variable_remaps.push_back({ (uint16_t)info->id, (uint8_t)this->feature, this->input_shift, this->output_shift, this->input_mask, this->output_mask, this->output_param });
+				_cur_gps.grffile->grf_variable_remaps.push_back({ (uint16_t)info->id, this->feature, this->input_shift, this->output_shift, this->input_mask, this->output_mask, this->output_param });
 				success = true;
 				break;
 			}
@@ -776,7 +776,7 @@ static bool ChangePropertyRemapFeature(size_t len, ByteReader &buf)
 		buf.Skip(len);
 	} else {
 		GrfSpecFeatureRef feature = ReadFeature(buf.ReadByte());
-		if (feature.id >= GSF_END) {
+		if (feature.id >= GrfSpecFeature::End) {
 			GrfMsg(2, "Action 14 {} mapping: invalid feature ID: {}, in '{}'->'FEAT', ignoring this field", action.descriptor, GetFeatureString(feature), action.tag_name);
 		} else {
 			action.feature = feature.id;

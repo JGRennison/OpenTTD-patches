@@ -45,7 +45,7 @@ static void NewSpriteSet(ByteReader &buf)
 	}
 	uint16_t num_ents = buf.ReadExtendedByte();
 
-	if (feature >= GSF_END) {
+	if (feature >= GrfSpecFeature::End) {
 		_cur_gps.skip_sprites = num_sets * num_ents;
 		GrfMsg(1, "NewSpriteSet: Unsupported feature {}, skipping {} sprites", GetFeatureString(feature_ref), _cur_gps.skip_sprites);
 		return;

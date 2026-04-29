@@ -39,16 +39,16 @@ bool _grfs_loaded_with_sg_shadow_enable = false;
 GrfSpecFeature GetGrfSpecFeatureForParentScope(GrfSpecFeature feature)
 {
 	switch (feature) {
-		case GSF_STATIONS:
-		case GSF_BRIDGES:
-		case GSF_HOUSES:
-		case GSF_INDUSTRIES:
-		case GSF_OBJECTS:
-		case GSF_ROADSTOPS:
-			return GSF_FAKE_TOWNS;
+		case GrfSpecFeature::Stations:
+		case GrfSpecFeature::Bridges:
+		case GrfSpecFeature::Houses:
+		case GrfSpecFeature::Industries:
+		case GrfSpecFeature::Objects:
+		case GrfSpecFeature::RoadStops:
+			return GrfSpecFeature::FakeTowns;
 
-		case GSF_INDUSTRYTILES:
-			return GSF_INDUSTRIES;
+		case GrfSpecFeature::IndustryTiles:
+			return GrfSpecFeature::Industries;
 
 		default:
 			return feature;

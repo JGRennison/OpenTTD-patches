@@ -43,7 +43,7 @@
 static InspectTargetId GetTownInspectTargetId(const Town *town)
 {
 	if (town == nullptr) return InspectTargetId::Invalid();
-	return InspectTargetId(GSF_FAKE_TOWNS, town->index.base());
+	return InspectTargetId(GrfSpecFeature::FakeTowns, town->index.base());
 }
 
 struct label_dumper : public NewGRFLabelDumper {
@@ -930,7 +930,7 @@ class NIHHouse : public NIHelper {
 	bool IsInspectable(uint index) const override        { return true; }
 	bool ShowExtraInfoOnly(uint index) const override    { return !HouseSpec::Get(GetHouseType(TileIndex{index}))->grf_prop.HasGrfFile(); }
 	bool ShowSpriteDumpButton(uint index) const override { return true; }
-	InspectTargetId GetParent(uint index) const override { return InspectTargetId(GSF_FAKE_TOWNS, GetTownIndex(TileIndex{index}).base()); }
+	InspectTargetId GetParent(uint index) const override { return InspectTargetId(GrfSpecFeature::FakeTowns, GetTownIndex(TileIndex{index}).base()); }
 	const void *GetInstance(uint)const override          { return nullptr; }
 	const void *GetSpec(uint index) const override       { return HouseSpec::Get(GetHouseType(TileIndex{index})); }
 	std::string GetName(uint index) const override       { return GetString(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT, STR_TOWN_NAME, GetTownIndex(TileIndex{index}), TileIndex{index}); }
@@ -1028,7 +1028,7 @@ static const NIVariable _niv_industrytiles[] = {
 class NIHIndustryTile : public NIHelper {
 	bool IsInspectable(uint index) const override        { return GetIndustryTileSpec(GetIndustryGfx(TileIndex{index}))->grf_prop.HasGrfFile(); }
 	bool ShowSpriteDumpButton(uint index) const override { return true; }
-	InspectTargetId GetParent(uint index) const override { return InspectTargetId(GSF_INDUSTRIES, GetIndustryIndex(TileIndex{index}).base()); }
+	InspectTargetId GetParent(uint index) const override { return InspectTargetId(GrfSpecFeature::Industries, GetIndustryIndex(TileIndex{index}).base()); }
 	const void *GetInstance(uint)const override          { return nullptr; }
 	const void *GetSpec(uint index) const override       { return GetIndustryTileSpec(GetIndustryGfx(TileIndex{index})); }
 	std::string GetName(uint index) const override       { return GetString(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT, STR_INDUSTRY_NAME, GetIndustryIndex(TileIndex{index}), TileIndex{index}); }
@@ -1545,7 +1545,7 @@ class NIHSignals : public NIHelper {
 	{
 		switch (selected) {
 			case 0:
-				ShowNewGRFInspectWindow(GSF_RAILTYPES, index);
+				ShowNewGRFInspectWindow(GrfSpecFeature::RailTypes, index);
 				break;
 		}
 	}
@@ -1820,11 +1820,11 @@ class NIHRailType : public NIHelper {
 	{
 		switch (selected) {
 			case 0:
-				ShowNewGRFInspectWindow(GSF_ROADTYPES, index);
+				ShowNewGRFInspectWindow(GrfSpecFeature::RoadTypes, index);
 				break;
 
 			case 1:
-				ShowNewGRFInspectWindow(GSF_SIGNALS, index);
+				ShowNewGRFInspectWindow(GrfSpecFeature::Signals, index);
 				break;
 		}
 	}
@@ -1862,7 +1862,7 @@ static const NIVariable _niv_airporttiles[] = {
 
 class NIHAirportTile : public NIHelper {
 	bool IsInspectable(uint index) const override        { return AirportTileSpec::Get(GetAirportGfx(TileIndex{index}))->grf_prop.HasGrfFile(); }
-	InspectTargetId GetParent(uint index) const override { return InspectTargetId(GSF_AIRPORTS, GetStationIndex(TileIndex{index}).base()); }
+	InspectTargetId GetParent(uint index) const override { return InspectTargetId(GrfSpecFeature::Airports, GetStationIndex(TileIndex{index}).base()); }
 	const void *GetInstance(uint)const override          { return nullptr; }
 	const void *GetSpec(uint index) const override       { return AirportTileSpec::Get(GetAirportGfx(TileIndex{index})); }
 	std::string GetName(uint index) const override       { return GetString(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT, STR_STATION_NAME, GetStationIndex(TileIndex{index}), TileIndex{index}); }
@@ -1915,7 +1915,7 @@ static const NIVariable _niv_airports[] = {
 
 class NIHAirport : public NIHelper {
 	bool IsInspectable(uint index) const override        { return AirportSpec::Get(Station::Get(index)->airport.type)->grf_prop.HasGrfFile(); }
-	InspectTargetId GetParent(uint index) const override { return InspectTargetId(GSF_FAKE_TOWNS, Station::Get(index)->town->index.base()); }
+	InspectTargetId GetParent(uint index) const override { return InspectTargetId(GrfSpecFeature::FakeTowns, Station::Get(index)->town->index.base()); }
 	const void *GetInstance(uint index)const override    { return Station::Get(index); }
 	const void *GetSpec(uint index) const override       { return AirportSpec::Get(Station::Get(index)->airport.type); }
 	std::string GetName(uint index) const override       { return GetString(STR_NEWGRF_INSPECT_CAPTION_OBJECT_AT, STR_STATION_NAME, index, Station::Get(index)->airport.tile); }
@@ -2055,7 +2055,7 @@ class NIHTown : public NIHelper {
 	/* virtual */ void SpriteDump(uint index, SpriteGroupDumper &dumper) const override
 	{
 		extern void DumpGenericCallbackSpriteGroups(GrfSpecFeature feature, SpriteGroupDumper &dumper);
-		DumpGenericCallbackSpriteGroups(GSF_FAKE_TOWNS, dumper);
+		DumpGenericCallbackSpriteGroups(GrfSpecFeature::FakeTowns, dumper);
 	}
 };
 
@@ -2411,7 +2411,7 @@ private:
 	{
 		switch (selected) {
 			case 0:
-				ShowNewGRFInspectWindow(GSF_RAILTYPES, index);
+				ShowNewGRFInspectWindow(GrfSpecFeature::RailTypes, index);
 				break;
 		}
 	}
@@ -2585,32 +2585,31 @@ static const NIFeature _nif_newlandscape = {
 };
 
 /** Table with all NIFeatures. */
-static const NIFeature * const _nifeatures[] = {
-	&_nif_vehicle,      // GSF_TRAINS
-	&_nif_vehicle,      // GSF_ROADVEHICLES
-	&_nif_vehicle,      // GSF_SHIPS
-	&_nif_vehicle,      // GSF_AIRCRAFT
-	&_nif_station,      // GSF_STATIONS
-	nullptr,            // GSF_CANALS (no callbacks/action2 implemented)
-	nullptr,            // GSF_BRIDGES (no callbacks/action2)
-	&_nif_house,        // GSF_HOUSES
-	nullptr,            // GSF_GLOBALVAR (has no "physical" objects)
-	&_nif_industrytile, // GSF_INDUSTRYTILES
-	&_nif_industry,     // GSF_INDUSTRIES
-	&_nif_cargo,        // GSF_CARGOES (has no "physical" objects)
-	nullptr,            // GSF_SOUNDFX (has no "physical" objects)
-	&_nif_airport,      // GSF_AIRPORTS
-	&_nif_signals,      // GSF_SIGNALS
-	&_nif_object,       // GSF_OBJECTS
-	&_nif_railtype,     // GSF_RAILTYPES
-	&_nif_airporttile,  // GSF_AIRPORTTILES
-	&_nif_roadtype,     // GSF_ROADTYPES
-	&_nif_tramtype,     // GSF_TRAMTYPES
-	&_nif_roadstop,     // GSF_ROADSTOPS
-	nullptr,            // GSF_BADGES
-	&_nif_newlandscape, // GSF_NEWLANDSCAPE
-	&_nif_town,         // GSF_FAKE_TOWNS
-	&_nif_station_struct,  // GSF_FAKE_STATION_STRUCT
-	&_nif_tracerestrict,   // GSF_FAKE_TRACERESTRICT
+static const EnumIndexArray<const NIFeature *, GrfSpecFeature, GrfSpecFeature::FakeEnd> _nifeatures{
+	&_nif_vehicle,         // GrfSpecFeature::Trains
+	&_nif_vehicle,         // GrfSpecFeature::RoadVehicles
+	&_nif_vehicle,         // GrfSpecFeature::Ships
+	&_nif_vehicle,         // GrfSpecFeature::Aircraft
+	&_nif_station,         // GrfSpecFeature::Stations
+	nullptr,               // GrfSpecFeature::Canals (no callbacks/action2 implemented)
+	nullptr,               // GrfSpecFeature::Bridges (no callbacks/action2)
+	&_nif_house,           // GrfSpecFeature::Houses
+	nullptr,               // GrfSpecFeature::GlobalVar (has no "physical" objects)
+	&_nif_industrytile,    // GrfSpecFeature::IndustryTiles
+	&_nif_industry,        // GrfSpecFeature::Industries
+	&_nif_cargo,           // GrfSpecFeature::Cargoes (has no "physical" objects)
+	nullptr,               // GrfSpecFeature::SoundEffects (has no "physical" objects)
+	&_nif_airport,         // GrfSpecFeature::Airports
+	&_nif_signals,         // GrfSpecFeature::Signals
+	&_nif_object,          // GrfSpecFeature::Objects
+	&_nif_railtype,        // GrfSpecFeature::RailTypes
+	&_nif_airporttile,     // GrfSpecFeature::AirportTiles
+	&_nif_roadtype,        // GrfSpecFeature::RoadTypes
+	&_nif_tramtype,        // GrfSpecFeature::TramTypes
+	&_nif_roadstop,        // GrfSpecFeature::RoadStops
+	nullptr,               // GrfSpecFeature::Badges
+	&_nif_newlandscape,    // GrfSpecFeature::NewLandscape
+	&_nif_town,            // GrfSpecFeature::FakeTowns
+	&_nif_station_struct,  // GrfSpecFeature::FakeStationStruct
+	&_nif_tracerestrict,   // GrfSpecFeature::FakeTracerestrict
 };
-static_assert(lengthof(_nifeatures) == GSF_FAKE_END);

@@ -190,7 +190,7 @@ static ChangeInfoResult ObjectChangeInfo(uint first, uint last, int prop, const 
 				break;
 
 			case 0x19: // Badge list
-				spec->badges = ReadBadgeList(buf, GSF_OBJECTS);
+				spec->badges = ReadBadgeList(buf, GrfSpecFeature::Objects);
 				break;
 
 			case A0RPI_OBJECT_USE_LAND_GROUND:
@@ -231,5 +231,5 @@ static ChangeInfoResult ObjectChangeInfo(uint first, uint last, int prop, const 
 	return ret;
 }
 
-template <> ChangeInfoResult GrfChangeInfoHandler<GSF_OBJECTS>::Reserve(uint, uint, int, const GRFFilePropertyRemapEntry *, ByteReader &) { return ChangeInfoResult::Unhandled; }
-template <> ChangeInfoResult GrfChangeInfoHandler<GSF_OBJECTS>::Activation(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf) { return ObjectChangeInfo(first, last, prop, mapping_entry, buf); }
+template <> ChangeInfoResult GrfChangeInfoHandler<GrfSpecFeature::Objects>::Reserve(uint, uint, int, const GRFFilePropertyRemapEntry *, ByteReader &) { return ChangeInfoResult::Unhandled; }
+template <> ChangeInfoResult GrfChangeInfoHandler<GrfSpecFeature::Objects>::Activation(uint first, uint last, int prop, const GRFFilePropertyRemapEntry *mapping_entry, ByteReader &buf) { return ObjectChangeInfo(first, last, prop, mapping_entry, buf); }

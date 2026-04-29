@@ -18,6 +18,7 @@
 #include "newgrf_callbacks.h"
 #include "newgrf_text_type.h"
 #include "newgrf_act5.h"
+#include "vehicle_type.h"
 #include "core/bitmath_func.hpp"
 #include "core/alloc_type.hpp"
 #include "core/format.hpp"
@@ -78,47 +79,47 @@ enum class GrfMiscBit : uint8_t {
 
 using GrfMiscBits = EnumBitSet<GrfMiscBit, uint8_t>;
 
-enum GrfSpecFeature : uint8_t {
-	GSF_TRAINS,
-	GSF_ROADVEHICLES,
-	GSF_SHIPS,
-	GSF_AIRCRAFT,
-	GSF_STATIONS,
-	GSF_CANALS,
-	GSF_BRIDGES,
-	GSF_HOUSES,
-	GSF_GLOBALVAR,
-	GSF_INDUSTRYTILES,
-	GSF_INDUSTRIES,
-	GSF_CARGOES,
-	GSF_SOUNDFX,
-	GSF_AIRPORTS,
-	GSF_SIGNALS,
-	GSF_OBJECTS,
-	GSF_RAILTYPES,
-	GSF_AIRPORTTILES,
-	GSF_ROADTYPES,
-	GSF_TRAMTYPES,
-	GSF_ROADSTOPS,
-	GSF_BADGES,
+enum class GrfSpecFeature : uint8_t {
+	Trains, ///< Trains feature
+	RoadVehicles, ///< Road vehicles feature
+	Ships, ///< Ships feature
+	Aircraft, ///< Aircraft feature
+	Stations, ///< Stations feature
+	Canals, ///< Canals feature
+	Bridges, ///< Bridges feature
+	Houses, ///< Houses feature
+	GlobalVar, ///< Global variables feature
+	IndustryTiles, ///< Industry tiles feature
+	Industries, ///< Industries feature
+	Cargoes, ///< Cargoes feature
+	SoundEffects, ///< Sound effects feature
+	Airports, ///< Airports feature
+	Signals, ///< Signals feature
+	Objects, ///< Objects feature
+	RailTypes, ///< Rail types feature
+	AirportTiles, ///< Airport tiles feature
+	RoadTypes, ///< Road types feature
+	TramTypes, ///< Tram types feature
+	RoadStops, ///< Road stops feature
+	Badges, ///< Badges feature
 
-	GSF_NEWLANDSCAPE,
-	GSF_FAKE_TOWNS,           ///< Fake (but mappable) town GrfSpecFeature for NewGRF debugging (parent scope), and generic callbacks
-	GSF_END,
+	NewLandscape,
+	FakeTowns, ///< Fake town GrfSpecFeature for NewGRF debugging (parent scope)
+	End, ///< End marker
 
-	GSF_REAL_FEATURE_END = GSF_NEWLANDSCAPE,
+	RealFeatureEnd = NewLandscape,
 
-	GSF_FAKE_STATION_STRUCT = GSF_END,  ///< Fake station struct GrfSpecFeature for NewGRF debugging
-	GSF_FAKE_TRACERESTRICT,   ///< Fake routing restriction GrfSpecFeature for debugging
-	GSF_FAKE_END,             ///< End of the fake features
+	Default = End, ///< Unspecified feature, default badge
 
-	GSF_DEFAULT = GSF_END,    ///< Unspecified feature, default badge
+	FakeStationStruct = End, ///< Fake station struct GrfSpecFeature for NewGRF debugging
+	FakeTracerestrict, ///< Fake routing restriction GrfSpecFeature for debugging
+	FakeEnd, ///< End of the fake features
 
-	GSF_ORIGINAL_STRINGS = 0x48,
-	GSF_ERROR_ON_USE = 0xFE,  ///< An invalid value which generates an immediate error on mapping
-	GSF_INVALID = 0xFF,       ///< An invalid spec feature
+	OriginalStrings = 0x48, ///< Pseudo unsupported 'feature' for replacing original strings
+	ErrorOnUse = 0xFE, ///< An invalid value which generates an immediate error on mapping
+	Invalid = 0xFF, ///< An invalid spec feature
 };
-using GrfSpecFeatures = EnumBitSet<GrfSpecFeature, uint32_t, GrfSpecFeature::GSF_END>;
+using GrfSpecFeatures = EnumBitSet<GrfSpecFeature, uint32_t, GrfSpecFeature::End>;
 
 static const uint32_t INVALID_GRFID = 0xFFFFFFFF;
 
@@ -245,7 +246,7 @@ struct GRFNameOnlyVariableMapDefinition {
 
 struct GRFVariableMapEntry {
 	uint16_t id = 0;
-	uint8_t feature = 0;
+	GrfSpecFeature feature{};
 	uint8_t input_shift = 0;
 	uint8_t output_shift = 0;
 	uint32_t input_mask = 0;
@@ -320,7 +321,7 @@ enum NewLandscapeAction3ID {
 /** GRFFile control flags. */
 enum GRFFileCtrlFlags {
 	GFCF_HAVE_FEATURE_ID_REMAP  = 0,                          ///< This GRF has one or more feature ID mappings
-	GFCF_ROADSTOPS_FEATURE_MAP_NON_DEFAULT_ID,                ///< The road stops feature was mapped to a non-default feature ID (not GSF_ROADSTOPS), enable some workarounds
+	GFCF_ROADSTOPS_FEATURE_MAP_NON_DEFAULT_ID,                ///< The road stops feature was mapped to a non-default feature ID (not GrfSpecFeature::RoadStops), enable some workarounds
 };
 
 struct NewSignalStyle;
@@ -344,7 +345,7 @@ struct GRFFile {
 	std::vector<std::unique_ptr<struct RoadStopSpec>> roadstops;
 
 	GRFFeatureMapRemapSet feature_id_remaps{};
-	GRFFilePropertyRemapSet action0_property_remaps[GSF_END]{};
+	EnumIndexArray<GRFFilePropertyRemapSet, GrfSpecFeature, GrfSpecFeature::End> action0_property_remaps{};
 	btree::btree_map<uint32_t, GRFFilePropertyRemapEntry> action0_extended_property_remaps{};
 	Action5TypeRemapSet action5_type_remaps{};
 	std::vector<GRFVariableMapEntry> grf_variable_remaps{};
@@ -446,7 +447,7 @@ struct GRFLoadedFeatures {
 struct PriceBaseSpec {
 	Money start_price; ///< Default value at game start, before adding multipliers.
 	PriceCategory category; ///< Price is affected by certain difficulty settings.
-	GrfSpecFeature grf_feature; ///< GRF Feature that decides whether price multipliers apply locally or globally, #GSF_END if none.
+	GrfSpecFeature grf_feature; ///< GRF Feature that decides whether price multipliers apply locally or globally, #GrfSpecFeature::End if none.
 	Price fallback_price; ///< Fallback price multiplier for new prices but old grfs.
 };
 
@@ -484,6 +485,9 @@ bool GetGlobalVariable(uint8_t param, uint32_t *value, const GRFFile *grffile);
 StringID MapGRFStringID(uint32_t grfid, GRFStringID str);
 StringID MapGRFStringID(const struct GRFFile *grf, GRFStringID str);
 void ShowNewGRFError();
+
+GrfSpecFeature GetGrfSpecFeature(VehicleType type);
+VehicleType GetVehicleType(GrfSpecFeature feature);
 
 struct TemplateVehicle;
 

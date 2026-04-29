@@ -3495,7 +3495,7 @@ public:
 
 	void ShowNewGRFInspectWindow() const override
 	{
-		::ShowNewGRFInspectWindow(GSF_FAKE_TRACERESTRICT, MakeTraceRestrictRefId(this->tile, this->track));
+		::ShowNewGRFInspectWindow(GrfSpecFeature::FakeTracerestrict, MakeTraceRestrictRefId(this->tile, this->track));
 	}
 
 private:

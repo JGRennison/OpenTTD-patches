@@ -84,7 +84,7 @@ std::vector<const GRFFile *> _new_landscape_rocks_grfs;
 
 GrfSpecFeature NewLandscapeResolverObject::GetFeature() const
 {
-	return GSF_NEWLANDSCAPE;
+	return GrfSpecFeature::NewLandscape;
 }
 
 NewLandscapeResolverObject::NewLandscapeResolverObject(const GRFFile *grffile, const TileInfo *ti, NewLandscapeType landscape_type, uint32_t param1, uint32_t param2)
