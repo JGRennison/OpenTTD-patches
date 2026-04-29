@@ -1208,28 +1208,28 @@ public:
 		}
 	}
 
-	void OnPlaceObjectAbort() override
-	{
-		if (Station::IsExpected(Station::Get(this->parent->window_number))) {
-			/* this is a station */
-			SetViewportStationRect(Station::Get(this->parent->window_number), false);
-		} else {
-			/* this is a waypoint */
-			SetViewportWaypointRect(Waypoint::Get(this->parent->window_number), false);
-		}
-
-		this->RaiseButtons();
-	}
-
-	void Close([[maybe_unused]] int data = 0) override
+private:
+	void ClearViewportRect()
 	{
 		if (this->parent != nullptr) {
 			if (this->parent->window_class == WC_STATION_VIEW) SetViewportStationRect(Station::Get(this->parent->window_number), false);
 			if (this->parent->window_class == WC_WAYPOINT_VIEW) SetViewportWaypointRect(Waypoint::Get(this->parent->window_number), false);
 		}
+	}
+
+public:
+	void OnPlaceObjectAbort() override
+	{
+		this->ClearViewportRect();
+		this->RaiseButtons();
+	}
+
+	void Close([[maybe_unused]] int data = 0) override
+	{
+		this->ClearViewportRect();
 
 		auto has_been_handled = [](const QueryString &editbox) { return editbox.handled; };
-		if (this->parent != nullptr && !std::ranges::any_of(editboxes, has_been_handled)) {
+		if (this->parent != nullptr && !std::ranges::any_of(this->editboxes, has_been_handled)) {
 			Window *parent = this->parent;
 			this->parent = nullptr; // so parent doesn't try to close us again
 			parent->OnQueryTextFinished(std::nullopt);
