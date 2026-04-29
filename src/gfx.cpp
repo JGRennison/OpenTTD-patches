@@ -65,7 +65,7 @@ uint32_t _pause_countdown;
 std::string _switch_baseset;
 static bool _adjust_gui_zoom_startup_done = false;
 
-static EnumClassIndexContainer<std::array<std::array<uint8_t, 244>, to_underlying(FontSize::End)>, FontSize> _stringwidth_table; ///< Cache containing width of often used characters. @see GetCharacterWidth()
+static EnumIndexArray<std::array<uint8_t, 244>, FontSize, FontSize::End> _stringwidth_table; ///< Cache containing width of often used characters. @see GetCharacterWidth()
 DrawPixelInfo *_cur_dpi;
 
 struct GfxBlitterCtx {

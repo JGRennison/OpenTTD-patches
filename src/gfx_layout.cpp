@@ -39,7 +39,7 @@ Layouter::LineCache *Layouter::linecache;
 uint64_t Layouter::linecache_lru_counter = 0;
 
 /** Cache of Font instances. */
-EnumClassIndexContainer<std::array<Layouter::FontColourMap, to_underlying(FontSize::End)>, FontSize> Layouter::fonts;
+EnumIndexArray<Layouter::FontColourMap, FontSize, FontSize::End> Layouter::fonts;
 
 
 /**
