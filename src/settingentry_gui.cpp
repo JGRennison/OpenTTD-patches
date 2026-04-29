@@ -902,6 +902,7 @@ SettingsContainer &GetSettingsTree()
 			advisors->Add(new SettingEntry("news_display.accident_other"));
 			advisors->Add(new SettingEntry("news_display.company_info"));
 			advisors->Add(new SettingEntry("news_display.acceptance"));
+			advisors->Add(new SettingEntry("news_display.cargo_flow"));
 			advisors->Add(new SettingEntry("news_display.arrival_player"));
 			advisors->Add(new SettingEntry("news_display.arrival_other"));
 			advisors->Add(new SettingEntry("news_display.advice"));

@@ -334,6 +334,7 @@ static const NewsTypeData _news_type_data[] = {
 	NewsTypeData("news_display.advice",           150, SND_BEGIN       ),  ///< NewsType::Advice
 	NewsTypeData("news_display.new_vehicles",      30, SND_1E_NEW_ENGINE), ///< NewsType::NewVehicles
 	NewsTypeData("news_display.acceptance",        90, SND_BEGIN       ),  ///< NewsType::Acceptance
+	NewsTypeData("news_display.cargo_flow",        90, SND_BEGIN       ),  ///< NewsType::CargoFlow
 	NewsTypeData("news_display.subsidies",        180, SND_BEGIN       ),  ///< NewsType::Subsidies
 	NewsTypeData("news_display.general",           60, SND_BEGIN       ),  ///< NewsType::General
 };

@@ -541,6 +541,7 @@ struct NewsSettings {
 	uint8_t advice;                                       ///< NewsDisplay on advice affecting the player's vehicles
 	uint8_t new_vehicles;                                 ///< NewsDisplay of new vehicles becoming available
 	uint8_t acceptance;                                   ///< NewsDisplay on changes affecting the acceptance of cargo at stations
+	uint8_t cargo_flow;                                   ///< NewsDisplay when cargo is accumulating at a station
 	uint8_t subsidies;                                    ///< NewsDisplay of changes on subsidies
 	uint8_t general;                                      ///< NewsDisplay of other topics
 };

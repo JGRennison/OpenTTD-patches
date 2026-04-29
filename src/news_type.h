@@ -44,6 +44,7 @@ enum class NewsType : uint8_t {
 	Advice, ///< Bits of news about vehicles of the company
 	NewVehicles, ///< New vehicle has become available
 	Acceptance, ///< A type of cargo is (no longer) accepted
+	CargoFlow, ///< Cargo flow warnings (overflowing cargo)
 	Subsidies, ///< News about subsidies (announcements, expirations, acceptance)
 	General, ///< General news (from towns)
 

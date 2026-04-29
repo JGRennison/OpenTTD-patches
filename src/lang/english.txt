@@ -1963,6 +1963,9 @@ STR_CONFIG_SETTING_NEWS_NEW_VEHICLES_HELPTEXT                   :Display a newsp
 STR_CONFIG_SETTING_NEWS_CHANGES_ACCEPTANCE                      :Changes to cargo acceptance: {STRING2}
 STR_CONFIG_SETTING_NEWS_CHANGES_ACCEPTANCE_HELPTEXT             :Display messages about stations changing acceptance of some cargoes
 
+STR_CONFIG_SETTING_NEWS_CARGO_FLOW                              :Overflowing cargo at station: {STRING2}
+STR_CONFIG_SETTING_NEWS_CARGO_FLOW_HELPTEXT                     :Warn about stations where cargo is accumulating.{}The detection is based on shape of the cargo history graph, not on specific amount threshold.
+
 STR_CONFIG_SETTING_NEWS_SUBSIDIES                               :Subsidies: {STRING2}
 STR_CONFIG_SETTING_NEWS_SUBSIDIES_HELPTEXT                      :Display a newspaper about subsidy related events
 

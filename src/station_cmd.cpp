@@ -571,7 +571,7 @@ void Station::CheckCargoOverflow() const
 	if (overflowing_cargoes.Any()) {
 		AddNewsItem(
 				GetEncodedString(STR_STATION_CARGO_OVERFLOW, overflowing_cargoes, this->index),
-				NewsType::Acceptance,
+				NewsType::CargoFlow,
 				NewsStyle::Small,
 				NewsFlag::InColour,
 				this->index);
@@ -4819,7 +4819,7 @@ void StationMonthlyLoop()
 			ge.status.Set(GoodsEntry::State::LastMonth, ge.status.Test(GoodsEntry::State::CurrentMonth));
 			ge.status.Reset(GoodsEntry::State::CurrentMonth);
 		}
-		st->CheckCargoOverflow();
+		if (_settings_client.news_display.cargo_flow > 0 && st->owner == _local_company) st->CheckCargoOverflow();
 	}
 }
 
