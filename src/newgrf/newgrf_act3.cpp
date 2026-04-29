@@ -495,11 +495,11 @@ static void RailTypeMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 
 	uint8_t cidcount = buf.ReadByte();
 	for (uint c = 0; c < cidcount; c++) {
-		uint8_t ctype = buf.ReadByte();
+		RailSpriteType ctype{buf.ReadByte()};
 		uint16_t groupid = buf.ReadWord();
 		if (!IsValidGroupID(groupid, "RailTypeMapSpriteGroup")) continue;
 
-		if (ctype >= RTSG_END) continue;
+		if (ctype >= RailSpriteType::End) continue;
 
 		extern RailTypeInfo _railtypes[RAILTYPE_END];
 		for (uint i = 0; i < idcount; i++) {
@@ -528,11 +528,11 @@ static void RoadTypeMapSpriteGroup(ByteReader &buf, uint8_t idcount, RoadTramTyp
 
 	uint8_t cidcount = buf.ReadByte();
 	for (uint c = 0; c < cidcount; c++) {
-		uint8_t ctype = buf.ReadByte();
+		RoadSpriteType ctype{buf.ReadByte()};
 		uint16_t groupid = buf.ReadWord();
 		if (!IsValidGroupID(groupid, "RoadTypeMapSpriteGroup")) continue;
 
-		if (ctype >= ROTSG_END) continue;
+		if (ctype >= RoadSpriteType::End) continue;
 
 		extern RoadTypeInfo _roadtypes[ROADTYPE_END];
 		for (uint i = 0; i < idcount; i++) {

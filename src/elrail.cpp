@@ -214,7 +214,7 @@ static TrackBits MaskWireBits(TileIndex t, TrackBits tracks)
 static inline SpriteID GetWireBase(TileIndex tile, RailType rt, TileContext context = TCX_NORMAL)
 {
 	const RailTypeInfo *rti = GetRailTypeInfo(rt);
-	SpriteID wires = GetCustomRailSprite(rti, tile, RTSG_WIRES, context);
+	SpriteID wires = GetCustomRailSprite(rti, tile, RailSpriteType::Wires, context);
 	return wires == 0 ? SPR_WIRE_BASE : wires;
 }
 
@@ -227,7 +227,7 @@ static inline SpriteID GetWireBase(TileIndex tile, RailType rt, TileContext cont
 static inline SpriteID GetPylonBase(TileIndex tile, RailType rt, TileContext context = TCX_NORMAL)
 {
 	const RailTypeInfo *rti = GetRailTypeInfo(rt);
-	SpriteID pylons = GetCustomRailSprite(rti, tile, RTSG_PYLONS, context);
+	SpriteID pylons = GetCustomRailSprite(rti, tile, RailSpriteType::Pylons, context);
 	return pylons == 0 ? SPR_PYLON_BASE : pylons;
 }
 

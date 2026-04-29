@@ -354,8 +354,8 @@ typedef void GfxFillRectModeFunctor(void *pixel, int count);
 
 /** Palettes OpenTTD supports. */
 enum PaletteType : uint8_t {
-	PAL_DOS,        ///< Use the DOS palette.
-	PAL_WINDOWS,    ///< Use the Windows palette.
+	DOS, ///< Use the DOS palette.
+	Windows, ///< Use the Windows palette.
 };
 
 /** Types of sprites that might be loaded */

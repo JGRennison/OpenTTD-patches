@@ -133,7 +133,7 @@ uint32_t RoadTypeResolverObject::GetDebugID() const
  * @param param1 Extra parameter (first parameter of the callback, except roadtypes do not have callbacks).
  * @param param2 Extra parameter (second parameter of the callback, except roadtypes do not have callbacks).
  */
-RoadTypeResolverObject::RoadTypeResolverObject(const RoadTypeInfo *rti, TileIndex tile, TileContext context, RoadTypeSpriteGroup rtsg, uint32_t param1, uint32_t param2)
+RoadTypeResolverObject::RoadTypeResolverObject(const RoadTypeInfo *rti, TileIndex tile, TileContext context, RoadSpriteType rtsg, uint32_t param1, uint32_t param2)
 	: ResolverObject(rti != nullptr ? rti->grffile[rtsg] : nullptr, CBID_NO_CALLBACK, param1, param2), roadtype_scope(*this, rti, tile, context)
 {
 	this->root_spritegroup = rti != nullptr ? rti->group[rtsg] : nullptr;
@@ -148,9 +148,9 @@ RoadTypeResolverObject::RoadTypeResolverObject(const RoadTypeInfo *rti, TileInde
  * @param [out] num_results If not nullptr, return the number of sprites in the spriteset.
  * @return The sprite to draw.
  */
-SpriteID GetCustomRoadSprite(const RoadTypeInfo *rti, TileIndex tile, RoadTypeSpriteGroup rtsg, TileContext context, uint *num_results)
+SpriteID GetCustomRoadSprite(const RoadTypeInfo *rti, TileIndex tile, RoadSpriteType rtsg, TileContext context, uint *num_results)
 {
-	assert(rtsg < ROTSG_END);
+	assert(rtsg < RoadSpriteType::End);
 
 	if (rti->group[rtsg] == nullptr) return 0;
 
@@ -287,23 +287,22 @@ void DumpRoadTypeSpriteGroup(RoadType rt, SpriteGroupDumper &dumper)
 	format_buffer buffer;
 	const RoadTypeInfo *rti = GetRoadTypeInfo(rt);
 
-	static const char *sprite_group_names[] =  {
-		"ROTSG_CURSORS",
-		"ROTSG_OVERLAY",
-		"ROTSG_GROUND",
-		"ROTSG_TUNNEL",
-		"ROTSG_CATENARY_FRONT",
-		"ROTSG_CATENARY_BACK",
-		"ROTSG_BRIDGE",
-		"ROTSG_reserved2",
-		"ROTSG_DEPOT",
-		"ROTSG_reserved3",
-		"ROTSG_ROADSTOP",
-		"ROTSG_ONEWAY"
+	static const EnumIndexArray<const char *, RoadSpriteType, RoadSpriteType::End> sprite_group_names{
+		"UI",
+		"Overlay",
+		"Ground",
+		"Tunnel",
+		"CatenaryFront",
+		"CatenaryRear",
+		"Bridge",
+		"ReservedCrossing",
+		"Depot",
+		"ReservedFence",
+		"Roadstop",
+		"Oneway"
 	};
-	static_assert(lengthof(sprite_group_names) == ROTSG_END);
 
-	for (RoadTypeSpriteGroup rtsg = (RoadTypeSpriteGroup)0; rtsg < ROTSG_END; rtsg = (RoadTypeSpriteGroup)(rtsg + 1)) {
+	for (RoadSpriteType rtsg{0}; rtsg < RoadSpriteType::End; rtsg = static_cast<RoadSpriteType>(to_underlying(rtsg) + 1)) {
 		if (rti->group[rtsg] != nullptr) {
 			buffer.clear();
 			buffer.format("{}: {}", RoadTypeIsTram(rt) ? "Tram" : "Road", sprite_group_names[rtsg]);

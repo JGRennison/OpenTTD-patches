@@ -3333,7 +3333,7 @@ static bool ConDumpRoadTypes(std::span<std::string_view> argv)
 		const RoadTypeInfo *rti = GetRoadTypeInfo(rt);
 		if (rti->label == 0) continue;
 		uint32_t grfid = 0;
-		const GRFFile *grf = rti->grffile[ROTSG_GROUND];
+		const GRFFile *grf = rti->grffile[RoadSpriteType::Ground];
 		if (grf == nullptr) {
 			uint32_t str_grfid = GetStringGRFID(rti->strings.name);
 			if (str_grfid != 0) {
@@ -3391,7 +3391,7 @@ static bool ConDumpRailTypes(std::span<std::string_view> argv)
 		const RailTypeInfo *rti = GetRailTypeInfo(rt);
 		if (rti->label == 0) continue;
 		uint32_t grfid = 0;
-		const GRFFile *grf = rti->grffile[RTSG_GROUND];
+		const GRFFile *grf = rti->grffile[RailSpriteType::Ground];
 		if (grf == nullptr) {
 			uint32_t str_grfid = GetStringGRFID(rti->strings.name);
 			if (str_grfid != 0) {

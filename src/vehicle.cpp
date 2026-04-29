@@ -3283,8 +3283,7 @@ static PaletteID GetEngineColourMap(EngineID engine_type, CompanyID company, Eng
 
 	const Livery *livery = GetEngineLivery(engine_type, company, parent_engine_type, v, _settings_client.gui.liveries, ignore_group);
 
-	map += livery->colour1;
-	if (twocc) map += livery->colour2 * 16;
+	map += livery->GetRecolourOffset(twocc);
 
 	/* Update cache */
 	if (v != nullptr && !ignore_group) const_cast<Vehicle *>(v)->colourmap = map;

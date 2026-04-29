@@ -128,7 +128,7 @@ void ResolveRailTypeGUISignalSprites(RailTypeInfo *rti, uint8_t style, PalSprite
 
 void ResolveRailTypeGUISprites(RailTypeInfo *rti)
 {
-	SpriteID cursors_base = GetCustomRailSprite(rti, INVALID_TILE, RTSG_CURSORS);
+	SpriteID cursors_base = GetCustomRailSprite(rti, INVALID_TILE, RailSpriteType::UI);
 	if (cursors_base != 0) {
 		rti->gui_sprites.build_ns_rail = cursors_base +  0;
 		rti->gui_sprites.build_x_rail  = cursors_base +  1;
@@ -3569,7 +3569,7 @@ void DrawTrackDetails(const TileInfo *ti, const RailTypeInfo *rti, const RailGro
 	 * Note: Halftile slopes only have fences on the upper part. */
 	uint num_sprites = 0;
 	PalSpriteID psid{
-		.sprite = GetCustomRailSprite(rti, ti->tile, RTSG_FENCES, IsHalftileSlope(ti->tileh) ? TCX_UPPER_HALFTILE : TCX_NORMAL, &num_sprites),
+		.sprite = GetCustomRailSprite(rti, ti->tile, RailSpriteType::Fences, IsHalftileSlope(ti->tileh) ? TCX_UPPER_HALFTILE : TCX_NORMAL, &num_sprites),
 		.pal = pal,
 	};
 	if (psid.sprite == 0) {
@@ -3674,8 +3674,8 @@ static void DrawTrackBitsOverlay(TileInfo *ti, TrackBits track, const RailTypeIn
 	}
 
 	bool no_combine = ti->tileh == SLOPE_FLAT && rti->flags.Test(RailTypeFlag::NoSpriteCombine);
-	SpriteID overlay = GetCustomRailSprite(rti, ti->tile, RTSG_OVERLAY);
-	SpriteID ground = GetCustomRailSprite(rti, ti->tile, no_combine ? RTSG_GROUND_COMPLETE : RTSG_GROUND);
+	SpriteID overlay = GetCustomRailSprite(rti, ti->tile, RailSpriteType::Overlay);
+	SpriteID ground = GetCustomRailSprite(rti, ti->tile, no_combine ? RailSpriteType::GroundComplete : RailSpriteType::Ground);
 	TrackBits pbs = TRACK_BIT_NONE;
 	if (_settings_client.gui.show_track_reservation) {
 		pbs = (is_bridge ? GetTunnelBridgeReservationTrackBits(ti->tile) : GetRailReservationTrackBits(ti->tile)) & track;
@@ -3765,8 +3765,8 @@ static void DrawTrackBitsOverlay(TileInfo *ti, TrackBits track, const RailTypeIn
 
 	if (IsValidCorner(halftile_corner) && (draw_half_tile == halftile_corner || draw_half_tile == CORNER_INVALID)) {
 		DrawFoundation(ti, HalftileFoundation(halftile_corner));
-		overlay = GetCustomRailSprite(rti, ti->tile, RTSG_OVERLAY, TCX_UPPER_HALFTILE);
-		ground = GetCustomRailSprite(rti, ti->tile, RTSG_GROUND, TCX_UPPER_HALFTILE);
+		overlay = GetCustomRailSprite(rti, ti->tile, RailSpriteType::Overlay, TCX_UPPER_HALFTILE);
+		ground = GetCustomRailSprite(rti, ti->tile, RailSpriteType::Ground, TCX_UPPER_HALFTILE);
 
 		/* Draw higher halftile-overlay: Use the sloped sprites with three corners raised. They probably best fit the lightning. */
 		Slope fake_slope = SlopeWithThreeCornersRaised(OppositeCorner(halftile_corner));
@@ -4127,7 +4127,7 @@ static void DrawTile_Rail(TileInfo *ti, DrawTileProcParams params)
 		DrawGroundSprite(image, GroundSpritePaletteTransform(image, PAL_NONE, pal));
 
 		if (rti->UsesOverlay()) {
-			SpriteID ground = GetCustomRailSprite(rti, ti->tile, RTSG_GROUND);
+			SpriteID ground = GetCustomRailSprite(rti, ti->tile, RailSpriteType::Ground);
 
 			switch (GetRailDepotDirection(ti->tile)) {
 				case DIAGDIR_NE:
@@ -4147,7 +4147,7 @@ static void DrawTile_Rail(TileInfo *ti, DrawTileProcParams params)
 			}
 
 			if (_settings_client.gui.show_track_reservation && HasDepotReservation(ti->tile)) {
-				SpriteID overlay = GetCustomRailSprite(rti, ti->tile, RTSG_OVERLAY);
+				SpriteID overlay = GetCustomRailSprite(rti, ti->tile, RailSpriteType::Overlay);
 
 				switch (GetRailDepotDirection(ti->tile)) {
 					case DIAGDIR_NE:
@@ -4187,7 +4187,7 @@ static void DrawTile_Rail(TileInfo *ti, DrawTileProcParams params)
 				}
 			}
 		}
-		int depot_sprite = GetCustomRailSprite(rti, ti->tile, RTSG_DEPOT);
+		int depot_sprite = GetCustomRailSprite(rti, ti->tile, RailSpriteType::Depot);
 		int relocation = depot_sprite != 0 ? depot_sprite - SPR_RAIL_DEPOT_SE_1 : rti->GetRailtypeSpriteOffset();
 
 		if (HasRailCatenaryDrawn(GetRailType(ti->tile))) DrawRailCatenary(ti);
@@ -4210,7 +4210,7 @@ void DrawTrainDepotSprite(int x, int y, int dir, RailType railtype)
 	DrawSprite(image, PAL_NONE, x, y);
 
 	if (rti->UsesOverlay()) {
-		SpriteID ground = GetCustomRailSprite(rti, INVALID_TILE, RTSG_GROUND);
+		SpriteID ground = GetCustomRailSprite(rti, INVALID_TILE, RailSpriteType::Ground);
 
 		switch (dir) {
 			case DIAGDIR_SW: DrawSprite(ground + RTO_X, PAL_NONE, x, y); break;
@@ -4218,7 +4218,7 @@ void DrawTrainDepotSprite(int x, int y, int dir, RailType railtype)
 			default: break;
 		}
 	}
-	int depot_sprite = GetCustomRailSprite(rti, INVALID_TILE, RTSG_DEPOT);
+	int depot_sprite = GetCustomRailSprite(rti, INVALID_TILE, RailSpriteType::Depot);
 	if (depot_sprite != 0) offset = depot_sprite - SPR_RAIL_DEPOT_SE_1;
 
 	DrawRailTileSeqInGUI(x, y, dts, offset, 0, palette);
