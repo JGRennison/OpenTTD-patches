@@ -1380,7 +1380,7 @@ OrderImportErrors ImportJsonOrderList(const Vehicle *veh, std::string_view json_
 		}
 	} else {
 		errors.global.push_back({
-			fmt::format("no valid '{}' found, current setings will be assumed to be correct", FName::GameProperties::OBJKEY),
+			fmt::format("no valid '{}' found, current settings will be assumed to be correct", FName::GameProperties::OBJKEY),
 			JOIET_MAJOR
 		});
 	}
