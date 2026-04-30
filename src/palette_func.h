@@ -61,12 +61,12 @@ static inline uint8_t GetColourBrightness(Colour colour)
  */
 inline bool IsValidColours(Colours colours)
 {
-	return colours < COLOUR_END;
+	return colours < Colours::End;
 }
 
 TextColour GetContrastColour(PixelColour background, uint8_t threshold = 128);
 
-extern PixelColour _colour_value[COLOUR_END];
+extern const EnumIndexArray<PixelColour, Colours, Colours::End> _colour_value;
 
 enum ColourShade : uint8_t {
 	SHADE_BEGIN = 0,

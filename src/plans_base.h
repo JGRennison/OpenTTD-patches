@@ -144,7 +144,7 @@ struct PlanLine : public BasePlanLine {
 
 struct Plan : PlanPool::PoolItem<&_plan_pool> { // todo
 	Owner owner;
-	Colours colour = COLOUR_WHITE;
+	Colours colour = Colours::White;
 	CalTime::Date creation_date;
 	std::vector<PlanLine> lines{};
 	BasePlanLine temp_line{};

@@ -2016,7 +2016,7 @@ static StringSpriteToDraw *ViewportAddString(ViewportDrawerDynamic *vdd, const D
  * @param string String ID
  * @param params_1 String parameter 1
  * @param params_2 String parameter 2
- * @param colour colour of the sign background; or INVALID_COLOUR if transparent
+ * @param colour colour of the sign background; or Colours::Invalid if transparent
  */
 void ViewportAddString(ViewportDrawerDynamic *vdd, const DrawPixelInfo *dpi, const ViewportSign *sign, ViewportStringFlags flags, StringID string, uint64_t params_1, uint64_t params_2, Colours colour)
 {
@@ -2057,7 +2057,7 @@ static void ViewportAddTownStrings(ViewportDrawerDynamic *vdd, DrawPixelInfo *dp
 	for (const Town *t : towns) {
 		StringSpriteToDraw *str = ViewportAddString(vdd, dpi, &t->cache.sign, flags);
 		if (str != nullptr) {
-			str->FillDetails(stringid, t->index.base(), t->LabelParam2(), INVALID_COLOUR);
+			str->FillDetails(stringid, t->index.base(), t->LabelParam2(), Colours::Invalid);
 		}
 	}
 }
@@ -2084,9 +2084,9 @@ static void ViewportAddSignStrings(ViewportDrawerDynamic *vdd, DrawPixelInfo *dp
 		if (str != nullptr) {
 			Colours colour;
 			if (si->owner == OWNER_NONE) {
-				colour = COLOUR_GREY;
+				colour = Colours::Grey;
 			} else if (si->owner == OWNER_DEITY) {
-				colour = si->text_colour == COLOUR_WHITE ? INVALID_COLOUR : si->text_colour;
+				colour = si->text_colour == Colours::White ? Colours::Invalid : si->text_colour;
 			} else {
 				colour = _company_colours[si->owner];
 			}
@@ -2112,7 +2112,7 @@ static void ViewportAddStationStrings(ViewportDrawerDynamic *vdd, DrawPixelInfo 
 		StringSpriteToDraw *str = ViewportAddString(vdd, dpi, &st->sign, flags);
 		if (str == nullptr) continue;
 
-		Colours colour = (st->owner == OWNER_NONE || !st->IsInUse()) ? COLOUR_GREY : _company_colours[st->owner];
+		Colours colour = (st->owner == OWNER_NONE || !st->IsInUse()) ? Colours::Grey : _company_colours[st->owner];
 		if (Station::IsExpected(st)) { /* Station */
 			str->FillDetails(small ? STR_STATION_NAME : STR_VIEWPORT_STATION, st->index.base(), st->facilities.base(), colour);
 		} else { /* Waypoint */
@@ -2592,14 +2592,14 @@ static void ViewportDrawStrings(ViewportDrawerDynamic *vdd, ZoomLevel zoom, cons
 
 		TextColour colour = TC_WHITE;
 		if (ss.flags.Test(ViewportStringFlag::ColourRect)) {
-			if (ss.colour != INVALID_COLOUR) DrawFrameRect(x, y, x + w - 1, y + h - 1, ss.colour, {});
+			if (ss.colour != Colours::Invalid) DrawFrameRect(x, y, x + w - 1, y + h - 1, ss.colour, {});
 			colour = TC_BLACK;
 		} else if (ss.flags.Test(ViewportStringFlag::TransparentRect)) {
 			DrawFrameRect(x, y, x + w - 1, y + h - 1, ss.colour, FrameFlag::Transparent);
 		}
 
 		if (ss.flags.Test(ViewportStringFlag::TextColour)) {
-			if (ss.colour != INVALID_COLOUR) colour = GetColourGradient(ss.colour, SHADE_LIGHTER).ToTextColour();
+			if (ss.colour != Colours::Invalid) colour = GetColourGradient(ss.colour, SHADE_LIGHTER).ToTextColour();
 		}
 
 		int left = x + WidgetDimensions::scaled.fullbevel.left;
@@ -2991,7 +2991,7 @@ void ViewportRouteOverlay::DrawVehicleRouteSteps(const Viewport *vp)
 
 	std::array<uint8_t, 256> palette;
 	std::array<uint8_t, 256> *use_palette = nullptr;
-	if (this->line_colour != COLOUR_WHITE) {
+	if (this->line_colour != Colours::White) {
 		for (uint i = 0; i < 256; i++) {
 			palette[i] = (uint8_t)i;
 		}

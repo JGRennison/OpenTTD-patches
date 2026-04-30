@@ -330,7 +330,7 @@ static std::unique_ptr<NWidgetBase> MakeTreeTypeButtons()
 		hstack->SetPIP(0, 1, 0);
 		for (int col = 0; col < num_columns; col++) {
 			if (cur_type > tree_types.base + tree_types.count) break;
-			auto button = std::make_unique<NWidgetBackground>(WWT_PANEL, COLOUR_GREY, WID_BT_TYPE_BUTTON_FIRST + cur_type);
+			auto button = std::make_unique<NWidgetBackground>(WWT_PANEL, Colours::Grey, WID_BT_TYPE_BUTTON_FIRST + cur_type);
 			button->SetToolTip(STR_PLANT_TREE_TOOLTIP);
 			hstack->Add(std::move(button));
 			cur_type++;
@@ -343,25 +343,25 @@ static std::unique_ptr<NWidgetBase> MakeTreeTypeButtons()
 
 static constexpr std::initializer_list<NWidgetPart> _nested_build_trees_widgets = {
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_CLOSEBOX, COLOUR_DARK_GREEN),
-		NWidget(WWT_CAPTION, COLOUR_DARK_GREEN), SetStringTip(STR_PLANT_TREE_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
-		NWidget(WWT_SHADEBOX, COLOUR_DARK_GREEN),
-		NWidget(WWT_STICKYBOX, COLOUR_DARK_GREEN),
+		NWidget(WWT_CLOSEBOX, Colours::DarkGreen),
+		NWidget(WWT_CAPTION, Colours::DarkGreen), SetStringTip(STR_PLANT_TREE_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_SHADEBOX, Colours::DarkGreen),
+		NWidget(WWT_STICKYBOX, Colours::DarkGreen),
 	EndContainer(),
-	NWidget(WWT_PANEL, COLOUR_DARK_GREEN),
+	NWidget(WWT_PANEL, Colours::DarkGreen),
 		NWidget(NWID_VERTICAL), SetPIP(0, 1, 0), SetPadding(2),
 			NWidgetFunction(MakeTreeTypeButtons),
-			NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_BT_TYPE_RANDOM), SetStringTip(STR_TREES_RANDOM_TYPE, STR_TREES_RANDOM_TYPE_TOOLTIP),
+			NWidget(WWT_TEXTBTN, Colours::Grey, WID_BT_TYPE_RANDOM), SetStringTip(STR_TREES_RANDOM_TYPE, STR_TREES_RANDOM_TYPE_TOOLTIP),
 			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
-				NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_BT_MODE_NORMAL), SetFill(1, 0), SetStringTip(STR_TREES_MODE_NORMAL_BUTTON, STR_SCENEDIT_TOOLBAR_PLANT_TREES_TOOLTIP),
-				NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_BT_MODE_FOREST_SM), SetFill(1, 0), SetStringTip(STR_TREES_MODE_FOREST_SM_BUTTON, STR_TREES_MODE_FOREST_SM_TOOLTIP),
-				NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_BT_MODE_FOREST_LG), SetFill(1, 0), SetStringTip(STR_TREES_MODE_FOREST_LG_BUTTON, STR_TREES_MODE_FOREST_LG_TOOLTIP),
+				NWidget(WWT_TEXTBTN, Colours::Grey, WID_BT_MODE_NORMAL), SetFill(1, 0), SetStringTip(STR_TREES_MODE_NORMAL_BUTTON, STR_SCENEDIT_TOOLBAR_PLANT_TREES_TOOLTIP),
+				NWidget(WWT_TEXTBTN, Colours::Grey, WID_BT_MODE_FOREST_SM), SetFill(1, 0), SetStringTip(STR_TREES_MODE_FOREST_SM_BUTTON, STR_TREES_MODE_FOREST_SM_TOOLTIP),
+				NWidget(WWT_TEXTBTN, Colours::Grey, WID_BT_MODE_FOREST_LG), SetFill(1, 0), SetStringTip(STR_TREES_MODE_FOREST_LG_BUTTON, STR_TREES_MODE_FOREST_LG_TOOLTIP),
 			EndContainer(),
-			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BT_SE_PANE),
+			NWidget(NWID_SELECTION, Colours::Invalid, WID_BT_SE_PANE),
 				NWidget(NWID_VERTICAL), SetPIP(0, 1, 0),
-					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BT_MANY_RANDOM), SetStringTip(STR_TREES_RANDOM_TREES_BUTTON, STR_TREES_RANDOM_TREES_TOOLTIP),
+					NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_BT_MANY_RANDOM), SetStringTip(STR_TREES_RANDOM_TREES_BUTTON, STR_TREES_RANDOM_TREES_TOOLTIP),
 					NWidget(NWID_SPACER), SetMinimalSize(0, 1),
-					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BT_REMOVE_ALL), SetStringTip(STR_TREES_REMOVE_TREES_BUTTON, STR_TREES_REMOVE_TREES_TOOLTIP),
+					NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_BT_REMOVE_ALL), SetStringTip(STR_TREES_REMOVE_TREES_BUTTON, STR_TREES_REMOVE_TREES_TOOLTIP),
 				EndContainer(),
 			EndContainer(),
 		EndContainer(),

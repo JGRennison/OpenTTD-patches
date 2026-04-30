@@ -103,81 +103,81 @@ enum TemplateReplaceWindowWidgets : WidgetID {
 static constexpr NWidgetPart _template_replace_widgets[] = {
 	// Title bar
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY, TRW_CAPTION),
-		NWidget(WWT_SHADEBOX, COLOUR_GREY),
-		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
-		NWidget(WWT_STICKYBOX, COLOUR_GREY),
+		NWidget(WWT_CLOSEBOX, Colours::Grey),
+		NWidget(WWT_CAPTION, Colours::Grey, TRW_CAPTION),
+		NWidget(WWT_SHADEBOX, Colours::Grey),
+		NWidget(WWT_DEFSIZEBOX, Colours::Grey),
+		NWidget(WWT_STICKYBOX, Colours::Grey),
 	EndContainer(),
 	//Top Matrix
 	NWidget(NWID_VERTICAL),
 		NWidget(NWID_HORIZONTAL),
-			NWidget(WWT_PANEL, COLOUR_GREY),
-				NWidget(WWT_TEXT, INVALID_COLOUR, TRW_WIDGET_INSET_GROUPS), SetPadding(2, 2, 2, 2), SetResize(1, 0), SetFill(1, 1), SetStringTip(STR_TMPL_MAINGUI_DEFINEDGROUPS, STR_NULL),
+			NWidget(WWT_PANEL, Colours::Grey),
+				NWidget(WWT_TEXT, Colours::Invalid, TRW_WIDGET_INSET_GROUPS), SetPadding(2, 2, 2, 2), SetResize(1, 0), SetFill(1, 1), SetStringTip(STR_TMPL_MAINGUI_DEFINEDGROUPS, STR_NULL),
 			EndContainer(),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, TRW_WIDGET_COLLAPSE_ALL_GROUPS), SetFill(0, 1), SetStringTip(STR_GROUP_COLLAPSE_ALL, STR_GROUP_COLLAPSE_ALL),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, TRW_WIDGET_EXPAND_ALL_GROUPS), SetFill(0, 1), SetStringTip(STR_GROUP_EXPAND_ALL, STR_GROUP_EXPAND_ALL),
+			NWidget(WWT_PUSHTXTBTN, Colours::Grey, TRW_WIDGET_COLLAPSE_ALL_GROUPS), SetFill(0, 1), SetStringTip(STR_GROUP_COLLAPSE_ALL, STR_GROUP_COLLAPSE_ALL),
+			NWidget(WWT_PUSHTXTBTN, Colours::Grey, TRW_WIDGET_EXPAND_ALL_GROUPS), SetFill(0, 1), SetStringTip(STR_GROUP_EXPAND_ALL, STR_GROUP_EXPAND_ALL),
 		EndContainer(),
 		NWidget(NWID_HORIZONTAL),
-			NWidget(WWT_MATRIX, COLOUR_GREY, TRW_WIDGET_TOP_MATRIX), SetMinimalSize(216, 0), SetFill(1, 1), SetMatrixDataTip(1, 0, STR_NULL), SetResize(1, 0), SetScrollbar(TRW_WIDGET_TOP_SCROLLBAR),
-			NWidget(NWID_VSCROLLBAR, COLOUR_GREY, TRW_WIDGET_TOP_SCROLLBAR),
+			NWidget(WWT_MATRIX, Colours::Grey, TRW_WIDGET_TOP_MATRIX), SetMinimalSize(216, 0), SetFill(1, 1), SetMatrixDataTip(1, 0, STR_NULL), SetResize(1, 0), SetScrollbar(TRW_WIDGET_TOP_SCROLLBAR),
+			NWidget(NWID_VSCROLLBAR, Colours::Grey, TRW_WIDGET_TOP_SCROLLBAR),
 		EndContainer(),
 	EndContainer(),
 	// Template Display
 	NWidget(NWID_VERTICAL),
-		NWidget(WWT_PANEL, COLOUR_GREY),
-			NWidget(WWT_TEXT, INVALID_COLOUR, TRW_WIDGET_INSET_TEMPLATES), SetPadding(2, 2, 2, 2), SetResize(1, 0), SetStringTip(STR_TMPL_AVAILABLE_TEMPLATES, STR_NULL),
+		NWidget(WWT_PANEL, Colours::Grey),
+			NWidget(WWT_TEXT, Colours::Invalid, TRW_WIDGET_INSET_TEMPLATES), SetPadding(2, 2, 2, 2), SetResize(1, 0), SetStringTip(STR_TMPL_AVAILABLE_TEMPLATES, STR_NULL),
 		EndContainer(),
 		NWidget(NWID_HORIZONTAL),
-			NWidget(WWT_MATRIX, COLOUR_GREY, TRW_WIDGET_BOTTOM_MATRIX), SetMinimalSize(216, 0), SetFill(1, 1), SetMatrixDataTip(1, 0, STR_NULL), SetResize(1, 1), SetScrollbar(TRW_WIDGET_MIDDLE_SCROLLBAR),
-			NWidget(NWID_VSCROLLBAR, COLOUR_GREY, TRW_WIDGET_MIDDLE_SCROLLBAR),
+			NWidget(WWT_MATRIX, Colours::Grey, TRW_WIDGET_BOTTOM_MATRIX), SetMinimalSize(216, 0), SetFill(1, 1), SetMatrixDataTip(1, 0, STR_NULL), SetResize(1, 1), SetScrollbar(TRW_WIDGET_MIDDLE_SCROLLBAR),
+			NWidget(NWID_VSCROLLBAR, Colours::Grey, TRW_WIDGET_MIDDLE_SCROLLBAR),
 		EndContainer(),
 	EndContainer(),
 	// Info Area
 	NWidget(NWID_VERTICAL),
-		NWidget(WWT_PANEL, COLOUR_GREY),
-			NWidget(WWT_TEXT, INVALID_COLOUR, TRW_WIDGET_TMPL_INFO_INSET), SetPadding(2, 2, 2, 2), SetResize(1, 0), SetStringTip(STR_TMPL_TEMPLATE_INFO, STR_NULL),
+		NWidget(WWT_PANEL, Colours::Grey),
+			NWidget(WWT_TEXT, Colours::Invalid, TRW_WIDGET_TMPL_INFO_INSET), SetPadding(2, 2, 2, 2), SetResize(1, 0), SetStringTip(STR_TMPL_TEMPLATE_INFO, STR_NULL),
 		EndContainer(),
 		NWidget(NWID_HORIZONTAL),
-			NWidget(WWT_PANEL, COLOUR_GREY, TRW_WIDGET_TMPL_INFO_PANEL), SetMinimalSize(216,120), SetResize(1,0), SetScrollbar(TRW_WIDGET_BOTTOM_SCROLLBAR), EndContainer(),
-			NWidget(NWID_VSCROLLBAR, COLOUR_GREY, TRW_WIDGET_BOTTOM_SCROLLBAR),
+			NWidget(WWT_PANEL, Colours::Grey, TRW_WIDGET_TMPL_INFO_PANEL), SetMinimalSize(216,120), SetResize(1,0), SetScrollbar(TRW_WIDGET_BOTTOM_SCROLLBAR), EndContainer(),
+			NWidget(NWID_VSCROLLBAR, Colours::Grey, TRW_WIDGET_BOTTOM_SCROLLBAR),
 		EndContainer(),
 	EndContainer(),
 	// Control Area
-	NWidget(WWT_PANEL, COLOUR_GREY),
+	NWidget(WWT_PANEL, Colours::Grey),
 		NWidget(NWID_VERTICAL),
 			// Config header
-			NWidget(WWT_PANEL, COLOUR_GREY, TRW_WIDGET_TMPL_CONFIG_HEADER), SetMinimalSize(0, 12), SetFill(1, 0), SetResize(1, 0), EndContainer(),
+			NWidget(WWT_PANEL, Colours::Grey, TRW_WIDGET_TMPL_CONFIG_HEADER), SetMinimalSize(0, 12), SetFill(1, 0), SetResize(1, 0), EndContainer(),
 			// Config buttons
 			NWidget(NWID_HORIZONTAL),
-				NWidget(WWT_TEXTBTN, COLOUR_GREY, TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REFIT_AS_TEMPLATE), SetMinimalSize(100, 12), SetFill(1, 0), SetResize(1, 0), SetStringTip(STR_TMPL_SET_REFIT_AS_TEMPLATE, STR_TMPL_SET_REFIT_AS_TEMPLATE_TIP),
-				NWidget(WWT_TEXTBTN, COLOUR_GREY, TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REFIT_AS_INCOMING), SetMinimalSize(100, 12), SetFill(1, 0), SetResize(1, 0), SetStringTip(STR_TMPL_SET_REFIT_AS_INCOMING, STR_TMPL_SET_REFIT_AS_INCOMING_TIP),
+				NWidget(WWT_TEXTBTN, Colours::Grey, TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REFIT_AS_TEMPLATE), SetMinimalSize(100, 12), SetFill(1, 0), SetResize(1, 0), SetStringTip(STR_TMPL_SET_REFIT_AS_TEMPLATE, STR_TMPL_SET_REFIT_AS_TEMPLATE_TIP),
+				NWidget(WWT_TEXTBTN, Colours::Grey, TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REFIT_AS_INCOMING), SetMinimalSize(100, 12), SetFill(1, 0), SetResize(1, 0), SetStringTip(STR_TMPL_SET_REFIT_AS_INCOMING, STR_TMPL_SET_REFIT_AS_INCOMING_TIP),
 				NWidget(NWID_SPACER), SetFill(0, 0), SetMinimalSize(2, 0), SetResize(0, 0),
-				NWidget(WWT_TEXTBTN, COLOUR_GREY, TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REUSE), SetMinimalSize(100, 12), SetFill(1, 0), SetResize(1, 0), SetStringTip(STR_TMPL_SET_USEDEPOT, STR_TMPL_SET_USEDEPOT_TIP),
-				NWidget(WWT_TEXTBTN, COLOUR_GREY, TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_KEEP), SetMinimalSize(100, 12), SetFill(1, 0), SetResize(1, 0), SetStringTip(STR_TMPL_SET_KEEPREMAINDERS, STR_TMPL_SET_KEEPREMAINDERS_TIP),
+				NWidget(WWT_TEXTBTN, Colours::Grey, TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_REUSE), SetMinimalSize(100, 12), SetFill(1, 0), SetResize(1, 0), SetStringTip(STR_TMPL_SET_USEDEPOT, STR_TMPL_SET_USEDEPOT_TIP),
+				NWidget(WWT_TEXTBTN, Colours::Grey, TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_KEEP), SetMinimalSize(100, 12), SetFill(1, 0), SetResize(1, 0), SetStringTip(STR_TMPL_SET_KEEPREMAINDERS, STR_TMPL_SET_KEEPREMAINDERS_TIP),
 				NWidget(NWID_SPACER), SetFill(0, 0), SetMinimalSize(2, 0), SetResize(0, 0),
-				NWidget(WWT_TEXTBTN, COLOUR_GREY, TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_OLD_ONLY), SetMinimalSize(100, 12), SetFill(1, 0), SetResize(1, 0), SetStringTip(STR_TMPL_SET_OLD_ONLY, STR_TMPL_SET_OLD_ONLY_TIP),
-				NWidget(WWT_PANEL, COLOUR_GREY, TRW_WIDGET_TMPL_BUTTONS_CONFIG_RIGHTPANEL), SetMinimalSize(12, 12), SetFill(0, 0), SetResize(0, 0), EndContainer(),
+				NWidget(WWT_TEXTBTN, Colours::Grey, TRW_WIDGET_TMPL_BUTTONS_CONFIGTMPL_OLD_ONLY), SetMinimalSize(100, 12), SetFill(1, 0), SetResize(1, 0), SetStringTip(STR_TMPL_SET_OLD_ONLY, STR_TMPL_SET_OLD_ONLY_TIP),
+				NWidget(WWT_PANEL, Colours::Grey, TRW_WIDGET_TMPL_BUTTONS_CONFIG_RIGHTPANEL), SetMinimalSize(12, 12), SetFill(0, 0), SetResize(0, 0), EndContainer(),
 			EndContainer(),
 			NWidget(NWID_SPACER), SetFill(1, 0), SetMinimalSize(0, 2), SetResize(1, 0),
 			// Edit buttons
 			NWidget(NWID_HORIZONTAL),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, TRW_WIDGET_TMPL_BUTTONS_DEFINE), SetMinimalSize(75, 12), SetFill(1, 0), SetResize(1, 0), SetStringTip(STR_TMPL_DEFINE_TEMPLATE, STR_TMPL_DEFINE_TEMPLATE),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, TRW_WIDGET_TMPL_BUTTONS_EDIT), SetMinimalSize(75, 12), SetFill(1, 0), SetResize(1, 0), SetStringTip(STR_TMPL_EDIT_TEMPLATE, STR_TMPL_EDIT_TEMPLATE),
-				NWidget(WWT_TEXTBTN, COLOUR_GREY, TRW_WIDGET_TMPL_BUTTONS_CLONE), SetMinimalSize(75, 12), SetFill(1, 0), SetResize(1, 0), SetStringTip(STR_TMPL_CREATE_CLONE_VEH, STR_TMPL_CREATE_CLONE_VEH),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, TRW_WIDGET_TMPL_BUTTONS_DELETE), SetMinimalSize(75, 12), SetFill(1, 0), SetResize(1, 0), SetStringTip(STR_TMPL_DELETE_TEMPLATE, STR_TMPL_DELETE_TEMPLATE),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, TRW_WIDGET_TMPL_BUTTONS_RENAME), SetMinimalSize(75, 12), SetFill(1, 0), SetResize(1, 0), SetStringTip(STR_BUTTON_RENAME, STR_TMPL_RENAME_TEMPLATE),
-				NWidget(WWT_PANEL, COLOUR_GREY, TRW_WIDGET_TMPL_BUTTONS_EDIT_RIGHTPANEL), SetMinimalSize(12, 12), SetFill(0, 0), SetResize(0, 0), EndContainer(),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, TRW_WIDGET_TMPL_BUTTONS_DEFINE), SetMinimalSize(75, 12), SetFill(1, 0), SetResize(1, 0), SetStringTip(STR_TMPL_DEFINE_TEMPLATE, STR_TMPL_DEFINE_TEMPLATE),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, TRW_WIDGET_TMPL_BUTTONS_EDIT), SetMinimalSize(75, 12), SetFill(1, 0), SetResize(1, 0), SetStringTip(STR_TMPL_EDIT_TEMPLATE, STR_TMPL_EDIT_TEMPLATE),
+				NWidget(WWT_TEXTBTN, Colours::Grey, TRW_WIDGET_TMPL_BUTTONS_CLONE), SetMinimalSize(75, 12), SetFill(1, 0), SetResize(1, 0), SetStringTip(STR_TMPL_CREATE_CLONE_VEH, STR_TMPL_CREATE_CLONE_VEH),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, TRW_WIDGET_TMPL_BUTTONS_DELETE), SetMinimalSize(75, 12), SetFill(1, 0), SetResize(1, 0), SetStringTip(STR_TMPL_DELETE_TEMPLATE, STR_TMPL_DELETE_TEMPLATE),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, TRW_WIDGET_TMPL_BUTTONS_RENAME), SetMinimalSize(75, 12), SetFill(1, 0), SetResize(1, 0), SetStringTip(STR_BUTTON_RENAME, STR_TMPL_RENAME_TEMPLATE),
+				NWidget(WWT_PANEL, Colours::Grey, TRW_WIDGET_TMPL_BUTTONS_EDIT_RIGHTPANEL), SetMinimalSize(12, 12), SetFill(0, 0), SetResize(0, 0), EndContainer(),
 			EndContainer(),
 		EndContainer(),
 		// Start/Stop buttons
 		NWidget(NWID_HORIZONTAL),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, TRW_WIDGET_START), SetMinimalSize(150, 12), SetStringTip(STR_TMPL_RPL_START, STR_TMPL_RPL_START_TOOLTIP),
-			NWidget(WWT_PANEL, COLOUR_GREY, TRW_WIDGET_TRAIN_FLUFF_LEFT), SetMinimalSize(15, 12), EndContainer(),
-			NWidget(WWT_DROPDOWN, COLOUR_GREY, TRW_WIDGET_TRAIN_RAILTYPE_DROPDOWN), SetMinimalSize(150, 12), SetToolTip(STR_REPLACE_RAILTYPE_TOOLTIP), SetResize(1, 0),
-			NWidget(WWT_PANEL, COLOUR_GREY, TRW_WIDGET_TRAIN_FLUFF_RIGHT), SetMinimalSize(16, 12), EndContainer(),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, TRW_WIDGET_STOP), SetMinimalSize(150, 12), SetStringTip(STR_TMPL_RPL_STOP, STR_TMPL_RPL_STOP_TOOLTIP),
-			NWidget(WWT_RESIZEBOX, COLOUR_GREY),
+			NWidget(WWT_PUSHTXTBTN, Colours::Grey, TRW_WIDGET_START), SetMinimalSize(150, 12), SetStringTip(STR_TMPL_RPL_START, STR_TMPL_RPL_START_TOOLTIP),
+			NWidget(WWT_PANEL, Colours::Grey, TRW_WIDGET_TRAIN_FLUFF_LEFT), SetMinimalSize(15, 12), EndContainer(),
+			NWidget(WWT_DROPDOWN, Colours::Grey, TRW_WIDGET_TRAIN_RAILTYPE_DROPDOWN), SetMinimalSize(150, 12), SetToolTip(STR_REPLACE_RAILTYPE_TOOLTIP), SetResize(1, 0),
+			NWidget(WWT_PANEL, Colours::Grey, TRW_WIDGET_TRAIN_FLUFF_RIGHT), SetMinimalSize(16, 12), EndContainer(),
+			NWidget(WWT_PUSHTXTBTN, Colours::Grey, TRW_WIDGET_STOP), SetMinimalSize(150, 12), SetStringTip(STR_TMPL_RPL_STOP, STR_TMPL_RPL_STOP_TOOLTIP),
+			NWidget(WWT_RESIZEBOX, Colours::Grey),
 		EndContainer(),
 	EndContainer(),
 };
@@ -716,7 +716,7 @@ public:
 
 			const int offset = (rtl ? -(int)this->fold_sprite_dim.width : (int)this->fold_sprite_dim.width) / 2;
 			const int level_width = rtl ? -WidgetDimensions::scaled.hsep_indent : WidgetDimensions::scaled.hsep_indent;
-			const PixelColour linecolour = GetColourGradient(COLOUR_ORANGE, SHADE_NORMAL);
+			const PixelColour linecolour = GetColourGradient(Colours::Orange, SHADE_NORMAL);
 
 			if (it->indent > 0) {
 				/* Draw tree continuation lines. */
@@ -808,7 +808,7 @@ public:
 
 			/* Fill the background of the current cell in a darker tone for the currently selected template */
 			if (this->selected_template_index == (int32_t) i) {
-				GfxFillRect(r.left + 1, y, r.right, y + this->bottom_matrix_item_size, GetColourGradient(COLOUR_GREY, SHADE_DARK));
+				GfxFillRect(r.left + 1, y, r.right, y + this->bottom_matrix_item_size, GetColourGradient(Colours::Grey, SHADE_DARK));
 			}
 
 			/* Draw the template */

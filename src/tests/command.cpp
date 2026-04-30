@@ -129,10 +129,10 @@ TEST_CASE("Command string sanitise tests")
 	auto non_string = CmdPayload<Commands::AddPlan>::Make();
 	CHECK(non_string.GetOperations().sanitise_strings == nullptr);
 
-	auto simple_string = CmdPayload<Commands::RenameSign>::Make(SignID{1}, "ab_\x1F\x1E_cd", INVALID_COLOUR);
+	auto simple_string = CmdPayload<Commands::RenameSign>::Make(SignID{1}, "ab_\x1F\x1E_cd", Colours::Invalid);
 	simple_string.SanitiseStrings(StringValidationSetting::ReplaceWithQuestionMark);
 	CHECK(simple_string.GetValue<1>() == "ab_??_cd");
-	CHECK(simple_string == CmdPayload<Commands::RenameSign>::Make(SignID{1}, "ab_??_cd", INVALID_COLOUR));
+	CHECK(simple_string == CmdPayload<Commands::RenameSign>::Make(SignID{1}, "ab_??_cd", Colours::Invalid));
 }
 
 TEST_CASE("Command format debug summary")

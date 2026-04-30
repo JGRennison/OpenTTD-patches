@@ -103,23 +103,23 @@ NLOHMANN_JSON_SERIALIZE_ENUM(DiagDirection, {
 })
 
 NLOHMANN_JSON_SERIALIZE_ENUM(Colours, {
-	{INVALID_COLOUR, nullptr},
-	{COLOUR_DARK_BLUE, "dark-blue"},
-	{COLOUR_PALE_GREEN, "pale-green"},
-	{COLOUR_PINK, "pink"},
-	{COLOUR_YELLOW, "yellow"},
-	{COLOUR_RED, "red"},
-	{COLOUR_LIGHT_BLUE, "light-blue"},
-	{COLOUR_GREEN, "green"},
-	{COLOUR_DARK_GREEN, "dark-green"},
-	{COLOUR_BLUE, "blue"},
-	{COLOUR_CREAM, "cream"},
-	{COLOUR_MAUVE, "mauve"},
-	{COLOUR_PURPLE, "purple"},
-	{COLOUR_ORANGE, "orange"},
-	{COLOUR_BROWN, "brown"},
-	{COLOUR_GREY, "grey"},
-	{COLOUR_WHITE, "white"}
+	{Colours::Invalid, nullptr},
+	{Colours::DarkBlue, "dark-blue"},
+	{Colours::PaleGreen, "pale-green"},
+	{Colours::Pink, "pink"},
+	{Colours::Yellow, "yellow"},
+	{Colours::Red, "red"},
+	{Colours::LightBlue, "light-blue"},
+	{Colours::Green, "green"},
+	{Colours::DarkGreen, "dark-green"},
+	{Colours::Blue, "blue"},
+	{Colours::Cream, "cream"},
+	{Colours::Mauve, "mauve"},
+	{Colours::Purple, "purple"},
+	{Colours::Orange, "orange"},
+	{Colours::Brown, "brown"},
+	{Colours::Grey, "grey"},
+	{Colours::White, "white"}
 })
 
 NLOHMANN_JSON_SERIALIZE_ENUM(VehicleType, {

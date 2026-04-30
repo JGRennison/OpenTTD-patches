@@ -2253,7 +2253,7 @@ static bool ConCompanies(std::span<std::string_view> argv)
 			password_state = _network_company_states[c->index].password.empty() ? "unprotected" : "protected";
 		}
 
-		std::string colour = GetString(STR_COLOUR_DARK_BLUE + _company_colours[c->index]);
+		std::string colour = GetString(STR_COLOUR_DARK_BLUE + to_underlying(_company_colours[c->index]));
 		IConsolePrint(CC_INFO, "#:{}({}) Company Name: '{}'  Year Founded: {}  Age: {}  Money: {}  Loan: {}  Value: {}  (T:{}, R:{}, P:{}, S:{}) {}",
 			c->index + 1, colour, company_name,
 			c->InauguratedDisplayYear(), c->age_years, (int64_t)c->money, (int64_t)c->current_loan, (int64_t)CalculateCompanyValue(c),
@@ -2573,7 +2573,7 @@ static bool ConCompanyPasswordHashes(std::span<std::string_view> argv)
 		std::string company_name = GetString(STR_COMPANY_NAME, c->index);
 
 		IConsolePrint(CC_INFO, "#:{}({}) Company Name: '{}'  Hash: '{}'",
-			c->index + 1, GetStringFmtParam(STR_COLOUR_DARK_BLUE + _company_colours[c->index]), company_name.c_str(), _network_company_states[c->index].password);
+			c->index + 1, GetStringFmtParam(STR_COLOUR_DARK_BLUE + to_underlying(_company_colours[c->index])), company_name.c_str(), _network_company_states[c->index].password);
 	}
 
 	return true;

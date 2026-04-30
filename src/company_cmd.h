@@ -14,7 +14,7 @@
 #include "company_type.h"
 #include "livery.h"
 
-enum Colours : uint8_t;
+enum class Colours : uint8_t;
 
 struct CmdCompanyCtrlInnerData {
 	CompanyCtrlAction cca;

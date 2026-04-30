@@ -25,23 +25,23 @@
 Palette _cur_palette;
 std::mutex _cur_palette_mutex;
 
-PixelColour _colour_value[COLOUR_END] = {
-	PixelColour{133}, // COLOUR_DARK_BLUE
-	PixelColour{ 99}, // COLOUR_PALE_GREEN,
-	PixelColour{ 48}, // COLOUR_PINK,
-	PixelColour{ 68}, // COLOUR_YELLOW,
-	PixelColour{184}, // COLOUR_RED,
-	PixelColour{152}, // COLOUR_LIGHT_BLUE,
-	PixelColour{209}, // COLOUR_GREEN,
-	PixelColour{ 95}, // COLOUR_DARK_GREEN,
-	PixelColour{150}, // COLOUR_BLUE,
-	PixelColour{ 79}, // COLOUR_CREAM,
-	PixelColour{134}, // COLOUR_MAUVE,
-	PixelColour{174}, // COLOUR_PURPLE,
-	PixelColour{195}, // COLOUR_ORANGE,
-	PixelColour{116}, // COLOUR_BROWN,
-	PixelColour{  6}, // COLOUR_GREY,
-	PixelColour{ 15}, // COLOUR_WHITE,
+const EnumIndexArray<PixelColour, Colours, Colours::End> _colour_value{
+	PixelColour{133}, // Colours::DarkBlue
+	PixelColour{ 99}, // Colours::PaleGreen,
+	PixelColour{ 48}, // Colours::Pink,
+	PixelColour{ 68}, // Colours::Yellow,
+	PixelColour{184}, // Colours::Red,
+	PixelColour{152}, // Colours::LightBlue,
+	PixelColour{209}, // Colours::Green,
+	PixelColour{ 95}, // Colours::DarkGreen,
+	PixelColour{150}, // Colours::Blue,
+	PixelColour{ 79}, // Colours::Cream,
+	PixelColour{134}, // Colours::Mauve,
+	PixelColour{174}, // Colours::Purple,
+	PixelColour{195}, // Colours::Orange,
+	PixelColour{116}, // Colours::Brown,
+	PixelColour{  6}, // Colours::Grey,
+	PixelColour{ 15}, // Colours::White,
 };
 
 Colour _water_palette[10];
@@ -379,7 +379,7 @@ struct ColourGradients
 {
 	using ColourGradient = std::array<PixelColour, SHADE_END>;
 
-	static inline std::array<ColourGradient, COLOUR_END> gradient{};
+	static inline std::array<ColourGradient, to_underlying(Colours::End)> gradient{};
 };
 
 /**
@@ -390,7 +390,7 @@ struct ColourGradients
  */
 PixelColour GetColourGradient(Colours colour, ColourShade shade)
 {
-	return ColourGradients::gradient[colour % COLOUR_END][shade % SHADE_END];
+	return ColourGradients::gradient[to_underlying(colour) % to_underlying(Colours::End)][shade % SHADE_END];
 }
 
 /**
@@ -401,7 +401,7 @@ PixelColour GetColourGradient(Colours colour, ColourShade shade)
  */
 void SetColourGradient(Colours colour, ColourShade shade, PixelColour palette_index)
 {
-	assert(colour < COLOUR_END);
+	assert(colour < Colours::End);
 	assert(shade < SHADE_END);
-	ColourGradients::gradient[colour % COLOUR_END][shade % SHADE_END] = palette_index;
+	ColourGradients::gradient[to_underlying(colour) % to_underlying(Colours::End)][shade % SHADE_END] = palette_index;
 }

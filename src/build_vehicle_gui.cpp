@@ -67,98 +67,98 @@ uint GetEngineListHeight(VehicleType type)
 /* Normal layout for roadvehicles, ships and airplanes. */
 static constexpr std::initializer_list<NWidgetPart> _nested_build_vehicle_widgets = {
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY, WID_BV_CAPTION), SetTextStyle(TC_WHITE),
-		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BV_TOGGLE_DUAL_PANE_SEL),
-			NWidget(WWT_IMGBTN, COLOUR_GREY, WID_BV_TOGGLE_DUAL_PANE), SetSpriteTip(SPR_LARGE_SMALL_WINDOW, STR_BUY_VEHICLE_TRAIN_TOGGLE_DUAL_PANE_TOOLTIP), SetAspect(WidgetDimensions::ASPECT_TOGGLE_SIZE),
+		NWidget(WWT_CLOSEBOX, Colours::Grey),
+		NWidget(WWT_CAPTION, Colours::Grey, WID_BV_CAPTION), SetTextStyle(TC_WHITE),
+		NWidget(NWID_SELECTION, Colours::Invalid, WID_BV_TOGGLE_DUAL_PANE_SEL),
+			NWidget(WWT_IMGBTN, Colours::Grey, WID_BV_TOGGLE_DUAL_PANE), SetSpriteTip(SPR_LARGE_SMALL_WINDOW, STR_BUY_VEHICLE_TRAIN_TOGGLE_DUAL_PANE_TOOLTIP), SetAspect(WidgetDimensions::ASPECT_TOGGLE_SIZE),
 		EndContainer(),
-		NWidget(WWT_SHADEBOX, COLOUR_GREY),
-		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
-		NWidget(WWT_STICKYBOX, COLOUR_GREY),
+		NWidget(WWT_SHADEBOX, Colours::Grey),
+		NWidget(WWT_DEFSIZEBOX, Colours::Grey),
+		NWidget(WWT_STICKYBOX, Colours::Grey),
 	EndContainer(),
 	NWidget(NWID_VERTICAL),
 		NWidget(NWID_HORIZONTAL),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_SORT_ASCENDING_DESCENDING), SetStringTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER),
-			NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_BV_SORT_DROPDOWN), SetResize(1, 0), SetFill(1, 0), SetToolTip(STR_TOOLTIP_SORT_CRITERIA),
+			NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_BV_SORT_ASCENDING_DESCENDING), SetStringTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER),
+			NWidget(WWT_DROPDOWN, Colours::Grey, WID_BV_SORT_DROPDOWN), SetResize(1, 0), SetFill(1, 0), SetToolTip(STR_TOOLTIP_SORT_CRITERIA),
 		EndContainer(),
 		NWidget(NWID_HORIZONTAL),
-			NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_BV_SHOW_HIDDEN_ENGINES),
-			NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_BV_CARGO_FILTER_DROPDOWN), SetResize(1, 0), SetFill(1, 0), SetToolTip(STR_TOOLTIP_FILTER_CRITERIA),
-			NWidget(WWT_IMGBTN, COLOUR_GREY, WID_BV_CONFIGURE_BADGES), SetAspect(WidgetDimensions::ASPECT_UP_DOWN_BUTTON), SetResize(0, 0), SetFill(0, 1), SetSpriteTip(SPR_EXTRA_MENU, STR_BADGE_CONFIG_MENU_TOOLTIP),
+			NWidget(WWT_TEXTBTN, Colours::Grey, WID_BV_SHOW_HIDDEN_ENGINES),
+			NWidget(WWT_DROPDOWN, Colours::Grey, WID_BV_CARGO_FILTER_DROPDOWN), SetResize(1, 0), SetFill(1, 0), SetToolTip(STR_TOOLTIP_FILTER_CRITERIA),
+			NWidget(WWT_IMGBTN, Colours::Grey, WID_BV_CONFIGURE_BADGES), SetAspect(WidgetDimensions::ASPECT_UP_DOWN_BUTTON), SetResize(0, 0), SetFill(0, 1), SetSpriteTip(SPR_EXTRA_MENU, STR_BADGE_CONFIG_MENU_TOOLTIP),
 		EndContainer(),
-		NWidget(WWT_PANEL, COLOUR_GREY),
-			NWidget(WWT_EDITBOX, COLOUR_GREY, WID_BV_FILTER), SetResize(1, 0), SetFill(1, 0), SetPadding(2), SetStringTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP),
+		NWidget(WWT_PANEL, Colours::Grey),
+			NWidget(WWT_EDITBOX, Colours::Grey, WID_BV_FILTER), SetResize(1, 0), SetFill(1, 0), SetPadding(2), SetStringTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP),
 		EndContainer(),
 		NWidget(NWID_VERTICAL, NWidContainerFlag{}, WID_BV_BADGE_FILTER),
 		EndContainer(),
 	EndContainer(),
 	/* Vehicle list. */
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_MATRIX, COLOUR_GREY, WID_BV_LIST), SetResize(1, 1), SetFill(1, 0), SetMatrixDataTip(1, 0), SetScrollbar(WID_BV_SCROLLBAR),
-		NWidget(NWID_VSCROLLBAR, COLOUR_GREY, WID_BV_SCROLLBAR),
+		NWidget(WWT_MATRIX, Colours::Grey, WID_BV_LIST), SetResize(1, 1), SetFill(1, 0), SetMatrixDataTip(1, 0), SetScrollbar(WID_BV_SCROLLBAR),
+		NWidget(NWID_VSCROLLBAR, Colours::Grey, WID_BV_SCROLLBAR),
 	EndContainer(),
 	/* Panel with details. */
-	NWidget(WWT_PANEL, COLOUR_GREY, WID_BV_PANEL), SetMinimalSize(240, 122), SetResize(1, 0), EndContainer(),
+	NWidget(WWT_PANEL, Colours::Grey, WID_BV_PANEL), SetMinimalSize(240, 122), SetResize(1, 0), EndContainer(),
 	/* Build/rename buttons, resize button. */
 	NWidget(NWID_HORIZONTAL),
-		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BV_BUILD_SEL),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_BUILD), SetResize(1, 0), SetFill(1, 0),
+		NWidget(NWID_SELECTION, Colours::Invalid, WID_BV_BUILD_SEL),
+			NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_BV_BUILD), SetResize(1, 0), SetFill(1, 0),
 		EndContainer(),
-		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_SHOW_HIDE), SetResize(1, 0), SetFill(1, 0),
-		NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_RENAME), SetResize(1, 0), SetFill(1, 0),
-		NWidget(WWT_RESIZEBOX, COLOUR_GREY),
+		NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_BV_SHOW_HIDE), SetResize(1, 0), SetFill(1, 0),
+		NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_BV_RENAME), SetResize(1, 0), SetFill(1, 0),
+		NWidget(WWT_RESIZEBOX, Colours::Grey),
 	EndContainer(),
 };
 
 /* Advanced layout for trains. */
 static constexpr NWidgetPart _nested_build_vehicle_widgets_train_advanced[] = {
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY, WID_BV_CAPTION), SetTextStyle(TC_WHITE),
-		NWidget(WWT_IMGBTN, COLOUR_GREY, WID_BV_TOGGLE_DUAL_PANE), SetSpriteTip(SPR_LARGE_SMALL_WINDOW, STR_BUY_VEHICLE_TRAIN_TOGGLE_DUAL_PANE_TOOLTIP), SetAspect(WidgetDimensions::ASPECT_TOGGLE_SIZE),
-		NWidget(WWT_SHADEBOX, COLOUR_GREY),
-		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
-		NWidget(WWT_STICKYBOX, COLOUR_GREY),
+		NWidget(WWT_CLOSEBOX, Colours::Grey),
+		NWidget(WWT_CAPTION, Colours::Grey, WID_BV_CAPTION), SetTextStyle(TC_WHITE),
+		NWidget(WWT_IMGBTN, Colours::Grey, WID_BV_TOGGLE_DUAL_PANE), SetSpriteTip(SPR_LARGE_SMALL_WINDOW, STR_BUY_VEHICLE_TRAIN_TOGGLE_DUAL_PANE_TOOLTIP), SetAspect(WidgetDimensions::ASPECT_TOGGLE_SIZE),
+		NWidget(WWT_SHADEBOX, Colours::Grey),
+		NWidget(WWT_DEFSIZEBOX, Colours::Grey),
+		NWidget(WWT_STICKYBOX, Colours::Grey),
 	EndContainer(),
 
 	NWidget(NWID_HORIZONTAL),
 		/* First half of the window contains locomotives. */
 		NWidget(NWID_VERTICAL),
 			NWidget(NWID_HORIZONTAL),
-				NWidget(WWT_PANEL, COLOUR_GREY), SetFill(1, 0),
-					NWidget(WWT_LABEL, INVALID_COLOUR, WID_BV_CAPTION_LOCO), SetTextStyle(TC_WHITE), SetResize(1, 0), SetFill(1, 0),
+				NWidget(WWT_PANEL, Colours::Grey), SetFill(1, 0),
+					NWidget(WWT_LABEL, Colours::Invalid, WID_BV_CAPTION_LOCO), SetTextStyle(TC_WHITE), SetResize(1, 0), SetFill(1, 0),
 				EndContainer(),
 			EndContainer(),
 			NWidget(NWID_VERTICAL),
 				NWidget(NWID_HORIZONTAL),
-					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_SORT_ASCENDING_DESCENDING_LOCO), SetStringTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER), SetFill(1, 0),
-					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_BV_SORT_DROPDOWN_LOCO), SetResize(1, 0), SetFill(1, 0), SetToolTip(STR_TOOLTIP_SORT_CRITERIA),
+					NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_BV_SORT_ASCENDING_DESCENDING_LOCO), SetStringTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER), SetFill(1, 0),
+					NWidget(WWT_DROPDOWN, Colours::Grey, WID_BV_SORT_DROPDOWN_LOCO), SetResize(1, 0), SetFill(1, 0), SetToolTip(STR_TOOLTIP_SORT_CRITERIA),
 				EndContainer(),
 				NWidget(NWID_HORIZONTAL),
-					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_BV_SHOW_HIDDEN_LOCOS),
-					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_BV_CARGO_FILTER_DROPDOWN_LOCO), SetResize(1, 0), SetFill(1, 0), SetToolTip(STR_TOOLTIP_FILTER_CRITERIA),
+					NWidget(WWT_TEXTBTN, Colours::Grey, WID_BV_SHOW_HIDDEN_LOCOS),
+					NWidget(WWT_DROPDOWN, Colours::Grey, WID_BV_CARGO_FILTER_DROPDOWN_LOCO), SetResize(1, 0), SetFill(1, 0), SetToolTip(STR_TOOLTIP_FILTER_CRITERIA),
 				EndContainer(),
-				NWidget(WWT_PANEL, COLOUR_GREY),
-					NWidget(WWT_EDITBOX, COLOUR_GREY, WID_BV_FILTER_LOCO), SetResize(1, 0), SetFill(1, 0), SetPadding(2), SetStringTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP),
+				NWidget(WWT_PANEL, Colours::Grey),
+					NWidget(WWT_EDITBOX, Colours::Grey, WID_BV_FILTER_LOCO), SetResize(1, 0), SetFill(1, 0), SetPadding(2), SetStringTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP),
 				EndContainer(),
 				NWidget(NWID_VERTICAL, NWidContainerFlag{}, WID_BV_BADGE_FILTER_LOCO),
 				EndContainer(),
 			EndContainer(),
 			/* Vehicle list for locomotives. */
 			NWidget(NWID_HORIZONTAL),
-				NWidget(WWT_MATRIX, COLOUR_GREY, WID_BV_LIST_LOCO), SetResize(1, 1), SetFill(1, 0), SetMatrixDataTip(1, 0, STR_NULL), SetScrollbar(WID_BV_SCROLLBAR_LOCO),
-				NWidget(NWID_VSCROLLBAR, COLOUR_GREY, WID_BV_SCROLLBAR_LOCO),
+				NWidget(WWT_MATRIX, Colours::Grey, WID_BV_LIST_LOCO), SetResize(1, 1), SetFill(1, 0), SetMatrixDataTip(1, 0, STR_NULL), SetScrollbar(WID_BV_SCROLLBAR_LOCO),
+				NWidget(NWID_VSCROLLBAR, Colours::Grey, WID_BV_SCROLLBAR_LOCO),
 			EndContainer(),
 			/* Panel with details for locomotives. */
-			NWidget(WWT_PANEL, COLOUR_GREY, WID_BV_PANEL_LOCO), SetMinimalSize(240, 122), SetResize(1, 0), EndContainer(),
+			NWidget(WWT_PANEL, Colours::Grey, WID_BV_PANEL_LOCO), SetMinimalSize(240, 122), SetResize(1, 0), EndContainer(),
 			/* Build/rename buttons, resize button for locomotives. */
-			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BV_LOCO_BUTTONS_SEL),
+			NWidget(NWID_SELECTION, Colours::Invalid, WID_BV_LOCO_BUTTONS_SEL),
 				NWidget(NWID_HORIZONTAL),
-					NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BV_BUILD_SEL_LOCO),
-						NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_BUILD_LOCO), SetMinimalSize(50, 1), SetResize(1, 0), SetFill(1, 0),
+					NWidget(NWID_SELECTION, Colours::Invalid, WID_BV_BUILD_SEL_LOCO),
+						NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_BV_BUILD_LOCO), SetMinimalSize(50, 1), SetResize(1, 0), SetFill(1, 0),
 					EndContainer(),
-					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_SHOW_HIDE_LOCO), SetResize(1, 0), SetFill(1, 0),
-					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_RENAME_LOCO), SetResize(1, 0), SetFill(1, 0),
+					NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_BV_SHOW_HIDE_LOCO), SetResize(1, 0), SetFill(1, 0),
+					NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_BV_RENAME_LOCO), SetResize(1, 0), SetFill(1, 0),
 				EndContainer(),
 			EndContainer(),
 
@@ -166,54 +166,54 @@ static constexpr NWidgetPart _nested_build_vehicle_widgets_train_advanced[] = {
 		/* Second half of the window contains wagons. */
 		NWidget(NWID_VERTICAL),
 			NWidget(NWID_HORIZONTAL),
-				NWidget(WWT_PANEL, COLOUR_GREY), SetFill(1, 0),
-					NWidget(WWT_LABEL, INVALID_COLOUR, WID_BV_CAPTION_WAGON), SetTextStyle(TC_WHITE), SetResize(1, 0), SetFill(1, 0),
+				NWidget(WWT_PANEL, Colours::Grey), SetFill(1, 0),
+					NWidget(WWT_LABEL, Colours::Invalid, WID_BV_CAPTION_WAGON), SetTextStyle(TC_WHITE), SetResize(1, 0), SetFill(1, 0),
 				EndContainer(),
 			EndContainer(),
 			NWidget(NWID_VERTICAL),
 				NWidget(NWID_HORIZONTAL),
-					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_SORT_ASCENDING_DESCENDING_WAGON), SetStringTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER), SetFill(1, 0),
-					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_BV_SORT_DROPDOWN_WAGON), SetResize(1, 0), SetFill(1, 0), SetToolTip(STR_TOOLTIP_SORT_CRITERIA),
+					NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_BV_SORT_ASCENDING_DESCENDING_WAGON), SetStringTip(STR_BUTTON_SORT_BY, STR_TOOLTIP_SORT_ORDER), SetFill(1, 0),
+					NWidget(WWT_DROPDOWN, Colours::Grey, WID_BV_SORT_DROPDOWN_WAGON), SetResize(1, 0), SetFill(1, 0), SetToolTip(STR_TOOLTIP_SORT_CRITERIA),
 				EndContainer(),
 				NWidget(NWID_HORIZONTAL),
-					NWidget(WWT_TEXTBTN, COLOUR_GREY, WID_BV_SHOW_HIDDEN_WAGONS),
-					NWidget(WWT_DROPDOWN, COLOUR_GREY, WID_BV_CARGO_FILTER_DROPDOWN_WAGON), SetResize(1, 0), SetFill(1, 0), SetToolTip(STR_TOOLTIP_FILTER_CRITERIA),
-					NWidget(WWT_IMGBTN, COLOUR_GREY, WID_BV_CONFIGURE_BADGES), SetAspect(WidgetDimensions::ASPECT_UP_DOWN_BUTTON), SetResize(0, 0), SetFill(0, 1), SetSpriteTip(SPR_EXTRA_MENU, STR_BADGE_CONFIG_MENU_TOOLTIP),
+					NWidget(WWT_TEXTBTN, Colours::Grey, WID_BV_SHOW_HIDDEN_WAGONS),
+					NWidget(WWT_DROPDOWN, Colours::Grey, WID_BV_CARGO_FILTER_DROPDOWN_WAGON), SetResize(1, 0), SetFill(1, 0), SetToolTip(STR_TOOLTIP_FILTER_CRITERIA),
+					NWidget(WWT_IMGBTN, Colours::Grey, WID_BV_CONFIGURE_BADGES), SetAspect(WidgetDimensions::ASPECT_UP_DOWN_BUTTON), SetResize(0, 0), SetFill(0, 1), SetSpriteTip(SPR_EXTRA_MENU, STR_BADGE_CONFIG_MENU_TOOLTIP),
 				EndContainer(),
-				NWidget(WWT_PANEL, COLOUR_GREY),
-					NWidget(WWT_EDITBOX, COLOUR_GREY, WID_BV_FILTER_WAGON), SetResize(1, 0), SetFill(1, 0), SetPadding(2), SetStringTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP),
+				NWidget(WWT_PANEL, Colours::Grey),
+					NWidget(WWT_EDITBOX, Colours::Grey, WID_BV_FILTER_WAGON), SetResize(1, 0), SetFill(1, 0), SetPadding(2), SetStringTip(STR_LIST_FILTER_OSKTITLE, STR_LIST_FILTER_TOOLTIP),
 				EndContainer(),
 				NWidget(NWID_VERTICAL, NWidContainerFlag{}, WID_BV_BADGE_FILTER_WAGON),
 				EndContainer(),
 			EndContainer(),
 			/* Vehicle list for wagons. */
 			NWidget(NWID_HORIZONTAL),
-				NWidget(WWT_MATRIX, COLOUR_GREY, WID_BV_LIST_WAGON), SetResize(1, 1), SetFill(1, 0), SetMatrixDataTip(1, 0, STR_NULL), SetScrollbar(WID_BV_SCROLLBAR_WAGON),
-				NWidget(NWID_VSCROLLBAR, COLOUR_GREY, WID_BV_SCROLLBAR_WAGON),
+				NWidget(WWT_MATRIX, Colours::Grey, WID_BV_LIST_WAGON), SetResize(1, 1), SetFill(1, 0), SetMatrixDataTip(1, 0, STR_NULL), SetScrollbar(WID_BV_SCROLLBAR_WAGON),
+				NWidget(NWID_VSCROLLBAR, Colours::Grey, WID_BV_SCROLLBAR_WAGON),
 			EndContainer(),
 			/* Panel with details for wagons. */
-			NWidget(WWT_PANEL, COLOUR_GREY, WID_BV_PANEL_WAGON), SetMinimalSize(240, 122), SetResize(1, 0), EndContainer(),
+			NWidget(WWT_PANEL, Colours::Grey, WID_BV_PANEL_WAGON), SetMinimalSize(240, 122), SetResize(1, 0), EndContainer(),
 			/* Build/rename buttons, resize button for wagons. */
-			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BV_WAGON_BUTTONS_SEL),
+			NWidget(NWID_SELECTION, Colours::Invalid, WID_BV_WAGON_BUTTONS_SEL),
 				NWidget(NWID_HORIZONTAL),
-					NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BV_BUILD_SEL_WAGON),
-						NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_BUILD_WAGON), SetMinimalSize(50, 1), SetResize(1, 0), SetFill(1, 0),
+					NWidget(NWID_SELECTION, Colours::Invalid, WID_BV_BUILD_SEL_WAGON),
+						NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_BV_BUILD_WAGON), SetMinimalSize(50, 1), SetResize(1, 0), SetFill(1, 0),
 					EndContainer(),
-					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_SHOW_HIDE_WAGON), SetResize(1, 0), SetFill(1, 0),
-					NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_RENAME_WAGON), SetResize(1, 0), SetFill(1, 0),
-					NWidget(WWT_RESIZEBOX, COLOUR_GREY),
+					NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_BV_SHOW_HIDE_WAGON), SetResize(1, 0), SetFill(1, 0),
+					NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_BV_RENAME_WAGON), SetResize(1, 0), SetFill(1, 0),
+					NWidget(WWT_RESIZEBOX, Colours::Grey),
 				EndContainer(),
 			EndContainer(),
 		EndContainer(),
 	EndContainer(),
-	NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BV_COMB_BUTTONS_SEL),
+	NWidget(NWID_SELECTION, Colours::Invalid, WID_BV_COMB_BUTTONS_SEL),
 		NWidget(NWID_HORIZONTAL),
-			NWidget(NWID_SELECTION, INVALID_COLOUR, WID_BV_COMB_BUILD_SEL),
-				NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_COMB_BUILD), SetMinimalSize(50, 1), SetResize(1, 0), SetFill(1, 0),
+			NWidget(NWID_SELECTION, Colours::Invalid, WID_BV_COMB_BUILD_SEL),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_BV_COMB_BUILD), SetMinimalSize(50, 1), SetResize(1, 0), SetFill(1, 0),
 			EndContainer(),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_COMB_SHOW_HIDE), SetResize(1, 0), SetFill(1, 0), SetToolTip(STR_BUY_VEHICLE_TRAIN_HIDE_SHOW_TOGGLE_TOOLTIP),
-			NWidget(WWT_PUSHTXTBTN, COLOUR_GREY, WID_BV_COMB_RENAME), SetResize(1, 0), SetFill(1, 0),
-			NWidget(WWT_RESIZEBOX, COLOUR_GREY),
+			NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_BV_COMB_SHOW_HIDE), SetResize(1, 0), SetFill(1, 0), SetToolTip(STR_BUY_VEHICLE_TRAIN_HIDE_SHOW_TOGGLE_TOOLTIP),
+			NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_BV_COMB_RENAME), SetResize(1, 0), SetFill(1, 0),
+			NWidget(WWT_RESIZEBOX, Colours::Grey),
 		EndContainer(),
 	EndContainer(),
 };
@@ -1129,7 +1129,7 @@ void DrawEngineList(VehicleType type, const Rect &r, const GUIEngineList &eng_li
 	int sprite_right = GetVehicleImageCellSize(type, EIT_PURCHASE).extend_right;
 	int sprite_width = sprite_left + sprite_right;
 	int circle_width = std::max(GetScaledSpriteSize(SPR_CIRCLE_FOLDED).width, GetScaledSpriteSize(SPR_CIRCLE_UNFOLDED).width);
-	PixelColour linecolour = GetColourGradient(COLOUR_ORANGE, SHADE_NORMAL);
+	PixelColour linecolour = GetColourGradient(Colours::Orange, SHADE_NORMAL);
 
 	auto badge_column_widths = badge_classes.GetColumnWidths();
 
@@ -1749,7 +1749,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		this->SetCargoFilterArray();
 		this->vscroll->SetCount(this->eng_list.size());
 
-		this->badge_filters = AddBadgeDropdownFilters(this, WID_BV_BADGE_FILTER, WID_BV_BADGE_FILTER, COLOUR_GREY, GetGrfSpecFeature(this->vehicle_type));
+		this->badge_filters = AddBadgeDropdownFilters(this, WID_BV_BADGE_FILTER, WID_BV_BADGE_FILTER, Colours::Grey, GetGrfSpecFeature(this->vehicle_type));
 
 		this->widget_lookup.clear();
 		this->nested_root->FillWidgetLookup(this->widget_lookup);
@@ -2021,7 +2021,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 	DropDownList BuildBadgeConfigurationList() const
 	{
 		static const auto separators = {STR_BADGE_CONFIG_PREVIEW, STR_BADGE_CONFIG_NAME};
-		return BuildBadgeClassConfigurationList(this->badge_classes, BADGE_COLUMNS, separators, COLOUR_GREY);
+		return BuildBadgeClassConfigurationList(this->badge_classes, BADGE_COLUMNS, separators, Colours::Grey);
 	}
 
 	void BuildVehicle()
@@ -2728,8 +2728,8 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		this->loco.vscroll->SetCount(this->loco.eng_list.size());
 		this->wagon.vscroll->SetCount(this->wagon.eng_list.size());
 
-		this->loco.badge_filters = AddBadgeDropdownFilters(this, WID_BV_BADGE_FILTER_LOCO, WID_BV_BADGE_FILTER_LOCO, COLOUR_GREY, static_cast<GrfSpecFeature>(GrfSpecFeature::Trains));
-		this->wagon.badge_filters = AddBadgeDropdownFilters(this, WID_BV_BADGE_FILTER_WAGON, WID_BV_BADGE_FILTER_WAGON, COLOUR_GREY, static_cast<GrfSpecFeature>(GrfSpecFeature::Trains));
+		this->loco.badge_filters = AddBadgeDropdownFilters(this, WID_BV_BADGE_FILTER_LOCO, WID_BV_BADGE_FILTER_LOCO, Colours::Grey, static_cast<GrfSpecFeature>(GrfSpecFeature::Trains));
+		this->wagon.badge_filters = AddBadgeDropdownFilters(this, WID_BV_BADGE_FILTER_WAGON, WID_BV_BADGE_FILTER_WAGON, Colours::Grey, static_cast<GrfSpecFeature>(GrfSpecFeature::Trains));
 
 		this->widget_lookup.clear();
 		this->nested_root->FillWidgetLookup(this->widget_lookup);
@@ -3493,7 +3493,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 	DropDownList BuildBadgeConfigurationList() const
 	{
 		static const auto separators = {STR_BADGE_CONFIG_PREVIEW, STR_BADGE_CONFIG_NAME};
-		return BuildBadgeClassConfigurationList(this->badge_classes, BADGE_COLUMNS, separators, COLOUR_GREY);
+		return BuildBadgeClassConfigurationList(this->badge_classes, BADGE_COLUMNS, separators, Colours::Grey);
 	}
 };
 

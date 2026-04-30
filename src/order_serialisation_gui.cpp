@@ -36,20 +36,20 @@ enum OrderWidgets : WidgetID {
 /** Nested widget definition for order import errors. */
 static constexpr NWidgetPart _nested_order_import_error_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_CLOSEBOX, COLOUR_GREY),
-		NWidget(WWT_CAPTION, COLOUR_GREY, WID_OIE_CAPTION), SetStringTip(STR_ORDER_IMPORT_ERROR_LIST_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
-		NWidget(NWID_SELECTION, INVALID_COLOUR, WID_OIE_TOGGLE_NON_ERROR_SEL),
-			NWidget(WWT_IMGBTN, COLOUR_GREY, WID_OIE_TOGGLE_NON_ERROR), SetSpriteTip(SPR_LARGE_SMALL_WINDOW, STR_ORDER_IMPORT_ERROR_LIST_TOGGLE_SHOW_NON_ERRORS), SetAspect(WidgetDimensions::ASPECT_TOGGLE_SIZE),
+		NWidget(WWT_CLOSEBOX, Colours::Grey),
+		NWidget(WWT_CAPTION, Colours::Grey, WID_OIE_CAPTION), SetStringTip(STR_ORDER_IMPORT_ERROR_LIST_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(NWID_SELECTION, Colours::Invalid, WID_OIE_TOGGLE_NON_ERROR_SEL),
+			NWidget(WWT_IMGBTN, Colours::Grey, WID_OIE_TOGGLE_NON_ERROR), SetSpriteTip(SPR_LARGE_SMALL_WINDOW, STR_ORDER_IMPORT_ERROR_LIST_TOGGLE_SHOW_NON_ERRORS), SetAspect(WidgetDimensions::ASPECT_TOGGLE_SIZE),
 		EndContainer(),
-		NWidget(WWT_SHADEBOX, COLOUR_GREY),
-		NWidget(WWT_DEFSIZEBOX, COLOUR_GREY),
-		NWidget(WWT_STICKYBOX, COLOUR_GREY),
+		NWidget(WWT_SHADEBOX, Colours::Grey),
+		NWidget(WWT_DEFSIZEBOX, Colours::Grey),
+		NWidget(WWT_STICKYBOX, Colours::Grey),
 	EndContainer(),
 	NWidget(NWID_HORIZONTAL),
-		NWidget(WWT_PANEL, COLOUR_GREY, WID_OIE_ORDER_LIST), SetMinimalSize(372, 72), SetToolTip(STR_ORDERS_LIST_TOOLTIP), SetResize(1, 1), SetScrollbar(WID_OIE_SCROLLBAR), EndContainer(),
+		NWidget(WWT_PANEL, Colours::Grey, WID_OIE_ORDER_LIST), SetMinimalSize(372, 72), SetToolTip(STR_ORDERS_LIST_TOOLTIP), SetResize(1, 1), SetScrollbar(WID_OIE_SCROLLBAR), EndContainer(),
 		NWidget(NWID_VERTICAL),
-			NWidget(NWID_VSCROLLBAR, COLOUR_GREY, WID_OIE_SCROLLBAR),
-			NWidget(WWT_RESIZEBOX, COLOUR_GREY),
+			NWidget(NWID_VSCROLLBAR, Colours::Grey, WID_OIE_SCROLLBAR),
+			NWidget(WWT_RESIZEBOX, Colours::Grey),
 		EndContainer(),
 	EndContainer(),
 };
@@ -156,8 +156,8 @@ struct OrderListImportErrorsWindow : GeneralVehicleWindow
 
 			int offset = ir.right - DrawString(ir.left, ir.right, y, str, color, SA_CENTER);
 
-			GfxFillRect(ir.left, middle_height - 1, ir.left + offset, middle_height + 1, GetColourGradient(COLOUR_BLUE, SHADE_DARK));
-			GfxFillRect(ir.right - offset, middle_height - 1, ir.right, middle_height + 1, GetColourGradient(COLOUR_BLUE, SHADE_DARK));
+			GfxFillRect(ir.left, middle_height - 1, ir.left + offset, middle_height + 1, GetColourGradient(Colours::Blue, SHADE_DARK));
+			GfxFillRect(ir.right - offset, middle_height - 1, ir.right, middle_height + 1, GetColourGradient(Colours::Blue, SHADE_DARK));
 
 			DrawString(ir.left, ir.right, y, str, color, SA_CENTER);
 
@@ -166,9 +166,9 @@ struct OrderListImportErrorsWindow : GeneralVehicleWindow
 
 		auto GetTColorFromError = [&](JsonOrderImportErrorType etype) -> TextColour {
 			switch (OrderErrorTypeToColour(etype)) {
-				case COLOUR_RED: return TC_RED;
-				case COLOUR_ORANGE: return TC_ORANGE;
-				case COLOUR_CREAM: return TC_CREAM;
+				case Colours::Red: return TC_RED;
+				case Colours::Orange: return TC_ORANGE;
+				case Colours::Cream: return TC_CREAM;
 				default: return TC_BLACK;
 			}
 		};
@@ -214,7 +214,7 @@ struct OrderListImportErrorsWindow : GeneralVehicleWindow
 				}
 
 				if (CheckVisibleAndIncrementRow()) {
-					if (order_has_errors && this->show_non_error_order) DrawHighlight(COLOUR_RED, SHADE_NORMAL);
+					if (order_has_errors && this->show_non_error_order) DrawHighlight(Colours::Red, SHADE_NORMAL);
 					DrawOrderString(this->vehicle, order, order_index, y, false, false, ir.left, middle, ir.right);
 					y += line_height;
 				}
@@ -223,7 +223,7 @@ struct OrderListImportErrorsWindow : GeneralVehicleWindow
 					const std::vector<OrderImportErrors::Error> &errors = this->errs.order.at(order_index);
 					for (const OrderImportErrors::Error &e : errors) {
 						if (CheckVisibleAndIncrementRow()) {
-							if (this->show_non_error_order) DrawHighlight(COLOUR_RED, SHADE_NORMAL);
+							if (this->show_non_error_order) DrawHighlight(Colours::Red, SHADE_NORMAL);
 							DrawRawString(e.msg, GetTColorFromError(e.type), true);
 						}
 					}

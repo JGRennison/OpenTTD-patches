@@ -1012,7 +1012,7 @@ CommandCost CmdDuplicateOrder(DoCommandFlags flags, VehicleID veh_id, VehicleOrd
  */
 CommandCost CmdSetRouteOverlayColour(DoCommandFlags flags, VehicleID veh_id, Colours colour)
 {
-	if (colour >= COLOUR_END) return CMD_ERROR;
+	if (colour >= Colours::End) return CMD_ERROR;
 
 	Vehicle *v = Vehicle::GetIfValid(veh_id);
 	if (v == nullptr || !IsCompanyBuildableVehicleType(v) || !v->IsPrimaryVehicle() || v->orders == nullptr) return CMD_ERROR;
@@ -2295,7 +2295,7 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 			break;
 
 		case MOF_COLOUR:
-			if (data >= COLOUR_END && data != INVALID_COLOUR) {
+			if (data >= to_underlying(Colours::End) && data != to_underlying(Colours::Invalid)) {
 				return CMD_ERROR;
 			}
 			break;
@@ -4498,7 +4498,7 @@ CommandCost CmdBulkOrder(DoCommandFlags flags, const BulkOrderCmdData &cmd_data)
 		auto create_error_order = [&]() {
 			Order error_order;
 			error_order.MakeLabel(OLST_ERROR);
-			error_order.SetColour(COLOUR_RED);
+			error_order.SetColour(Colours::Red);
 			error_order.SetLabelError(OrderLabelError::ParseError);
 
 			if (modify_pos != INVALID_VEH_ORDER_ID) {

@@ -99,7 +99,7 @@ static void IConsoleHistoryNavigate(int direction);
 static void IConsoleTabCompletion();
 
 static constexpr std::initializer_list<NWidgetPart> _nested_console_window_widgets = {
-	NWidget(WWT_EMPTY, INVALID_COLOUR, WID_C_BACKGROUND), SetResize(1, 1),
+	NWidget(WWT_EMPTY, Colours::Invalid, WID_C_BACKGROUND), SetResize(1, 1),
 };
 
 static WindowDesc _console_window_desc(__FILE__, __LINE__,
@@ -589,7 +589,7 @@ bool IsValidConsoleColour(TextColour c)
 	/* A text colour from the palette is used; must be the company
 	 * colour gradient, so it must be one of those. */
 	c &= ~TC_IS_PALETTE_COLOUR;
-	for (Colours i = COLOUR_BEGIN; i < COLOUR_END; i++) {
+	for (Colours i = Colours::Begin; i < Colours::End; i++) {
 		if (GetColourGradient(i, SHADE_NORMAL).p == c) return true;
 	}
 

@@ -178,7 +178,7 @@ static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 		}
 	}
 
-	if (o.GetColour() != INVALID_COLOUR) {
+	if (o.GetColour() != Colours::Invalid) {
 		json[OFName::COLOUR] = o.GetColour();
 	}
 
@@ -503,7 +503,7 @@ std::string OrderListToJSONString(const OrderList *ol)
 		}
 	}
 
-	if (ol->GetRouteOverlayColour() != COLOUR_WHITE) {
+	if (ol->GetRouteOverlayColour() != Colours::White) {
 		json[FName::ROUTE_OVERLAY_COLOUR] = ol->GetRouteOverlayColour();
 	}
 
@@ -559,9 +559,9 @@ std::string OrderListToJSONString(const OrderList *ol)
 Colours OrderErrorTypeToColour(JsonOrderImportErrorType error_type)
 {
 	switch (error_type) {
-		case JOIET_CRITICAL: return COLOUR_RED;
-		case JOIET_MAJOR: return COLOUR_ORANGE;
-		case JOIET_MINOR: return COLOUR_CREAM;
+		case JOIET_CRITICAL: return Colours::Red;
+		case JOIET_MAJOR: return Colours::Orange;
+		case JOIET_MINOR: return Colours::Cream;
 		default: NOT_REACHED();
 	}
 }
@@ -1474,9 +1474,9 @@ OrderImportErrors ImportJsonOrderList(const Vehicle *veh, std::string_view json_
 	}
 
 	{
-		Colours route_overlay_colour = COLOUR_WHITE;
+		Colours route_overlay_colour = Colours::White;
 		json_importer.TryGetField(FName::ROUTE_OVERLAY_COLOUR, route_overlay_colour, JOIET_MINOR);
-		const Colours current = (veh->orders != nullptr) ? veh->orders->GetRouteOverlayColour() : COLOUR_WHITE;
+		const Colours current = (veh->orders != nullptr) ? veh->orders->GetRouteOverlayColour() : Colours::White;
 		if (route_overlay_colour != current) {
 			cmd_buffer.op_serialiser.SetRouteOverlayColour(route_overlay_colour);
 		}

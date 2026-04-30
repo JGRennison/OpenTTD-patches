@@ -1188,7 +1188,7 @@ private:
 
 	std::vector<Order> orders;        ///< Order list.
 
-	Colours route_overlay_colour = COLOUR_WHITE;
+	Colours route_overlay_colour = Colours::White;
 
 	VehicleOrderID num_manual_orders = 0; ///< NOSAVE: How many manually added orders are there in the list.
 	uint num_vehicles = 0;                ///< NOSAVE: Number of vehicles that share this order list.

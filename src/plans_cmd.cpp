@@ -110,7 +110,7 @@ CommandCost CmdChangePlanColour(DoCommandFlags flags, PlanID plan, Colours colou
 {
 	Plan *p = Plan::GetIfValid(plan);
 	if (p == nullptr) return CMD_ERROR;
-	if (colour >= COLOUR_END) return CMD_ERROR;
+	if (colour >= Colours::End) return CMD_ERROR;
 	CommandCost ret = CheckOwnership(p->owner);
 	if (ret.Failed()) return ret;
 	if (flags.Test(DoCommandFlag::Execute)) {
