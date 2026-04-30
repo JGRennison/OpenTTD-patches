@@ -1991,7 +1991,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_game_options_widgets
 };
 
 static WindowDesc _game_options_desc(__FILE__, __LINE__,
-	WDP_CENTER, "game_options", 510, 450,
+	WindowPosition::Center, "game_options", 510, 450,
 	WC_GAME_OPTIONS, WC_NONE,
 	{},
 	_nested_game_options_widgets
@@ -2334,7 +2334,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_cust_currency_widget
 };
 
 static WindowDesc _cust_currency_desc(__FILE__, __LINE__,
-	WDP_CENTER, nullptr, 0, 0,
+	WindowPosition::Center, nullptr, 0, 0,
 	WC_CUSTOM_CURRENCY, WC_NONE,
 	{},
 	_nested_cust_currency_widgets

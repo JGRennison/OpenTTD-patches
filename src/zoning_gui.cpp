@@ -180,7 +180,7 @@ static constexpr NWidgetPart _nested_zoning_widgets[] = {
 };
 
 static WindowDesc _zoning_desc (__FILE__, __LINE__,
-	WDP_CENTER, "zoning_gui", 0, 0,
+	WindowPosition::Center, "zoning_gui", 0, 0,
 	WC_ZONING_TOOLBAR, WC_NONE,
 	{},
 	_nested_zoning_widgets

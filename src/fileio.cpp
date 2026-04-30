@@ -184,6 +184,9 @@ std::string FioGetDirectory(Searchpath sp, Subdirectory subdir)
 	assert(subdir < Subdirectory::End);
 	assert(sp < Searchpath::End);
 
+	/* For official TTD directory, don't include the subdirectory. */
+	if (sp == Searchpath::TransportTycoonDeluxeDir && subdir == Subdirectory::Baseset) return _searchpaths[sp];
+
 	return _searchpaths[sp] + _subdirs[subdir];
 }
 
@@ -214,7 +217,7 @@ static std::optional<FileHandle> FioFOpenFileSp(std::string_view filename, const
 	if (subdir == Subdirectory::None) {
 		buf = filename;
 	} else {
-		buf = fmt::format("{}{}{}", _searchpaths[sp], _subdirs[subdir], filename);
+		buf = fmt::format("{}{}", FioGetDirectory(sp, subdir), filename);
 	}
 
 	auto f = FileHandle::Open(buf, mode);
@@ -915,6 +918,49 @@ extern void CocoaSetApplicationBundleDir();
 #else
 	_searchpaths[Searchpath::ApplicationBundleDir].clear();
 #endif
+
+	/* Look for Atari release of Transport Tycoon Deluxe for original data files */
+	std::string config_file_path;
+	const std::string atari_ini_filename = "Atari/Transport Tycoon Deluxe/installpath.ini";
+
+	_searchpaths[Searchpath::TransportTycoonDeluxeDir].clear();
+
+#ifdef WITH_COCOA
+extern std::string CocoaGetAppSupportDir();
+	config_file_path = CocoaGetAppSupportDir();
+
+	if (!config_file_path.empty()) {
+		AppendPathSeparator(config_file_path);
+		config_file_path += atari_ini_filename;
+	}
+#else
+	config_file_path = GetHomeDir();
+
+	if (!config_file_path.empty()) {
+		AppendPathSeparator(config_file_path);
+		config_file_path += ".local/share/";
+		config_file_path += atari_ini_filename;
+	}
+#endif
+
+	if (!config_file_path.empty()) {
+		std::optional<UniqueBuffer<uint8_t>> installpath = ReadFileToBuffer(config_file_path, MAX_PATH);
+
+		if (installpath.has_value() && installpath->size() > 0) {
+			std::string ttd_path((const char *)installpath->get(), installpath->size());
+			AppendPathSeparator(ttd_path);
+
+#ifdef WITH_COCOA
+			/* The path provided is to the TTD.app/Contents/MacOS folder */
+			ttd_path += "../Resources/";
+#endif
+
+			ttd_path += "CD";
+			AppendPathSeparator(ttd_path);
+
+			if (FileExists(ttd_path)) _searchpaths[Searchpath::TransportTycoonDeluxeDir] = std::move(ttd_path);
+		}
+	}
 }
 #endif /* defined(_WIN32) */
 

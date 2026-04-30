@@ -400,7 +400,7 @@ static constexpr NWidgetPart _nested_cargo_type_orders_widgets[] = {
 
 /** Window description for the 'load' variant of CargoTypeOrdersWindow. */
 static WindowDesc _cargo_type_load_orders_widgets (__FILE__, __LINE__,
-	WDP_AUTO, nullptr, 195, 186,
+	WindowPosition::Automatic, nullptr, 195, 186,
 	WC_VEHICLE_CARGO_TYPE_LOAD_ORDERS, WC_VEHICLE_ORDERS,
 	WindowDefaultFlag::Construction,
 	_nested_cargo_type_orders_widgets
@@ -408,7 +408,7 @@ static WindowDesc _cargo_type_load_orders_widgets (__FILE__, __LINE__,
 
 /** Window description for the 'unload' variant of CargoTypeOrdersWindow. */
 static WindowDesc _cargo_type_unload_orders_widgets (__FILE__, __LINE__,
-	WDP_AUTO, nullptr, 195, 186,
+	WindowPosition::Automatic, nullptr, 195, 186,
 	WC_VEHICLE_CARGO_TYPE_UNLOAD_ORDERS, WC_VEHICLE_ORDERS,
 	WindowDefaultFlag::Construction,
 	_nested_cargo_type_orders_widgets
@@ -4424,7 +4424,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_orders_train_widgets
 };
 
 static WindowDesc _orders_train_desc(__FILE__, __LINE__,
-	WDP_AUTO, "view_vehicle_orders_train", 384, 100,
+	WindowPosition::Automatic, "view_vehicle_orders_train", 384, 100,
 	WC_VEHICLE_ORDERS, WC_VEHICLE_VIEW,
 	WindowDefaultFlag::Construction,
 	_nested_orders_train_widgets,
@@ -4585,7 +4585,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_orders_widgets = {
 };
 
 static WindowDesc _orders_desc(__FILE__, __LINE__,
-	WDP_AUTO, "view_vehicle_orders", 384, 100,
+	WindowPosition::Automatic, "view_vehicle_orders", 384, 100,
 	WC_VEHICLE_ORDERS, WC_VEHICLE_VIEW,
 	WindowDefaultFlag::Construction,
 	_nested_orders_widgets,
@@ -4617,7 +4617,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_other_orders_widgets
 };
 
 static WindowDesc _other_orders_desc(__FILE__, __LINE__,
-	WDP_AUTO, "view_vehicle_orders_competitor", 384, 86,
+	WindowPosition::Automatic, "view_vehicle_orders_competitor", 384, 86,
 	WC_VEHICLE_ORDERS, WC_VEHICLE_VIEW,
 	WindowDefaultFlag::Construction,
 	_nested_other_orders_widgets,

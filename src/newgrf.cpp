@@ -328,7 +328,7 @@ Engine *GetNewEngine(const GRFFile *file, VehicleType type, uint16_t internal_id
 			scope_grfid, // Note: this is INVALID_GRFID if dynamic_engines is disabled, so no reservation
 			internal_id,
 			type,
-			std::min<uint8_t>(internal_id, _engine_counts[type]) // substitute_id == _engine_counts[subtype] means "no substitute"
+			std::min<uint8_t>(internal_id, GetOriginalEngineCount(type)) // substitute_id == _engine_counts[subtype] means "no substitute"
 	});
 	_engine_mngr.AddToIndex(e->index);
 

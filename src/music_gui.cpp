@@ -682,7 +682,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_music_track_selectio
 };
 
 static WindowDesc _music_track_selection_desc(__FILE__, __LINE__,
-	WDP_AUTO, nullptr, 0, 0,
+	WindowPosition::Automatic, nullptr, 0, 0,
 	WC_MUSIC_TRACK_SELECTION, WC_NONE,
 	{},
 	_nested_music_track_selection_widgets
@@ -941,7 +941,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_music_window_widgets
 };
 
 static WindowDesc _music_window_desc(__FILE__, __LINE__,
-	WDP_AUTO, "music", 0, 0,
+	WindowPosition::Automatic, "music", 0, 0,
 	WC_MUSIC_WINDOW, WC_NONE,
 	{},
 	_nested_music_window_widgets

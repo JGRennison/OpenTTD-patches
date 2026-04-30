@@ -97,7 +97,7 @@ static constexpr NWidgetPart _template_create_window_widgets[] = {
 };
 
 static WindowDesc _template_create_window_desc(__FILE__, __LINE__,
-	WDP_AUTO,                       // window position
+	WindowPosition::Automatic,                       // window position
 	"template_create",              // const char* ini_key
 	456, 100,                       // window size
 	WC_CREATE_TEMPLATE,             // window class

@@ -365,7 +365,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_sign_list_widgets = 
 };
 
 static WindowDesc _sign_list_desc(__FILE__, __LINE__,
-	WDP_AUTO, "list_signs", 358, 138,
+	WindowPosition::Automatic, "list_signs", 358, 138,
 	WC_SIGN_LIST, WC_NONE,
 	{},
 	_nested_sign_list_widgets,
@@ -622,7 +622,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_query_sign_edit_widg
 };
 
 static WindowDesc _query_sign_edit_desc(__FILE__, __LINE__,
-	WDP_CENTER, nullptr, 0, 0,
+	WindowPosition::Center, nullptr, 0, 0,
 	WC_QUERY_STRING, WC_NONE,
 	WindowDefaultFlag::Construction,
 	_nested_query_sign_edit_widgets

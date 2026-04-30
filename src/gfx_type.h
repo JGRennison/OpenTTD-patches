@@ -382,10 +382,10 @@ struct Palette {
 };
 
 /** Modes for 8bpp support */
-enum Support8bpp : uint8_t {
-	S8BPP_NONE = 0, ///< No support for 8bpp by OS or hardware, force 32bpp blitters.
-	S8BPP_SYSTEM,   ///< No 8bpp support by hardware, do not try to use 8bpp video modes or hardware palettes.
-	S8BPP_HARDWARE, ///< Full 8bpp support by OS and hardware.
+enum class Support8bpp : uint8_t {
+	None = 0, ///< No support for 8bpp by OS or hardware, force 32bpp blitters.
+	System, ///< No 8bpp support by hardware, do not try to use 8bpp video modes or hardware palettes.
+	Hardware, ///< Full 8bpp support by OS and hardware.
 };
 
 	/** How to align the to-be drawn text. */
@@ -405,6 +405,15 @@ enum StringAlignment : uint8_t {
 	SA_FORCE       = 1 << 4, ///< Force the alignment, i.e. don't swap for RTL languages.
 };
 DECLARE_ENUM_AS_BIT_SET(StringAlignment)
+
+/** The four direction keys on a keyboard. */
+enum class DirectionKey {
+	Left, ///< Left
+	Up, ///< Up
+	Right, ///< Right
+	Down, ///< Down
+};
+using DirectionKeys = EnumBitSet<DirectionKey, uint8_t>; ///< Bitset of the direction keys.
 
 /** Colour for pixel/line drawing. */
 struct PixelColour {

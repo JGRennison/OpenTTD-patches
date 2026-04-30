@@ -40,9 +40,9 @@
 
 #include "safeguards.h"
 
-uint8_t _dirkeys;     ///< 1 = left, 2 = up, 4 = right, 8 = down
+DirectionKeys _dirkeys; ///< Pressed direction keys.
 bool _fullscreen;
-uint8_t _support8bpp;
+Support8bpp _support8bpp; ///< State of the support for 8bpp graphics.
 CursorVars _cursor;
 bool _ctrl_pressed;   ///< Is Ctrl pressed?
 bool _shift_pressed;  ///< Is Shift pressed?

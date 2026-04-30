@@ -961,7 +961,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_network_game_widgets
 
 /** Description of the NetworkGameWindow. */
 static WindowDesc _network_game_window_desc(__FILE__, __LINE__,
-	WDP_CENTER, "list_servers", 1000, 730,
+	WindowPosition::Center, "list_servers", 1000, 730,
 	WC_NETWORK_WINDOW, WC_NONE,
 	WindowDefaultFlag::Network,
 	_nested_network_game_widgets
@@ -1238,7 +1238,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_network_start_server
 
 /** Description of the NetworkStartServerWindow. */
 static WindowDesc _network_start_server_window_desc(__FILE__, __LINE__,
-	WDP_CENTER, nullptr, 0, 0,
+	WindowPosition::Center, nullptr, 0, 0,
 	WC_NETWORK_WINDOW, WC_NONE,
 	WindowDefaultFlag::Network,
 	_nested_network_start_server_window_widgets
@@ -1315,7 +1315,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_client_list_widgets 
 
 /** Description of the NetworkClientListWindow. */
 static WindowDesc _client_list_desc(__FILE__, __LINE__,
-	WDP_AUTO, "list_clients", 220, 300,
+	WindowPosition::Automatic, "list_clients", 220, 300,
 	WC_CLIENT_LIST, WC_NONE,
 	WindowDefaultFlag::Network,
 	_nested_client_list_widgets
@@ -2210,7 +2210,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_network_join_status_
 
 /** Description of the NetworkJoinStatusWindow. */
 static WindowDesc _network_join_status_window_desc(__FILE__, __LINE__,
-	WDP_CENTER, nullptr, 0, 0,
+	WindowPosition::Center, nullptr, 0, 0,
 	WC_NETWORK_STATUS_WINDOW, WC_NONE,
 	{ WindowDefaultFlag::Modal, WindowDefaultFlag::Network },
 	_nested_network_join_status_window_widgets
@@ -2329,7 +2329,7 @@ static constexpr NWidgetPart _nested_network_company_password_window_widgets[] =
 };
 
 static WindowDesc _network_company_password_window_desc(__FILE__, __LINE__,
-	WDP_AUTO, nullptr, 0, 0,
+	WindowPosition::Automatic, nullptr, 0, 0,
 	WC_COMPANY_PASSWORD_WINDOW, WC_NONE,
 	WindowDefaultFlag::Network,
 	_nested_network_company_password_window_widgets
@@ -2438,7 +2438,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_network_ask_relay_wi
 
 /** Description of the NetworkAskRelayWindow. */
 static WindowDesc _network_ask_relay_desc(__FILE__, __LINE__,
-	WDP_CENTER, nullptr, 0, 0,
+	WindowPosition::Center, nullptr, 0, 0,
 	WC_NETWORK_ASK_RELAY, WC_NONE,
 	{ WindowDefaultFlag::Modal, WindowDefaultFlag::Network },
 	_nested_network_ask_relay_widgets
@@ -2543,7 +2543,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_network_ask_survey_w
 
 /** Description of the NetworkAskSurveyWindow. */
 static WindowDesc _network_ask_survey_desc(__FILE__, __LINE__,
-	WDP_CENTER, nullptr, 0, 0,
+	WindowPosition::Center, nullptr, 0, 0,
 	WC_NETWORK_ASK_SURVEY, WC_NONE,
 	WindowDefaultFlag::Modal,
 	_nested_network_ask_survey_widgets

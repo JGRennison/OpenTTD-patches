@@ -758,7 +758,7 @@ struct CheatWindow : Window {
 
 /** Window description of the cheats GUI. */
 static WindowDesc _cheats_desc(__FILE__, __LINE__,
-	WDP_AUTO, "cheats", 0, 0,
+	WindowPosition::Automatic, "cheats", 0, 0,
 	WC_CHEATS, WC_NONE,
 	{},
 	_nested_cheat_widgets

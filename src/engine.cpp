@@ -51,7 +51,7 @@ uint32_t _engine_seed = 0;
 static CalTime::Year _year_engine_aging_stops;
 
 /** Number of engines of each vehicle type in original engine data */
-const uint8_t _engine_counts[4] = {
+extern const uint8_t _engine_counts[4] = {
 	lengthof(_orig_rail_vehicle_info),
 	lengthof(_orig_road_vehicle_info),
 	lengthof(_orig_ship_vehicle_info),
@@ -59,7 +59,7 @@ const uint8_t _engine_counts[4] = {
 };
 
 /** Offset of the first engine of each vehicle type in original engine data */
-const uint8_t _engine_offsets[4] = {
+extern const uint8_t _engine_offsets[4] = {
 	0,
 	lengthof(_orig_rail_vehicle_info),
 	lengthof(_orig_rail_vehicle_info) + lengthof(_orig_road_vehicle_info),
@@ -83,7 +83,7 @@ Engine::Engine(EngineID index, VehicleType type, uint16_t local_id) : Engine::Po
 	this->display_last_variant = EngineID::Invalid();
 
 	/* Check if this base engine is within the original engine data range */
-	if (local_id >= _engine_counts[type]) {
+	if (local_id >= GetOriginalEngineCount(type)) {
 		/* Initialise default type-specific information. */
 		switch (type) {
 			case VEH_TRAIN: this->vehicle_info.emplace<RailVehicleInfo>(); break;
@@ -105,7 +105,7 @@ Engine::Engine(EngineID index, VehicleType type, uint16_t local_id) : Engine::Po
 	}
 
 	/* Copy the original engine info for this slot */
-	this->info = _orig_engine_info[_engine_offsets[type] + local_id];
+	this->info = _orig_engine_info[GetOriginalEngineOffset(type) + local_id];
 
 	/* Copy the original engine data for this slot */
 	switch (type) {
@@ -578,7 +578,7 @@ void EngineOverrideManager::ResetToDefaultMapping()
 {
 	this->mappings.clear();
 	for (VehicleType type = VEH_TRAIN; type <= VEH_AIRCRAFT; type++) {
-		for (uint8_t internal_id = 0; internal_id < _engine_counts[type]; internal_id++) {
+		for (uint8_t internal_id = 0; internal_id < GetOriginalEngineCount(type); internal_id++) {
 			this->mappings.push_back({ INVALID_GRFID, internal_id, type, internal_id });
 		}
 	}

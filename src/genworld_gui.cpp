@@ -1182,14 +1182,14 @@ struct GenerateLandscapeWindow : public Window {
 };
 
 static WindowDesc _generate_landscape_desc(__FILE__, __LINE__,
-	WDP_CENTER, nullptr, 0, 0,
+	WindowPosition::Center, nullptr, 0, 0,
 	WC_GENERATE_LANDSCAPE, WC_NONE,
 	{},
 	_nested_generate_landscape_widgets
 );
 
 static WindowDesc _heightmap_load_desc(__FILE__, __LINE__,
-	WDP_CENTER, nullptr, 0, 0,
+	WindowPosition::Center, nullptr, 0, 0,
 	WC_GENERATE_LANDSCAPE, WC_NONE,
 	{},
 	_nested_heightmap_load_widgets
@@ -1502,7 +1502,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_create_scenario_widg
 };
 
 static WindowDesc _create_scenario_desc(__FILE__, __LINE__,
-	WDP_CENTER, nullptr, 0, 0,
+	WindowPosition::Center, nullptr, 0, 0,
 	WC_GENERATE_LANDSCAPE, WC_NONE,
 	{},
 	_nested_create_scenario_widgets
@@ -1528,7 +1528,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_generate_progress_wi
 
 
 static WindowDesc _generate_progress_desc(__FILE__, __LINE__,
-	WDP_CENTER, nullptr, 0, 0,
+	WindowPosition::Center, nullptr, 0, 0,
 	WC_MODAL_PROGRESS, WC_NONE,
 	WindowDefaultFlag::NoClose,
 	_nested_generate_progress_widgets

@@ -183,7 +183,7 @@ static constexpr NWidgetPart _template_replace_widgets[] = {
 };
 
 static WindowDesc _template_replace_desc(__FILE__, __LINE__,
-	WDP_AUTO,
+	WindowPosition::Automatic,
 	"template_replace",
 	456, 156,
 	WC_TEMPLATEGUI_MAIN,

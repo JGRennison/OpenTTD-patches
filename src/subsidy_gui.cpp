@@ -278,7 +278,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_subsidies_list_widge
 };
 
 static WindowDesc _subsidies_list_desc(__FILE__, __LINE__,
-	WDP_AUTO, "list_subsidies", 500, 127,
+	WindowPosition::Automatic, "list_subsidies", 500, 127,
 	WC_SUBSIDIES_LIST, WC_NONE,
 	{},
 	_nested_subsidies_list_widgets

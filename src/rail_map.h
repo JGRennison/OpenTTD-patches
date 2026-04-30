@@ -689,6 +689,17 @@ inline void SetRestrictedSignal(TileIndex tile, bool is_restricted)
 	AssignBit(_m[tile].m2, 12, is_restricted);
 }
 
+/**
+ * Check whether a block signal is present along the trackdir.
+ * @param tile The tile to check.
+ * @param td The trackdir to check.
+ * @return \c true iff a block signal present along the trackdir.
+ */
+inline bool HasBlockSignalOnTrackdir(TileIndex tile, Trackdir td)
+{
+	return IsTileType(tile, TileType::Railway) && HasSignalOnTrackdir(tile, td) &&
+		!IsPbsSignal(GetSignalType(tile, TrackdirToTrack(td)));
+}
 
 RailType GetTileRailType(TileIndex tile);
 RailType GenericGetRailTypeByTrack(TileIndex t, Track track, bool return_invalid);

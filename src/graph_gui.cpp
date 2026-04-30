@@ -151,7 +151,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_graph_legend_widgets
 };
 
 static WindowDesc _graph_legend_desc(__FILE__, __LINE__,
-	WDP_AUTO, "graph_legend", 0, 0,
+	WindowPosition::Automatic, "graph_legend", 0, 0,
 	WC_GRAPH_LEGEND, WC_NONE,
 	{},
 	_nested_graph_legend_widgets
@@ -1011,7 +1011,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_operating_profit_wid
 };
 
 static WindowDesc _operating_profit_desc(__FILE__, __LINE__,
-	WDP_AUTO, "graph_operating_profit", 0, 0,
+	WindowPosition::Automatic, "graph_operating_profit", 0, 0,
 	WC_OPERATING_PROFIT, WC_NONE,
 	{},
 	_nested_operating_profit_widgets
@@ -1064,7 +1064,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_income_graph_widgets
 };
 
 static WindowDesc _income_graph_desc(__FILE__, __LINE__,
-	WDP_AUTO, "graph_income", 0, 0,
+	WindowPosition::Automatic, "graph_income", 0, 0,
 	WC_INCOME_GRAPH, WC_NONE,
 	{},
 	_nested_income_graph_widgets
@@ -1412,7 +1412,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_delivered_cargo_grap
 };
 
 static WindowDesc _delivered_cargo_graph_desc(__FILE__, __LINE__,
-	WDP_AUTO, "graph_delivered_cargo", 0, 0,
+	WindowPosition::Automatic, "graph_delivered_cargo", 0, 0,
 	WC_DELIVERED_CARGO, WC_NONE,
 	{},
 	_nested_delivered_cargo_graph_widgets
@@ -1470,7 +1470,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_performance_history_
 };
 
 static WindowDesc _performance_history_desc(__FILE__, __LINE__,
-	WDP_AUTO, "graph_performance", 0, 0,
+	WindowPosition::Automatic, "graph_performance", 0, 0,
 	WC_PERFORMANCE_HISTORY, WC_NONE,
 	{},
 	_nested_performance_history_widgets
@@ -1521,7 +1521,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_company_value_graph_
 };
 
 static WindowDesc _company_value_graph_desc(__FILE__, __LINE__,
-	WDP_AUTO, "graph_company_value", 0, 0,
+	WindowPosition::Automatic, "graph_company_value", 0, 0,
 	WC_COMPANY_VALUE, WC_NONE,
 	{},
 	_nested_company_value_graph_widgets
@@ -1927,7 +1927,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_cargo_payment_rates_
 };
 
 static WindowDesc _cargo_payment_rates_desc(__FILE__, __LINE__,
-	WDP_AUTO, "graph_cargo_payment_rates", 0, 0,
+	WindowPosition::Automatic, "graph_cargo_payment_rates", 0, 0,
 	WC_PAYMENT_RATES, WC_NONE,
 	{},
 	_nested_cargo_payment_rates_widgets
@@ -2337,7 +2337,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_industry_production_
 };
 
 static WindowDesc _industry_production_desc(__FILE__, __LINE__,
-	WDP_AUTO, "graph_industry_production", 0, 0,
+	WindowPosition::Automatic, "graph_industry_production", 0, 0,
 	WC_INDUSTRY_PRODUCTION, WC_INDUSTRY_VIEW,
 	{},
 	_nested_industry_production_widgets
@@ -2506,7 +2506,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_town_cargo_graph_wid
 };
 
 static WindowDesc _town_cargo_graph_desc(__FILE__, __LINE__,
-	WDP_AUTO, "graph_town_cargo", 0, 0,
+	WindowPosition::Automatic, "graph_town_cargo", 0, 0,
 	WC_TOWN_CARGO_GRAPH, WC_TOWN_VIEW,
 	{},
 	_nested_town_cargo_graph_widgets
@@ -2568,7 +2568,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_performance_rating_d
 };
 
 static WindowDesc _performance_rating_detail_desc(__FILE__, __LINE__,
-	WDP_AUTO, "league_details", 0, 0,
+	WindowPosition::Automatic, "league_details", 0, 0,
 	WC_PERFORMANCE_DETAIL, WC_NONE,
 	{},
 	_nested_performance_rating_detail_widgets
@@ -2848,7 +2848,7 @@ static constexpr NWidgetPart _nested_station_cargo_widgets[] = {
 };
 
 static WindowDesc _station_cargo_desc(__FILE__, __LINE__,
-	WDP_AUTO, "graph_station_cargo", 0, 0,
+	WindowPosition::Automatic, "graph_station_cargo", 0, 0,
 	WC_STATION_CARGO, WC_NONE,
 	{},
 	_nested_station_cargo_widgets

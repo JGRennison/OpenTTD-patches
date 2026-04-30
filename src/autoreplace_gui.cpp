@@ -186,7 +186,7 @@ class ReplaceVehicleWindow : public Window {
 			EngList_Sort(list, &EngineNumberSorter);
 		} else {
 			_engine_sort_direction = this->descending_sort_order;
-			EngList_Sort(list, _engine_sort_functions[this->window_number][this->sort_criteria]);
+			EngList_Sort(list, GetEngineSortFunctions(this->vehicle_type)[this->sort_criteria]);
 		}
 
 		this->engines[side].clear();
@@ -406,7 +406,7 @@ public:
 				break;
 
 			case WID_RV_SORT_DROPDOWN:
-				return GetString(std::data(_engine_sort_listing[this->window_number])[this->sort_criteria]);
+				return GetString(GetEngineSortNames(this->vehicle_type)[this->sort_criteria]);
 
 			case WID_RV_TRAIN_WAGONREMOVE_TOGGLE:
 				if (const Group *g = Group::GetIfValid(this->sel_group); g != nullptr) {
@@ -465,7 +465,7 @@ public:
 
 				/* Do the actual drawing */
 				DrawEngineList((VehicleType)this->window_number, r, this->engines[side], *this->vscroll[side], this->sel_engine[side], side == 0,
-						this->sel_group, this->badge_classes, std::data(_engine_sort_listing[this->window_number])[this->sort_criteria]);
+						this->sel_group, this->badge_classes, GetEngineSortNames(this->vehicle_type)[this->sort_criteria]);
 				break;
 			}
 		}
@@ -767,7 +767,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_replace_rail_vehicle
 };
 
 static WindowDesc _replace_rail_vehicle_desc(__FILE__, __LINE__,
-	WDP_AUTO, "replace_vehicle_train", 500, 140,
+	WindowPosition::Automatic, "replace_vehicle_train", 500, 140,
 	WC_REPLACE_VEHICLE, WC_NONE,
 	WindowDefaultFlag::Construction,
 	_nested_replace_rail_vehicle_widgets
@@ -825,7 +825,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_replace_road_vehicle
 };
 
 static WindowDesc _replace_road_vehicle_desc(__FILE__, __LINE__,
-	WDP_AUTO, "replace_vehicle_road", 500, 140,
+	WindowPosition::Automatic, "replace_vehicle_road", 500, 140,
 	WC_REPLACE_VEHICLE, WC_NONE,
 	WindowDefaultFlag::Construction,
 	_nested_replace_road_vehicle_widgets
@@ -879,7 +879,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_replace_vehicle_widg
 };
 
 static WindowDesc _replace_vehicle_desc(__FILE__, __LINE__,
-	WDP_AUTO, "replace_vehicle", 456, 118,
+	WindowPosition::Automatic, "replace_vehicle", 456, 118,
 	WC_REPLACE_VEHICLE, WC_NONE,
 	WindowDefaultFlag::Construction,
 	_nested_replace_vehicle_widgets

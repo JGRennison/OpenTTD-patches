@@ -59,7 +59,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_land_info_widgets = 
 };
 
 static WindowDesc _land_info_desc(__FILE__, __LINE__,
-	WDP_AUTO, nullptr, 0, 0,
+	WindowPosition::Automatic, nullptr, 0, 0,
 	WC_LAND_INFO, WC_NONE,
 	{},
 	_nested_land_info_widgets
@@ -375,7 +375,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_about_widgets = {
 };
 
 static WindowDesc _about_desc(__FILE__, __LINE__,
-	WDP_CENTER, nullptr, 0, 0,
+	WindowPosition::Center, nullptr, 0, 0,
 	WC_GAME_OPTIONS, WC_NONE,
 	{},
 	_nested_about_widgets
@@ -642,7 +642,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_tooltips_widgets = {
 };
 
 static WindowDesc _tool_tips_desc(__FILE__, __LINE__,
-	WDP_MANUAL, nullptr, 0, 0, // Coordinates and sizes are not used,
+	WindowPosition::Manual, nullptr, 0, 0, // Coordinates and sizes are not used,
 	WC_TOOLTIPS, WC_NONE,
 	{WindowDefaultFlag::NoFocus, WindowDefaultFlag::NoClose},
 	_nested_tooltips_widgets
@@ -1268,7 +1268,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_query_string_widgets
 };
 
 static WindowDesc _query_string_desc(__FILE__, __LINE__,
-	WDP_CENTER, nullptr, 0, 0,
+	WindowPosition::Center, nullptr, 0, 0,
 	WC_QUERY_STRING, WC_NONE,
 	{},
 	_nested_query_string_widgets
@@ -1447,7 +1447,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_query_widgets = {
 };
 
 static WindowDesc _query_desc(__FILE__, __LINE__,
-	WDP_CENTER, nullptr, 0, 0,
+	WindowPosition::Center, nullptr, 0, 0,
 	WC_CONFIRM_POPUP_QUERY, WC_NONE,
 	WindowDefaultFlag::Modal,
 	_nested_query_widgets
@@ -1563,7 +1563,7 @@ struct ModifierKeyToggleWindow : Window {
 };
 
 static WindowDesc _modifier_key_toggle_desc(__FILE__, __LINE__,
-	WDP_AUTO, "modifier_key_toggle", 0, 0,
+	WindowPosition::Automatic, "modifier_key_toggle", 0, 0,
 	WC_MODIFIER_KEY_TOGGLE, WC_NONE,
 	WindowDefaultFlag::NoFocus,
 	_modifier_key_toggle_widgets

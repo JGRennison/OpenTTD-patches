@@ -539,7 +539,7 @@ static bool AircraftRangeSorter(const GUIEngineListItem &a, const GUIEngineListI
 }
 
 /** Sort functions for the vehicle sort criteria, for each vehicle type. */
-EngList_SortTypeFunction * const _engine_sort_functions[][13] = {{
+extern const std::array<std::initializer_list<EngList_SortTypeFunction * const>, 4> _engine_sort_functions = {{{
 	/* Trains */
 	&EngineNumberSorter,
 	&EngineCostSorter,
@@ -594,10 +594,10 @@ EngList_SortTypeFunction * const _engine_sort_functions[][13] = {{
 	&AircraftEngineCapacityVsRunningCostSorter,
 	&EngineVehicleCountSorter,
 	&AircraftRangeSorter,
-}};
+}}};
 
 /** Dropdown menu strings for the vehicle sort criteria. */
-const std::initializer_list<const StringID> _engine_sort_listing[] = {{
+extern const std::array<std::initializer_list<const StringID>, 4> _engine_sort_listing = {{{
 	/* Trains */
 	STR_SORT_BY_ENGINE_ID,
 	STR_SORT_BY_COST,
@@ -652,7 +652,7 @@ const std::initializer_list<const StringID> _engine_sort_listing[] = {{
 	STR_SORT_BY_CARGO_CAPACITY_VS_RUNNING_COST,
 	STR_SORT_BY_VEHICLE_COUNT,
 	STR_SORT_BY_RANGE,
-}};
+}}};
 
 /**
  * Filters vehicles by cargo and engine (in case of rail vehicle).
@@ -1372,7 +1372,7 @@ void DisplayVehicleSortDropDown(Window *w, VehicleType vehicle_type, int selecte
 	if (vehicle_type == VEH_TRAIN && _settings_game.vehicle.train_acceleration_model == AM_ORIGINAL) {
 		SetBit(hidden_mask, 4); // tractive effort
 	}
-	ShowDropDownMenu(w, _engine_sort_listing[vehicle_type], selected, button, 0, hidden_mask);
+	ShowDropDownMenu(w, GetEngineSortNames(vehicle_type), selected, button, 0, hidden_mask);
 }
 
 /**
@@ -1866,10 +1866,10 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 
 		/* and then sort engines */
 		_engine_sort_direction = this->descending_sort_order;
-		EngList_SortPartial(list, _engine_sort_functions[0][this->sort_criteria], 0, num_engines);
+		EngList_SortPartial(list, GetEngineSortFunctions(VEH_TRAIN)[this->sort_criteria], 0, num_engines);
 
 		/* and finally sort wagons */
-		EngList_SortPartial(list, _engine_sort_functions[0][this->sort_criteria], num_engines, list.size() - num_engines);
+		EngList_SortPartial(list, GetEngineSortFunctions(VEH_TRAIN)[this->sort_criteria], num_engines, list.size() - num_engines);
 	}
 
 	/** Figure out what road vehicle EngineIDs to put in the list. */
@@ -2011,7 +2011,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		this->eng_list.SortParameterData().UpdateCargoFilter(this, this->cargo_filter_criteria);
 
 		_engine_sort_direction = this->descending_sort_order;
-		EngList_Sort(this->eng_list, _engine_sort_functions[this->vehicle_type][this->sort_criteria]);
+		EngList_Sort(this->eng_list, GetEngineSortFunctions(this->vehicle_type)[this->sort_criteria]);
 
 		this->eng_list.swap(list);
 		GUIEngineListAddChildren(this->eng_list, list, EngineID::Invalid(), 0);
@@ -2185,7 +2185,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 				return GetString((this->listview_mode ? STR_VEHICLE_LIST_AVAILABLE_TRAINS : STR_BUY_VEHICLE_TRAIN_ALL_CAPTION) + this->vehicle_type);
 
 			case WID_BV_SORT_DROPDOWN:
-				return GetString(std::data(_engine_sort_listing[this->vehicle_type])[this->sort_criteria]);
+				return GetString(GetEngineSortNames(this->vehicle_type)[this->sort_criteria]);
 
 			case WID_BV_CARGO_FILTER_DROPDOWN:
 				return GetString(this->GetCargoFilterLabel(this->cargo_filter_criteria));
@@ -2271,7 +2271,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 					false,
 					DEFAULT_GROUP,
 					this->badge_classes,
-					std::data(_engine_sort_listing[this->vehicle_type])[this->sort_criteria]
+					GetEngineSortNames(this->vehicle_type)[this->sort_criteria]
 				);
 				break;
 
@@ -3521,7 +3521,7 @@ void CcMoveNewVirtualEngine(const CommandCost &result)
 }
 
 static WindowDesc _build_vehicle_desc(__FILE__, __LINE__,
-	WDP_AUTO, "build_vehicle", 240, 268,
+	WindowPosition::Automatic, "build_vehicle", 240, 268,
 	WC_BUILD_VEHICLE, WC_NONE,
 	WindowDefaultFlag::Construction,
 	_nested_build_vehicle_widgets,
@@ -3529,7 +3529,7 @@ static WindowDesc _build_vehicle_desc(__FILE__, __LINE__,
 );
 
 static WindowDesc _build_template_vehicle_desc(__FILE__, __LINE__,
-	WDP_AUTO, "build_template_vehicle", 240, 268,
+	WindowPosition::Automatic, "build_template_vehicle", 240, 268,
 	WC_BUILD_VIRTUAL_TRAIN, WC_CREATE_TEMPLATE,
 	WindowDefaultFlag::Construction,
 	_nested_build_vehicle_widgets,
@@ -3537,7 +3537,7 @@ static WindowDesc _build_template_vehicle_desc(__FILE__, __LINE__,
 );
 
 static WindowDesc _build_vehicle_desc_train_advanced(__FILE__, __LINE__,
-	WDP_AUTO, "build_vehicle_dual", 480, 268,
+	WindowPosition::Automatic, "build_vehicle_dual", 480, 268,
 	WC_BUILD_VEHICLE, WC_NONE,
 	WindowDefaultFlag::Construction,
 	_nested_build_vehicle_widgets_train_advanced,
@@ -3545,7 +3545,7 @@ static WindowDesc _build_vehicle_desc_train_advanced(__FILE__, __LINE__,
 );
 
 static WindowDesc _build_template_vehicle_desc_advanced(__FILE__, __LINE__,
-	WDP_AUTO, "build_template_vehicle_dual", 480, 268,
+	WindowPosition::Automatic, "build_template_vehicle_dual", 480, 268,
 	WC_BUILD_VIRTUAL_TRAIN, WC_CREATE_TEMPLATE,
 	WindowDefaultFlag::Construction,
 	_nested_build_vehicle_widgets_train_advanced,

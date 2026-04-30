@@ -339,7 +339,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_osk_widgets = {
 };
 
 static WindowDesc _osk_desc(__FILE__, __LINE__,
-	WDP_CENTER, nullptr, 0, 0,
+	WindowPosition::Center, nullptr, 0, 0,
 	WC_OSK, WC_NONE,
 	{},
 	_nested_osk_widgets

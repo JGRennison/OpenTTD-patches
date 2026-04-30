@@ -722,7 +722,7 @@ static PBSTileInfo FollowReservation(Owner o, RailTypes rts, TileIndex tile, Tra
 			break;
 		}
 		/* Non-pbs signal? Reservation can't continue. */
-		if (IsTileType(tile, TileType::Railway) && HasSignalOnTrackdir(tile, trackdir) && !IsPbsSignal(GetSignalType(tile, TrackdirToTrack(trackdir)))) break;
+		if (HasBlockSignalOnTrackdir(tile, trackdir)) break;
 	}
 
 	if (lookahead != nullptr) lookahead->reservation_end_z = z;
@@ -1518,10 +1518,8 @@ bool IsSafeWaitingPosition(const Train *v, TileIndex tile, Trackdir trackdir, bo
 {
 	if (IsRailDepotTile(tile)) return true;
 
-	if (IsTileType(tile, TileType::Railway)) {
-		/* For non-pbs signals, stop on the signal tile. */
-		if (HasSignalOnTrackdir(tile, trackdir) && !IsPbsSignal(GetSignalType(tile, TrackdirToTrack(trackdir)))) return true;
-	}
+	/* For non-pbs signals, stop on the signal tile. */
+	if (HasBlockSignalOnTrackdir(tile, trackdir)) return true;
 
 	if (IsTunnelBridgeSignalSimulationEntranceTile(tile) && IsTrackAcrossTunnelBridge(tile, TrackdirToTrack(trackdir))) {
 		return true;

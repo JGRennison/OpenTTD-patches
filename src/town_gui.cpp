@@ -540,7 +540,7 @@ public:
 };
 
 static WindowDesc _town_authority_desc(__FILE__, __LINE__,
-	WDP_AUTO, "view_town_authority", 317, 222,
+	WindowPosition::Automatic, "view_town_authority", 317, 222,
 	WC_TOWN_AUTHORITY, WC_NONE,
 	{},
 	_nested_town_authority_widgets
@@ -866,7 +866,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_town_game_view_widge
 };
 
 static WindowDesc _town_game_view_desc(__FILE__, __LINE__,
-	WDP_AUTO, "view_town", 260, TownViewWindow::WID_TV_HEIGHT_NORMAL,
+	WindowPosition::Automatic, "view_town", 260, TownViewWindow::WID_TV_HEIGHT_NORMAL,
 	WC_TOWN_VIEW, WC_NONE,
 	{},
 	_nested_town_game_view_widgets
@@ -902,7 +902,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_town_editor_view_wid
 };
 
 static WindowDesc _town_editor_view_desc(__FILE__, __LINE__,
-	WDP_AUTO, "view_town_scen", 260, TownViewWindow::WID_TV_HEIGHT_NORMAL,
+	WindowPosition::Automatic, "view_town_scen", 260, TownViewWindow::WID_TV_HEIGHT_NORMAL,
 	WC_TOWN_VIEW, WC_NONE,
 	{},
 	_nested_town_editor_view_widgets
@@ -1345,7 +1345,7 @@ const std::initializer_list<GUITownList::SortFunction * const> TownDirectoryWind
 };
 
 static WindowDesc _town_directory_desc(__FILE__, __LINE__,
-	WDP_AUTO, "list_towns", 208, 202,
+	WindowPosition::Automatic, "list_towns", 208, 202,
 	WC_TOWN_DIRECTORY, WC_NONE,
 	{},
 	_nested_town_directory_widgets,
@@ -1648,7 +1648,7 @@ public:
 };
 
 static WindowDesc _found_town_desc(__FILE__, __LINE__,
-	WDP_AUTO, "build_town", 160, 162,
+	WindowPosition::Automatic, "build_town", 160, 162,
 	WC_FOUND_TOWN, WC_NONE,
 	WindowDefaultFlag::Construction,
 	_nested_found_town_widgets
@@ -1768,7 +1768,7 @@ static const NWidgetPart _nested_select_town_widgets[] = {
 };
 
 static WindowDesc _select_town_desc(__FILE__, __LINE__,
-	WDP_AUTO, "select_town", 100, 0,
+	WindowPosition::Automatic, "select_town", 100, 0,
 	WC_SELECT_TOWN, WC_NONE,
 	WindowDefaultFlag::Construction,
 	_nested_select_town_widgets
@@ -2389,7 +2389,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_build_house_widgets 
 };
 
 static WindowDesc _build_house_desc(__FILE__, __LINE__,
-	WDP_AUTO, "build_house", 0, 0,
+	WindowPosition::Automatic, "build_house", 0, 0,
 	WC_BUILD_HOUSE, WC_BUILD_TOOLBAR,
 	WindowDefaultFlag::Construction,
 	_nested_build_house_widgets,

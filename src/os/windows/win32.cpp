@@ -495,6 +495,24 @@ void DetermineBasePaths(const char *exe)
 
 	_searchpaths[Searchpath::InstallationDir].clear();
 	_searchpaths[Searchpath::ApplicationBundleDir].clear();
+	_searchpaths[Searchpath::TransportTycoonDeluxeDir].clear();
+
+	if (SUCCEEDED(SHGetFolderPath(nullptr, CSIDL_APPDATA, nullptr, SHGFP_TYPE_CURRENT, path))) {
+		std::string config_file_path(FS2OTTD(path));
+		AppendPathSeparator(config_file_path);
+		config_file_path += "Atari\\Transport Tycoon Deluxe\\installpath.ini";
+
+		std::optional<UniqueBuffer<uint8_t>> installpath = ReadFileToBuffer(config_file_path, MAX_PATH);
+
+		if (installpath.has_value() && installpath->size() > 0) {
+			std::string ttd_path((const char *)installpath->get(), installpath->size());
+			AppendPathSeparator(ttd_path);
+			ttd_path += "CD";
+			AppendPathSeparator(ttd_path);
+
+			if (FileExists(ttd_path)) _searchpaths[Searchpath::TransportTycoonDeluxeDir] = ttd_path;
+		}
+	}
 }
 
 

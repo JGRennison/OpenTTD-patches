@@ -73,7 +73,7 @@ static constexpr NWidgetPart _nested_departures_list[] = {
 };
 
 static WindowDesc _departures_desc(__FILE__, __LINE__,
-	WDP_AUTO, "depatures", 260, 246,
+	WindowPosition::Automatic, "depatures", 260, 246,
 	WC_DEPARTURES_BOARD, WC_NONE,
 	{},
 	_nested_departures_list

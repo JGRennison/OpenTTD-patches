@@ -103,7 +103,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_console_window_widge
 };
 
 static WindowDesc _console_window_desc(__FILE__, __LINE__,
-	WDP_MANUAL, nullptr, 0, 0,
+	WindowPosition::Manual, nullptr, 0, 0,
 	WC_CONSOLE, WC_NONE,
 	{},
 	_nested_console_window_widgets

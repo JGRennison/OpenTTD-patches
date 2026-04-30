@@ -309,7 +309,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_build_industry_widge
 
 /** Window definition of the dynamic place industries gui */
 static WindowDesc _build_industry_desc(__FILE__, __LINE__,
-	WDP_AUTO, "build_industry", 170, 212,
+	WindowPosition::Automatic, "build_industry", 170, 212,
 	WC_BUILD_INDUSTRY, WC_NONE,
 	WindowDefaultFlag::Construction,
 	_nested_build_industry_widgets
@@ -1275,7 +1275,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_industry_view_widget
 
 /** Window definition of the view industry gui */
 static WindowDesc _industry_view_desc(__FILE__, __LINE__,
-	WDP_AUTO, "view_industry", 260, 120,
+	WindowPosition::Automatic, "view_industry", 260, 120,
 	WC_INDUSTRY_VIEW, WC_NONE,
 	{},
 	_nested_industry_view_widgets
@@ -1973,7 +1973,7 @@ CargoType IndustryDirectoryWindow::produced_cargo_filter = CargoFilterCriteria::
 
 /** Window definition of the industry directory gui */
 static WindowDesc _industry_directory_desc(__FILE__, __LINE__,
-	WDP_AUTO, "list_industries", 428, 190,
+	WindowPosition::Automatic, "list_industries", 428, 190,
 	WC_INDUSTRY_DIRECTORY, WC_NONE,
 	{},
 	_nested_industry_directory_widgets,
@@ -2017,7 +2017,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_industry_cargoes_wid
 
 /** Window description for the industry cargoes window. */
 static WindowDesc _industry_cargoes_desc(__FILE__, __LINE__,
-	WDP_AUTO, "industry_cargoes", 300, 210,
+	WindowPosition::Automatic, "industry_cargoes", 300, 210,
 	WC_INDUSTRY_CARGOES, WC_NONE,
 	{},
 	_nested_industry_cargoes_widgets

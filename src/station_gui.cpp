@@ -886,7 +886,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_company_stations_wid
 };
 
 static WindowDesc _company_stations_desc(__FILE__, __LINE__,
-	WDP_AUTO, "list_stations", 358, 162,
+	WindowPosition::Automatic, "list_stations", 358, 162,
 	WC_STATION_LIST, WC_NONE,
 	{},
 	_nested_company_stations_widgets
@@ -2413,7 +2413,7 @@ struct StationViewWindow : public Window {
 };
 
 static WindowDesc _station_view_desc(__FILE__, __LINE__,
-	WDP_AUTO, "view_station", 249, 117,
+	WindowPosition::Automatic, "view_station", 249, 117,
 	WC_STATION_VIEW, WC_NONE,
 	{},
 	_nested_station_view_widgets
@@ -2667,7 +2667,7 @@ struct SelectStationWindow : Window {
 };
 
 static WindowDesc _select_station_desc(__FILE__, __LINE__,
-	WDP_AUTO, "build_station_join", 200, 180,
+	WindowPosition::Automatic, "build_station_join", 200, 180,
 	WC_SELECT_STATION, WC_NONE,
 	WindowDefaultFlag::Construction,
 	_nested_select_station_widgets
@@ -2753,7 +2753,7 @@ static constexpr NWidgetPart _nested_station_rating_tooltip_widgets[] = {
 };
 
 static WindowDesc _station_rating_tooltip_desc(__FILE__, __LINE__,
-	WDP_MANUAL, nullptr, 0, 0,
+	WindowPosition::Manual, nullptr, 0, 0,
 	WC_STATION_RATING_TOOLTIP, WC_NONE,
 	{},
 	_nested_station_rating_tooltip_widgets

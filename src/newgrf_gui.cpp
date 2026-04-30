@@ -548,7 +548,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_newgrf_parameter_wid
 
 /** Window definition for the change grf parameters window */
 static WindowDesc _newgrf_parameters_desc(__FILE__, __LINE__,
-	WDP_CENTER, "settings_newgrf_config", 500, 208,
+	WindowPosition::Center, "settings_newgrf_config", 500, 208,
 	WC_GRF_PARAMETERS, WC_NONE,
 	{},
 	_nested_newgrf_parameter_widgets
@@ -1997,7 +1997,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_newgrf_widgets = {
 
 /* Window definition of the manage newgrfs window */
 static WindowDesc _newgrf_desc(__FILE__, __LINE__,
-	WDP_CENTER, "settings_newgrf", 300, 263,
+	WindowPosition::Center, "settings_newgrf", 300, 263,
 	WC_GAME_OPTIONS, WC_NONE,
 	{},
 	_nested_newgrf_widgets
@@ -2095,7 +2095,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_save_preset_widgets 
 
 /** Window description of the preset save window. */
 static WindowDesc _save_preset_desc(__FILE__, __LINE__,
-	WDP_CENTER, "save_preset", 140, 110,
+	WindowPosition::Center, "save_preset", 140, 110,
 	WC_SAVE_PRESET, WC_GAME_OPTIONS,
 	WindowDefaultFlag::Modal,
 	_nested_save_preset_widgets
@@ -2232,7 +2232,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_scan_progress_widget
 
 /** Description of the widgets and other settings of the window. */
 static WindowDesc _scan_progress_desc(__FILE__, __LINE__,
-	WDP_CENTER, nullptr, 0, 0,
+	WindowPosition::Center, nullptr, 0, 0,
 	WC_MODAL_PROGRESS, WC_NONE,
 	{},
 	_nested_scan_progress_widgets

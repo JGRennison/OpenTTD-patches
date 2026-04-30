@@ -1982,7 +1982,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_smallmap_widgets = {
 };
 
 static WindowDesc _smallmap_desc(__FILE__, __LINE__,
-	WDP_AUTO, "smallmap", 484, 314,
+	WindowPosition::Automatic, "smallmap", 484, 314,
 	WC_SMALLMAP, WC_NONE,
 	{},
 	_nested_smallmap_widgets

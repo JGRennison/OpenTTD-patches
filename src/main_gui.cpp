@@ -615,7 +615,7 @@ struct MainWindow : Window
 };
 
 static WindowDesc _main_window_desc(__FILE__, __LINE__,
-	WDP_MANUAL, nullptr, 0, 0,
+	WindowPosition::Manual, nullptr, 0, 0,
 	WC_MAIN_WINDOW, WC_NONE,
 	WindowDefaultFlag::NoClose,
 	_nested_main_window_widgets,

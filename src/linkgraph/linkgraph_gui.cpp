@@ -778,7 +778,7 @@ static_assert(WID_LGL_SATURATION_LAST - WID_LGL_SATURATION_FIRST ==
 		lengthof(LinkGraphOverlay::LINK_COLOURS[0]) - 1);
 
 static WindowDesc _linkgraph_legend_desc(__FILE__, __LINE__,
-	WDP_AUTO, "toolbar_linkgraph", 0, 0,
+	WindowPosition::Automatic, "toolbar_linkgraph", 0, 0,
 	WC_LINKGRAPH_LEGEND, WC_NONE,
 	{},
 	_nested_linkgraph_legend_widgets

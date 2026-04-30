@@ -203,7 +203,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_helpwin_widgets = {
 };
 
 static WindowDesc _helpwin_desc(__FILE__, __LINE__,
-	WDP_CENTER, nullptr, 0, 0,
+	WindowPosition::Center, nullptr, 0, 0,
 	WC_HELPWIN, WC_NONE,
 	{},
 	_nested_helpwin_widgets

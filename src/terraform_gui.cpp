@@ -428,7 +428,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_terraform_widgets = 
 };
 
 static WindowDesc _terraform_desc(__FILE__, __LINE__,
-	WDP_MANUAL, "toolbar_landscape", 0, 0,
+	WindowPosition::Manual, "toolbar_landscape", 0, 0,
 	WC_SCEN_LAND_GEN, WC_NONE,
 	WindowDefaultFlag::Construction,
 	_nested_terraform_widgets,
@@ -651,7 +651,7 @@ static constexpr NWidgetPart _nested_scen_edit_public_roads_widgets[] = {
 };
 
 static WindowDesc _public_roads_window_desc(__FILE__, __LINE__,
-	WDP_AUTO, "public_roads_window", 0, 0,
+	WindowPosition::Automatic, "public_roads_window", 0, 0,
 	WC_SCEN_PUBLIC_ROADS, WC_NONE,
 	WindowDefaultFlag::Construction,
 	_nested_scen_edit_public_roads_widgets
@@ -981,7 +981,7 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 };
 
 static WindowDesc _scen_edit_land_gen_desc(__FILE__, __LINE__,
-	WDP_AUTO, "toolbar_landscape_scen", 0, 0,
+	WindowPosition::Automatic, "toolbar_landscape_scen", 0, 0,
 	WC_SCEN_LAND_GEN, WC_NONE,
 	WindowDefaultFlag::Construction,
 	_nested_scen_edit_land_gen_widgets,

@@ -55,7 +55,7 @@ static constexpr NWidgetPart _nested_order_import_error_widgets[] = {
 };
 
 static WindowDesc _order_list_import_errors_desc(__FILE__, __LINE__,
-	WDP_AUTO, "view_vehicle_order_import_errors", 384, 100,
+	WindowPosition::Automatic, "view_vehicle_order_import_errors", 384, 100,
 	WC_VEHICLE_ORDER_IMPORT_ERRORS, WC_VEHICLE_VIEW,
 	WindowDefaultFlag::Construction,
 	_nested_order_import_error_widgets

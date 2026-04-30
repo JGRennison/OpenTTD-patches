@@ -1196,7 +1196,7 @@ public:
 
 /** Load game/scenario */
 static WindowDesc _load_dialog_desc(__FILE__, __LINE__,
-	WDP_CENTER, "load_game", 500, 294,
+	WindowPosition::Center, "load_game", 500, 294,
 	WC_SAVELOAD, WC_NONE,
 	{},
 	_nested_load_dialog_widgets
@@ -1204,7 +1204,7 @@ static WindowDesc _load_dialog_desc(__FILE__, __LINE__,
 
 /** Load heightmap */
 static WindowDesc _load_heightmap_dialog_desc(__FILE__, __LINE__,
-	WDP_CENTER, "load_heightmap", 257, 320,
+	WindowPosition::Center, "load_heightmap", 257, 320,
 	WC_SAVELOAD, WC_NONE,
 	{},
 	_nested_load_heightmap_dialog_widgets
@@ -1212,7 +1212,7 @@ static WindowDesc _load_heightmap_dialog_desc(__FILE__, __LINE__,
 
 /** Load town data */
 static WindowDesc _load_town_data_dialog_desc(__FILE__, __LINE__,
-	WDP_CENTER, "load_town_data", 257, 320,
+	WindowPosition::Center, "load_town_data", 257, 320,
 	WC_SAVELOAD, WC_NONE,
 	{},
 	_nested_load_town_data_dialog_widgets
@@ -1220,7 +1220,7 @@ static WindowDesc _load_town_data_dialog_desc(__FILE__, __LINE__,
 
 /** Load orderlist */
 static WindowDesc _load_orderlist_dialog_desc(__FILE__, __LINE__,
-	WDP_CENTER, "load_orderlist", 257, 320,
+	WindowPosition::Center, "load_orderlist", 257, 320,
 	WC_SAVELOAD, WC_NONE,
 	{},
 	_nested_load_orderlist_dialog_widgets
@@ -1228,7 +1228,7 @@ static WindowDesc _load_orderlist_dialog_desc(__FILE__, __LINE__,
 
 /** Save game/scenario */
 static WindowDesc _save_dialog_desc(__FILE__, __LINE__,
-	WDP_CENTER, "save_game", 500, 294,
+	WindowPosition::Center, "save_game", 500, 294,
 	WC_SAVELOAD, WC_NONE,
 	{},
 	_nested_save_dialog_widgets
@@ -1236,7 +1236,7 @@ static WindowDesc _save_dialog_desc(__FILE__, __LINE__,
 
 /** Save orderlist */
 static WindowDesc _save_orderlist_dialog_desc(__FILE__, __LINE__,
-	WDP_CENTER, "save_orderlist", 257, 320,
+	WindowPosition::Center, "save_orderlist", 257, 320,
 	WC_SAVELOAD, WC_NONE,
 	{},
 	_nested_save_orderlist_dialog_widgets

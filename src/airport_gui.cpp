@@ -214,7 +214,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_air_toolbar_widgets 
 };
 
 static WindowDesc _air_toolbar_desc(__FILE__, __LINE__,
-	WDP_MANUAL, "toolbar_air", 0, 0,
+	WindowPosition::Manual, "toolbar_air", 0, 0,
 	WC_BUILD_TOOLBAR, WC_NONE,
 	WindowDefaultFlag::Construction,
 	_nested_air_toolbar_widgets,
@@ -624,7 +624,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_build_airport_widget
 };
 
 static WindowDesc _build_airport_desc(__FILE__, __LINE__,
-	WDP_AUTO, nullptr, 0, 0,
+	WindowPosition::Automatic, nullptr, 0, 0,
 	WC_BUILD_STATION, WC_BUILD_TOOLBAR,
 	WindowDefaultFlag::Construction,
 	_nested_build_airport_widgets
