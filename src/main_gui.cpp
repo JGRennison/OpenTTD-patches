@@ -256,7 +256,7 @@ struct MainWindow : Window
 		nvp->InitializeViewport(this, TileXY(32, 32).base(), ScaleZoomGUI(ZoomLevel::Viewport));
 
 		this->viewport->map_type = (ViewportMapType) _settings_client.gui.default_viewport_map_mode;
-		this->viewport->overlay = new LinkGraphOverlay(this, WID_M_VIEWPORT, 0, CompanyMask{}, 2);
+		this->viewport->overlay = new LinkGraphOverlay(this, WID_M_VIEWPORT, CargoTypes{}, CompanyMask{}, 2);
 		this->refresh.SetInterval(LINKGRAPH_DELAY);
 	}
 
@@ -266,7 +266,7 @@ struct MainWindow : Window
 
 		this->refresh.SetInterval(LINKGRAPH_REFRESH_PERIOD);
 
-		if (this->viewport->overlay->GetCargoMask() == 0 ||
+		if (this->viewport->overlay->GetCargoMask().None() ||
 				this->viewport->overlay->GetCompanyMask().None()) {
 			return;
 		}

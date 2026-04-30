@@ -3513,7 +3513,7 @@ static bool ConDumpCargoTypes(std::span<std::string_view> argv)
 	static constexpr EnumIndexArray<char, TownAcceptanceEffect, TownAcceptanceEffect::End> tae_char{ '-', 'P', 'M', 'G', 'W', 'F' };
 
 	btree::btree_map<uint32_t, const GRFFile *> grfs;
-	for (CargoType i = 0; i < NUM_CARGO; i++) {
+	for (CargoType i{}; i < NUM_CARGO; i++) {
 		const CargoSpec *spec = CargoSpec::Get(i);
 		uint32_t grfid = 0;
 		const GRFFile *grf = spec->grffile;

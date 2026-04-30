@@ -869,7 +869,7 @@ public:
 	inline StationIDVector GetNextStoppingStationCargoIndependent() const
 	{
 		StationIDVector set;
-		if (this->orders != nullptr) set = this->orders->GetNextStoppingStation(this, 0).station;
+		if (this->orders != nullptr) set = this->orders->GetNextStoppingStation(this, CargoTypes{}).station;
 		return set;
 	}
 

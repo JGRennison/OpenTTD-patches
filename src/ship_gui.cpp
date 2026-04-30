@@ -90,7 +90,7 @@ void DrawShipDetails(const Vehicle *v, const Rect &r)
 			std::string_view list_separator = GetListSeparator();
 
 			bool first = true;
-			for (CargoType i = 0; i < NUM_CARGO; i++) {
+			for (CargoType i{}; i < NUM_CARGO; i++) {
 				if (max_cargo[i] > 0) {
 					if (!first) capacity.append(list_separator);
 					AppendStringInPlace(capacity, STR_JUST_CARGO, i, max_cargo[i]);

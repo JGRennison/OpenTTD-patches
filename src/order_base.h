@@ -426,12 +426,12 @@ public:
 	{
 		if ((this->GetLoadType() == OLFB_CARGO_TYPE_LOAD) || (this->GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD)) {
 			CargoTypes output_mask = cargo_mask;
-			for (CargoType cargo : SetCargoBitIterator(cargo_mask)) {
-				if (!filter_func(this, cargo)) ClrBit(output_mask, cargo);
+			for (CargoType cargo : cargo_mask) {
+				if (!filter_func(this, cargo)) output_mask.Reset(cargo);
 			}
 			return output_mask;
 		} else {
-			return filter_func(this, FindFirstBit(cargo_mask)) ? cargo_mask : 0;
+			return filter_func(this, cargo_mask.FindFirstBit()) ? cargo_mask : CargoTypes{};
 		}
 	}
 
@@ -888,9 +888,9 @@ public:
 
 	const StationIDVector& Get(CargoType cargo) const
 	{
-		if (HasBit(first.cargo_mask, cargo)) return first.station;
+		if (first.cargo_mask.Test(cargo)) return first.station;
 		for (size_t i = 0; i < more.size(); i++) {
-			if (HasBit(more[i].cargo_mask, cargo)) return more[i].station;
+			if (more[i].cargo_mask.Test(cargo)) return more[i].station;
 		}
 		NOT_REACHED();
 	}
@@ -901,20 +901,20 @@ public:
 template <typename F> CargoTypes FilterCargoMask(F filter_func, CargoTypes cargo_mask = ALL_CARGOTYPES)
 {
 	CargoTypes output_mask = cargo_mask;
-	for (CargoType cargo : SetCargoBitIterator(cargo_mask)) {
-		if (!filter_func(cargo)) ClrBit(output_mask, cargo);
+	for (CargoType cargo : cargo_mask) {
+		if (!filter_func(cargo)) output_mask.Reset(cargo);
 	}
 	return output_mask;
 }
 
 template <typename T, typename F> T CargoMaskValueFilter(CargoTypes &cargo_mask, F filter_func)
 {
-	CargoType first_cargo_id = FindFirstBit(cargo_mask);
+	CargoType first_cargo_id = cargo_mask.FindFirstBit();
 	T value = filter_func(first_cargo_id);
 	CargoTypes other_cargo_mask = cargo_mask;
-	ClrBit(other_cargo_mask, first_cargo_id);
-	for (CargoType cargo : SetCargoBitIterator(other_cargo_mask)) {
-		if (value != filter_func(cargo)) ClrBit(cargo_mask, cargo);
+	other_cargo_mask.Reset(first_cargo_id);
+	for (CargoType cargo : other_cargo_mask) {
+		if (value != filter_func(cargo)) cargo_mask.Reset(cargo);
 	}
 	return value;
 }

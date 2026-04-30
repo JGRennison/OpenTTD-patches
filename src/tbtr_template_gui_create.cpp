@@ -383,7 +383,7 @@ public:
 						cargo_caps[tmp->cargo_type] += tmp->cargo_cap;
 					}
 					y += GetCharacterHeight(FontSize::Normal);
-					for (CargoType i = 0; i < NUM_CARGO; ++i) {
+					for (CargoType i{}; i < NUM_CARGO; ++i) {
 						if (cargo_caps[i] > 0) {
 							DrawString(left, right, y, GetString(STR_TMPL_CARGO_SUMMARY, i, cargo_caps[i]), TC_LIGHT_BLUE, SA_LEFT);
 							y += GetCharacterHeight(FontSize::Normal);
@@ -431,7 +431,7 @@ public:
 		/* Build tooltipstring */
 		format_buffer details;
 
-		for (CargoType cargo_type = 0; cargo_type < NUM_CARGO; cargo_type++) {
+		for (CargoType cargo_type{}; cargo_type < NUM_CARGO; cargo_type++) {
 			if (capacity[cargo_type] == 0) continue;
 
 			AppendStringInPlace(details, STR_DEPOT_VEHICLE_TOOLTIP_CARGO,
@@ -576,7 +576,7 @@ public:
 			if (full_cargo_weight > 0 || _settings_client.gui.show_train_weight_ratios_in_details) height += GetCharacterHeight(FontSize::Normal);
 			if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) height += GetCharacterHeight(FontSize::Normal);
 
-			for (CargoType i = 0; i < NUM_CARGO; ++i) {
+			for (CargoType i{}; i < NUM_CARGO; ++i) {
 				if (cargo_caps[i] > 0) {
 					height += GetCharacterHeight(FontSize::Normal);
 				}

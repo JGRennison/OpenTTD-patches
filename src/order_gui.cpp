@@ -2793,7 +2793,7 @@ public:
 							break;
 					}
 					if (order->GetConditionVariable() == OrderConditionVariable::MaxSpeed) value = ConvertSpeedToDisplaySpeed(value, this->vehicle->type);
-					if (order->GetConditionVariable() == OrderConditionVariable::CargoWaitingAmount) value = ConvertCargoQuantityToDisplayQuantity(order->GetConditionValue(), value);
+					if (order->GetConditionVariable() == OrderConditionVariable::CargoWaitingAmount) value = ConvertCargoQuantityToDisplayQuantity(static_cast<CargoType>(order->GetConditionValue()), value);
 					return GetString(STR_JUST_COMMA, value);
 				}
 				return {};
@@ -3549,7 +3549,7 @@ public:
 						break;
 				}
 				if (order->GetConditionVariable() == OrderConditionVariable::MaxSpeed) value = ConvertSpeedToDisplaySpeed(value, this->vehicle->type);
-				if (order->GetConditionVariable() == OrderConditionVariable::CargoWaitingAmount) value = ConvertCargoQuantityToDisplayQuantity(order->GetConditionValue(), value);
+				if (order->GetConditionVariable() == OrderConditionVariable::CargoWaitingAmount) value = ConvertCargoQuantityToDisplayQuantity(static_cast<CargoType>(order->GetConditionValue()), value);
 				this->query_text_widget = widget;
 				ShowQueryString(GetString(STR_JUST_INT, value), STR_ORDER_CONDITIONAL_VALUE_CAPT, (order->GetConditionVariable() == OrderConditionVariable::CargoWaitingAmount) ? 12 : 6, this, charset_filter, {});
 				break;
@@ -3659,7 +3659,7 @@ public:
 					break;
 
 				case OrderConditionVariable::CargoWaitingAmount:
-					value = Clamp(ConvertDisplayQuantityToCargoQuantity(this->vehicle->GetOrder(sel)->GetConditionValue(), value), 0, 0xFFFF);
+					value = Clamp(ConvertDisplayQuantityToCargoQuantity(static_cast<CargoType>(this->vehicle->GetOrder(sel)->GetConditionValue()), value), 0, 0xFFFF);
 					break;
 
 				case OrderConditionVariable::CounterValue:

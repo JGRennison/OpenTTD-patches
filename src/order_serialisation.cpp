@@ -227,7 +227,7 @@ static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 			json[OFName::UNLOAD] = o.GetUnloadType();
 		}
 
-		for (CargoType i = 0; i < NUM_CARGO; i++) {
+		for (CargoType i{}; i < NUM_CARGO; i++) {
 			if (o.GetLoadType() == OLFB_CARGO_TYPE_LOAD && o.GetCargoLoadType(i) != OLF_LOAD_IF_POSSIBLE) {
 				json[OFName::LOAD_BY_CARGO_TYPE][std::to_string(i)][OFName::LOAD] = o.GetCargoLoadType(i);
 			}
@@ -763,7 +763,7 @@ public:
 				T temp = (T)value;
 
 				/* Special case for enums, here we can also check if the value is valid. */
-				if constexpr (std::is_enum<T>::value) {
+				if constexpr (std::is_enum<T>::value && !std::is_same_v<T, CargoType>) {
 					const char *result = nullptr;
 					to_json(result, temp);
 					if (result == nullptr) {
@@ -1091,12 +1091,12 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order>
 	if (auto it = json.find(OFName::LOAD_BY_CARGO_TYPE); it != json.end()) {
 		if (it->is_object()) {
 			for (const auto &[key, val] : it->items()) {
-				auto cargo_res = IntFromChars<CargoType>((std::string_view)key);
-				if (!cargo_res.has_value() || *cargo_res >= NUM_CARGO) {
+				auto cargo_res = IntFromChars<std::underlying_type_t<CargoType>>((std::string_view)key);
+				if (!cargo_res.has_value() || *cargo_res >= to_underlying(NUM_CARGO)) {
 					json_importer.LogError(fmt::format("in '{}','{}' is not a valid cargo_id", OFName::LOAD_BY_CARGO_TYPE, key), JOIET_MAJOR);
 					continue;
 				}
-				CargoType cargo_id = *cargo_res;
+				CargoType cargo_id{*cargo_res};
 
 				if (!val.is_object()) {
 					json_importer.LogError(fmt::format("loading options in '{}'[{}] are not valid", OFName::LOAD_BY_CARGO_TYPE, key), JOIET_MAJOR);

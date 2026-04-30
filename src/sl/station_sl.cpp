@@ -499,7 +499,7 @@ static void Load_STNS()
 
 		_waiting_acceptance = 0;
 
-		for (CargoType i = 0; i < num_cargo; i++) {
+		for (CargoType i{}; i < num_cargo; i++) {
 			GoodsEntry *ge = &st->goods[i];
 			SlObjectLoadFiltered(ge, goods_desc);
 			if (_cargo_reserved_count) ge->CreateData().cargo.LoadSetReservedCount(_cargo_reserved_count);
@@ -545,7 +545,7 @@ static void Ptrs_STNS()
 	uint num_cargo = IsSavegameVersionBefore(SLV_EXTEND_CARGOTYPES) ? 32 : NUM_CARGO;
 	for (Station *st : Station::Iterate()) {
 		if (!IsSavegameVersionBefore(SLV_68)) {
-			for (CargoType i = 0; i < num_cargo; i++) {
+			for (CargoType i{}; i < num_cargo; i++) {
 				GoodsEntry *ge = &st->goods[i];
 				SwapPackets(ge);
 				SlObject(ge, goods_desc);
@@ -685,7 +685,7 @@ struct StationGoodsStructHandler final : public TypedSaveLoadStructHandler<Stati
 	{
 		uint8_t num_cargo = static_cast<uint8_t>(SlGetStructListLength(NUM_CARGO));
 
-		for (CargoType i = 0; i < num_cargo; i++) {
+		for (CargoType i{}; i < num_cargo; i++) {
 			GoodsEntry &ge = st->goods[i];
 			if (ge.data == nullptr) {
 				if (this->spare_ged != nullptr) {
@@ -715,7 +715,7 @@ struct StationCargoHistoryStructHandler final : public TypedSaveLoadStructHandle
 		MemoryDumper *dumper = MemoryDumper::GetCurrent();
 		RawMemoryDumper dump = dumper->BorrowRawWriteBytes(8 + SlGetMaxGammaLength() + (st->station_cargo_history.size() * MAX_STATION_CARGO_HISTORY_DAYS * 2));
 
-		dump.RawWriteUint64(st->station_cargo_history_cargoes);
+		dump.RawWriteUint64(st->station_cargo_history_cargoes.base());
 		dump.RawWriteSimpleGamma(st->station_cargo_history.size() * MAX_STATION_CARGO_HISTORY_DAYS);
 
 		for (const auto &history : st->station_cargo_history) {
@@ -731,7 +731,7 @@ struct StationCargoHistoryStructHandler final : public TypedSaveLoadStructHandle
 
 	void Load(Station *st) const override
 	{
-		st->station_cargo_history_cargoes = SlReadUint64();
+		st->station_cargo_history_cargoes = static_cast<CargoTypes>(SlReadUint64());
 		st->station_cargo_history.resize(CountBits(st->station_cargo_history_cargoes));
 		if (SlReadSimpleGamma() != st->station_cargo_history.size() * MAX_STATION_CARGO_HISTORY_DAYS) {
 			SlErrorCorrupt("Station cargo history data of wrong size");
@@ -1024,7 +1024,7 @@ static void Load_STNN()
 				std::copy(std::begin(_old_st_persistent_storage.storage), std::end(_old_st_persistent_storage.storage), std::begin(st->airport.psa->storage));
 			}
 
-			for (CargoType i = 0; i < num_cargo; i++) {
+			for (CargoType i{}; i < num_cargo; i++) {
 				GoodsEntry &ge = st->goods[i];
 				if (ge.data == nullptr) {
 					if (spare_ged != nullptr) {
@@ -1150,7 +1150,7 @@ static void Ptrs_STNN()
 
 	uint num_cargo = IsSavegameVersionBefore(SLV_EXTEND_CARGOTYPES) ? 32 : NUM_CARGO;
 	for (Station *st : Station::Iterate()) {
-		for (CargoType i = 0; i < num_cargo; i++) {
+		for (CargoType i{}; i < num_cargo; i++) {
 			GoodsEntry *ge = &st->goods[i];
 			if (IsSavegameVersionBefore(SLV_183) && SlXvIsFeatureMissing(XSLFI_CHILLPP)) {
 				SwapPackets(ge);

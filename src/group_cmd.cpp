@@ -886,12 +886,12 @@ static std::pair<TownID, TownID> GetAutoGroupMostRelevantTowns(const Vehicle *ve
 
 static CargoTypes GetVehicleCargoList(const Vehicle *vehicle)
 {
-	CargoTypes cargoes = 0;
+	CargoTypes cargoes{};
 
 	for (const Vehicle *u = vehicle; u != nullptr; u = u->Next()) {
 		if (u->cargo_cap == 0) continue;
 
-		SetBit(cargoes, u->cargo_type);
+		cargoes.Set(u->cargo_type);
 	}
 	return cargoes;
 }
@@ -904,9 +904,9 @@ std::string GenerateAutoNameForVehicleGroup(const Vehicle *v)
 	CargoTypes cargoes = GetVehicleCargoList(v);
 
 	if (town_from == town_to) {
-		return GetString(STR_VEHICLE_AUTO_GROUP_LOCAL_ROUTE, town_from, (cargoes != 0) ? STR_VEHICLE_AUTO_GROUP_CARGO_LIST : STR_EMPTY, cargoes);
+		return GetString(STR_VEHICLE_AUTO_GROUP_LOCAL_ROUTE, town_from, (cargoes.Any()) ? STR_VEHICLE_AUTO_GROUP_CARGO_LIST : STR_EMPTY, cargoes);
 	} else {
-		return GetString(STR_VEHICLE_AUTO_GROUP_ROUTE, town_from, town_to, (cargoes != 0) ? STR_VEHICLE_AUTO_GROUP_CARGO_LIST : STR_EMPTY, cargoes);
+		return GetString(STR_VEHICLE_AUTO_GROUP_ROUTE, town_from, town_to, (cargoes.Any()) ? STR_VEHICLE_AUTO_GROUP_CARGO_LIST : STR_EMPTY, cargoes);
 	}
 }
 

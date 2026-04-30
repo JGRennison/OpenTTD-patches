@@ -510,7 +510,7 @@ static void Load_TOWN()
 		}
 
 		if (!SlIsTableChunk()) {
-			for (CargoType i = 0; i < num_cargo; i++) {
+			for (CargoType i{}; i < num_cargo; i++) {
 				TransportedCargoStat<uint32_t> cargo_stat{};
 				SlObjectLoadFiltered(&cargo_stat, supplied_desc);
 
@@ -539,10 +539,10 @@ static void Load_TOWN()
 
 		if (IsSavegameVersionBefore(SLV_165)) {
 			/* Passengers and mail were always treated as slots 0 and 2 in older saves. */
-			auto &pass = t->supplied.emplace_back(0);
+			auto &pass = t->supplied.emplace_back(static_cast<CargoType>(0));
 			pass.history[LAST_MONTH] = _old_pass_supplied[LAST_MONTH];
 			pass.history[THIS_MONTH] = _old_pass_supplied[THIS_MONTH];
-			auto &mail = t->supplied.emplace_back(2);
+			auto &mail = t->supplied.emplace_back(static_cast<CargoType>(2));
 			mail.history[LAST_MONTH] = _old_mail_supplied[LAST_MONTH];
 			mail.history[THIS_MONTH] = _old_mail_supplied[THIS_MONTH];
 		}

@@ -598,7 +598,7 @@ const Order *OrderList::GetNextDecisionNode(const Order *next, uint hops, CargoT
 	bool can_load_or_unload = false;
 	if ((next->IsType(OT_GOTO_STATION) || next->IsType(OT_IMPLICIT)) &&
 			(next->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0) {
-		if (cargo_mask == 0) {
+		if (cargo_mask.None()) {
 			can_load_or_unload = true;
 		} else if (next->GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD || next->GetLoadType() == OLFB_CARGO_TYPE_LOAD) {
 			/* This is a cargo-specific load/unload order.
@@ -695,7 +695,7 @@ CargoMaskedStationIDVector OrderList::GetNextStoppingStation(const Vehicle *v, C
 
 		/* Don't return a next stop if the vehicle has to unload everything. */
 		if ((next->IsType(OT_GOTO_STATION) || next->IsType(OT_IMPLICIT)) &&
-				next->GetDestination() == v->last_station_visited && cargo_mask != 0) {
+				next->GetDestination() == v->last_station_visited && cargo_mask.Any()) {
 			/* This is a cargo-specific load/unload order.
 			 * Don't return a next stop if first cargo has transfer or unload set.
 			 * Drop cargoes which don't match the first one. */
@@ -1515,7 +1515,7 @@ static CommandCost DecloneOrder(Vehicle *dst, DoCommandFlags flags)
  */
 static CargoType GetFirstValidCargo()
 {
-	for (CargoType i = 0; i < NUM_CARGO; i++) {
+	for (CargoType i{}; i < NUM_CARGO; i++) {
 		if (CargoSpec::Get(i)->IsValid()) return i;
 	}
 	/* No cargos defined -> 'Houston, we have a problem!' */
@@ -2337,7 +2337,7 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 
 			case MOF_CARGO_TYPE_UNLOAD:
 				if (cargo_id == INVALID_CARGO) {
-					for (CargoType i = 0; i < NUM_CARGO; i++) {
+					for (CargoType i{}; i < NUM_CARGO; i++) {
 						order->SetUnloadType((OrderUnloadFlags)data, i);
 					}
 				} else {
@@ -2352,7 +2352,7 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 
 			case MOF_CARGO_TYPE_LOAD:
 				if (cargo_id == INVALID_CARGO) {
-					for (CargoType i = 0; i < NUM_CARGO; i++) {
+					for (CargoType i{}; i < NUM_CARGO; i++) {
 						order->SetLoadType((OrderLoadFlags)data, i);
 					}
 				} else {
@@ -2664,7 +2664,7 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 				switch (mof) {
 					case MOF_CARGO_TYPE_UNLOAD:
 						if (cargo_id == INVALID_CARGO) {
-							for (CargoType i = 0; i < NUM_CARGO; i++) {
+							for (CargoType i{}; i < NUM_CARGO; i++) {
 								u->current_order.SetUnloadType((OrderUnloadFlags)data, i);
 							}
 						} else {
@@ -2674,7 +2674,7 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 
 					case MOF_CARGO_TYPE_LOAD:
 						if (cargo_id == INVALID_CARGO) {
-							for (CargoType i = 0; i < NUM_CARGO; i++) {
+							for (CargoType i{}; i < NUM_CARGO; i++) {
 								u->current_order.SetLoadType((OrderLoadFlags)data, i);
 							}
 						} else {
@@ -3741,7 +3741,7 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, Pro
 						veh_capacity += u->cargo_cap;
 					} else if (refit_mode) {
 						const Engine *e = Engine::Get(u->engine_type);
-						if (!HasBit(e->info.refit_mask, cargo)) {
+						if (!e->info.refit_mask.Test(cargo)) {
 							continue;
 						}
 
@@ -3749,7 +3749,7 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, Pro
 						const CargoType temp_cid = u->cargo_type;
 						const uint8_t temp_subtype = u->cargo_subtype;
 
-						const_cast<Vehicle *>(u)->cargo_type = value;
+						const_cast<Vehicle *>(u)->cargo_type = static_cast<CargoType>(value);
 						if (e->refit_capacity_values == nullptr || !(e->callbacks_used & SGCU_REFIT_CB_ALL_CARGOES) || cargo == e->GetDefaultCargoType() || (e->type == VEH_AIRCRAFT && IsCargoInClass(cargo, CargoClass::Passengers))) {
 							/* This can be omitted when the refit capacity values are already determined, and the capacity is definitely from the refit callback */
 							const_cast<Vehicle *>(u)->cargo_subtype = GetBestFittingSubType(u, const_cast<Vehicle *>(u), cargo);

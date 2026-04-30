@@ -109,16 +109,7 @@ struct CargoSpec {
 	 */
 	inline CargoType Index() const
 	{
-		return this - CargoSpec::array;
-	}
-
-	/**
-	 * Determine CargoTypes bit of this cargospec
-	 * @return CargoTypes bit
-	 */
-	inline CargoTypes CargoTypesBit() const
-	{
-		return static_cast<CargoTypes>(1) << this->Index();
+		return static_cast<CargoType>(this - CargoSpec::array);
 	}
 
 	/**
@@ -255,8 +246,6 @@ inline bool IsCargoInClass(CargoType cargo, CargoClasses cc)
 {
 	return CargoSpec::Get(cargo)->classes.Any(cc);
 }
-
-using SetCargoBitIterator = SetBitIterator<CargoType, CargoTypes>;
 
 /** Comparator to sort CargoType by according to desired order. */
 struct CargoTypeComparator {

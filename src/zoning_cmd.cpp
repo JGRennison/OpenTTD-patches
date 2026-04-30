@@ -194,7 +194,7 @@ SpriteID TileZoneCheckUnservedBuildingsEvaluation(TileIndex tile, Owner owner)
 	}
 
 	auto has_town_cargo = [&](const CargoArray &dat) {
-		for (CargoType cid : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[TownProductionEffect::Passengers] | CargoSpec::town_production_cargo_mask[TownProductionEffect::Mail])) {
+		for (CargoType cid : (CargoSpec::town_production_cargo_mask[TownProductionEffect::Passengers] | CargoSpec::town_production_cargo_mask[TownProductionEffect::Mail])) {
 			if (dat[cid] > 0) return true;
 		}
 		return false;

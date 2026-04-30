@@ -189,7 +189,7 @@ void LinkGraphOverlay::RebuildCache(bool incremental)
 
 	auto AddLinks = [&](const Station *from, const Station *to, Point from_pt, Point to_pt, btree::btree_map<std::pair<StationID, StationID>, LinkCacheItem>::iterator insert_iter) {
 		LinkCacheItem *item = nullptr;
-		for (CargoType c : SetCargoBitIterator(this->cargo_mask)) {
+		for (CargoType c : this->cargo_mask) {
 			if (!CargoSpec::Get(c)->IsValid()) continue;
 			const GoodsEntry &ge = from->goods[c];
 			if (!LinkGraph::IsValidID(ge.link_graph) ||
@@ -225,7 +225,7 @@ void LinkGraphOverlay::RebuildCache(bool incremental)
 		StationID from = sta->index;
 
 		uint supply = 0;
-		for (CargoType cargo : SetCargoBitIterator(this->cargo_mask)) {
+		for (CargoType cargo : this->cargo_mask) {
 			if (!CargoSpec::Get(cargo)->IsValid()) continue;
 			if (!LinkGraph::IsValidID(sta->goods[cargo].link_graph)) continue;
 			const LinkGraph &lg = *LinkGraph::Get(sta->goods[cargo].link_graph);
@@ -814,7 +814,7 @@ void LinkGraphLegendWindow::SetOverlay(LinkGraphOverlay *overlay)
 	}
 	CargoTypes cargoes = this->overlay->GetCargoMask();
 	for (uint c = 0; c < this->num_cargo; c++) {
-		this->SetWidgetLoweredState(WID_LGL_CARGO_FIRST + c, HasBit(cargoes, _sorted_cargo_specs[c]->Index()));
+		this->SetWidgetLoweredState(WID_LGL_CARGO_FIRST + c, cargoes.Test(_sorted_cargo_specs[c]->Index()));
 	}
 }
 
@@ -917,10 +917,10 @@ void LinkGraphLegendWindow::UpdateOverlayCompanies()
  */
 void LinkGraphLegendWindow::UpdateOverlayCargoes()
 {
-	CargoTypes mask = 0;
+	CargoTypes mask{};
 	for (uint c = 0; c < num_cargo; c++) {
 		if (!this->IsWidgetLowered(WID_LGL_CARGO_FIRST + c)) continue;
-		SetBit(mask, _sorted_cargo_specs[c]->Index());
+		mask.Set(_sorted_cargo_specs[c]->Index());
 	}
 	this->overlay->SetCargoMask(mask);
 }

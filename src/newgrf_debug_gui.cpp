@@ -853,7 +853,7 @@ struct NewGRFInspectWindow final : Window {
 						break;
 
 					case NIT_CARGO:
-						AppendStringInPlace(property_str, (value != INVALID_CARGO) ? CargoSpec::Get(value)->name : STR_QUANTITY_N_A);
+						AppendStringInPlace(property_str, (value != to_underlying(INVALID_CARGO)) ? CargoSpec::Get(value)->name : STR_QUANTITY_N_A);
 						break;
 
 					default:

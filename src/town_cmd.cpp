@@ -612,7 +612,7 @@ static void TownGenerateCargo(Town *t, CargoType cargo, uint amount, StationFind
  */
 static void TownGenerateCargoOriginal(Town *t, TownProductionEffect tpe, uint8_t rate, StationFinder &stations)
 {
-	for (CargoType cid : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[tpe])) {
+	for (CargoType cid : CargoSpec::town_production_cargo_mask[tpe]) {
 		const CargoSpec *cs = CargoSpec::Get(cid);
 		uint32_t r = Random();
 		if (GB(r, 0, 8) < rate) {
@@ -633,7 +633,7 @@ static void TownGenerateCargoOriginal(Town *t, TownProductionEffect tpe, uint8_t
  */
 static void TownGenerateCargoBinomial(Town *t, TownProductionEffect tpe, uint8_t rate, StationFinder &stations)
 {
-	for (CargoType cargo_type : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[tpe])) {
+	for (CargoType cargo_type : CargoSpec::town_production_cargo_mask[tpe]) {
 		const CargoSpec *cs = CargoSpec::Get(cargo_type);
 		uint32_t r = Random();
 
@@ -811,12 +811,12 @@ static void AddProducedHouseCargo(HouseID house_id, TileIndex tile, CargoArray &
 		}
 	} else {
 		if (hs->population > 0) {
-			for (CargoType cid : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[TownProductionEffect::Passengers])) {
+			for (CargoType cid : CargoSpec::town_production_cargo_mask[TownProductionEffect::Passengers]) {
 				produced[cid]++;
 			}
 		}
 		if (hs->mail_generation > 0) {
-			for (CargoType cid : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[TownProductionEffect::Mail])) {
+			for (CargoType cid : CargoSpec::town_production_cargo_mask[TownProductionEffect::Mail]) {
 				produced[cid]++;
 			}
 		}
@@ -840,7 +840,7 @@ static void AddAcceptedCargoSetMask(CargoType cargo, uint amount, CargoArray &ac
 {
 	if (cargo == INVALID_CARGO || amount == 0) return;
 	acceptance[cargo] += amount;
-	SetBit(always_accepted, cargo);
+	always_accepted.Set(cargo);
 }
 
 /**
@@ -2176,7 +2176,7 @@ void UpdateTownRadii()
 
 void UpdateTownMaxPass(Town *t)
 {
-	for (CargoType cid : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[TownProductionEffect::Passengers])) {
+	for (CargoType cid : CargoSpec::town_production_cargo_mask[TownProductionEffect::Passengers]) {
 		uint32_t production = _town_cargo_scaler.Scale(t->cache.population >> 3);
 		if (production == 0) continue;
 
@@ -2184,7 +2184,7 @@ void UpdateTownMaxPass(Town *t)
 		supplied.history[LAST_MONTH].production = production;
 	}
 
-	for (CargoType cid : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[TownProductionEffect::Mail])) {
+	for (CargoType cid : CargoSpec::town_production_cargo_mask[TownProductionEffect::Mail]) {
 		uint32_t production = _town_cargo_scaler.Scale(t->cache.population >> 4);
 		if (production == 0) continue;
 
@@ -4359,7 +4359,7 @@ static uint GetNormalGrowthRate(Town *t)
 		for (auto tpe : {TownProductionEffect::Passengers, TownProductionEffect::Mail}) {
 			uint32_t old_max = 0;
 			uint32_t old_act = 0;
-			for (CargoType cid : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[tpe])) {
+			for (CargoType cid : CargoSpec::town_production_cargo_mask[tpe]) {
 				auto it = t->GetCargoSupplied(cid);
 				if (it != std::end(t->supplied)) {
 					old_max += it->history[LAST_MONTH].production;

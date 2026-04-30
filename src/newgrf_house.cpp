@@ -430,7 +430,7 @@ uint32_t HouseScopeResolver::OtherHouseIDVariable(uint32_t parameter, F func) co
 			}
 
 			/* Cargo triggered CB 148? */
-			if (HasBit(this->watched_cargo_triggers, cargo_type)) SetBit(res, 4);
+			if (this->watched_cargo_triggers.Test(cargo_type)) SetBit(res, 4);
 
 			return res;
 		}
@@ -897,9 +897,9 @@ void TriggerHouseAnimation_WatchedCargoAccepted(TileIndex tile, CargoTypes trigg
 	HouseID id = GetHouseType(tile);
 	const HouseSpec *hs = HouseSpec::Get(id);
 
-	trigger_cargoes &= hs->watched_cargoes;
+	trigger_cargoes = trigger_cargoes & hs->watched_cargoes;
 	/* None of the trigger cargoes is watched? */
-	if (trigger_cargoes == 0) return;
+	if (trigger_cargoes.None()) return;
 
 	/* Same random value for all tiles of a multi-tile house. */
 	uint16_t r = Random();

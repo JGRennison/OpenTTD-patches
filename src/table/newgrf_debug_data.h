@@ -584,7 +584,7 @@ class NIHVehicle : public NIHelper {
 				}
 				if (e->refit_capacity_values != nullptr) {
 					const EngineRefitCapacityValue *caps = e->refit_capacity_values.get();
-					CargoTypes seen = 0;
+					CargoTypes seen{};
 					while (seen != ALL_CARGOTYPES) {
 						output.Print("    Refit capacity cache: cargoes: 0x{:X} --> 0x{:X}", caps->cargoes, caps->capacity);
 						seen |= caps->cargoes;

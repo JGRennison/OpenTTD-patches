@@ -1166,7 +1166,7 @@ public:
 				this->UpdateSortingInterval();
 				break;
 			case WID_GL_FILTER_BY_CARGO: // Select a cargo filter criteria
-				this->SetCargoFilter(index);
+				this->SetCargoFilter(static_cast<CargoType>(index));
 				break;
 			case WID_GL_MANAGE_VEHICLES_DROPDOWN:
 				assert(this->ShouldShowActionDropdownList());

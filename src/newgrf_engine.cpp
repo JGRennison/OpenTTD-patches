@@ -625,7 +625,7 @@ static uint32_t VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *objec
 			}
 
 			/* The cargo translation is specific to the accessing GRF, and thus cannot be cached. */
-			CargoType common_cargo_type = (v->grf_cache.consist_cargo_information >> 8) & 0xFF;
+			CargoType common_cargo_type = static_cast<CargoType>(GB(v->grf_cache.consist_cargo_information, 8, 8));
 
 			/* Note:
 			 *  - Unlike everywhere else the cargo translation table is only used since grf version 8, not 7.
@@ -1721,9 +1721,9 @@ void AnalyseEngineCallbacks()
 				cb_refit_cap_values.emplace_back(ALL_CARGOTYPES, GetVehicleCallback(CBID_VEHICLE_REFIT_CAPACITY, 0, 0, e->index, nullptr));
 			} else {
 				const CargoType default_cb = e->info.cargo_type;
-				for (CargoType c = 0; c < NUM_CARGO; c++) {
+				for (CargoType c{}; c < NUM_CARGO; c++) {
 					e->info.cargo_type = c;
-					set_cb_refit_cap_value(GetVehicleCallback(CBID_VEHICLE_REFIT_CAPACITY, 0, 0, e->index, nullptr), static_cast<CargoTypes>(1) << c);
+					set_cb_refit_cap_value(GetVehicleCallback(CBID_VEHICLE_REFIT_CAPACITY, 0, 0, e->index, nullptr), CargoTypes{c});
 				}
 				e->info.cargo_type = default_cb;
 				std::sort(cb_refit_cap_values.begin(), cb_refit_cap_values.end(), [](const EngineRefitCapacityValue &a, const EngineRefitCapacityValue &b) -> bool {

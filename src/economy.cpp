@@ -1327,7 +1327,7 @@ static Money DeliverGoods(int num_pieces, CargoType cargo_type, StationID dest, 
 	uint accepted_ind = DeliverGoodsToIndustry(st, cargo_type, num_pieces, src.type == SourceType::Industry ? src.ToIndustryID() : IndustryID::Invalid(), company->index);
 
 	/* If this cargo type is always accepted, accept all */
-	uint accepted_total = HasBit(st->always_accepted, cargo_type) ? num_pieces : accepted_ind;
+	uint accepted_total = st->always_accepted.Test(cargo_type) ? num_pieces : accepted_ind;
 
 	/* Update station statistics */
 	if (accepted_total > 0) {
@@ -1697,7 +1697,7 @@ struct PrepareRefitAction
 	bool operator()(const Vehicle *v)
 	{
 		this->consist_capleft[v->cargo_type] -= v->cargo_cap - v->cargo.ReservedCount();
-		this->refit_mask |= EngInfo(v->engine_type)->refit_mask;
+		this->refit_mask.Set(EngInfo(v->engine_type)->refit_mask);
 		return true;
 	}
 };
@@ -1794,7 +1794,7 @@ static void HandleStationRefit(Vehicle *v, Vehicle *v_start, CargoArray &consist
 	if (is_auto_refit) {
 		/* Get a refittable cargo type with waiting cargo for next_station or StationID::Invalid(). */
 		new_cid = v_start->cargo_type;
-		for (CargoType cid : SetCargoBitIterator(refit_mask)) {
+		for (CargoType cid : refit_mask) {
 			if (check_order && v->First()->current_order.GetCargoLoadType(cid) == OLFB_NO_LOAD) continue;
 			if (st->goods[cid].data != nullptr && st->goods[cid].data->cargo.HasCargoFor(next_station.Get(cid))) {
 				/* Try to find out if auto-refitting would succeed. In case the refit is allowed,
@@ -2032,13 +2032,13 @@ static void LoadUnloadVehicle(Vehicle *front)
 	bool completely_emptied = true;
 	bool anything_unloaded  = false;
 	bool anything_loaded    = false;
-	CargoTypes full_load_amount = 0;
-	CargoTypes cargo_not_full   = 0;
-	CargoTypes cargo_full       = 0;
-	CargoTypes reservation_left = 0;
-	CargoTypes not_yet_in_station_cargo_not_full   = 0;
-	CargoTypes not_yet_in_station_cargo_full       = 0;
-	CargoTypes beyond_platform_end_cargo_full      = 0;
+	CargoTypes full_load_amount{};
+	CargoTypes cargo_not_full{};
+	CargoTypes cargo_full{};
+	CargoTypes reservation_left{};
+	CargoTypes not_yet_in_station_cargo_not_full{};
+	CargoTypes not_yet_in_station_cargo_full{};
+	CargoTypes beyond_platform_end_cargo_full{};
 
 	front->cur_speed = 0;
 
@@ -2051,7 +2051,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 		if (pull_through_mode && Train::From(v)->flags.Test(VehicleRailFlag::BeyondPlatformEnd)) {
 			if (v->cargo_cap != 0) {
 				if (v->cargo.StoredCount() >= v->cargo_cap) {
-					SetBit(beyond_platform_end_cargo_full, v->cargo_type);
+					beyond_platform_end_cargo_full.Set(v->cargo_type);
 				}
 			}
 			continue;
@@ -2075,9 +2075,9 @@ static void LoadUnloadVehicle(Vehicle *front)
 					}
 					if (skip->cargo_cap != 0) {
 						if (skip->cargo.StoredCount() >= skip->cargo_cap) {
-							SetBit(not_yet_in_station_cargo_full, skip->cargo_type);
+							not_yet_in_station_cargo_full.Set(skip->cargo_type);
 						} else {
-							SetBit(not_yet_in_station_cargo_not_full, skip->cargo_type);
+							not_yet_in_station_cargo_not_full.Set(skip->cargo_type);
 						}
 					}
 				}
@@ -2233,14 +2233,14 @@ static void LoadUnloadVehicle(Vehicle *front)
 				if (v->cargo.ActionCount(VehicleCargoList::MTA_LOAD) > 0) {
 					/* Remember if there are reservations left so that we don't stop
 					 * loading before they're loaded. */
-					SetBit(reservation_left, v->cargo_type);
+					reservation_left.Set(v->cargo_type);
 				}
 
 				/* Store whether the maximum possible load amount was loaded or not.*/
 				if (loaded == cap_left) {
-					SetBit(full_load_amount, v->cargo_type);
+					full_load_amount.Set(v->cargo_type);
 				} else {
-					ClrBit(full_load_amount, v->cargo_type);
+					full_load_amount.Reset(v->cargo_type);
 				}
 
 				/* TODO: Regarding this, when we do gradual loading, we
@@ -2272,9 +2272,9 @@ static void LoadUnloadVehicle(Vehicle *front)
 		}
 
 		if (v->cargo.StoredCount() >= v->cargo_cap) {
-			SetBit(cargo_full, v->cargo_type);
+			cargo_full.Set(v->cargo_type);
 		} else {
-			SetBit(cargo_not_full, v->cargo_type);
+			cargo_not_full.Set(v->cargo_type);
 		}
 	}
 
@@ -2295,13 +2295,13 @@ static void LoadUnloadVehicle(Vehicle *front)
 
 	front->vehicle_flags.Reset(VehicleFlag::StopLoading);
 
-	CargoTypes full_load_cargo_mask = 0;
+	CargoTypes full_load_cargo_mask{};
 	if (front->current_order.GetLoadType() & OLFB_FULL_LOAD) {
 		full_load_cargo_mask = ALL_CARGOTYPES;
 	} else if (front->current_order.GetLoadType() == OLFB_CARGO_TYPE_LOAD) {
 		for (Vehicle *v = front; v != nullptr; v = v->Next()) {
 			if (front->current_order.GetCargoLoadTypeRaw(v->cargo_type) & OLFB_FULL_LOAD) {
-				SetBit(full_load_cargo_mask, v->cargo_type);
+				full_load_cargo_mask.Set(v->cargo_type);
 			}
 		}
 	}
@@ -2315,10 +2315,10 @@ static void LoadUnloadVehicle(Vehicle *front)
 
 			case OLT_LEAVE_EARLY_FULL_ANY:
 				return !((front->type == VEH_AIRCRAFT && IsCargoInClass(front->cargo_type, CargoClass::Passengers) && front->cargo_cap > front->cargo.StoredCount()) ||
-					((cargo_not_full | not_yet_in_station_cargo_not_full) != 0 && ((cargo_full | beyond_platform_end_cargo_full) & ~(cargo_not_full | not_yet_in_station_cargo_not_full)) == 0));
+					((cargo_not_full | not_yet_in_station_cargo_not_full).Any() && ((cargo_full | beyond_platform_end_cargo_full) & ~(cargo_not_full | not_yet_in_station_cargo_not_full)).None()));
 
 			case OLT_LEAVE_EARLY_FULL_ALL:
-				return (cargo_not_full | not_yet_in_station_cargo_not_full) == 0;
+				return (cargo_not_full | not_yet_in_station_cargo_not_full).None();
 
 			default:
 				NOT_REACHED();
@@ -2334,7 +2334,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 		}
 		/* We loaded less cargo than possible for all cargo types and it's not full
 		 * load and we're not supposed to wait any longer: stop loading. */
-		if (!anything_unloaded && full_load_amount == 0 && reservation_left == 0 && full_load_cargo_mask == 0 &&
+		if (!anything_unloaded && full_load_amount.None() && reservation_left.None() && full_load_cargo_mask.None() &&
 				(front->current_order_time >= (uint)std::max<int>((int)front->current_order.GetTimetabledWait() - (int)front->lateness_counter, 0) ||
 				may_leave_early())) {
 			front->vehicle_flags.Set(VehicleFlag::StopLoading);
@@ -2347,26 +2347,26 @@ static void LoadUnloadVehicle(Vehicle *front)
 	} else {
 		UpdateLoadUnloadTicks(front, st, 20, platform_length_left); // We need the ticks for link refreshing.
 		bool finished_loading = true;
-		if (full_load_cargo_mask != 0) {
+		if (full_load_cargo_mask.Any()) {
 			const bool full_load_any_order = front->current_order.GetLoadType() == OLF_FULL_LOAD_ANY;
 			if (full_load_any_order) {
 				/* if the aircraft carries passengers and is NOT full, then
 				 * continue loading, no matter how much mail is in */
 				if ((front->type == VEH_AIRCRAFT && IsCargoInClass(front->cargo_type, CargoClass::Passengers) && front->cargo_cap > front->cargo.StoredCount()) ||
-						(cargo_not_full != 0 && ((cargo_full | beyond_platform_end_cargo_full) & ~cargo_not_full) == 0)) { // There are still non-full cargoes
+						(cargo_not_full.Any() && ((cargo_full | beyond_platform_end_cargo_full) & ~cargo_not_full).None())) { // There are still non-full cargoes
 					finished_loading = false;
 				}
-			} else if ((cargo_not_full & full_load_cargo_mask) != 0) {
+			} else if ((cargo_not_full & full_load_cargo_mask).Any()) {
 				finished_loading = false;
 			}
 			if (finished_loading && pull_through_mode) {
 				if (full_load_any_order) {
-					if (not_yet_in_station_cargo_not_full != 0 &&
-							((cargo_full | not_yet_in_station_cargo_full) & ~(cargo_not_full | not_yet_in_station_cargo_not_full)) == 0) {
+					if (not_yet_in_station_cargo_not_full.Any() &&
+							((cargo_full | not_yet_in_station_cargo_full) & ~(cargo_not_full | not_yet_in_station_cargo_not_full)).None()) {
 						finished_loading = false;
 						Train::From(front)->flags.Set(VehicleRailFlag::AdvanceInPlatform);
 					}
-				} else if (not_yet_in_station_cargo_not_full) {
+				} else if (not_yet_in_station_cargo_not_full.Any()) {
 					finished_loading = false;
 					Train::From(front)->flags.Set(VehicleRailFlag::AdvanceInPlatform);
 				}

@@ -381,7 +381,7 @@ public:
 				cargo_caps[u->cargo_type] += u->cargo_cap;
 			}
 
-			for (CargoType i = 0; i < NUM_CARGO; ++i) {
+			for (CargoType i{}; i < NUM_CARGO; ++i) {
 				if (cargo_caps[i] > 0) {
 					if (count_columns % max_columns == 0) {
 						height += GetCharacterHeight(FontSize::Normal);
@@ -965,7 +965,7 @@ public:
 		int x = 0;
 		int step = ScaleGUITrad(250);
 		bool rtl = _current_text_dir == TD_RTL;
-		for (CargoType i = 0; i < NUM_CARGO; ++i) {
+		for (CargoType i{}; i < NUM_CARGO; ++i) {
 			if (cargo_caps[i] > 0) {
 				count_columns++;
 				std::string str = GetString(FreightWagonMult(i) > 1 ? STR_TMPL_CARGO_SUMMARY_MULTI : STR_TMPL_CARGO_SUMMARY,

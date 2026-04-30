@@ -348,7 +348,7 @@ void CargoDestPerCargoSettingEntry::DrawSettingString(uint left, uint right, int
 
 bool CargoDestPerCargoSettingEntry::UpdateFilterState(SettingFilter &filter, bool force_visible)
 {
-	if (!HasBit(_cargo_mask, this->cargo)) {
+	if (!_cargo_mask.Test(this->cargo)) {
 		this->flags.Set(SettingEntryFlag::Filtered);
 		return false;
 	} else {
@@ -1202,7 +1202,7 @@ SettingsContainer &GetSettingsTree()
 					const SettingTable &linkgraph_table = GetLinkGraphSettingTable();
 					uint base_index = GetSettingIndexByFullName(linkgraph_table, "linkgraph.distribution_per_cargo[0]");
 					assert(base_index != UINT32_MAX);
-					for (CargoType c = 0; c < NUM_CARGO; c++) {
+					for (CargoType c{}; c < NUM_CARGO; c++) {
 						cdist_override->Add(new CargoDestPerCargoSettingEntry(c, GetSettingDescription(linkgraph_table, base_index + c)->AsIntSetting()));
 					}
 				}

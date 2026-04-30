@@ -1631,7 +1631,7 @@ static void FillInstructionString(format_buffer &instruction_string, const Trace
 					set_instruction(STR_TRACE_RESTRICT_CONDITIONAL_CARGO,
 							_program_cond_type[item.GetCondFlags()],
 							GetDropDownStringByValue(&_cargo_cond_ops, item.GetCondOp()),
-							GetCargoStringByID(item.GetValue()));
+							GetCargoStringByID(item.GetValueAsCargoType()));
 					break;
 
 				case TRVT_DIRECTION: {
@@ -3919,7 +3919,7 @@ private:
 						case TRVT_CARGO_ID:
 							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
 							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
-							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->SetString(GetCargoStringByID(item.GetValue()));
+							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->SetString(GetCargoStringByID(item.GetValueAsCargoType()));
 							break;
 
 						case TRVT_DIRECTION:
@@ -5310,7 +5310,7 @@ public:
 				break;
 
 			case WID_TRSL_FILTER_BY_CARGO: // Select a cargo filter criteria
-				this->SetCargoFilter(index);
+				this->SetCargoFilter(static_cast<CargoType>(index));
 				break;
 
 			default: NOT_REACHED();

@@ -323,25 +323,25 @@ bool Vehicle::NeedsServicing() const
 		GetArticulatedRefitMasks(new_engine, true, &union_mask, &available_cargo_types);
 
 		/* Is this a multi-cargo ship? */
-		if (union_mask != 0 && v->type == VEH_SHIP && v->Next() != nullptr) {
-			CargoTypes cargoes = 0;
+		if (union_mask.Any() && v->type == VEH_SHIP && v->Next() != nullptr) {
+			CargoTypes cargoes{};
 			for (const Vehicle *u = v; u != nullptr; u = u->Next()) {
 				if (u->cargo_type != INVALID_CARGO && u->GetEngine()->CanCarryCargo()) {
-					SetBit(cargoes, u->cargo_type);
+					cargoes.Set(u->cargo_type);
 				}
 			}
 			if (!HasAtMostOneBit(cargoes)) {
 				/* Ship has more than one cargo, special handling */
 				if (!AutoreplaceMultiPartShipWouldSucceed(new_engine, v, cargoes)) continue;
-				union_mask = 0;
+				union_mask = CargoTypes{};
 			}
 		}
 
 		/* Is there anything to refit? */
-		if (union_mask != 0) {
+		if (union_mask.Any()) {
 			CargoType cargo_type;
 			CargoTypes cargo_mask = GetCargoTypesOfArticulatedVehicle(v, &cargo_type);
-			if (!HasAtMostOneBit(cargo_mask)) {
+			if (!HasAtMostOneBit(cargo_mask.base())) {
 				CargoTypes new_engine_default_cargoes = GetCargoTypesOfArticulatedParts(new_engine);
 				if ((cargo_mask & new_engine_default_cargoes) != cargo_mask) {
 					/* We cannot refit to mixed cargoes in an automated way */
@@ -352,7 +352,7 @@ bool Vehicle::NeedsServicing() const
 				/* Did the old vehicle carry anything? */
 				if (cargo_type != INVALID_CARGO) {
 					/* We can't refit the vehicle to carry the cargo we want */
-					if (!HasBit(available_cargo_types, cargo_type)) continue;
+					if (!available_cargo_types.Test(cargo_type)) continue;
 				}
 			}
 		}
@@ -3552,12 +3552,12 @@ void Vehicle::CancelReservation(StationID next, Station *st)
 CargoTypes Vehicle::GetLastLoadingStationValidCargoMask() const
 {
 	if (!this->vehicle_flags.Test(VehicleFlag::LastLoadStationSeparate)) {
-		return (this->last_loading_station != StationID::Invalid()) ? ALL_CARGOTYPES : 0;
+		return (this->last_loading_station != StationID::Invalid()) ? ALL_CARGOTYPES : CargoTypes{};
 	} else {
-		CargoTypes cargo_mask = 0;
+		CargoTypes cargo_mask{};
 		for (const Vehicle *u = this; u != nullptr; u = u->Next()) {
 			if (u->cargo_type < NUM_CARGO && u->last_loading_station != StationID::Invalid()) {
-				SetBit(cargo_mask, u->cargo_type);
+				cargo_mask.Set(u->cargo_type);
 			}
 		}
 		return cargo_mask;
@@ -3596,11 +3596,11 @@ void Vehicle::LeaveStation()
 	});
 	CargoTypes has_cargo_mask = this->GetLastLoadingStationValidCargoMask();
 	CargoTypes cargoes_can_leave_with_cargo = FilterCargoMask([&](CargoType cargo) {
-		return this->current_order.CanLeaveWithCargo(HasBit(has_cargo_mask, cargo), cargo);
+		return this->current_order.CanLeaveWithCargo(has_cargo_mask.Test(cargo), cargo);
 	}, cargoes_can_load_unload);
 
-	if (cargoes_can_load_unload != 0) {
-		if (cargoes_can_leave_with_cargo != 0) {
+	if (cargoes_can_load_unload.Any()) {
+		if (cargoes_can_leave_with_cargo.Any()) {
 			/* Refresh next hop stats to make sure we've done that at least once
 			 * during the stop and that refit_cap == cargo_cap for each vehicle in
 			 * the consist. */
@@ -3615,7 +3615,7 @@ void Vehicle::LeaveStation()
 			this->last_loading_station = this->last_station_visited;
 			this->last_loading_tick = _state_ticks;
 			this->vehicle_flags.Reset(VehicleFlag::LastLoadStationSeparate);
-		} else if (cargoes_can_leave_with_cargo == 0) {
+		} else if (cargoes_can_leave_with_cargo.None()) {
 			/* can leave with no cargoes */
 
 			/* if the vehicle couldn't load and had to unload or transfer everything
@@ -3631,8 +3631,8 @@ void Vehicle::LeaveStation()
 			for (Vehicle *u = this; u != nullptr; u = u->Next()) {
 				StationID last_loading_station = this->vehicle_flags.Test(VehicleFlag::LastLoadStationSeparate) ? u->last_loading_station : head_last_loading_station;
 				StateTicks last_loading_tick = this->vehicle_flags.Test(VehicleFlag::LastLoadStationSeparate) ? u->last_loading_tick : head_last_loading_tick;
-				if (u->cargo_type < NUM_CARGO && HasBit(cargoes_can_load_unload, u->cargo_type)) {
-					if (HasBit(cargoes_can_leave_with_cargo, u->cargo_type)) {
+				if (u->cargo_type < NUM_CARGO && cargoes_can_load_unload.Test(u->cargo_type)) {
+					if (cargoes_can_leave_with_cargo.Test(u->cargo_type)) {
 						u->last_loading_station = this->last_station_visited;
 						u->last_loading_tick = _state_ticks;
 					} else {
@@ -3874,7 +3874,7 @@ bool Vehicle::HasFullLoadOrder() const
 	for (const Order *o : this->Orders()) {
 		if (o->IsType(OT_GOTO_STATION) && o->GetLoadType() & (OLFB_FULL_LOAD | OLF_FULL_LOAD_ANY)) return true;
 		if (o->IsType(OT_GOTO_STATION) && o->GetLoadType() == OLFB_CARGO_TYPE_LOAD) {
-			for (CargoType cid = 0; cid < NUM_CARGO; cid++) {
+			for (CargoType cid{}; cid < NUM_CARGO; cid++) {
 				if (o->GetCargoLoadType(cid) & (OLFB_FULL_LOAD | OLF_FULL_LOAD_ANY)) return true;
 			}
 		}

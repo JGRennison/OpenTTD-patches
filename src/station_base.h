@@ -927,7 +927,7 @@ public:
 	IndustryList industries_near{};            ///< Cached list of industries near the station that can accept cargo, @see DeliverGoodsToIndustry()
 	Industry *industry = nullptr;              ///< NOSAVE: Associated industry for neutral stations. (Rebuilt on load from Industry->st)
 
-	CargoTypes station_cargo_history_cargoes = 0;                                            ///< Bitmask of cargoes in station_cargo_history
+	CargoTypes station_cargo_history_cargoes{};                                              ///< Bitmask of cargoes in station_cargo_history
 	std::vector<std::array<uint16_t, MAX_STATION_CARGO_HISTORY_DAYS>> station_cargo_history; ///< Station history of waiting cargo, dynamic range compressed (see RXCompressUint)
 
 	Station(StationID index, TileIndex tile = INVALID_TILE);

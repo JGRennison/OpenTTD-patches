@@ -1984,8 +1984,8 @@ void SetTraceRestrictValueDefault(TraceRestrictInstructionItemRef item, TraceRes
 			break;
 
 		case TRVT_CARGO_ID:
-			assert(_standard_cargo_mask != 0);
-			item.SetValue(FindFirstBit(_standard_cargo_mask));
+			assert(_standard_cargo_mask.Any());
+			item.SetValue(_standard_cargo_mask.FindFirstBit());
 			item.SetAuxField(0);
 			break;
 

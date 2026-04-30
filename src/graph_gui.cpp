@@ -1139,7 +1139,7 @@ struct ExcludingCargoBaseGraphWindow : BaseCompanyGraphWindow {
 			if (pos-- > 0) continue;
 			if (--max < 0) break;
 
-			bool lowered = !HasBit(this->excluded_cargo_types, cs->Index());
+			bool lowered = !this->excluded_cargo_types.Test(cs->Index());
 
 			/* Redraw frame if lowered */
 			if (lowered) DrawFrameRect(line, Colours::Brown, FrameFlag::Lowered);
@@ -1178,7 +1178,7 @@ struct ExcludingCargoBaseGraphWindow : BaseCompanyGraphWindow {
 			case WID_ECBG_DISABLE_CARGOES: {
 				/* Add all cargoes to the excluded lists. */
 				for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
-					SetBit(this->excluded_cargo_types, cs->Index());
+					this->excluded_cargo_types.Set(cs->Index());
 				}
 				ExcludingCargoBaseGraphWindow::static_excluded_cargo_types = this->excluded_cargo_types;
 				this->OnInvalidateData();
@@ -1193,7 +1193,7 @@ struct ExcludingCargoBaseGraphWindow : BaseCompanyGraphWindow {
 				for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
 					if (row-- > 0) continue;
 
-					ToggleBit(this->excluded_cargo_types, cs->Index());
+					this->excluded_cargo_types.Flip(cs->Index());
 					break;
 				}
 				ExcludingCargoBaseGraphWindow::static_excluded_cargo_types = this->excluded_cargo_types;
@@ -1232,12 +1232,12 @@ struct DeliveredCargoGraphWindow : ExcludingCargoBaseGraphWindow {
 
 	OverflowSafeInt64 GetGraphData(const Company *c, int j) override
 	{
-		if (this->excluded_cargo_types == 0) {
+		if (this->excluded_cargo_types.None()) {
 			return c->old_economy[j].delivered_cargo.GetSum<OverflowSafeInt64>();
 		}
 		OverflowSafeInt64 total_delivered = 0;
 		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
-			if (!HasBit(this->excluded_cargo_types, cs->Index())){
+			if (!this->excluded_cargo_types.Test(cs->Index())){
 				total_delivered += c->old_economy[j].delivered_cargo[cs->Index()];
 			}
 		}
@@ -1316,7 +1316,7 @@ struct DeliveredCargoGraphWindow : ExcludingCargoBaseGraphWindow {
 			mo += 12;
 		}
 
-		if (!initialize && this->excluded_data == this->excluded_cargo_types && this->num_on_x_axis == nums &&
+		if (!initialize && this->excluded_data == this->excluded_cargo_types.base() && this->num_on_x_axis == nums &&
 				this->year == yr && this->month == mo) {
 			/* There's no reason to get new stats */
 			return;
@@ -1332,8 +1332,8 @@ struct DeliveredCargoGraphWindow : ExcludingCargoBaseGraphWindow {
 			DataSet &dataset = this->data.emplace_back();
 			dataset.colour = cs->legend_colour;
 			dataset.exclude_bit = cs->Index();
-			if (HasBit(this->excluded_cargo_types, cs->Index())) {
-				SetBit(this->excluded_data, cs->Index());
+			if (this->excluded_cargo_types.Test(cs->Index())) {
+				SetBit(this->excluded_data, to_underlying(cs->Index()));
 				continue;
 			}
 
@@ -1576,7 +1576,7 @@ struct BaseCargoGraphWindow : BaseGraphWindow {
 		if (row >= this->vscroll->GetCount()) return std::nullopt;
 
 		for (const CargoSpec *cs : _sorted_cargo_specs) {
-			if (!HasBit(this->cargo_types, cs->Index())) continue;
+			if (!this->cargo_types.Test(cs->Index())) continue;
 			if (row-- > 0) continue;
 
 			return cs->Index();
@@ -1600,7 +1600,7 @@ struct BaseCargoGraphWindow : BaseGraphWindow {
 
 		size.height = GetCharacterHeight(FontSize::Small) + WidgetDimensions::scaled.framerect.Vertical();
 
-		for (CargoType cargo_type : SetCargoBitIterator(this->cargo_types)) {
+		for (CargoType cargo_type : this->cargo_types) {
 			const CargoSpec *cs = CargoSpec::Get(cargo_type);
 
 			Dimension d = GetStringBoundingBox(GetString(STR_GRAPH_CARGO_PAYMENT_CARGO, cs->name));
@@ -1631,12 +1631,12 @@ struct BaseCargoGraphWindow : BaseGraphWindow {
 		Rect line = r.WithHeight(this->line_height);
 
 		for (const CargoSpec *cs : _sorted_cargo_specs) {
-			if (!HasBit(this->cargo_types, cs->Index())) continue;
+			if (!this->cargo_types.Test(cs->Index())) continue;
 
 			if (pos-- > 0) continue;
 			if (--max < 0) break;
 
-			bool lowered = !HasBit(this->excluded_data, cs->Index());
+			bool lowered = !CargoTypes{this->excluded_data}.Test(cs->Index());
 
 			/* Redraw frame if lowered */
 			if (lowered) DrawFrameRect(line, Colours::Brown, FrameFlag::Lowered);
@@ -1663,14 +1663,14 @@ struct BaseCargoGraphWindow : BaseGraphWindow {
 			case WID_GRAPH_ENABLE_CARGOES:
 				/* Remove all cargoes from the excluded lists. */
 				this->GetExcludedCargoTypes() = {};
-				this->excluded_data = this->GetExcludedCargoTypes();
+				this->excluded_data = this->GetExcludedCargoTypes().base();
 				this->SetDirty();
 				break;
 
 			case WID_GRAPH_DISABLE_CARGOES: {
 				/* Add all cargoes to the excluded lists. */
 				this->GetExcludedCargoTypes() = this->cargo_types;
-				this->excluded_data = this->GetExcludedCargoTypes();
+				this->excluded_data = this->GetExcludedCargoTypes().base();
 				this->SetDirty();
 				break;
 			}
@@ -1682,11 +1682,11 @@ struct BaseCargoGraphWindow : BaseGraphWindow {
 				SndClickBeep();
 
 				for (const CargoSpec *cs : _sorted_cargo_specs) {
-					if (!HasBit(this->cargo_types, cs->Index())) continue;
+					if (!this->cargo_types.Test(cs->Index())) continue;
 					if (row-- > 0) continue;
 
-					ToggleBit(this->GetExcludedCargoTypes(), cs->Index());
-					this->excluded_data = this->GetExcludedCargoTypes();
+					this->GetExcludedCargoTypes().Flip(cs->Index());
+					this->excluded_data = this->GetExcludedCargoTypes().base();
 					this->SetDirty();
 					break;
 				}
@@ -1820,7 +1820,7 @@ struct PaymentRatesGraphWindow : BaseCargoGraphWindow {
 
 	void OnHundredthTick() override
 	{
-		this->excluded_data = this->GetExcludedCargoTypes();
+		this->excluded_data = this->GetExcludedCargoTypes().base();
 
 		const float factor = 200.0f * 28.57f * 0.4f * ConvertSpeedToUnitDisplaySpeed(1 << 16, VEH_TRAIN) / (1.6f * static_cast<float>(1 << 16));
 
@@ -2205,10 +2205,10 @@ struct IndustryProductionGraphWindow : BaseCargoGraphWindow {
 		CargoTypes cargo_types{};
 		const Industry *i = Industry::Get(window_number);
 		for (const auto &a : i->Accepted()) {
-			if (IsValidCargoType(a.cargo)) SetBit(cargo_types, a.cargo);
+			if (IsValidCargoType(a.cargo)) cargo_types.Set(a.cargo);
 		}
 		for (const auto &p : i->Produced()) {
-			if (IsValidCargoType(p.cargo)) SetBit(cargo_types, p.cargo);
+			if (IsValidCargoType(p.cargo)) cargo_types.Set(p.cargo);
 		}
 		return cargo_types;
 	}
@@ -2240,12 +2240,12 @@ struct IndustryProductionGraphWindow : BaseCargoGraphWindow {
 			mo += 12;
 		}
 
-		if (!initialize && this->excluded_data == this->GetExcludedCargoTypes() && this->num_on_x_axis == this->num_vert_lines && this->year == yr && this->month == mo) {
+		if (!initialize && this->excluded_data == this->GetExcludedCargoTypes().base() && this->num_on_x_axis == this->num_vert_lines && this->year == yr && this->month == mo) {
 			/* There's no reason to get new stats */
 			return;
 		}
 
-		this->excluded_data = this->GetExcludedCargoTypes();
+		this->excluded_data = this->GetExcludedCargoTypes().base();
 		this->year = yr;
 		this->month = mo;
 
@@ -2381,10 +2381,10 @@ struct TownCargoGraphWindow : BaseCargoGraphWindow {
 		CargoTypes cargo_types{};
 		const Town *t = Town::Get(window_number);
 		for (const auto &s : t->supplied) {
-			if (IsValidCargoType(s.cargo)) SetBit(cargo_types, s.cargo);
+			if (IsValidCargoType(s.cargo)) cargo_types.Set(s.cargo);
 		}
 		for (const auto &a : t->accepted) {
-			if (IsValidCargoType(a.cargo)) SetBit(cargo_types, a.cargo);
+			if (IsValidCargoType(a.cargo)) cargo_types.Set(a.cargo);
 		}
 		return cargo_types;
 	}
@@ -2416,12 +2416,12 @@ struct TownCargoGraphWindow : BaseCargoGraphWindow {
 			mo += 12;
 		}
 
-		if (!initialize && this->excluded_data == this->GetExcludedCargoTypes() && this->num_on_x_axis == this->num_vert_lines && this->year == yr && this->month == mo) {
+		if (!initialize && this->excluded_data == this->GetExcludedCargoTypes().base() && this->num_on_x_axis == this->num_vert_lines && this->year == yr && this->month == mo) {
 			/* There's no reason to get new stats */
 			return;
 		}
 
-		this->excluded_data = this->GetExcludedCargoTypes();
+		this->excluded_data = this->GetExcludedCargoTypes().base();
 		this->year = yr;
 		this->month = mo;
 
@@ -2618,7 +2618,7 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 	{
 		/* Width of the legend blob. */
 		this->legend_width = GetCharacterHeight(FontSize::Small) * 9 / 6;
-		this->legend_excluded_cargo = 0;
+		this->legend_excluded_cargo = CargoTypes{};
 	}
 
 	std::string GetWidgetString(WidgetID widget, StringID stringid) const override
@@ -2636,7 +2636,7 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 
 	void UpdateExcludedData()
 	{
-		this->excluded_data = legend_excluded_cargo;
+		this->excluded_data = this->legend_excluded_cargo.base();
 	}
 
 	void UpdateWidgetSize(WidgetID widget, Dimension &size, const Dimension &padding, Dimension &fill, Dimension &resize) override
@@ -2675,11 +2675,11 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 		Rect line = r.WithHeight(this->line_height);
 
 		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
-			if (!HasBit(this->present_cargoes, cs->Index())) continue;
+			if (!this->present_cargoes.Test(cs->Index())) continue;
 			if (pos-- > 0) continue;
 			if (--max < 0) break;
 
-			const bool lowered = !HasBit(legend_excluded_cargo, cs->Index());
+			const bool lowered = !this->legend_excluded_cargo.Test(cs->Index());
 
 			/* Redraw frame if lowered */
 			if (lowered) DrawFrameRect(line, Colours::Brown, FrameFlag::Lowered);
@@ -2705,7 +2705,7 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 		switch (widget) {
 			case WID_GRAPH_ENABLE_CARGOES:
 				/* Remove all cargoes from the excluded lists. */
-				this->legend_excluded_cargo = 0;
+				this->legend_excluded_cargo = CargoTypes{};
 				this->excluded_data = 0;
 				this->SetDirty();
 				break;
@@ -2714,8 +2714,8 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 				/* Add all cargoes to the excluded lists. */
 				this->legend_excluded_cargo = ~static_cast<CargoTypes>(0);
 				for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
-					if (!HasBit(this->present_cargoes, cs->Index())) continue;
-					SetBit(this->excluded_data, cs->Index());
+					if (!this->present_cargoes.Test(cs->Index())) continue;
+					SetBit(this->excluded_data, to_underlying(cs->Index()));
 				}
 				this->SetDirty();
 				break;
@@ -2726,10 +2726,10 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 				if (row >= this->vscroll->GetCount()) return;
 
 				for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
-					if (!HasBit(this->present_cargoes, cs->Index())) continue;
+					if (!this->present_cargoes.Test(cs->Index())) continue;
 					if (row-- > 0) continue;
 
-					ToggleBit(legend_excluded_cargo, cs->Index());
+					this->legend_excluded_cargo.Flip(cs->Index());
 					this->UpdateExcludedData();
 					this->SetDirty();
 					break;
@@ -2774,12 +2774,12 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 
 		this->data.clear();
 		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
-			if (!HasBit(this->present_cargoes, cs->Index())) continue;
+			if (!this->present_cargoes.Test(cs->Index())) continue;
 			DataSet &dataset = this->data.emplace_back();
 			dataset.colour = cs->legend_colour;
 			dataset.exclude_bit = cs->Index();
 
-			const auto &history = station->station_cargo_history[CountBits(this->present_cargoes & (cs->CargoTypesBit() - 1))];
+			const auto &history = station->station_cargo_history[CountBits(this->present_cargoes.base() & (CargoTypes{cs->Index()}.base() - 1))];
 
 			uint offset = station->station_cargo_history_offset;
 			for (uint j = 0; j < MAX_STATION_CARGO_HISTORY_DAYS; j++) {
@@ -2798,7 +2798,7 @@ struct StationCargoGraphWindow final : BaseGraphWindow {
 		if (row >= this->vscroll->GetCount()) return std::nullopt;
 
 		for (const CargoSpec *cs : _sorted_cargo_specs) {
-			if (!HasBit(this->present_cargoes, cs->Index())) continue;
+			if (!this->present_cargoes.Test(cs->Index())) continue;
 			if (row-- > 0) continue;
 
 			return cs->Index();

@@ -145,7 +145,7 @@ struct RoadStopSpec : NewGRFSpecBase<RoadStopClassID> {
 	RoadStopSpecFlags flags{};
 	RoadStopSpecIntlFlags internal_flags{};
 
-	CargoTypes cargo_triggers = 0;       ///< Bitmask of cargo types which cause trigger re-randomizing
+	CargoTypes cargo_triggers{};          ///< Bitmask of cargo types which cause trigger re-randomizing
 
 	AnimationInfo<StationAnimationTriggers> animation;
 

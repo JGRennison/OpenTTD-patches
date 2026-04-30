@@ -500,13 +500,13 @@ void Station::UpdateCargoHistory()
 	bool update_window = false;
 	for (const CargoSpec *cs : CargoSpec::Iterate()) {
 		uint amount = this->goods[cs->Index()].CargoTotalCount();
-		if (!HasBit(this->station_cargo_history_cargoes, cs->Index())) {
+		if (!this->station_cargo_history_cargoes.Test(cs->Index())) {
 			if (amount == 0) {
 				/* No cargo present, and no history stored for this cargo, no work to do */
 				continue;
 			} else {
-				if (this->station_cargo_history_cargoes == 0) update_window = true;
-				SetBit(this->station_cargo_history_cargoes, cs->Index());
+				if (this->station_cargo_history_cargoes.None()) update_window = true;
+				this->station_cargo_history_cargoes.Set(cs->Index());
 				this->station_cargo_history.emplace(this->station_cargo_history.begin() + storage_offset);
 			}
 		}
@@ -587,25 +587,25 @@ void ClearAllStationCachedNames()
  */
 CargoTypes GetAcceptanceMask(const Station *st)
 {
-	CargoTypes mask = 0;
+	CargoTypes mask{};
 
-	for (CargoType i = 0; i < NUM_CARGO; i++) {
-		if (st->goods[i].status.Test(GoodsEntry::State::Acceptance)) SetBit(mask, i);
+	for (CargoType i{}; i < NUM_CARGO; i++) {
+		if (st->goods[i].status.Test(GoodsEntry::State::Acceptance)) mask.Set(i);
 	}
 	return mask;
 }
 
 /**
- * Get a mask of the cargo types that are empty at the station.
+ * Get a mask of the cargo types that have cargo waiting at the station.
  * @param st Station to query
- * @return the empty mask
+ * @return cargo types that have cargo waiting
  */
-CargoTypes GetEmptyMask(const Station *st)
+CargoTypes GetCargoWaitingMask(const Station *st)
 {
-	CargoTypes mask = 0;
+	CargoTypes mask{};
 
-	for (CargoType i = 0; i < NUM_CARGO; i++) {
-		if (st->goods[i].CargoTotalCount() == 0) SetBit(mask, i);
+	for (CargoType i{}; i < NUM_CARGO; i++) {
+		if (st->goods[i].CargoTotalCount() == 0) mask.Set(i);
 	}
 	return mask;
 }
@@ -720,7 +720,7 @@ void UpdateStationAcceptance(Station *st, bool show_msg)
 	}
 
 	/* Adjust in case our station only accepts fewer kinds of goods */
-	for (CargoType cargo = 0; cargo < NUM_CARGO; ++cargo) {
+	for (CargoType cargo{}; cargo < NUM_CARGO; ++cargo) {
 		uint amt = acceptance[cargo];
 
 		/* Make sure the station can accept the goods type. */
@@ -744,12 +744,12 @@ void UpdateStationAcceptance(Station *st, bool show_msg)
 	/* show a message to report that the acceptance was changed? */
 	if (show_msg && st->owner == _local_company && st->IsInUse()) {
 		/* Combine old and new masks to get changes */
-		CargoTypes accepts = new_acc & ~old_acc;
-		CargoTypes rejects = ~new_acc & old_acc;
+		CargoTypes accepts = new_acc & CargoTypes{old_acc}.Flip();
+		CargoTypes rejects = CargoTypes{new_acc}.Flip() & old_acc;
 
 		/* Show news message if there are any changes */
-		if (accepts != 0) ShowRejectOrAcceptNews(st, accepts, false);
-		if (rejects != 0) ShowRejectOrAcceptNews(st, rejects, true);
+		if (accepts.Any()) ShowRejectOrAcceptNews(st, accepts, false);
+		if (rejects.Any()) ShowRejectOrAcceptNews(st, rejects, true);
 	}
 
 	/* redraw the station view since acceptance changed */
@@ -4148,13 +4148,13 @@ static VehicleEnterTileStates VehicleEnterTile_Station(Vehicle *v, TileIndex til
 void TriggerWatchedCargoCallbacks(Station *st)
 {
 	/* Collect cargoes accepted since the last big tick. */
-	CargoTypes cargoes = 0;
-	for (CargoType cargo_type = 0; cargo_type < NUM_CARGO; cargo_type++) {
-		if (st->goods[cargo_type].status.Test(GoodsEntry::State::AcceptedBigtick)) SetBit(cargoes, cargo_type);
+	CargoTypes cargoes{};
+	for (CargoType cargo_type{}; cargo_type < NUM_CARGO; ++cargo_type) {
+		if (st->goods[cargo_type].status.Test(GoodsEntry::State::AcceptedBigtick)) cargoes.Set(cargo_type);
 	}
 
 	/* Anything to do? */
-	if (cargoes == 0) return;
+	if (cargoes.None()) return;
 
 	/* Loop over all houses in the catchment. */
 	BitmapTileIterator it(st->catchment_tiles);
@@ -4537,7 +4537,7 @@ void ClearDeleteStaleLinksVehicleCache()
  */
 void DeleteStaleLinks(Station *from)
 {
-	for (CargoType cargo = 0; cargo < NUM_CARGO; ++cargo) {
+	for (CargoType cargo{}; cargo < NUM_CARGO; ++cargo) {
 		const bool auto_distributed = (_settings_game.linkgraph.GetDistributionType(cargo) != DistributionType::Manual);
 		GoodsEntry &ge = from->goods[cargo];
 		LinkGraph *lg = LinkGraph::GetIfValid(ge.link_graph);
@@ -5839,7 +5839,7 @@ void DumpStationFlowStats(format_target &buffer)
 	btree::btree_map<uint, uint> count_map;
 	btree::btree_map<uint, uint> invalid_map;
 	for (const Station *st : Station::Iterate()) {
-		for (CargoType i = 0; i < NUM_CARGO; i++) {
+		for (CargoType i{}; i < NUM_CARGO; i++) {
 			const GoodsEntry &ge = st->goods[i];
 			if (ge.data == nullptr) continue;
 			for (FlowStatMap::const_iterator it(ge.data->flows.begin()); it != ge.data->flows.end(); ++it) {

@@ -547,6 +547,12 @@ namespace TracerestrictDetail {
 				return GroupID(this->GetValue());
 			}
 
+			/** Get value field, as a cargo type */
+			CargoType GetValueAsCargoType() const
+			{
+				return static_cast<CargoType>(this->GetValue());
+			}
+
 			/** Set type field */
 			inline void SetType(TraceRestrictItemType type)
 			{
@@ -617,6 +623,12 @@ namespace TracerestrictDetail {
 			inline void SetValue(GroupID value)
 			{
 				this->SetValue(value.base());
+			}
+
+			/** Set value field (cargo type) */
+			inline void SetValue(CargoType value)
+			{
+				this->SetValue(to_underlying(value));
 			}
 
 			/** Is the type field a conditional type? */

@@ -235,12 +235,12 @@ bool FindSubsidyPassengerRoute()
 {
 	if (!Subsidy::CanAllocateItem()) return false;
 
-	if (CargoSpec::town_production_cargo_mask[TownProductionEffect::Passengers] == 0) return false;
+	if (CargoSpec::town_production_cargo_mask[TownProductionEffect::Passengers].None()) return false;
 
 	/* Pick a random TPE_PASSENGER type */
 	uint32_t r = RandomRange(CountBits(CargoSpec::town_production_cargo_mask[TownProductionEffect::Passengers]));
 	CargoType cargo_type{};
-	for (CargoType c : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[TownProductionEffect::Passengers])) {
+	for (CargoType c : CargoSpec::town_production_cargo_mask[TownProductionEffect::Passengers]) {
 		if (r == 0) {
 			cargo_type = c;
 			break;
@@ -292,7 +292,7 @@ bool FindSubsidyTownCargoRoute()
 	}
 
 	/* Passenger subsidies are not handled here. */
-	for (CargoType c : SetCargoBitIterator(CargoSpec::town_production_cargo_mask[TownProductionEffect::Passengers])) {
+	for (CargoType c : CargoSpec::town_production_cargo_mask[TownProductionEffect::Passengers]) {
 		town_cargo_produced[c] = 0;
 	}
 
@@ -303,8 +303,8 @@ bool FindSubsidyTownCargoRoute()
 
 	/* Choose a random cargo that is produced in the town. */
 	uint8_t cargo_number = RandomRange(cargo_count);
-	CargoType cargo_type;
-	for (cargo_type = 0; cargo_type < NUM_CARGO; cargo_type++) {
+	CargoType cargo_type{};
+	for (; cargo_type < NUM_CARGO; ++cargo_type) {
 		if (town_cargo_produced[cargo_type] > 0) {
 			if (cargo_number == 0) break;
 			cargo_number--;
