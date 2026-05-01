@@ -3192,16 +3192,6 @@ public:
 						case OPOS_DEPARTURE_VIA:        sel = ODDI_LABEL_DEPARTURES_VIA; break;
 						default: NOT_REACHED();
 					}
-					bool show_counters = false;
-					if (_settings_client.gui.show_adv_tracerestrict_features) {
-						bool infra_sharing = _settings_game.economy.infrastructure_sharing[VEH_TRAIN];
-						for (const TraceRestrictCounter *ctr : TraceRestrictCounter::Iterate()) {
-							if (ctr->owner == this->vehicle->owner || (infra_sharing && ctr->flags.Test(TraceRestrictCounter::Flag::Public))) {
-								show_counters = true;
-								break;
-							}
-						}
-					}
 					DropDownList list;
 					list.push_back(MakeDropDownListStringItem(STR_ORDER_GO_TO, ODDI_GO_TO, false));
 					list.push_back(MakeDropDownListStringItem((this->vehicle->type == VEH_AIRCRAFT) ? STR_ORDER_GO_TO_NEAREST_HANGAR : STR_ORDER_GO_TO_NEAREST_DEPOT, ODDI_GO_TO_NEAREST_DEPOT, false));
@@ -3213,7 +3203,7 @@ public:
 					if (TraceRestrictSlotGroup::GetNumItems() > 0) {
 						list.push_back(MakeDropDownListStringItem(STR_ORDER_RELEASE_SLOT_GROUP_BUTTON, ODDI_RELEASE_SLOT_GROUP, false));
 					}
-					if (show_counters) {
+					if (_settings_client.gui.show_adv_tracerestrict_features) {
 						list.push_back(MakeDropDownListStringItem(STR_ORDER_CHANGE_COUNTER_BUTTON, ODDI_CHANGE_COUNTER, false));
 					}
 					list.push_back(MakeDropDownListStringItem(STR_ORDER_LABEL_TEXT_BUTTON, ODDI_LABEL_TEXT, false));
