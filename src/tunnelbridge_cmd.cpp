@@ -2036,7 +2036,7 @@ static void DrawBridgeSignalOnMiddlePart(const TileInfo *ti, TileIndex bridge_st
 				sprite.pal = PAL_NONE;
 			}
 
-			AddSortableSpriteToDraw(sprite.sprite, sprite.pal, x, y, z + 5, {{0, 0, BB_Z_SEPARATOR}, {1, 1, TILE_HEIGHT}, {0, 0, -BB_Z_SEPARATOR}}, IsTransparencySet(TO_BRIDGES));
+			AddSortableSpriteToDraw(sprite.sprite, sprite.pal, x, y, z + 5, {{0, 0, BB_Z_SEPARATOR}, {1, 1, TILE_HEIGHT}, {0, 0, -BB_Z_SEPARATOR}}, IsTransparencySet(TO_BRIDGES) && !_settings_client.gui.always_show_bridge_middle_signals);
 			break;
 		}
 		m2_position++;
@@ -2693,8 +2693,10 @@ void DrawBridgeMiddle(const TileInfo *ti)
 		if (HasRailCatenaryDrawn(GetRailType(rampsouth))) {
 			DrawRailCatenaryOnBridge(ti);
 		}
-		if (!IsInvisibilitySet(TO_BRIDGES) && IsTunnelBridgeSignalSimulationEntrance(rampsouth)) DrawBridgeSignalOnMiddlePart(ti, rampsouth, rampnorth, z);
-		if (!IsInvisibilitySet(TO_BRIDGES) && IsTunnelBridgeSignalSimulationEntrance(rampnorth)) DrawBridgeSignalOnMiddlePart(ti, rampnorth, rampsouth, z);
+		if (!IsInvisibilitySet(TO_BRIDGES) || _settings_client.gui.always_show_bridge_middle_signals) {
+			if (IsTunnelBridgeSignalSimulationEntrance(rampsouth)) DrawBridgeSignalOnMiddlePart(ti, rampsouth, rampnorth, z);
+			if (IsTunnelBridgeSignalSimulationEntrance(rampnorth)) DrawBridgeSignalOnMiddlePart(ti, rampnorth, rampsouth, z);
+		}
 	}
 
 	/* draw roof, the component of the bridge which is logically between the vehicle and the camera */

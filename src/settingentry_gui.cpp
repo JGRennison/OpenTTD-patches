@@ -882,6 +882,7 @@ SettingsContainer &GetSettingsTree()
 				signals->Add(new SettingEntry("gui.show_noentrysig_ui"));
 				signals->Add(new SettingEntry("gui.show_adv_tracerestrict_features"));
 				signals->Add(new SettingEntry("gui.adv_sig_bridge_tun_modes"));
+				signals->Add(new SettingEntry("gui.always_show_bridge_middle_signals"));
 			}
 
 			interface->Add(new SettingEntry("gui.toolbar_pos"));
