@@ -2,6 +2,16 @@
 
 * * *
 
+### v0.72.1 (2026-05-04)
+* Fix crash which could occur when showing vehicle overshot station news items.
+* Fix crash when dragging/sizing drop-down related window.
+* Fix crash closing rename station/waypoint window when move tool active.
+* Fix very fast trains overshooting stations when driving backwards.
+* Fix depot listings for trains driving backwards with an articulated rear unit.
+* Add setting to enable news warning when cargo at station appears to be overflowing.
+* Signals on bridges which are transparent/invisible now default to also being transparent/invisible. Add a setting for these signals to always be shown.
+* Bump trunk base from commit 6dce7fdca30e1fc1fc75b6c9e4fe04de96777619 to commit 8b5c4ae96b75925dc0c04b1adf204373a2e6681a.
+
 ### v0.72.0 (2026-04-26)
 * Fix crash which could occur in some cases when a delayed multiplayer command was received for a vehicle which had already been sold/deleted.
 * Fix incorrect waiting average values in graphs for industries using stockpiling.
