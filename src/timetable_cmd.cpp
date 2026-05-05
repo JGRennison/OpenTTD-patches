@@ -202,7 +202,7 @@ CommandCost CmdChangeTimetable(DoCommandFlags flags, VehicleID veh, VehicleOrder
 
 		case MTF_SET_WAIT_FIXED:
 			wait_fixed = data != 0;
-			if (v->type != VEH_TRAIN && wait_fixed && order->IsType(OT_GOTO_WAYPOINT)) {
+			if (v->type != VehicleType::Train && wait_fixed && order->IsType(OT_GOTO_WAYPOINT)) {
 				return CommandCost(STR_ERROR_TIMETABLE_ONLY_WAIT_AT_STATIONS);
 			}
 			break;
@@ -235,7 +235,7 @@ CommandCost CmdChangeTimetable(DoCommandFlags flags, VehicleID veh, VehicleOrder
 				break;
 
 			case OT_GOTO_WAYPOINT:
-				if (v->type != VEH_TRAIN && !clear_field) {
+				if (v->type != VehicleType::Train && !clear_field) {
 					return CommandCost(STR_ERROR_TIMETABLE_ONLY_WAIT_AT_STATIONS);
 				}
 				break;
@@ -269,7 +269,7 @@ CommandCost CmdChangeTimetable(DoCommandFlags flags, VehicleID veh, VehicleOrder
 
 	if (travel_time != order->GetTravelTime() && order->IsType(OT_CONDITIONAL)) return CMD_ERROR;
 	if (travel_fixed != order->IsTravelFixed() && order->IsType(OT_CONDITIONAL)) return CMD_ERROR;
-	if (max_speed != order->GetMaxSpeed() && (order->IsType(OT_CONDITIONAL) || v->type == VEH_AIRCRAFT)) return CMD_ERROR;
+	if (max_speed != order->GetMaxSpeed() && (order->IsType(OT_CONDITIONAL) || v->type == VehicleType::Aircraft)) return CMD_ERROR;
 	if (leave_type != order->GetLeaveType() && order->IsType(OT_CONDITIONAL)) return CMD_ERROR;
 
 	if (flags.Test(DoCommandFlag::Execute)) {

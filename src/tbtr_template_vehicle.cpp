@@ -137,7 +137,7 @@ static void MarkTrainsInGroupAsPendingTemplateReplacement(GroupID gid, const Tem
 	Owner owner = Group::Get(gid)->owner;
 
 	for (const Group *group : Group::Iterate()) {
-		if (group->vehicle_type != VEH_TRAIN || group->owner != owner || group->index == gid) continue;
+		if (group->vehicle_type != VehicleType::Train || group->owner != owner || group->index == gid) continue;
 
 		auto is_descendant = [gid](const Group *g) -> bool {
 			while (true) {
@@ -241,7 +241,7 @@ uint TemplateVehicle::NumGroupsUsingTemplate() const
  */
 void RemoveTemplateReplacementsFromGroupToBeDeleted(const Group *g)
 {
-	if (g->vehicle_type != VEH_TRAIN) return;
+	if (g->vehicle_type != VehicleType::Train) return;
 
 	_template_replacements.erase(g->index);
 	_template_replacement_index_recursive.erase(g->index);
@@ -263,7 +263,7 @@ void ReindexTemplateReplacements()
 
 	_template_replacement_index_recursive.clear();
 	for (const Group *group : Group::Iterate()) {
-		if (group->vehicle_type != VEH_TRAIN) continue;
+		if (group->vehicle_type != VehicleType::Train) continue;
 
 		const Group *g = group;
 		while (true) {

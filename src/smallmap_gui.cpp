@@ -642,7 +642,7 @@ static inline uint32_t GetSmallMapOwnerPixels(TileIndex tile, TileType t)
 }
 
 /** Vehicle colours in #SMT_VEHICLES mode. Indexed by #VehicleType. */
-static const PixelColour _vehicle_type_colours[6] = {
+static constexpr VehicleTypeIndexArray<PixelColour, VehicleType::End> _vehicle_type_colours = {
 	PC_RED, PC_YELLOW, PC_LIGHT_BLUE, PC_WHITE, PC_BLACK, PC_RED
 };
 
@@ -896,7 +896,7 @@ void SmallMapWindow::DrawSmallMapColumn(void *dst, uint xc, uint yc, int pitch, 
 void SmallMapWindow::DrawVehicles(const DrawPixelInfo *dpi, Blitter *blitter) const
 {
 	for (const Vehicle *v : Vehicle::Iterate()) {
-		if (v->type == VEH_EFFECT) continue;
+		if (v->type == VehicleType::Effect) continue;
 		if (v->vehstatus.Any({VehState::Hidden, VehState::Unclickable})) continue;
 
 		/* Remap into flat coordinates. */

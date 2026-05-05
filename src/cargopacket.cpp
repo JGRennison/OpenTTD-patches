@@ -60,7 +60,7 @@ void ChangeOwnershipOfCargoPacketDeferredPayments(Owner old_owner, Owner new_own
 
 inline uint64_t CargoPacketDeferredPaymentKey(CargoPacketID id, CompanyID cid, VehicleType type)
 {
-	return (((uint64_t) id.base()) << 32) | (cid.base() << 24) | (type << 22);
+	return (((uint64_t) id.base()) << 32) | (cid.base() << 24) | (to_underlying(type) << 22);
 }
 
 template <typename F>
@@ -266,10 +266,10 @@ void CargoPacket::PayDeferredPayments()
 		IterateCargoPacketDeferredPayments(this->index, true, [&](Money &payment, CompanyID cid, VehicleType type) {
 			ExpensesType exp;
 			switch (type) {
-				case VEH_TRAIN: exp = EXPENSES_TRAIN_REVENUE; break;
-				case VEH_ROAD: exp = EXPENSES_ROADVEH_REVENUE; break;
-				case VEH_SHIP: exp = EXPENSES_SHIP_REVENUE; break;
-				case VEH_AIRCRAFT: exp = EXPENSES_AIRCRAFT_REVENUE; break;
+				case VehicleType::Train: exp = EXPENSES_TRAIN_REVENUE; break;
+				case VehicleType::Road: exp = EXPENSES_ROADVEH_REVENUE; break;
+				case VehicleType::Ship: exp = EXPENSES_SHIP_REVENUE; break;
+				case VehicleType::Aircraft: exp = EXPENSES_AIRCRAFT_REVENUE; break;
 				default: NOT_REACHED();
 			}
 			SubtractMoneyFromCompany(cid, CommandCost(exp, -payment));

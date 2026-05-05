@@ -557,8 +557,8 @@ struct NewGRFInspectWindow final : Window {
 				for (const Vehicle *u = v->First(); u != nullptr; u = u->Next()) {
 					if (u == v) sel_start = total_width;
 					switch (u->type) {
-						case VEH_TRAIN: total_width += Train      ::From(u)->GetDisplayImageWidth(); break;
-						case VEH_ROAD:  total_width += RoadVehicle::From(u)->GetDisplayImageWidth(); break;
+						case VehicleType::Train: total_width += Train      ::From(u)->GetDisplayImageWidth(); break;
+						case VehicleType::Road:  total_width += RoadVehicle::From(u)->GetDisplayImageWidth(); break;
 						default: NOT_REACHED();
 					}
 					if (u == v) sel_end = total_width;

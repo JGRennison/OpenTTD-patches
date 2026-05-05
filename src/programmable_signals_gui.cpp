@@ -361,7 +361,7 @@ public:
 				SignalSlotCondition *sc = static_cast<SignalSlotCondition*>(sif->condition);
 
 				int selected;
-				DropDownList list = GetSlotDropDownList(this->GetOwner(), sc->slot_id, selected, VEH_TRAIN, true);
+				DropDownList list = GetSlotDropDownList(this->GetOwner(), sc->slot_id, selected, VehicleType::Train, true);
 				if (!list.empty()) ShowDropDownList(this, std::move(list), selected, PROGRAM_WIDGET_COND_SLOT);
 				break;
 			}
@@ -546,7 +546,7 @@ public:
 					TraceRestrictFollowUpCmdData follow_up{ BaseCommandContainer<Commands::ProgpresigModifyInstruction>((StringID)0, this->tile, std::move(follow_up_payload)) };
 					if (qsm == QSM_NEW_SLOT) {
 						TraceRestrictCreateSlotCmdData data;
-						data.vehtype = VEH_TRAIN;
+						data.vehtype = VehicleType::Train;
 						data.parent = INVALID_TRACE_RESTRICT_SLOT_GROUP;
 						data.name = std::move(*str);
 						data.max_occupancy = TRACE_RESTRICT_SLOT_DEFAULT_MAX_OCCUPANCY;
@@ -674,12 +674,12 @@ public:
 	{
 		switch (widget) {
 			case PROGRAM_WIDGET_COND_SLOT: {
-				GuiShowTooltips(this, TraceRestrictPrepareSlotCounterSelectTooltip(STR_PROGSIG_COND_SLOT_TOOLTIP, VEH_TRAIN), close_cond);
+				GuiShowTooltips(this, TraceRestrictPrepareSlotCounterSelectTooltip(STR_PROGSIG_COND_SLOT_TOOLTIP, VehicleType::Train), close_cond);
 				return true;
 			}
 
 			case PROGRAM_WIDGET_COND_COUNTER: {
-				GuiShowTooltips(this, TraceRestrictPrepareSlotCounterSelectTooltip(STR_PROGSIG_COND_COUNTER_TOOLTIP, VEH_TRAIN), close_cond);
+				GuiShowTooltips(this, TraceRestrictPrepareSlotCounterSelectTooltip(STR_PROGSIG_COND_COUNTER_TOOLTIP, VehicleType::Train), close_cond);
 				return true;
 			}
 

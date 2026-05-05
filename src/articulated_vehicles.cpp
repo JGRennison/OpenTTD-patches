@@ -39,7 +39,7 @@ static EngineID GetNextArticulatedPart(uint index, EngineID front_type, Vehicle 
 
 	const Engine *front_engine = Engine::Get(front_type);
 
-	if (front_engine->type == VEH_SHIP && !(front_engine->GetGRF() != nullptr && HasBit(front_engine->GetGRF()->observed_feature_tests, GFTOF_MULTI_PART_SHIPS))) {
+	if (front_engine->type == VehicleType::Ship && !(front_engine->GetGRF() != nullptr && HasBit(front_engine->GetGRF()->observed_feature_tests, GFTOF_MULTI_PART_SHIPS))) {
 		return EngineID::Invalid();
 	}
 
@@ -352,7 +352,7 @@ void CheckConsistencyOfArticulatedVehicle(const Vehicle *v)
 		real_refit_union.Set(refit_mask);
 		if (refit_mask.Any()) real_refit_intersection = real_refit_intersection & refit_mask;
 
-		assert(v->cargo_type < NUM_CARGO || (v->type == VEH_TRAIN && Train::From(v)->IsVirtual()));
+		assert(v->cargo_type < NUM_CARGO || (v->type == VehicleType::Train && Train::From(v)->IsVirtual()));
 		if (v->cargo_cap > 0) real_default_cargoes.Set(v->cargo_type);
 
 		v = v->HasArticulatedPart() ? v->GetNextArticulatedPart() : nullptr;
@@ -393,7 +393,7 @@ void AddArticulatedParts(Vehicle *first)
 		if (!Vehicle::CanAllocateItem()) return;
 
 		GroundVehicleCache *gcache = nullptr;
-		if (type == VEH_TRAIN || type == VEH_ROAD) {
+		if (type == VehicleType::Train || type == VehicleType::Road) {
 			gcache = v->GetGroundVehicleCache();
 			gcache->first_engine = v->engine_type; // Needs to be set before first callback
 		}
@@ -402,7 +402,7 @@ void AddArticulatedParts(Vehicle *first)
 		switch (type) {
 			default: NOT_REACHED();
 
-			case VEH_TRAIN: {
+			case VehicleType::Train: {
 				Train *front = Train::From(first);
 				Train *t = Train::Create();
 				v->SetNext(t);
@@ -428,7 +428,7 @@ void AddArticulatedParts(Vehicle *first)
 				break;
 			}
 
-			case VEH_ROAD: {
+			case VehicleType::Road: {
 				RoadVehicle *front = RoadVehicle::From(first);
 				RoadVehicle *rv = RoadVehicle::Create();
 				v->SetNext(rv);
@@ -456,7 +456,7 @@ void AddArticulatedParts(Vehicle *first)
 				break;
 			}
 
-			case VEH_SHIP: {
+			case VehicleType::Ship: {
 				Ship *front = Ship::From(first);
 				Ship *s = Ship::Create();
 				v->SetNext(s);
@@ -493,7 +493,7 @@ void AddArticulatedParts(Vehicle *first)
 		v->value = 0;
 		v->random_bits = Random();
 
-		if (type == VEH_SHIP) continue;
+		if (type == VehicleType::Ship) continue;
 
 		v->direction = first->direction;
 		v->tile = first->tile;
@@ -507,7 +507,7 @@ void AddArticulatedParts(Vehicle *first)
 
 		if (flip_image) v->spritenum++;
 
-		if (v->type == VEH_TRAIN) {
+		if (v->type == VehicleType::Train) {
 			auto prob = TestVehicleBuildProbability(v, BuildProbabilityType::Reversed);
 			if (prob.has_value()) Train::From(v)->flags.Set(VehicleRailFlag::Flipped, prob.value());
 		}

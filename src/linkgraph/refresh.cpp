@@ -57,7 +57,7 @@
 
 			RefreshFlags flags = {};
 			if (iter_cargo_mask.Any(have_cargo_mask)) flags.Set(RefreshFlag::HasCargo);
-			if (v->type == VEH_AIRCRAFT) flags.Set(RefreshFlag::Aircraft);
+			if (v->type == VehicleType::Aircraft) flags.Set(RefreshFlag::Aircraft);
 			refresher.RefreshLinks(first, first, { 0, TimetableTravelTimeFlag::NoWaitTime }, flags);
 		}
 
@@ -109,7 +109,7 @@ bool LinkRefresher::HandleRefit(CargoType refit_cargo)
 		CargoType temp_cargo_type = v->cargo_type;
 		uint8_t temp_subtype = v->cargo_subtype;
 		v->cargo_type = this->cargo;
-		if (e->refit_capacity_values == nullptr || !(e->callbacks_used & SGCU_REFIT_CB_ALL_CARGOES) || this->cargo == e->GetDefaultCargoType() || (e->type == VEH_AIRCRAFT && IsCargoInClass(this->cargo, CargoClass::Passengers))) {
+		if (e->refit_capacity_values == nullptr || !(e->callbacks_used & SGCU_REFIT_CB_ALL_CARGOES) || this->cargo == e->GetDefaultCargoType() || (e->type == VehicleType::Aircraft && IsCargoInClass(this->cargo, CargoClass::Passengers))) {
 			/* This can be omitted when the refit capacity values are already determined, and the capacity is definitely from the refit callback */
 			v->cargo_subtype = GetBestFittingSubType(v, v, this->cargo);
 		}
@@ -135,7 +135,7 @@ bool LinkRefresher::HandleRefit(CargoType refit_cargo)
 		++refit_it;
 
 		/* Special case for aircraft with mail. */
-		if (v->type == VEH_AIRCRAFT) {
+		if (v->type == VehicleType::Aircraft) {
 			if (mail_capacity < refit_it->remaining) {
 				this->capacities[refit_it->cargo] -= refit_it->remaining - mail_capacity;
 				refit_it->remaining = mail_capacity;

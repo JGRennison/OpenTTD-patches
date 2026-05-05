@@ -123,11 +123,11 @@ NLOHMANN_JSON_SERIALIZE_ENUM(Colours, {
 })
 
 NLOHMANN_JSON_SERIALIZE_ENUM(VehicleType, {
-	{VEH_END, nullptr},
-	{VEH_TRAIN, "train"},
-	{VEH_ROAD, "road"},
-	{VEH_SHIP, "ship"},
-	{VEH_AIRCRAFT, "aircraft"}
+	{VehicleType::End, nullptr},
+	{VehicleType::Train, "train"},
+	{VehicleType::Road, "road"},
+	{VehicleType::Ship, "ship"},
+	{VehicleType::Aircraft, "aircraft"}
 })
 
 NLOHMANN_JSON_SERIALIZE_ENUM(OrderConditionVariable, {

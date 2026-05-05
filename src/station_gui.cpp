@@ -439,16 +439,16 @@ protected:
 
 		auto can_vehicle_use_facility = [&](const Vehicle *v) -> bool {
 			switch (v->type) {
-				case VEH_TRAIN:
+				case VehicleType::Train:
 					return facilities.Test(StationFacility::Train);
 
-				case VEH_ROAD:
+				case VehicleType::Road:
 					return facilities.Test(RoadVehicle::From(v)->IsBus() ? StationFacility::BusStop : StationFacility::TruckStop);
 
-				case VEH_AIRCRAFT:
+				case VehicleType::Aircraft:
 					return facilities.Test(StationFacility::Airport);
 
-				case VEH_SHIP:
+				case VehicleType::Ship:
 					return facilities.Test(StationFacility::Dock);
 
 				default:
@@ -1462,10 +1462,10 @@ struct StationViewWindow : public Window {
 	void Close([[maybe_unused]] int data = 0) override
 	{
 		ZoningStationWindowOpenClose(Station::Get(window_number));
-		CloseWindowById(WC_TRAINS_LIST,   VehicleListIdentifier(VL_STATION_LIST, VEH_TRAIN,    this->owner, this->window_number).ToWindowNumber(), false);
-		CloseWindowById(WC_ROADVEH_LIST,  VehicleListIdentifier(VL_STATION_LIST, VEH_ROAD,     this->owner, this->window_number).ToWindowNumber(), false);
-		CloseWindowById(WC_SHIPS_LIST,    VehicleListIdentifier(VL_STATION_LIST, VEH_SHIP,     this->owner, this->window_number).ToWindowNumber(), false);
-		CloseWindowById(WC_AIRCRAFT_LIST, VehicleListIdentifier(VL_STATION_LIST, VEH_AIRCRAFT, this->owner, this->window_number).ToWindowNumber(), false);
+		CloseWindowById(WC_TRAINS_LIST,   VehicleListIdentifier(VL_STATION_LIST, VehicleType::Train,    this->owner, this->window_number).ToWindowNumber(), false);
+		CloseWindowById(WC_ROADVEH_LIST,  VehicleListIdentifier(VL_STATION_LIST, VehicleType::Road,     this->owner, this->window_number).ToWindowNumber(), false);
+		CloseWindowById(WC_SHIPS_LIST,    VehicleListIdentifier(VL_STATION_LIST, VehicleType::Ship,     this->owner, this->window_number).ToWindowNumber(), false);
+		CloseWindowById(WC_AIRCRAFT_LIST, VehicleListIdentifier(VL_STATION_LIST, VehicleType::Aircraft, this->owner, this->window_number).ToWindowNumber(), false);
 
 		SetViewportCatchmentStation(Station::Get(this->window_number), false);
 		this->Window::Close();
@@ -1581,18 +1581,18 @@ struct StationViewWindow : public Window {
 
 		this->vscroll->SetCount(cargo.GetNumChildren()); // update scrollbar
 
-		uint8_t have_veh_types = 0;
+		EnumBitSet<VehicleType, uint8_t> have_veh_types{};
 		IterateOrderRefcountMapForDestinationID(st->index, [&](CompanyID cid, OrderType order_type, VehicleType veh_type, uint32_t refcount) {
-			SetBit(have_veh_types, veh_type);
+			have_veh_types.Set(veh_type);
 			return true;
 		});
 
 		/* disable some buttons */
 		this->SetWidgetDisabledState(WID_SV_RENAME,   st->owner != _local_company);
-		this->SetWidgetDisabledState(WID_SV_TRAINS,   !st->facilities.Test(StationFacility::Train) && !HasBit(have_veh_types, VEH_TRAIN));
-		this->SetWidgetDisabledState(WID_SV_ROADVEHS, !st->facilities.Test(StationFacility::TruckStop) && !st->facilities.Test(StationFacility::BusStop) && !HasBit(have_veh_types, VEH_ROAD));
-		this->SetWidgetDisabledState(WID_SV_SHIPS,    !st->facilities.Test(StationFacility::Dock) && !HasBit(have_veh_types, VEH_SHIP));
-		this->SetWidgetDisabledState(WID_SV_PLANES,   !st->facilities.Test(StationFacility::Airport) && !HasBit(have_veh_types, VEH_AIRCRAFT));
+		this->SetWidgetDisabledState(WID_SV_TRAINS,   !st->facilities.Test(StationFacility::Train) && !have_veh_types.Test(VehicleType::Train));
+		this->SetWidgetDisabledState(WID_SV_ROADVEHS, !st->facilities.Test(StationFacility::TruckStop) && !st->facilities.Test(StationFacility::BusStop) && !have_veh_types.Test(VehicleType::Road));
+		this->SetWidgetDisabledState(WID_SV_SHIPS,    !st->facilities.Test(StationFacility::Dock) && !have_veh_types.Test(VehicleType::Ship));
+		this->SetWidgetDisabledState(WID_SV_PLANES,   !st->facilities.Test(StationFacility::Airport) && !have_veh_types.Test(VehicleType::Aircraft));
 		this->SetWidgetDisabledState(WID_SV_CLOSE_AIRPORT, !st->facilities.Test(StationFacility::Airport) || st->owner != _local_company || st->owner == OWNER_NONE); // Also consider SE, where _local_company == OWNER_NONE
 		this->SetWidgetLoweredState(WID_SV_CLOSE_AIRPORT, st->facilities.Test(StationFacility::Airport) && st->airport.blocks.Test(AirportBlock::AirportClosed));
 
@@ -2826,10 +2826,10 @@ public:
 
 		auto to_display_speed = [&](uint speed) -> uint {
 			switch (ge->last_vehicle_type) {
-				case VEH_SHIP:
+				case VehicleType::Ship:
 					return speed / 2;
 
-				case VEH_AIRCRAFT:
+				case VehicleType::Aircraft:
 					/* Undo conversion in GetSpeedOldUnits */
 					return (speed * 128) / 10;
 
@@ -2838,15 +2838,15 @@ public:
 			}
 		};
 
-		auto get_vtype_rating_str = [&](uint8_t vt) -> StringID {
-			switch (ge->last_vehicle_type) {
-				case VEH_TRAIN:
+		auto get_vtype_rating_str = [](VehicleType vt) -> StringID {
+			switch (vt) {
+				case VehicleType::Train:
 					return STR_STATION_RATING_TOOLTIP_TRAIN;
-				case VEH_ROAD:
+				case VehicleType::Road:
 					return STR_STATION_RATING_TOOLTIP_ROAD_VEHICLE;
-				case VEH_SHIP:
+				case VehicleType::Ship:
 					return STR_STATION_RATING_TOOLTIP_SHIP;
-				case VEH_AIRCRAFT:
+				case VehicleType::Aircraft:
 					return STR_STATION_RATING_TOOLTIP_AIRCRAFT;
 				default:
 					return STR_STATION_RATING_TOOLTIP_INVALID;
@@ -2926,7 +2926,7 @@ public:
 					wait_time_stage = TC_ORANGE;
 				}
 
-				this->data[line_nr] = GetString((ge->last_vehicle_type == VEH_SHIP) ? STR_STATION_RATING_TOOLTIP_WAITTIME_SHIP : STR_STATION_RATING_TOOLTIP_WAITTIME,
+				this->data[line_nr] = GetString((ge->last_vehicle_type == VehicleType::Ship) ? STR_STATION_RATING_TOOLTIP_WAITTIME_SHIP : STR_STATION_RATING_TOOLTIP_WAITTIME,
 						detailed ? STR_STATION_RATING_MAX_PERCENTAGE : STR_EMPTY,
 						51,
 						STR_STATION_RATING_TOOLTIP_WAITTIME_VALUE,

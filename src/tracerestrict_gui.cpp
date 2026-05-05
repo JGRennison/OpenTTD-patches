@@ -60,8 +60,8 @@
 #include "safeguards.h"
 
 static constexpr uint RECENT_SLOT_HISTORY_SIZE = 8;
-static std::array<jgr::ring_buffer<TraceRestrictSlotID>, VEH_COMPANY_END> _recent_slots;
-static std::array<jgr::ring_buffer<TraceRestrictSlotGroupID>, VEH_COMPANY_END> _recent_slot_groups;
+static VehicleTypeIndexArray<jgr::ring_buffer<TraceRestrictSlotID>> _recent_slots;
+static VehicleTypeIndexArray<jgr::ring_buffer<TraceRestrictSlotGroupID>> _recent_slot_groups;
 static jgr::ring_buffer<TraceRestrictCounterID> _recent_counters;
 
 extern std::array<Sorting, BaseVehicleListWindow::GB_END> _sorting;
@@ -108,7 +108,7 @@ void TraceRestrictEraseRecentCounter(TraceRestrictCounterID index)
 void TraceRestrictRecordRecentSlot(TraceRestrictSlotID index)
 {
 	const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(index);
-	if (slot != nullptr && slot->owner == _local_company && slot->vehicle_type < _recent_slots.size()) {
+	if (slot != nullptr && slot->owner == _local_company && to_underlying(slot->vehicle_type) < _recent_slots.size()) {
 		RecordRecentSlotOrCounter(_recent_slots[slot->vehicle_type], index);
 	}
 }
@@ -116,7 +116,7 @@ void TraceRestrictRecordRecentSlot(TraceRestrictSlotID index)
 void TraceRestrictRecordRecentSlotGroup(TraceRestrictSlotGroupID index)
 {
 	const TraceRestrictSlotGroup *sg = TraceRestrictSlotGroup::GetIfValid(index);
-	if (sg != nullptr && sg->owner == _local_company && sg->vehicle_type < _recent_slot_groups.size()) {
+	if (sg != nullptr && sg->owner == _local_company && to_underlying(sg->vehicle_type) < _recent_slot_groups.size()) {
 		RecordRecentSlotOrCounter(_recent_slot_groups[sg->vehicle_type], index);
 	}
 }
@@ -718,7 +718,7 @@ static DropDownList GetGroupDropDownList(Owner owner, GroupID group_id, int &sel
 	robin_hood::unordered_set<GroupID> seen_parents;
 
 	for (const Group *g : Group::Iterate()) {
-		if (g->owner == owner && g->vehicle_type == VEH_TRAIN) {
+		if (g->owner == owner && g->vehicle_type == VehicleType::Train) {
 			list.push_back(g);
 			seen_parents.insert(g->parent);
 		}
@@ -889,7 +889,7 @@ static void GetSlotDropDownListIntlCommon(DropDownList &dlist, Owner owner, int 
 		if (indent == 0 || slot->vehicle_type == vehtype) {
 			dlist.push_back(MakeDropDownListIndentStringItem(indent, GetString(STR_TRACE_RESTRICT_SLOT_NAME, id), id.base(), false));
 		} else {
-			dlist.push_back(MakeDropDownListIndentStringItem(indent, GetString(STR_TRACE_RESTRICT_SLOT_NAME_PREFIXED, STR_REPLACE_VEHICLE_TRAIN + slot->vehicle_type, id), id.base(), false));
+			dlist.push_back(MakeDropDownListIndentStringItem(indent, GetString(STR_TRACE_RESTRICT_SLOT_NAME_PREFIXED, STR_REPLACE_VEHICLE_TRAIN + to_underlying(slot->vehicle_type), id), id.base(), false));
 		}
 	};
 
@@ -900,7 +900,7 @@ static void GetSlotDropDownListIntlCommon(DropDownList &dlist, Owner owner, int 
 		} else if (indent == 0 || sg->vehicle_type == vehtype) {
 			dlist.push_back(std::make_unique<DropDownUnselectable<DropDownListIndentStringItem>>(indent, GetString(STR_TRACE_RESTRICT_SLOT_GROUP_NAME_DOWN, id), id.base(), false));
 		} else {
-			dlist.push_back(std::make_unique<DropDownUnselectable<DropDownListIndentStringItem>>(indent, GetString(STR_TRACE_RESTRICT_SLOT_GROUP_NAME_DOWN_PREFIXED, STR_REPLACE_VEHICLE_TRAIN + sg->vehicle_type, id), id.base(), false));
+			dlist.push_back(std::make_unique<DropDownUnselectable<DropDownListIndentStringItem>>(indent, GetString(STR_TRACE_RESTRICT_SLOT_GROUP_NAME_DOWN_PREFIXED, STR_REPLACE_VEHICLE_TRAIN + to_underlying(sg->vehicle_type), id), id.base(), false));
 		}
 	};
 
@@ -1002,7 +1002,7 @@ DropDownList GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int &
 {
 	DropDownList dlist;
 
-	if (_shift_pressed && _settings_game.economy.infrastructure_sharing[vehtype]) {
+	if (_shift_pressed && IsInfrastructureSharingEnabled(vehtype)) {
 		for (const Company *c : Company::Iterate()) {
 			if (c->index == owner) continue;
 
@@ -1036,7 +1036,7 @@ DropDownList GetSlotGroupDropDownList(Owner owner, TraceRestrictSlotGroupID slot
 {
 	DropDownList dlist;
 
-	if (_shift_pressed && _settings_game.economy.infrastructure_sharing[vehtype]) {
+	if (_shift_pressed && IsInfrastructureSharingEnabled(vehtype)) {
 		for (const Company *c : Company::Iterate()) {
 			if (c->index == owner) continue;
 
@@ -1103,7 +1103,7 @@ DropDownList GetCounterDropDownList(Owner owner, TraceRestrictCounterID ctr_id, 
 {
 	DropDownList dlist;
 
-	if (_shift_pressed && _settings_game.economy.infrastructure_sharing[VEH_TRAIN]) {
+	if (_shift_pressed && IsInfrastructureSharingEnabled(VehicleType::Train)) {
 		for (const Company *c : Company::Iterate()) {
 			if (c->index == owner) continue;
 
@@ -1353,8 +1353,8 @@ static uint ConvertIntegerValue(TraceRestrictValueType type, uint in, bool to_di
 
 		case TRVT_SPEED:
 			return to_display
-					? ConvertKmhishSpeedToDisplaySpeed(in, VEH_TRAIN)
-					: ConvertDisplaySpeedToKmhishSpeed(in, VEH_TRAIN);
+					? ConvertKmhishSpeedToDisplaySpeed(in, VehicleType::Train)
+					: ConvertDisplaySpeedToKmhishSpeed(in, VehicleType::Train);
 
 		case TRVT_WEIGHT:
 			return to_display
@@ -1400,7 +1400,7 @@ static DecimalValue ConvertValueToDecimal(TraceRestrictValueType type, uint in)
 			return ConvertForceWeightRatioToDisplay(static_cast<int64_t>(in) * 1000);
 
 		case TRVT_SPEED:
-			return { ConvertKmhishSpeedToDisplaySpeed(in, VEH_TRAIN), _settings_game.locale.units_velocity == 3 ? 1 : 0 };
+			return { ConvertKmhishSpeedToDisplaySpeed(in, VehicleType::Train), _settings_game.locale.units_velocity == 3 ? 1 : 0 };
 
 		default:
 			NOT_REACHED();
@@ -1420,7 +1420,7 @@ static uint ConvertDecimalToValue(TraceRestrictValueType type, double in)
 			return ConvertDisplayToForceWeightRatio(in) / 1000;
 
 		case TRVT_SPEED:
-			return ConvertDisplaySpeedToKmhishSpeed(in * (_settings_game.locale.units_velocity == 3 ? 10 : 1), VEH_TRAIN);
+			return ConvertDisplaySpeedToKmhishSpeed(in * (_settings_game.locale.units_velocity == 3 ? 10 : 1), VehicleType::Train);
 
 		default:
 			NOT_REACHED();
@@ -1616,7 +1616,7 @@ static void FillInstructionString(format_buffer &instruction_string, const Trace
 							break;
 
 						case TROCAF_DEPOT:
-							set_conditional_common(STR_TRACE_RESTRICT_CONDITIONAL_ORDER_DEPOT, VEH_TRAIN, item.GetValue());
+							set_conditional_common(STR_TRACE_RESTRICT_CONDITIONAL_ORDER_DEPOT, VehicleType::Train, item.GetValue());
 							break;
 
 						default:
@@ -2214,7 +2214,7 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 
 EncodedString TraceRestrictPrepareSlotCounterSelectTooltip(StringID base_str, VehicleType vtype)
 {
-	if (_settings_game.economy.infrastructure_sharing[vtype]) {
+	if (IsInfrastructureSharingEnabled(vtype)) {
 		return GetEncodedString(STR_TRACE_RESTRICT_OTHER_COMPANY_TOOLTIP_EXTRA, STR_TRACE_RESTRICT_RECENTLY_USED_TOOLTIP_EXTRA, base_str);
 	} else {
 		return GetEncodedString(STR_TRACE_RESTRICT_RECENTLY_USED_TOOLTIP_EXTRA, base_str);
@@ -2576,7 +2576,7 @@ public:
 					case TRVT_GROUP_INDEX: {
 						int selected;
 						DropDownList dlist;
-						if (_shift_pressed && _settings_game.economy.infrastructure_sharing[VEH_TRAIN]) {
+						if (_shift_pressed && IsInfrastructureSharingEnabled(VehicleType::Train)) {
 							selected = -1;
 							if (item.GetValue() == DEFAULT_GROUP) selected = DEFAULT_GROUP.base();
 							dlist.push_back(MakeDropDownListStringItem(STR_GROUP_DEFAULT_TRAINS, DEFAULT_GROUP.base(), false));
@@ -2607,14 +2607,14 @@ public:
 
 					case TRVT_SLOT_INDEX: {
 						int selected;
-						DropDownList dlist = GetSlotDropDownList(this->GetOwner(), item.GetValueAsSlot(), selected, VEH_TRAIN, IsTraceRestrictTypeNonMatchingVehicleTypeSlot(item.GetType()));
+						DropDownList dlist = GetSlotDropDownList(this->GetOwner(), item.GetValueAsSlot(), selected, VehicleType::Train, IsTraceRestrictTypeNonMatchingVehicleTypeSlot(item.GetType()));
 						if (!dlist.empty()) ShowDropDownList(this, std::move(dlist), selected, TR_WIDGET_VALUE_DROPDOWN);
 						break;
 					}
 
 					case TRVT_SLOT_GROUP_INDEX: {
 						int selected;
-						DropDownList dlist = GetSlotGroupDropDownList(this->GetOwner(), item.GetValueAsSlotGroup(), selected, VEH_TRAIN);
+						DropDownList dlist = GetSlotGroupDropDownList(this->GetOwner(), item.GetValueAsSlotGroup(), selected, VehicleType::Train);
 						if (!dlist.empty()) ShowDropDownList(this, std::move(dlist), selected, TR_WIDGET_VALUE_DROPDOWN);
 						break;
 					}
@@ -2662,7 +2662,7 @@ public:
 				switch (GetTraceRestrictTypeProperties(item).value_type) {
 					case TRVT_SLOT_INDEX_INT: {
 						int selected;
-						DropDownList dlist = GetSlotDropDownList(this->GetOwner(), item.GetValueAsSlot(), selected, VEH_TRAIN, IsTraceRestrictTypeNonMatchingVehicleTypeSlot(item.GetType()));
+						DropDownList dlist = GetSlotDropDownList(this->GetOwner(), item.GetValueAsSlot(), selected, VehicleType::Train, IsTraceRestrictTypeNonMatchingVehicleTypeSlot(item.GetType()));
 						if (!dlist.empty()) ShowDropDownList(this, std::move(dlist), selected, TR_WIDGET_LEFT_AUX_DROPDOWN);
 						break;
 					}
@@ -2839,7 +2839,7 @@ public:
 			case QSM_NEW_SLOT:
 				if (type == TRVT_SLOT_INDEX || type == TRVT_SLOT_INDEX_INT) {
 					TraceRestrictCreateSlotCmdData data;
-					data.vehtype = VEH_TRAIN;
+					data.vehtype = VehicleType::Train;
 					data.parent = INVALID_TRACE_RESTRICT_SLOT_GROUP;
 					data.name = std::move(*str);
 					data.max_occupancy = TRACE_RESTRICT_SLOT_DEFAULT_MAX_OCCUPANCY;
@@ -3179,7 +3179,7 @@ public:
 			return;
 		}
 
-		if (!IsInfraTileUsageAllowed(VEH_TRAIN, _local_company, tile)) {
+		if (!IsInfraTileUsageAllowed(VehicleType::Train, _local_company, tile)) {
 			ShowErrorMessage(GetEncodedString(error_message), GetEncodedString(STR_ERROR_AREA_IS_OWNED_BY_ANOTHER), WL_INFO);
 			return;
 		}
@@ -3196,7 +3196,7 @@ public:
 		TraceRestrictValueType val_type = GetTraceRestrictTypeProperties(item).value_type;
 		if (val_type != TRVT_TILE_INDEX && val_type != TRVT_TILE_INDEX_THROUGH) return;
 
-		if (!IsInfraTileUsageAllowed(VEH_TRAIN, _local_company, tile)) {
+		if (!IsInfraTileUsageAllowed(VehicleType::Train, _local_company, tile)) {
 			ShowErrorMessage(GetEncodedString(error_message), GetEncodedString(STR_ERROR_AREA_IS_OWNED_BY_ANOTHER), WL_INFO);
 			return;
 		}
@@ -3450,11 +3450,11 @@ public:
 				switch (GetTraceRestrictTypeProperties(this->GetSelected().instruction).value_type) {
 					case TRVT_SLOT_INDEX:
 					case TRVT_SLOT_GROUP_INDEX:
-						GuiShowTooltips(this, TraceRestrictPrepareSlotCounterSelectTooltip(STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP, VEH_TRAIN), close_cond);
+						GuiShowTooltips(this, TraceRestrictPrepareSlotCounterSelectTooltip(STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP, VehicleType::Train), close_cond);
 						return true;
 
 					case TRVT_GROUP_INDEX:
-						if (_settings_game.economy.infrastructure_sharing[VEH_TRAIN]) {
+						if (IsInfrastructureSharingEnabled(VehicleType::Train)) {
 							GuiShowTooltips(this, GetEncodedString(STR_TRACE_RESTRICT_OTHER_COMPANY_TOOLTIP_EXTRA, STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP, STR_NULL), close_cond);
 							return true;
 						}
@@ -3469,7 +3469,7 @@ public:
 				switch (GetTraceRestrictTypeProperties(this->GetSelected().instruction).value_type) {
 					case TRVT_SLOT_INDEX_INT:
 					case TRVT_COUNTER_INDEX_INT:
-						GuiShowTooltips(this, TraceRestrictPrepareSlotCounterSelectTooltip(STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP, VEH_TRAIN), close_cond);
+						GuiShowTooltips(this, TraceRestrictPrepareSlotCounterSelectTooltip(STR_TRACE_RESTRICT_COND_VALUE_TOOLTIP, VehicleType::Train), close_cond);
 						return true;
 
 					default:
@@ -4768,7 +4768,7 @@ private:
 				break;
 
 			case SlotItemType::Special:
-				str = GetString(STR_GROUP_ALL_TRAINS + this->vli.vtype);
+				str = GetString(STR_GROUP_ALL_TRAINS + to_underlying(this->vli.vtype));
 				break;
 
 			default:
@@ -4828,10 +4828,10 @@ public:
 		this->slots.NeedResort();
 		this->BuildSlotList(vli.company);
 
-		this->GetWidget<NWidgetCore>(WID_TRSL_CREATE_SLOT)->SetSprite(SPR_GROUP_CREATE_TRAIN + this->vli.vtype);
-		this->GetWidget<NWidgetCore>(WID_TRSL_RENAME_SLOT)->SetSprite(SPR_GROUP_RENAME_TRAIN + this->vli.vtype);
-		this->GetWidget<NWidgetCore>(WID_TRSL_DELETE_SLOT)->SetSprite(SPR_GROUP_DELETE_TRAIN + this->vli.vtype);
-		this->GetWidget<NWidgetCore>(WID_TRSL_LIST_VEHICLE)->SetToolTip(STR_VEHICLE_LIST_TRAIN_LIST_TOOLTIP + this->vli.vtype);
+		this->GetWidget<NWidgetCore>(WID_TRSL_CREATE_SLOT)->SetSprite(SPR_GROUP_CREATE_TRAIN + to_underlying(this->vli.vtype));
+		this->GetWidget<NWidgetCore>(WID_TRSL_RENAME_SLOT)->SetSprite(SPR_GROUP_RENAME_TRAIN + to_underlying(this->vli.vtype));
+		this->GetWidget<NWidgetCore>(WID_TRSL_DELETE_SLOT)->SetSprite(SPR_GROUP_DELETE_TRAIN + to_underlying(this->vli.vtype));
+		this->GetWidget<NWidgetCore>(WID_TRSL_LIST_VEHICLE)->SetToolTip(STR_VEHICLE_LIST_TRAIN_LIST_TOOLTIP + to_underlying(this->vli.vtype));
 
 		this->FinishInitNested(window_number);
 		this->owner = vli.company;
@@ -4922,7 +4922,7 @@ public:
 				return GetString(this->GetCargoFilterLabel(this->cargo_filter_criteria));
 
 			case WID_TRSL_CAPTION:
-				return GetString(STR_TRACE_RESTRICT_SLOT_CAPTION, STR_VEHICLE_TYPE_TRAINS + this->vli.vtype);
+				return GetString(STR_TRACE_RESTRICT_SLOT_CAPTION, STR_VEHICLE_TYPE_TRAINS + to_underlying(this->vli.vtype));
 
 			default:
 				return this->Window::GetWidgetString(widget, stringid);

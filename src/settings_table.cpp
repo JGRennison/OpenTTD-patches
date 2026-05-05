@@ -351,10 +351,10 @@ static int32_t GetDefaultServiceInterval(const IntSettingDesc &sd, VehicleType t
 
 	if (EconTime::UsingWallclockUnits((_game_mode == GM_MENU))) {
 		switch (type) {
-			case VEH_TRAIN:    return DEF_SERVINT_MINUTES_TRAINS;
-			case VEH_ROAD:     return DEF_SERVINT_MINUTES_ROADVEH;
-			case VEH_AIRCRAFT: return DEF_SERVINT_MINUTES_AIRCRAFT;
-			case VEH_SHIP:     return DEF_SERVINT_MINUTES_SHIPS;
+			case VehicleType::Train: return DEF_SERVINT_MINUTES_TRAINS;
+			case VehicleType::Road: return DEF_SERVINT_MINUTES_ROADVEH;
+			case VehicleType::Aircraft: return DEF_SERVINT_MINUTES_AIRCRAFT;
+			case VehicleType::Ship: return DEF_SERVINT_MINUTES_SHIPS;
 			default: NOT_REACHED();
 		}
 	}
@@ -826,7 +826,7 @@ static void InvalidateCompanyWindow(int32_t new_value)
 
 static void EnableSingleVehSharedOrderGuiChanged(int32_t new_value)
 {
-	for (VehicleType type = VEH_BEGIN; type < VEH_COMPANY_END; type++) {
+	for (VehicleType type = VehicleType::Begin; type < VehicleType::CompanyEnd; type++) {
 		InvalidateWindowClassesData(GetWindowClassForVehicleType(type));
 	}
 	SetWindowClassesDirty(WC_VEHICLE_TIMETABLE);
@@ -1169,7 +1169,7 @@ static void StationCatchmentChanged(int32_t new_value)
 
 static bool CheckSharingRail(int32_t &new_value)
 {
-	return CheckSharingChangePossible(VEH_TRAIN, new_value);
+	return CheckSharingChangePossible(VehicleType::Train, new_value);
 }
 
 static void SharingRailChanged(int32_t new_value)
@@ -1179,17 +1179,17 @@ static void SharingRailChanged(int32_t new_value)
 
 static bool CheckSharingRoad(int32_t &new_value)
 {
-	return CheckSharingChangePossible(VEH_ROAD, new_value);
+	return CheckSharingChangePossible(VehicleType::Road, new_value);
 }
 
 static bool CheckSharingWater(int32_t &new_value)
 {
-	return CheckSharingChangePossible(VEH_SHIP, new_value);
+	return CheckSharingChangePossible(VehicleType::Ship, new_value);
 }
 
 static bool CheckSharingAir(int32_t &new_value)
 {
-	return CheckSharingChangePossible(VEH_AIRCRAFT, new_value);
+	return CheckSharingChangePossible(VehicleType::Aircraft, new_value);
 }
 
 static void MaxVehiclesChanged(int32_t new_value)
@@ -1204,14 +1204,14 @@ static void ImprovedBreakdownsSettingChanged(int32_t new_value)
 
 	for (Vehicle *v : Vehicle::IterateFrontOnly()) {
 		switch (v->type) {
-			case VEH_TRAIN:
+			case VehicleType::Train:
 				if (v->IsFrontEngine()) {
 					v->breakdown_chance_factor = 128;
 					Train::From(v)->UpdateAcceleration();
 				}
 				break;
 
-			case VEH_ROAD:
+			case VehicleType::Road:
 				if (v->IsFrontEngine()) {
 					v->breakdown_chance_factor = 128;
 				}

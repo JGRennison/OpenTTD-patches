@@ -200,12 +200,12 @@ struct VehiclePoolOps {
 	static inline uintptr_t PutPtr(Vehicle *v, VehicleType vtype)
 	{
 		uintptr_t ptr = reinterpret_cast<uintptr_t>(v);
-		SB(ptr, 60, 3, vtype & 7);
+		SB(ptr, 60, 3, to_underlying(vtype) & 7);
 		return ptr;
 	}
 
 	static constexpr uintptr_t NullValue() { return 0; }
-	static constexpr VehicleType DefaultItemParam() { return VEH_INVALID; }
+	static constexpr VehicleType DefaultItemParam() { return VehicleType::Invalid; }
 
 	static constexpr VehicleType GetVehicleType(uintptr_t ptr) { return static_cast<VehicleType>(GB(ptr, 60, 3)); }
 	static constexpr bool IsNonFrontVehiclePtr(uintptr_t ptr) { return HasBit(ptr, 63); }
@@ -398,7 +398,7 @@ public:
 		return 0;
 	}
 
-	Vehicle(VehicleID index, VehicleType type = VEH_INVALID);
+	Vehicle(VehicleID index, VehicleType type = VehicleType::Invalid);
 
 	void PreDestructor();
 	/** We want to 'destruct' the right class. */
@@ -611,7 +611,7 @@ public:
 	 */
 	[[debug_inline]] inline bool IsGroundVehicle() const
 	{
-		return this->type == VEH_TRAIN || this->type == VEH_ROAD;
+		return this->type == VehicleType::Train || this->type == VehicleType::Road;
 	}
 
 	/**
@@ -620,7 +620,7 @@ public:
 	 */
 	[[debug_inline]] bool IsArticulatedCallbackVehicleType() const
 	{
-		return this->type == VEH_TRAIN || this->type == VEH_ROAD || this->type == VEH_SHIP;
+		return this->type == VehicleType::Train || this->type == VehicleType::Road || this->type == VehicleType::Ship;
 	}
 
 	/**
@@ -964,7 +964,7 @@ public:
 	void UpdatePosition()
 	{
 		extern void UpdateVehicleTileHash(Vehicle *v, bool remove);
-		if (this->type < VEH_COMPANY_END) UpdateVehicleTileHash(this, false);
+		if (this->type < VehicleType::CompanyEnd) UpdateVehicleTileHash(this, false);
 	}
 
 	void UpdateViewport(bool dirty);
@@ -1296,10 +1296,10 @@ public:
 		{
 #if OTTD_UPPER_TAGGED_PTR
 			uintptr_t vptr = _vehicle_pool.GetRaw(index);
-			return !VehiclePoolOps::IsNonFrontVehiclePtr(vptr) && HasBit(this->vt_mask, VehiclePoolOps::GetVehicleType(vptr));
+			return !VehiclePoolOps::IsNonFrontVehiclePtr(vptr) && HasBit(this->vt_mask, to_underlying(VehiclePoolOps::GetVehicleType(vptr)));
 #else
 			const Vehicle *v = Vehicle::Get(index);
-			return HasBit(this->vt_mask, v->type) && v->Previous() == nullptr;
+			return HasBit(this->vt_mask, to_underlying(v->type)) && v->Previous() == nullptr;
 #endif
 		}
 	};
@@ -1389,7 +1389,7 @@ struct SpecializedVehicle : public Base {
 	/** @copydoc Vehicle::IsDrivingBackwards() */
 	inline bool IsDrivingBackwards() const
 	{
-		if constexpr (EXPECTED_TYPE == VEH_TRAIN) {
+		if constexpr (EXPECTED_TYPE == VehicleType::Train) {
 			return this->Vehicle::IsDrivingBackwards();
 		} else {
 			return false;
@@ -1399,7 +1399,7 @@ struct SpecializedVehicle : public Base {
 	/** @copydoc Vehicle::IsMovingFront() */
 	inline bool IsMovingFront() const
 	{
-		if constexpr (EXPECTED_TYPE == VEH_TRAIN) {
+		if constexpr (EXPECTED_TYPE == VehicleType::Train) {
 			return this->Vehicle::IsMovingFront();
 		} else {
 			return static_cast<T *>(this)->IsPrimaryVehicle();
@@ -1409,7 +1409,7 @@ struct SpecializedVehicle : public Base {
 	/** @copydoc Vehicle::GetMovingFront() */
 	inline T *GetMovingFront() const
 	{
-		if constexpr (EXPECTED_TYPE == VEH_TRAIN) {
+		if constexpr (EXPECTED_TYPE == VehicleType::Train) {
 			return (T *)this->Vehicle::GetMovingFront();
 		} else {
 			return this->First();
@@ -1419,7 +1419,7 @@ struct SpecializedVehicle : public Base {
 	/** @copydoc Vehicle::GetMovingBack() */
 	inline T *GetMovingBack() const
 	{
-		if constexpr (EXPECTED_TYPE == VEH_TRAIN) {
+		if constexpr (EXPECTED_TYPE == VehicleType::Train) {
 			return (T *)this->Vehicle::GetMovingBack();
 		} else {
 			return this->Last();
@@ -1429,7 +1429,7 @@ struct SpecializedVehicle : public Base {
 	/** @copydoc Vehicle::GetMovingNext() */
 	inline T *GetMovingNext() const
 	{
-		if constexpr (EXPECTED_TYPE == VEH_TRAIN) {
+		if constexpr (EXPECTED_TYPE == VehicleType::Train) {
 			return (T *)this->Vehicle::GetMovingNext();
 		} else {
 			return this->Next();
@@ -1439,7 +1439,7 @@ struct SpecializedVehicle : public Base {
 	/** @copydoc Vehicle::GetMovingPrev() */
 	inline T *GetMovingPrev() const
 	{
-		if constexpr (EXPECTED_TYPE == VEH_TRAIN) {
+		if constexpr (EXPECTED_TYPE == VehicleType::Train) {
 			return (T *)this->Vehicle::GetMovingPrev();
 		} else {
 			return this->Previous();
@@ -1452,7 +1452,7 @@ struct SpecializedVehicle : public Base {
 	 */
 	inline Direction GetMovingDirection() const
 	{
-		if constexpr (EXPECTED_TYPE == VEH_TRAIN) {
+		if constexpr (EXPECTED_TYPE == VehicleType::Train) {
 			return this->Vehicle::GetMovingDirection();
 		} else {
 			return this->direction;
@@ -1644,7 +1644,7 @@ struct SpecializedVehicle : public Base {
 
 private:
 	inline bool CheckVehicleCurvature() const {
-		if (!(EXPECTED_TYPE == VEH_TRAIN || EXPECTED_TYPE == VEH_ROAD)) return false;
+		if (!(EXPECTED_TYPE == VehicleType::Train || EXPECTED_TYPE == VehicleType::Road)) return false;
 		if (likely(!HasBit(this->vcache.cached_veh_flags, VCF_IMAGE_CURVATURE))) return false;
 		return this->vcache.cached_image_curvature != this->GetVehicleCurvature();
 	};
@@ -1654,9 +1654,9 @@ public:
 	{
 		ClrBit(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH);
 		_sprite_group_resolve_check_veh_check = true;
-		if (EXPECTED_TYPE == VEH_TRAIN || EXPECTED_TYPE == VEH_ROAD) _sprite_group_resolve_check_veh_curvature_check = true;
+		if (EXPECTED_TYPE == VehicleType::Train || EXPECTED_TYPE == VehicleType::Road) _sprite_group_resolve_check_veh_curvature_check = true;
 		((T *)this)->T::GetImage(current_direction, EIT_ON_MAP, &seq);
-		if (EXPECTED_TYPE == VEH_TRAIN || EXPECTED_TYPE == VEH_ROAD) {
+		if (EXPECTED_TYPE == VehicleType::Train || EXPECTED_TYPE == VehicleType::Road) {
 			AssignBit(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH_NEXT, !_sprite_group_resolve_check_veh_check);
 			if (unlikely(!_sprite_group_resolve_check_veh_curvature_check)) {
 				SetBit(this->vcache.cached_veh_flags, VCF_IMAGE_CURVATURE);
@@ -1688,7 +1688,7 @@ private:
 				this->Vehicle::UpdateViewport(true);
 			}
 		} else {
-			if ((EXPECTED_TYPE == VEH_TRAIN || EXPECTED_TYPE == VEH_ROAD) && HasBit(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH_NEXT)) {
+			if ((EXPECTED_TYPE == VehicleType::Train || EXPECTED_TYPE == VehicleType::Road) && HasBit(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH_NEXT)) {
 				SetBit(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH);
 			}
 			if (force_update) {
@@ -1716,14 +1716,14 @@ public:
 		extern std::vector<Rect> _viewport_vehicle_map_redraw_rects;
 
 		Point pt = RemapCoords(this->x_pos + this->bounds.origin.x + this->bounds.offset.x, this->y_pos + this->bounds.origin.y + this->bounds.offset.y, this->z_pos);
-		if (EXPECTED_TYPE >= VEH_COMPANY_END || IsPointInViewportVehicleRedrawArea(_viewport_vehicle_normal_redraw_rects, pt)) {
+		if (EXPECTED_TYPE >= VehicleType::CompanyEnd || IsPointInViewportVehicleRedrawArea(_viewport_vehicle_normal_redraw_rects, pt)) {
 			UpdateViewportNormalViewportMode(force_update);
 			return;
 		}
 
 		bool always_update_viewport = false;
 
-		if (EXPECTED_TYPE == VEH_SHIP && update_delta) {
+		if (EXPECTED_TYPE == VehicleType::Ship && update_delta) {
 			extern bool RecentreShipSpriteBounds(Vehicle *v);
 			always_update_viewport = RecentreShipSpriteBounds(this);
 		}
@@ -1787,32 +1787,32 @@ template <VehicleType TYPE>
 struct VehicleTypeHelper {};
 
 template <>
-struct VehicleTypeHelper<VEH_TRAIN> {
+struct VehicleTypeHelper<VehicleType::Train> {
 	using VehType = Train;
 };
 
 template <>
-struct VehicleTypeHelper<VEH_ROAD> {
+struct VehicleTypeHelper<VehicleType::Road> {
 	using VehType = RoadVehicle;
 };
 
 template <>
-struct VehicleTypeHelper<VEH_SHIP> {
+struct VehicleTypeHelper<VehicleType::Ship> {
 	using VehType = Ship;
 };
 
 template <>
-struct VehicleTypeHelper<VEH_AIRCRAFT> {
+struct VehicleTypeHelper<VehicleType::Aircraft> {
 	using VehType = Aircraft;
 };
 
 template <>
-struct VehicleTypeHelper<VEH_EFFECT> {
+struct VehicleTypeHelper<VehicleType::Effect> {
 	using VehType = EffectVehicle;
 };
 
 template <>
-struct VehicleTypeHelper<VEH_DISASTER> {
+struct VehicleTypeHelper<VehicleType::Disaster> {
 	using VehType = DisasterVehicle;
 };
 
@@ -1878,7 +1878,7 @@ template <VehicleType TYPE>
 inline VehiclesOnTileIterable<typename VehicleTypeHelper<TYPE>::VehType> VehiclesOnTile(TileIndex tile)
 {
 	using VehType = typename VehicleTypeHelper<TYPE>::VehType;
-	static_assert(TYPE < VEH_COMPANY_END); // Only for the 4 company vehicle types
+	static_assert(TYPE < VehicleType::CompanyEnd); // Only for the 4 company vehicle types
 	static_assert(VehType::EXPECTED_TYPE == TYPE); // Sanity check
 	return VehiclesOnTileIterable<VehType>(static_cast<VehType *>(GetFirstVehicleOnTile(tile, TYPE)));
 }
@@ -1904,7 +1904,7 @@ template <VehicleType TYPE, class UnaryPred>
 bool HasVehicleOnTile(TileIndex tile, UnaryPred &&predicate)
 {
 	using VehType = typename VehicleTypeHelper<TYPE>::VehType;
-	static_assert(TYPE < VEH_COMPANY_END); // Only for the 4 company vehicle types
+	static_assert(TYPE < VehicleType::CompanyEnd); // Only for the 4 company vehicle types
 	static_assert(VehType::EXPECTED_TYPE == TYPE); // Sanity check
 	for (Vehicle *v = GetFirstVehicleOnTile(tile, TYPE); v != nullptr; v = v->HashTileNext()) {
 		if (predicate(VehType::From(v))) return true;
@@ -2029,7 +2029,7 @@ template <VehicleType TYPE>
 inline typename VehiclesNearTileXYIterator<typename VehicleTypeHelper<TYPE>::VehType>::Iterable VehiclesNearTileXY(int32_t x, int32_t y, uint max_dist)
 {
 	using VehType = typename VehicleTypeHelper<TYPE>::VehType;
-	static_assert(TYPE < VEH_COMPANY_END); // Only for the 4 company vehicle types
+	static_assert(TYPE < VehicleType::CompanyEnd); // Only for the 4 company vehicle types
 	static_assert(VehType::EXPECTED_TYPE == TYPE); // Sanity check
 	return typename VehiclesNearTileXYIterator<VehType>::Iterable(x, y, max_dist);
 }

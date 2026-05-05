@@ -2688,7 +2688,7 @@ void ViewportRouteOverlay::PrepareRoutePathsConditionalOrder(const Vehicle *veh,
 			continue;
 		}
 
-		const TileIndex to_tile = order->GetLocation(veh, veh->type == VEH_AIRCRAFT);
+		const TileIndex to_tile = order->GetLocation(veh, veh->type == VehicleType::Aircraft);
 		if (to_tile == INVALID_TILE) continue;
 
 		DrawnPathRouteTileLine path = { state.from_tile, to_tile, conditional };
@@ -2724,7 +2724,7 @@ void ViewportRouteOverlay::PrepareRoutePaths(const Vehicle *veh)
 			return false;
 		}
 
-		const TileIndex to_tile = order->GetLocation(veh, veh->type == VEH_AIRCRAFT);
+		const TileIndex to_tile = order->GetLocation(veh, veh->type == VehicleType::Aircraft);
 		if (to_tile == INVALID_TILE) return false;
 
 		if (from_tile != INVALID_TILE) {
@@ -2942,7 +2942,7 @@ void ViewportRouteOverlay::PrepareRouteSteps(const Vehicle *veh)
 	for (const Order *order : veh->Orders()) {
 		order_rank++;
 		if (ViewportVehicleRouteShouldSkipOrder(order)) continue;
-		const TileIndex tile = order->GetLocation(veh, veh->type == VEH_AIRCRAFT);
+		const TileIndex tile = order->GetLocation(veh, veh->type == VehicleType::Aircraft);
 		if (tile == INVALID_TILE) continue;
 		RouteStepOrderType type = RSOT_INVALID;
 		switch (order->GetType()) {

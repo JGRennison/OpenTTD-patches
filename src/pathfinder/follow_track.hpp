@@ -64,7 +64,7 @@ struct CFollowTrackT {
 
 	inline void Init(const VehicleType *v, RailTypes railtype_override)
 	{
-		dbg_assert(!IsRailTT() || (v != nullptr && v->type == VEH_TRAIN));
+		dbg_assert(!IsRailTT() || (v != nullptr && v->type == ::VehicleType::Train));
 		this->veh = v;
 		Init(v != nullptr ? v->owner : INVALID_OWNER, IsRailTT() && railtype_override == INVALID_RAILTYPES ? Train::From(v)->compatible_railtypes : railtype_override);
 	}
@@ -311,7 +311,7 @@ protected:
 				return false;
 			}
 			/* road stops shouldn't be entered unless allowed to */
-			if (!IsInfraTileUsageAllowed(VEH_ROAD, this->veh_owner, this->new_tile)) {
+			if (!IsInfraTileUsageAllowed(::VehicleType::Road, this->veh_owner, this->new_tile)) {
 				this->err = EC_OWNER;
 				return false;
 			}
@@ -334,7 +334,7 @@ protected:
 				return false;
 			}
 			/* don't try to enter other company's depots if not allowed */
-			if (!IsInfraTileUsageAllowed(VEH_ROAD, this->veh_owner, this->new_tile)) {
+			if (!IsInfraTileUsageAllowed(::VehicleType::Road, this->veh_owner, this->new_tile)) {
 				this->err = EC_OWNER;
 				return false;
 			}
@@ -348,7 +348,7 @@ protected:
 		}
 
 		/* rail transport is possible only on allowed tiles */
-		if (IsRailTT() && !IsInfraTileUsageAllowed(VEH_TRAIN, this->veh_owner, this->new_tile)) {
+		if (IsRailTT() && !IsInfraTileUsageAllowed(::VehicleType::Train, this->veh_owner, this->new_tile)) {
 			/* different owner */
 			this->err = EC_NO_WAY;
 			return false;

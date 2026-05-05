@@ -154,7 +154,7 @@ struct TrainCache {
 /**
  * 'Train' is either a loco or a wagon.
  */
-struct Train final : public GroundVehicle<Train, VEH_TRAIN> {
+struct Train final : public GroundVehicle<Train, VehicleType::Train> {
 	TrackBits track{}; ///< On which track the train currently is.
 	VehicleRailFlags flags{};
 	TrainCache tcache{};
@@ -184,7 +184,7 @@ struct Train final : public GroundVehicle<Train, VEH_TRAIN> {
 	/** We want to 'destruct' the right class. */
 	~Train() override { this->PreDestructor(); }
 
-	friend struct GroundVehicle<Train, VEH_TRAIN>; // GroundVehicle needs to use the acceleration functions defined at Train.
+	friend struct GroundVehicle<Train, VehicleType::Train>; // GroundVehicle needs to use the acceleration functions defined at Train.
 
 	void MarkDirty() override;
 	void UpdateDeltaXY() override;

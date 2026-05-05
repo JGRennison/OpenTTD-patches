@@ -814,8 +814,8 @@ static const StringID _order_timetable_dropdown[] = {
 StringID OrderStringForVariable(const Vehicle *v, OrderConditionVariable ocv)
 {
 	if (ocv > OrderConditionVariable::End) return STR_UNDEFINED;
-	if (ocv == OrderConditionVariable::VehicleInSlot && v->type != VEH_TRAIN) return STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT;
-	if (ocv == OrderConditionVariable::VehicleInSlotGroup && v->type != VEH_TRAIN) return STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT_GROUP;
+	if (ocv == OrderConditionVariable::VehicleInSlot && v->type != VehicleType::Train) return STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT;
+	if (ocv == OrderConditionVariable::VehicleInSlotGroup && v->type != VehicleType::Train) return STR_ORDER_CONDITIONAL_VEHICLE_IN_SLOT_GROUP;
 
 	static constexpr std::array<StringID, to_underlying(OrderConditionVariable::End)> ocv_names{
 		STR_ORDER_CONDITIONAL_LOAD_PERCENTAGE,
@@ -937,13 +937,13 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 					}
 				}
 
-				if (v->type == VEH_TRAIN && (order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0) {
+				if (v->type == VehicleType::Train && (order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0) {
 					/* Only show the stopping location if other than the default chosen by the player. */
 					if (!_settings_client.gui.hide_default_stop_location || order->GetStopLocation() != (OrderStopLocation)(_settings_client.gui.stop_location)) {
 						AppendStringInPlace(line, STR_ORDER_STOP_LOCATION_NEAR_END + order->GetStopLocation());
 					}
 				}
-				if (v->type == VEH_ROAD && order->GetRoadVehTravelDirection() != INVALID_DIAGDIR) {
+				if (v->type == VehicleType::Road && order->GetRoadVehTravelDirection() != INVALID_DIAGDIR) {
 					line.push_back(' ');
 					AppendStringInPlace(line, STR_ORDER_RV_DIR_NE + order->GetRoadVehTravelDirection());
 				}
@@ -954,12 +954,12 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 		case OT_GOTO_DEPOT:
 			if (!(order->GetDepotActionType() & ODATFB_NEAREST_DEPOT)) {
 				AppendStringInPlace(line, STR_ORDER_GO_TO_DEPOT_FORMAT, GetDepotOrderGoToString(*order), v->type, order->GetDestination().ToDepotID());
-			} else if (v->type == VEH_AIRCRAFT) {
+			} else if (v->type == VehicleType::Aircraft) {
 				/* Going to the nearest hangar. */
 				AppendStringInPlace(line, STR_ORDER_GO_TO_NEAREST_HANGAR_FORMAT, GetDepotOrderGoToString(*order));
 			} else {
 				/* Going to the nearest depot. */
-				AppendStringInPlace(line, STR_ORDER_GO_TO_NEAREST_DEPOT_FORMAT, GetDepotOrderGoToString(*order), STR_ORDER_TRAIN_DEPOT + v->type);
+				AppendStringInPlace(line, STR_ORDER_GO_TO_NEAREST_DEPOT_FORMAT, GetDepotOrderGoToString(*order), STR_ORDER_TRAIN_DEPOT + to_underlying(v->type));
 			}
 
 			if (!timetable && (order->GetDepotActionType() & ODATFB_SELL)) {
@@ -999,7 +999,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 				AppendStringInPlace(line, STR_TIMETABLE_STAY_FOR, str, value);
 				timetable_wait_time_valid = true;
 			}
-			if (!timetable && v->type == VEH_ROAD && order->GetRoadVehTravelDirection() != INVALID_DIAGDIR) {
+			if (!timetable && v->type == VehicleType::Road && order->GetRoadVehTravelDirection() != INVALID_DIAGDIR) {
 				line.push_back(' ');
 				AppendStringInPlace(line, STR_ORDER_RV_DIR_NE + order->GetRoadVehTravelDirection());
 			}
@@ -1062,7 +1062,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 					case OrderConditionComparator::IsFalse:
 					case OrderConditionComparator::Equal:
 					case OrderConditionComparator::NotEqual: {
-						const StringID *strs = v->type == VEH_TRAIN ? _order_conditional_condition_is_in_slot : _order_conditional_condition_is_in_slot_non_train;
+						const StringID *strs = v->type == VehicleType::Train ? _order_conditional_condition_is_in_slot : _order_conditional_condition_is_in_slot_non_train;
 						comparator = strs[to_underlying(order->GetConditionComparator())];
 						break;
 					}
@@ -1085,7 +1085,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 				switch (order->GetConditionComparator()) {
 					case OrderConditionComparator::IsTrue:
 					case OrderConditionComparator::IsFalse: {
-						const StringID *strs = v->type == VEH_TRAIN ? _order_conditional_condition_is_in_slot : _order_conditional_condition_is_in_slot_non_train;
+						const StringID *strs = v->type == VehicleType::Train ? _order_conditional_condition_is_in_slot : _order_conditional_condition_is_in_slot_non_train;
 						comparator = strs[to_underlying(order->GetConditionComparator())];
 						break;
 					}
@@ -1399,7 +1399,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 	}
 
 	/* Check range for aircraft. */
-	if (v->type == VEH_AIRCRAFT && Aircraft::From(v)->GetRange() > 0 && order->IsGotoOrder()) {
+	if (v->type == VehicleType::Aircraft && Aircraft::From(v)->GetRange() > 0 && order->IsGotoOrder()) {
 		const Order *next = v->orders->GetNext(order);
 		if (GetOrderDistance(order, next, v) > Aircraft::From(v)->acache.cached_max_range_sqr) {
 			AppendStringInPlace(line, STR_ORDER_OUT_OF_RANGE);
@@ -1449,7 +1449,7 @@ static Order GetOrderCmdFromTile(const Vehicle *v, TileIndex tile)
 
 	/* check depot first */
 	if (IsDepotTypeTile(tile, (TransportType)(uint)v->type) && IsInfraTileUsageAllowed(v->type, v->owner, tile)) {
-		if (v->type == VEH_ROAD && ((GetPresentRoadTypes(tile) & RoadVehicle::From(v)->compatible_roadtypes).None())) {
+		if (v->type == VehicleType::Road && ((GetPresentRoadTypes(tile) & RoadVehicle::From(v)->compatible_roadtypes).None())) {
 			order.Free();
 			return order;
 		}
@@ -1464,8 +1464,8 @@ static Order GetOrderCmdFromTile(const Vehicle *v, TileIndex tile)
 
 	/* check rail waypoint */
 	if (IsRailWaypointTile(tile) &&
-			v->type == VEH_TRAIN &&
-			IsInfraTileUsageAllowed(VEH_TRAIN, v->owner, tile)) {
+			v->type == VehicleType::Train &&
+			IsInfraTileUsageAllowed(VehicleType::Train, v->owner, tile)) {
 		order.MakeGoToWaypoint(GetStationIndex(tile));
 		if (_settings_client.gui.new_nonstop != _ctrl_pressed || _settings_game.order.nonstop_only) order.SetNonStopType(ONSF_NO_STOP_AT_ANY_STATION);
 		return order;
@@ -1473,15 +1473,15 @@ static Order GetOrderCmdFromTile(const Vehicle *v, TileIndex tile)
 
 	/* check road waypoint */
 	if (IsRoadWaypointTile(tile) &&
-			v->type == VEH_ROAD &&
-			IsInfraTileUsageAllowed(VEH_ROAD, v->owner, tile)) {
+			v->type == VehicleType::Road &&
+			IsInfraTileUsageAllowed(VehicleType::Road, v->owner, tile)) {
 		order.MakeGoToWaypoint(GetStationIndex(tile));
 		if (_settings_client.gui.new_nonstop != _ctrl_pressed || _settings_game.order.nonstop_only) order.SetNonStopType(ONSF_NO_STOP_AT_ANY_STATION);
 		return order;
 	}
 
 	/* check buoy (no ownership) */
-	if (IsBuoyTile(tile) && v->type == VEH_SHIP) {
+	if (IsBuoyTile(tile) && v->type == VehicleType::Ship) {
 		order.MakeGoToWaypoint(GetStationIndex(tile));
 		return order;
 	}
@@ -1499,17 +1499,17 @@ static Order GetOrderCmdFromTile(const Vehicle *v, TileIndex tile)
 		if (st != nullptr && IsInfraUsageAllowed(v->type, v->owner, st->owner)) {
 			StationFacilities facil;
 			switch (v->type) {
-				case VEH_SHIP:     facil = StationFacility::Dock;    break;
-				case VEH_TRAIN:    facil = StationFacility::Train;   break;
-				case VEH_AIRCRAFT: facil = StationFacility::Airport; break;
-				case VEH_ROAD:     facil = {StationFacility::BusStop, StationFacility::TruckStop}; break;
+				case VehicleType::Ship:     facil = StationFacility::Dock;    break;
+				case VehicleType::Train:    facil = StationFacility::Train;   break;
+				case VehicleType::Aircraft: facil = StationFacility::Airport; break;
+				case VehicleType::Road:     facil = {StationFacility::BusStop, StationFacility::TruckStop}; break;
 				default: NOT_REACHED();
 			}
 			if (st->facilities.Any(facil)) {
 				order.MakeGoToStation(st->index);
 				if (_ctrl_pressed) order.SetLoadType(OLF_FULL_LOAD_ANY);
 				if ((_settings_client.gui.new_nonstop || _settings_game.order.nonstop_only) && v->IsGroundVehicle()) order.SetNonStopType(ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS);
-				order.SetStopLocation(v->type == VEH_TRAIN ? (OrderStopLocation)(_settings_client.gui.stop_location) : OSL_PLATFORM_FAR_END);
+				order.SetStopLocation(v->type == VehicleType::Train ? (OrderStopLocation)(_settings_client.gui.stop_location) : OSL_PLATFORM_FAR_END);
 				return order;
 			}
 		}
@@ -1729,7 +1729,7 @@ private:
 
 			case OrderConditionVariable::VehicleInSlot:
 			case OrderConditionVariable::VehicleInSlotGroup:
-				return v->type == VEH_TRAIN ? _order_conditional_condition_is_in_slot : _order_conditional_condition_is_in_slot_non_train;
+				return v->type == VehicleType::Train ? _order_conditional_condition_is_in_slot : _order_conditional_condition_is_in_slot_non_train;
 
 			case OrderConditionVariable::DispatchSlot: {
 				const uint16_t value = order->GetConditionValue();
@@ -2078,7 +2078,7 @@ public:
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_O_SCROLLBAR);
 		if (NWidgetCore *nwid = this->GetWidget<NWidgetCore>(WID_O_DEPOT_ACTION); nwid != nullptr) {
-			nwid->SetToolTip(STR_ORDER_TRAIN_DEPOT_ACTION_TOOLTIP + v->type);
+			nwid->SetToolTip(STR_ORDER_TRAIN_DEPOT_ACTION_TOOLTIP + to_underlying(v->type));
 		}
 		this->GetWidget<NWidgetStacked>(WID_O_SEL_OCCUPANCY)->SetDisplayedPlane(_settings_client.gui.show_order_occupancy_by_default ? 0 : SZSP_NONE);
 		this->SetWidgetLoweredState(WID_O_OCCUPANCY_TOGGLE, _settings_client.gui.show_order_occupancy_by_default);
@@ -2143,7 +2143,7 @@ public:
 			case WID_O_COND_VARIABLE: {
 				Dimension d = {0, 0};
 				for (const auto &ocv : _order_conditional_variable) {
-					if (this->vehicle->type != VEH_TRAIN && ocv == OrderConditionVariable::FreePlatforms) {
+					if (this->vehicle->type != VehicleType::Train && ocv == OrderConditionVariable::FreePlatforms) {
 						continue;
 					}
 					d = maxdim(d, GetStringBoundingBox(OrderStringForVariable(this->vehicle, ocv)));
@@ -3035,7 +3035,7 @@ public:
 						if (this->IsWidgetActiveInLayout(WID_O_TEXT_LABEL)) this->OnClick({}, WID_O_TEXT_LABEL, click_count);
 						return;
 					}
-					if (this->vehicle->type == VEH_TRAIN) {
+					if (this->vehicle->type == VehicleType::Train) {
 						int osl = ((order->GetStopLocation() + 1) % OSL_END);
 						if (osl == OSL_PLATFORM_THROUGH && !_settings_client.gui.show_adv_load_mode_features) {
 							osl = OSL_PLATFORM_NEAR_END;
@@ -3051,7 +3051,7 @@ public:
 						}
 						this->ModifyOrder(sel, MOF_STOP_LOCATION, osl);
 					}
-					if (this->vehicle->type == VEH_ROAD) {
+					if (this->vehicle->type == VehicleType::Road) {
 						DiagDirection current = order->GetRoadVehTravelDirection();
 						if (_settings_client.gui.show_adv_load_mode_features || current != INVALID_DIAGDIR) {
 							uint dir = (current + 1) & 0xFF;
@@ -3099,7 +3099,7 @@ public:
 				list.push_back(MakeDropDownListStringItem(STR_ORDER_DUPLICATE_ORDER, 0, false));
 				if (order->IsType(OT_CONDITIONAL)) list.push_back(MakeDropDownListStringItem(STR_ORDER_CHANGE_JUMP_TARGET, 1, false));
 
-				if (this->vehicle->type == VEH_TRAIN && order->IsType(OT_GOTO_STATION) && (order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0) {
+				if (this->vehicle->type == VehicleType::Train && order->IsType(OT_GOTO_STATION) && (order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0) {
 					const OrderStopLocation osl = order->GetStopLocation();
 					list.push_back(MakeDropDownListDividerItem());
 					list.push_back(MakeDropDownListCheckedItem(osl == OSL_PLATFORM_NEAR_END, STR_ORDER_STOP_LOCATION_NEAR_END, 0x200 + OSL_PLATFORM_NEAR_END, false));
@@ -3120,7 +3120,7 @@ public:
 					}
 				}
 
-				if (this->vehicle->type == VEH_ROAD && (order->IsType(OT_GOTO_STATION) || order->IsType(OT_GOTO_WAYPOINT))) {
+				if (this->vehicle->type == VehicleType::Road && (order->IsType(OT_GOTO_STATION) || order->IsType(OT_GOTO_WAYPOINT))) {
 					const DiagDirection dir = order->GetRoadVehTravelDirection();
 					if (_settings_client.gui.show_adv_load_mode_features || dir != INVALID_DIAGDIR) {
 						list.push_back(MakeDropDownListDividerItem());
@@ -3194,7 +3194,7 @@ public:
 					}
 					DropDownList list;
 					list.push_back(MakeDropDownListStringItem(STR_ORDER_GO_TO, ODDI_GO_TO, false));
-					list.push_back(MakeDropDownListStringItem((this->vehicle->type == VEH_AIRCRAFT) ? STR_ORDER_GO_TO_NEAREST_HANGAR : STR_ORDER_GO_TO_NEAREST_DEPOT, ODDI_GO_TO_NEAREST_DEPOT, false));
+					list.push_back(MakeDropDownListStringItem((this->vehicle->type == VehicleType::Aircraft) ? STR_ORDER_GO_TO_NEAREST_HANGAR : STR_ORDER_GO_TO_NEAREST_DEPOT, ODDI_GO_TO_NEAREST_DEPOT, false));
 					list.push_back(MakeDropDownListStringItem(STR_ORDER_CONDITIONAL, ODDI_CONDITIONAL, false));
 					list.push_back(MakeDropDownListStringItem(STR_ORDER_SHARE, ODDI_SHARE, false));
 					list.push_back(MakeDropDownListStringItem(STR_ORDER_INSERT_FROM_VEHICLE, ODDI_INSERT_FROM_VEHICLE, false));
@@ -3418,7 +3418,7 @@ public:
 				const OrderConditionVariable current_ocv = this->vehicle->GetOrder(this->OrderGetSel())->GetConditionVariable();
 				DropDownList list;
 				for (const auto &ocv : _order_conditional_variable) {
-					if (this->vehicle->type != VEH_TRAIN && (ocv == OrderConditionVariable::FreePlatforms || ocv == OrderConditionVariable::DrivingBackwards)) {
+					if (this->vehicle->type != VehicleType::Train && (ocv == OrderConditionVariable::FreePlatforms || ocv == OrderConditionVariable::DrivingBackwards)) {
 						continue;
 					}
 					if (current_ocv != ocv) {

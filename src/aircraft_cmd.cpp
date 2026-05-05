@@ -96,7 +96,7 @@ static const SpriteID _aircraft_sprite[] = {
 
 /** @copydoc IsValidImageIndex */
 template <>
-bool IsValidImageIndex<VEH_AIRCRAFT>(uint8_t image_index)
+bool IsValidImageIndex<VehicleType::Aircraft>(uint8_t image_index)
 {
 	return image_index < lengthof(_aircraft_sprite);
 }
@@ -140,7 +140,7 @@ static StationID FindNearestHangar(const Aircraft *v)
 	}
 
 	for (const Station *st : Station::Iterate()) {
-		if (!IsInfraUsageAllowed(VEH_AIRCRAFT, v->owner, st->owner) || !st->facilities.Test(StationFacility::Airport) || !st->airport.HasHangar()) continue;
+		if (!IsInfraUsageAllowed(VehicleType::Aircraft, v->owner, st->owner) || !st->facilities.Test(StationFacility::Airport) || !st->airport.HasHangar()) continue;
 
 		const AirportFTAClass *afc = st->airport.GetFTA();
 
@@ -194,7 +194,7 @@ void Aircraft::GetImage(Direction direction, EngineImageType image_type, Vehicle
 		spritenum = this->GetEngine()->original_image_index;
 	}
 
-	assert(IsValidImageIndex<VEH_AIRCRAFT>(spritenum));
+	assert(IsValidImageIndex<VehicleType::Aircraft>(spritenum));
 	result->Set(direction + _aircraft_sprite[spritenum]);
 }
 
@@ -224,7 +224,7 @@ static void GetAircraftIcon(EngineID engine, EngineImageType image_type, Vehicle
 		spritenum = e->original_image_index;
 	}
 
-	assert(IsValidImageIndex<VEH_AIRCRAFT>(spritenum));
+	assert(IsValidImageIndex<VehicleType::Aircraft>(spritenum));
 	result->Set(DIR_W + _aircraft_sprite[spritenum]);
 }
 
@@ -759,7 +759,7 @@ int GetTileHeightBelowAircraft(const Vehicle *v)
 void GetAircraftFlightLevelBounds(const Vehicle *v, int *min_level, int *max_level)
 {
 	int base_altitude = GetTileHeightBelowAircraft(v);
-	if (v->type == VEH_AIRCRAFT && Aircraft::From(v)->subtype == AIR_HELICOPTER) {
+	if (v->type == VehicleType::Aircraft && Aircraft::From(v)->subtype == AIR_HELICOPTER) {
 		base_altitude += HELICOPTER_HOLD_MAX_FLYING_ALTITUDE - PLANE_HOLD_MAX_FLYING_ALTITUDE;
 	}
 
@@ -1225,7 +1225,7 @@ static bool AircraftController(Aircraft *v)
  */
 void FindBreakdownDestination(Aircraft *v)
 {
-	assert(v->type == VEH_AIRCRAFT && v->breakdown_ctr == 1);
+	assert(v->type == VehicleType::Aircraft && v->breakdown_ctr == 1);
 
 	DestinationID destination = StationID::Invalid();
 	if (v->breakdown_type == BREAKDOWN_AIRCRAFT_DEPOT) {
@@ -1777,7 +1777,7 @@ static void AircraftEventHandler_Flying(Aircraft *v, const AirportFTAClass *apc)
 	Station *st = Station::Get(v->targetairport);
 
 	/* Runway busy, not allowed to use this airstation or closed, circle. */
-	if (CanVehicleUseStation(v, st) && IsInfraUsageAllowed(VEH_AIRCRAFT, v->owner, st->owner) && !st->airport.blocks.Test(AirportBlock::AirportClosed)) {
+	if (CanVehicleUseStation(v, st) && IsInfraUsageAllowed(VehicleType::Aircraft, v->owner, st->owner) && !st->airport.blocks.Test(AirportBlock::AirportClosed)) {
 		/* {32,FLYING,NOTHING_block,37}, {32,LANDING,N,33}, {32,HELILANDING,N,41},
 		 * if it is an airplane, look for LANDING, for helicopter HELILANDING
 		 * it is possible to choose from multiple landing runways, so loop until a free one is found */
@@ -2305,7 +2305,7 @@ bool Aircraft::Tick()
  */
 Station *GetTargetAirportIfValid(const Aircraft *v)
 {
-	assert(v->type == VEH_AIRCRAFT);
+	assert(v->type == VehicleType::Aircraft);
 
 	Station *st = Station::GetIfValid(v->targetairport);
 	if (st == nullptr) return nullptr;

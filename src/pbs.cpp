@@ -850,7 +850,7 @@ struct FindTrainOnTrackInfo {
  */
 static void CheckTrainsOnTrack(FindTrainOnTrackInfo &info, TileIndex tile)
 {
-	for (Train *t : VehiclesOnTile<VEH_TRAIN>(tile)) {
+	for (Train *t : VehiclesOnTile<VehicleType::Train>(tile)) {
 		if (t->vehstatus.Test(VehState::Crashed)) continue;
 
 		if (t->track & TRACK_BIT_WORMHOLE) {
@@ -914,7 +914,7 @@ bool ValidateLookAhead(const Train *v)
  */
 PBSTileInfo FollowTrainReservation(const Train *v, Vehicle **train_on_res, FollowTrainReservationFlags flags)
 {
-	assert(v->type == VEH_TRAIN);
+	assert(v->type == VehicleType::Train);
 
 	TileIndex tile;
 	Trackdir  trackdir;
@@ -1420,7 +1420,7 @@ CommandCost CheckTrainInTunnelBridgePreventsTrackModification(TileIndex start, T
 	auto handler = [&](const Train *t) -> bool {
 		return CheckTrainReservationPreventsTrackModification(t->First()).Failed();
 	};
-	if (HasVehicleOnTile<VEH_TRAIN>(start, handler) || HasVehicleOnTile<VEH_TRAIN>(end, handler)) {
+	if (HasVehicleOnTile<VehicleType::Train>(start, handler) || HasVehicleOnTile<VehicleType::Train>(end, handler)) {
 		return CommandCost(STR_ERROR_CANNOT_MODIFY_TRACK_TRAIN_APPROACHING);
 	}
 	return CommandCost();
@@ -1650,7 +1650,7 @@ bool IsWaitingPositionFree(const Train *v, TileIndex tile, Trackdir trackdir, bo
 			TileIndex other_end = GetOtherTunnelBridgeEnd(tile);
 			if (HasAcrossTunnelBridgeReservation(other_end) && GetTunnelBridgeExitSignalState(other_end) == SIGNAL_STATE_RED) return false;
 			const Direction dir = DiagDirToDir(GetTunnelBridgeDirection(other_end));
-			for (const Train *u : VehiclesOnTile<VEH_TRAIN>(other_end)) {
+			for (const Train *u : VehiclesOnTile<VehicleType::Train>(other_end)) {
 				DirDiff diff = DirDifference(u->direction, dir);
 				if (diff == DIRDIFF_SAME) return false;
 				if (diff == DIRDIFF_45RIGHT || diff == DIRDIFF_45LEFT) {

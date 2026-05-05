@@ -33,7 +33,7 @@ static ChangeInfoResult RoadVehicleChangeInfo(uint first, uint last, int prop, c
 	ChangeInfoResult ret = ChangeInfoResult::Success;
 
 	for (uint id = first; id < last; ++id) {
-		Engine *e = GetNewEngine(_cur_gps.grffile, VEH_ROAD, id);
+		Engine *e = GetNewEngine(_cur_gps.grffile, VehicleType::Road, id);
 		if (e == nullptr) return ChangeInfoResult::InvalidId; // No engine could be allocated, so neither can any next vehicles
 
 		EngineInfo *ei = &e->info;
@@ -67,7 +67,7 @@ static ChangeInfoResult RoadVehicleChangeInfo(uint first, uint last, int prop, c
 
 				if (spriteid < CUSTOM_VEHICLE_SPRITENUM) spriteid >>= 1;
 
-				if (IsValidNewGRFImageIndex<VEH_ROAD>(spriteid)) {
+				if (IsValidNewGRFImageIndex<VehicleType::Road>(spriteid)) {
 					rvi->image_index = spriteid;
 				} else {
 					GrfMsg(1, "RoadVehicleChangeInfo: Invalid Sprite {} specified, ignoring", orig_spriteid);

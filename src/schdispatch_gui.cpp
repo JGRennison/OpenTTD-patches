@@ -937,7 +937,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 							case OT_GOTO_DEPOT:
 								if (order->GetDepotActionType() & ODATFB_NEAREST_DEPOT) {
-									if (v->type == VEH_AIRCRAFT) {
+									if (v->type == VehicleType::Aircraft) {
 										set_text(STR_ORDER_GO_TO_NEAREST_HANGAR);
 									} else {
 										set_text(STR_ORDER_GO_TO_NEAREST_DEPOT);
@@ -1489,7 +1489,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 						break;
 
 					case SCH_MD_APPEND_VEHICLE_SCHEDULES: {
-						static const CursorID clone_icons[] = {
+						static const VehicleTypeIndexArray<CursorID> clone_icons = {
 							SPR_CURSOR_CLONE_TRAIN, SPR_CURSOR_CLONE_ROADVEH,
 							SPR_CURSOR_CLONE_SHIP, SPR_CURSOR_CLONE_AIRPLANE
 						};

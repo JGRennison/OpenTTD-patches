@@ -1149,13 +1149,13 @@ static void FloodVehicleProc(Vehicle *v, int z)
 
 static void FloodVehiclesOnTile(TileIndex tile, int z)
 {
-	for (Aircraft *v : VehiclesOnTile<VEH_AIRCRAFT>(tile)) {
+	for (Aircraft *v : VehiclesOnTile<VehicleType::Aircraft>(tile)) {
 		FloodAircraftProc(v);
 	}
-	for (Vehicle *v : VehiclesOnTile(tile, VEH_TRAIN)) {
+	for (Vehicle *v : VehiclesOnTile(tile, VehicleType::Train)) {
 		FloodVehicleProc(v, z);
 	}
-	for (Vehicle *v : VehiclesOnTile(tile, VEH_ROAD)) {
+	for (Vehicle *v : VehiclesOnTile(tile, VehicleType::Road)) {
 		FloodVehicleProc(v, z);
 	}
 }
@@ -1518,7 +1518,7 @@ static TrackStatus GetTileTrackStatus_Water(TileIndex tile, TransportType mode, 
 static bool ClickTile_Water(TileIndex tile)
 {
 	if (GetWaterTileType(tile) == WaterTileType::Depot) {
-		ShowDepotWindow(GetShipDepotNorthTile(tile), VEH_SHIP);
+		ShowDepotWindow(GetShipDepotNorthTile(tile), VehicleType::Ship);
 		return true;
 	}
 	return false;

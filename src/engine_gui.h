@@ -64,9 +64,9 @@ void DrawShipEngine(int left, int right, int preferred_x, int y, EngineID engine
 void DrawAircraftEngine(int left, int right, int preferred_x, int y, EngineID engine, PaletteID pal, EngineImageType image_type);
 
 extern bool _engine_sort_direction;
-extern uint8_t _engine_sort_last_criteria[];
-extern bool _engine_sort_last_order[];
-extern bool _engine_sort_show_hidden_engines[];
+extern VehicleTypeIndexArray<uint8_t> _engine_sort_last_criteria;
+extern VehicleTypeIndexArray<bool> _engine_sort_last_order;
+extern VehicleTypeIndexArray<bool> _engine_sort_show_hidden_engines;
 
 
 /**
@@ -77,7 +77,7 @@ extern bool _engine_sort_show_hidden_engines[];
 inline std::span<EngList_SortTypeFunction * const> GetEngineSortFunctions(VehicleType vehicle_type)
 {
 	extern const std::array<std::initializer_list<EngList_SortTypeFunction * const>, 4> _engine_sort_functions;
-	assert(vehicle_type < VEH_COMPANY_END);
+	assert(vehicle_type < VehicleType::CompanyEnd);
 	return _engine_sort_functions[to_underlying(vehicle_type)];
 }
 
@@ -89,7 +89,7 @@ inline std::span<EngList_SortTypeFunction * const> GetEngineSortFunctions(Vehicl
 inline std::span<StringID const> GetEngineSortNames(VehicleType vehicle_type)
 {
 	extern const std::array<std::initializer_list<const StringID>, 4> _engine_sort_listing;
-	assert(vehicle_type < VEH_COMPANY_END);
+	assert(vehicle_type < VehicleType::CompanyEnd);
 	return _engine_sort_listing[to_underlying(vehicle_type)];
 }
 

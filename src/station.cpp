@@ -64,10 +64,10 @@ BaseStation::~BaseStation()
 {
 	if (CleaningPool()) return;
 
-	CloseWindowById(WC_TRAINS_LIST,   VehicleListIdentifier(VL_STATION_LIST, VEH_TRAIN,    this->owner, this->index).ToWindowNumber());
-	CloseWindowById(WC_ROADVEH_LIST,  VehicleListIdentifier(VL_STATION_LIST, VEH_ROAD,     this->owner, this->index).ToWindowNumber());
-	CloseWindowById(WC_SHIPS_LIST,    VehicleListIdentifier(VL_STATION_LIST, VEH_SHIP,     this->owner, this->index).ToWindowNumber());
-	CloseWindowById(WC_AIRCRAFT_LIST, VehicleListIdentifier(VL_STATION_LIST, VEH_AIRCRAFT, this->owner, this->index).ToWindowNumber());
+	CloseWindowById(WC_TRAINS_LIST,   VehicleListIdentifier(VL_STATION_LIST, VehicleType::Train,    this->owner, this->index).ToWindowNumber());
+	CloseWindowById(WC_ROADVEH_LIST,  VehicleListIdentifier(VL_STATION_LIST, VehicleType::Road,     this->owner, this->index).ToWindowNumber());
+	CloseWindowById(WC_SHIPS_LIST,    VehicleListIdentifier(VL_STATION_LIST, VehicleType::Ship,     this->owner, this->index).ToWindowNumber());
+	CloseWindowById(WC_AIRCRAFT_LIST, VehicleListIdentifier(VL_STATION_LIST, VehicleType::Aircraft, this->owner, this->index).ToWindowNumber());
 	CloseWindowById(WC_STATION_CARGO, this->index);
 
 	extern void CloseStationDeparturesWindow(StationID station);

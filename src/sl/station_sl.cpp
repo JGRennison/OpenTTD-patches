@@ -28,7 +28,7 @@ struct CppOffsetConstruct<BaseStation> {
 	using type = Station;
 };
 
-static uint8_t _old_last_vehicle_type;
+static VehicleType _old_last_vehicle_type;
 static uint8_t _num_specs;
 static uint8_t _num_roadstop_specs;
 static uint32_t _num_roadstop_custom_tiles;
@@ -59,14 +59,14 @@ void MoveBuoysToWaypoints()
 	/* Buoy orders become waypoint orders */
 	for (OrderList *ol : OrderList::Iterate()) {
 		VehicleType vt = ol->GetFirstSharedVehicle()->type;
-		if (vt != VEH_SHIP && vt != VEH_TRAIN) continue;
+		if (vt != VehicleType::Ship && vt != VehicleType::Train) continue;
 
 		for (Order *o : ol->Orders()) UpdateWaypointOrder(o);
 	}
 
 	for (Vehicle *v : Vehicle::Iterate()) {
 		VehicleType vt = v->type;
-		if (vt != VEH_SHIP && vt != VEH_TRAIN) continue;
+		if (vt != VehicleType::Ship && vt != VehicleType::Train) continue;
 
 		UpdateWaypointOrder(&v->current_order);
 	}

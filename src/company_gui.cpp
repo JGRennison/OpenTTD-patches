@@ -789,10 +789,10 @@ public:
 		this->RaiseWidget(WID_SCL_CLASS_GENERAL + this->livery_class);
 		const Group *g = Group::Get(group);
 		switch (g->vehicle_type) {
-			case VEH_TRAIN: this->livery_class = LC_GROUP_RAIL; break;
-			case VEH_ROAD: this->livery_class = LC_GROUP_ROAD; break;
-			case VEH_SHIP: this->livery_class = LC_GROUP_SHIP; break;
-			case VEH_AIRCRAFT: this->livery_class = LC_GROUP_AIRCRAFT; break;
+			case VehicleType::Train: this->livery_class = LC_GROUP_RAIL; break;
+			case VehicleType::Road: this->livery_class = LC_GROUP_ROAD; break;
+			case VehicleType::Ship: this->livery_class = LC_GROUP_SHIP; break;
+			case VehicleType::Aircraft: this->livery_class = LC_GROUP_AIRCRAFT; break;
 			default: NOT_REACHED();
 		}
 		this->sel = group.base();
@@ -971,7 +971,7 @@ public:
 			}
 
 			if (this->vscroll->GetCount() == 0) {
-				const StringID empty_labels[] = { STR_LIVERY_TRAIN_GROUP_EMPTY, STR_LIVERY_ROAD_VEHICLE_GROUP_EMPTY, STR_LIVERY_SHIP_GROUP_EMPTY, STR_LIVERY_AIRCRAFT_GROUP_EMPTY };
+				constexpr VehicleTypeIndexArray<const StringID> empty_labels = { STR_LIVERY_TRAIN_GROUP_EMPTY, STR_LIVERY_ROAD_VEHICLE_GROUP_EMPTY, STR_LIVERY_SHIP_GROUP_EMPTY, STR_LIVERY_AIRCRAFT_GROUP_EMPTY };
 				VehicleType vtype = (VehicleType)(this->livery_class - LC_GROUP_RAIL);
 				DrawString(ir.left, ir.right, y + text_offs, empty_labels[vtype], TC_BLACK);
 			}
@@ -1659,7 +1659,7 @@ struct CompanyInfrastructureWindow : Window
 		this->roadtypes = {};
 
 		/* Find the used railtypes. */
-		for (const Engine *e : Engine::IterateType(VEH_TRAIN)) {
+		for (const Engine *e : Engine::IterateType(VehicleType::Train)) {
 			if (!e->info.climates.Test(_settings_game.game_creation.landscape)) continue;
 
 			this->railtypes.Set(GetAllIntroducesRailTypes(e->VehInfo<RailVehicleInfo>().railtypes));
@@ -1670,7 +1670,7 @@ struct CompanyInfrastructureWindow : Window
 		this->railtypes.Reset(_railtypes_hidden_mask);
 
 		/* Find the used roadtypes. */
-		for (const Engine *e : Engine::IterateType(VEH_ROAD)) {
+		for (const Engine *e : Engine::IterateType(VehicleType::Road)) {
 			if (!e->info.climates.Test(_settings_game.game_creation.landscape)) continue;
 
 			this->roadtypes.Set(GetRoadTypeInfo(e->VehInfo<RoadVehicleInfo>().roadtype)->introduces_roadtypes);
@@ -2106,7 +2106,7 @@ int GetAmountOwnedBy(const Company *c, Owner owner)
 }
 
 /** Strings for the company vehicle counts */
-static const StringID _company_view_vehicle_count_strings[] = {
+static constexpr VehicleTypeIndexArray<const StringID> _company_view_vehicle_count_strings = {
 	STR_COMPANY_VIEW_TRAINS, STR_COMPANY_VIEW_ROAD_VEHICLES, STR_COMPANY_VIEW_SHIPS, STR_COMPANY_VIEW_AIRCRAFT
 };
 
@@ -2274,10 +2274,8 @@ struct CompanyWindow : Window
 
 	void DrawVehicleCountsWidget(const Rect &r, const Company *c) const
 	{
-		static_assert(VEH_COMPANY_END == lengthof(_company_view_vehicle_count_strings));
-
 		int y = r.top;
-		for (VehicleType type = VEH_BEGIN; type < VEH_COMPANY_END; type++) {
+		for (VehicleType type = VehicleType::Begin; type < VehicleType::CompanyEnd; type++) {
 			uint amount = c->group_all[type].num_vehicle;
 			if (amount != 0) {
 				DrawString(r.left, r.right, y, GetString(_company_view_vehicle_count_strings[type], amount));

@@ -550,7 +550,7 @@ public:
 		int cost = 0;
 		const Train *v = Yapf().GetVehicle();
 		dbg_assert(v != nullptr);
-		dbg_assert(v->type == VEH_TRAIN);
+		dbg_assert(v->type == VehicleType::Train);
 		dbg_assert(v->gcache.cached_total_length != 0);
 		int missing_platform_length = CeilDiv(v->gcache.cached_total_length, TILE_SIZE) - platform_length;
 		if (missing_platform_length < 0) {

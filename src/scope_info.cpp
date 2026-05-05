@@ -58,8 +58,8 @@ void GeneralFmtDumper<Vehicle, const Vehicle *>::fmt_format_value(format_target 
 		u->DumpVehicleFlags(buf, true);
 	};
 	auto dump_name = [&](const Vehicle *u) {
-		if (u->type < VEH_COMPANY_END) {
-			const char *veh_type[] = {
+		if (u->type < VehicleType::CompanyEnd) {
+			static const VehicleTypeIndexArray<const char *> veh_type = {
 				"Train",
 				"Road Vehicle",
 				"Ship",
@@ -74,9 +74,9 @@ void GeneralFmtDumper<Vehicle, const Vehicle *>::fmt_format_value(format_target 
 			if (!u->name.empty()) {
 				buf.format(" ({})", u->name.c_str());
 			}
-		} else if (u->type == VEH_EFFECT) {
+		} else if (u->type == VehicleType::Effect) {
 			buf.format("Effect Vehicle: subtype: {}", u->subtype);
-		} else if (u->type == VEH_DISASTER) {
+		} else if (u->type == VehicleType::Disaster) {
 			buf.format("Disaster Vehicle: subtype: {}", u->subtype);
 		}
 	};

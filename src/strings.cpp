@@ -1077,7 +1077,7 @@ static const Units _units_time_years_or_minutes[] = {
 
 StringID GetVelocityUnitName(VehicleType type)
 {
-	uint8_t setting = (type == VEH_SHIP || type == VEH_AIRCRAFT) ? _settings_game.locale.units_velocity_nautical : _settings_game.locale.units_velocity;
+	uint8_t setting = (type == VehicleType::Ship || type == VehicleType::Aircraft) ? _settings_game.locale.units_velocity_nautical : _settings_game.locale.units_velocity;
 
 	assert(setting < lengthof(_units_velocity_calendar));
 	assert(setting < lengthof(_units_velocity_realtime));
@@ -1108,7 +1108,7 @@ StringID GetVelocityUnitName(VehicleType type)
 static const Units GetVelocityUnits(VehicleType type)
 {
 	const GameSettings &game_settings = GetGameSettings();
-	uint8_t setting = (type == VEH_SHIP || type == VEH_AIRCRAFT) ? game_settings.locale.units_velocity_nautical : game_settings.locale.units_velocity;
+	uint8_t setting = (type == VehicleType::Ship || type == VehicleType::Aircraft) ? game_settings.locale.units_velocity_nautical : game_settings.locale.units_velocity;
 
 	assert(setting < lengthof(_units_velocity_calendar));
 	assert(setting < lengthof(_units_velocity_realtime));
@@ -2151,7 +2151,7 @@ static void FormatString(StringBuilder builder, std::string_view str_arg, String
 
 				case SCC_DEPOT_NAME: { // {DEPOT}
 					VehicleType vt = args.GetNextParameter<VehicleType>();
-					if (vt == VEH_AIRCRAFT) {
+					if (vt == VehicleType::Aircraft) {
 						auto tmp_params = MakeParameters(args.GetNextParameter<StationID>());
 						GetStringWithArgs(builder, STR_FORMAT_DEPOT_NAME_AIRCRAFT, tmp_params);
 						break;
@@ -2162,7 +2162,7 @@ static void FormatString(StringBuilder builder, std::string_view str_arg, String
 						FormatRawString(builder, d->name);
 					} else {
 						auto tmp_params = MakeParameters(d->town->index, d->town_cn + 1);
-						GetStringWithArgs(builder, STR_FORMAT_DEPOT_NAME_TRAIN + 2 * vt + (d->town_cn == 0 ? 0 : 1), tmp_params);
+						GetStringWithArgs(builder, STR_FORMAT_DEPOT_NAME_TRAIN + 2 * to_underlying(vt) + (d->town_cn == 0 ? 0 : 1), tmp_params);
 					}
 					break;
 				}
@@ -2356,7 +2356,7 @@ static void FormatString(StringBuilder builder, std::string_view str_arg, String
 
 					if (!v->name.empty()) {
 						FormatRawString(builder, v->name);
-					} else if (v->group_id != DEFAULT_GROUP && vehicle_names != 0 && v->type < VEH_COMPANY_END) {
+					} else if (v->group_id != DEFAULT_GROUP && vehicle_names != 0 && v->type < VehicleType::CompanyEnd) {
 						/* The vehicle has no name, but is member of a group, so print group name */
 						uint32_t group_name = v->group_id.base();
 						if (_settings_client.gui.show_vehicle_group_hierarchy_name) group_name |= GROUP_NAME_HIERARCHY;
@@ -2364,15 +2364,15 @@ static void FormatString(StringBuilder builder, std::string_view str_arg, String
 							auto tmp_params = MakeParameters(group_name, v->unitnumber);
 							GetStringWithArgs(builder, STR_FORMAT_GROUP_VEHICLE_NAME, tmp_params);
 						} else {
-							auto tmp_params = MakeParameters(group_name, STR_TRADITIONAL_TRAIN_NAME + v->type, v->unitnumber);
+							auto tmp_params = MakeParameters(group_name, STR_TRADITIONAL_TRAIN_NAME + to_underlying(v->type), v->unitnumber);
 							GetStringWithArgs(builder, STR_FORMAT_GROUP_VEHICLE_NAME_LONG, tmp_params);
 						}
 					} else {
 						auto tmp_params = MakeParameters(v->unitnumber);
 
 						StringID string_id;
-						if (v->type < VEH_COMPANY_END) {
-							string_id = ((vehicle_names == 1) ? STR_SV_TRAIN_NAME : STR_TRADITIONAL_TRAIN_NAME) + v->type;
+						if (v->type < VehicleType::CompanyEnd) {
+							string_id = ((vehicle_names == 1) ? STR_SV_TRAIN_NAME : STR_TRADITIONAL_TRAIN_NAME) + to_underlying(v->type);
 						} else {
 							string_id = STR_INVALID_VEHICLE;
 						}

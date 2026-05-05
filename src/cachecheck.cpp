@@ -407,10 +407,10 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 				if (u->IsGroundVehicle() && (HasBit(u->GetGroundVehicleFlags(), GVF_GOINGUP_BIT) || HasBit(u->GetGroundVehicleFlags(), GVF_GOINGDOWN_BIT)) && u->GetGroundVehicleCache()->cached_slope_resistance && HasBit(v->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST)) {
 					CCLOGV("VCF_GV_ZERO_SLOPE_RESIST set incorrectly (1)");
 				}
-				if (u->type == VEH_TRAIN && u->breakdown_ctr != 0 && !Train::From(v)->flags.Test(VehicleRailFlag::ConsistBreakdown) && (Train::From(u)->IsEngine() || Train::From(u)->IsMultiheaded())) {
+				if (u->type == VehicleType::Train && u->breakdown_ctr != 0 && !Train::From(v)->flags.Test(VehicleRailFlag::ConsistBreakdown) && (Train::From(u)->IsEngine() || Train::From(u)->IsMultiheaded())) {
 					CCLOGV("VehicleRailFlag::ConsistBreakdown incorrectly not set");
 				}
-				if (u->type == VEH_TRAIN && ((Train::From(u)->track & TRACK_BIT_WORMHOLE && !Train::From(u)->vehstatus.Test(VehState::Hidden)) || Train::From(u)->track == TRACK_BIT_DEPOT) && !Train::From(v)->flags.Test(VehicleRailFlag::ConsistSpeedReduction)) {
+				if (u->type == VehicleType::Train && ((Train::From(u)->track & TRACK_BIT_WORMHOLE && !Train::From(u)->vehstatus.Test(VehState::Hidden)) || Train::From(u)->track == TRACK_BIT_DEPOT) && !Train::From(v)->flags.Test(VehicleRailFlag::ConsistSpeedReduction)) {
 					CCLOGV("VehicleRailFlag::ConsistSpeedReduction incorrectly not set");
 				}
 			}
@@ -419,14 +419,14 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 				FillNewGRFVehicleCache(u);
 				veh_old.emplace_back(u);
 				switch (u->type) {
-					case VEH_TRAIN:
+					case VehicleType::Train:
 						gro_cache.push_back(Train::From(u)->gcache);
 						train_old.emplace_back(Train::From(u));
 						break;
-					case VEH_ROAD:
+					case VehicleType::Road:
 						gro_cache.push_back(RoadVehicle::From(u)->gcache);
 						break;
-					case VEH_AIRCRAFT:
+					case VehicleType::Aircraft:
 						air_cache.push_back(Aircraft::From(u)->acache);
 						break;
 					default:
@@ -435,10 +435,10 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 			}
 
 			switch (v->type) {
-				case VEH_TRAIN:    Train::From(v)->ConsistChanged(CCF_TRACK); break;
-				case VEH_ROAD:     RoadVehUpdateCache(RoadVehicle::From(v)); break;
-				case VEH_AIRCRAFT: UpdateAircraftCache(Aircraft::From(v));   break;
-				case VEH_SHIP:     Ship::From(v)->UpdateCache();             break;
+				case VehicleType::Train:    Train::From(v)->ConsistChanged(CCF_TRACK); break;
+				case VehicleType::Road:     RoadVehUpdateCache(RoadVehicle::From(v)); break;
+				case VehicleType::Aircraft: UpdateAircraftCache(Aircraft::From(v));   break;
+				case VehicleType::Ship:     Ship::From(v)->UpdateCache();             break;
 				default: break;
 			}
 
@@ -499,7 +499,7 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 							a.cached_veh_length != b.cached_veh_length ? 'L' : '-');
 				};
 				switch (u->type) {
-					case VEH_TRAIN: {
+					case VehicleType::Train: {
 						if (gro_cache[length] != Train::From(u)->gcache) {
 							print_gv_cache_diff("train", gro_cache[length], Train::From(u)->gcache);
 						}
@@ -530,14 +530,14 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 						break;
 					}
 
-					case VEH_ROAD: {
+					case VehicleType::Road: {
 						if (gro_cache[length] != RoadVehicle::From(u)->gcache) {
 							print_gv_cache_diff("road vehicle", gro_cache[length], Train::From(u)->gcache);
 						}
 						break;
 					}
 
-					case VEH_AIRCRAFT: {
+					case VehicleType::Aircraft: {
 						if (air_cache[length] != Aircraft::From(u)->acache) {
 							CCLOGV("Aircraft vehicle cache mismatch: {}{}",
 									air_cache[length].cached_max_range != Aircraft::From(u)->acache.cached_max_range ? 'r' : '-',

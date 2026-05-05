@@ -3019,7 +3019,7 @@ static bool ClickTile_TunnelBridge(TileIndex tile)
 	/* Show vehicles found in tunnel. */
 	if (IsTunnelTile(tile)) {
 		TileIndex tile_end = GetOtherTunnelBridgeEnd(tile);
-		VehicleType veh_type = GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL ? VEH_TRAIN : VEH_ROAD;
+		VehicleType veh_type = GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL ? VehicleType::Train : VehicleType::Road;
 
 		std::vector<const Vehicle *> candidates;
 		for (TileIndex test_tile : { tile, tile_end }) {
@@ -3302,7 +3302,7 @@ static VehicleEnterTileStates VehicleEnterTile_TunnelBridge(Vehicle *v, TileInde
 
 	if (IsTunnel(tile)) {
 		/* Direction of the vehicle */
-		if (v->type == VEH_TRAIN) {
+		if (v->type == VehicleType::Train) {
 			Train *t = Train::From(v);
 			const DiagDirection vdir = DirToDiagDir(v->GetMovingDirection());
 
@@ -3333,7 +3333,7 @@ static VehicleEnterTileStates VehicleEnterTile_TunnelBridge(Vehicle *v, TileInde
 				t->UpdateIsDrawn();
 				return VehicleEnterTileState::EnteredWormhole;
 			}
-		} else if (v->type == VEH_ROAD) {
+		} else if (v->type == VehicleType::Road) {
 			RoadVehicle *rv = RoadVehicle::From(v);
 			const DiagDirection vdir = DirToDiagDir(rv->direction);
 
@@ -3369,11 +3369,11 @@ static VehicleEnterTileStates VehicleEnterTile_TunnelBridge(Vehicle *v, TileInde
 		}
 	} else { // IsBridge(tile)
 		if (v->vehstatus.Test(VehState::Hidden)) return {}; // Building bridges between chunnel portals allowed.
-		if (v->type != VEH_SHIP) {
+		if (v->type != VehicleType::Ship) {
 			/* modify speed of vehicle */
 			uint16_t spd = GetBridgeSpec(GetBridgeType(tile))->speed;
 
-			if (v->type == VEH_ROAD) spd *= 2;
+			if (v->type == VehicleType::Road) spd *= 2;
 			Vehicle *first = v->First();
 			first->cur_speed = std::min(first->cur_speed, spd);
 		}
@@ -3382,7 +3382,7 @@ static VehicleEnterTileStates VehicleEnterTile_TunnelBridge(Vehicle *v, TileInde
 		const Direction vdir = v->GetMovingDirection();
 		if (vdir == bridge_dir) {
 			switch (v->type) {
-				case VEH_TRAIN: {
+				case VehicleType::Train: {
 					/* Trains enter bridge at the first frame beyond this tile. */
 					if (frame != TILE_SIZE) return {};
 					Train *t = Train::From(v);
@@ -3398,7 +3398,7 @@ static VehicleEnterTileStates VehicleEnterTile_TunnelBridge(Vehicle *v, TileInde
 					break;
 				}
 
-				case VEH_ROAD: {
+				case VehicleType::Road: {
 					/* Non-train vehicles enter bridge at the last frame inside this tile. */
 					if (frame != TILE_SIZE - 1) return {};
 					RoadVehicle *rv = RoadVehicle::From(v);
@@ -3414,7 +3414,7 @@ static VehicleEnterTileStates VehicleEnterTile_TunnelBridge(Vehicle *v, TileInde
 					break;
 				}
 
-				case VEH_SHIP:
+				case VehicleType::Ship:
 					/* Non-train vehicles enter bridge at the last frame inside this tile. */
 					if (frame != TILE_SIZE - 1) return {};
 					Ship::From(v)->state = TRACK_BIT_WORMHOLE;
@@ -3425,7 +3425,7 @@ static VehicleEnterTileStates VehicleEnterTile_TunnelBridge(Vehicle *v, TileInde
 			return VehicleEnterTileState::EnteredWormhole;
 		} else if (vdir == ReverseDir(bridge_dir)) {
 			switch (v->type) {
-				case VEH_TRAIN: {
+				case VehicleType::Train: {
 					Train *t = Train::From(v);
 					if (t->track & TRACK_BIT_WORMHOLE) {
 						if (IsRailCustomBridgeHeadTile(tile)) {
@@ -3439,7 +3439,7 @@ static VehicleEnterTileStates VehicleEnterTile_TunnelBridge(Vehicle *v, TileInde
 					break;
 				}
 
-				case VEH_ROAD: {
+				case VehicleType::Road: {
 					v->tile = tile;
 					RoadVehicle *rv = RoadVehicle::From(v);
 					if (rv->state == RVSB_WORMHOLE) {
@@ -3451,7 +3451,7 @@ static VehicleEnterTileStates VehicleEnterTile_TunnelBridge(Vehicle *v, TileInde
 					break;
 				}
 
-				case VEH_SHIP: {
+				case VehicleType::Ship: {
 					v->tile = tile;
 					Ship *ship = Ship::From(v);
 					if (ship->state == TRACK_BIT_WORMHOLE) {
@@ -3463,7 +3463,7 @@ static VehicleEnterTileStates VehicleEnterTile_TunnelBridge(Vehicle *v, TileInde
 
 				default: NOT_REACHED();
 			}
-		} else if (v->type == VEH_TRAIN && IsRailCustomBridgeHeadTile(tile)) {
+		} else if (v->type == VehicleType::Train && IsRailCustomBridgeHeadTile(tile)) {
 			DirDiff dir_diff = DirDifference(vdir, bridge_dir);
 			DirDiff reverse_dir_diff = DirDifference(vdir, ReverseDir(bridge_dir));
 

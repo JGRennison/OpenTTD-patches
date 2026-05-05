@@ -156,7 +156,7 @@ TEST_CASE("Command format debug summary")
 	CHECK(get_summary(CmdPayload<Commands::CreateCustomNewsItem>::Make(NewsType{1}, CompanyID{2}, IndustryID{42}, GetEncodedRawString("test string"))) == "1, 2, (4: 42)");
 
 	TraceRestrictCreateSlotCmdData data;
-	data.vehtype = VEH_TRAIN;
+	data.vehtype = VehicleType::Train;
 	data.parent = TraceRestrictSlotGroupID{1};
 	data.name = "slot name";
 	data.max_occupancy = 2;

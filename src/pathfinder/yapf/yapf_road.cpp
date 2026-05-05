@@ -429,7 +429,7 @@ public:
 			}
 
 			const RoadVehicle *origin_vehicle = v;
-			for (const RoadVehicle *u : VehiclesOnTile<VEH_ROAD>(tile)) {
+			for (const RoadVehicle *u : VehiclesOnTile<VehicleType::Road>(tile)) {
 				const RoadVehicle *front = u->First();
 				if (front == origin_vehicle) continue;
 

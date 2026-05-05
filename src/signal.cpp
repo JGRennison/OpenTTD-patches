@@ -263,7 +263,7 @@ static bool IsTrainNotInDepot(const Train *t)
 /** Check whether there is a train only on ramp. */
 static bool IsTrainInWormholeTile(const TileIndex veh_tile, const TileIndex portal_tile)
 {
-	for (const Train *v : VehiclesOnTile<VEH_TRAIN>(veh_tile)) {
+	for (const Train *v : VehiclesOnTile<VehicleType::Train>(veh_tile)) {
 		/* Only look for front engine or last wagon. */
 		if ((v->Previous() != nullptr && v->Next() != nullptr)) continue;
 		if (portal_tile != TileVirtXY(v->x_pos, v->y_pos)) continue;
@@ -370,14 +370,14 @@ static SigInfo ExploreSegment(Owner owner)
 				if (IsRailDepot(tile)) {
 					if (enterdir == INVALID_DIAGDIR) { // from 'inside' - train just entered or left the depot
 						info.flags |= SF_JUNCTION;
-						if (!(info.flags & SF_TRAIN) && HasVehicleOnTile<VEH_TRAIN>(tile, IsTrainNotInDepot)) info.flags |= SF_TRAIN;
+						if (!(info.flags & SF_TRAIN) && HasVehicleOnTile<VehicleType::Train>(tile, IsTrainNotInDepot)) info.flags |= SF_TRAIN;
 						exitdir = GetRailDepotDirection(tile);
 						tile += TileOffsByDiagDir(exitdir);
 						enterdir = ReverseDiagDir(exitdir);
 						break;
 					} else if (enterdir == GetRailDepotDirection(tile)) { // entered a depot
 						info.flags |= SF_JUNCTION;
-						if (!(info.flags & SF_TRAIN) && HasVehicleOnTile<VEH_TRAIN>(tile, IsTrainNotInDepot)) info.flags |= SF_TRAIN;
+						if (!(info.flags & SF_TRAIN) && HasVehicleOnTile<VehicleType::Train>(tile, IsTrainNotInDepot)) info.flags |= SF_TRAIN;
 						continue;
 					} else {
 						continue;
@@ -394,7 +394,7 @@ static SigInfo ExploreSegment(Owner owner)
 					if (!(info.flags & SF_TRAIN) && EnsureNoTrainOnTrackBits(tile, tracks).Failed()) info.flags |= SF_TRAIN;
 				} else {
 					if (tracks_masked == TRACK_BIT_NONE) continue; // no incidating track
-					if (!(info.flags & SF_TRAIN) && HasVehicleOnTile<VEH_TRAIN>(tile, IsTrainNotInDepot)) info.flags |= SF_TRAIN;
+					if (!(info.flags & SF_TRAIN) && HasVehicleOnTile<VehicleType::Train>(tile, IsTrainNotInDepot)) info.flags |= SF_TRAIN;
 				}
 
 				if (HasSignals(tile)) { // there is exactly one track - not zero, because there is exit from this tile
@@ -485,7 +485,7 @@ static SigInfo ExploreSegment(Owner owner)
 				if (DiagDirToAxis(enterdir) != GetRailStationAxis(tile)) continue; // different axis
 				if (IsStationTileBlocked(tile)) continue; // 'eye-candy' station tile
 
-				if (!(info.flags & SF_TRAIN) && HasVehicleOnTile<VEH_TRAIN>(tile, IsTrainNotInDepot)) info.flags |= SF_TRAIN;
+				if (!(info.flags & SF_TRAIN) && HasVehicleOnTile<VehicleType::Train>(tile, IsTrainNotInDepot)) info.flags |= SF_TRAIN;
 				tile += TileOffsByDiagDir(exitdir);
 				break;
 
@@ -494,7 +494,7 @@ static SigInfo ExploreSegment(Owner owner)
 				if (!IsOneSignalBlock(owner, GetTileOwner(tile))) continue;
 				if (DiagDirToAxis(enterdir) == GetCrossingRoadAxis(tile)) continue; // different axis
 
-				if (!(info.flags & SF_TRAIN) && HasVehicleOnTile<VEH_TRAIN>(tile, IsTrainNotInDepot)) info.flags |= SF_TRAIN;
+				if (!(info.flags & SF_TRAIN) && HasVehicleOnTile<VehicleType::Train>(tile, IsTrainNotInDepot)) info.flags |= SF_TRAIN;
 				if (_settings_game.vehicle.safer_crossings) info.flags |= SF_PBS | SF_JUNCTION;
 				tile += TileOffsByDiagDir(exitdir);
 				break;
@@ -517,7 +517,7 @@ static SigInfo ExploreSegment(Owner owner)
 							return EnsureNoTrainOnTrackBits(tile, tracks & (~across_tracks)).Failed();
 						}
 					} else {
-						return HasVehicleOnTile<VEH_TRAIN>(tile, IsTrainNotInDepot);
+						return HasVehicleOnTile<VehicleType::Train>(tile, IsTrainNotInDepot);
 					}
 				};
 

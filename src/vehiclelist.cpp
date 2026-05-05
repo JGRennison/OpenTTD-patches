@@ -26,12 +26,12 @@ uint32_t VehicleListIdentifier::Pack() const
 {
 	uint8_t c = this->company == OWNER_NONE ? 0xF : this->company.base();
 	assert(c             < (1 <<  4));
-	assert(this->vtype   < (1 <<  2));
+	assert(to_underlying(this->vtype) < (1 <<  2));
 	assert(this->index   < (1 << 20));
 	assert(this->type    < VLT_END);
 	static_assert(VLT_END <= (1 <<  3));
 
-	return c << 28 | this->type << 23 | this->vtype << 26 | this->index;
+	return c << 28 | this->type << 23 | to_underlying(this->vtype) << 26 | this->index;
 }
 
 /**
@@ -83,7 +83,7 @@ void BuildDepotVehicleList(VehicleType type, TileIndex tile, VehicleList *engine
 	for (Vehicle *v : VehiclesOnTile(tile, type)) {
 		if (!v->IsInDepot()) continue;
 
-		if (type == VEH_TRAIN) {
+		if (type == VehicleType::Train) {
 			const Train *t = Train::From(v);
 			if (wagons != nullptr && t->First()->IsFreeWagon()) {
 				if (!t->IsArticulatedPart() && (individual_wagons || t->IsFreeWagon())) wagons->push_back(t);

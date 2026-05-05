@@ -230,7 +230,7 @@ public:
 		this->vscroll[0] = this->GetScrollbar(TRW_WIDGET_TOP_SCROLLBAR);
 		this->vscroll[1] = this->GetScrollbar(TRW_WIDGET_MIDDLE_SCROLLBAR);
 		this->vscroll[2] = this->GetScrollbar(TRW_WIDGET_BOTTOM_SCROLLBAR);
-		this->FinishInitNested(VEH_TRAIN);
+		this->FinishInitNested(VehicleType::Train);
 
 		this->owner = _local_company;
 
@@ -264,7 +264,7 @@ public:
 
 			case TRW_WIDGET_BOTTOM_MATRIX: {
 				int base_resize = GetCharacterHeight(FontSize::Normal) + WidgetDimensions::scaled.matrix.Vertical();
-				int target_resize = WidgetDimensions::scaled.matrix.top + GetCharacterHeight(FontSize::Normal) + ScaleGUITrad(GetVehicleHeight(VEH_TRAIN));
+				int target_resize = WidgetDimensions::scaled.matrix.top + GetCharacterHeight(FontSize::Normal) + ScaleGUITrad(GetVehicleHeight(VehicleType::Train));
 				this->bottom_matrix_item_size = resize.height = CeilT<int>(target_resize, base_resize);
 				size.height = 4 * resize.height;
 
@@ -665,7 +665,7 @@ public:
 		bool enable_collapse_all = false;
 
 		for (const Group *g : Group::Iterate()) {
-			if (g->owner == owner && g->vehicle_type == VEH_TRAIN && g->parent != GroupID::Invalid()) {
+			if (g->owner == owner && g->vehicle_type == VehicleType::Train && g->parent != GroupID::Invalid()) {
 				if (Group::Get(g->parent)->IsFolded(GroupFoldBits::TemplateReplaceView)) {
 					enable_expand_all = true;
 				} else {
@@ -679,7 +679,7 @@ public:
 
 		this->groups.clear();
 
-		BuildGuiGroupList(this->groups, GroupFoldBits::TemplateReplaceView, this->owner, VEH_TRAIN);
+		BuildGuiGroupList(this->groups, GroupFoldBits::TemplateReplaceView, this->owner, VehicleType::Train);
 
 		this->groups.shrink_to_fit();
 		this->groups.RebuildDone();
@@ -836,7 +836,7 @@ public:
 			bool buildable = true;
 			RailTypes types = static_cast<RailTypes>(UINT64_MAX);
 			for (const TemplateVehicle *u = v; u != nullptr; u = u->GetNextUnit()) {
-				if (!IsEngineBuildable(u->engine_type, VEH_TRAIN, u->owner)) {
+				if (!IsEngineBuildable(u->engine_type, VehicleType::Train, u->owner)) {
 					buildable = false;
 					break;
 				} else {
@@ -1013,7 +1013,7 @@ public:
 	void SetAllGroupsFoldState(bool folded)
 	{
 		for (const Group *g : Group::Iterate()) {
-			if (g->owner == this->owner && g->vehicle_type == VEH_TRAIN) {
+			if (g->owner == this->owner && g->vehicle_type == VehicleType::Train) {
 				if (g->parent != GroupID::Invalid()) {
 					SetFlagState(Group::Get(g->parent)->folded_mask, GroupFoldBits::TemplateReplaceView, folded);
 				}

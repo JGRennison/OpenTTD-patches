@@ -1451,7 +1451,7 @@ struct GameOptionsWindow : Window {
 				int64_t value64 = value;
 				/* Show the correct currency or velocity translated value */
 				if (sd->flags.Test(SettingFlag::GuiCurrency)) value64 *= GetCurrency().rate;
-				if (sd->flags.Test(SettingFlag::GuiVelocity)) value64 = ConvertKmhishSpeedToDisplaySpeed((uint)value64, VEH_TRAIN);
+				if (sd->flags.Test(SettingFlag::GuiVelocity)) value64 = ConvertKmhishSpeedToDisplaySpeed((uint)value64, VehicleType::Train);
 
 				this->valuewindow_entry = pe;
 				if (sd->flags.Test(SettingFlag::GuiVelocity) && GetGameSettings().locale.units_velocity == 3) {
@@ -1518,7 +1518,7 @@ struct GameOptionsWindow : Window {
 			value = ClampTo<int32_t>(llvalue);
 
 			/* Save the correct velocity-translated value */
-			if (sd->flags.Test(SettingFlag::GuiVelocity)) value = ConvertDisplaySpeedToKmhishSpeed(value, VEH_TRAIN);
+			if (sd->flags.Test(SettingFlag::GuiVelocity)) value = ConvertDisplaySpeedToKmhishSpeed(value, VehicleType::Train);
 		} else {
 			value = sd->GetDefaultValue();
 		}

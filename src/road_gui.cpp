@@ -399,7 +399,7 @@ struct BuildRoadToolbarWindow : Window {
 
 		RoadTramType rtt = GetRoadTramType(this->roadtype);
 
-		bool can_build = CanBuildVehicleInfrastructure(VEH_ROAD, rtt);
+		bool can_build = CanBuildVehicleInfrastructure(VehicleType::Road, rtt);
 		this->SetWidgetsDisabledState(!can_build,
 			WID_ROT_DEPOT,
 			WID_ROT_BUILD_WAYPOINT,
@@ -458,7 +458,7 @@ struct BuildRoadToolbarWindow : Window {
 		if (widget == WID_ROT_CAPTION) {
 			const RoadTypeInfo *rti = GetRoadTypeInfo(this->roadtype);
 			if (rti->max_speed > 0) {
-				return GetString(STR_TOOLBAR_ROADTYPE_VELOCITY, rti->strings.toolbar_caption, PackVelocity(rti->max_speed / 2, VEH_ROAD));
+				return GetString(STR_TOOLBAR_ROADTYPE_VELOCITY, rti->strings.toolbar_caption, PackVelocity(rti->max_speed / 2, VehicleType::Road));
 			}
 			return GetString(rti->strings.toolbar_caption);
 

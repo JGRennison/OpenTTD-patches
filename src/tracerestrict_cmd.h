@@ -71,7 +71,7 @@ struct TraceRestrictFollowUpCmdData final : public CommandPayloadSerialisable<Tr
 };
 
 struct TraceRestrictCreateSlotCmdData final : public CommandPayloadSerialisable<TraceRestrictCreateSlotCmdData> {
-	VehicleType vehtype = VEH_INVALID;
+	VehicleType vehtype = VehicleType::Invalid;
 	TraceRestrictSlotGroupID parent = INVALID_TRACE_RESTRICT_SLOT_GROUP;
 	std::string name;
 	uint32_t max_occupancy;

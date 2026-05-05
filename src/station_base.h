@@ -23,6 +23,7 @@
 #include "core/alignment.hpp"
 #include "core/alloc_func.hpp"
 #include "strings_type.h"
+#include "vehicle_type.h"
 #include <vector>
 #include <array>
 #include <iterator>
@@ -582,7 +583,7 @@ struct GoodsEntry {
 	GoodsEntry() :
 		status(0),
 		time_since_pickup(255),
-		last_vehicle_type(VEH_INVALID),
+		last_vehicle_type(VehicleType::Invalid),
 		rating(INITIAL_STATION_RATING),
 		last_speed(0),
 		last_age(255),
@@ -601,7 +602,7 @@ struct GoodsEntry {
 	 */
 	uint8_t time_since_pickup;
 
-	uint8_t last_vehicle_type;
+	VehicleType last_vehicle_type = VehicleType::Invalid;
 
 	uint8_t rating;         ///< %Station rating for this cargo.
 

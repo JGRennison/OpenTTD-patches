@@ -1537,7 +1537,7 @@ bool AfterLoadGame()
 			} else {
 				continue;
 			}
-			if (v->type == VEH_TRAIN) {
+			if (v->type == VehicleType::Train) {
 				Train::From(v)->track = TRACK_BIT_WORMHOLE;
 			} else {
 				RoadVehicle::From(v)->state = RVSB_WORMHOLE;
@@ -1821,7 +1821,7 @@ bool AfterLoadGame()
 	if (IsSavegameVersionBefore(SLV_26)) {
 		for (Station *st : Station::Iterate()) {
 			for (CargoType c{}; c < NUM_CARGO; c++) {
-				st->goods[c].last_vehicle_type = VEH_INVALID;
+				st->goods[c].last_vehicle_type = VehicleType::Invalid;
 			}
 		}
 	}
@@ -2086,7 +2086,7 @@ bool AfterLoadGame()
 	if (IsSavegameVersionBefore(SLV_57)) {
 		/* Added a FIFO queue of vehicles loading at stations */
 		for (Vehicle *v : Vehicle::Iterate()) {
-			if ((v->type != VEH_TRAIN || Train::From(v)->IsFrontEngine()) &&  // for all locs
+			if ((v->type != VehicleType::Train || Train::From(v)->IsFrontEngine()) &&  // for all locs
 					!v->vehstatus.Any({VehState::Stopped, VehState::Crashed}) && // not stopped or crashed
 					v->current_order.IsType(OT_LOADING)) {         // loading
 				Station::Get(v->last_station_visited)->loading_vehicles.push_back(v);
@@ -2231,7 +2231,7 @@ bool AfterLoadGame()
 			}
 
 			v->current_order.ConvertFromOldSavegame();
-			if (v->type == VEH_ROAD && v->IsPrimaryVehicle() && v->FirstShared() == v) {
+			if (v->type == VehicleType::Road && v->IsPrimaryVehicle() && v->FirstShared() == v) {
 				for (Order *order : v->Orders()) order->SetNonStopType(ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS);
 			}
 		}
@@ -2707,7 +2707,7 @@ bool AfterLoadGame()
 		for (DisasterVehicle *v : DisasterVehicle::Iterate()) {
 			if (v->subtype == 2 /* ST_SMALL_UFO */ && v->state != 0) {
 				const Vehicle *u = Vehicle::GetIfValid(v->dest_tile.base());
-				if (u == nullptr || u->type != VEH_ROAD || !RoadVehicle::From(u)->IsFrontEngine()) {
+				if (u == nullptr || u->type != VehicleType::Road || !RoadVehicle::From(u)->IsFrontEngine()) {
 					delete v;
 				}
 			}
@@ -3125,16 +3125,16 @@ bool AfterLoadGame()
 				v->vehstatus.Set(VehState::Hidden);
 
 				switch (v->type) {
-					case VEH_TRAIN: Train::From(v)->track       = TRACK_BIT_WORMHOLE; break;
-					case VEH_ROAD:  RoadVehicle::From(v)->state = RVSB_WORMHOLE;      break;
+					case VehicleType::Train: Train::From(v)->track       = TRACK_BIT_WORMHOLE; break;
+					case VehicleType::Road:  RoadVehicle::From(v)->state = RVSB_WORMHOLE;      break;
 					default: NOT_REACHED();
 				}
 			} else {
 				v->vehstatus.Reset(VehState::Hidden);
 
 				switch (v->type) {
-					case VEH_TRAIN: Train::From(v)->track       = DiagDirToDiagTrackBits(vdir); break;
-					case VEH_ROAD:  RoadVehicle::From(v)->state = DiagDirToDiagTrackdir(vdir); RoadVehicle::From(v)->frame = frame; break;
+					case VehicleType::Train: Train::From(v)->track       = DiagDirToDiagTrackBits(vdir); break;
+					case VehicleType::Road:  RoadVehicle::From(v)->state = DiagDirToDiagTrackdir(vdir); RoadVehicle::From(v)->frame = frame; break;
 					default: NOT_REACHED();
 				}
 			}
@@ -3191,7 +3191,7 @@ bool AfterLoadGame()
 	if (IsSavegameVersionBefore(SLV_158)) {
 		for (Vehicle *v : Vehicle::Iterate()) {
 			switch (v->type) {
-				case VEH_TRAIN: {
+				case VehicleType::Train: {
 					Train *t = Train::From(v);
 
 					/* Clear old GOINGUP / GOINGDOWN flags.
@@ -3214,7 +3214,7 @@ bool AfterLoadGame()
 					t->gv_flags |= FixVehicleInclination(t, t->direction);
 					break;
 				}
-				case VEH_ROAD: {
+				case VehicleType::Road: {
 					RoadVehicle *rv = RoadVehicle::From(v);
 					ClrBit(rv->gv_flags, GVF_GOINGUP_BIT);
 					ClrBit(rv->gv_flags, GVF_GOINGDOWN_BIT);
@@ -3243,7 +3243,7 @@ bool AfterLoadGame()
 					rv->gv_flags |= FixVehicleInclination(rv, dir);
 					break;
 				}
-				case VEH_SHIP:
+				case VehicleType::Ship:
 					break;
 
 				default:
@@ -3256,7 +3256,7 @@ bool AfterLoadGame()
 				 * by loading and saving the game in a new version. */
 				v->z_pos = GetSlopePixelZ(v->x_pos, v->y_pos, true);
 				DiagDirection dir = GetTunnelBridgeDirection(v->tile);
-				if (v->type == VEH_TRAIN && !v->vehstatus.Test(VehState::Crashed) &&
+				if (v->type == VehicleType::Train && !v->vehstatus.Test(VehState::Crashed) &&
 						v->direction != DiagDirToDir(dir)) {
 					/* If the train has left the bridge, it shouldn't have
 					 * track == TRACK_BIT_WORMHOLE - this could happen
@@ -3449,16 +3449,16 @@ bool AfterLoadGame()
 	if (!SlXvIsFeaturePresent(XSLFI_IMPROVED_BREAKDOWNS, 3)) {
 		for (Vehicle *v : Vehicle::Iterate()) {
 			switch(v->type) {
-				case VEH_TRAIN:
-				case VEH_ROAD:
+				case VehicleType::Train:
+				case VehicleType::Road:
 					v->breakdown_chance_factor = 128;
 					break;
 
-				case VEH_SHIP:
+				case VehicleType::Ship:
 					v->breakdown_chance_factor = 64;
 					break;
 
-				case VEH_AIRCRAFT:
+				case VehicleType::Aircraft:
 					v->breakdown_chance_factor = Clamp(64 + (AircraftVehInfo(v->engine_type)->max_speed >> 3), 0, 255);
 					v->breakdown_severity = 40;
 					break;
@@ -3471,7 +3471,7 @@ bool AfterLoadGame()
 	if (!SlXvIsFeaturePresent(XSLFI_IMPROVED_BREAKDOWNS, 4)) {
 		for (Vehicle *v : Vehicle::Iterate()) {
 			switch(v->type) {
-				case VEH_AIRCRAFT:
+				case VehicleType::Aircraft:
 					if (v->breakdown_type == BREAKDOWN_AIRCRAFT_SPEED && v->breakdown_severity == 0) {
 						v->breakdown_severity = std::max(1, std::min(v->vcache.cached_max_speed >> 4, 255));
 					}
@@ -4416,7 +4416,7 @@ bool AfterLoadGame()
 	if (SlXvIsFeaturePresent(XSLFI_TRACE_RESTRICT, 7, 12)) {
 		/* Move vehicle in slot flag */
 		for (Vehicle *v : Vehicle::Iterate()) {
-			if (v->type == VEH_TRAIN && Train::From(v)->flags.Test(VehicleRailFlag{2})) { /* was VRF_HAVE_SLOT */
+			if (v->type == VehicleType::Train && Train::From(v)->flags.Test(VehicleRailFlag{2})) { /* was VRF_HAVE_SLOT */
 				v->vehicle_flags.Set(VehicleFlag::HaveSlot);
 				Train::From(v)->flags.Reset(VehicleRailFlag{2});
 			} else {

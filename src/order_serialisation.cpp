@@ -203,7 +203,7 @@ static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 			}
 		}
 
-		if (vt == VEH_ROAD || vt == VEH_TRAIN) {
+		if (vt == VehicleType::Road || vt == VehicleType::Train) {
 			OrderNonStopFlags default_non_stop_flags;
 			bool is_default_nonstop = _settings_client.gui.new_nonstop || _settings_game.order.nonstop_only;
 			if (o.IsType(OT_GOTO_WAYPOINT)) {
@@ -237,9 +237,9 @@ static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 			}
 		}
 
-		if (vt == VEH_TRAIN && o.GetStopLocation() != _settings_client.gui.stop_location) {
+		if (vt == VehicleType::Train && o.GetStopLocation() != _settings_client.gui.stop_location) {
 			json[OFName::STOP_LOCATION] = o.GetStopLocation();
-		} else if (vt == VEH_ROAD && o.GetRoadVehTravelDirection() != INVALID_DIAGDIR) {
+		} else if (vt == VehicleType::Road && o.GetRoadVehTravelDirection() != INVALID_DIAGDIR) {
 			json[OFName::STOP_DIRECTION] = o.GetRoadVehTravelDirection();
 		}
 
@@ -917,7 +917,7 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order>
 	switch (type) {
 		case OT_GOTO_STATION:
 			new_order.MakeGoToStation(destination.ToStationID());
-			if (veh->type != VEH_TRAIN) {
+			if (veh->type != VehicleType::Train) {
 				new_order.SetStopLocation(OSL_PLATFORM_FAR_END);
 			}
 			break;
@@ -1334,7 +1334,7 @@ OrderImportErrors ImportJsonOrderList(const Vehicle *veh, std::string_view json_
 	try {
 		vt = json[FName::VEHICLE_TYPE];
 	} catch (...) {
-		vt = VEH_END;
+		vt = VehicleType::End;
 	}
 
 	if (vt != veh->type) {

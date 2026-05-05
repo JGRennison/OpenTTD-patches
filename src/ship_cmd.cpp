@@ -80,7 +80,7 @@ static const uint16_t _ship_sprites[] = {0x0E5D, 0x0E55, 0x0E65, 0x0E6D};
 
 /** @copydoc IsValidImageIndex */
 template <>
-bool IsValidImageIndex<VEH_SHIP>(uint8_t image_index)
+bool IsValidImageIndex<VehicleType::Ship>(uint8_t image_index)
 {
 	return image_index < lengthof(_ship_sprites);
 }
@@ -102,7 +102,7 @@ static void GetShipIcon(EngineID engine, EngineImageType image_type, VehicleSpri
 		spritenum = e->original_image_index;
 	}
 
-	dbg_assert(IsValidImageIndex<VEH_SHIP>(spritenum));
+	dbg_assert(IsValidImageIndex<VehicleType::Ship>(spritenum));
 	result->Set(DIR_W + _ship_sprites[spritenum]);
 }
 
@@ -154,7 +154,7 @@ void Ship::GetImage(Direction direction, EngineImageType image_type, VehicleSpri
 		spritenum = this->GetEngine()->original_image_index;
 	}
 
-	dbg_assert(IsValidImageIndex<VEH_SHIP>(spritenum));
+	dbg_assert(IsValidImageIndex<VehicleType::Ship>(spritenum));
 	result->Set(_ship_sprites[spritenum] + direction);
 }
 
@@ -199,7 +199,7 @@ static const Depot *FindClosestShipDepot(const Vehicle *v, uint max_distance)
 	uint best_dist_sq = std::numeric_limits<uint>::max();
 	for (const Depot *depot : Depot::Iterate()) {
 		const TileIndex tile = depot->xy;
-		if (IsShipDepotTile(tile) && IsInfraTileUsageAllowed(VEH_SHIP, v->owner, tile)) {
+		if (IsShipDepotTile(tile) && IsInfraTileUsageAllowed(VehicleType::Ship, v->owner, tile)) {
 			const uint dist_sq = DistanceSquare(tile, v->tile);
 			if (dist_sq < best_dist_sq && dist_sq <= max_distance_sq &&
 					visited_patch_hashes.count(CalculateWaterRegionPatchHash(GetWaterRegionPatchInfo(tile))) > 0) {
@@ -447,7 +447,7 @@ static bool CheckShipStayInDepot(Ship *v)
 
 	/* Don't leave depot if another vehicle is already entering/leaving */
 	/* This helps avoid CPU load if many ships are set to start at the same time */
-	if (HasVehicleOnTile<VEH_SHIP>(v->tile, [](const Ship *u) { return u->cur_speed != 0; })) {
+	if (HasVehicleOnTile<VehicleType::Ship>(v->tile, [](const Ship *u) { return u->cur_speed != 0; })) {
 		return true;
 	}
 
@@ -695,8 +695,8 @@ static bool HandleSpeedOnAqueduct(Ship *v, TileIndex tile, TileIndex ramp)
 	if (scc.search_tile == INVALID_TILE) return false;
 
 	if (IsValidTile(scc.search_tile) &&
-			(HasVehicleOnTile<VEH_SHIP>(ramp, scc) ||
-			HasVehicleOnTile<VEH_SHIP>(GetOtherTunnelBridgeEnd(ramp), scc))) {
+			(HasVehicleOnTile<VehicleType::Ship>(ramp, scc) ||
+			HasVehicleOnTile<VehicleType::Ship>(GetOtherTunnelBridgeEnd(ramp), scc))) {
 		UpdateShipSpeed(v, v->cur_speed / 4);
 	}
 	return false;
@@ -735,7 +735,7 @@ static void CheckDistanceBetweenShips(TileIndex tile, Ship *v, TrackBits tracks,
 	scc.track_bits = track_bits;
 	scc.search_tile = tile;
 
-	bool found = HasVehicleOnTile<VEH_SHIP>(tile, scc);
+	bool found = HasVehicleOnTile<VehicleType::Ship>(tile, scc);
 
 	if (!found) {
 		/* Bridge entrance */
@@ -746,7 +746,7 @@ static void CheckDistanceBetweenShips(TileIndex tile, Ship *v, TrackBits tracks,
 		scc.search_tile = TileAddWrap(tile, ti.x, ti.y);
 		if (scc.search_tile == INVALID_TILE) return;
 
-		found = HasVehicleOnTile<VEH_SHIP>(scc.search_tile, scc);
+		found = HasVehicleOnTile<VehicleType::Ship>(scc.search_tile, scc);
 	}
 	if (!found) {
 		scc.track_bits = track_bits;
@@ -754,7 +754,7 @@ static void CheckDistanceBetweenShips(TileIndex tile, Ship *v, TrackBits tracks,
 		scc.search_tile = TileAddWrap(scc.search_tile, ti.x, ti.y);
 		if (scc.search_tile == INVALID_TILE) return;
 
-		found = HasVehicleOnTile<VEH_SHIP>(scc.search_tile, scc);
+		found = HasVehicleOnTile<VehicleType::Ship>(scc.search_tile, scc);
 	}
 	if (found) {
 
@@ -778,7 +778,7 @@ static void CheckDistanceBetweenShips(TileIndex tile, Ship *v, TrackBits tracks,
 
 			scc.search_tile = tile_check;
 			scc.track_bits = TrackToTrackBits(IsDiagonalTrack(track) ? track : TrackToOppositeTrack(track));
-			if (HasVehicleOnTile<VEH_SHIP>(scc.search_tile, scc)) continue;
+			if (HasVehicleOnTile<VehicleType::Ship>(scc.search_tile, scc)) continue;
 
 			TrackBits bits = GetTileShipTrackStatus(tile_check) & DiagdirReachesTracks(_ship_search_directions[track][diagdir]);
 			if (!IsDiagonalTrack(track)) bits &= TRACK_BIT_CROSS;  // No 90 degree turns.

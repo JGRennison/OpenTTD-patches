@@ -2484,7 +2484,7 @@ CommandCost RemoveRoadStop(TileIndex tile, DoCommandFlags flags, int replacement
 	if (IsDriveThroughStopTile(tile) && flags.Test(DoCommandFlag::Bankrupt)) {
 		/* remove the 'going through road stop' status from all vehicles on that tile */
 		if (flags.Test(DoCommandFlag::Execute)) {
-			for (RoadVehicle *rv : VehiclesOnTile<VEH_ROAD>(tile)) {
+			for (RoadVehicle *rv : VehiclesOnTile<VehicleType::Road>(tile)) {
 				/* Okay... we are a road vehicle on a drive through road stop.
 				 * But that road stop has just been removed, so we need to make
 				 * sure we are in a valid state... however, vehicles can also
@@ -4103,7 +4103,7 @@ static bool ClickTile_Station(TileIndex tile)
 		ShowWaypointWindow(Waypoint::From(bst));
 	} else if (IsHangar(tile)) {
 		const Station *st = Station::From(bst);
-		ShowDepotWindow(st->airport.GetHangarTile(st->airport.GetHangarNum(tile)), VEH_AIRCRAFT);
+		ShowDepotWindow(st->airport.GetHangarTile(st->airport.GetHangarNum(tile)), VehicleType::Aircraft);
 	} else {
 		ShowStationViewWindow(bst->index);
 	}
@@ -4113,7 +4113,7 @@ static bool ClickTile_Station(TileIndex tile)
 /** @copydoc VehicleEnterTileProc */
 static VehicleEnterTileStates VehicleEnterTile_Station(Vehicle *v, TileIndex tile, int x, int y)
 {
-	if (v->type == VEH_TRAIN) {
+	if (v->type == VehicleType::Train) {
 		Train *t = Train::From(v);
 		Train *consist = t->First();
 		StationID station_id = GetStationIndex(tile);
@@ -4187,7 +4187,7 @@ static VehicleEnterTileStates VehicleEnterTile_Station(Vehicle *v, TileIndex til
 				if (spd < consist->cur_speed) consist->cur_speed = spd;
 			}
 		}
-	} else if (v->type == VEH_ROAD) {
+	} else if (v->type == VehicleType::Road) {
 		RoadVehicle *rv = RoadVehicle::From(v);
 		if (rv->state < RVSB_IN_ROAD_STOP && !IsReversingRoadTrackdir((Trackdir)rv->state) && rv->frame == 0) {
 			if (IsStationRoadStop(tile) && rv->IsFrontEngine()) {
@@ -4299,7 +4299,7 @@ bool GetNewGrfRating(const Station *st, const CargoSpec *cs, const GoodsEntry *g
 		| (std::min<uint>(ge->max_waiting_cargo, 0xFFFFu) << 8)
 		| (std::min<uint>(last_speed, 0xFFu) << 24);
 	/* Convert to the 'old' vehicle types */
-	uint32_t var10 = (ge->last_vehicle_type == VEH_INVALID) ? 0x0 : (ge->last_vehicle_type + 0x10);
+	uint32_t var10 = (ge->last_vehicle_type == VehicleType::Invalid) ? 0x0 : (to_underlying(ge->last_vehicle_type) + 0x10);
 	uint16_t callback = GetCargoCallback(CBID_CARGO_STATION_RATING_CALC, var10, var18, cs);
 	if (callback != CALLBACK_FAILED) {
 		is_using_newgrf_rating = true;
@@ -4337,7 +4337,7 @@ int GetWaitTimeRating(const CargoSpec *cs, const GoodsEntry *ge)
 		}
 	}
 
-	if (ge->last_vehicle_type == VEH_SHIP) wait_time >>= 2;
+	if (ge->last_vehicle_type == VehicleType::Ship) wait_time >>= 2;
 	if (wait_time <= 21) rating += 25;
 	if (wait_time <= 12) rating += 25;
 	if (wait_time <= 6) rating += 45;

@@ -144,7 +144,7 @@ protected:
 	uint entry_height = 0;                      ///< The height of an entry in the departures list.
 	uint64_t elapsed_ms = 0;                    ///< The number of milliseconds that have elapsed since the window was created. Used for scrolling text.
 	int calc_tick_countdown = 0;                ///< The number of ticks to wait until recomputing the departure list. Signed in case it goes below zero.
-	bool show_types[4]{};                       ///< The vehicle types to show in the departure list.
+	VehicleTypeIndexArray<bool> show_types{};   ///< The vehicle types to show in the departure list.
 	DeparturesCargoMode cargo_mode = DCF_ALL_CARGOES;
 	DeparturesMode mode = DM_DEPARTURES;
 	DeparturesSourceMode source_mode = DSM_LIVE;
@@ -187,7 +187,7 @@ protected:
 
 		btree::btree_set<GroupID> groups;
 		CompanyMask companies = {};
-		int unitnumber_max[4] = { -1, -1, -1, -1 };
+		VehicleTypeIndexArray<int> unitnumber_max = { -1, -1, -1, -1 };
 
 		bool show_vehicle_name = false;
 		if (_settings_client.gui.departure_show_vehicle) {
@@ -238,8 +238,8 @@ protected:
 			process_vehicle(this->order_list_filter->GetFirstSharedVehicle());
 		} else {
 			VehicleTypeMask vt_mask = 0;
-			for (VehicleType vt = VEH_BEGIN; vt != VEH_COMPANY_END; vt++) {
-				if (this->show_types[vt]) SetBit(vt_mask, vt);
+			for (VehicleType vt = VehicleType::Begin; vt != VehicleType::CompanyEnd; vt++) {
+				if (this->show_types[vt]) SetBit(vt_mask, to_underlying(vt));
 			}
 
 			for (const Vehicle *veh : Vehicle::IterateTypeMaskFrontOnly(vt_mask)) {
@@ -247,17 +247,17 @@ protected:
 			}
 		}
 
-		for (uint i = 0; i < 4; i++) {
-			if (unitnumber_max[i] >= 0) {
+		for (VehicleType vt = VehicleType::Begin; vt < VehicleType::CompanyEnd; vt++) {
+			if (unitnumber_max[vt] >= 0) {
 				uint unitnumber_digits = 2;
-				if (unitnumber_max[i] >= 10000) {
+				if (unitnumber_max[vt] >= 10000) {
 					unitnumber_digits = 5;
-				} else if (unitnumber_max[i] >= 1000) {
+				} else if (unitnumber_max[vt] >= 1000) {
 					unitnumber_digits = 4;
-				} else if (unitnumber_max[i] >= 100) {
+				} else if (unitnumber_max[vt] >= 100) {
 					unitnumber_digits = 3;
 				}
-				StringID str = ((_settings_client.gui.vehicle_names == 1) ? STR_SV_TRAIN_NAME : STR_TRADITIONAL_TRAIN_NAME) + i;
+				StringID str = ((_settings_client.gui.vehicle_names == 1) ? STR_SV_TRAIN_NAME : STR_TRADITIONAL_TRAIN_NAME) + to_underlying(vt);
 				int width = GetStringBoundingBox(GetString(str, GetParamMaxDigits(unitnumber_digits))).width + 4;
 				if (width > this->veh_width) this->veh_width = width;
 			}
@@ -317,15 +317,15 @@ protected:
 	void UpdateVehicleTypeFilterDisableState()
 	{
 		bool disable = this->source_type == DST_WAYPOINT || this->source_type == DST_DEPOT || this->order_list_filter != nullptr;
-		for (uint i = 0; i < 4; ++i) {
-			this->SetWidgetDisabledState(WID_DB_SHOW_TRAINS + i, disable);
-			this->SetWidgetDirty(WID_DB_SHOW_TRAINS + i);
+		for (VehicleType vt = VehicleType::Begin; vt < VehicleType::CompanyEnd; vt++) {
+			this->SetWidgetDisabledState(WID_DB_SHOW_TRAINS + to_underlying(vt), disable);
+			this->SetWidgetDirty(WID_DB_SHOW_TRAINS + to_underlying(vt));
 		}
 		if (this->order_list_filter != nullptr) {
 			VehicleType vt = this->order_list_filter->GetFirstSharedVehicle()->type;
-			for (uint i = 0; i < 4; ++i) {
+			for (VehicleType i = VehicleType::Begin; i < VehicleType::CompanyEnd; i++) {
 				this->show_types[i] = (i == vt);
-				this->SetWidgetLoweredState(WID_DB_SHOW_TRAINS + i, i == vt);
+				this->SetWidgetLoweredState(WID_DB_SHOW_TRAINS + to_underlying(i), i == vt);
 			}
 		}
 	}
@@ -346,10 +346,10 @@ public:
 			const Waypoint *wp = Waypoint::Get(window_number);
 			VehicleType vt;
 			if (wp->string_id == STR_SV_STNAME_WAYPOINT) {
-				vt = HasBit(wp->waypoint_flags, WPF_ROAD) ? VEH_ROAD : VEH_TRAIN;
+				vt = HasBit(wp->waypoint_flags, WPF_ROAD) ? VehicleType::Road : VehicleType::Train;
 				this->GetWidget<NWidgetCore>(WID_DB_LOCATION)->SetToolTip(STR_WAYPOINT_VIEW_CENTER_TOOLTIP);
 			} else {
-				vt = VEH_SHIP;
+				vt = VehicleType::Ship;
 				this->GetWidget<NWidgetCore>(WID_DB_LOCATION)->SetToolTip(STR_BUOY_VIEW_CENTER_TOOLTIP);
 			}
 			this->UpdateVehicleTypeFilterDisableState();
@@ -364,9 +364,9 @@ public:
 			this->source.destination = window_number;
 			this->title_params[0] = STR_STATION_NAME;
 
-			for (uint i = 0; i < 4; ++i) {
-				this->show_types[i] = true;
-				this->LowerWidget(WID_DB_SHOW_TRAINS + i);
+			for (VehicleType vt = VehicleType::Begin; vt < VehicleType::CompanyEnd; vt++) {
+				this->show_types[vt] = true;
+				this->LowerWidget(WID_DB_SHOW_TRAINS + to_underlying(vt));
 			}
 
 			this->mode = static_cast<DeparturesMode>(_settings_client.gui.departure_default_mode);
@@ -392,12 +392,12 @@ public:
 
 		this->source_type = DST_DEPOT;
 		SetBit(this->source.order_type_mask, OT_GOTO_DEPOT);
-		this->source.destination = (vt == VEH_AIRCRAFT) ? DestinationID(GetStationIndex(tile)) : DestinationID(GetDepotIndex(tile));
+		this->source.destination = (vt == VehicleType::Aircraft) ? DestinationID(GetStationIndex(tile)) : DestinationID(GetDepotIndex(tile));
 		this->title_params[0] = STR_DEPOT_NAME;
-		this->title_params[1] = vt;
+		this->title_params[1] = to_underlying(vt);
 		this->title_params[2] = this->source.destination.base();
 
-		this->GetWidget<NWidgetCore>(WID_DB_LOCATION)->SetToolTip(STR_DEPOT_TRAIN_LOCATION_TOOLTIP + vt);
+		this->GetWidget<NWidgetCore>(WID_DB_LOCATION)->SetToolTip(STR_DEPOT_TRAIN_LOCATION_TOOLTIP + to_underlying(vt));
 
 		this->UpdateVehicleTypeFilterDisableState();
 		this->show_types[vt] = true;
@@ -523,17 +523,18 @@ public:
 				if (_ctrl_pressed) {
 					for (int w = WID_DB_SHOW_TRAINS; w <= WID_DB_SHOW_PLANES; w++) {
 						if (w == widget) {
-							this->show_types[w - WID_DB_SHOW_TRAINS] = true;
+							this->show_types[static_cast<VehicleType>(w - WID_DB_SHOW_TRAINS)] = true;
 							this->LowerWidget(w);
 						} else {
-							this->show_types[w - WID_DB_SHOW_TRAINS] = false;
+							this->show_types[static_cast<VehicleType>(w - WID_DB_SHOW_TRAINS)] = false;
 							this->RaiseWidget(w);
 						}
 						this->SetWidgetDirty(w);
 					}
 				} else {
-					this->show_types[widget - WID_DB_SHOW_TRAINS] = !this->show_types[widget - WID_DB_SHOW_TRAINS];
-					this->SetWidgetLoweredState(widget, this->show_types[widget - WID_DB_SHOW_TRAINS]);
+					VehicleType vt = static_cast<VehicleType>(widget - WID_DB_SHOW_TRAINS);
+					this->show_types[vt] = !this->show_types[vt];
+					this->SetWidgetLoweredState(widget, this->show_types[vt]);
 					/* We need to redraw the button that was pressed. */
 					this->SetWidgetDirty(widget);
 				}
@@ -714,7 +715,7 @@ public:
 
 	bool OnVehicleSelect(const Vehicle *v) override
 	{
-		if (v->type >= VEH_COMPANY_END) return false;
+		if (v->type >= VehicleType::CompanyEnd) return false;
 
 		if (this->source_type == DST_WAYPOINT || this->source_type == DST_DEPOT) {
 			if (!this->show_types[v->type]) return false; // wrong vehicle type
@@ -895,9 +896,9 @@ public:
 	{
 		if (this->source_type == DST_DEPOT) {
 			VehicleType vt{};
-			for (uint i = 0; i < 4; ++i) {
+			for (VehicleType i = VehicleType::Begin; i < VehicleType::CompanyEnd; i++) {
 				if (this->show_types[i]) {
-					vt = (VehicleType)i;
+					vt = i;
 					break;
 				}
 			}
@@ -1089,7 +1090,7 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 
 	/* Nothing selected? Then display the information text. */
 	bool no_vehs_selected = true;
-	for (uint i = 0; i < 4; ++i) {
+	for (VehicleType i = VehicleType::Begin; i < VehicleType::CompanyEnd; i++) {
 		if (this->show_types[i]) {
 			no_vehs_selected = false;
 			break;
@@ -1197,16 +1198,16 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 			int offset = (_settings_client.gui.departure_show_vehicle_color ? 1 : 0);
 
 			switch (d->vehicle->type) {
-				case VEH_TRAIN:
+				case VehicleType::Train:
 					type = STR_DEPARTURES_TYPE_TRAIN;
 					break;
-				case VEH_ROAD:
+				case VehicleType::Road:
 					type = IsCargoInClass(d->vehicle->cargo_type, CargoClass::Passengers) ? STR_DEPARTURES_TYPE_BUS : STR_DEPARTURES_TYPE_LORRY;
 					break;
-				case VEH_SHIP:
+				case VehicleType::Ship:
 					type = STR_DEPARTURES_TYPE_SHIP;
 					break;
-				case VEH_AIRCRAFT:
+				case VehicleType::Aircraft:
 					type = STR_DEPARTURES_TYPE_PLANE;
 					break;
 				default:
@@ -1229,12 +1230,12 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 				/* No icon change */
 			} else if (t->facilities.Test(StationFacility::Dock) &&
 					t->facilities.Test(StationFacility::Airport) &&
-					d->vehicle->type != VEH_SHIP &&
-					d->vehicle->type != VEH_AIRCRAFT) {
+					d->vehicle->type != VehicleType::Ship &&
+					d->vehicle->type != VehicleType::Aircraft) {
 				icon = STR_DEPARTURES_STATION_PORTAIRPORT;
-			} else if (t->facilities.Test(StationFacility::Dock) && d->vehicle->type != VEH_SHIP) {
+			} else if (t->facilities.Test(StationFacility::Dock) && d->vehicle->type != VehicleType::Ship) {
 				icon = STR_DEPARTURES_STATION_PORT;
-			} else if (t->facilities.Test(StationFacility::Airport) && d->vehicle->type != VEH_AIRCRAFT) {
+			} else if (t->facilities.Test(StationFacility::Airport) && d->vehicle->type != VehicleType::Aircraft) {
 				icon = STR_DEPARTURES_STATION_AIRPORT;
 			}
 		}
@@ -1283,14 +1284,14 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 
 							if (st->facilities.Test(StationFacility::Dock) &&
 									st->facilities.Test(StationFacility::Airport) &&
-									d->vehicle->type != VEH_SHIP &&
-									d->vehicle->type != VEH_AIRCRAFT) {
+									d->vehicle->type != VehicleType::Ship &&
+									d->vehicle->type != VehicleType::Aircraft) {
 								icon_via = STR_DEPARTURES_STATION_PORTAIRPORT;
 							} else if (st->facilities.Test(StationFacility::Dock) &&
-									d->vehicle->type != VEH_SHIP) {
+									d->vehicle->type != VehicleType::Ship) {
 								icon_via = STR_DEPARTURES_STATION_PORT;
 							} else if (st->facilities.Test(StationFacility::Airport) &&
-									d->vehicle->type != VEH_AIRCRAFT) {
+									d->vehicle->type != VehicleType::Aircraft) {
 								icon_via = STR_DEPARTURES_STATION_AIRPORT;
 							}
 						}

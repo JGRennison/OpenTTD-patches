@@ -250,7 +250,7 @@ public:
 
 		/* Rail speed limit */
 		if (td.rail_speed != 0) {
-			this->landinfo_data.push_back(GetString(STR_LANG_AREA_INFORMATION_RAIL_SPEED_LIMIT, PackVelocity(td.rail_speed, VEH_TRAIN)));
+			this->landinfo_data.push_back(GetString(STR_LANG_AREA_INFORMATION_RAIL_SPEED_LIMIT, PackVelocity(td.rail_speed, VehicleType::Train)));
 		}
 
 		/* 2nd Rail type name */
@@ -270,7 +270,7 @@ public:
 
 		/* Road speed limit */
 		if (td.road_speed != 0) {
-			this->landinfo_data.push_back(GetString(STR_LANG_AREA_INFORMATION_ROAD_SPEED_LIMIT, PackVelocity(td.road_speed, VEH_ROAD)));
+			this->landinfo_data.push_back(GetString(STR_LANG_AREA_INFORMATION_ROAD_SPEED_LIMIT, PackVelocity(td.road_speed, VehicleType::Road)));
 		}
 
 		/* Tram type name */
@@ -280,7 +280,7 @@ public:
 
 		/* Tram speed limit */
 		if (td.tram_speed != 0) {
-			this->landinfo_data.push_back(GetString(STR_LANG_AREA_INFORMATION_TRAM_SPEED_LIMIT, PackVelocity(td.tram_speed, VEH_ROAD)));
+			this->landinfo_data.push_back(GetString(STR_LANG_AREA_INFORMATION_TRAM_SPEED_LIMIT, PackVelocity(td.tram_speed, VehicleType::Road)));
 		}
 
 		/* Tile protection status */

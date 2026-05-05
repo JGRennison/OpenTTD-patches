@@ -254,7 +254,7 @@ void InitRailTypesIndirectCompatibility()
 		_railtypes[rt].indirect_compatible_railtypes = _railtypes[rt].compatible_railtypes;
 	}
 
-	for (const Engine *e : Engine::IterateType(VEH_TRAIN)) {
+	for (const Engine *e : Engine::IterateType(VehicleType::Train)) {
 		RailTypes rts = e->VehInfo<RailVehicleInfo>().intended_railtypes;
 		if (HasAtMostOneBit(rts)) continue;
 
@@ -2463,7 +2463,7 @@ static void UpdateTrainPowerProcOnTrackBits(const Train *t, TrainList &affected_
 CommandCost EnsureNoIncompatibleRailtypeTrainOnGround(const TileIndex tile, const RailType type)
 {
 	const int max_z = GetTileMaxPixelZ(tile);
-	for (const Train *t : VehiclesOnTile<VEH_TRAIN>(tile)) {
+	for (const Train *t : VehiclesOnTile<VehicleType::Train>(tile)) {
 		if (t->z_pos > max_z) continue;
 		if (t->First()->compatible_railtypes.Test(type)) continue;
 
@@ -2474,7 +2474,7 @@ CommandCost EnsureNoIncompatibleRailtypeTrainOnGround(const TileIndex tile, cons
 
 CommandCost EnsureNoIncompatibleRailtypeTrainOnTrackBits(const TileIndex tile, const TrackBits track_bits, const RailType type)
 {
-	for (const Train *t : VehiclesOnTile<VEH_TRAIN>(tile)) {
+	for (const Train *t : VehiclesOnTile<VehicleType::Train>(tile)) {
 		TrackBits rail_bits = track_bits;
 		if (t->First()->compatible_railtypes.Test(type)) continue;
 		if (rail_bits & TRACK_BIT_WORMHOLE) {
@@ -2629,7 +2629,7 @@ CommandCost CmdConvertRail(DoCommandFlags flags, TileIndex tile, TileIndex area_
 
 				MarkTileDirtyByTile(tile);
 				/* update power of train on this tile */
-				for (Train *t : VehiclesOnTile<VEH_TRAIN>(tile)) {
+				for (Train *t : VehiclesOnTile<VehicleType::Train>(tile)) {
 					include(affected_trains, t->First());
 				}
 			}
@@ -2717,10 +2717,10 @@ CommandCost CmdConvertRail(DoCommandFlags flags, TileIndex tile, TileIndex area_
 					SetSecondaryRailType(tile, totype);
 					SetSecondaryRailType(endtile, totype);
 
-					for (Train *t : VehiclesOnTile<VEH_TRAIN>(tile)) {
+					for (Train *t : VehiclesOnTile<VehicleType::Train>(tile)) {
 						include(affected_trains, t->First());
 					}
-					for (Train *t : VehiclesOnTile<VEH_TRAIN>(endtile)) {
+					for (Train *t : VehiclesOnTile<VehicleType::Train>(endtile)) {
 						include(affected_trains, t->First());
 					}
 
@@ -2935,7 +2935,7 @@ CommandCost CmdConvertRailTrack(DoCommandFlags flags, TileIndex end_tile, TileIn
 
 				MarkTileDirtyByTile(tile);
 				/* update power of train on this tile */
-				for (const Train *t : VehiclesOnTile<VEH_TRAIN>(tile)) {
+				for (const Train *t : VehiclesOnTile<VehicleType::Train>(tile)) {
 					UpdateTrainPowerProcOnTrackBits(t, affected_trains, track_bits);
 				}
 			}
@@ -3022,15 +3022,15 @@ CommandCost CmdConvertRailTrack(DoCommandFlags flags, TileIndex end_tile, TileIn
 					}
 
 					if (across) {
-						for (const Train *t : VehiclesOnTile<VEH_TRAIN>(tile)) {
+						for (const Train *t : VehiclesOnTile<VehicleType::Train>(tile)) {
 							UpdateTrainPowerProcAcrossTunnelBridge(t, affected_trains, track_bits);
 						}
 						const TrackBits end_track_bits = GetPrimaryTunnelBridgeTrackBits(endtile);
-						for (const Train *t : VehiclesOnTile<VEH_TRAIN>(endtile)) {
+						for (const Train *t : VehiclesOnTile<VehicleType::Train>(endtile)) {
 							UpdateTrainPowerProcAcrossTunnelBridge(t, affected_trains, end_track_bits);
 						}
 					} else {
-						for (const Train *t : VehiclesOnTile<VEH_TRAIN>(tile)) {
+						for (const Train *t : VehiclesOnTile<VehicleType::Train>(tile)) {
 							UpdateTrainPowerProcOnTrackBits(t, affected_trains, track_bits);
 						}
 					}
@@ -4470,7 +4470,7 @@ static bool ClickTile_Rail(TileIndex tile)
 
 	if (!IsRailDepot(tile)) return false;
 
-	ShowDepotWindow(tile, VEH_TRAIN);
+	ShowDepotWindow(tile, VehicleType::Train);
 	return true;
 }
 
@@ -4703,7 +4703,7 @@ int TicksToLeaveDepot(const Train *v)
 static VehicleEnterTileStates VehicleEnterTile_Rail(Vehicle *u, TileIndex tile, int x, int y)
 {
 	/* This routine applies only to trains in depot tiles. */
-	if (u->type != VEH_TRAIN || !IsRailDepotTile(tile)) return {};
+	if (u->type != VehicleType::Train || !IsRailDepotTile(tile)) return {};
 
 	Train *v = Train::From(u);
 
@@ -4861,7 +4861,7 @@ static CommandCost TerraformTile_Rail(TileIndex tile, DoCommandFlags flags, int 
 		bool was_water = (GetRailGroundType(tile) == RailGroundType::HalfTileWater && IsSlopeWithOneCornerRaised(tileh_old));
 
 		/* Allow clearing the water only if there is no ship */
-		if (was_water && GetFirstVehicleOnTile(tile, VEH_SHIP) != nullptr) {
+		if (was_water && GetFirstVehicleOnTile(tile, VehicleType::Ship) != nullptr) {
 			return CommandCost(STR_ERROR_SHIP_IN_THE_WAY);
 		}
 

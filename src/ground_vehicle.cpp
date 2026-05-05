@@ -118,7 +118,7 @@ void GroundVehicle<T, Type>::CargoChanged()
 			articulated_weight = engine_weight / part_count;
 			current_weight += articulated_weight + (engine_weight % part_count);
 		}
-		if (Type == VEH_TRAIN) {
+		if (Type == VehicleType::Train) {
 			Train::From(u)->tcache.cached_veh_weight = current_weight;
 			mass_offset += current_weight * (veh_offset + (Train::From(u)->gcache.cached_veh_length / 2));
 			veh_offset += Train::From(u)->gcache.cached_veh_length;
@@ -129,7 +129,7 @@ void GroundVehicle<T, Type>::CargoChanged()
 		u->InvalidateImageCache();
 	}
 	ClrBit(this->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST);
-	if (Type == VEH_TRAIN) {
+	if (Type == VehicleType::Train) {
 		Train::From(this)->tcache.cached_centre_mass = (weight != 0) ? (mass_offset / weight) : (this->gcache.cached_total_length / 2);
 	}
 
@@ -198,7 +198,7 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 
 	/* handle breakdown power reduction */
 	uint32_t max_te = this->gcache.cached_max_te; // [N]
-	if (Type == VEH_TRAIN && mode == AS_ACCEL && Train::From(this)->flags.Test(VehicleRailFlag::BreakdownPower)) {
+	if (Type == VehicleType::Train && mode == AS_ACCEL && Train::From(this)->flags.Test(VehicleRailFlag::BreakdownPower)) {
 		/* We'd like to cache this, but changing cached_power has too many unwanted side-effects */
 		uint32_t power_temp;
 		this->CalculatePower(power_temp, max_te, true);
@@ -227,12 +227,12 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 		braking_force = force;
 	}
 
-	if (Type == VEH_TRAIN && Train::From(this)->UsingRealisticBraking()) {
+	if (Type == VehicleType::Train && Train::From(this)->UsingRealisticBraking()) {
 		braking_power += (Train::From(this)->tcache.cached_braking_length * (int64_t)RBC_BRAKE_POWER_PER_LENGTH);
 	}
 
 	/* If power is 0 because of a breakdown, we make the force 0 if accelerating */
-	if (Type == VEH_TRAIN && mode == AS_ACCEL && Train::From(this)->flags.Test(VehicleRailFlag::BreakdownPower) && power == 0) {
+	if (Type == VehicleType::Train && mode == AS_ACCEL && Train::From(this)->flags.Test(VehicleRailFlag::BreakdownPower) && power == 0) {
 		force = 0;
 	}
 
@@ -257,7 +257,7 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 		uint64_t breakdown_factor = (uint64_t)abs(resistance) * (uint64_t)(this->cur_speed << 16);
 		breakdown_factor /= (std::max(force, (int64_t)100) * this->gcache.cached_max_track_speed);
 		breakdown_factor = std::min<uint64_t>((64 << 16) + (breakdown_factor * 128), 255 << 16);
-		if (Type == VEH_TRAIN && Train::From(this)->tcache.cached_num_engines > 1) {
+		if (Type == VehicleType::Train && Train::From(this)->tcache.cached_num_engines > 1) {
 			/* For multiengine trains, breakdown chance is multiplied by 3 / (num_engines + 2) */
 			breakdown_factor *= 3;
 			breakdown_factor /= (Train::From(this)->tcache.cached_num_engines + 2);
@@ -267,7 +267,7 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 	}
 
 	int braking_accel;
-	if (Type == VEH_TRAIN && Train::From(this)->UsingRealisticBraking()) {
+	if (Type == VehicleType::Train && Train::From(this)->UsingRealisticBraking()) {
 		/* Assume that every part of a train is braked, not just the engine.
 		 * Exceptionally heavy freight trains should still have a sensible braking distance.
 		 * The total braking force is generally larger than the total tractive force. */
@@ -291,7 +291,7 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 		 * same (maximum) speed. */
 		int accel = ClampTo<int32_t>((force - resistance) / (mass * 4));
 		accel = force < resistance ? std::min(-1, accel) : std::max(1, accel);
-		if (this->type == VEH_TRAIN) {
+		if (this->type == VehicleType::Train) {
 			if (_settings_game.vehicle.train_acceleration_model == AM_ORIGINAL &&
 					Train::From(this)->flags.Test(VehicleRailFlag::BreakdownPower)) {
 				/* We need to apply the power reducation for non-realistic acceleration here */
@@ -335,8 +335,8 @@ bool GroundVehicle<T, Type>::IsChainInDepot() const
 {
 	const T *v = this->First();
 	/* Is the front engine stationary in the depot? */
-	static_assert((int)TRANSPORT_RAIL == (int)VEH_TRAIN);
-	static_assert((int)TRANSPORT_ROAD == (int)VEH_ROAD);
+	static_assert(to_underlying(TRANSPORT_RAIL) == to_underlying(VehicleType::Train));
+	static_assert(to_underlying(TRANSPORT_ROAD) == to_underlying(VehicleType::Road));
 	if (!IsDepotTypeTile(v->tile, (TransportType)Type) || v->cur_speed != 0) return false;
 
 	/* Check whether the rest is also already trying to enter the depot. */
@@ -497,6 +497,6 @@ uint GroundVehicle<T, Type>::DoUpdateSpeed(GroundVehicleAcceleration accel, int 
 }
 
 /* Instantiation for Train */
-template struct GroundVehicle<Train, VEH_TRAIN>;
+template struct GroundVehicle<Train, VehicleType::Train>;
 /* Instantiation for RoadVehicle */
-template struct GroundVehicle<RoadVehicle, VEH_ROAD>;
+template struct GroundVehicle<RoadVehicle, VehicleType::Road>;

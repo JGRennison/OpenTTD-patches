@@ -2078,7 +2078,7 @@ void SetTraceRestrictTypeAndNormalise(TraceRestrictInstructionItemRef item, Trac
 	if (new_properties.value_type == TRVT_SLOT_INDEX || new_properties.value_type == TRVT_SLOT_INDEX_INT) {
 		if (!IsTraceRestrictTypeNonMatchingVehicleTypeSlot(item.GetType())) {
 			const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(item.GetValue());
-			if (slot != nullptr && slot->vehicle_type != VEH_TRAIN) item.SetValue(INVALID_TRACE_RESTRICT_SLOT_ID);
+			if (slot != nullptr && slot->vehicle_type != VehicleType::Train) item.SetValue(INVALID_TRACE_RESTRICT_SLOT_ID);
 		}
 	}
 	if (item.GetType() == TRIT_COND_LAST_STATION && item.GetAuxField() != TROCAF_STATION) {
@@ -2574,7 +2574,7 @@ CommandCost CmdProgramSignalTraceRestrict(DoCommandFlags flags, TileIndex tile, 
 				if (item.GetValue() != INVALID_TRACE_RESTRICT_SLOT_ID) {
 					const TraceRestrictSlot *slot = TraceRestrictSlot::GetIfValid(item.GetValue());
 					if (slot == nullptr) return CMD_ERROR;
-					if (slot->vehicle_type != VEH_TRAIN && !IsTraceRestrictTypeNonMatchingVehicleTypeSlot(item.GetType())) return CMD_ERROR;
+					if (slot->vehicle_type != VehicleType::Train && !IsTraceRestrictTypeNonMatchingVehicleTypeSlot(item.GetType())) return CMD_ERROR;
 					if (!slot->IsUsableByOwner(_current_company)) return CMD_ERROR;
 				}
 				break;
@@ -2582,7 +2582,7 @@ CommandCost CmdProgramSignalTraceRestrict(DoCommandFlags flags, TileIndex tile, 
 			case TRVT_SLOT_GROUP_INDEX:
 				if (item.GetValue() != INVALID_TRACE_RESTRICT_SLOT_GROUP) {
 					const TraceRestrictSlotGroup *sg = TraceRestrictSlotGroup::GetIfValid(item.GetValue());
-					if (sg == nullptr || sg->vehicle_type != VEH_TRAIN) return CMD_ERROR;
+					if (sg == nullptr || sg->vehicle_type != VehicleType::Train) return CMD_ERROR;
 					if (!sg->CompanyCanReferenceSlotGroup(_current_company)) return CMD_ERROR;
 				}
 				break;
@@ -3690,7 +3690,7 @@ CommandCost CmdCreateTraceRestrictSlot(DoCommandFlags flags, const TraceRestrict
 	if (!TraceRestrictSlot::CanAllocateItem()) return CMD_ERROR;
 	if (data.name.empty()) return CMD_ERROR;
 
-	if (data.vehtype >= VEH_COMPANY_END) return CMD_ERROR;
+	if (data.vehtype >= VehicleType::CompanyEnd) return CMD_ERROR;
 
 	size_t length = Utf8StringLength(data.name);
 	if (length <= 0) return CMD_ERROR;
@@ -3926,7 +3926,7 @@ CommandCost CmdCreateTraceRestrictSlotGroup(DoCommandFlags flags, VehicleType ve
 {
 	if (!TraceRestrictSlotGroup::CanAllocateItem()) return CMD_ERROR;
 	if (name.empty()) return CMD_ERROR;
-	if (vehtype >= VEH_COMPANY_END) return CMD_ERROR;
+	if (vehtype >= VehicleType::CompanyEnd) return CMD_ERROR;
 
 	size_t length = Utf8StringLength(name);
 	if (length <= 0) return CMD_ERROR;
@@ -4471,8 +4471,8 @@ void TraceRestrictRemoveNonOwnedReferencesFromOrder(struct Order *o, Owner order
 void DumpTraceRestrictSlotsStats(format_target &buffer)
 {
 	struct cstats {
-		std::array<uint, VEH_END> slotstats{};
-		std::array<uint, VEH_END> slotgroupstats{};
+		VehicleTypeIndexArray<uint> slotstats{};
+		VehicleTypeIndexArray<uint> slotgroupstats{};
 		uint counters = 0;
 	};
 	std::map<Owner, cstats> cstatmap;
@@ -4495,10 +4495,10 @@ void DumpTraceRestrictSlotsStats(format_target &buffer)
 				buffer.format("  {:10} slots: {:5}, groups: {:5}\n", type_name, cs.slotstats[vt], cs.slotgroupstats[vt]);
 			}
 		};
-		line(VEH_TRAIN, "train");
-		line(VEH_ROAD, "road");
-		line(VEH_SHIP, "ship");
-		line(VEH_AIRCRAFT, "aircraft");
+		line(VehicleType::Train, "train");
+		line(VehicleType::Road, "road");
+		line(VehicleType::Ship, "ship");
+		line(VehicleType::Aircraft, "aircraft");
 		if (cs.counters > 0) {
 			buffer.format("          counters: {:5}\n", cs.counters);
 		}
@@ -4512,7 +4512,7 @@ void DumpTraceRestrictSlotsStats(format_target &buffer)
 		buffer.push_back('\n');
 		print_stats(it.second);
 
-		for (VehicleType vt = VEH_BEGIN; vt != VEH_END; vt++) {
+		for (VehicleType vt = VehicleType::Begin; vt != VehicleType::CompanyEnd; vt++) {
 			totals.slotstats[vt] += it.second.slotstats[vt];
 		}
 		totals.counters += it.second.counters;

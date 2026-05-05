@@ -1450,7 +1450,7 @@ struct TraceRestrictSlot : TraceRestrictSlotPool::PoolItem<&_tracerestrictslot_p
 	static void ValidateSlotGroupDescendants(std::function<void(std::string_view)> log);
 	static void PreCleanPool();
 
-	TraceRestrictSlot(TraceRestrictSlotID index, CompanyID owner = CompanyID::Invalid(), VehicleType type = VEH_TRAIN) :
+	TraceRestrictSlot(TraceRestrictSlotID index, CompanyID owner = CompanyID::Invalid(), VehicleType type = VehicleType::Train) :
 		PoolItemBase(index), owner(owner), vehicle_type(type) {}
 
 	~TraceRestrictSlot()
@@ -1539,7 +1539,7 @@ struct TraceRestrictSlotGroup : TraceRestrictSlotGroupPool::PoolItem<&_tracerest
 	ankerl::svector<TraceRestrictSlotID, 8> contained_slots; ///< NOSAVE: slots directly and indirectly contained in this slot group, sorted
 	bool folded = false;        ///< NOSAVE: Is this slot group folded in the slot view?
 
-	TraceRestrictSlotGroup(TraceRestrictSlotGroupID index, CompanyID owner = CompanyID::Invalid(), VehicleType type = VEH_TRAIN) :
+	TraceRestrictSlotGroup(TraceRestrictSlotGroupID index, CompanyID owner = CompanyID::Invalid(), VehicleType type = VehicleType::Train) :
 		PoolItemBase(index), owner(owner), vehicle_type(type), parent(INVALID_TRACE_RESTRICT_SLOT_GROUP) {}
 
 	void AddSlotsToParentGroups();

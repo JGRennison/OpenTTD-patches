@@ -167,7 +167,7 @@ static const uint8_t _vehicle_initial_y_fract[4] = { 8, 4, 8, 10};
 
 /** @copydoc IsValidImageIndex */
 template <>
-bool IsValidImageIndex<VEH_TRAIN>(uint8_t image_index)
+bool IsValidImageIndex<VehicleType::Train>(uint8_t image_index)
 {
 	return image_index < lengthof(_engine_sprite_base);
 }
@@ -1412,7 +1412,7 @@ int Train::GetDisplayImageWidth(Point *offset) const
 
 static SpriteID GetDefaultTrainSprite(uint8_t spritenum, Direction direction)
 {
-	dbg_assert(IsValidImageIndex<VEH_TRAIN>(spritenum));
+	dbg_assert(IsValidImageIndex<VehicleType::Train>(spritenum));
 	return ((direction + _engine_sprite_add[spritenum]) & _engine_sprite_and[spritenum]) + _engine_sprite_base[spritenum];
 }
 
@@ -1436,7 +1436,7 @@ void Train::GetImage(Direction direction, EngineImageType image_type, VehicleSpr
 		spritenum = this->GetEngine()->original_image_index;
 	}
 
-	dbg_assert(IsValidImageIndex<VEH_TRAIN>(spritenum));
+	dbg_assert(IsValidImageIndex<VehicleType::Train>(spritenum));
 	SpriteID sprite = GetDefaultTrainSprite(spritenum, direction);
 
 	if (this->cargo.StoredCount() >= this->cargo_cap / 2U) sprite += _wagon_full_adder[spritenum];
@@ -1608,7 +1608,7 @@ static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlags flags, const
 		if (!flags.Test(DoCommandFlag::AutoReplace)) {
 			/* Try to connect the vehicle to one of free chains of wagons. */
 			std::vector<Train *> candidates;
-			for (Train *w = Train::From(GetFirstVehicleOnTile(tile, VEH_TRAIN)); w != nullptr; w = w->HashTileNext()) {
+			for (Train *w = Train::From(GetFirstVehicleOnTile(tile, VehicleType::Train)); w != nullptr; w = w->HashTileNext()) {
 				if (w->IsFreeWagon() &&                          ///< A free wagon chain
 						w->engine_type == e->index &&            ///< Same type
 						w->First() != v &&                       ///< Don't connect to ourself
@@ -1641,7 +1641,7 @@ void NormalizeTrainVehInDepot(const Train *u)
 {
 	assert(u->IsEngine());
 	std::vector<Train *> candidates;
-	for (Train *v = Train::From(GetFirstVehicleOnTile(u->tile, VEH_TRAIN)); v != nullptr; v = v->HashTileNext()) {
+	for (Train *v = Train::From(GetFirstVehicleOnTile(u->tile, VehicleType::Train)); v != nullptr; v = v->HashTileNext()) {
 		if (v->IsFreeWagon() &&
 				v->track == TRACK_BIT_DEPOT &&
 				v->owner == u->owner) {
@@ -1798,7 +1798,7 @@ static std::vector<Train *> FindGoodVehiclePosList(const Train *src)
 
 	std::vector<Train *> candidates;
 
-	for (Train *dst = Train::From(GetFirstVehicleOnTile(tile, VEH_TRAIN)); dst != nullptr; dst = dst->HashTileNext()) {
+	for (Train *dst = Train::From(GetFirstVehicleOnTile(tile, VehicleType::Train)); dst != nullptr; dst = dst->HashTileNext()) {
 		if (dst->IsFreeWagon() && !dst->vehstatus.Test(VehState::Crashed) && dst->owner == src->owner) {
 			/* check so all vehicles in the line have the same engine. */
 			Train *t = dst;
@@ -1967,7 +1967,7 @@ static CommandCost CheckNewTrain(Train *original_dst, Train *dst, Train *origina
 
 	/* Get a free unit number and check whether it's within the bounds.
 	 * There will always be a maximum of one new train. */
-	if (GetFreeUnitNumber(VEH_TRAIN) <= _settings_game.vehicle.max_trains) return CommandCost();
+	if (GetFreeUnitNumber(VehicleType::Train) <= _settings_game.vehicle.max_trains) return CommandCost();
 
 	return CommandCost(STR_ERROR_TOO_MANY_VEHICLES_IN_GAME);
 }
@@ -2170,7 +2170,7 @@ static void NormaliseTrainHead(Train *head)
 
 	/* If we don't have a unit number yet, set one. */
 	if (head->unitnumber != 0 || HasBit(head->subtype, GVSF_VIRTUAL)) return;
-	head->unitnumber = Company::Get(head->owner)->freeunits[head->type].UseID(GetFreeUnitNumber(VEH_TRAIN));
+	head->unitnumber = Company::Get(head->owner)->freeunits[head->type].UseID(GetFreeUnitNumber(VehicleType::Train));
 }
 
 CommandCost CmdMoveVirtualRailVehicle(DoCommandFlags flags, VehicleID src_veh, VehicleID dest_veh, MoveRailVehicleFlags move_flags)
@@ -2411,7 +2411,7 @@ CommandCost CmdMoveRailVehicle(DoCommandFlags flags, VehicleID src_veh, VehicleI
 		/* But only if the moved vehicle is not virtual */
 		if (!HasBit(src->subtype, GVSF_VIRTUAL)) {
 			InvalidateWindowData(WC_VEHICLE_DEPOT, src->tile.base());
-			InvalidateVehicleListWindows(VEH_TRAIN);
+			InvalidateVehicleListWindows(VehicleType::Train);
 		}
 	} else {
 		/* We don't want to execute what we're just tried. */
@@ -2502,7 +2502,7 @@ CommandCost CmdSellRailWagon(DoCommandFlags flags, Vehicle *t, bool sell_chain, 
 		/* Unless its a virtual train */
 		if (!HasBit(v->subtype, GVSF_VIRTUAL)) {
 			InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile.base());
-			InvalidateVehicleListWindows(VEH_TRAIN);
+			InvalidateVehicleListWindows(VehicleType::Train);
 		}
 
 		/* Actually delete the sold 'goods' */
@@ -2736,7 +2736,7 @@ bool TrainOnCrossing(TileIndex tile)
 {
 	assert(IsLevelCrossingTile(tile));
 
-	return GetFirstVehicleOnTile(tile, VEH_TRAIN) != nullptr;
+	return GetFirstVehicleOnTile(tile, VehicleType::Train) != nullptr;
 }
 
 /**
@@ -2768,14 +2768,14 @@ static bool TrainApproachingCrossing(TileIndex tile)
 	DiagDirection dir = AxisToDiagDir(GetCrossingRailAxis(tile));
 	TileIndex tile_from = tile + TileOffsByDiagDir(dir);
 
-	if (HasVehicleOnTile<VEH_TRAIN>(tile_from, [&](const Train *t) {
+	if (HasVehicleOnTile<VehicleType::Train>(tile_from, [&](const Train *t) {
 			return TrainApproachingCrossingEnum(t, tile);
 		})) return true;
 
 	dir = ReverseDiagDir(dir);
 	tile_from = tile + TileOffsByDiagDir(dir);
 
-	return HasVehicleOnTile<VEH_TRAIN>(tile_from, [&](const Train *t) {
+	return HasVehicleOnTile<VehicleType::Train>(tile_from, [&](const Train *t) {
 		return TrainApproachingCrossingEnum(t, tile);
 	});
 }
@@ -5091,7 +5091,7 @@ static void TrainEnterStation(Train *consist, StationID station)
  */
 static inline bool CheckCompatibleRail(const Train *v, TileIndex tile, DiagDirection enterdir, bool check_railtype)
 {
-	return IsInfraTileUsageAllowed(VEH_TRAIN, v->owner, tile) &&
+	return IsInfraTileUsageAllowed(VehicleType::Train, v->owner, tile) &&
 			(!check_railtype || v->compatible_railtypes.Test(GetRailTypeByEntryDir(tile, enterdir)));
 }
 
@@ -5312,14 +5312,14 @@ static bool CheckTrainCollision(Train *moving_front)
 
 	/* find colliding vehicles */
 	if (moving_front->track == TRACK_BIT_WORMHOLE) {
-		for (Train *u : VehiclesOnTile<VEH_TRAIN>(moving_front->tile)) {
+		for (Train *u : VehiclesOnTile<VehicleType::Train>(moving_front->tile)) {
 			num_victims += CheckTrainCollision(u, moving_front);
 		}
-		for (Train *u : VehiclesOnTile<VEH_TRAIN>(GetOtherTunnelBridgeEnd(moving_front->tile))) {
+		for (Train *u : VehiclesOnTile<VehicleType::Train>(GetOtherTunnelBridgeEnd(moving_front->tile))) {
 			num_victims += CheckTrainCollision(u, moving_front);
 		}
 	} else {
-		for (Train *u : VehiclesNearTileXY<VEH_TRAIN>(moving_front->x_pos, moving_front->y_pos, 7)) {
+		for (Train *u : VehiclesNearTileXY<VehicleType::Train>(moving_front->x_pos, moving_front->y_pos, 7)) {
 			num_victims += CheckTrainCollision(u, moving_front);
 		}
 	}
@@ -5418,7 +5418,7 @@ static bool IsTooCloseBehindTrain(Train *moving_front, TileIndex tile, uint16_t 
 		case DIAGDIR_NW: checker.pos = (TileY(tile) * TILE_SIZE) + TILE_UNIT_MASK; break;
 	}
 
-	if (HasVehicleOnTile<VEH_TRAIN>(moving_front->tile, checker)) {
+	if (HasVehicleOnTile<VehicleType::Train>(moving_front->tile, checker)) {
 		/* Revert train if not going with tunnel direction. */
 		if (checker.direction != GetTunnelBridgeDirection(moving_front->tile)) {
 			consist->flags.Set(VehicleRailFlag::Reversing);
@@ -5427,7 +5427,7 @@ static bool IsTooCloseBehindTrain(Train *moving_front, TileIndex tile, uint16_t 
 	}
 	/* Cover blind spot at end of tunnel bridge. */
 	if (check_endtile){
-		if (HasVehicleOnTile<VEH_TRAIN>(GetOtherTunnelBridgeEnd(moving_front->tile), checker)) {
+		if (HasVehicleOnTile<VehicleType::Train>(GetOtherTunnelBridgeEnd(moving_front->tile), checker)) {
 			/* Revert train if not going with tunnel direction. */
 			if (checker.direction != GetTunnelBridgeDirection(moving_front->tile)) {
 				consist->flags.Set(VehicleRailFlag::Reversing);
@@ -5900,7 +5900,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 								exitdir = ReverseDiagDir(exitdir);
 
 								/* check if a train is waiting on the other side */
-								if (!HasVehicleOnTile<VEH_TRAIN>(o_tile, [&exitdir](const Train *t) {
+								if (!HasVehicleOnTile<VehicleType::Train>(o_tile, [&exitdir](const Train *t) {
 										if (t->vehstatus.Test(VehState::Crashed)) return false;
 
 										/* not front engine of a train, inside wormhole or depot, crashed */
@@ -6462,10 +6462,10 @@ static bool IsRailStationPlatformOccupied(TileIndex tile)
 	TileIndexDiff delta = TileOffsByAxis(GetRailStationAxis(tile));
 
 	for (TileIndex t = tile; IsCompatibleTrainStationTile(t, tile); t -= delta) {
-		if (GetFirstVehicleOnTile(t, VEH_TRAIN) != nullptr) return true;
+		if (GetFirstVehicleOnTile(t, VehicleType::Train) != nullptr) return true;
 	}
 	for (TileIndex t = tile + delta; IsCompatibleTrainStationTile(t, tile); t += delta) {
-		if (GetFirstVehicleOnTile(t, VEH_TRAIN) != nullptr) return true;
+		if (GetFirstVehicleOnTile(t, VehicleType::Train) != nullptr) return true;
 	}
 
 	return false;
@@ -6519,7 +6519,7 @@ static void DeleteLastWagon(Train *v)
 
 		/* If there are still crashed vehicles on the tile, give the track reservation to them */
 		TrackBits remaining_trackbits = TRACK_BIT_NONE;
-		for (const Train *u : VehiclesOnTile<VEH_TRAIN>(tile)) {
+		for (const Train *u : VehiclesOnTile<VehicleType::Train>(tile)) {
 			if (!u->vehstatus.Test(VehState::Crashed)) continue;
 			remaining_trackbits |= GetTrackbitsFromCrashedVehicle(u);
 		}
@@ -7310,8 +7310,8 @@ static Train *CmdBuildVirtualRailWagon(const Engine *e, ClientID user, bool no_c
 Train *BuildVirtualRailVehicle(EngineID eid, StringID &error, ClientID user, bool no_consist_change)
 {
 	const Engine *e = Engine::GetIfValid(eid);
-	if (e == nullptr || e->type != VEH_TRAIN) {
-		error = STR_ERROR_RAIL_VEHICLE_NOT_AVAILABLE + VEH_TRAIN;
+	if (e == nullptr || e->type != VehicleType::Train) {
+		error = STR_ERROR_RAIL_VEHICLE_NOT_AVAILABLE + to_underlying(VehicleType::Train);
 		return nullptr;
 	}
 
@@ -7407,8 +7407,8 @@ Train *BuildVirtualRailVehicle(EngineID eid, StringID &error, ClientID user, boo
  */
 CommandCost CmdBuildVirtualRailVehicle(DoCommandFlags flags, EngineID eid, CargoType cargo, ClientID client, VehicleID move_target)
 {
-	if (!IsEngineBuildable(eid, VEH_TRAIN, _current_company)) {
-		return CommandCost(STR_ERROR_RAIL_VEHICLE_NOT_AVAILABLE + VEH_TRAIN);
+	if (!IsEngineBuildable(eid, VehicleType::Train, _current_company)) {
+		return CommandCost(STR_ERROR_RAIL_VEHICLE_NOT_AVAILABLE + to_underlying(VehicleType::Train));
 	}
 
 	/* Validate the cargo type. */
@@ -7839,7 +7839,7 @@ void TrainRoadVehicleCrashBreakdown(Vehicle *v)
 
 void TrainBrakesOverheatedBreakdown(Vehicle *v, int speed, int max_speed)
 {
-	if (v->type != VEH_TRAIN) return;
+	if (v->type != VehicleType::Train) return;
 	Train *t = Train::From(v)->First();
 	if (t->breakdown_ctr != 0 || t->vehstatus.Test(VehState::Crashed)) return;
 

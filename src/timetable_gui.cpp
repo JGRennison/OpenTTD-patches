@@ -347,7 +347,7 @@ void ProcessTimetableWarnings(const Vehicle *v, std::function<void(std::string_v
 				if (o->IsType(OT_IMPLICIT) || o->HasNoTimetableTimes()) continue;
 
 				if (o->IsWaitTimetabled() && o->GetWaitTime() > 0 && ((o->IsType(OT_GOTO_STATION) && !(o->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION)) ||
-						(o->IsType(OT_GOTO_WAYPOINT) && v->type == VEH_TRAIN))) {
+						(o->IsType(OT_GOTO_WAYPOINT) && v->type == VehicleType::Train))) {
 					return false;
 				}
 			}
@@ -630,7 +630,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 						if (order->IsType(OT_GOTO_WAYPOINT)) {
 							disable = false;
 							disable_time = false;
-							if (v->type != VEH_TRAIN && !order->IsWaitTimetabled() && !order->IsWaitFixed()) disable_time = true;
+							if (v->type != VehicleType::Train && !order->IsWaitTimetabled() && !order->IsWaitFixed()) disable_time = true;
 							clearable_when_wait_locked = true;
 						} else if (order->IsType(OT_CONDITIONAL)) {
 							disable = true;
@@ -654,7 +654,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 					}
 				}
 			}
-			bool disable_speed = disable || selected % 2 == 0 || v->type == VEH_AIRCRAFT;
+			bool disable_speed = disable || selected % 2 == 0 || v->type == VehicleType::Aircraft;
 
 			this->SetWidgetDisabledState(WID_VT_CHANGE_TIME, disable_time || (v->vehicle_flags.Test(VehicleFlag::AutomateTimetable) && !wait_locked));
 			this->SetWidgetDisabledState(WID_VT_CLEAR_TIME, disable_time || (v->vehicle_flags.Test(VehicleFlag::AutomateTimetable) && !(wait_locked && clearable_when_wait_locked)));

@@ -145,7 +145,7 @@ public:
 		this->CreateNestedTree();
 		this->hscroll = this->GetScrollbar(TCW_SCROLLBAR_H_NEW_TMPL);
 		this->vscroll = this->GetScrollbar(TCW_SCROLLBAR_V_NEW_TMPL);
-		this->FinishInitNested(VEH_TRAIN);
+		this->FinishInitNested(VehicleType::Train);
 		/* a sprite */
 		this->GetWidget<NWidgetCore>(TCW_SELL_TMPL)->SetSprite(SPR_SELL_TRAIN);
 
@@ -312,7 +312,7 @@ public:
 					RailTypes types = static_cast<RailTypes>(UINT64_MAX);
 					for (const Train *train = this->virtual_train; train != nullptr; train = train->GetNextUnit()) {
 						const Engine *e = Engine::Get(train->engine_type);
-						if (!IsEngineBuildable(train->engine_type, VEH_TRAIN, train->owner)) {
+						if (!IsEngineBuildable(train->engine_type, VehicleType::Train, train->owner)) {
 							buildable = false;
 						} else {
 							types &= GetAllCompatibleRailTypes(e->VehInfo<RailVehicleInfo>().railtypes);
@@ -422,7 +422,7 @@ public:
 				loaded  [w->cargo_type] += w->cargo.StoredCount();
 			}
 
-			if (w->type == VEH_TRAIN && !w->HasArticulatedPart()) {
+			if (w->type == VehicleType::Train && !w->HasArticulatedPart()) {
 				num++;
 				if (!whole_chain) break;
 			}
@@ -569,7 +569,7 @@ public:
 			for (Train *train = this->virtual_train; train != nullptr; train = train->GetNextUnit()) {
 				width += train->GetDisplayImageWidth();
 				cargo_caps[train->cargo_type] += train->cargo_cap;
-				if (!IsEngineBuildable(train->engine_type, VEH_TRAIN, train->owner)) buildable = false;
+				if (!IsEngineBuildable(train->engine_type, VehicleType::Train, train->owner)) buildable = false;
 				full_cargo_weight += train->GetCargoWeight(train->cargo_cap);
 			}
 			if (!buildable) height += GetCharacterHeight(FontSize::Normal);
@@ -690,14 +690,14 @@ public:
 	void ShowNewGRFInspectWindow() const override
 	{
 		if (this->virtual_train != nullptr) {
-			::ShowNewGRFInspectWindow(GetGrfSpecFeature(VEH_TRAIN), this->virtual_train->index.base());
+			::ShowNewGRFInspectWindow(GetGrfSpecFeature(VehicleType::Train), this->virtual_train->index.base());
 		}
 	}
 };
 
 void ShowTemplateCreateWindow(TemplateVehicle *to_edit, bool *create_window_open)
 {
-	if (BringWindowToFrontById(WC_CREATE_TEMPLATE, VEH_TRAIN) != nullptr) return;
+	if (BringWindowToFrontById(WC_CREATE_TEMPLATE, VehicleType::Train) != nullptr) return;
 	new TemplateCreateWindow(_template_create_window_desc, to_edit, create_window_open);
 }
 

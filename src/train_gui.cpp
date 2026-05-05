@@ -36,7 +36,7 @@ void CcBuildWagon(const CommandCost &result, TileIndex tile)
 
 	/* find a locomotive in the depot. */
 	const Vehicle *found = nullptr;
-	for (const Train *t = Train::From(GetFirstVehicleOnTile(tile, VEH_TRAIN)); t != nullptr; t = t->HashTileNext()) {
+	for (const Train *t = Train::From(GetFirstVehicleOnTile(tile, VehicleType::Train)); t != nullptr; t = t->HashTileNext()) {
 		if (t->IsFrontEngine() && t->IsStoppedInDepot()) {
 			if (found != nullptr) return; // must be exactly one.
 			found = t;
@@ -48,7 +48,7 @@ void CcBuildWagon(const CommandCost &result, TileIndex tile)
 		found = found->Last();
 		/* put the new wagon at the end of the loco. */
 		Command<Commands::MoveRailVehicle>::Post(found->tile, *veh_id, found->index, MoveRailVehicleFlags::None);
-		InvalidateVehicleListWindows(VEH_TRAIN);
+		InvalidateVehicleListWindows(VehicleType::Train);
 	}
 }
 

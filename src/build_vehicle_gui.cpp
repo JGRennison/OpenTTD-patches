@@ -218,13 +218,13 @@ static constexpr NWidgetPart _nested_build_vehicle_widgets_train_advanced[] = {
 	EndContainer(),
 };
 
-bool _engine_sort_direction;                                            ///< \c false = descending, \c true = ascending.
-uint8_t _engine_sort_last_criteria[]    = {0, 0, 0, 0};                 ///< Last set sort criteria, for each vehicle type.
-bool _engine_sort_last_order[]          = {false, false, false, false}; ///< Last set direction of the sort order, for each vehicle type.
-bool _engine_sort_show_hidden_engines[] = {false, false, false, false}; ///< Last set 'show hidden engines' setting for each vehicle type.
-bool _engine_sort_show_hidden_locos     = false;                        ///< Last set 'show hidden locos' setting.
-bool _engine_sort_show_hidden_wagons    = false;                        ///< Last set 'show hidden wagons' setting.
-static CargoType _engine_sort_last_cargo_criteria[] = {CargoFilterCriteria::CF_ANY, CargoFilterCriteria::CF_ANY, CargoFilterCriteria::CF_ANY, CargoFilterCriteria::CF_ANY}; ///< Last set filter criteria, for each vehicle type.
+bool _engine_sort_direction;                                                                 ///< \c false = descending, \c true = ascending.
+VehicleTypeIndexArray<uint8_t> _engine_sort_last_criteria = {0, 0, 0, 0};                    ///< Last set sort criteria, for each vehicle type.
+VehicleTypeIndexArray<bool> _engine_sort_last_order = {false, false, false, false};          ///< Last set direction of the sort order, for each vehicle type.
+VehicleTypeIndexArray<bool> _engine_sort_show_hidden_engines = {false, false, false, false}; ///< Last set 'show hidden engines' setting for each vehicle type.
+bool _engine_sort_show_hidden_locos = false;                                                 ///< Last set 'show hidden locos' setting.
+bool _engine_sort_show_hidden_wagons = false;                                                ///< Last set 'show hidden wagons' setting.
+static VehicleTypeIndexArray<CargoType> _engine_sort_last_cargo_criteria = {CargoFilterCriteria::CF_ANY, CargoFilterCriteria::CF_ANY, CargoFilterCriteria::CF_ANY, CargoFilterCriteria::CF_ANY}; ///< Last set filter criteria, for each vehicle type.
 
 static uint8_t _last_sort_criteria_loco   = 0;
 static bool _last_sort_order_loco         = false;
@@ -681,7 +681,7 @@ static uint GetCargoWeight(const CargoArray &cap, VehicleType vtype)
 	uint weight = 0;
 	for (CargoType cargo{}; cargo < NUM_CARGO; ++cargo) {
 		if (cap[cargo] != 0) {
-			if (vtype == VEH_TRAIN) {
+			if (vtype == VehicleType::Train) {
 				weight += CargoSpec::Get(cargo)->WeightOfNUnitsInTrain(cap[cargo]);
 			} else {
 				weight += CargoSpec::Get(cargo)->WeightOfNUnits(cap[cargo]);
@@ -742,7 +742,7 @@ static int DrawRailWagonPurchaseInfo(int left, int right, int y, EngineID engine
 	/* Wagon weight - (including cargo) */
 	uint weight = e->GetDisplayWeight();
 	DrawString(left, right, y,
-			GetString(STR_PURCHASE_INFO_WEIGHT_CWEIGHT, weight, GetCargoWeight(te.all_capacities, VEH_TRAIN) + weight));
+			GetString(STR_PURCHASE_INFO_WEIGHT_CWEIGHT, weight, GetCargoWeight(te.all_capacities, VehicleType::Train) + weight));
 	y += GetCharacterHeight(FontSize::Normal);
 
 	/* Wagon speed limit, displayed if above zero */
@@ -836,7 +836,7 @@ static int DrawRoadVehPurchaseInfo(int left, int right, int y, EngineID engine_n
 
 		/* Road vehicle weight - (including cargo) */
 		int16_t weight = e->GetDisplayWeight();
-		DrawString(left, right, y, GetString(STR_PURCHASE_INFO_WEIGHT_CWEIGHT, weight, GetCargoWeight(te.all_capacities, VEH_ROAD) + weight));
+		DrawString(left, right, y, GetString(STR_PURCHASE_INFO_WEIGHT_CWEIGHT, weight, GetCargoWeight(te.all_capacities, VehicleType::Road) + weight));
 		y += GetCharacterHeight(FontSize::Normal);
 
 		/* Max speed - Engine power */
@@ -999,7 +999,7 @@ static uint ShowAdditionalText(int left, int right, int y, EngineID engine)
 void TestedEngineDetails::FillDefaultCapacities(const Engine *e)
 {
 	this->cargo = e->GetDefaultCargoType();
-	if (e->type == VEH_TRAIN || e->type == VEH_ROAD || e->type == VEH_SHIP) {
+	if (e->type == VehicleType::Train || e->type == VehicleType::Road || e->type == VehicleType::Ship) {
 		this->all_capacities = GetCapacityOfArticulatedParts(e->index);
 		this->capacity = this->all_capacities[this->cargo];
 		this->mail_capacity = 0;
@@ -1031,7 +1031,7 @@ int DrawVehiclePurchaseInfo(int left, int right, int y, EngineID engine_number, 
 
 	switch (e->type) {
 		default: NOT_REACHED();
-		case VEH_TRAIN:
+		case VehicleType::Train:
 			if (e->VehInfo<RailVehicleInfo>().railveh_type == RAILVEH_WAGON) {
 				y = DrawRailWagonPurchaseInfo(left, right, y, engine_number, &e->VehInfo<RailVehicleInfo>(), te);
 			} else {
@@ -1040,17 +1040,17 @@ int DrawVehiclePurchaseInfo(int left, int right, int y, EngineID engine_number, 
 			articulated_cargo = true;
 			break;
 
-		case VEH_ROAD:
+		case VehicleType::Road:
 			y = DrawRoadVehPurchaseInfo(left, right, y, engine_number, te);
 			articulated_cargo = true;
 			break;
 
-		case VEH_SHIP:
+		case VehicleType::Ship:
 			y = DrawShipPurchaseInfo(left, right, y, engine_number, refittable, te);
 			if (IsArticulatedEngine(engine_number)) articulated_cargo = true;
 			break;
 
-		case VEH_AIRCRAFT:
+		case VehicleType::Aircraft:
 			y = DrawAircraftPurchaseInfo(left, right, y, engine_number, refittable, te);
 			break;
 	}
@@ -1068,7 +1068,7 @@ int DrawVehiclePurchaseInfo(int left, int right, int y, EngineID engine_number, 
 	}
 
 	/* Draw details that apply to all types except rail wagons. */
-	if (e->type != VEH_TRAIN || e->VehInfo<RailVehicleInfo>().railveh_type != RAILVEH_WAGON) {
+	if (e->type != VehicleType::Train || e->VehInfo<RailVehicleInfo>().railveh_type != RAILVEH_WAGON) {
 		/* Design date - Life length */
 		DrawString(left, right, y, GetString(STR_PURCHASE_INFO_DESIGNED_LIFE, ymd.year, DateDeltaToYearDelta(e->GetLifeLengthInDays())));
 		y += GetCharacterHeight(FontSize::Normal);
@@ -1119,7 +1119,7 @@ static void DrawEngineBadgeColumn(const Rect &r, int column_group, const GUIBadg
 void DrawEngineList(VehicleType type, const Rect &r, const GUIEngineList &eng_list, const Scrollbar &sb, EngineID selected_id, bool show_count,
 		GroupID selected_group, const GUIBadgeClasses &badge_classes, StringID sort_criteria)
 {
-	static const std::array<int8_t, VehicleType::VEH_COMPANY_END> sprite_y_offsets = { 0, 0, -1, -1 };
+	static const VehicleTypeIndexArray<int8_t> sprite_y_offsets = { 0, 0, -1, -1 };
 
 	auto [first, last] = sb.GetVisibleRangeIterators(eng_list);
 
@@ -1257,7 +1257,7 @@ void DrawEngineList(VehicleType type, const Rect &r, const GUIEngineList &eng_li
 				break;
 			case STR_SORT_BY_TRACTIVE_EFFORT:
 				/* Allow trucks, and allow trains that are not wagons */
-				if (type == VEH_ROAD || (type == VEH_TRAIN && e->VehInfo<RailVehicleInfo>().railveh_type != RAILVEH_WAGON)) {
+				if (type == VehicleType::Road || (type == VehicleType::Train && e->VehInfo<RailVehicleInfo>().railveh_type != RAILVEH_WAGON)) {
 					auto max_te = e->GetDisplayMaxTractiveEffort();
 					if (max_te != 0) {
 						sort_prop_detail = GetString(STR_PURCHASE_SORT_DETAILS_MAX_TE, max_te);
@@ -1284,7 +1284,7 @@ void DrawEngineList(VehicleType type, const Rect &r, const GUIEngineList &eng_li
 				}
 				break;
 			case STR_SORT_BY_RELIABILITY:
-				if (auto isWagon = e->type == VEH_TRAIN && e->VehInfo<RailVehicleInfo>().railveh_type == RAILVEH_WAGON; !isWagon) {
+				if (auto isWagon = e->type == VehicleType::Train && e->VehInfo<RailVehicleInfo>().railveh_type == RAILVEH_WAGON; !isWagon) {
 					sort_prop_detail = GetString(STR_PURCHASE_SORT_DETAILS_RELIABILITY, ToPercent16(e->reliability));
 				}
 				break;
@@ -1292,14 +1292,14 @@ void DrawEngineList(VehicleType type, const Rect &r, const GUIEngineList &eng_li
 			case STR_SORT_BY_CARGO_CAPACITY_VS_RUNNING_COST: {
 					uint total_capacity = 0;
 					switch (type) {
-						case VEH_TRAIN:
+						case VehicleType::Train:
 							total_capacity = eng_list.SortParameterData().GetArticulatedCapacity(item.engine_id, e->VehInfo<RailVehicleInfo>().railveh_type == RAILVEH_MULTIHEAD);
 							break;
-						case VEH_ROAD:
-						case VEH_SHIP:
+						case VehicleType::Road:
+						case VehicleType::Ship:
 							total_capacity = eng_list.SortParameterData().GetArticulatedCapacity(item.engine_id);
 							break;
-						case VEH_AIRCRAFT: {
+						case VehicleType::Aircraft: {
 								uint16_t mail_cap;
 								int aircraft_cap = e->GetDisplayDefaultCapacity(&mail_cap);
 								total_capacity = aircraft_cap + mail_cap;
@@ -1322,7 +1322,7 @@ void DrawEngineList(VehicleType type, const Rect &r, const GUIEngineList &eng_li
 				}
 				break;
 			case STR_SORT_BY_RANGE:
-				if (e->type == VEH_AIRCRAFT) {
+				if (e->type == VehicleType::Aircraft) {
 					if (uint16_t range = e->GetRange(); range != 0) {
 						sort_prop_detail = GetString(STR_PURCHASE_SORT_DETAILS_AIRCRAFT_RANGE, range);
 					}
@@ -1363,13 +1363,13 @@ void DisplayVehicleSortDropDown(Window *w, VehicleType vehicle_type, int selecte
 {
 	uint32_t hidden_mask = 0;
 	/* Disable sorting by power or tractive effort when the original acceleration model for road vehicles is being used. */
-	if (vehicle_type == VEH_ROAD && _settings_game.vehicle.roadveh_acceleration_model == AM_ORIGINAL) {
+	if (vehicle_type == VehicleType::Road && _settings_game.vehicle.roadveh_acceleration_model == AM_ORIGINAL) {
 		SetBit(hidden_mask, 3); // power
 		SetBit(hidden_mask, 4); // tractive effort
 		SetBit(hidden_mask, 8); // power by running costs
 	}
 	/* Disable sorting by tractive effort when the original acceleration model for trains is being used. */
-	if (vehicle_type == VEH_TRAIN && _settings_game.vehicle.train_acceleration_model == AM_ORIGINAL) {
+	if (vehicle_type == VehicleType::Train && _settings_game.vehicle.train_acceleration_model == AM_ORIGINAL) {
 		SetBit(hidden_mask, 4); // tractive effort
 	}
 	ShowDropDownMenu(w, GetEngineSortNames(vehicle_type), selected, button, 0, hidden_mask);
@@ -1419,7 +1419,7 @@ enum BuildVehicleHotkeys : int32_t {
 };
 
 struct BuildVehicleWindowBase : Window {
-	VehicleType vehicle_type = VEH_INVALID;   ///< Type of vehicles shown in the window.
+	VehicleType vehicle_type = VehicleType::Invalid;   ///< Type of vehicles shown in the window.
 	TileIndex tile = INVALID_TILE;            ///< Original tile.
 	bool virtual_train_mode = false;          ///< Are we building a virtual train?
 	Train **virtual_train_out = nullptr;      ///< Virtual train ptr
@@ -1472,7 +1472,7 @@ struct BuildVehicleWindowBase : Window {
 		/* Add item for disabling filtering. */
 		list.push_back(MakeDropDownListStringItem(this->GetCargoFilterLabel(CargoFilterCriteria::CF_ANY), CargoFilterCriteria::CF_ANY, false));
 		/* Specific filters for trains. */
-		if (this->vehicle_type == VEH_TRAIN) {
+		if (this->vehicle_type == VehicleType::Train) {
 			if (!hide_engines) {
 				/* Add item for locomotives only in case of trains. */
 				list.push_back(MakeDropDownListStringItem(this->GetCargoFilterLabel(CargoFilterCriteria::CF_ENGINES), CargoFilterCriteria::CF_ENGINES, false));
@@ -1629,9 +1629,9 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 			}
 		} else {
 			if (refit) {
-				widget->SetStringTip(STR_BUY_VEHICLE_TRAIN_BUY_REFIT_VEHICLE_BUTTON + this->vehicle_type, STR_BUY_VEHICLE_TRAIN_BUY_REFIT_VEHICLE_TOOLTIP + this->vehicle_type);
+				widget->SetStringTip(STR_BUY_VEHICLE_TRAIN_BUY_REFIT_VEHICLE_BUTTON + to_underlying(this->vehicle_type), STR_BUY_VEHICLE_TRAIN_BUY_REFIT_VEHICLE_TOOLTIP + to_underlying(this->vehicle_type));
 			} else {
-				widget->SetStringTip(STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_BUTTON + this->vehicle_type, STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP + this->vehicle_type);
+				widget->SetStringTip(STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_BUTTON + to_underlying(this->vehicle_type), STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_TOOLTIP + to_underlying(this->vehicle_type));
 			}
 		}
 	}
@@ -1655,21 +1655,21 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		}
 
 		NWidgetCore *widget = this->GetWidget<NWidgetCore>(WID_BV_LIST);
-		widget->SetToolTip(STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP + type);
+		widget->SetToolTip(STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP + to_underlying(type));
 
 		widget = this->GetWidget<NWidgetCore>(WID_BV_SHOW_HIDE);
-		widget->SetToolTip(STR_BUY_VEHICLE_TRAIN_HIDE_SHOW_TOGGLE_TOOLTIP + type);
+		widget->SetToolTip(STR_BUY_VEHICLE_TRAIN_HIDE_SHOW_TOGGLE_TOOLTIP + to_underlying(type));
 
 		widget = this->GetWidget<NWidgetCore>(WID_BV_RENAME);
-		widget->SetStringTip(STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON + type, STR_BUY_VEHICLE_TRAIN_RENAME_TOOLTIP + type);
+		widget->SetStringTip(STR_BUY_VEHICLE_TRAIN_RENAME_BUTTON + to_underlying(type), STR_BUY_VEHICLE_TRAIN_RENAME_TOOLTIP + to_underlying(type));
 
 		widget = this->GetWidget<NWidgetCore>(WID_BV_SHOW_HIDDEN_ENGINES);
-		widget->SetStringTip(STR_SHOW_HIDDEN_ENGINES_VEHICLE_TRAIN + type, STR_SHOW_HIDDEN_ENGINES_VEHICLE_TRAIN_TOOLTIP + type);
+		widget->SetStringTip(STR_SHOW_HIDDEN_ENGINES_VEHICLE_TRAIN + to_underlying(type), STR_SHOW_HIDDEN_ENGINES_VEHICLE_TRAIN_TOOLTIP + to_underlying(type));
 		widget->SetLowered(this->show_hidden_engines);
 
-		this->details_height = ((this->vehicle_type == VEH_TRAIN) ? 10 : 9);
+		this->details_height = ((this->vehicle_type == VehicleType::Train) ? 10 : 9);
 
-		this->GetWidget<NWidgetStacked>(WID_BV_TOGGLE_DUAL_PANE_SEL)->SetDisplayedPlane((this->vehicle_type == VEH_TRAIN) ? 0 : SZSP_NONE);
+		this->GetWidget<NWidgetStacked>(WID_BV_TOGGLE_DUAL_PANE_SEL)->SetDisplayedPlane((this->vehicle_type == VehicleType::Train) ? 0 : SZSP_NONE);
 
 		this->FinishInitNested(this->window_number);
 
@@ -1694,7 +1694,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 	{
 		switch (this->vehicle_type) {
 			default: NOT_REACHED();
-			case VEH_TRAIN:
+			case VehicleType::Train:
 				if (this->listview_mode || this->virtual_train_mode) {
 					this->filter.railtype = INVALID_RAILTYPE;
 				} else {
@@ -1702,7 +1702,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 				}
 				break;
 
-			case VEH_ROAD:
+			case VehicleType::Road:
 				if (this->listview_mode || this->virtual_train_mode) {
 					this->filter.roadtype = INVALID_ROADTYPE;
 				} else {
@@ -1713,8 +1713,8 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 				}
 				break;
 
-			case VEH_SHIP:
-			case VEH_AIRCRAFT:
+			case VehicleType::Ship:
+			case VehicleType::Aircraft:
 				break;
 		}
 	}
@@ -1814,13 +1814,13 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		 * Also check to see if the previously selected engine is still available,
 		 * and if not, reset selection to EngineID::Invalid(). This could be the case
 		 * when engines become obsolete and are removed */
-		for (const Engine *e : Engine::IterateType(VEH_TRAIN)) {
+		for (const Engine *e : Engine::IterateType(VehicleType::Train)) {
 			if (!this->show_hidden_engines && e->IsVariantHidden(_local_company)) continue;
 			EngineID eid = e->index;
 			const RailVehicleInfo *rvi = &e->VehInfo<RailVehicleInfo>();
 
 			if (this->filter.railtype != INVALID_RAILTYPE && !HasPowerOnRail(rvi->railtypes, this->filter.railtype)) continue;
-			if (!IsEngineBuildable(eid, VEH_TRAIN, _local_company)) continue;
+			if (!IsEngineBuildable(eid, VehicleType::Train, _local_company)) continue;
 
 			/* Filter now! So num_engines and num_wagons is valid */
 			if (!FilterSingleEngine(eid)) continue;
@@ -1866,10 +1866,10 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 
 		/* and then sort engines */
 		_engine_sort_direction = this->descending_sort_order;
-		EngList_SortPartial(list, GetEngineSortFunctions(VEH_TRAIN)[this->sort_criteria], 0, num_engines);
+		EngList_SortPartial(list, GetEngineSortFunctions(VehicleType::Train)[this->sort_criteria], 0, num_engines);
 
 		/* and finally sort wagons */
-		EngList_SortPartial(list, GetEngineSortFunctions(VEH_TRAIN)[this->sort_criteria], num_engines, list.size() - num_engines);
+		EngList_SortPartial(list, GetEngineSortFunctions(VehicleType::Train)[this->sort_criteria], num_engines, list.size() - num_engines);
 	}
 
 	/** Figure out what road vehicle EngineIDs to put in the list. */
@@ -1882,10 +1882,10 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		BadgeTextFilter btf(this->string_filter, GrfSpecFeature::RoadVehicles);
 		BadgeDropdownFilter bdf(this->badge_filter_choices);
 
-		for (const Engine *e : Engine::IterateType(VEH_ROAD)) {
+		for (const Engine *e : Engine::IterateType(VehicleType::Road)) {
 			if (!this->show_hidden_engines && e->IsVariantHidden(_local_company)) continue;
 			EngineID eid = e->index;
-			if (!IsEngineBuildable(eid, VEH_ROAD, _local_company)) continue;
+			if (!IsEngineBuildable(eid, VehicleType::Road, _local_company)) continue;
 			if (this->filter.roadtype != INVALID_ROADTYPE && !HasPowerOnRoad(e->VehInfo<RoadVehicleInfo>().roadtype, this->filter.roadtype)) continue;
 			if (!bdf.Filter(e->badges)) continue;
 
@@ -1908,10 +1908,10 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		BadgeTextFilter btf(this->string_filter, GrfSpecFeature::Ships);
 		BadgeDropdownFilter bdf(this->badge_filter_choices);
 
-		for (const Engine *e : Engine::IterateType(VEH_SHIP)) {
+		for (const Engine *e : Engine::IterateType(VehicleType::Ship)) {
 			if (!this->show_hidden_engines && e->IsVariantHidden(_local_company)) continue;
 			EngineID eid = e->index;
-			if (!IsEngineBuildable(eid, VEH_SHIP, _local_company)) continue;
+			if (!IsEngineBuildable(eid, VehicleType::Ship, _local_company)) continue;
 			if (!bdf.Filter(e->badges)) continue;
 
 			/* Filter by name or NewGRF extra text */
@@ -1940,11 +1940,11 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		 * Also check to see if the previously selected plane is still available,
 		 * and if not, reset selection to EngineID::Invalid(). This could be the case
 		 * when planes become obsolete and are removed */
-		for (const Engine *e : Engine::IterateType(VEH_AIRCRAFT)) {
+		for (const Engine *e : Engine::IterateType(VehicleType::Aircraft)) {
 			if (!this->show_hidden_engines && e->IsVariantHidden(_local_company)) continue;
 			EngineID eid = e->index;
-			if (!IsEngineBuildable(eid, VEH_AIRCRAFT, _local_company)) continue;
-			/* First VEH_END window_numbers are fake to allow a window open for all different types at once */
+			if (!IsEngineBuildable(eid, VehicleType::Aircraft, _local_company)) continue;
+			/* First VehicleType::End window_numbers are fake to allow a window open for all different types at once */
 			if (!this->listview_mode && !CanVehicleUseStation(eid, st)) continue;
 			if (!bdf.Filter(e->badges)) continue;
 
@@ -1973,18 +1973,18 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 
 		switch (this->vehicle_type) {
 			default: NOT_REACHED();
-			case VEH_TRAIN:
+			case VehicleType::Train:
 				this->GenerateBuildTrainList(list);
 				GUIEngineListAddChildren(this->eng_list, list);
 				this->eng_list.RebuildDone();
 				return;
-			case VEH_ROAD:
+			case VehicleType::Road:
 				this->GenerateBuildRoadVehList();
 				break;
-			case VEH_SHIP:
+			case VehicleType::Ship:
 				this->GenerateBuildShipList();
 				break;
-			case VEH_AIRCRAFT:
+			case VehicleType::Aircraft:
 				this->GenerateBuildAircraftList();
 				break;
 		}
@@ -2032,9 +2032,9 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		CargoType cargo = this->cargo_filter_criteria;
 		if (cargo == CargoFilterCriteria::CF_ANY || cargo == CargoFilterCriteria::CF_ENGINES || cargo == CargoFilterCriteria::CF_NONE) cargo = INVALID_CARGO;
 		if (this->virtual_train_mode) {
-			Command<Commands::BuildVirtualRailVehicle>::Post(GetCmdBuildVehMsg(VEH_TRAIN), CommandCallback::AddVirtualEngine, sel_eng, cargo, INVALID_CLIENT_ID, this->GetNewVirtualEngineMoveTarget());
+			Command<Commands::BuildVirtualRailVehicle>::Post(GetCmdBuildVehMsg(VehicleType::Train), CommandCallback::AddVirtualEngine, sel_eng, cargo, INVALID_CLIENT_ID, this->GetNewVirtualEngineMoveTarget());
 		} else {
-			CommandCallback callback = (this->vehicle_type == VEH_TRAIN && RailVehInfo(sel_eng)->railveh_type == RAILVEH_WAGON)
+			CommandCallback callback = (this->vehicle_type == VehicleType::Train && RailVehInfo(sel_eng)->railveh_type == RAILVEH_WAGON)
 					? CommandCallback::BuildWagon : CommandCallback::BuildPrimaryVehicle;
 			Command<Commands::BuildVehicle>::Post(GetCmdBuildVehMsg(this->vehicle_type), callback, TileIndex(this->window_number), sel_eng, true, cargo, INVALID_CLIENT_ID);
 		}
@@ -2133,7 +2133,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 				EngineID sel_eng = this->sel_engine;
 				if (sel_eng != EngineID::Invalid()) {
 					this->rename_engine = sel_eng;
-					ShowQueryString(GetString(STR_ENGINE_NAME, PackEngineNameDParam(sel_eng, EngineNameContext::Generic)), STR_QUERY_RENAME_TRAIN_TYPE_CAPTION + this->vehicle_type, MAX_LENGTH_ENGINE_NAME_CHARS, this, CS_ALPHANUMERAL, {QueryStringFlag::EnableDefault, QueryStringFlag::LengthIsInChars});
+					ShowQueryString(GetString(STR_ENGINE_NAME, PackEngineNameDParam(sel_eng, EngineNameContext::Generic)), STR_QUERY_RENAME_TRAIN_TYPE_CAPTION + to_underlying(this->vehicle_type), MAX_LENGTH_ENGINE_NAME_CHARS, this, CS_ALPHANUMERAL, {QueryStringFlag::EnableDefault, QueryStringFlag::LengthIsInChars});
 				}
 				break;
 			}
@@ -2161,11 +2161,11 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 	{
 		if (!gui_scope) return;
 		/* When switching to original acceleration model for road vehicles, clear the selected sort criteria if it is not available now. */
-		if (this->vehicle_type == VEH_ROAD &&
+		if (this->vehicle_type == VehicleType::Road &&
 				_settings_game.vehicle.roadveh_acceleration_model == AM_ORIGINAL &&
 				this->sort_criteria > 7) {
 			this->sort_criteria = 0;
-			_engine_sort_last_criteria[VEH_ROAD] = 0;
+			_engine_sort_last_criteria[VehicleType::Road] = 0;
 		}
 		this->eng_list.ForceRebuild();
 	}
@@ -2174,15 +2174,15 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 	{
 		switch (widget) {
 			case WID_BV_CAPTION:
-				if (this->vehicle_type == VEH_TRAIN && !this->listview_mode && !this->virtual_train_mode) {
+				if (this->vehicle_type == VehicleType::Train && !this->listview_mode && !this->virtual_train_mode) {
 					const RailTypeInfo *rti = GetRailTypeInfo(this->filter.railtype);
 					return GetString(rti->strings.build_caption);
 				}
-				if (this->vehicle_type == VEH_ROAD && !this->listview_mode) {
+				if (this->vehicle_type == VehicleType::Road && !this->listview_mode) {
 					const RoadTypeInfo *rti = GetRoadTypeInfo(this->filter.roadtype);
 					return GetString(rti->strings.build_caption);
 				}
-				return GetString((this->listview_mode ? STR_VEHICLE_LIST_AVAILABLE_TRAINS : STR_BUY_VEHICLE_TRAIN_ALL_CAPTION) + this->vehicle_type);
+				return GetString((this->listview_mode ? STR_VEHICLE_LIST_AVAILABLE_TRAINS : STR_BUY_VEHICLE_TRAIN_ALL_CAPTION) + to_underlying(this->vehicle_type));
 
 			case WID_BV_SORT_DROPDOWN:
 				return GetString(GetEngineSortNames(this->vehicle_type)[this->sort_criteria]);
@@ -2193,9 +2193,9 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 			case WID_BV_SHOW_HIDE: {
 				const Engine *e = (this->sel_engine == EngineID::Invalid()) ? nullptr : Engine::Get(this->sel_engine);
 				if (e != nullptr && e->IsHidden(_local_company)) {
-					return GetString(STR_BUY_VEHICLE_TRAIN_SHOW_TOGGLE_BUTTON + this->vehicle_type);
+					return GetString(STR_BUY_VEHICLE_TRAIN_SHOW_TOGGLE_BUTTON + to_underlying(this->vehicle_type));
 				}
-				return GetString(STR_BUY_VEHICLE_TRAIN_HIDE_TOGGLE_BUTTON + this->vehicle_type);
+				return GetString(STR_BUY_VEHICLE_TRAIN_HIDE_TOGGLE_BUTTON + to_underlying(this->vehicle_type));
 			}
 
 			default:
@@ -2242,16 +2242,16 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 					size = GetStringBoundingBox(STR_TMPL_ADD_VEHICLE);
 					size = maxdim(size, GetStringBoundingBox(STR_TMPL_ADD_VEHICLE_REFIT));
 				} else {
-					size = GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_BUTTON + this->vehicle_type);
-					size = maxdim(size, GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_BUY_REFIT_VEHICLE_BUTTON + this->vehicle_type));
+					size = GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_BUY_VEHICLE_BUTTON + to_underlying(this->vehicle_type));
+					size = maxdim(size, GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_BUY_REFIT_VEHICLE_BUTTON + to_underlying(this->vehicle_type)));
 				}
 				size.width += padding.width;
 				size.height += padding.height;
 				break;
 
 			case WID_BV_SHOW_HIDE:
-				size = GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_HIDE_TOGGLE_BUTTON + this->vehicle_type);
-				size = maxdim(size, GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_SHOW_TOGGLE_BUTTON + this->vehicle_type));
+				size = GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_HIDE_TOGGLE_BUTTON + to_underlying(this->vehicle_type));
+				size = maxdim(size, GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_SHOW_TOGGLE_BUTTON + to_underlying(this->vehicle_type)));
 				size.width += padding.width;
 				size.height += padding.height;
 				break;
@@ -2314,7 +2314,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 	{
 		if (!str.has_value()) return;
 
-		Command<Commands::RenameEngine>::Post(STR_ERROR_CAN_T_RENAME_TRAIN_TYPE + this->vehicle_type, this->rename_engine, *str);
+		Command<Commands::RenameEngine>::Post(STR_ERROR_CAN_T_RENAME_TRAIN_TYPE + to_underlying(this->vehicle_type), this->rename_engine, *str);
 	}
 
 	void OnDropdownSelect(WidgetID widget, int index, int click_result) override
@@ -2566,7 +2566,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		}
 	}
 
-	BuildVehicleWindowTrainAdvanced(WindowDesc &desc, TileIndex tile, Train **virtual_train_out) : BuildVehicleWindowBase(desc, tile, VEH_TRAIN, virtual_train_out)
+	BuildVehicleWindowTrainAdvanced(WindowDesc &desc, TileIndex tile, Train **virtual_train_out) : BuildVehicleWindowBase(desc, tile, VehicleType::Train, virtual_train_out)
 	{
 		this->invalidation_policy = WindowInvalidationPolicy::QueueSingle;
 
@@ -2598,31 +2598,31 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		/* Locomotives */
 
 		auto widget_loco = this->GetWidget<NWidgetCore>(WID_BV_LIST_LOCO);
-		widget_loco->SetToolTip(STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP + VEH_TRAIN);
+		widget_loco->SetToolTip(STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP + to_underlying(VehicleType::Train));
 
 		widget_loco = this->GetWidget<NWidgetCore>(WID_BV_SHOW_HIDE_LOCO);
-		widget_loco->SetToolTip(STR_BUY_VEHICLE_TRAIN_HIDE_SHOW_TOGGLE_TOOLTIP + VEH_TRAIN);
+		widget_loco->SetToolTip(STR_BUY_VEHICLE_TRAIN_HIDE_SHOW_TOGGLE_TOOLTIP + to_underlying(VehicleType::Train));
 
 		widget_loco = this->GetWidget<NWidgetCore>(WID_BV_RENAME_LOCO);
 		widget_loco->SetStringTip(STR_BUY_VEHICLE_TRAIN_RENAME_LOCOMOTIVE_BUTTON, STR_BUY_VEHICLE_TRAIN_RENAME_LOCOMOTIVE_TOOLTIP);
 
 		widget_loco = this->GetWidget<NWidgetCore>(WID_BV_SHOW_HIDDEN_LOCOS);
-		widget_loco->SetStringTip(STR_SHOW_HIDDEN_ENGINES_VEHICLE_TRAIN + VEH_TRAIN, STR_SHOW_HIDDEN_ENGINES_VEHICLE_TRAIN_TOOLTIP + VEH_TRAIN);
+		widget_loco->SetStringTip(STR_SHOW_HIDDEN_ENGINES_VEHICLE_TRAIN + to_underlying(VehicleType::Train), STR_SHOW_HIDDEN_ENGINES_VEHICLE_TRAIN_TOOLTIP + to_underlying(VehicleType::Train));
 		widget_loco->SetLowered(this->loco.show_hidden);
 
 		/* Wagons */
 
 		auto widget_wagon = this->GetWidget<NWidgetCore>(WID_BV_LIST_WAGON);
-		widget_wagon->SetToolTip(STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP + VEH_TRAIN);
+		widget_wagon->SetToolTip(STR_BUY_VEHICLE_TRAIN_LIST_TOOLTIP + to_underlying(VehicleType::Train));
 
 		widget_wagon = this->GetWidget<NWidgetCore>(WID_BV_SHOW_HIDE_WAGON);
-		widget_wagon->SetToolTip(STR_BUY_VEHICLE_TRAIN_HIDE_SHOW_TOGGLE_TOOLTIP + VEH_TRAIN);
+		widget_wagon->SetToolTip(STR_BUY_VEHICLE_TRAIN_HIDE_SHOW_TOGGLE_TOOLTIP + to_underlying(VehicleType::Train));
 
 		widget_wagon = this->GetWidget<NWidgetCore>(WID_BV_RENAME_WAGON);
 		widget_wagon->SetStringTip(STR_BUY_VEHICLE_TRAIN_RENAME_WAGON_BUTTON, STR_BUY_VEHICLE_TRAIN_RENAME_WAGON_TOOLTIP);
 
 		widget_wagon = this->GetWidget<NWidgetCore>(WID_BV_SHOW_HIDDEN_WAGONS);
-		widget_wagon->SetStringTip(STR_SHOW_HIDDEN_ENGINES_VEHICLE_TRAIN + VEH_TRAIN, STR_SHOW_HIDDEN_ENGINES_VEHICLE_TRAIN_TOOLTIP + VEH_TRAIN);
+		widget_wagon->SetStringTip(STR_SHOW_HIDDEN_ENGINES_VEHICLE_TRAIN + to_underlying(VehicleType::Train), STR_SHOW_HIDDEN_ENGINES_VEHICLE_TRAIN_TOOLTIP + to_underlying(VehicleType::Train));
 		widget_wagon->SetLowered(this->wagon.show_hidden);
 
 		this->UpdateButtonMode();
@@ -2774,13 +2774,13 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		 * Also check to see if the previously selected engine is still available,
 		 * and if not, reset selection to EngineID::Invalid(). This could be the case
 		 * when engines become obsolete and are removed */
-		for (const Engine *engine : Engine::IterateType(VEH_TRAIN)) {
+		for (const Engine *engine : Engine::IterateType(VehicleType::Train)) {
 			if (!state.show_hidden && engine->IsVariantHidden(_local_company)) continue;
 			EngineID eid = engine->index;
 			const RailVehicleInfo &rvi = engine->VehInfo<RailVehicleInfo>();
 
 			if (this->railtype != RAILTYPE_END && !HasPowerOnRail(rvi.railtypes, this->railtype)) continue;
-			if (!IsEngineBuildable(eid, VEH_TRAIN, _local_company)) continue;
+			if (!IsEngineBuildable(eid, VehicleType::Train, _local_company)) continue;
 
 			if (!FilterSingleEngine(state, eid)) continue;
 
@@ -2862,9 +2862,9 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		if (selected != EngineID::Invalid()) {
 			if (cargo == CargoFilterCriteria::CF_ANY || cargo == CargoFilterCriteria::CF_ENGINES || cargo == CargoFilterCriteria::CF_NONE) cargo = INVALID_CARGO;
 			if (this->virtual_train_mode) {
-				Command<Commands::BuildVirtualRailVehicle>::Post(GetCmdBuildVehMsg(VEH_TRAIN), CommandCallback::AddVirtualEngine, selected, cargo, INVALID_CLIENT_ID, this->GetNewVirtualEngineMoveTarget());
+				Command<Commands::BuildVirtualRailVehicle>::Post(GetCmdBuildVehMsg(VehicleType::Train), CommandCallback::AddVirtualEngine, selected, cargo, INVALID_CLIENT_ID, this->GetNewVirtualEngineMoveTarget());
 			} else {
-				CommandCallback callback = (this->vehicle_type == VEH_TRAIN && RailVehInfo(selected)->railveh_type == RAILVEH_WAGON)
+				CommandCallback callback = (this->vehicle_type == VehicleType::Train && RailVehInfo(selected)->railveh_type == RAILVEH_WAGON)
 						? CommandCallback::BuildWagon : CommandCallback::BuildPrimaryVehicle;
 				Command<Commands::BuildVehicle>::Post(GetCmdBuildVehMsg(this->vehicle_type), callback, TileIndex(this->window_number), selected, true, cargo, INVALID_CLIENT_ID);
 			}
@@ -2994,7 +2994,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 					this->loco.rename_engine = selected_loco;
 					this->wagon.rename_engine = EngineID::Invalid();
 					std::string str = GetString(STR_ENGINE_NAME, PackEngineNameDParam(selected_loco, EngineNameContext::Generic));
-					ShowQueryString(str, STR_QUERY_RENAME_TRAIN_TYPE_LOCOMOTIVE_CAPTION + this->vehicle_type, MAX_LENGTH_ENGINE_NAME_CHARS, this, CS_ALPHANUMERAL, {QueryStringFlag::EnableDefault, QueryStringFlag::LengthIsInChars});
+					ShowQueryString(str, STR_QUERY_RENAME_TRAIN_TYPE_LOCOMOTIVE_CAPTION + to_underlying(this->vehicle_type), MAX_LENGTH_ENGINE_NAME_CHARS, this, CS_ALPHANUMERAL, {QueryStringFlag::EnableDefault, QueryStringFlag::LengthIsInChars});
 				}
 				break;
 			}
@@ -3058,7 +3058,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 					this->loco.rename_engine = EngineID::Invalid();
 					this->wagon.rename_engine = selected_wagon;
 					std::string str = GetString(STR_ENGINE_NAME, PackEngineNameDParam(selected_wagon, EngineNameContext::Generic));
-					ShowQueryString(str, STR_QUERY_RENAME_TRAIN_TYPE_WAGON_CAPTION + this->vehicle_type, MAX_LENGTH_ENGINE_NAME_CHARS, this, CS_ALPHANUMERAL, {QueryStringFlag::EnableDefault, QueryStringFlag::LengthIsInChars});
+					ShowQueryString(str, STR_QUERY_RENAME_TRAIN_TYPE_WAGON_CAPTION + to_underlying(this->vehicle_type), MAX_LENGTH_ENGINE_NAME_CHARS, this, CS_ALPHANUMERAL, {QueryStringFlag::EnableDefault, QueryStringFlag::LengthIsInChars});
 				}
 				break;
 			}
@@ -3100,7 +3100,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 					const RailTypeInfo *rti = GetRailTypeInfo(this->railtype);
 					return GetString(rti->strings.build_caption);
 				} else {
-					return GetString(this->listview_mode ? STR_VEHICLE_LIST_AVAILABLE_TRAINS : STR_BUY_VEHICLE_TRAIN_ALL_CAPTION + this->vehicle_type);
+					return GetString(this->listview_mode ? STR_VEHICLE_LIST_AVAILABLE_TRAINS : STR_BUY_VEHICLE_TRAIN_ALL_CAPTION + to_underlying(this->vehicle_type));
 				}
 			}
 
@@ -3111,9 +3111,9 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 			case WID_BV_SHOW_HIDE_LOCO: {
 				const Engine *engine = (this->loco.sel_engine == EngineID::Invalid()) ? nullptr : Engine::GetIfValid(this->loco.sel_engine);
 				if (engine != nullptr && engine->IsHidden(_local_company)) {
-					return GetString(STR_BUY_VEHICLE_TRAIN_SHOW_TOGGLE_BUTTON + this->vehicle_type);
+					return GetString(STR_BUY_VEHICLE_TRAIN_SHOW_TOGGLE_BUTTON + to_underlying(this->vehicle_type));
 				} else {
-					return GetString(STR_BUY_VEHICLE_TRAIN_HIDE_TOGGLE_BUTTON + this->vehicle_type);
+					return GetString(STR_BUY_VEHICLE_TRAIN_HIDE_TOGGLE_BUTTON + to_underlying(this->vehicle_type));
 				}
 			}
 
@@ -3140,9 +3140,9 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 			case WID_BV_SHOW_HIDE_WAGON: {
 				const Engine *engine = (this->wagon.sel_engine == EngineID::Invalid()) ? nullptr : Engine::GetIfValid(this->wagon.sel_engine);
 				if (engine != nullptr && engine->IsHidden(_local_company)) {
-					return GetString(STR_BUY_VEHICLE_TRAIN_SHOW_TOGGLE_BUTTON + this->vehicle_type);
+					return GetString(STR_BUY_VEHICLE_TRAIN_SHOW_TOGGLE_BUTTON + to_underlying(this->vehicle_type));
 				} else {
-					return GetString(STR_BUY_VEHICLE_TRAIN_HIDE_TOGGLE_BUTTON + this->vehicle_type);
+					return GetString(STR_BUY_VEHICLE_TRAIN_HIDE_TOGGLE_BUTTON + to_underlying(this->vehicle_type));
 				}
 			}
 
@@ -3150,9 +3150,9 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 				const PanelState &state = this->wagon_selected ? this->wagon : this->loco;
 				const Engine *engine = (state.sel_engine == EngineID::Invalid()) ? nullptr : Engine::GetIfValid(state.sel_engine);
 				if (engine != nullptr && engine->IsHidden(_local_company)) {
-					return GetString(STR_BUY_VEHICLE_TRAIN_SHOW_TOGGLE_BUTTON + this->vehicle_type);
+					return GetString(STR_BUY_VEHICLE_TRAIN_SHOW_TOGGLE_BUTTON + to_underlying(this->vehicle_type));
 				} else {
-					return GetString(STR_BUY_VEHICLE_TRAIN_HIDE_TOGGLE_BUTTON + this->vehicle_type);
+					return GetString(STR_BUY_VEHICLE_TRAIN_HIDE_TOGGLE_BUTTON + to_underlying(this->vehicle_type));
 				}
 			}
 
@@ -3238,8 +3238,8 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 			case WID_BV_SHOW_HIDE_LOCO: // Fallthrough
 			case WID_BV_SHOW_HIDE_WAGON:
 			case WID_BV_COMB_SHOW_HIDE: {
-				size = GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_HIDE_TOGGLE_BUTTON + this->vehicle_type);
-				size = maxdim(size, GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_SHOW_TOGGLE_BUTTON + this->vehicle_type));
+				size = GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_HIDE_TOGGLE_BUTTON + to_underlying(this->vehicle_type));
+				size = maxdim(size, GetStringBoundingBox(STR_BUY_VEHICLE_TRAIN_SHOW_TOGGLE_BUTTON + to_underlying(this->vehicle_type)));
 				size.width += padding.width;
 				size.height += padding.height;
 				break;
@@ -3366,9 +3366,9 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		if (!str.has_value()) return;
 
 		if (this->loco.rename_engine != EngineID::Invalid()) {
-			Command<Commands::RenameEngine>::Post(STR_ERROR_CAN_T_RENAME_TRAIN_TYPE + this->vehicle_type, this->loco.rename_engine, *str);
+			Command<Commands::RenameEngine>::Post(STR_ERROR_CAN_T_RENAME_TRAIN_TYPE + to_underlying(this->vehicle_type), this->loco.rename_engine, *str);
 		} else {
-			Command<Commands::RenameEngine>::Post(STR_ERROR_CAN_T_RENAME_TRAIN_TYPE + this->vehicle_type, this->wagon.rename_engine, *str);
+			Command<Commands::RenameEngine>::Post(STR_ERROR_CAN_T_RENAME_TRAIN_TYPE + to_underlying(this->vehicle_type), this->wagon.rename_engine, *str);
 		}
 	}
 
@@ -3565,7 +3565,7 @@ void ShowBuildVehicleWindow(const TileIndex tile, const VehicleType type)
 
 	CloseWindowById(WC_BUILD_VEHICLE, num);
 
-	if (type == VEH_TRAIN && _settings_client.gui.dual_pane_train_purchase_window) {
+	if (type == VehicleType::Train && _settings_client.gui.dual_pane_train_purchase_window) {
 		new BuildVehicleWindowTrainAdvanced(_build_vehicle_desc_train_advanced, tile, nullptr);
 	} else {
 		new BuildVehicleWindow(_build_vehicle_desc, tile, type, nullptr);
@@ -3574,13 +3574,13 @@ void ShowBuildVehicleWindow(const TileIndex tile, const VehicleType type)
 
 void ShowTemplateTrainBuildVehicleWindow(Train **virtual_train)
 {
-	assert(IsCompanyBuildableVehicleType(VEH_TRAIN));
+	assert(IsCompanyBuildableVehicleType(VehicleType::Train));
 
 	CloseWindowById(WC_BUILD_VIRTUAL_TRAIN, 0);
 
 	if (_settings_client.gui.dual_pane_train_purchase_window) {
 		new BuildVehicleWindowTrainAdvanced(_build_template_vehicle_desc_advanced, INVALID_TILE, virtual_train);
 	} else {
-		new BuildVehicleWindow(_build_template_vehicle_desc, INVALID_TILE, VEH_TRAIN, virtual_train);
+		new BuildVehicleWindow(_build_template_vehicle_desc, INVALID_TILE, VehicleType::Train, virtual_train);
 	}
 }

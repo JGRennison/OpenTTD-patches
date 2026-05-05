@@ -155,7 +155,7 @@ class NIHVehicle : public NIHelper {
 		Vehicle *v = Vehicle::Get(index);
 		output.Print("Debug Info:");
 		this->VehicleInfo(v, output, true, 0);
-		if (v->type == VEH_AIRCRAFT) {
+		if (v->type == VehicleType::Aircraft) {
 			output.Print("");
 			output.Print("Shadow:");
 			this->VehicleInfo(v->Next(), output, false, 8);
@@ -195,8 +195,8 @@ class NIHVehicle : public NIHelper {
 			output.Print("  VirtXYTile: {}", vtile);
 		}
 		output.buffer.format("  Position: {:X}, {:X}, {:X}, Direction: {}", v->x_pos, v->y_pos, v->z_pos, v->direction);
-		if (v->type == VEH_TRAIN) output.buffer.format(", tile margin: {}", GetTileMarginInFrontOfTrain(Train::From(v)));
-		if (v->type == VEH_SHIP) output.buffer.format(", rotation: {}, state: 0x{:X}", Ship::From(v)->rotation, Ship::From(v)->state);
+		if (v->type == VehicleType::Train) output.buffer.format(", tile margin: {}", GetTileMarginInFrontOfTrain(Train::From(v)));
+		if (v->type == VehicleType::Ship) output.buffer.format(", rotation: {}, state: 0x{:X}", Ship::From(v)->rotation, Ship::From(v)->state);
 		output.FinishPrint();
 
 		if (v->IsPrimaryVehicle()) {
@@ -237,7 +237,7 @@ class NIHVehicle : public NIHelper {
 			output.Print("  GV Cache: total length: {}, veh length: {}",
 					gvc.cached_total_length, gvc.cached_veh_length);
 		}
-		if (v->type == VEH_TRAIN) {
+		if (v->type == VehicleType::Train) {
 			const Train *t = Train::From(v);
 			output.Print("  T cache: tilt: {}, speed varies by railtype: {}, curve speed mod: {}, engines: {}",
 					(t->tcache.cached_tflags & TCF_TILT) ? 1 : 0, (t->tcache.cached_tflags & TCF_SPD_RAILTYPE) ? 1 : 0,
@@ -386,7 +386,7 @@ class NIHVehicle : public NIHelper {
 				}
 			}
 		}
-		if (v->type == VEH_ROAD) {
+		if (v->type == VehicleType::Road) {
 			const RoadVehicle *rv = RoadVehicle::From(v);
 			output.Print("  Overtaking: {}, overtaking_ctr: {}, overtaking threshold: {}",
 					rv->overtaking, rv->overtaking_ctr, rv->GetOvertakingCounterThreshold());
@@ -421,7 +421,7 @@ class NIHVehicle : public NIHelper {
 				DumpRoadTypeList(output, "    ", rv->compatible_roadtypes);
 			}
 		}
-		if (v->type == VEH_SHIP) {
+		if (v->type == VehicleType::Ship) {
 			const Ship *s = Ship::From(v);
 			output.Print("  Lost counter: {}", s->lost_count);
 
@@ -445,7 +445,7 @@ class NIHVehicle : public NIHelper {
 				output.FinishPrint();
 			}
 		}
-		if (v->type == VEH_AIRCRAFT) {
+		if (v->type == VehicleType::Aircraft) {
 			const Aircraft *a = Aircraft::From(v);
 			output.buffer.format("  Pos: {}, prev pos: {}, state: {}",
 					a->pos, a->previous_pos, a->state);
@@ -466,7 +466,7 @@ class NIHVehicle : public NIHelper {
 		output.Print("  Current image cacheable: {} ({:X}), spritenum: {:X}",
 				v->cur_image_valid_dir != INVALID_DIR ? "yes" : "no", v->cur_image_valid_dir, v->spritenum);
 
-		if (v->type == VEH_TRAIN && HasBit(v->vcache.cached_veh_flags, VCF_IMAGE_CURVATURE)) {
+		if (v->type == VehicleType::Train && HasBit(v->vcache.cached_veh_flags, VCF_IMAGE_CURVATURE)) {
 			output.Print("  Curvature: cached: {:X}, current: {:X}", v->vcache.cached_image_curvature, Train::From(v)->GetVehicleCurvature());
 		}
 
@@ -651,7 +651,7 @@ class NIHVehicle : public NIHelper {
 							e->info.misc_flags.Test(EngineMiscFlag::SpriteStack)              ? 's' : '-');
 				}
 
-				if (e->type == VEH_TRAIN) {
+				if (e->type == VehicleType::Train) {
 					const RailVehicleInfo &rvi = e->VehInfo<RailVehicleInfo>();
 					const RailTypes rts = rvi.railtypes;
 					output.buffer.format("  Railtypes: {} (", rts);
@@ -671,7 +671,7 @@ class NIHVehicle : public NIHelper {
 					};
 					output.Print("    Rail veh type: {}, power: {}", engine_types[rvi.railveh_type], rvi.power);
 				}
-				if (e->type == VEH_ROAD) {
+				if (e->type == VehicleType::Road) {
 					output.register_next_line_click_flag_toggle(16 << flag_shift);
 					const RoadVehicleInfo &rvi = e->VehInfo<RoadVehicleInfo>();
 					const RoadTypeInfo *rti = GetRoadTypeInfo(rvi.roadtype);
@@ -683,7 +683,7 @@ class NIHVehicle : public NIHelper {
 					output.Print("    Capacity: {}, Weight: {}, Power: {}, TE: {}, Air drag: {}, Shorten: {}",
 							rvi.capacity, rvi.weight, rvi.power, rvi.tractive_effort, rvi.air_drag, rvi.shorten_factor);
 				}
-				if (e->type == VEH_SHIP) {
+				if (e->type == VehicleType::Ship) {
 					const ShipVehicleInfo &svi = e->VehInfo<ShipVehicleInfo>();
 					output.Print("    Capacity: {}, Max speed: {}, Accel: {}, Ocean speed: {}, Canal speed: {}",
 							svi.capacity, svi.max_speed, svi.acceleration, svi.ocean_speed_frac, svi.canal_speed_frac);

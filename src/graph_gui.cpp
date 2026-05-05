@@ -1822,7 +1822,7 @@ struct PaymentRatesGraphWindow : BaseCargoGraphWindow {
 	{
 		this->excluded_data = this->GetExcludedCargoTypes().base();
 
-		const float factor = 200.0f * 28.57f * 0.4f * ConvertSpeedToUnitDisplaySpeed(1 << 16, VEH_TRAIN) / (1.6f * static_cast<float>(1 << 16));
+		const float factor = 200.0f * 28.57f * 0.4f * ConvertSpeedToUnitDisplaySpeed(1 << 16, VehicleType::Train) / (1.6f * static_cast<float>(1 << 16));
 
 		this->data.clear();
 		for (const CargoSpec *cs : _sorted_standard_cargo_specs) {
@@ -1842,7 +1842,7 @@ struct PaymentRatesGraphWindow : BaseCargoGraphWindow {
 		switch (widget) {
 			case WID_GRAPH_FOOTER_CUSTOM:
 				if (_cargo_payment_x_mode) {
-					return GetString(STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_SPEED, GetVelocityUnitName(VEH_TRAIN));
+					return GetString(STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_SPEED, GetVelocityUnitName(VehicleType::Train));
 				} else if (_settings_time.time_in_minutes) {
 					return GetString(STR_GRAPH_CARGO_PAYMENT_RATES_X_LABEL_MINUTES);
 				} else {

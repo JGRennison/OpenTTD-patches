@@ -211,13 +211,13 @@ public:
 
 	void Save(Vehicle *v) const override
 	{
-		if (v->type != VEH_TRAIN) return;
+		if (v->type != VehicleType::Train) return;
 		SlObject(v, this->GetDescription());
 	}
 
 	void Load(Vehicle *v) const override
 	{
-		if (v->type != VEH_TRAIN) return;
+		if (v->type != VehicleType::Train) return;
 		SlObject(v, this->GetLoadDescription());
 		if (v->cur_real_order_index == 0xFF) v->cur_real_order_index = INVALID_VEH_ORDER_ID;
 		if (v->cur_implicit_order_index == 0xFF) v->cur_implicit_order_index = INVALID_VEH_ORDER_ID;
@@ -226,7 +226,7 @@ public:
 
 	void FixPointers(Vehicle *v) const override
 	{
-		if (v->type != VEH_TRAIN) return;
+		if (v->type != VehicleType::Train) return;
 		SlObject(v, this->GetDescription());
 	}
 };
@@ -297,13 +297,13 @@ public:
 
 	void Save(Vehicle *v) const override
 	{
-		if (v->type != VEH_ROAD) return;
+		if (v->type != VehicleType::Road) return;
 		SlObject(v, this->GetDescription());
 	}
 
 	void Load(Vehicle *v) const override
 	{
-		if (v->type != VEH_ROAD) return;
+		if (v->type != VehicleType::Road) return;
 		SlObject(v, this->GetLoadDescription());
 
 		if (!_path_td.empty() && _path_td.size() <= RV_PATH_CACHE_SEGMENTS && _path_td.size() == _path_tile.size()) {
@@ -321,7 +321,7 @@ public:
 
 	void FixPointers(Vehicle *v) const override
 	{
-		if (v->type != VEH_ROAD) return;
+		if (v->type != VehicleType::Road) return;
 		SlObject(v, this->GetDescription());
 	}
 };
@@ -369,13 +369,13 @@ public:
 
 	void Save(Vehicle *v) const override
 	{
-		if (v->type != VEH_SHIP) return;
+		if (v->type != VehicleType::Ship) return;
 		SlObject(v, this->GetDescription());
 	}
 
 	void Load(Vehicle *v) const override
 	{
-		if (v->type != VEH_SHIP) return;
+		if (v->type != VehicleType::Ship) return;
 		SlObject(v, this->GetLoadDescription());
 
 		if (!_path_td.empty()) {
@@ -387,7 +387,7 @@ public:
 
 	void FixPointers(Vehicle *v) const override
 	{
-		if (v->type != VEH_SHIP) return;
+		if (v->type != VehicleType::Ship) return;
 		SlObject(v, this->GetDescription());
 	}
 };
@@ -415,19 +415,19 @@ public:
 
 	void Save(Vehicle *v) const override
 	{
-		if (v->type != VEH_AIRCRAFT) return;
+		if (v->type != VehicleType::Aircraft) return;
 		SlObject(v, this->GetDescription());
 	}
 
 	void Load(Vehicle *v) const override
 	{
-		if (v->type != VEH_AIRCRAFT) return;
+		if (v->type != VehicleType::Aircraft) return;
 		SlObject(v, this->GetLoadDescription());
 	}
 
 	void FixPointers(Vehicle *v) const override
 	{
-		if (v->type != VEH_AIRCRAFT) return;
+		if (v->type != VehicleType::Aircraft) return;
 		SlObject(v, this->GetDescription());
 	}
 };
@@ -460,19 +460,19 @@ public:
 
 	void Save(Vehicle *v) const override
 	{
-		if (v->type != VEH_EFFECT) return;
+		if (v->type != VehicleType::Effect) return;
 		SlObject(v, this->GetDescription());
 	}
 
 	void Load(Vehicle *v) const override
 	{
-		if (v->type != VEH_EFFECT) return;
+		if (v->type != VehicleType::Effect) return;
 		SlObject(v, this->GetLoadDescription());
 	}
 
 	void FixPointers(Vehicle *v) const override
 	{
-		if (v->type != VEH_EFFECT) return;
+		if (v->type != VehicleType::Effect) return;
 		SlObject(v, this->GetDescription());
 	}
 };
@@ -519,19 +519,19 @@ public:
 
 	void Save(Vehicle *v) const override
 	{
-		if (v->type != VEH_DISASTER) return;
+		if (v->type != VehicleType::Disaster) return;
 		SlObject(v, this->GetDescription());
 	}
 
 	void Load(Vehicle *v) const override
 	{
-		if (v->type != VEH_DISASTER) return;
+		if (v->type != VehicleType::Disaster) return;
 		SlObject(v, this->GetLoadDescription());
 	}
 
 	void FixPointers(Vehicle *v) const override
 	{
-		if (v->type != VEH_DISASTER) return;
+		if (v->type != VehicleType::Disaster) return;
 		SlObject(v, this->GetDescription());
 	}
 };
@@ -573,13 +573,13 @@ struct VEHSChunkHandler : ChunkHandler {
 			VehicleType vtype = (VehicleType)SlReadByte();
 
 			switch (vtype) {
-				case VEH_TRAIN: v = Train::CreateAtIndex(VehicleID(index)); break;
-				case VEH_ROAD: v = RoadVehicle::CreateAtIndex(VehicleID(index)); break;
-				case VEH_SHIP: v = Ship::CreateAtIndex(VehicleID(index)); break;
-				case VEH_AIRCRAFT: v = Aircraft::CreateAtIndex(VehicleID(index)); break;
-				case VEH_EFFECT: v = EffectVehicle::CreateAtIndex(VehicleID(index)); break;
-				case VEH_DISASTER: v = DisasterVehicle::CreateAtIndex(VehicleID(index)); break;
-				case VEH_INVALID: // Savegame shouldn't contain invalid vehicles
+				case VehicleType::Train: v = Train::CreateAtIndex(VehicleID(index)); break;
+				case VehicleType::Road: v = RoadVehicle::CreateAtIndex(VehicleID(index)); break;
+				case VehicleType::Ship: v = Ship::CreateAtIndex(VehicleID(index)); break;
+				case VehicleType::Aircraft: v = Aircraft::CreateAtIndex(VehicleID(index)); break;
+				case VehicleType::Effect: v = EffectVehicle::CreateAtIndex(VehicleID(index)); break;
+				case VehicleType::Disaster: v = DisasterVehicle::CreateAtIndex(VehicleID(index)); break;
+				case VehicleType::Invalid: // Savegame shouldn't contain invalid vehicles
 				default: SlErrorCorrupt("Invalid vehicle type");
 			}
 

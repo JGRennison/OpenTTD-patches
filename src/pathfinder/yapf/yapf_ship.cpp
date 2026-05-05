@@ -377,7 +377,7 @@ public:
 		if (IsDockingTile(n.GetTile())) {
 			/* Check docking tile for occupancy. */
 			uint count = 0;
-			for (const Vehicle *v : VehiclesOnTile(n.GetTile(), VEH_SHIP)) {
+			for (const Vehicle *v : VehiclesOnTile(n.GetTile(), VehicleType::Ship)) {
 				/* Ignore other vehicles (aircraft) and ships inside depot. */
 				if (!v->vehstatus.Test(VehState::Hidden)) count++;
 			}

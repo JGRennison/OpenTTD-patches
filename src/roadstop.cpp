@@ -441,7 +441,7 @@ void RoadStop::Entry::Rebuild(const RoadStop *rs, int side)
 	TileIndexDiff offset = TileOffsByAxis(axis);
 	for (TileIndex tile = rs->xy; IsDriveThroughRoadStopContinuation(rs->xy, tile); tile += offset) {
 		this->length += TILE_SIZE;
-		for (const RoadVehicle *rv : VehiclesOnTile<VEH_ROAD>(tile)) {
+		for (const RoadVehicle *rv : VehiclesOnTile<VehicleType::Road>(tile)) {
 			/* Not a RV or not in the right direction or crashed :( */
 			DiagDirection diag_dir = DirToDiagDir(rv->direction);
 			if (rv->overtaking != 0) diag_dir = ReverseDiagDir(diag_dir);

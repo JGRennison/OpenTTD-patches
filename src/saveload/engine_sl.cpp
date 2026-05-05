@@ -68,7 +68,7 @@ struct ENGNChunkHandler : ChunkHandler {
 		 * engine pool after processing NewGRFs by CopyTempEngineData(). */
 		int index;
 		while ((index = SlIterateArray()) != -1) {
-			Engine *e = GetTempDataEngine(static_cast<EngineID>(index), VEH_INVALID, 0);
+			Engine *e = GetTempDataEngine(static_cast<EngineID>(index), VehicleType::Invalid, 0);
 			SlObject(e, slt);
 
 			if (IsSavegameVersionBefore(SLV_179)) {

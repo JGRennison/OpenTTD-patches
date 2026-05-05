@@ -176,12 +176,12 @@ void FixOldVehicles(LoadgameState &ls)
 		}
 
 		/* Vehicle-subtype is different in TTD(Patch) */
-		if (v->type == VEH_EFFECT) v->subtype = v->subtype >> 1;
+		if (v->type == VehicleType::Effect) v->subtype = v->subtype >> 1;
 
 		v->name = CopyFromOldName(ls.vehicle_names[v->index.base()]);
 
 		/* We haven't used this bit for stations for ages */
-		if (v->type == VEH_ROAD) {
+		if (v->type == VehicleType::Road) {
 			RoadVehicle *rv = RoadVehicle::From(v);
 			if (rv->state != RVSB_IN_DEPOT && rv->state != RVSB_WORMHOLE) {
 				ClrBit(rv->state, 2);
@@ -193,7 +193,7 @@ void FixOldVehicles(LoadgameState &ls)
 		}
 
 		/* The subtype should be 0, but it sometimes isn't :( */
-		if (v->type == VEH_ROAD || v->type == VEH_SHIP) v->subtype = 0;
+		if (v->type == VehicleType::Road || v->type == VehicleType::Ship) v->subtype = 0;
 
 		/* Sometimes primary vehicles would have a nothing (invalid) order
 		 * or vehicles that could not have an order would still have a
@@ -380,10 +380,10 @@ static bool FixTTOEngines()
 	/* Load the default engine set. Many of them will be overridden later */
 	{
 		EngineID j = EngineID::Begin();
-		for (uint16_t i = 0; i < lengthof(_orig_rail_vehicle_info); ++i, ++j) GetTempDataEngine(j, VEH_TRAIN, i);
-		for (uint16_t i = 0; i < lengthof(_orig_road_vehicle_info); ++i, ++j) GetTempDataEngine(j, VEH_ROAD, i);
-		for (uint16_t i = 0; i < lengthof(_orig_ship_vehicle_info); ++i, ++j) GetTempDataEngine(j, VEH_SHIP, i);
-		for (uint16_t i = 0; i < lengthof(_orig_aircraft_vehicle_info); ++i, ++j) GetTempDataEngine(j, VEH_AIRCRAFT, i);
+		for (uint16_t i = 0; i < lengthof(_orig_rail_vehicle_info); ++i, ++j) GetTempDataEngine(j, VehicleType::Train, i);
+		for (uint16_t i = 0; i < lengthof(_orig_road_vehicle_info); ++i, ++j) GetTempDataEngine(j, VehicleType::Road, i);
+		for (uint16_t i = 0; i < lengthof(_orig_ship_vehicle_info); ++i, ++j) GetTempDataEngine(j, VehicleType::Ship, i);
+		for (uint16_t i = 0; i < lengthof(_orig_aircraft_vehicle_info); ++i, ++j) GetTempDataEngine(j, VehicleType::Aircraft, i);
 	}
 
 	CalTime::Date aging_date = std::min(CalTime::CurDate() + CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR.AsDelta(), CalTime::ConvertYMDToDate(CalTime::Year{2050}, 0, 1));
@@ -1145,12 +1145,12 @@ static bool LoadOldVehicleUnion(LoadgameState &ls, int)
 	} else {
 		switch (v->type) {
 			default: SlErrorCorrupt("Invalid vehicle type");
-			case VEH_TRAIN   : res = LoadChunk(ls, v, vehicle_train_chunk);    break;
-			case VEH_ROAD    : res = LoadChunk(ls, v, vehicle_road_chunk);     break;
-			case VEH_SHIP    : res = LoadChunk(ls, v, vehicle_ship_chunk);     break;
-			case VEH_AIRCRAFT: res = LoadChunk(ls, v, vehicle_air_chunk);      break;
-			case VEH_EFFECT  : res = LoadChunk(ls, v, vehicle_effect_chunk);   break;
-			case VEH_DISASTER: res = LoadChunk(ls, v, vehicle_disaster_chunk); break;
+			case VehicleType::Train   : res = LoadChunk(ls, v, vehicle_train_chunk);    break;
+			case VehicleType::Road    : res = LoadChunk(ls, v, vehicle_road_chunk);     break;
+			case VehicleType::Ship    : res = LoadChunk(ls, v, vehicle_ship_chunk);     break;
+			case VehicleType::Aircraft: res = LoadChunk(ls, v, vehicle_air_chunk);      break;
+			case VehicleType::Effect  : res = LoadChunk(ls, v, vehicle_effect_chunk);   break;
+			case VehicleType::Disaster: res = LoadChunk(ls, v, vehicle_disaster_chunk); break;
 		}
 	}
 
@@ -1274,14 +1274,14 @@ bool LoadOldVehicle(LoadgameState &ls, int num)
 			uint type = ReadByte(ls);
 			switch (type) {
 				default: return false;
-				case 0x00 /* VEH_INVALID */: v = nullptr; break;
+				case 0x00 /* VehicleType::Invalid */: v = nullptr; break;
 				case 0x25 /* MONORAIL */:
-				case 0x20 /* VEH_TRAIN */: v = Train::CreateAtIndex(VehicleID(_current_vehicle_id)); break;
-				case 0x21 /* VEH_ROAD */: v = RoadVehicle::CreateAtIndex(VehicleID(_current_vehicle_id)); break;
-				case 0x22 /* VEH_SHIP */: v = Ship::CreateAtIndex(VehicleID(_current_vehicle_id)); break;
-				case 0x23 /* VEH_AIRCRAFT */: v = Aircraft::CreateAtIndex(VehicleID(_current_vehicle_id)); break;
-				case 0x24 /* VEH_EFFECT */: v = EffectVehicle::CreateAtIndex(VehicleID(_current_vehicle_id)); break;
-				case 0x26 /* VEH_DISASTER */: v = DisasterVehicle::CreateAtIndex(VehicleID(_current_vehicle_id)); break;
+				case 0x20 /* VehicleType::Train */: v = Train::CreateAtIndex(VehicleID(_current_vehicle_id)); break;
+				case 0x21 /* VehicleType::Road */: v = RoadVehicle::CreateAtIndex(VehicleID(_current_vehicle_id)); break;
+				case 0x22 /* VehicleType::Ship */: v = Ship::CreateAtIndex(VehicleID(_current_vehicle_id)); break;
+				case 0x23 /* VehicleType::Aircraft */: v = Aircraft::CreateAtIndex(VehicleID(_current_vehicle_id)); break;
+				case 0x24 /* VehicleType::Effect */: v = EffectVehicle::CreateAtIndex(VehicleID(_current_vehicle_id)); break;
+				case 0x26 /* VehicleType::Disaster */: v = DisasterVehicle::CreateAtIndex(VehicleID(_current_vehicle_id)); break;
 			}
 
 			if (!LoadChunk(ls, v, vehicle_chunk)) return false;
@@ -1304,7 +1304,7 @@ bool LoadOldVehicle(LoadgameState &ls, int num)
 			v->UpdateSpriteSeqBound();
 
 			switch (v->type) {
-				case VEH_TRAIN: {
+				case VehicleType::Train: {
 					static const uint8_t spriteset_rail[] = {
 						  0,   2,   4,   4,   8,  10,  12,  14,  16,  18,  20,  22,  40,  42,  44,  46,
 						 48,  52,  54,  66,  68,  70,  72,  74,  76,  78,  80,  82,  84,  86, 120, 122,
@@ -1315,11 +1315,11 @@ bool LoadOldVehicle(LoadgameState &ls, int num)
 					break;
 				}
 
-				case VEH_ROAD:
+				case VehicleType::Road:
 					if (v->spritenum >= 22) v->spritenum += 12;
 					break;
 
-				case VEH_SHIP:
+				case VehicleType::Ship:
 					v->spritenum += 2;
 
 					switch (v->spritenum) {
@@ -1353,13 +1353,13 @@ bool LoadOldVehicle(LoadgameState &ls, int num)
 			/* Read the vehicle type and allocate the right vehicle */
 			switch (ReadByte(ls)) {
 				default: SlErrorCorrupt("Invalid vehicle type");
-				case 0x00 /* VEH_INVALID */: v = nullptr; break;
-				case 0x10 /* VEH_TRAIN */: v = Train::CreateAtIndex(VehicleID(_current_vehicle_id)); break;
-				case 0x11 /* VEH_ROAD */: v = RoadVehicle::CreateAtIndex(VehicleID(_current_vehicle_id)); break;
-				case 0x12 /* VEH_SHIP */: v = Ship::CreateAtIndex(VehicleID(_current_vehicle_id)); break;
-				case 0x13 /* VEH_AIRCRAFT */: v = Aircraft::CreateAtIndex(VehicleID(_current_vehicle_id)); break;
-				case 0x14 /* VEH_EFFECT */: v = EffectVehicle::CreateAtIndex(VehicleID(_current_vehicle_id)); break;
-				case 0x15 /* VEH_DISASTER */: v = DisasterVehicle::CreateAtIndex(VehicleID(_current_vehicle_id)); break;
+				case 0x00 /* VehicleType::Invalid */: v = nullptr; break;
+				case 0x10 /* VehicleType::Train */: v = Train::CreateAtIndex(VehicleID(_current_vehicle_id)); break;
+				case 0x11 /* VehicleType::Road */: v = RoadVehicle::CreateAtIndex(VehicleID(_current_vehicle_id)); break;
+				case 0x12 /* VehicleType::Ship */: v = Ship::CreateAtIndex(VehicleID(_current_vehicle_id)); break;
+				case 0x13 /* VehicleType::Aircraft */: v = Aircraft::CreateAtIndex(VehicleID(_current_vehicle_id)); break;
+				case 0x14 /* VehicleType::Effect */: v = EffectVehicle::CreateAtIndex(VehicleID(_current_vehicle_id)); break;
+				case 0x15 /* VehicleType::Disaster */: v = DisasterVehicle::CreateAtIndex(VehicleID(_current_vehicle_id)); break;
 			}
 
 			if (!LoadChunk(ls, v, vehicle_chunk)) return false;
@@ -1386,7 +1386,7 @@ bool LoadOldVehicle(LoadgameState &ls, int num)
 		}
 		v->current_order.AssignOrder(UnpackOldOrder(_old_order));
 
-		if (v->type == VEH_DISASTER) {
+		if (v->type == VehicleType::Disaster) {
 			DisasterVehicle::From(v)->state = UnpackOldOrder(_old_order).GetDestination().value;
 		}
 

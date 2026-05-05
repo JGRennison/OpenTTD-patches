@@ -131,9 +131,8 @@ public:
 		ADI_TRACERESTRICT_COUNTER_MGMT,
 	};
 
-	static const StringID vehicle_depot_name[];
-	static const StringID vehicle_depot_sell_name[];
-
+	static const VehicleTypeIndexArray<const StringID> vehicle_depot_name;
+	static const VehicleTypeIndexArray<const StringID> vehicle_depot_sell_name;
 	static const std::initializer_list<const StringID> vehicle_group_by_names;
 	static const std::initializer_list<const StringID> vehicle_group_none_sorter_names_calendar;
 	static const std::initializer_list<const StringID> vehicle_group_none_sorter_names_wallclock;

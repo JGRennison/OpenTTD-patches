@@ -51,7 +51,7 @@ uint32_t _engine_seed = 0;
 static CalTime::Year _year_engine_aging_stops;
 
 /** Number of engines of each vehicle type in original engine data */
-extern const uint8_t _engine_counts[4] = {
+extern const VehicleTypeIndexArray<uint8_t> _engine_counts = {
 	lengthof(_orig_rail_vehicle_info),
 	lengthof(_orig_road_vehicle_info),
 	lengthof(_orig_ship_vehicle_info),
@@ -59,7 +59,7 @@ extern const uint8_t _engine_counts[4] = {
 };
 
 /** Offset of the first engine of each vehicle type in original engine data */
-extern const uint8_t _engine_offsets[4] = {
+extern const VehicleTypeIndexArray<uint8_t> _engine_offsets = {
 	0,
 	lengthof(_orig_rail_vehicle_info),
 	lengthof(_orig_rail_vehicle_info) + lengthof(_orig_road_vehicle_info),
@@ -68,14 +68,14 @@ extern const uint8_t _engine_offsets[4] = {
 
 static_assert(lengthof(_orig_rail_vehicle_info) + lengthof(_orig_road_vehicle_info) + lengthof(_orig_ship_vehicle_info) + lengthof(_orig_aircraft_vehicle_info) == lengthof(_orig_engine_info));
 
-const uint EngineOverrideManager::NUM_DEFAULT_ENGINES = _engine_counts[VEH_TRAIN] + _engine_counts[VEH_ROAD] + _engine_counts[VEH_SHIP] + _engine_counts[VEH_AIRCRAFT];
+const uint EngineOverrideManager::NUM_DEFAULT_ENGINES = _engine_counts[VehicleType::Train] + _engine_counts[VehicleType::Road] + _engine_counts[VehicleType::Ship] + _engine_counts[VehicleType::Aircraft];
 
 Engine::Engine(EngineID index, VehicleType type, uint16_t local_id) : Engine::PoolItemBase(index)
 {
 	this->type = type;
 
 	/* Called in the context of loading a savegame. The rest comes from the loader. */
-	if (type == VEH_INVALID) return;
+	if (type == VehicleType::Invalid) return;
 
 	this->grf_prop.local_id = local_id;
 	this->list_position = local_id;
@@ -86,17 +86,17 @@ Engine::Engine(EngineID index, VehicleType type, uint16_t local_id) : Engine::Po
 	if (local_id >= GetOriginalEngineCount(type)) {
 		/* Initialise default type-specific information. */
 		switch (type) {
-			case VEH_TRAIN: this->vehicle_info.emplace<RailVehicleInfo>(); break;
-			case VEH_ROAD: this->vehicle_info.emplace<RoadVehicleInfo>(); break;
-			case VEH_SHIP: this->vehicle_info.emplace<ShipVehicleInfo>(); break;
-			case VEH_AIRCRAFT: this->vehicle_info.emplace<AircraftVehicleInfo>(); break;
+			case VehicleType::Train: this->vehicle_info.emplace<RailVehicleInfo>(); break;
+			case VehicleType::Road: this->vehicle_info.emplace<RoadVehicleInfo>(); break;
+			case VehicleType::Ship: this->vehicle_info.emplace<ShipVehicleInfo>(); break;
+			case VehicleType::Aircraft: this->vehicle_info.emplace<AircraftVehicleInfo>(); break;
 			default: break;
 		}
 		/* Set model life to maximum to make wagons available */
 		this->info.base_life = CalTime::YearDelta{0xFF};
 		/* Aircraft must have CT_INVALID as default, as there is no property */
 		this->info.cargo_type = INVALID_CARGO;
-		this->info.cargo_label = (type == VEH_AIRCRAFT) ? CT_INVALID : CT_PASSENGERS;
+		this->info.cargo_label = (type == VehicleType::Aircraft) ? CT_INVALID : CT_PASSENGERS;
 		/* Set cargo aging period to the default value. */
 		this->info.cargo_age_period = CARGO_AGING_TICKS;
 		/* Not a variant */
@@ -111,7 +111,7 @@ Engine::Engine(EngineID index, VehicleType type, uint16_t local_id) : Engine::Po
 	switch (type) {
 		default: NOT_REACHED();
 
-		case VEH_TRAIN: {
+		case VehicleType::Train: {
 			const RailVehicleInfo &rvi = this->vehicle_info.emplace<RailVehicleInfo>(_orig_rail_vehicle_info[local_id]);
 			this->original_image_index = rvi.image_index;
 			this->info.string_id = STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_KIRBY_PAUL_TANK_STEAM + local_id;
@@ -122,21 +122,21 @@ Engine::Engine(EngineID index, VehicleType type, uint16_t local_id) : Engine::Po
 			break;
 		}
 
-		case VEH_ROAD: {
+		case VehicleType::Road: {
 			RoadVehicleInfo &rvi = this->vehicle_info.emplace<RoadVehicleInfo>(_orig_road_vehicle_info[local_id]);
 			this->original_image_index = rvi.image_index;
 			this->info.string_id = STR_VEHICLE_NAME_ROAD_VEHICLE_MPS_REGAL_BUS + local_id;
 			break;
 		}
 
-		case VEH_SHIP: {
+		case VehicleType::Ship: {
 			ShipVehicleInfo &svi = this->vehicle_info.emplace<ShipVehicleInfo>(_orig_ship_vehicle_info[local_id]);
 			this->original_image_index = svi.image_index;
 			this->info.string_id = STR_VEHICLE_NAME_SHIP_MPS_OIL_TANKER + local_id;
 			break;
 		}
 
-		case VEH_AIRCRAFT: {
+		case VehicleType::Aircraft: {
 			AircraftVehicleInfo &avi = this->vehicle_info.emplace<AircraftVehicleInfo>(_orig_aircraft_vehicle_info[local_id]);
 			this->original_image_index = avi.image_index;
 			this->info.string_id = STR_VEHICLE_NAME_AIRCRAFT_SAMPSON_U52 + local_id;
@@ -178,16 +178,16 @@ bool Engine::CanCarryCargo() const
 	 * Note: Only the property is tested. A capacity callback returning 0 does not have the same effect.
 	 */
 	switch (this->type) {
-		case VEH_TRAIN:
+		case VehicleType::Train:
 			if (this->VehInfo<RailVehicleInfo>().capacity == 0) return false;
 			break;
 
-		case VEH_ROAD:
+		case VehicleType::Road:
 			if (this->VehInfo<RoadVehicleInfo>().capacity == 0) return false;
 			break;
 
-		case VEH_SHIP:
-		case VEH_AIRCRAFT:
+		case VehicleType::Ship:
+		case VehicleType::Aircraft:
 			break;
 
 		default: NOT_REACHED();
@@ -200,19 +200,19 @@ bool Engine::CanPossiblyCarryCargo() const
 	if (this->IsArticulatedCallbackVehicleType() && this->info.callback_mask.Test(VehicleCallbackMask::ArticEngine)) return true;
 
 	switch (this->type) {
-		case VEH_TRAIN:
+		case VehicleType::Train:
 			if (HasBit(this->cb36_properties_used, PROP_TRAIN_CARGO_CAPACITY)) return true;
 			break;
 
-		case VEH_ROAD:
+		case VehicleType::Road:
 			if (HasBit(this->cb36_properties_used, PROP_ROADVEH_CARGO_CAPACITY)) return true;
 			break;
 
-		case VEH_SHIP:
+		case VehicleType::Ship:
 			if (HasBit(this->cb36_properties_used, PROP_SHIP_CARGO_CAPACITY)) return true;
 			break;
 
-		case VEH_AIRCRAFT:
+		case VehicleType::Aircraft:
 			if (HasBit(this->cb36_properties_used, PROP_AIRCRAFT_PASSENGER_CAPACITY)) return true;
 			if (HasBit(this->cb36_properties_used, PROP_AIRCRAFT_MAIL_CAPACITY)) return true;
 			break;
@@ -253,7 +253,7 @@ uint Engine::DetermineCapacity(const Vehicle *v, uint16_t *mail_capacity, CargoT
 		}
 	}
 
-	if (mail_capacity != nullptr && this->type == VEH_AIRCRAFT && IsCargoInClass(cargo_type, CargoClass::Passengers)) {
+	if (mail_capacity != nullptr && this->type == VehicleType::Aircraft && IsCargoInClass(cargo_type, CargoClass::Passengers)) {
 		*mail_capacity = GetEngineProperty(this->index, PROP_AIRCRAFT_MAIL_CAPACITY, this->VehInfo<AircraftVehicleInfo>().mail_capacity, v);
 	}
 
@@ -280,22 +280,22 @@ uint Engine::DetermineCapacity(const Vehicle *v, uint16_t *mail_capacity, CargoT
 	uint capacity;
 	uint extra_mail_cap = 0;
 	switch (this->type) {
-		case VEH_TRAIN:
+		case VehicleType::Train:
 			capacity = GetEngineProperty(this->index, PROP_TRAIN_CARGO_CAPACITY,        this->VehInfo<RailVehicleInfo>().capacity, v);
 
 			/* In purchase list add the capacity of the second head. Always use the plain property for this. */
 			if (v == nullptr && this->VehInfo<RailVehicleInfo>().railveh_type == RAILVEH_MULTIHEAD) capacity += this->VehInfo<RailVehicleInfo>().capacity;
 			break;
 
-		case VEH_ROAD:
+		case VehicleType::Road:
 			capacity = GetEngineProperty(this->index, PROP_ROADVEH_CARGO_CAPACITY,      this->VehInfo<RoadVehicleInfo>().capacity, v);
 			break;
 
-		case VEH_SHIP:
+		case VehicleType::Ship:
 			capacity = GetEngineProperty(this->index, PROP_SHIP_CARGO_CAPACITY,         this->VehInfo<ShipVehicleInfo>().capacity, v);
 			break;
 
-		case VEH_AIRCRAFT:
+		case VehicleType::Aircraft:
 			capacity = GetEngineProperty(this->index, PROP_AIRCRAFT_PASSENGER_CAPACITY, this->VehInfo<AircraftVehicleInfo>().passenger_capacity, v);
 			if (!IsCargoInClass(cargo_type, CargoClass::Passengers)) {
 				extra_mail_cap = GetEngineProperty(this->index, PROP_AIRCRAFT_MAIL_CAPACITY, this->VehInfo<AircraftVehicleInfo>().mail_capacity, v);
@@ -316,7 +316,7 @@ uint Engine::DetermineCapacity(const Vehicle *v, uint16_t *mail_capacity, CargoT
 	}
 
 	/* Apply multipliers depending on cargo- and vehicletype. */
-	if (new_multipliers || (this->type != VEH_SHIP && default_cargo != cargo_type)) {
+	if (new_multipliers || (this->type != VehicleType::Ship && default_cargo != cargo_type)) {
 		uint16_t default_multiplier = new_multipliers ? 0x100 : CargoSpec::Get(default_cargo)->multiplier;
 		uint16_t cargo_multiplier = CargoSpec::Get(cargo_type)->multiplier;
 		capacity *= cargo_multiplier;
@@ -350,24 +350,24 @@ Money Engine::GetRunningCost() const
 	Price base_price;
 	uint cost_factor;
 	switch (this->type) {
-		case VEH_ROAD:
+		case VehicleType::Road:
 			base_price = this->VehInfo<RoadVehicleInfo>().running_cost_class;
 			if (base_price == Price::Invalid) return 0;
 			cost_factor = GetEngineProperty(this->index, PROP_ROADVEH_RUNNING_COST_FACTOR, this->VehInfo<RoadVehicleInfo>().running_cost);
 			break;
 
-		case VEH_TRAIN:
+		case VehicleType::Train:
 			base_price = this->VehInfo<RailVehicleInfo>().running_cost_class;
 			if (base_price == Price::Invalid) return 0;
 			cost_factor = GetEngineProperty(this->index, PROP_TRAIN_RUNNING_COST_FACTOR, this->VehInfo<RailVehicleInfo>().running_cost);
 			break;
 
-		case VEH_SHIP:
+		case VehicleType::Ship:
 			base_price = Price::RunningShip;
 			cost_factor = GetEngineProperty(this->index, PROP_SHIP_RUNNING_COST_FACTOR, this->VehInfo<ShipVehicleInfo>().running_cost);
 			break;
 
-		case VEH_AIRCRAFT:
+		case VehicleType::Aircraft:
 			base_price = Price::RunningAircraft;
 			cost_factor = GetEngineProperty(this->index, PROP_AIRCRAFT_RUNNING_COST_FACTOR, this->VehInfo<AircraftVehicleInfo>().running_cost);
 			break;
@@ -387,12 +387,12 @@ Money Engine::GetCost() const
 	Price base_price;
 	uint cost_factor;
 	switch (this->type) {
-		case VEH_ROAD:
+		case VehicleType::Road:
 			base_price = Price::BuildVehicleRoad;
 			cost_factor = GetEngineProperty(this->index, PROP_ROADVEH_COST_FACTOR, this->VehInfo<RoadVehicleInfo>().cost_factor);
 			break;
 
-		case VEH_TRAIN:
+		case VehicleType::Train:
 			if (this->VehInfo<RailVehicleInfo>().railveh_type == RAILVEH_WAGON) {
 				base_price = Price::BuildVehicleWagon;
 				cost_factor = GetEngineProperty(this->index, PROP_TRAIN_COST_FACTOR, this->VehInfo<RailVehicleInfo>().cost_factor);
@@ -402,12 +402,12 @@ Money Engine::GetCost() const
 			}
 			break;
 
-		case VEH_SHIP:
+		case VehicleType::Ship:
 			base_price = Price::BuildVehicleShip;
 			cost_factor = GetEngineProperty(this->index, PROP_SHIP_COST_FACTOR, this->VehInfo<ShipVehicleInfo>().cost_factor);
 			break;
 
-		case VEH_AIRCRAFT:
+		case VehicleType::Aircraft:
 			base_price = Price::BuildVehicleAircraft;
 			cost_factor = GetEngineProperty(this->index, PROP_AIRCRAFT_COST_FACTOR, this->VehInfo<AircraftVehicleInfo>().cost_factor);
 			break;
@@ -425,18 +425,18 @@ Money Engine::GetCost() const
 uint Engine::GetDisplayMaxSpeed() const
 {
 	switch (this->type) {
-		case VEH_TRAIN:
+		case VehicleType::Train:
 			return GetEngineProperty(this->index, PROP_TRAIN_SPEED, this->VehInfo<RailVehicleInfo>().max_speed);
 
-		case VEH_ROAD: {
+		case VehicleType::Road: {
 			uint max_speed = GetEngineProperty(this->index, PROP_ROADVEH_SPEED, 0);
 			return (max_speed != 0) ? max_speed * 2 : this->VehInfo<RoadVehicleInfo>().max_speed / 2;
 		}
 
-		case VEH_SHIP:
+		case VehicleType::Ship:
 			return GetEngineProperty(this->index, PROP_SHIP_SPEED, this->VehInfo<ShipVehicleInfo>().max_speed) / 2;
 
-		case VEH_AIRCRAFT: {
+		case VehicleType::Aircraft: {
 			uint max_speed = GetEngineProperty(this->index, PROP_AIRCRAFT_SPEED, 0);
 			if (max_speed != 0) {
 				return (max_speed * 128) / 10;
@@ -458,9 +458,9 @@ uint Engine::GetPower() const
 {
 	/* Only trains and road vehicles have 'power'. */
 	switch (this->type) {
-		case VEH_TRAIN:
+		case VehicleType::Train:
 			return GetEngineProperty(this->index, PROP_TRAIN_POWER, this->VehInfo<RailVehicleInfo>().power);
-		case VEH_ROAD:
+		case VehicleType::Road:
 			return GetEngineProperty(this->index, PROP_ROADVEH_POWER, this->VehInfo<RoadVehicleInfo>().power) * 10;
 
 		default: NOT_REACHED();
@@ -476,9 +476,9 @@ uint Engine::GetDisplayWeight() const
 {
 	/* Only trains and road vehicles have 'weight'. */
 	switch (this->type) {
-		case VEH_TRAIN:
+		case VehicleType::Train:
 			return GetEngineProperty(this->index, PROP_TRAIN_WEIGHT, this->VehInfo<RailVehicleInfo>().weight) << (this->VehInfo<RailVehicleInfo>().railveh_type == RAILVEH_MULTIHEAD ? 1 : 0);
-		case VEH_ROAD:
+		case VehicleType::Road:
 			return GetEngineProperty(this->index, PROP_ROADVEH_WEIGHT, this->VehInfo<RoadVehicleInfo>().weight) / 4;
 
 		default: NOT_REACHED();
@@ -494,9 +494,9 @@ uint Engine::GetDisplayMaxTractiveEffort() const
 {
 	/* Only trains and road vehicles have 'tractive effort'. */
 	switch (this->type) {
-		case VEH_TRAIN:
+		case VehicleType::Train:
 			return (GROUND_ACCELERATION * this->GetDisplayWeight() * GetEngineProperty(this->index, PROP_TRAIN_TRACTIVE_EFFORT, this->VehInfo<RailVehicleInfo>().tractive_effort)) / 256;
-		case VEH_ROAD:
+		case VehicleType::Road:
 			return (GROUND_ACCELERATION * this->GetDisplayWeight() * GetEngineProperty(this->index, PROP_ROADVEH_TRACTIVE_EFFORT, this->VehInfo<RoadVehicleInfo>().tractive_effort)) / 256;
 
 		default: NOT_REACHED();
@@ -521,7 +521,7 @@ uint16_t Engine::GetRange() const
 {
 	if (!_settings_game.vehicle.aircraft_range) return 0;
 	switch (this->type) {
-		case VEH_AIRCRAFT:
+		case VehicleType::Aircraft:
 			return GetEngineProperty(this->index, PROP_AIRCRAFT_RANGE, this->VehInfo<AircraftVehicleInfo>().max_range);
 
 		default: NOT_REACHED();
@@ -535,7 +535,7 @@ uint16_t Engine::GetRange() const
 StringID Engine::GetAircraftTypeText() const
 {
 	switch (this->type) {
-		case VEH_AIRCRAFT:
+		case VehicleType::Aircraft:
 			switch (this->VehInfo<AircraftVehicleInfo>().subtype) {
 				case AIR_HELI: return STR_LIVERY_HELICOPTER;
 				case AIR_CTOL: return STR_LIVERY_SMALL_PLANE;
@@ -577,7 +577,7 @@ bool Engine::IsVariantHidden(CompanyID c) const
 void EngineOverrideManager::ResetToDefaultMapping()
 {
 	this->mappings.clear();
-	for (VehicleType type = VEH_TRAIN; type <= VEH_AIRCRAFT; type++) {
+	for (VehicleType type = VehicleType::Train; type <= VehicleType::Aircraft; type++) {
 		for (uint8_t internal_id = 0; internal_id < GetOriginalEngineCount(type); internal_id++) {
 			this->mappings.push_back({ INVALID_GRFID, internal_id, type, internal_id });
 		}
@@ -680,7 +680,7 @@ void ShowEnginePreviewWindow(EngineID engine);
 static bool IsWagon(EngineID index)
 {
 	const Engine *e = Engine::Get(index);
-	return e->type == VEH_TRAIN && e->VehInfo<RailVehicleInfo>().railveh_type == RAILVEH_WAGON;
+	return e->type == VehicleType::Train && e->VehInfo<RailVehicleInfo>().railveh_type == RAILVEH_WAGON;
 }
 
 /**
@@ -764,7 +764,7 @@ void SetYearEngineAgingStops()
 
 		/* Exclude certain engines */
 		if (!ei->climates.Test(_settings_game.game_creation.landscape)) continue;
-		if (e->type == VEH_TRAIN && e->VehInfo<RailVehicleInfo>().railveh_type == RAILVEH_WAGON) continue;
+		if (e->type == VehicleType::Train && e->VehInfo<RailVehicleInfo>().railveh_type == RAILVEH_WAGON) continue;
 
 		/* Base year ending date on half the model life */
 		CalTime::YearMonthDay ymd = CalTime::ConvertDateToYMD(ei->base_intro + (ei->lifelength.base() * DAYS_IN_LEAP_YEAR) / 2);
@@ -794,7 +794,7 @@ void StartupOneEngine(Engine *e, const CalTime::YearMonthDay &aging_ymd, const C
 	SaveRandomSeeds(&saved_seeds);
 	SetRandomSeed(_settings_game.game_creation.generation_seed ^ seed ^
 	              ei->base_intro.base() ^
-	              e->type ^
+	              to_underlying(e->type) ^
 	              e->GetGRFID());
 	uint32_t r = Random();
 
@@ -817,7 +817,7 @@ void StartupOneEngine(Engine *e, const CalTime::YearMonthDay &aging_ymd, const C
 	SetRandomSeed(_settings_game.game_creation.generation_seed ^ seed ^
 	              (re->index.base() << 16) ^ (re->info.base_intro.base() << 12) ^ (re->info.decay_speed << 8) ^
 	              (re->info.lifelength.base() << 4) ^ re->info.retire_early ^
-	              e->type ^
+	              to_underlying(e->type) ^
 	              e->GetGRFID());
 
 	/* Base reliability defined as a percentage of UINT16_MAX. */
@@ -919,9 +919,9 @@ static void EnableEngineForCompany(EngineID eid, CompanyID company)
 	Company *c = Company::Get(company);
 
 	e->company_avail.Set(company);
-	if (e->type == VEH_TRAIN) {
+	if (e->type == VehicleType::Train) {
 		c->avail_railtypes = GetCompanyRailTypes(c->index);
-	} else if (e->type == VEH_ROAD) {
+	} else if (e->type == VehicleType::Road) {
 		c->avail_roadtypes = GetCompanyRoadTypes(c->index);
 	}
 
@@ -930,9 +930,9 @@ static void EnableEngineForCompany(EngineID eid, CompanyID company)
 
 		/* Update the toolbar. */
 		InvalidateWindowData(WC_MAIN_TOOLBAR, 0);
-		if (e->type == VEH_ROAD) InvalidateWindowData(WC_BUILD_TOOLBAR, TRANSPORT_ROAD);
-		if (e->type == VEH_SHIP) InvalidateWindowData(WC_BUILD_TOOLBAR, TRANSPORT_WATER);
-		if (e->type == VEH_AIRCRAFT) InvalidateWindowData(WC_BUILD_TOOLBAR, TRANSPORT_AIR);
+		if (e->type == VehicleType::Road) InvalidateWindowData(WC_BUILD_TOOLBAR, TRANSPORT_ROAD);
+		if (e->type == VehicleType::Ship) InvalidateWindowData(WC_BUILD_TOOLBAR, TRANSPORT_WATER);
+		if (e->type == VehicleType::Aircraft) InvalidateWindowData(WC_BUILD_TOOLBAR, TRANSPORT_AIR);
 	}
 }
 
@@ -947,9 +947,9 @@ static void DisableEngineForCompany(EngineID eid, CompanyID company)
 	Company *c = Company::Get(company);
 
 	e->company_avail.Reset(company);
-	if (e->type == VEH_TRAIN) {
+	if (e->type == VehicleType::Train) {
 		c->avail_railtypes = GetCompanyRailTypes(c->index);
-	} else if (e->type == VEH_ROAD) {
+	} else if (e->type == VehicleType::Road) {
 		c->avail_roadtypes = GetCompanyRoadTypes(c->index);
 	}
 
@@ -1002,7 +1002,7 @@ static CompanyID GetPreviewCompany(Engine *e)
 	CompanyID best_company = CompanyID::Invalid();
 
 	/* For trains the cargomask has no useful meaning, since you can attach other wagons */
-	CargoTypes cargomask = e->type != VEH_TRAIN ? GetUnionOfArticulatedRefitMasks(e->index, true) : ALL_CARGOTYPES;
+	CargoTypes cargomask = e->type != VehicleType::Train ? GetUnionOfArticulatedRefitMasks(e->index, true) : ALL_CARGOTYPES;
 
 	int32_t best_hist = -1;
 	for (const Company *c : Company::Iterate()) {
@@ -1034,10 +1034,10 @@ static CompanyID GetPreviewCompany(Engine *e)
 static bool IsVehicleTypeDisabled(VehicleType type, bool ai)
 {
 	switch (type) {
-		case VEH_TRAIN:    return _settings_game.vehicle.max_trains == 0   || (ai && _settings_game.ai.ai_disable_veh_train);
-		case VEH_ROAD:     return _settings_game.vehicle.max_roadveh == 0  || (ai && _settings_game.ai.ai_disable_veh_roadveh);
-		case VEH_SHIP:     return _settings_game.vehicle.max_ships == 0    || (ai && _settings_game.ai.ai_disable_veh_ship);
-		case VEH_AIRCRAFT: return _settings_game.vehicle.max_aircraft == 0 || (ai && _settings_game.ai.ai_disable_veh_aircraft);
+		case VehicleType::Train: return _settings_game.vehicle.max_trains == 0 || (ai && _settings_game.ai.ai_disable_veh_train);
+		case VehicleType::Road: return _settings_game.vehicle.max_roadveh == 0 || (ai && _settings_game.ai.ai_disable_veh_roadveh);
+		case VehicleType::Ship: return _settings_game.vehicle.max_ships == 0 || (ai && _settings_game.ai.ai_disable_veh_ship);
+		case VehicleType::Aircraft: return _settings_game.vehicle.max_aircraft == 0 || (ai && _settings_game.ai.ai_disable_veh_aircraft);
 
 		default: NOT_REACHED();
 	}
@@ -1190,13 +1190,13 @@ static void NewVehicleAvailable(Engine *e)
 	/* Do not introduce new rail wagons */
 	if (IsWagon(index)) return;
 
-	if (e->type == VEH_TRAIN) {
+	if (e->type == VehicleType::Train) {
 		/* maybe make another rail type available */
 		const RailVehicleInfo &rvi = e->VehInfo<RailVehicleInfo>();
 		assert(rvi.railtypes != RailTypes{});
 		RailTypes introduced = GetAllIntroducesRailTypes(rvi.railtypes);
 		for (Company *c : Company::Iterate()) c->avail_railtypes = AddDateIntroducedRailTypes(c->avail_railtypes | introduced, CalTime::CurDate());
-	} else if (e->type == VEH_ROAD) {
+	} else if (e->type == VehicleType::Road) {
 		/* maybe make another road type available */
 		const RoadVehicleInfo &rvi = e->VehInfo<RoadVehicleInfo>();
 		assert(rvi.roadtype < ROADTYPE_END);
@@ -1215,9 +1215,9 @@ static void NewVehicleAvailable(Engine *e)
 	}
 
 	/* Update the toolbar. */
-	if (e->type == VEH_ROAD) InvalidateWindowData(WC_BUILD_TOOLBAR, TRANSPORT_ROAD);
-	if (e->type == VEH_SHIP) InvalidateWindowData(WC_BUILD_TOOLBAR, TRANSPORT_WATER);
-	if (e->type == VEH_AIRCRAFT) InvalidateWindowData(WC_BUILD_TOOLBAR, TRANSPORT_AIR);
+	if (e->type == VehicleType::Road) InvalidateWindowData(WC_BUILD_TOOLBAR, TRANSPORT_ROAD);
+	if (e->type == VehicleType::Ship) InvalidateWindowData(WC_BUILD_TOOLBAR, TRANSPORT_WATER);
+	if (e->type == VehicleType::Aircraft) InvalidateWindowData(WC_BUILD_TOOLBAR, TRANSPORT_AIR);
 
 	/* Remove from preview windows */
 	InvalidateWindowClassesData(WC_ENGINE_PREVIEW);
@@ -1357,12 +1357,12 @@ bool IsEngineBuildable(EngineID engine, VehicleType type, CompanyID company)
 
 	if (!e->IsEnabled()) return false;
 
-	if (type == VEH_TRAIN && company != OWNER_DEITY) {
+	if (type == VehicleType::Train && company != OWNER_DEITY) {
 		/* Check if the rail type is available to this company */
 		const Company *c = Company::Get(company);
 		if (!GetAllCompatibleRailTypes(e->VehInfo<RailVehicleInfo>().railtypes).Any(c->avail_railtypes)) return false;
 	}
-	if (type == VEH_ROAD && company != OWNER_DEITY) {
+	if (type == VehicleType::Road && company != OWNER_DEITY) {
 		/* Check if the road type is available to this company */
 		const Company *c = Company::Get(company);
 		if (!GetRoadTypeInfo(e->VehInfo<RoadVehicleInfo>().roadtype)->powered_roadtypes.Any(c->avail_roadtypes)) return false;
@@ -1410,7 +1410,7 @@ void CheckEngines()
 		if (!e->IsEnabled()) continue;
 
 		/* Don't consider train wagons, we need a powered engine available. */
-		if (e->type == VEH_TRAIN && e->VehInfo<RailVehicleInfo>().railveh_type == RAILVEH_WAGON) continue;
+		if (e->type == VehicleType::Train && e->VehInfo<RailVehicleInfo>().railveh_type == RAILVEH_WAGON) continue;
 
 		/* We have an available engine... yay! */
 		if (e->flags.Test(EngineFlag::Available) && e->company_avail.Any()) return;
