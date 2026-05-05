@@ -11,6 +11,8 @@
 #define STRINGS_TYPE_H
 
 #include "string_type.h"
+#include "strings_type_trait.h"
+#include "core/enum_type.hpp"
 #include "core/strong_typedef_type.hpp"
 #include <optional>
 #include <variant>
@@ -137,6 +139,13 @@ private:
 		static inline StringParameterData Init(const T &v)
 		{
 			return Init(v.base());
+		}
+
+		template <typename T> requires is_scoped_enum_v<T>
+		static inline StringParameterData Init(const T &v)
+		{
+			static_assert(is_scoped_enum_convertible_to_string_parameter_v<T>);
+			return Init(static_cast<uint64_t>(to_underlying(v)));
 		}
 	};
 

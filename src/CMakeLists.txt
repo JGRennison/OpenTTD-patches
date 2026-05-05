@@ -543,6 +543,7 @@ add_files(
     strings_func.h
     strings_internal.h
     strings_type.h
+    strings_type_trait.h
     subsidy.cpp
     subsidy_base.h
     subsidy_cmd.h
