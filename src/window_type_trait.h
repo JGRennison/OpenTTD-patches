@@ -24,4 +24,18 @@ constexpr bool is_convertible_to_window_number_v = is_convertible_to_window_numb
 		static const bool value = true; \
 	};
 
+/** Trait to enable auto-conversion to window invalidation data. */
+template <typename enum_type>
+struct is_convertible_to_window_invalidation_data {
+	static constexpr bool value = false;
+};
+
+template <typename enum_type>
+constexpr bool is_convertible_to_window_invalidation_data_v = is_convertible_to_window_invalidation_data<enum_type>::value;
+
+#define DECLARE_CONVERTIBLE_TO_WINDOW_INVALIDATION_DATA(enum_type) \
+	template <> struct is_convertible_to_window_invalidation_data<enum_type> { \
+		static const bool value = true; \
+	};
+
 #endif /* WINDOW_TYPE_TRAIT_H */
