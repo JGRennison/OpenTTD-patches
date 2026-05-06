@@ -169,6 +169,7 @@ NetworkRecvStatus NetworkGameSocketHandler::HandlePacket(Packet &p)
 		case PacketGameType::ClientChat: return this->ReceiveClientChat(p);
 		case PacketGameType::ServerChat: return this->ReceiveServerChat(p);
 		case PacketGameType::ServerExternalChat: return this->ReceiveServerExternalChat(p);
+		case PacketGameType::ClientSetPassword: return this->ReceiveClientSetPassword(p);
 		case PacketGameType::ClientSetName: return this->ReceiveClientSetName(p);
 		case PacketGameType::ClientQuit: return this->ReceiveClientQuit(p);
 		case PacketGameType::ClientError: return this->ReceiveClientError(p);
