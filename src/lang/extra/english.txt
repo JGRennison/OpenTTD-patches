@@ -2595,3 +2595,11 @@ STR_CONFIG_SETTING_LINEAR_MAINTENANCE_HELPTEXT                  :When enabled, i
 
 STR_CONFIG_SETTING_VEHICLE_INTRO_RANDOMISATION                  :Randomise vehicle introduction dates: {STRING2}
 STR_CONFIG_SETTING_VEHICLE_INTRO_RANDOMISATION_HELPTEXT         :When enabled, randomises vehicle introduction dates by up to one and a half years
+
+STR_CONFIG_SETTING_TRUNCATE_CARGO                               :Stations can discard cargo: {STRING2}
+STR_CONFIG_SETTING_TRUNCATE_CARGO_HELPTEXT                      :When enabled, stations can discard cargo when the amount waiting is too high, or when station ratings are low. Disable to keep all waiting cargo.
+
+STR_CONFIG_SETTING_NEWS_CARGO_FLOW                              :Overflowing cargo at station: {STRING2}
+STR_CONFIG_SETTING_NEWS_CARGO_FLOW_HELPTEXT                     :Warn about stations where cargo is accumulating.{}The detection is based on shape of the cargo history graph, not on specific amount threshold.
+
+STR_STATION_CARGO_OVERFLOW                                      :{WHITE}{CARGO_LIST} overflowing at {STATION}
