@@ -115,7 +115,7 @@ struct Aircraft final : public SpecializedVehicle<Aircraft, VehicleType::Aircraf
 	uint Crash(bool flooded = false) override;
 	TileIndex GetOrderStationLocation(StationID station) override;
 	TileIndex GetCargoTile() const override { return this->First()->tile; }
-	ClosestDepot FindClosestDepot() override;
+	ClosestDepot FindClosestDepot() const override;
 
 	/**
 	 * Check if the aircraft type is a normal flying device; eg

@@ -944,7 +944,7 @@ public:
 	 * DestinationID and whether we should reverse.
 	 * @return A structure with information about the closest depot, if found.
 	 */
-	virtual ClosestDepot FindClosestDepot() { return {}; }
+	virtual ClosestDepot FindClosestDepot() const { return {}; }
 
 	/**
 	 * Set the destination of this vehicle.

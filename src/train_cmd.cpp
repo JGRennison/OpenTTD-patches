@@ -3403,7 +3403,7 @@ CommandCost CmdForceTrainProceed(DoCommandFlags flags, VehicleID veh_id)
  * @return Information where the closest train depot is located.
  * @pre The given vehicle must not be crashed!
  */
-static FindDepotData FindClosestTrainDepot(Train *v, int max_distance)
+static FindDepotData FindClosestTrainDepot(const Train *v, int max_distance)
 {
 	assert(!v->vehstatus.Test(VehState::Crashed));
 
@@ -3412,7 +3412,7 @@ static FindDepotData FindClosestTrainDepot(Train *v, int max_distance)
 	return YapfTrainFindNearestDepot(v, max_distance);
 }
 
-ClosestDepot Train::FindClosestDepot()
+ClosestDepot Train::FindClosestDepot() const
 {
 	FindDepotData tfdd = FindClosestTrainDepot(this, 0);
 	if (tfdd.best_length == UINT_MAX) return ClosestDepot();

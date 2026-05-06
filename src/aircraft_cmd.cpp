@@ -414,7 +414,7 @@ CommandCost CmdBuildAircraft(TileIndex tile, DoCommandFlags flags, const Engine 
 }
 
 
-ClosestDepot Aircraft::FindClosestDepot()
+ClosestDepot Aircraft::FindClosestDepot() const
 {
 	const Station *st = GetTargetAirportIfValid(this);
 	/* If the station is not a valid airport or if it has no hangars */

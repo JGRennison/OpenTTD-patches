@@ -205,7 +205,7 @@ struct Train final : public GroundVehicle<Train, VehicleType::Train> {
 	Money CalculateCurrentOverallValue() const;
 	Trackdir GetVehicleTrackdir() const override;
 	TileIndex GetOrderStationLocation(StationID station) override;
-	ClosestDepot FindClosestDepot() override;
+	ClosestDepot FindClosestDepot() const override;
 
 	void ReserveTrackUnderConsist() const;
 

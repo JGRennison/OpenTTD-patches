@@ -370,7 +370,7 @@ static FindDepotData FindClosestRoadDepot(const RoadVehicle *v, int max_distance
 	return YapfRoadVehicleFindNearestDepot(v, max_distance);
 }
 
-ClosestDepot RoadVehicle::FindClosestDepot()
+ClosestDepot RoadVehicle::FindClosestDepot() const
 {
 	FindDepotData rfdd = FindClosestRoadDepot(this, 0);
 	if (rfdd.best_length == UINT_MAX) return ClosestDepot();

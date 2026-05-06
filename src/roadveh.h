@@ -183,7 +183,7 @@ struct RoadVehicle final : public GroundVehicle<RoadVehicle, VehicleType::Road> 
 	uint Crash(bool flooded = false) override;
 	Trackdir GetVehicleTrackdir() const override;
 	TileIndex GetOrderStationLocation(StationID station) override;
-	ClosestDepot FindClosestDepot() override;
+	ClosestDepot FindClosestDepot() const override;
 
 	bool IsBus() const;
 

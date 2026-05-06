@@ -1190,7 +1190,7 @@ CommandCost CmdBuildShip(TileIndex tile, DoCommandFlags flags, const Engine *e, 
 	return CommandCost();
 }
 
-ClosestDepot Ship::FindClosestDepot()
+ClosestDepot Ship::FindClosestDepot() const
 {
 	const Depot *depot = FindClosestShipDepot(this, MAX_SHIP_DEPOT_SEARCH_DISTANCE);
 	if (depot == nullptr) return ClosestDepot();
