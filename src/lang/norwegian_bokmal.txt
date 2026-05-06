@@ -1384,7 +1384,6 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Ha dekningssomr
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Selskapets stasjoner kan betjene industrier med tilknyttede nøytrale stasjoner: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Hvis aktivert, vil industrier med tilknyttede stasjoner (slik som oljerigger) også kunne betjenes av selskapseide stasjoner bygget i nærheten. Hvis deaktivert, vil disse industriene bare kunne betjenes av sine tilknyttede stasjoner. Nærliggende selskapsstasjoner vil ikke kunne betjene dem, heller ikke vil den tilknyttede stasjonen betjene noe annet enn industrien
 
-
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Tillat fjerning av flere veier, broer osv. eid av byene: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Gjør det enklere å fjerne infrastruktur og bygninger som tilhører byer
 
@@ -2239,7 +2238,7 @@ STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :ignorerer Base 
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :ignorerer Base Sounds-sett '{STRING}': ikke funnet
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :ignorerer Base Music-sett '{STRING}': ikke funnet
 
-# Video initalization errors
+# Video initialization errors
 STR_VIDEO_DRIVER_ERROR                                          :Feil med skjerminstillingene...
 STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :ingen kompatibel GPU funnet. Maskinvareakselerasjon deaktivert
 STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :GPU-driveren krasjet spillet. Maskinvareakselerasjon er deaktivert

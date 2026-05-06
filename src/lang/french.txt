@@ -1377,7 +1377,6 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Les zones de de
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Les stations des compagnies peuvent desservir les industries avec une station intégrée{NBSP}: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Si activé, les industries avec une station intégrée (comme les plateformes pétrolières) peuvent aussi être desservies par les stations des compagnies construites à proximité. Si désactivé, ces industries peuvent uniquement être desservies par leur station intégrée. Aucune station de compagnie ne pourra desservir cette industrie, et la station intégrée ne desservira que cette industrie
 
-
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Permettre le retrait de plus d'éléments possédés par une ville{NBSP}: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Simplifier le retrait d'éléments possédés par une ville
 
@@ -2230,7 +2229,7 @@ STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :graphiques de b
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :sons de base '{STRING}' ignorés{NBSP}: non trouvés
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :musique de base '{STRING}' ignorée{NBSP}: non trouvée
 
-# Video initalization errors
+# Video initialization errors
 STR_VIDEO_DRIVER_ERROR                                          :Erreur avec les paramètres vidéo...
 STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :aucun GPU compatible trouvé. l'accélération matérielle est désactivée
 STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :le pilote du GPU a fait planter le jeu. L'accélération matérielle est désactivée

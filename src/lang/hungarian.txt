@@ -1446,7 +1446,6 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :A különböző
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :A vállalatok állomásai elláthatnak beépített semleges állomással rendelkező gazdasági épületeket: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Ha be van kapcsolva, akkor az olyan gazdasági épületeket, amelyekhez beépített állomás tartozik (pl. olajfúró tornyok), el lehet látni a vállalatok által épített közeli állomásokkal is. Ha ki van kapcsolva, akkor csak a beépített állomásukkal lehet ellátni ezeket a gazdasági épületeket. A vállalatok közeli állomásai nem tudják őket ellátni, és a beépített állomások sem látnak el mást, csak az adott gazdasági épületet.
 
-
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Települési tulajdonú utak/hidak/alagutak rombolásának engedélyezése: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Városi tulajdonú infrastruktúra és épületek könnyebb eltávolíthatósága
 
@@ -2301,7 +2300,7 @@ STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :érvénytelen g
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :érvénytelen hang alapcsomag nem került betöltésre - '{STRING}': nem található
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :zenei alapcsomag kihagyása - '{STRING}': nem található
 
-# Video initalization errors
+# Video initialization errors
 STR_VIDEO_DRIVER_ERROR                                          :Hiba a videobeállításokban...
 STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :nem található kompatibilis GPU. Hardveres gyorsítás kikapcsolva.
 STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :A videókártya illesztőprogram hibát okozott. Hardveres gyorsítás kikapcsolva

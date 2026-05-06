@@ -1383,7 +1383,6 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Para ter difere
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Estações da empresa podem servir indústrias com estações neutras anexadas: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Quando ativo, indústrias com estações incluídas (com as Plataformas Petrolíferas) podem ser servidas por estações da empresa construídas nas redondezas. Quando inativo, estas indústrias só podem ser servidas pela sua própria estação. Qualquer estação da empresa não poderá servir a indústria, nem a estação incluída pode servir outra entidade senão a própria indústria
 
-
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Permitir remover mais estradas, pontes e túneis detidos pela cidade: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Facilitar a remoçar de edifícios e infraestruturas detidas pela localidade
 
@@ -2238,7 +2237,7 @@ STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :a ignorar conju
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :a ignorar conjunto Base de Sons '{STRING}': não foi encontrado
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :a ignorar conjunto Musica Base '{STRING}': não foi encontrado
 
-# Video initalization errors
+# Video initialization errors
 STR_VIDEO_DRIVER_ERROR                                          :Erro com as definições gráficas...
 STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :não foi encontrada nenhuma placa gráfica compatível. Aceleração por hardware desativada
 STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :O controlador gráfico interrompeu o jogo. Aceleração por hardware desativada

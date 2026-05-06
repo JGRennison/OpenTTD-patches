@@ -1258,7 +1258,6 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :אזורי אג
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :תחנות החברה יכולות לשרת תעשיות עם תחנות ניטרליות צמודות: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :כאשר מופעל, תעשיות עם תחנות צמודות (כגון אסדות נפט) עשויות להיות משורתות גם על ידי תחנות בבעלות החברה שנבנו בקרבת מקום. כאשר מושבת, ניתן לשרת תעשיות אלו רק על ידי התחנות הצמודות שלהן. כל תחנות של החברה הסמוכות לא יוכלו לשרת אותן, וגם התחנה המצורפת לא תשרת שום דבר אחר מלבד התעשייה
 
-
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :אפשר הסרה של יותר כבישים גשרים וכו' שבבעלות עיירות: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :הקל על הסרת מבנים ותשתיות בבעלות עיירות
 
@@ -2026,7 +2025,7 @@ STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... מת
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... מתעלם מערכת צלילים בסיסית '{STRING}': לא נמצאה
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... מתעלם מערכת מוסיקה בסיסית '{STRING}': לא נמצאה
 
-# Video initalization errors
+# Video initialization errors
 STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... לא נמצא כרטיס מסך תואם, האצת חומרה מושבתת
 
 # Intro window

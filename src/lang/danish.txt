@@ -1376,7 +1376,6 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Har forskellige
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Selskabers stationer kan betjene industrier med tilknyttede neutrale stationer: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Når aktiveret kan industries med tilknyttede stationer (så som Boreplatforme) også betjenes af andre selskabers stationer i nærheden. Når deaktiveret, kan disse industrier kun betjenes af deres egen tilknyttede station. Andre stationer i nærheden kan ikke betjene dem, og industriens tilknyttede station vil heller ikke betjene andet end industrien.
 
-
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Tillad nedriving af flere by-ejede veje, broer og tunneler: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Gør det nemmere at fjerne by-ejede infrastruktur og bygninger
 
@@ -2229,7 +2228,7 @@ STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... igno
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... ignorere Basis Lydsæt '{STRING}': ikke fundet
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... ignorere Basis Musiksæt '{STRING}': ikke fundet
 
-# Video initalization errors
+# Video initialization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Fejl med grafikindstillinger...
 STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... ingen kompatibel GPU fundet. Hardware-acceleration deaktiveret
 STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :{WHITE}... GPU-driver fik spillet til at gå ned. Hardwareacceleration deaktiveret

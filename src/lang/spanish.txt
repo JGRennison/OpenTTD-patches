@@ -1377,7 +1377,6 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Permite tener d
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Las estaciones de la empresa pueden atender industrias con las estaciones neutrales adheridas: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Al habilitarse esta opción, las industrias con estaciones adjuntas (como las Plataformas Petrolíferas) pueden atenderse por las estaciones propiedad de las empresas que se construyan en las cercanías. Al deshabilitarse, estas industrias sólo pueden ser atendidas mediante sus respectivas estaciones adjuntas. Cualquier estación cercana propiedad de una empresa no podrá atenderlas, y las estaciones adjuntas sólo podrán atender a su respectiva industria.
 
-
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Permitir eliminar más propiedades de los municipios: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Permite que sea más sencillo eliminar las infraestructuras y edificios de los municipios
 
@@ -2230,7 +2229,7 @@ STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... igno
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... ignorando conjunto de sonidos base '{STRING}': no encontrado
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... ignorando conjunto de música base '{STRING}': no encontrado
 
-# Video initalization errors
+# Video initialization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Error en los ajustes de vídeo...
 STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... no se ha encontrado ninguna GPU compatible. La aceleración por hardware se ha desactivado
 STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :El controlador de GPU ha hecho fallar el juego. Se ha deshabilitado la aceleración por hardware
@@ -3423,7 +3422,7 @@ STR_MAPGEN_QUANTITY_OF_RIVERS                                   :{BLACK}Ríos:
 STR_MAPGEN_SMOOTHNESS                                           :{BLACK}Uniformidad:
 STR_MAPGEN_VARIETY                                              :{BLACK}Variedad:
 STR_MAPGEN_GENERATE                                             :{WHITE}Generar
-STR_MAPGEN_GENERATE_TOOLTIP                                     :{BLACK}¡Crear el mundo y juegar a OpenTTD!
+STR_MAPGEN_GENERATE_TOOLTIP                                     :{BLACK}¡Crear el mundo y jugar a OpenTTD!
 STR_MAPGEN_NEWGRF_SETTINGS                                      :{BLACK}Configuración de NewGRF
 STR_MAPGEN_NEWGRF_SETTINGS_TOOLTIP                              :{BLACK}Abrir la configuración de NewGRF
 STR_MAPGEN_AI_SETTINGS                                          :{BLACK}Configuración de IA

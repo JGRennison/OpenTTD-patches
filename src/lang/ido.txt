@@ -599,7 +599,6 @@ STR_CONFIG_SETTING_NONE                                         :Nulo
 
 
 
-
 ###length 3
 
 
@@ -835,7 +834,7 @@ STR_CONFIG_SETTING_SMALLMAP_LAND_COLOUR_VIOLET                  :Violkolora
 
 # Config errors
 
-# Video initalization errors
+# Video initialization errors
 
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}

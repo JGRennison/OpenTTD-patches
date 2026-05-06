@@ -1471,7 +1471,6 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Diversaj tipoj 
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Kompaniaj stacioj povas servi entreprenojn kun alkroĉitaj neŭtralaj stacioj: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Kiam tiu ĉi agordo estas ŝaltita, entreprenoj kun alkroĉitaj stacioj (ekzemple oleplatformoj) povas ankaŭ esti servataj de apudaj stacioj konstruitaj de kompanioj. Kiam tiu ĉi agordo estas malŝaltita, tiaj ĉi entreprenoj serveblas nur per siaj alkroĉitaj stacioj. Apudaj stacioj konstruitaj de kompanioj ne povos servi ilin, kaj la alkroĉita stacio ankaŭ ne servos ion alian ol la entreprenon mem
 
-
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Permesi forigon de pli da urboposedataj stratoj, pontoj ktp: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Faciligi forigadon de infrastrukturo kaj konstruaĵoj, posedataj de urboj
 
@@ -2330,7 +2329,7 @@ STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :ignoras bazan g
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :ignoras bazan sonaron '{STRING}': ne trovebla
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :ignoras bazan muzikaron '{STRING}': ne trovebla
 
-# Video initalization errors
+# Video initialization errors
 STR_VIDEO_DRIVER_ERROR                                          :Eraro pri videaj agordoj...
 STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :ne troveblis kongrua grafika procesoro. Aparata plirapidigo malŝaltita
 STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :pelilo de grafikkarto kraŝis la ludon. Aparata plirapidigo malŝaltita

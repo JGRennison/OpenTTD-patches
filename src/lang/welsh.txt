@@ -1084,10 +1084,10 @@ STR_GAME_OPTIONS_INTERFACE                                      :Rhyngwyneb
 STR_GAME_OPTIONS_GUI_SCALE_FRAME                                :Maint rhyngwyneb
 STR_GAME_OPTIONS_GUI_SCALE_TOOLTIP                              :Llusgwch y llithrwr i osod maint y rhyngwyneb. Daliwhc Ctrl i ganiatáu addasiad parhaol
 STR_GAME_OPTIONS_GUI_SCALE_AUTO                                 :Awto-ganfod maint
-STR_GAME_OPTIONS_GUI_SCALE_AUTO_TOOLTIP                         :Marciwch y blwch hwn i ganfod maint y rhyngwyneb yn awtomatig
+STR_GAME_OPTIONS_GUI_SCALE_AUTO_TOOLTIP                         :Trowch ymlaen i ganfod maint y rhyngwyneb yn awtomatig
 
 STR_GAME_OPTIONS_GUI_SCALE_BEVELS                               :Helaethu befelau
-STR_GAME_OPTIONS_GUI_SCALE_BEVELS_TOOLTIP                       :Marciwch y blwch hwn i helaethu befelau yn ôl maint y rhyngwyneb
+STR_GAME_OPTIONS_GUI_SCALE_BEVELS_TOOLTIP                       :Trowch ymlaen i helaethu befelau yn ôl maint y rhyngwyneb
 
 STR_GAME_OPTIONS_GUI_FONT_SPRITE                                :Defnyddio wynebfath corlun traddodiadol
 STR_GAME_OPTIONS_GUI_FONT_SPRITE_TOOLTIP                        :Marciwch y blwch hwn os oes well gennych ddefnyddio y wynebfath corlun un-maint traddodiadol
@@ -1352,8 +1352,13 @@ STR_CONFIG_SETTING_CONSTRUCTION_COSTS_HIGH                      :Uchel
 STR_CONFIG_SETTING_RECESSIONS                                   :Dirwasgiadau: {STRING}
 STR_CONFIG_SETTING_RECESSIONS_HELPTEXT                          :Os y galluogir, gall dirwasgiadau ddigwydd yn ysbeidiol. Yn ystod dirwasgiad bydd lefelau gweithgynhyrchu'n is o lawer (gan ddychwelyd at y lefel gwreiddiol wedi diwedd y dirwasgiad)
 
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE                           :Canaitáu i drenau fflipio pan yn gwrthdroi: {STRING}
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE_HELPTEXT                  :Dewis lle y caiff trenau fflipio i wrthdroi cyfeiriad. Gyda "Pob man" ciff trenau fflipio mewn unrhyw le. Gyda "Pen y lein yn unig" ni fydd trenau yn fflipio mewn gorsaf os yw llwybr ymlaen ar gael. Gyda "Dim" ni chaiff trenau fflipio a byddent yn gyrru at yn ôl os oes angen, ond ar fuanedd is os nad oes cab gyrru ar y cerbyd ôl
 
 ###length 3
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE_ALL                       :Bob man
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE_END_OF_LINE_ONLY          :Pen y lein yn unig
+STR_CONFIG_SETTING_TRAIN_FLIP_REVERSE_NONE                      :Dim
 
 STR_CONFIG_SETTING_DISASTERS                                    :Trychinebau: {STRING}
 STR_CONFIG_SETTING_DISASTERS_HELPTEXT                           :Toglo trychinebau a all rhwystro neu ddinistrio cerbydau neu tanadeiledd
@@ -1376,7 +1381,6 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Defnyddio dalgy
 
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Gall gorsafoedd cwmni wasanaethu diwydiannau gyda gorsafoedd niwtral ynghlwm: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Pan y galluogir, bydd diwydiannau gyda gorsafoedd ynghlwm (fel Rigiau Olew) yn gallu caen eu gwasanaethu gan orsafoedd cwmni sydd gerllaw. Pan analluogir, dim ond yn y gorsafoedd ynghlwm y gellir gwasanaethu'r diwydiannau yma. Ni fydd gorsafoedd gerllaw yn gallu eu gweini, ac ni fydd y gorsaf ynghlwm yn gweini unrhyw beth ond y diwydiant yna
-
 
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Caniatáu chwalu mwy o ffyrdd, pontydd ayb. sy'n berthyn i drefi: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Hwyluso chwalu tanadeiledd ac adeiladau sy'n eiddo i drefi
@@ -1906,6 +1910,8 @@ STR_CONFIG_SETTING_STATION_LENGTH_LOADING_PENALTY_HELPTEXT      :Pan y galluogir
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS                             :Galluogi terfynau cyflymder wagenni: {STRING}
 STR_CONFIG_SETTING_WAGONSPEEDLIMITS_HELPTEXT                    :Pan y galluogir, fe ddefnyddir terfynnau cyflymder pob cerbyd mewn trên pan yn cyfrifo ei gyflymder uchafsymol
 
+STR_CONFIG_SETTING_AIRCRAFT_RANGE                               :Galluogi cwmpas uchafsymol awyernnau: {STRING}
+STR_CONFIG_SETTING_AIRCRAFT_RANGE_HELPTEXT                      :Pan y galluogir, bydd NewGRFau yn gallu cyfyngu cwmpas uchafsymol awyrennau
 
 STR_CONFIG_SETTING_DISABLE_ELRAILS                              :Analluogi cledrau trydan: {STRING}
 STR_CONFIG_SETTING_DISABLE_ELRAILS_HELPTEXT                     :Mae galluogi'r gosodiad yma yn gwaredu a'r angen i drydaneiddio traciau cyn y gall injan drydan redeg arnynt
@@ -2213,24 +2219,24 @@ STR_CONFIG_SETTING_REVERSE_AT_SIGNALS_HELPTEXT                  :Caniatáu i dre
 STR_CONFIG_SETTING_QUERY_CAPTION                                :{WHITE}Newid gwerth gosodiad
 
 # Config errors
-STR_CONFIG_ERROR                                                :{WHITE}Gwall gyda'r ffeil ffurfweddu...
-STR_CONFIG_ERROR_ARRAY                                          :{WHITE}... gwall yn arae '{STRING}'
+STR_CONFIG_ERROR                                                :Gwall gyda'r ffeil ffurfweddu...
+STR_CONFIG_ERROR_ARRAY                                          :gwall yn arae '{STRING}'
 STR_CONFIG_ERROR_INVALID_VALUE                                  :{WHITE}... gwerth annilys '{STRING}' ar gyfer '{STRING}'
 STR_CONFIG_ERROR_TRAILING_CHARACTERS                            :{WHITE}... cymeriadau gormodol ar ddiwedd '{STRING}'
-STR_CONFIG_ERROR_DUPLICATE_GRFID                                :{WHITE}... yn anwybyddu NewGRF '{STRING}': GRF ID unfath â '{STRING}'
-STR_CONFIG_ERROR_INVALID_GRF                                    :{WHITE}... yn annwybyddu NewGRF annilys '{STRING}': {STRING}
+STR_CONFIG_ERROR_DUPLICATE_GRFID                                :yn anwybyddu NewGRF '{STRING}': ID NewGRF unfath â '{STRING}'
+STR_CONFIG_ERROR_INVALID_GRF                                    :yn annwybyddu NewGRF annilys '{STRING}': {STRING}
 STR_CONFIG_ERROR_INVALID_GRF_NOT_FOUND                          :ni ganfuwyd
 STR_CONFIG_ERROR_INVALID_GRF_UNSAFE                             :anniogel ar gyfer defnydd statig
 STR_CONFIG_ERROR_INVALID_GRF_SYSTEM                             :system NewGRF
 STR_CONFIG_ERROR_INVALID_GRF_INCOMPATIBLE                       :anghydnaws gyda'r fersiwn yma o OpenTTD
 STR_CONFIG_ERROR_INVALID_GRF_UNKNOWN                            :anhysbys
-STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_LEVEL             :{WHITE}... nid yw'r lefel cywasgu '{STRING}' yn ddilys
-STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :{WHITE}... nid yw'r fformat ffeil cadw gêm '{STRING}' ar gael. Yn dychwelyd at '{STRING}'
-STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... yn anwybyddu set Graffeg Sylfaenol '{STRING}': ni ganfuwyd
-STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... yn anwybyddu setiau Sain Sylfaenol '{STRING}': ni ganfuwyd
+STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_LEVEL             :nid yw'r lefel cywasgu '{STRING}' yn ddilys
+STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM         :nid yw'r fformat ffeil cadw gêm '{STRING}' ar gael. Yn dychwelyd at '{STRING}'
+STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :yn anwybyddu set Graffeg Sylfaenol '{STRING}': ni ganfuwyd
+STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :yn anwybyddu setiau Sain Sylfaenol '{STRING}': ni ganfuwyd
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :yn anwybyddu set Sain Sylfaenol '{STRING}': ni ganfuwyd
 
-# Video initalization errors
+# Video initialization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Gwall gyda'r gosodiadau fideo...
 STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... dim caledwedd graffeg cydnaws wedi ei ddarganfod. Analluogwyd cyflymu caledwedd
 STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :gyriant caledwedd graffig wedi chwalu'r gêm. Cyflymu caledwedd wedi'i analluogi
@@ -2370,15 +2376,15 @@ STR_FACE_SIMPLE                                                 :{BLACK}Syml
 STR_FACE_SIMPLE_TOOLTIP                                         :{BLACK}Dewis wyneb syml
 STR_FACE_LOAD                                                   :{BLACK}Llwytho
 STR_FACE_LOAD_TOOLTIP                                           :{BLACK}Llwytho hoff wyneb
-STR_FACE_LOAD_DONE                                              :{WHITE}Llwythwyd eich hoff wyneb o'r ffeil ffurfweddu OpenTTD
+STR_FACE_LOAD_DONE                                              :Llwythwyd eich hoff wyneb o'r ffeil ffurfweddu OpenTTD
 STR_FACE_FACECODE                                               :{BLACK}Cod gwyneb chwaraewr
 STR_FACE_FACECODE_TOOLTIP                                       :{BLACK}Gweld ac/neu osod cod gwyneb llywydd y cwmni
 STR_FACE_FACECODE_CAPTION                                       :{WHITE}Gweld ac/neu osod cod gwyneb llywydd
-STR_FACE_FACECODE_SET                                           :{WHITE}Cafodd cod gwyneb newydd ei osod
-STR_FACE_FACECODE_ERR                                           :{WHITE}Methu gosod cod wyneb llywydd - rhaid iddo fod yn label a rhif dilys
+STR_FACE_FACECODE_SET                                           :Cafodd cod gwyneb newydd ei osod
+STR_FACE_FACECODE_ERR                                           :Methu gosod cod wyneb llywydd - rhaid iddo fod yn label a rhif dilys
 STR_FACE_SAVE                                                   :{BLACK}Cadw
 STR_FACE_SAVE_TOOLTIP                                           :{BLACK}Cadw hoff wyneb
-STR_FACE_SAVE_DONE                                              :{WHITE}Bydd yr wyneb hwn yn cael ei gadw fel eich ffefryn yn y ffeil ffurfweddu OpenTTD
+STR_FACE_SAVE_DONE                                              :Bydd yr wyneb hwn yn cael ei gadw fel eich ffefryn yn y ffeil ffurfweddu OpenTTD
 STR_FACE_SETTING_TOGGLE                                         :{STRING} {ORANGE}{STRING}
 STR_FACE_SETTING_NUMERIC                                        :{STRING} {ORANGE}{NUM} / {NUM}
 STR_FACE_YES                                                    :Ie
@@ -2441,7 +2447,7 @@ STR_NETWORK_SERVER_LIST_GAMESCRIPT                              :{SILVER}Sgript 
 STR_NETWORK_SERVER_LIST_PASSWORD                                :{SILVER}Wedi'i Ddiogelu gan Gyfrinair!
 STR_NETWORK_SERVER_LIST_SERVER_OFFLINE                          :{SILVER}GWEINYDD ALL-LEIN
 STR_NETWORK_SERVER_LIST_SERVER_FULL                             :{SILVER}GWEINYDD LLAWN
-STR_NETWORK_SERVER_LIST_SERVER_BANNED                           :{SILVER}MAE'R GWEINYDD WEDI'CH RHWYSTRO CHI
+STR_NETWORK_SERVER_LIST_SERVER_BANNED                           :{SILVER}MAE'R GWEINYDD WEDI'CH GWAHARDD CHI
 STR_NETWORK_SERVER_LIST_SERVER_TOO_OLD                          :{SILVER}GWEINYDD YN RHY HEN
 STR_NETWORK_SERVER_LIST_VERSION_MISMATCH                        :{SILVER}FERSIWN ANGHYDNAWS
 STR_NETWORK_SERVER_LIST_GRF_MISMATCH                            :{SILVER}NEWGRF ANGHYDNAWS
@@ -2590,30 +2596,30 @@ STR_NETWORK_CHAT_EXTERNAL                                       :[{STRING}] {STR
 STR_NETWORK_CHAT_OSKTITLE                                       :{BLACK}teipiwch destun ar gyfer sgwrs rwydwaith
 
 # Network messages
-STR_NETWORK_ERROR_NOTAVAILABLE                                  :{WHITE}Ni ddaethpwyd o hyd i ddyfeisiau rhwydwaith, neu ni chafodd y gêm ei chrynhoi gyda ENABLE_NETWORK
-STR_NETWORK_ERROR_NOCONNECTION                                  :{WHITE}Ni atebodd y gweinydd y cais neu cafodd ei wrthod
-STR_NETWORK_ERROR_NEWGRF_MISMATCH                               :{WHITE}Doedd dim modd cysylltu oherwydd nid oedd y NewGRF yn cyfateb
-STR_NETWORK_ERROR_DESYNC                                        :{WHITE}Methodd y cydamseru rhwng y rhwydwaith a'r gêm
-STR_NETWORK_ERROR_LOSTCONNECTION                                :{WHITE}Collwyd cysylltiad rhwydwaith y gêm
-STR_NETWORK_ERROR_SAVEGAMEERROR                                 :{WHITE}Doedd dim modd llwytho'r gêm a gadwyd
-STR_NETWORK_ERROR_SERVER_START                                  :{WHITE}Methwyd a chychwyn y gweinydd
-STR_NETWORK_ERROR_SERVER_ERROR                                  :{WHITE}Caewyd y cyswllt oherwydd gwall protocol
+STR_NETWORK_ERROR_NOTAVAILABLE                                  :Ni ddaethpwyd o hyd i ddyfeisiau rhwydwaith
+STR_NETWORK_ERROR_NOCONNECTION                                  :Ni atebodd y gweinydd y cais neu cafodd ei wrthod
+STR_NETWORK_ERROR_NEWGRF_MISMATCH                               :Doedd dim modd cysylltu oherwydd bod NewGRF ddim yn cyfateb
+STR_NETWORK_ERROR_DESYNC                                        :Methodd y cydamseru rhwng y rhwydwaith a'r gêm
+STR_NETWORK_ERROR_LOSTCONNECTION                                :Collwyd cysylltiad rhwydwaith y gêm
+STR_NETWORK_ERROR_SAVEGAMEERROR                                 :Doedd dim modd llwytho'r gêm a gadwyd
+STR_NETWORK_ERROR_SERVER_START                                  :Methwyd a chychwyn y gweinydd
+STR_NETWORK_ERROR_SERVER_ERROR                                  :Caewyd y cyswllt oherwydd gwall protocol
 STR_NETWORK_ERROR_BAD_PLAYER_NAME                               :Nid yw eich enw chwaraewr wedi ei osod. Gall yr enw gael ei osod ar frig y ffenestr Amlchwaraewr
 STR_NETWORK_ERROR_BAD_SERVER_NAME                               :Nid yw eich enw gweinydd wedi ei osod. Gall yr enw gael ei osod ar frig y ffenestr Amlchwaraewr
 STR_NETWORK_ERROR_WRONG_REVISION                                :Nid yw fersiwn y gwestai yn cyfateb i fersiwn y gweinydd
 STR_NETWORK_ERROR_WRONG_PASSWORD                                :Cyfrinair anghywir
 STR_NETWORK_ERROR_NOT_ON_ALLOW_LIST                             :Nid ydych ar y rhestr o westai sydd wedi'u caniatáu
-STR_NETWORK_ERROR_SERVER_FULL                                   :{WHITE}Mae'r gweinydd yn llawn
-STR_NETWORK_ERROR_SERVER_BANNED                                 :{WHITE}Rydych chi wedi'ch gwahardd o'r gweinydd hwn
-STR_NETWORK_ERROR_KICKED                                        :{WHITE}Cafoch chi eich cicio o'r gêm
-STR_NETWORK_ERROR_KICK_MESSAGE                                  :{WHITE}Rheswm: {STRING}
+STR_NETWORK_ERROR_SERVER_FULL                                   :Mae'r gweinydd yn llawn
+STR_NETWORK_ERROR_SERVER_BANNED                                 :Rydych chi wedi'ch gwahardd o'r gweinydd hwn
+STR_NETWORK_ERROR_KICKED                                        :Cafoch chi eich cicio o'r gêm
+STR_NETWORK_ERROR_KICK_MESSAGE                                  :Rheswm: {STRING}
 STR_NETWORK_ERROR_CHEATER                                       :Ni chaniateir twyllo ar y gweinydd hwn
-STR_NETWORK_ERROR_TOO_MANY_COMMANDS                             :{WHITE}Roeddech yn gyrru gormod o orchmynion i'r gweinydd
-STR_NETWORK_ERROR_TIMEOUT_PASSWORD                              :{WHITE}Fe gymeroch ormod o amser i fewnbynnu'r cyfrinair
-STR_NETWORK_ERROR_TIMEOUT_COMPUTER                              :{WHITE}Mae'ch cyfrifiadur rhy araf i gadw amser gyda'r gweinydd
-STR_NETWORK_ERROR_TIMEOUT_MAP                                   :{WHITE}Fe gymerodd eich cyfrifiadur gormod o amser i lawrlwytho'r map
-STR_NETWORK_ERROR_TIMEOUT_JOIN                                  :{WHITE}Fe gymerodd eich cyfrifiadur gormod o amser i ymuno a'r gweinydd
-STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :{WHITE}Nid yw eich enw chwaraewr yn ddilys
+STR_NETWORK_ERROR_TOO_MANY_COMMANDS                             :Roeddech yn gyrru gormod o orchmynion i'r gweinydd
+STR_NETWORK_ERROR_TIMEOUT_PASSWORD                              :Fe gymeroch ormod o amser i fewnbynnu'r cyfrinair
+STR_NETWORK_ERROR_TIMEOUT_COMPUTER                              :Mae'ch cyfrifiadur rhy araf i gadw amser gyda'r gweinydd
+STR_NETWORK_ERROR_TIMEOUT_MAP                                   :Fe gymerodd eich cyfrifiadur gormod o amser i lawrlwytho'r map
+STR_NETWORK_ERROR_TIMEOUT_JOIN                                  :Fe gymerodd eich cyfrifiadur gormod o amser i ymuno a'r gweinydd
+STR_NETWORK_ERROR_INVALID_CLIENT_NAME                           :Nid yw eich enw chwaraewr yn ddilys
 
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION_CAPTION            :Colled cysylltiad o bosib
 STR_NETWORK_ERROR_CLIENT_GUI_LOST_CONNECTION                    :Am y {NUM} eiliad diwethaf nid oes data wedi cyrraedd o'r gweinydd
@@ -3522,9 +3528,9 @@ STR_GENERATION_PREPARING_TILELOOP                               :{BLACK}Rhedeg d
 STR_GENERATION_PREPARING_SCRIPT                                 :{BLACK}Rhedeg sgript
 STR_GENERATION_PREPARING_GAME                                   :{BLACK}Paratoi gêm
 
-STR_TOWN_DATA_ERROR_LOAD_FAILED                                 :{WHITE}Methwyd llwytho data tref
+STR_TOWN_DATA_ERROR_LOAD_FAILED                                 :Methwyd llwytho data tref
 STR_TOWN_DATA_ERROR_JSON_FORMATTED_INCORRECTLY                  :ffeil JSON wedi'i fformadu'n anghywir
-STR_TOWN_DATA_ERROR_TOWN_FORMATTED_INCORRECTLY                  :{WHITE}{STRING} data wedi'i fformatio'n anghywir
+STR_TOWN_DATA_ERROR_TOWN_FORMATTED_INCORRECTLY                  :Data {STRING} wedi'i fformatio'n anghywir
 STR_TOWN_DATA_ERROR_BAD_COORDINATE                              :{STRING} cyfesurynnau wedi'u fformadu'n anghywir, rhaid fod rhwng 0 ac 1 fel cyfran o gyfanswm dimensiwn y map uchder
 
 STR_TOWN_DATA_ERROR_FAILED_TO_FOUND_TOWN                        :Methu dod o hyd i leoliad addas i sefydlu {NUM} tref. Crëwyd arwydd{P "" "ion"} yn lle'r tref{P "" "i"}
@@ -3679,7 +3685,7 @@ STR_NEWGRF_TOO_MANY_NEWGRFS                                     :{WHITE}Methu yc
 
 STR_NEWGRF_COMPATIBLE_LOAD_WARNING                              :{WHITE}Llwythwyd GRF(au) cydnaws yn lle'r rhai coll
 STR_NEWGRF_DISABLED_WARNING                                     :{WHITE}Analluogwyd y ffeiliau GRF coll
-STR_NEWGRF_UNPAUSE_WARNING_TITLE                                :{YELLOW}Ffeil(iau) GRF coll
+STR_NEWGRF_UNPAUSE_WARNING_TITLE                                :{YELLOW}Ffeil(iau) NewGRF coll
 STR_NEWGRF_UNPAUSE_WARNING                                      :{WHITE}Gall dadseibio beri i OpenTTD grasio. Peidiwch ag anfon adroddiadau am fygiau ar gyfer crasiau pellach.{}Ydych chi wir eisiau dadseibio?
 
 # NewGRF status
@@ -4741,6 +4747,7 @@ STR_ORDER_CONDITIONAL_REQUIRES_SERVICE                          :Angen gwasanaet
 STR_ORDER_CONDITIONAL_UNCONDITIONALLY                           :Bob tro
 STR_ORDER_CONDITIONAL_REMAINING_LIFETIME                        :Oes yn weddill (blynyddoedd)
 STR_ORDER_CONDITIONAL_MAX_RELIABILITY                           :Dibynadwyedd uchafsymol
+STR_ORDER_CONDITIONAL_DRIVING_BACKWARDS                         :Yn gyrru at yn ôl
 ###next-name-looks-similar
 
 STR_ORDER_CONDITIONAL_COMPARATOR_TOOLTIP                        :{BLACK}Sut i gymharu'r data cerbyd i'r gwerth a roddwyd
@@ -4942,7 +4949,7 @@ STR_AI_GAME_SCRIPT                                              :{BLACK}Game Scr
 STR_AI_GAME_SCRIPT_TOOLTIP                                      :{BLACK}Gwirio'r log sgript gêm. Mae Ctrl+Clic yn ei agor mewn ffenest newydd
 
 STR_ERROR_AI_NO_AI_FOUND                                        :Ni ganfuwyd AI addas i lwytho.{}AI ffug yw hwn na wnai unrhyw beth.{}Gallwch lawrlwytho sawl AI drwy'r system 'Cynnwys Ar-lein'
-STR_ERROR_AI_PLEASE_REPORT_CRASH                                :{WHITE}Mae sgript a oedd yn rhedeg wedi chwalu. A fyddwch cystad ag adrodd am hyn i awdur yr sgript ynghyd â sgrin-gipiad o'r Ffenestr Ddadnamu AI/Sgript Gêm
+STR_ERROR_AI_PLEASE_REPORT_CRASH                                :Mae sgript a oedd yn rhedeg wedi chwalu. A fyddwch cystad ag adrodd am hyn i awdur yr sgript ynghyd â sgrin-gipiad o'r Ffenestr Ddadnamu AI/Sgript Gêm
 STR_ERROR_AI_DEBUG_SERVER_ONLY                                  :{YELLOW}Mae'r Ffenestr Ddadnamu AI / Sgript Gêm ar gael ar gyfer y gweinydd yn unig
 
 # AI configuration window
@@ -5078,8 +5085,8 @@ STR_WARNING_FALLBACK_SOUNDSET                                   :{WHITE}Dim ond 
 STR_WARNING_SCREENSHOT_SIZE_CAPTION                             :{WHITE}Ciplun anferth
 STR_WARNING_SCREENSHOT_SIZE_MESSAGE                             :{YELLOW}Bydd gan y ciplun faint o {COMMA} x {COMMA} pcsel. Gall cymeryd peth amser i greu'r ciplun. A ydych am barhau?
 
-STR_MESSAGE_HEIGHTMAP_SUCCESSFULLY                              :{WHITE}Map uchder wedi ei gadw'n llwyddiannus fel '{STRING}'. Copa uchaf yw {NUM}
-STR_MESSAGE_SCREENSHOT_SUCCESSFULLY                             :{WHITE}Cadwyd y ciplun yn llwyddiannus fel '{STRING}'
+STR_MESSAGE_HEIGHTMAP_SUCCESSFULLY                              :Map uchder wedi ei gadw'n llwyddiannus fel '{STRING}'. Copa uchaf yw {NUM}
+STR_MESSAGE_SCREENSHOT_SUCCESSFULLY                             :Cadwyd y ciplun yn llwyddiannus fel '{STRING}'
 STR_ERROR_SCREENSHOT_FAILED                                     :{WHITE}Methodd y ciplun!
 
 # Error message titles
@@ -5091,11 +5098,11 @@ STR_ERROR_OFF_EDGE_OF_MAP                                       :{WHITE}Oddi ar 
 STR_ERROR_TOO_CLOSE_TO_EDGE_OF_MAP                              :rhy agos i ymyl y map
 STR_ERROR_NOT_ENOUGH_CASH_REQUIRES_CURRENCY                     :Dim digon o arian - angen {CURRENCY_LONG}
 STR_ERROR_FLAT_LAND_REQUIRED                                    :{WHITE}Rhaid i'r tir fod yn wastad
-STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION                        :{WHITE}Mae'r tir yn goleddu i'r cyfeiriad anghywir
+STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION                        :tir yn goleddu i'r cyfeiriad anghywir
 STR_ERROR_CAN_T_DO_THIS                                         :{WHITE}Does dim modd gwneud hynny...
 STR_ERROR_BUILDING_MUST_BE_DEMOLISHED                           :{WHITE}Rhaid dymchwel adeilad yn gyntaf
 STR_ERROR_BUILDING_IS_PROTECTED                                 :{WHITE}... adeilad wedi ei amddiffyn
-STR_ERROR_CAN_T_CLEAR_THIS_AREA                                 :{WHITE}Does dim modd clirio’r ardal hon...
+STR_ERROR_CAN_T_CLEAR_THIS_AREA                                 :Does dim modd clirio’r ardal hon...
 STR_ERROR_SITE_UNSUITABLE                                       :{WHITE}... safle anaddas
 STR_ERROR_ALREADY_BUILT                                         :{WHITE}... eisoes wedi'i adeiladu
 STR_ERROR_OWNED_BY                                              :{WHITE}... eiddo {STRING}
@@ -5104,8 +5111,8 @@ STR_ERROR_TERRAFORM_LIMIT_REACHED                               :{WHITE}... wedi
 STR_ERROR_CLEARING_LIMIT_REACHED                                :terfyn clirio teiliau wedi ei gyrraedd
 STR_ERROR_TREE_PLANT_LIMIT_REACHED                              :{WHITE}... wedi cyrraedd y diben planu coed
 STR_ERROR_NAME_MUST_BE_UNIQUE                                   :{WHITE}Rhaid i'r enw fod yn unigryw
-STR_ERROR_GENERIC_OBJECT_IN_THE_WAY                             :{WHITE}{STRING} yn y ffordd
-STR_ERROR_NOT_ALLOWED_WHILE_PAUSED                              :{WHITE}Ni chaniateir hynny tra fo'r gêm wedi ei oedi
+STR_ERROR_GENERIC_OBJECT_IN_THE_WAY                             :{STRING} yn y ffordd
+STR_ERROR_NOT_ALLOWED_WHILE_PAUSED                              :ni chaniateir hynny tra fo'r gêm wedi ei oedi
 
 # Local authority errors
 STR_ERROR_LOCAL_AUTHORITY_REFUSES_TO_ALLOW_THIS                 :Nid yw awdurdod lleol {TOWN} yn caniatáu hyn
@@ -5115,13 +5122,13 @@ STR_ERROR_BRIBE_FAILED                                          :{WHITE}Cawsoch 
 
 # Levelling errors
 STR_ERROR_CAN_T_RAISE_LAND_HERE                                 :{WHITE}Does dim modd codi tir yma...
-STR_ERROR_CAN_T_LOWER_LAND_HERE                                 :{WHITE}Does dim modd gostwng tir yma...
+STR_ERROR_CAN_T_LOWER_LAND_HERE                                 :Does dim modd gostwng tir yma...
 STR_ERROR_CAN_T_LEVEL_LAND_HERE                                 :{WHITE}Does dim modd lefelu tir yma...
 STR_ERROR_EXCAVATION_WOULD_DAMAGE                               :{WHITE}Byddai cloddio yno'n difrodi twnnel
-STR_ERROR_ALREADY_AT_SEA_LEVEL                                  :{WHITE}... eisoes ar lefel y môr
+STR_ERROR_ALREADY_AT_SEA_LEVEL                                  :eisoes ar lefel y môr
 STR_ERROR_TOO_HIGH                                              :{WHITE}Rhy uchel
 STR_ERROR_ALREADY_LEVELLED                                      :{WHITE}... mae eisoes yn fflat
-STR_ERROR_BRIDGE_TOO_HIGH_AFTER_LOWER_LAND                      :{WHITE}Byddai'r bont wedyn yn rhy uchel.
+STR_ERROR_BRIDGE_TOO_HIGH_AFTER_LOWER_LAND                      :byddai'r bont uwchben wedyn yn rhy uchel.
 STR_ERROR_MUST_DEMOLISH_RIVER_FIRST                             :rhaid dymchwel afon yn gyntaf
 
 # Company related errors
@@ -5140,26 +5147,26 @@ STR_ERROR_CAN_T_BUILD_COMPANY_HEADQUARTERS                      :Methu adeiladu 
 
 # Town related errors
 STR_ERROR_CAN_T_GENERATE_TOWN                                   :{WHITE}Methu adeiladu unrhyw drefi...
-STR_ERROR_CAN_T_RENAME_TOWN                                     :{WHITE}Methu ailenwi tref...
+STR_ERROR_CAN_T_RENAME_TOWN                                     :Methu ailenwi tref...
 STR_ERROR_CAN_T_FOUND_TOWN_HERE                                 :Methu adeiladu tref yma...
 STR_ERROR_CAN_T_EXPAND_TOWN                                     :{WHITE}Methu ehangu'r dref...
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_TOWN                             :rhy agos i dref arall
-STR_ERROR_TOO_MANY_TOWNS                                        :{WHITE}... gormod o drefi
+STR_ERROR_TOO_MANY_TOWNS                                        :gormod o drefi
 STR_ERROR_NO_SPACE_FOR_TOWN                                     :{WHITE}... nid oes mwy o le ar y map
-STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :{WHITE}Mae gwaith yn cael ei wneud ar y ffordd
+STR_ERROR_ROAD_WORKS_IN_PROGRESS                                :gwaith yn cael ei wneud ar y ffordd
 STR_ERROR_TOWN_CAN_T_DELETE                                     :{WHITE}Methu dileu'r dref...{}{}Mae gorsaf neu depo sy'n cyfeirio i'r dref neu deil ym mherchnogaeth y dref na ellir ei ddileu
 STR_ERROR_STATUE_NO_SUITABLE_PLACE                              :nid oes man addas i'r cerflun yn nghanol y ddinas yma
 STR_ERROR_CAN_T_BUILD_HOUSE                                     :Methu adeiladu tŷ...
 
 # Industry related errors
-STR_ERROR_TOO_MANY_INDUSTRIES                                   :{WHITE}... gormod o ddiwydiannau
+STR_ERROR_TOO_MANY_INDUSTRIES                                   :gormod o ddiwydiannau
 STR_ERROR_CAN_T_GENERATE_INDUSTRIES                             :{WHITE}Doedd dim modd cynhyrchu diwydiannau...
 STR_ERROR_CAN_T_BUILD_HERE                                      :Ni ellir adeiladu {STRING} yma...
 STR_ERROR_CAN_T_CONSTRUCT_THIS_INDUSTRY                         :{WHITE}Does dim modd adeiladu diwydiant o'r math hwn yma...
 STR_ERROR_CAN_T_PROSPECT_INDUSTRY                               :{WHITE}Methu mwynchwilio'r diwydiant...
 STR_ERROR_INDUSTRY_TOO_CLOSE                                    :{WHITE}... rhy agos i ddiwydiant arall
 STR_ERROR_MUST_FOUND_TOWN_FIRST                                 :{WHITE}... rhaid adeiladu tref yn gyntaf
-STR_ERROR_ONLY_ONE_ALLOWED_PER_TOWN                             :{WHITE}... un yn unig a ganiateir ym mhob tref
+STR_ERROR_ONLY_ONE_ALLOWED_PER_TOWN                             :un yn unig a ganiateir ym mhob tref
 STR_ERROR_CAN_ONLY_BE_BUILT_IN_TOWNS_WITH_POPULATION_OF_1200    :{WHITE}... gellir ei adeiladu'n unig mewn trefi gyda phoblogaeth o 1200 neu fwy
 STR_ERROR_CAN_ONLY_BE_BUILT_IN_RAINFOREST                       :{WHITE}... gellir ei adeiladu mewn ardal coedwig glaw yn unig
 STR_ERROR_CAN_ONLY_BE_BUILT_IN_DESERT                           :{WHITE}... gellir ei adeiladu mewn ardal anialwch yn unig
@@ -5171,10 +5178,10 @@ STR_ERROR_FOREST_CAN_ONLY_BE_PLANTED                            :{WHITE}... dim 
 STR_ERROR_CAN_ONLY_BE_BUILT_ABOVE_SNOW_LINE                     :{WHITE}... gellir ei adeiladu uwchben yr eirlin yn unig
 STR_ERROR_CAN_ONLY_BE_BUILT_BELOW_SNOW_LINE                     :{WHITE}... gellir ei adeiladu islaw i'r eirlin yn unig
 
-STR_ERROR_PROSPECTING_WAS_UNLUCKY                               :{WHITE}Yn anlwcus, methodd y mwyngloddio ; triwch eto
-STR_ERROR_NO_SUITABLE_PLACES_FOR_PROSPECTING                    :{WHITE}Nid oedd mannau addas ar gyfer mwynchwilio'r diwydiant yma
-STR_ERROR_NO_SUITABLE_PLACES_FOR_INDUSTRIES                     :{WHITE}Nid oedd manau addas ar gyfer diwydiannau '{STRING}'
-STR_ERROR_NO_SUITABLE_PLACES_FOR_INDUSTRIES_EXPLANATION         :{WHITE}Newidwch y paramedrau cynhyrchu map er mwyn cael map gwell
+STR_ERROR_PROSPECTING_WAS_UNLUCKY                               :yn anlwcus, fe methodd y mwyngloddio; triwch eto
+STR_ERROR_NO_SUITABLE_PLACES_FOR_PROSPECTING                    :nid oedd mannau addas ar gyfer mwynchwilio'r diwydiant yma
+STR_ERROR_NO_SUITABLE_PLACES_FOR_INDUSTRIES                     :nid oedd manau addas ar gyfer diwydiannau '{STRING}'
+STR_ERROR_NO_SUITABLE_PLACES_FOR_INDUSTRIES_EXPLANATION         :Newidwch y paramedrau cynhyrchu map er mwyn cael map gwell
 
 # Station construction related errors
 STR_ERROR_CAN_T_BUILD_RAILROAD_STATION                          :Methu adeiladu gorsaf reilffordd yma...
@@ -5189,22 +5196,22 @@ STR_ERROR_ADJOINS_MORE_THAN_ONE_EXISTING                        :Mae'n ymylu ar 
 STR_ERROR_STATION_TOO_SPREAD_OUT                                :{WHITE}... mae'r orsaf yn rhy wasgaredig
 STR_ERROR_STATION_DISALLOWED_NUMBER_TRACKS                      :nifer anghydnaws o draciau
 STR_ERROR_STATION_DISALLOWED_LENGTH                             :hyd anghydnaws
-STR_ERROR_TOO_MANY_STATIONS_LOADING                             :{WHITE}Gormod o orsafoedd/ardaloedd llwytho
-STR_ERROR_TOO_MANY_STATION_SPECS                                :{WHITE}Mae gan yr orsaf ormod o rannau
-STR_ERROR_TOO_MANY_BUS_STOPS                                    :{WHITE}Gormod o arosfannau bysus
-STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :{WHITE}Gormod o orsafoedd lorïau
+STR_ERROR_TOO_MANY_STATIONS_LOADING                             :gormod o orsafoedd/ardaloedd llwytho
+STR_ERROR_TOO_MANY_STATION_SPECS                                :mae gan yr orsaf ormod o rannau
+STR_ERROR_TOO_MANY_BUS_STOPS                                    :gormod o arosfannau bysus
+STR_ERROR_TOO_MANY_TRUCK_STOPS                                  :gormod o orsafoedd lorïau
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_DOCK                             :rhy agos i ddoc arall
 STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT                          :rhy agos i faes awyr arall
-STR_ERROR_CAN_T_RENAME_STATION                                  :{WHITE}Methu ailenwi gorsaf...
-STR_ERROR_CAN_T_MOVE_STATION_NAME                               :{WHITE}Methu symud arwydd gorsaf...
+STR_ERROR_CAN_T_RENAME_STATION                                  :Methu ailenwi gorsaf...
+STR_ERROR_CAN_T_MOVE_STATION_NAME                               :Methu symud arwydd gorsaf...
 STR_ERROR_DRIVE_THROUGH_ON_TOWN_ROAD                            :mae'r ffordd hon yn eiddo i dref
 STR_ERROR_DRIVE_THROUGH_DIRECTION                               :{WHITE}... mae'r ffordd yn gorwedd yn y cyfeiriad anghywir
 STR_ERROR_DRIVE_THROUGH_CORNER                                  :{WHITE}... ni all arosfannau gyrru-trwodd fod â chorneli
 STR_ERROR_DRIVE_THROUGH_JUNCTION                                :{WHITE}... ni all arosfannau gyrru-trwodd fod â chyffyrdd
 
 # Station destruction related errors
-STR_ERROR_CAN_T_REMOVE_PART_OF_STATION                          :{WHITE}Methu tynnu rhan o orsaf...
-STR_ERROR_MUST_REMOVE_RAILWAY_STATION_FIRST                     :{WHITE}Rhaid dymchwel yr orsaf yn gyntaf
+STR_ERROR_CAN_T_REMOVE_PART_OF_STATION                          :Methu tynnu rhan o'r orsaf...
+STR_ERROR_MUST_REMOVE_RAILWAY_STATION_FIRST                     :rhaid dymchwel yr orsaf yn gyntaf
 STR_ERROR_CAN_T_REMOVE_BUS_STATION                              :Methu dileu gorsaf fysiau...
 STR_ERROR_CAN_T_REMOVE_TRUCK_STATION                            :{WHITE}Methu dileu gorsaf lorïau...
 STR_ERROR_CAN_T_REMOVE_PASSENGER_TRAM_STATION                   :Methu dileu gorsaf tramiau teithwyr...
@@ -5212,12 +5219,12 @@ STR_ERROR_CAN_T_REMOVE_CARGO_TRAM_STATION                       :Methu dileu gor
 STR_ERROR_MUST_REMOVE_ROAD_STOP_FIRST                           :{WHITE}Rhaid tynnu'r arhosfan ffordd gyntaf
 STR_ERROR_THERE_IS_NO_STATION                                   :nid oes gorsaf yma
 
-STR_ERROR_MUST_DEMOLISH_RAILROAD                                :{WHITE}Rhaid dymchwel gorsaf reilffordd yn gyntaf
+STR_ERROR_MUST_DEMOLISH_RAILROAD                                :rhaid dymchwel gorsaf reilffordd yn gyntaf
 STR_ERROR_MUST_DEMOLISH_BUS_STATION_FIRST                       :rhaid dymchwel gorsaf fysiau yn gyntaf
-STR_ERROR_MUST_DEMOLISH_TRUCK_STATION_FIRST                     :{WHITE}Rhaid dymchwel gorsaf lorïau yn gyntaf
-STR_ERROR_MUST_DEMOLISH_PASSENGER_TRAM_STATION_FIRST            :{WHITE}Rhaid dileu gorsaf tramiau teithwyr yn gyntaf
+STR_ERROR_MUST_DEMOLISH_TRUCK_STATION_FIRST                     :rhaid dymchwel gorsaf lorïau yn gyntaf
+STR_ERROR_MUST_DEMOLISH_PASSENGER_TRAM_STATION_FIRST            :rhaid dileu gorsaf tramiau teithwyr yn gyntaf
 STR_ERROR_MUST_DEMOLISH_CARGO_TRAM_STATION_FIRST                :rhaid dymchwel yr orsaf tramiau nwyddau'n gyntaf
-STR_ERROR_MUST_DEMOLISH_DOCK_FIRST                              :{WHITE}Rhaid dymchwel doc yn gyntaf
+STR_ERROR_MUST_DEMOLISH_DOCK_FIRST                              :rhaid dymchwel doc yn gyntaf
 STR_ERROR_MUST_DEMOLISH_AIRPORT_FIRST                           :rhaid dymchwel maes awyr yn gyntaf
 
 # Waypoint related errors
@@ -5228,11 +5235,11 @@ STR_ERROR_CAN_T_BUILD_RAIL_WAYPOINT                             :Does dim modd a
 STR_ERROR_CAN_T_BUILD_ROAD_WAYPOINT                             :Methu adeiladu pwynt llwybro ffordd yma...
 STR_ERROR_CAN_T_POSITION_BUOY_HERE                              :{WHITE}Methu gosod bwï yma...
 STR_ERROR_CAN_T_CHANGE_WAYPOINT_NAME                            :Does dim modd newid enw pwynt llwybro...
-STR_ERROR_CAN_T_MOVE_WAYPOINT_NAME                              :{WHITE}Methu symud arwydd pwynt llwybro...
+STR_ERROR_CAN_T_MOVE_WAYPOINT_NAME                              :Methu symud arwydd pwynt llwybro...
 
 STR_ERROR_CAN_T_REMOVE_RAIL_WAYPOINT                            :{WHITE}Does dim modd tynnu'r pwynt llwybro trên yma...
 STR_ERROR_CAN_T_REMOVE_ROAD_WAYPOINT                            :{WHITE}Methu tynnu'r pwynt llwybro ffordd yma...
-STR_ERROR_MUST_REMOVE_RAILWAYPOINT_FIRST                        :{WHITE}Rhaid tynnu'r pwynt llwybro rheilffordd yn gyntaf
+STR_ERROR_MUST_REMOVE_RAILWAYPOINT_FIRST                        :rhaid tynnu'r pwynt llwybro rheilffordd yn gyntaf
 STR_ERROR_MUST_REMOVE_ROADWAYPOINT_FIRST                        :{WHITE}Rhaid tynnu'r pwynt llwybro ffordd yn gyntaf
 STR_ERROR_BUOY_IN_THE_WAY                                       :bwï yn y ffordd
 STR_ERROR_BUOY_IS_IN_USE                                        :{WHITE}... bwï mewn defnydd gan cwmni arall!
@@ -5248,7 +5255,7 @@ STR_ERROR_CAN_T_RENAME_DEPOT                                    :Methu ailenwi d
 STR_ERROR_TRAIN_MUST_BE_STOPPED_INSIDE_DEPOT                    :{WHITE}... nid yw wedi'i stopio mewn depo
 STR_ERROR_ROAD_VEHICLE_MUST_BE_STOPPED_INSIDE_DEPOT             :{WHITE}... nid yw wedi'i stopio mewn depo
 STR_ERROR_SHIP_MUST_BE_STOPPED_INSIDE_DEPOT                     :{WHITE}... nid yw wedi'i stopio mewn depo
-STR_ERROR_AIRCRAFT_MUST_BE_STOPPED_INSIDE_HANGAR                :{WHITE}... nid yw wedi'i stopio mewn awyrendy
+STR_ERROR_AIRCRAFT_MUST_BE_STOPPED_INSIDE_HANGAR                :rhaid fod wedi'i stopio mewn awyrendy
 
 STR_ERROR_TRAINS_CAN_ONLY_BE_ALTERED_INSIDE_A_DEPOT             :{WHITE}Gellir newid trenau yn unig pan fyddan nhw wedi stopio tu mewn i ddepo
 STR_ERROR_TRAIN_TOO_LONG                                        :{WHITE}trên yn rhy hir
@@ -5256,10 +5263,11 @@ STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE                  :{WHITE}Methu gw
 STR_ERROR_CAN_T_REVERSE_DIRECTION_RAIL_VEHICLE_MULTIPLE_UNITS   :{WHITE}... mae'n cynnwys sawl uned
 STR_ERROR_INCOMPATIBLE_RAIL_TYPES                               :Mathau rheilffordd anghydnaws
 
-STR_ERROR_CAN_T_MOVE_VEHICLE                                    :{WHITE}Methu symud y cerbyd...
+STR_ERROR_CAN_T_MOVE_VEHICLE                                    :Methu symud y cerbyd...
 STR_ERROR_REAR_ENGINE_FOLLOW_FRONT                              :{WHITE}Bydd yr injan ôl wastad yn dilyn ei gymar blaen
-STR_ERROR_UNABLE_TO_FIND_ROUTE_TO                               :Methu dod o hyd i ffordd i'r depo lleol
-STR_ERROR_UNABLE_TO_FIND_LOCAL_DEPOT                            :Methu dod o hyd i'r depo lleol
+STR_ERROR_UNABLE_TO_FIND_ROUTE_TO                               :Methu dod o hyd i ffordd i ddepo lleol
+STR_ERROR_UNABLE_TO_FIND_LOCAL_DEPOT                            :Methu dod o hyd i ddepo lleol
+STR_ERROR_UNABLE_TO_FIND_LOCAL_HANGAR                           :meth udod o hyd i awyrendy lleol
 
 STR_ERROR_DEPOT_WRONG_DEPOT_TYPE                                :math depo anghywir
 
@@ -5281,7 +5289,7 @@ STR_ERROR_AUTOREPLACE_INCOMPATIBLE_REFIT                        :Ni all cerbyd n
 STR_ERROR_IMPOSSIBLE_TRACK_COMBINATION                          :{WHITE}Cyfuniad trac amhosib
 STR_ERROR_MUST_REMOVE_SIGNALS_FIRST                             :{WHITE}Rhaid tynnu signalau yn gyntaf
 STR_ERROR_NO_SUITABLE_RAILROAD_TRACK                            :{WHITE}Dim trac rheilffordd addas
-STR_ERROR_MUST_REMOVE_RAILROAD_TRACK                            :{WHITE}Rhaid tynnu'r trac rheilffordd yn gyntaf
+STR_ERROR_MUST_REMOVE_RAILROAD_TRACK                            :rhaid tynnu'r trac rheilffordd yn gyntaf
 STR_ERROR_CROSSING_ON_ONEWAY_ROAD                               :mae'r ffordd yn ffordd un-ffordd, neu wedi'i blocio
 STR_ERROR_CROSSING_DISALLOWED_RAIL                              :{WHITE}Ni chaniateir croesfannau ar y cledrau yma
 STR_ERROR_CROSSING_DISALLOWED_ROAD                              :{WHITE}Ni chaniateir croesfannau ar gyfer y math yma o ffordd
@@ -5289,7 +5297,7 @@ STR_ERROR_CAN_T_BUILD_SIGNALS_HERE                              :Methu adeiladu 
 STR_ERROR_CAN_T_BUILD_RAILROAD_TRACK                            :Methu adeiladu trac rheilffordd yma...
 STR_ERROR_CAN_T_REMOVE_RAILROAD_TRACK                           :{WHITE}Methu tynnu trac rheilffordd oddi yma...
 STR_ERROR_CAN_T_REMOVE_SIGNALS_FROM                             :{WHITE}Methu tynnu signalau oddi yma...
-STR_ERROR_SIGNAL_CAN_T_CONVERT_SIGNALS_HERE                     :{WHITE}Methu trosi signalau yma...
+STR_ERROR_SIGNAL_CAN_T_CONVERT_SIGNALS_HERE                     :Methu trosi signalau yma...
 STR_ERROR_THERE_IS_NO_RAILROAD_TRACK                            :nid oes cledrau yno
 STR_ERROR_THERE_ARE_NO_SIGNALS                                  :nid oes signalau
 
@@ -5313,12 +5321,12 @@ STR_ERROR_NO_SUITABLE_TRAMWAY                                   :{WHITE}Dim tram
 STR_ERROR_CAN_T_BUILD_CANALS                                    :Methu adeiladu camlesi yma...
 STR_ERROR_CAN_T_BUILD_LOCKS                                     :Methu adeiladu lociau yma...
 STR_ERROR_CAN_T_PLACE_RIVERS                                    :{WHITE}Methu gosod afonydd yma...
-STR_ERROR_MUST_BE_BUILT_ON_WATER                                :{WHITE}... rhaid ei adeiladu ar ddŵr
+STR_ERROR_MUST_BE_BUILT_ON_WATER                                :rhaid ei adeiladu ar ddŵr
 STR_ERROR_CAN_T_BUILD_ON_WATER                                  :methu adeiladu ar ddŵr
 STR_ERROR_CAN_T_BUILD_ON_SEA                                    :methu adeiladu ynghanol y môr
 STR_ERROR_CAN_T_BUILD_ON_CANAL                                  :methu adeiladu ar gamlas
 STR_ERROR_CAN_T_BUILD_ON_RIVER                                  :methu adeiladu ar afon
-STR_ERROR_MUST_DEMOLISH_CANAL_FIRST                             :{WHITE}Rhaid dymchwel camlas yn gyntaf
+STR_ERROR_MUST_DEMOLISH_CANAL_FIRST                             :rhaid dymchwel camlas yn gyntaf
 STR_ERROR_CAN_T_BUILD_AQUEDUCT_HERE                             :Methu adeiladu traphont yma...
 
 # Tree related errors
@@ -5331,19 +5339,19 @@ STR_ERROR_CAN_T_BUILD_BRIDGE_HERE                               :Methu adeiladu 
 STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST                            :rhaid dymchwel pont yn gyntaf
 STR_ERROR_CAN_T_START_AND_END_ON                                :{WHITE}Does dim modd cychwyn a gorffen yn yr un man
 STR_ERROR_BRIDGEHEADS_NOT_SAME_HEIGHT                           :{WHITE}Nid yw dau ben y bont ar yr un lefel
-STR_ERROR_BRIDGE_TOO_LOW_FOR_TERRAIN                            :{WHITE}Mae'r bont yn rhy isel ar gyfer y tirwedd
+STR_ERROR_BRIDGE_TOO_LOW_FOR_TERRAIN                            :mae'r bont yn rhy isel ar gyfer y tirwedd
 STR_ERROR_BRIDGE_TOO_HIGH_FOR_TERRAIN                           :{WHITE}Pont rhy uchel ar gyfer y tirwedd yma.
 STR_ERROR_START_AND_END_MUST_BE_IN                              :rhaid i'r cychwyn a'r diwedd fod mewn llinell
 STR_ERROR_ENDS_OF_BRIDGE_MUST_BOTH                              :{WHITE}... rhaid i ddau ben y bont orffwys ar y tir
 STR_ERROR_BRIDGE_TOO_LONG                                       :{WHITE}... pont rhy hir
 STR_ERROR_BRIDGE_THROUGH_MAP_BORDER                             :{WHITE}Byddai'r bont yn gorffen y tu allan i'r map
-STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :{WHITE}Mae'r bont {HEIGHT} yn rhy isel ar gyfer gorsaf
-STR_ERROR_BRIDGE_TOO_LOW_FOR_ROADSTOP                           :{WHITE}Mae'r bont {HEIGHT} yn rhy isel ar gyfer arhosfan lôn
-STR_ERROR_BRIDGE_TOO_LOW_FOR_DOCK                               :{WHITE}Mae'r bont {HEIGHT} yn rhy isel ar gyfer doc
-STR_ERROR_BRIDGE_TOO_LOW_FOR_BUOY                               :{WHITE}Mae'r bont {HEIGHT} yn rhy isel ar gyfer bwi
-STR_ERROR_BRIDGE_TOO_LOW_FOR_RAIL_WAYPOINT                      :{WHITE}Mae'r bont {HEIGHT} yn rhy isel ar gyfer pwynt llwybro rheilffordd
-STR_ERROR_BRIDGE_TOO_LOW_FOR_ROAD_WAYPOINT                      :{WHITE}Mae'r bont {HEIGHT} yn rhy isel ar gyfer pwynt llwybro ffordd
-STR_ERROR_BRIDGE_TOO_LOW_FOR_LOCK                               :{WHITE}Mae'r bont {HEIGHT} yn rhy isel ar gyfer loc
+STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION                            :mae'r bont {HEIGHT} yn rhy isel ar gyfer gorsaf
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROADSTOP                           :mae'r bont {HEIGHT} yn rhy isel ar gyfer arhosfan lôn
+STR_ERROR_BRIDGE_TOO_LOW_FOR_DOCK                               :mae'r bont {HEIGHT} yn rhy isel ar gyfer doc
+STR_ERROR_BRIDGE_TOO_LOW_FOR_BUOY                               :mae'r bont {HEIGHT} yn rhy isel ar gyfer bwi
+STR_ERROR_BRIDGE_TOO_LOW_FOR_RAIL_WAYPOINT                      :mae'r bont {HEIGHT} yn rhy isel ar gyfer pwynt llwybro rheilffordd
+STR_ERROR_BRIDGE_TOO_LOW_FOR_ROAD_WAYPOINT                      :mae'r bont {HEIGHT} yn rhy isel ar gyfer pwynt llwybro ffordd
+STR_ERROR_BRIDGE_TOO_LOW_FOR_LOCK                               :mae'r bont {HEIGHT} yn rhy isel ar gyfer loc
 
 # Tunnel related errors
 STR_ERROR_CAN_T_BUILD_TUNNEL_HERE                               :Methu adeiladu twnnel yma...
@@ -5355,9 +5363,9 @@ STR_ERROR_UNABLE_TO_EXCAVATE_LAND                               :Does dim modd c
 STR_ERROR_TUNNEL_TOO_LONG                                       :{WHITE}... twnel rhy hir
 
 # Object related errors
-STR_ERROR_TOO_MANY_OBJECTS                                      :{WHITE}... gormod o wrthrychau
+STR_ERROR_TOO_MANY_OBJECTS                                      :gormod o wrthrychau
 STR_ERROR_CAN_T_BUILD_OBJECT                                    :Methu adeiladu gwrthrych...
-STR_ERROR_OBJECT_IN_THE_WAY                                     :{WHITE}Gwrthrych yn y ffordd
+STR_ERROR_OBJECT_IN_THE_WAY                                     :gwrthrych yn y ffordd
 STR_ERROR_COMPANY_HEADQUARTERS_IN                               :pencadlys cwmni yn y ffordd
 STR_ERROR_CAN_T_PURCHASE_THIS_LAND                              :{WHITE}Does dim modd prynu'r darn yma o dir...
 STR_ERROR_YOU_ALREADY_OWN_IT                                    :{WHITE}... rydych chi eisoes yn berchen arno!
@@ -5366,9 +5374,9 @@ STR_ERROR_BUILD_OBJECT_LIMIT_REACHED                            :{WHITE}... terf
 # Group related errors
 STR_ERROR_GROUP_CAN_T_CREATE                                    :Methu creu grŵp...
 STR_ERROR_GROUP_CAN_T_DELETE                                    :Methu dileu'r grŵp hwn...
-STR_ERROR_GROUP_CAN_T_RENAME                                    :{WHITE}Methu ailenwi'r grŵp...
-STR_ERROR_GROUP_CAN_T_SET_PARENT                                :{WHITE}Methu gosod grŵp rhiant...
-STR_ERROR_GROUP_CAN_T_SET_PARENT_RECURSION                      :{WHITE}... ni chaniateir lwpiau yn y grŵp hierarchaeth
+STR_ERROR_GROUP_CAN_T_RENAME                                    :Methu ailenwi'r grŵp...
+STR_ERROR_GROUP_CAN_T_SET_PARENT                                :Methu gosod grŵp rhiant...
+STR_ERROR_GROUP_CAN_T_SET_PARENT_RECURSION                      :ni chaniateir lwpiau yn y grŵp hierarchaeth
 STR_ERROR_GROUP_CAN_T_REMOVE_ALL_VEHICLES                       :Methu dileu pob cerbyd o'r grŵp hwn...
 STR_ERROR_GROUP_CAN_T_ADD_VEHICLE                               :Methu ychawnegu'r cerbyd i'r grŵp hwn...
 STR_ERROR_GROUP_CAN_T_ADD_SHARED_VEHICLE                        :Methu ychwanegu cerbydau a rennir i'r grŵp...
@@ -5385,7 +5393,7 @@ STR_ERROR_AIRCRAFT_IN_THE_WAY                                   :awyren yn y ffo
 STR_ERROR_RAIL_VEHICLE_NOT_AVAILABLE                            :{WHITE}Nid yw'r cerbyd ar gael
 STR_ERROR_ROAD_VEHICLE_NOT_AVAILABLE                            :{WHITE}Nid yw'r cerbyd ar gael
 STR_ERROR_SHIP_NOT_AVAILABLE                                    :{WHITE}Nid yw'r llong ar gael
-STR_ERROR_AIRCRAFT_NOT_AVAILABLE                                :{WHITE}Nid yw'r awyren ar gael
+STR_ERROR_AIRCRAFT_NOT_AVAILABLE                                :nid yw'r awyren ar gael
 
 ###length VEHICLE_TYPES
 STR_ERROR_CAN_T_REFIT_TRAIN                                     :Methu ailffitio trên...
@@ -5394,9 +5402,9 @@ STR_ERROR_CAN_T_REFIT_SHIP                                      :Methu ailffitio
 STR_ERROR_CAN_T_REFIT_AIRCRAFT                                  :Methu ailffitio awyren...
 
 ###length VEHICLE_TYPES
-STR_ERROR_CAN_T_RENAME_TRAIN                                    :{WHITE}Methu enwi trên...
+STR_ERROR_CAN_T_RENAME_TRAIN                                    :Methu enwi trên...
 STR_ERROR_CAN_T_RENAME_ROAD_VEHICLE                             :Methu enwi cerbyd ffordd...
-STR_ERROR_CAN_T_RENAME_SHIP                                     :{WHITE}Methu enwi llong...
+STR_ERROR_CAN_T_RENAME_SHIP                                     :Methu enwi llong...
 STR_ERROR_CAN_T_RENAME_AIRCRAFT                                 :Methu enwi awyren...
 
 ###length VEHICLE_TYPES
@@ -5418,22 +5426,22 @@ STR_ERROR_CAN_T_BUY_SHIP                                        :Methu prynnu ll
 STR_ERROR_CAN_T_BUY_AIRCRAFT                                    :Methu prynnu awyren...
 
 ###length VEHICLE_TYPES
-STR_ERROR_CAN_T_RENAME_TRAIN_TYPE                               :{WHITE}Methu ailenwi math y cerbyd trên...
+STR_ERROR_CAN_T_RENAME_TRAIN_TYPE                               :Methu ailenwi math y cerbyd trên...
 STR_ERROR_CAN_T_RENAME_ROAD_VEHICLE_TYPE                        :Methu ailenwi cerbyd ffordd...
-STR_ERROR_CAN_T_RENAME_SHIP_TYPE                                :{WHITE}Methu ailenwi math llong...
+STR_ERROR_CAN_T_RENAME_SHIP_TYPE                                :Methu ailenwi math llong...
 STR_ERROR_CAN_T_RENAME_AIRCRAFT_TYPE                            :Methu ailenwi'r math awyren...
 
 ###length VEHICLE_TYPES
-STR_ERROR_CAN_T_SELL_TRAIN                                      :{WHITE}Methu gwerthu cerbyd rheilffordd...
-STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :{WHITE}Methu gwerthu cerbyd ffordd...
-STR_ERROR_CAN_T_SELL_SHIP                                       :{WHITE}Methu gwerthu llong...
-STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :{WHITE}methu gwerthu awyren...
+STR_ERROR_CAN_T_SELL_TRAIN                                      :Methu gwerthu cerbyd rheilffordd...
+STR_ERROR_CAN_T_SELL_ROAD_VEHICLE                               :Methu gwerthu cerbyd ffordd...
+STR_ERROR_CAN_T_SELL_SHIP                                       :Methu gwerthu llong...
+STR_ERROR_CAN_T_SELL_AIRCRAFT                                   :Methu gwerthu awyren...
 
 ###length VEHICLE_TYPES
-STR_ERROR_CAN_T_SELL_ALL_TRAIN                                  :{WHITE}Methu gwerthu pob cerbyd rheilffordd...
-STR_ERROR_CAN_T_SELL_ALL_ROAD_VEHICLE                           :{WHITE}Methu gwerthu pob cerbyd ffordd...
-STR_ERROR_CAN_T_SELL_ALL_SHIP                                   :{WHITE}Methu gwerthu pob llong...
-STR_ERROR_CAN_T_SELL_ALL_AIRCRAFT                               :{WHITE}Methu gwerthu pob awyren...
+STR_ERROR_CAN_T_SELL_ALL_TRAIN                                  :Methu gwerthu pob cerbyd rheilffordd...
+STR_ERROR_CAN_T_SELL_ALL_ROAD_VEHICLE                           :Methu gwerthu pob cerbyd ffordd...
+STR_ERROR_CAN_T_SELL_ALL_SHIP                                   :Methu gwerthu pob llong...
+STR_ERROR_CAN_T_SELL_ALL_AIRCRAFT                               :Methu gwerthu pob awyren...
 
 ###length VEHICLE_TYPES
 STR_ERROR_CAN_T_AUTOREPLACE_TRAIN                               :Methu awtodisodli cerbydau rheilffordd...
@@ -5441,15 +5449,15 @@ STR_ERROR_CAN_T_AUTOREPLACE_ROAD_VEHICLE                        :Methu awtodisod
 STR_ERROR_CAN_T_AUTOREPLACE_SHIP                                :Methu awtodisodli llongau...
 STR_ERROR_CAN_T_AUTOREPLACE_AIRCRAFT                            :Methu awtodisodli awyrennau...
 
-STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :{WHITE}Mae gormod o gerbydau yn y gêm
+STR_ERROR_TOO_MANY_VEHICLES_IN_GAME                             :gormod o gerbydau yn y gêm
 STR_ERROR_CAN_T_CHANGE_SERVICING                                :Methu newid y cyfnod rhwng gwasanaethu...
 
-STR_ERROR_VEHICLE_IS_DESTROYED                                  :{WHITE}... cerbyd wedi ei ddinistrio
+STR_ERROR_VEHICLE_IS_DESTROYED                                  :cerbyd wedi ei ddinistrio
 
-STR_ERROR_CAN_T_CLONE_VEHICLE_LIST                              :{WHITE}... nid yw bob cerbyd yn unfath
+STR_ERROR_CAN_T_CLONE_VEHICLE_LIST                              :nid yw bob cerbyd yn unfath
 
-STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :{WHITE}Ni fydd cerbydau ar gael o gwbl
-STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :{WHITE}Newid eich ffurfweddiad NewGRF
+STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL                          :Ni fydd cerbydau ar gael o gwbl
+STR_ERROR_NO_VEHICLES_AVAILABLE_AT_ALL_EXPLANATION              :Newidiwch eich ffurfweddiad NewGRF
 STR_ERROR_NO_VEHICLES_AVAILABLE_YET                             :{WHITE}Dim cerbydau ar gael eto
 STR_ERROR_NO_VEHICLES_AVAILABLE_YET_EXPLANATION                 :{WHITE}Dechreuwch gêm newydd wedi {DATE_SHORT} neu defnyddiwch NewGRF sy'n darparu cerbydau cynnar
 
@@ -5469,11 +5477,11 @@ STR_ERROR_AIRCRAFT_IS_IN_FLIGHT                                 :mae'r awyren yn
 
 # Order related errors
 STR_ERROR_NO_MORE_SPACE_FOR_ORDERS                              :{WHITE}Dim mwy o le ar gyfer gorchmynion
-STR_ERROR_TOO_MANY_ORDERS                                       :{WHITE}Gormod o orchmynion
+STR_ERROR_TOO_MANY_ORDERS                                       :gormod o orchmynion
 STR_ERROR_CAN_T_INSERT_NEW_ORDER                                :Methu ychwanegu gorchymyn newydd...
 STR_ERROR_CAN_T_DELETE_THIS_ORDER                               :{WHITE}Methu dileu'r gorchymyn hwn...
 STR_ERROR_CAN_T_MODIFY_THIS_ORDER                               :Methu newid y gorchymyn hwn...
-STR_ERROR_CAN_T_MOVE_THIS_ORDER                                 :{WHITE}Methu symud y gorchymyn hwn...
+STR_ERROR_CAN_T_MOVE_THIS_ORDER                                 :Methu symud y gorchymyn hwn...
 STR_ERROR_CAN_T_SKIP_ORDER                                      :Methu hepgor y gorchymyn cyfredol...
 STR_ERROR_CAN_T_SKIP_TO_ORDER                                   :Does dim modd hepgor i'r gorchymyn a ddewiswyd...
 STR_ERROR_CAN_T_COPY_SHARE_ORDER                                :{WHITE}... ni all y cerbyd fynd i bob gorsaf
@@ -5486,7 +5494,7 @@ STR_ERROR_CAN_T_SHARE_ORDER_LIST                                :{WHITE}Does dim
 STR_ERROR_CAN_T_STOP_SHARING_ORDER_LIST                         :{WHITE}Methu rhoi'r gorau i rannu rhestr gorchmynion...
 STR_ERROR_CAN_T_COPY_ORDER_LIST                                 :{WHITE}Does dim modd copïo'r rhestr gorchmynion...
 STR_ERROR_TOO_FAR_FROM_PREVIOUS_DESTINATION                     :... rhy bell o'r gyrchfan blaenorol
-STR_ERROR_AIRCRAFT_NOT_ENOUGH_RANGE                             :{WHITE}... nid yw o fewn cyrraedd yr awyren
+STR_ERROR_AIRCRAFT_NOT_ENOUGH_RANGE                             :nid yw o fewn cyrraedd yr awyren
 
 # Extra messages which go on the third line of errors, explaining why orders failed
 STR_ERROR_NO_RAIL_STATION                                       :{WHITE}Nid oes gorsaf rheilffordd
@@ -5497,8 +5505,8 @@ STR_ERROR_NO_AIRPORT                                            :{WHITE}Nid oes 
 STR_ERROR_NO_STOP_COMPATIBLE_ROAD_TYPE                          :Nid oes gorsafoedd gyda math ffordd cydnaws
 STR_ERROR_NO_STOP_COMPATIBLE_TRAM_TYPE                          :Nid oes gorsafoedd gyda math tram cydnaws
 STR_ERROR_NO_STOP_ARTICULATED_VEHICLE                           :{WHITE}Nid oes arosfannau addas ar gyfer cerbydau cymalog.{}Mae cerbydau ffordd cymalog angen arosfan gyrru-trwodd, nid arosfan trol'n ôl
-STR_ERROR_AIRPORT_NO_PLANES                                     :{WHITE}Nid yw'r awyren yma'n gallu glanio yn yr hofrenfa yma
-STR_ERROR_AIRPORT_NO_HELICOPTERS                                :{WHITE}Nid yw'r hofrennydd yma'n gallu glanio yn y maes awyr yma
+STR_ERROR_AIRPORT_NO_PLANES                                     :Nid yw'r awyren yma'n gallu glanio yn yr hofrenfa yma
+STR_ERROR_AIRPORT_NO_HELICOPTERS                                :Nid yw'r hofrennydd yma'n gallu glanio yn y maes awyr yma
 STR_ERROR_NO_RAIL_WAYPOINT                                      :{WHITE}Nid oes pwynt llwybro rheilffordd
 STR_ERROR_NO_ROAD_WAYPOINT                                      :{WHITE}Nid oes pwynt llwybro ffordd
 STR_ERROR_NO_BUOY                                               :{WHITE}Nid oes bwi
@@ -5511,7 +5519,7 @@ STR_ERROR_TIMETABLE_INCOMPLETE                                  :{WHITE}... amse
 STR_ERROR_TIMETABLE_NOT_STARTED                                 :{WHITE}... amserlen heb ddechrau eto
 
 # Sign related errors
-STR_ERROR_TOO_MANY_SIGNS                                        :{WHITE}... gormod o arwyddion
+STR_ERROR_TOO_MANY_SIGNS                                        :gormod o arwyddion
 STR_ERROR_CAN_T_PLACE_SIGN_HERE                                 :Methu gosod arwydd yma...
 STR_ERROR_CAN_T_CHANGE_SIGN_NAME                                :Methu newid enw arwydd...
 STR_ERROR_CAN_T_DELETE_SIGN                                     :{WHITE}Methu dileu arwydd...

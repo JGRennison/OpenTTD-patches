@@ -1299,7 +1299,6 @@ STR_CONFIG_SETTING_CATCHMENT                                    :Dovoli bolj res
 STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Postaje in letališča različnih tipov imajo različna področja zajema
 
 
-
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Dovoli odstanitev mestnih cest in mostov: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Poenostavi odstranitev infrastrukture in zgradb v lasti mesta
 
@@ -2018,7 +2017,7 @@ STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... igno
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... ignoriran osnovni zvočni set '{STRING}': ni najden
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... ignoriran osnovni glasbeni set '{STRING}': ni najden
 
-# Video initalization errors
+# Video initialization errors
 
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}

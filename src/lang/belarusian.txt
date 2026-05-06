@@ -1643,7 +1643,6 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Мець роз
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Прадпрыемствы з уласнымі станцыямі выкарыстоўваюць станцыі гульцоў: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Пры ўключэнні - прадпрыемствы, якія маюць уласныя станцыі пагрузкі (напрыклад, нафтавыя платформы), змогуць абслугоўвацца таксама і станцыямі гульцоў, пабудаванымі паблізу.{}Пры адключэнні - прадпрыемствы будуць рабіць пагрузку толькі праз свае ўнутраныя станцыі, і гэтыя станцыі будуць абслугоўваць толькі сваё прадпрыемства.
 
-
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Дазволіць знос амаль усіх гарадзкіх аб'ектаў: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Спрасьціць знос гарадзкіх будынкаў ды інфраструктуры
 
@@ -2474,7 +2473,7 @@ STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... на
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... набор гукаў "{STRING}" ня знойдзены
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... набор музыкі "{STRING}" ня знойдзены
 
-# Video initalization errors
+# Video initialization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Памылка ў наладках графікі...
 STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... не знойдзена сумяшчальнага графічнага працэсара. Апаратнае паскарэньне адключана.
 STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :{WHITE}... драйвер відэакарты выклікаў крытычную памылку. Апаратнае паскарэньне адключана.

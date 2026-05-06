@@ -1382,7 +1382,6 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Erityyppisillä
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Yhtiöiden asemat voivat palvella laitoksia, joilla on omat asemat: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Mikäli käytössä, asemilla valmiiksi varustettuja teollisuuslaitoksia (kuten öljynporauslauttoja) voivat palvella myös yhtiöiden lähistölle rakentamat asemat. Mikäli pois käytöstä, tällaisia laitoksia voivat palvella vain niiden omat asemat. Lähistöllä olevat yhtiöiden asemat eivät tällöin voi palvella näitä laitoksia, eivätkä laitosten asemat palvele muita kuin näitä laitoksia
 
-
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Kunnan omistamien teiden, siltojen ja tunneleiden raivaaminen sallittu: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Tekee kuntien omistaman infrastruktuurin ja rakennusten tuhoamisesta helpompaa
 
@@ -2237,7 +2236,7 @@ STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :ohitetaan perus
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :ohitetaan perusäänipaketti ”{STRING}”: ei löydy
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :ohitetaan perusmusiikkipaketti ”{STRING}”: ei löydetty
 
-# Video initalization errors
+# Video initialization errors
 STR_VIDEO_DRIVER_ERROR                                          :Virhe näyttöasetuksissa…
 STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :yhteensopivaa grafiikkasuoritinta ei löytynyt. Laitteistokiihdytys on poistettu käytöstä
 STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :Näytönohjaimen ajuri kaatoi pelin. Laitteistokiihdytys on poistettu käytöstä

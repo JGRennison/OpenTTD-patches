@@ -1106,7 +1106,6 @@ STR_CONFIG_SETTING_CATCHMENT                                    :Benarkan kawasa
 STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Mempunyai kawasan tadahan yang berbeza saiz untuk jenis stesen dan lapangan terbang
 
 
-
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Benarkan lebih pemusnahan jalanraya, jambatan, dan sbgnya yang dimiliki bandar: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Jadikan lebih mudah untuk menghapuskan infrastruktur dan bangunan milik bandaran
 
@@ -1635,7 +1634,7 @@ STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE} ... aba
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE} ... abaikan set bunyi Base '{STRING}': tidak ditemui
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE} ... abaikan set grafik Base '{STRING}': tidak ditemui
 
-# Video initalization errors
+# Video initialization errors
 
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}OpenTTD {REV}

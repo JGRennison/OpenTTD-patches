@@ -1762,7 +1762,6 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Używaj różny
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Stacje firmowe mogą obsługiwać przedsiębiorstwa z dołączonymi stacjami neutralnymi: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Jeśli włączone, przedsiębiorstwa z dołączonymi stacjami (takie jak platformy wiertnicze) mogą być obsługiwane także przez stacje firmowe znajdujące się w pobliżu. Jeśli wyłączone, przedsiębiorstwa te mogą być obsługiwane wyłącznie przez dołączone do nich stacje. Żadne pobliskie stacje firmowe nie będą mogły ich obsługiwać, a ponadto dołączone stacje nie będą obsługiwały niczego innego poza ich przedsiębiorstwem
 
-
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Pozwól usuwać drogi, mosty, tunele, itp. należące do miasta: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Ułatwiaj usuwanie infrastruktury i budynków należących do miast
 
@@ -2617,7 +2616,7 @@ STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :ignorowanie pod
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :ignorowanie podstawowego zestawu dźwięków „{STRING}”: nie odnaleziono
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :ignorowanie podstawowego zestawu muzyki „{STRING}”: nie odnaleziono
 
-# Video initalization errors
+# Video initialization errors
 STR_VIDEO_DRIVER_ERROR                                          :Błąd w ustawieniach obrazu...
 STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :nie znaleziono kompatybilnego procesora graficznego. Przyspieszenie sprzętowe wyłączone.
 STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :sterownik GPU spowodował awarię gry. Wyłączono przyspieszenie sprzętowe
@@ -5335,7 +5334,7 @@ STR_AI_DEBUG_SELECT_AI_TOOLTIP                                  :{BLACK}Pokaż o
 STR_AI_GAME_SCRIPT                                              :{BLACK}Game Script
 STR_AI_GAME_SCRIPT_TOOLTIP                                      :{BLACK}Sprawdź log tego Game Script. Użyj Ctrl, aby otworzyć w nowym oknie
 
-STR_ERROR_AI_NO_AI_FOUND                                        :Nie znaleziono SI do wczytania.{}SI jest nieaktywne i nic nie robi.{}Możesz pobrać kilka SI z przeglądarki „Dodatków Online”
+STR_ERROR_AI_NO_AI_FOUND                                        :Brak odpowiedniej SI do załadowania.{}Obecna SI jest tylko symboliczna i nie wykonuje żadnych czynności.{}Możesz pobrać SI z „Przeglądarki Dodatków”
 STR_ERROR_AI_PLEASE_REPORT_CRASH                                :Jeden z uruchomionych skryptów przestał działać. Prosimy o zgłoszenie tego autorowi skryptu dołączając zrzut obrazu okna debugowania SI / GameScript
 STR_ERROR_AI_DEBUG_SERVER_ONLY                                  :{YELLOW}Okno debugowania SI / Game Script jest dostępne tylko dla serwera
 
@@ -5466,7 +5465,7 @@ STR_WARNING_HEIGHTMAP_SCALE_CAPTION                             :{WHITE}Ostrzeż
 STR_WARNING_HEIGHTMAP_SCALE_MESSAGE                             :{YELLOW}Nie zaleca się zbyt dużej zmiany wielkości mapy źródłowej. Kontynuować tworzenie?
 
 # Soundset messages
-STR_WARNING_FALLBACK_SOUNDSET                                   :{WHITE}Znaleziono tylko podstawowy schemat dźwiękowy. Jeśli chcesz mieć pełny dźwięk, zainstaluj inny schemat dźwiękowy używając menadżera pobierania
+STR_WARNING_FALLBACK_SOUNDSET                                   :{WHITE}Znaleziono jedynie awaryjny zestaw dźwięków. Jeśli chcesz używać dźwięków, zainstaluj zestaw za pomocą przeglądarki dodatków
 
 # Screenshot related messages
 STR_WARNING_SCREENSHOT_SIZE_CAPTION                             :{WHITE}Ogromny zrzut obrazu

@@ -1298,7 +1298,6 @@ STR_CONFIG_SETTING_CATCHMENT_HELPTEXT                           :Gunakan area pe
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES                     :Stasiun perusahaan dapat melayani pabrik dengan stasiun netral terpasang: {STRING}
 STR_CONFIG_SETTING_SERVE_NEUTRAL_INDUSTRIES_HELPTEXT            :Jika diaktifkan, industri dengan stasiun terlampir (seperti Rig Minyak) juga dapat dilayani oleh stasiun milik perusahaan yang dibangun di dekatnya. Saat dinonaktifkan, industri ini hanya dapat dilayani oleh stasiun yang terhubung. Stasiun perusahaan terdekat mana pun tidak akan dapat melayani mereka, dan stasiun terlampir tidak akan melayani hal lain selain industri
 
-
 STR_CONFIG_SETTING_EXTRADYNAMITE                                :Ijinkan menggusur lebih banyak jalan, jembatan, terowongan milik kota, dsb: {STRING}
 STR_CONFIG_SETTING_EXTRADYNAMITE_HELPTEXT                       :Permudah membuang infrasturktur yang dimiliki kota
 
@@ -2115,7 +2114,7 @@ STR_CONFIG_ERROR_INVALID_BASE_GRAPHICS_NOT_FOUND                :{WHITE}... meng
 STR_CONFIG_ERROR_INVALID_BASE_SOUNDS_NOT_FOUND                  :{WHITE}... mengabaikan set suara dasar '{STRING}': tidak ditemukan
 STR_CONFIG_ERROR_INVALID_BASE_MUSIC_NOT_FOUND                   :{WHITE}... mengabaikan set musik dasar '{STRING}': tidak ditemukan
 
-# Video initalization errors
+# Video initialization errors
 STR_VIDEO_DRIVER_ERROR                                          :{WHITE}Kesalahan dengan pengaturan video...
 STR_VIDEO_DRIVER_ERROR_NO_HARDWARE_ACCELERATION                 :{WHITE}... tidak ditemukan GPU yang kompatibel. Akselerasi perangkat keras dinonaktifkan
 STR_VIDEO_DRIVER_ERROR_HARDWARE_ACCELERATION_CRASH              :{WHITE}... Driver GPU membuat game crash. Akselerasi perangkat keras dinonaktifkan

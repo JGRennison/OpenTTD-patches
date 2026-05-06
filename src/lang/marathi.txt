@@ -808,7 +808,6 @@ STR_CONFIG_SETTING_REALISTIC                                    :खरेखु
 
 
 
-
 STR_CONFIG_SETTING_SMOKE_AMOUNT                                 :वाहनांचा धूर/ठिणग्या: {STRING}
 
 
@@ -1055,7 +1054,7 @@ STR_CONFIG_SETTING_STATUSBAR_POS                                :स्टेट
 
 # Config errors
 
-# Video initalization errors
+# Video initialization errors
 
 # Intro window
 STR_INTRO_CAPTION                                               :{WHITE}ओपेन टीटीडी {REV}
