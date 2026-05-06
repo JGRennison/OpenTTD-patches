@@ -270,7 +270,7 @@ static CommandCost ClearTile_Object(TileIndex tile, DoCommandFlags flags);
  */
 CommandCost CmdBuildObject(DoCommandFlags flags, TileIndex tile, ObjectType type, uint8_t view)
 {
-	CommandCost cost(EXPENSES_CONSTRUCTION);
+	CommandCost cost(ExpensesType::Construction);
 
 	if (type >= ObjectSpec::Count()) return CMD_ERROR;
 	const ObjectSpec *spec = ObjectSpec::Get(type);
@@ -466,7 +466,7 @@ CommandCost CmdPurchaseLandArea(DoCommandFlags flags, TileIndex tile, TileIndex 
 	if (_settings_game.construction.purchase_land_permitted != 2) return CommandCost(STR_PURCHASE_LAND_NOT_PERMITTED_BULK);
 
 	Money money = GetAvailableMoneyForCommand();
-	CommandCost cost(EXPENSES_CONSTRUCTION);
+	CommandCost cost(ExpensesType::Construction);
 	CommandCost last_error = CMD_ERROR;
 	bool had_success = false;
 
@@ -525,7 +525,7 @@ CommandCost CmdBuildObjectArea(DoCommandFlags flags, TileIndex tile, TileIndex s
 	if (spec->size != 0x11) return CMD_ERROR;
 
 	Money money = GetAvailableMoneyForCommand();
-	CommandCost cost(EXPENSES_CONSTRUCTION);
+	CommandCost cost(ExpensesType::Construction);
 	CommandCost last_error = CMD_ERROR;
 	bool had_success = false;
 
@@ -744,7 +744,7 @@ static CommandCost ClearTile_Object(TileIndex tile, DoCommandFlags flags)
 	ObjectType type = o->type;
 	const ObjectSpec *spec = ObjectSpec::Get(type);
 
-	CommandCost cost(EXPENSES_CONSTRUCTION, spec->GetClearCost() * ta.w * ta.h / 5);
+	CommandCost cost(ExpensesType::Construction, spec->GetClearCost() * ta.w * ta.h / 5);
 	if (spec->flags.Test(ObjectFlag::ClearIncome)) cost.MultiplyCost(-1); // They get an income!
 
 	/* Towns can't remove any objects. */
@@ -795,7 +795,7 @@ static CommandCost ClearTile_Object(TileIndex tile, DoCommandFlags flags)
 			}
 
 			/* cost of relocating company is 1% of company value */
-			cost = CommandCost(EXPENSES_CONSTRUCTION, CalculateCompanyValue(c) / 100);
+			cost = CommandCost(ExpensesType::Construction, CalculateCompanyValue(c) / 100);
 			break;
 		}
 
@@ -1344,12 +1344,12 @@ static CommandCost TerraformTile_Object(TileIndex tile, DoCommandFlags flags, in
 				uint16_t res = GetObjectCallback(CBID_OBJECT_AUTOSLOPE, 0, 0, spec, Object::GetByTile(tile), tile);
 				if (res == CALLBACK_FAILED || !ConvertBooleanCallback(spec->grf_prop.grffile, CBID_OBJECT_AUTOSLOPE, res)) {
 					pre_success_checks();
-					return CommandCost(EXPENSES_CONSTRUCTION, _price[Price::BuildFoundation]);
+					return CommandCost(ExpensesType::Construction, _price[Price::BuildFoundation]);
 				}
 			} else if (spec->IsEnabled()) {
 				/* allow autoslope */
 				pre_success_checks();
-				return CommandCost(EXPENSES_CONSTRUCTION, _price[Price::BuildFoundation]);
+				return CommandCost(ExpensesType::Construction, _price[Price::BuildFoundation]);
 			}
 		}
 	}

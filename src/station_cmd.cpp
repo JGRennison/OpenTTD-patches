@@ -966,7 +966,7 @@ CommandCost CheckBuildableTile(TileIndex tile, DiagDirections invalid_dirs, int 
 		return CommandCost(STR_ERROR_FLAT_LAND_REQUIRED);
 	}
 
-	CommandCost cost(EXPENSES_CONSTRUCTION);
+	CommandCost cost(ExpensesType::Construction);
 	int flat_z = z + GetSlopeMaxZ(tileh);
 	if (tileh != SLOPE_FLAT) {
 		/* Forbid building if the tile faces a slope in a invalid direction. */
@@ -1130,7 +1130,7 @@ CommandCost IsDockBridgeAboveOK(TileIndex tile, TileIndex northern_bridge_end, T
  */
 static CommandCost CheckFlatLandRailStation(TileArea tile_area, DoCommandFlags flags, Axis axis, StationID *station, RailType rt, std::vector<Train *> &affected_vehicles, StationClassID spec_class, uint16_t spec_index, uint8_t plat_len, uint8_t numtracks)
 {
-	CommandCost cost(EXPENSES_CONSTRUCTION);
+	CommandCost cost(ExpensesType::Construction);
 	int allowed_z = -1;
 	DiagDirections invalid_dirs = AxisToDiagDirs(axis);
 
@@ -1222,7 +1222,7 @@ static CommandCost CheckFlatLandRailStation(TileArea tile_area, DoCommandFlags f
  */
 CommandCost CheckFlatLandRoadStop(TileArea tile_area, const RoadStopSpec *spec, DoCommandFlags flags, DiagDirections invalid_dirs, bool is_drive_through, StationType station_type, Axis axis, StationID *station, RoadType rt, bool require_road)
 {
-	CommandCost cost(EXPENSES_CONSTRUCTION);
+	CommandCost cost(ExpensesType::Construction);
 	int allowed_z = -1;
 
 	for (TileIndex cur_tile : tile_area) {
@@ -1343,7 +1343,7 @@ CommandCost CheckFlatLandRoadStop(TileArea tile_area, const RoadStopSpec *spec, 
  */
 static CommandCost CheckFlatLandAirport(AirportTileTableIterator tile_iter, DoCommandFlags flags, StationID *station)
 {
-	CommandCost cost(EXPENSES_CONSTRUCTION);
+	CommandCost cost(ExpensesType::Construction);
 	int allowed_z = -1;
 
 	for (; tile_iter != INVALID_TILE; ++tile_iter) {
@@ -1935,7 +1935,7 @@ CommandCost RemoveFromRailBaseStation(TileArea ta, std::vector<T *> &affected_st
 {
 	/* Count of the number of tiles removed */
 	int quantity = 0;
-	CommandCost total_cost(EXPENSES_CONSTRUCTION);
+	CommandCost total_cost(ExpensesType::Construction);
 	/* Accumulator for the errors seen during clearing. If no errors happen,
 	 * and the quantity is 0 there is no station. Otherwise it will be one
 	 * of the other error that got accumulated. */
@@ -2110,7 +2110,7 @@ CommandCost RemoveRailStation(T *st, DoCommandFlags flags, Money removal_cost)
 
 	assert(ta.w != 0 && ta.h != 0);
 
-	CommandCost cost(EXPENSES_CONSTRUCTION);
+	CommandCost cost(ExpensesType::Construction);
 	/* clear all areas of the station */
 	for (TileIndex tile : ta) {
 		/* only remove tiles that are actually train station tiles */
@@ -2268,7 +2268,7 @@ CommandCost CmdBuildRoadStop(DoCommandFlags flags, TileIndex tile, uint8_t width
 	} else {
 		unit_cost = _price[is_truck_stop ? Price::BuildStationTruck : Price::BuildStationBus];
 	}
-	CommandCost cost(EXPENSES_CONSTRUCTION, roadstop_area.w * roadstop_area.h * unit_cost);
+	CommandCost cost(ExpensesType::Construction, roadstop_area.w * roadstop_area.h * unit_cost);
 	StationID est = StationID::Invalid();
 	ret = CheckFlatLandRoadStop(roadstop_area, roadstopspec, flags, is_drive_through ? AxisToDiagDirs(axis) : DiagDirections{ddir}, is_drive_through, station_type, axis, &est, rt, false);
 	if (ret.Failed()) return ret;
@@ -2443,7 +2443,7 @@ CommandCost RemoveRoadWaypointStop(TileIndex tile, DoCommandFlags flags, int rep
 		NotifyRoadLayoutChanged(false);
 	}
 
-	return CommandCost(EXPENSES_CONSTRUCTION, spec != nullptr ? spec->GetClearCost(Price::ClearStationTruck) : _price[Price::ClearStationTruck]);
+	return CommandCost(ExpensesType::Construction, spec != nullptr ? spec->GetClearCost(Price::ClearStationTruck) : _price[Price::ClearStationTruck]);
 }
 
 /**
@@ -2570,7 +2570,7 @@ CommandCost RemoveRoadStop(TileIndex tile, DoCommandFlags flags, int replacement
 	}
 
 	Price category = is_truck ? Price::ClearStationTruck : Price::ClearStationBus;
-	return CommandCost(EXPENSES_CONSTRUCTION, spec != nullptr ? spec->GetClearCost(category) : _price[category]);
+	return CommandCost(ExpensesType::Construction, spec != nullptr ? spec->GetClearCost(category) : _price[category]);
 }
 
 /**
@@ -2583,7 +2583,7 @@ CommandCost RemoveRoadStop(TileIndex tile, DoCommandFlags flags, int replacement
  */
 static CommandCost RemoveGenericRoadStop(DoCommandFlags flags, const TileArea &roadstop_area, bool road_waypoint, bool remove_road)
 {
-	CommandCost cost(EXPENSES_CONSTRUCTION);
+	CommandCost cost(ExpensesType::Construction);
 	CommandCost last_error(STR_ERROR_THERE_IS_NO_STATION);
 	bool had_success = false;
 
@@ -2797,7 +2797,7 @@ static CommandCost CanRemoveAirport(Station *st, DoCommandFlags flags)
 			return CommandCost(STR_ERROR_AIRCRAFT_IN_THE_WAY);
 	}
 
-	CommandCost cost(EXPENSES_CONSTRUCTION);
+	CommandCost cost(ExpensesType::Construction);
 
 	for (TileIndex tile_cur : st->airport) {
 		if (!st->TileBelongsToAirport(tile_cur)) continue;
@@ -3168,7 +3168,7 @@ CommandCost CmdBuildDock(DoCommandFlags flags, TileIndex tile, StationID station
 		if (ret.Failed()) return ret;
 	}
 
-	CommandCost cost(EXPENSES_CONSTRUCTION, _price[Price::BuildStationDock]);
+	CommandCost cost(ExpensesType::Construction, _price[Price::BuildStationDock]);
 	ret = Command<Commands::LandscapeClear>::Do(flags, tile);
 	if (ret.Failed()) return ret;
 	cost.AddCost(ret.GetCost());
@@ -3366,7 +3366,7 @@ static CommandCost RemoveDock(TileIndex tile, DoCommandFlags flags)
 		}
 	}
 
-	return CommandCost(EXPENSES_CONSTRUCTION, _price[Price::ClearStationDock]);
+	return CommandCost(ExpensesType::Construction, _price[Price::ClearStationDock]);
 }
 
 #include "table/station_land.h"
@@ -5498,11 +5498,11 @@ static CommandCost TerraformTile_Station(TileIndex tile, DoCommandFlags flags, i
 				case StationType::RailWaypoint:
 				case StationType::Rail: {
 					if (!AutoslopeCheckForAxis(tile, z_new, tileh_new, GetRailStationAxis(tile))) break;
-					return CommandCost(EXPENSES_CONSTRUCTION, _price[Price::BuildFoundation]);
+					return CommandCost(ExpensesType::Construction, _price[Price::BuildFoundation]);
 				}
 
 				case StationType::Airport:
-					return CommandCost(EXPENSES_CONSTRUCTION, _price[Price::BuildFoundation]);
+					return CommandCost(ExpensesType::Construction, _price[Price::BuildFoundation]);
 
 				case StationType::Truck:
 				case StationType::Bus:
@@ -5512,7 +5512,7 @@ static CommandCost TerraformTile_Station(TileIndex tile, DoCommandFlags flags, i
 					} else {
 						if (!AutoslopeCheckForEntranceEdge(tile, z_new, tileh_new, GetBayRoadStopDir(tile))) break;
 					}
-					return CommandCost(EXPENSES_CONSTRUCTION, _price[Price::BuildFoundation]);
+					return CommandCost(ExpensesType::Construction, _price[Price::BuildFoundation]);
 				}
 
 				default: break;

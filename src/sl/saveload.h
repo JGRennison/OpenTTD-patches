@@ -27,10 +27,10 @@
 #include <type_traits>
 
 /** Save or load result codes. */
-enum SaveOrLoadResult {
-	SL_OK     = 0, ///< completed successfully
-	SL_ERROR  = 1, ///< error that was caught before internal structures were modified
-	SL_REINIT = 2, ///< error that was caught in the middle of updating game state, need to clear it. (can only happen during load)
+enum class SaveLoadResult : uint8_t {
+	Ok, ///< completed successfully
+	Error, ///< error that was caught before internal structures were modified
+	ReInit, ///< error that was caught in the middle of updating game state, need to clear it. (can only happen during load)
 };
 
 /** Deals with the type of the savegame, independent of extension */
@@ -68,15 +68,15 @@ std::string GenerateDefaultSaveName();
 void SetSaveLoadError(StringID str);
 EncodedString GetSaveLoadErrorType();
 EncodedString GetSaveLoadErrorMessage();
-SaveOrLoadResult SaveOrLoad(const std::string &filename, SaveLoadOperation fop, DetailedFileType dft, Subdirectory sb, bool threaded = true, SaveModeFlags flags = SMF_NONE);
+SaveLoadResult SaveOrLoad(const std::string &filename, SaveLoadOperation fop, DetailedFileType dft, Subdirectory sb, bool threaded = true, SaveModeFlags flags = SMF_NONE);
 void WaitTillSaved();
 void ProcessAsyncSaveFinish();
 void DoExitSave();
 
 void DoAutoOrNetsave(FiosNumberedSaveName &counter, bool threaded, FiosNumberedSaveName *lt_counter = nullptr);
 
-SaveOrLoadResult SaveWithFilter(std::shared_ptr<struct SaveFilter> writer, bool threaded, SaveModeFlags flags);
-SaveOrLoadResult LoadWithFilter(std::shared_ptr<struct LoadFilter> reader);
+SaveLoadResult SaveWithFilter(std::shared_ptr<struct SaveFilter> writer, bool threaded, SaveModeFlags flags);
+SaveLoadResult LoadWithFilter(std::shared_ptr<struct LoadFilter> reader);
 bool IsNetworkServerSave();
 bool IsScenarioSave();
 

@@ -49,7 +49,7 @@ static ChangeInfoResult RailVehicleChangeInfo(uint first, uint last, int prop, c
 				}
 
 				switch (tracktype) {
-					case 0: _gted[e->index].railtypelabels.push_back(rvi->engclass >= 2 ? RAILTYPE_LABEL_ELECTRIC : RAILTYPE_LABEL_RAIL); break;
+					case 0: _gted[e->index].railtypelabels.push_back(rvi->engclass >= EngineClass::Electric ? RAILTYPE_LABEL_ELECTRIC : RAILTYPE_LABEL_RAIL); break;
 					case 1: _gted[e->index].railtypelabels.push_back(RAILTYPE_LABEL_MONO); break;
 					case 2: _gted[e->index].railtypelabels.push_back(RAILTYPE_LABEL_MAGLEV); break;
 					default:
@@ -78,11 +78,11 @@ static ChangeInfoResult RailVehicleChangeInfo(uint first, uint last, int prop, c
 
 				/* Set engine / wagon state based on power */
 				if (rvi->power != 0) {
-					if (rvi->railveh_type == RAILVEH_WAGON) {
-						rvi->railveh_type = RAILVEH_SINGLEHEAD;
+					if (rvi->railveh_type == RailVehicleType::Wagon) {
+						rvi->railveh_type = RailVehicleType::Singlehead;
 					}
 				} else {
-					rvi->railveh_type = RAILVEH_WAGON;
+					rvi->railveh_type = RailVehicleType::Wagon;
 				}
 				break;
 
@@ -115,10 +115,10 @@ static ChangeInfoResult RailVehicleChangeInfo(uint first, uint last, int prop, c
 				uint8_t dual = buf.ReadByte();
 
 				if (dual != 0) {
-					rvi->railveh_type = RAILVEH_MULTIHEAD;
+					rvi->railveh_type = RailVehicleType::Multihead;
 				} else {
 					rvi->railveh_type = rvi->power == 0 ?
-						RAILVEH_WAGON : RAILVEH_SINGLEHEAD;
+						RailVehicleType::Wagon : RailVehicleType::Singlehead;
 				}
 				break;
 			}
@@ -168,15 +168,15 @@ static ChangeInfoResult RailVehicleChangeInfo(uint first, uint last, int prop, c
 				EngineClass engclass;
 
 				if (traction <= 0x07) {
-					engclass = EC_STEAM;
+					engclass = EngineClass::Steam;
 				} else if (traction <= 0x27) {
-					engclass = EC_DIESEL;
+					engclass = EngineClass::Diesel;
 				} else if (traction <= 0x31) {
-					engclass = EC_ELECTRIC;
+					engclass = EngineClass::Electric;
 				} else if (traction <= 0x37) {
-					engclass = EC_MONORAIL;
+					engclass = EngineClass::Monorail;
 				} else if (traction <= 0x41) {
-					engclass = EC_MAGLEV;
+					engclass = EngineClass::Maglev;
 				} else {
 					break;
 				}
@@ -184,8 +184,8 @@ static ChangeInfoResult RailVehicleChangeInfo(uint first, uint last, int prop, c
 				if (_cur_gps.grffile->railtype_list.empty() && !_gted[e->index].railtypelabels.empty()) {
 					/* Use traction type to select between normal and electrified
 					 * rail only when no translation list is in place. */
-					if (_gted[e->index].railtypelabels[0] == RAILTYPE_LABEL_RAIL && engclass >= EC_ELECTRIC) _gted[e->index].railtypelabels[0] = RAILTYPE_LABEL_ELECTRIC;
-					if (_gted[e->index].railtypelabels[0] == RAILTYPE_LABEL_ELECTRIC && engclass < EC_ELECTRIC) _gted[e->index].railtypelabels[0] = RAILTYPE_LABEL_RAIL;
+					if (_gted[e->index].railtypelabels[0] == RAILTYPE_LABEL_RAIL && engclass >= EngineClass::Electric) _gted[e->index].railtypelabels[0] = RAILTYPE_LABEL_ELECTRIC;
+					if (_gted[e->index].railtypelabels[0] == RAILTYPE_LABEL_ELECTRIC && engclass < EngineClass::Electric) _gted[e->index].railtypelabels[0] = RAILTYPE_LABEL_RAIL;
 				}
 
 				rvi->engclass = engclass;

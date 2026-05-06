@@ -2973,11 +2973,12 @@ bool AfterLoadGame()
 			// MemMoveT(&c->yearly_expenses[2][0], &c->yearly_expenses[1][11], 13);
 			// MemMoveT(&c->yearly_expenses[1][0], &c->yearly_expenses[0][13], 13);
 			// The below are equivalent to the MemMoveT calls above
-			std::copy_backward(&c->yearly_expenses[1][11], &c->yearly_expenses[1][11] + 13, &c->yearly_expenses[2][0] + 13);
-			std::copy_backward(&c->yearly_expenses[0][13], &c->yearly_expenses[0][13] + 13, &c->yearly_expenses[1][0] + 13);
+			auto cast = [](uint val) constexpr -> ExpensesType { return static_cast<ExpensesType>(val); };
+			std::copy_backward(&c->yearly_expenses[1][cast(11)], &c->yearly_expenses[1][cast(11)] + 13, &c->yearly_expenses[2][cast(0)] + 13);
+			std::copy_backward(&c->yearly_expenses[0][cast(13)], &c->yearly_expenses[0][cast(13)] + 13, &c->yearly_expenses[1][cast(0)] + 13);
 			/* Clear the old location of just-moved data, so sharing income/expenses is set to 0 */
-			std::fill_n(&c->yearly_expenses[0][13], 2, 0);
-			std::fill_n(&c->yearly_expenses[1][13], 2, 0);
+			std::fill_n(&c->yearly_expenses[0][cast(13)], 2, 0);
+			std::fill_n(&c->yearly_expenses[1][cast(13)], 2, 0);
 		}
 	}
 
@@ -4583,6 +4584,15 @@ bool AfterLoadGame()
 				check_signal(TRACK_LOWER);
 				check_signal(TRACK_UPPER);
 			}
+		}
+	}
+
+	if (!IsSavegameVersionBefore(SLV_STATIONS_UNDER_BRIDGES) && IsSavegameVersionBeforeOrAt(SLV_DRIVE_BACKWARDS)) {
+		/* Default waypoints were built with an incorrect layout that prevents building bridges over them. */
+		for (TileIndex tile(0); tile < map_size; tile++) {
+			if (!IsRailWaypointTile(tile)) continue; // Not a waypoint.
+			if (GetCustomStationSpecIndex(tile) > 0) continue; // Not a default waypoint.
+			SetStationGfx(tile, GetStationGfx(tile) & 1);
 		}
 	}
 

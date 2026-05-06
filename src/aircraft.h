@@ -93,7 +93,7 @@ struct Aircraft final : public SpecializedVehicle<Aircraft, VehicleType::Aircraf
 
 	void MarkDirty() override;
 	void UpdateDeltaXY() override;
-	ExpensesType GetExpenseType(bool income) const override { return income ? EXPENSES_AIRCRAFT_REVENUE : EXPENSES_AIRCRAFT_RUN; }
+	ExpensesType GetExpenseType(bool income) const override { return income ? ExpensesType::AircraftRevenue : ExpensesType::AircraftRun; }
 	bool IsPrimaryVehicle() const override                  { return this->IsNormalAircraft(); }
 	void GetImage(Direction direction, EngineImageType image_type, VehicleSpriteSeq *result) const override;
 	Direction GetMapImageDirection() const { return this->First()->direction; }

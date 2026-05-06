@@ -134,7 +134,7 @@ static CommandCost TerraformTileHeight(TerraformerState *ts, TileIndex tile, int
 	/* Store the height modification */
 	TerraformSetHeightOfTile(ts, tile, height);
 
-	CommandCost total_cost(EXPENSES_CONSTRUCTION);
+	CommandCost total_cost(ExpensesType::Construction);
 
 	/* Increment cost */
 	total_cost.AddCost(_price[Price::Terraform]);
@@ -173,7 +173,7 @@ static CommandCost TerraformTileHeight(TerraformerState *ts, TileIndex tile, int
  */
 CommandCost CmdTerraformLand(DoCommandFlags flags, TileIndex tile, Slope slope, bool dir_up)
 {
-	CommandCost total_cost(EXPENSES_CONSTRUCTION);
+	CommandCost total_cost(ExpensesType::Construction);
 	int direction = (dir_up ? 1 : -1);
 	TerraformerState ts;
 
@@ -352,7 +352,7 @@ CommandCost CmdLevelLand(DoCommandFlags flags, TileIndex tile, TileIndex start_t
 	if (h > _settings_game.construction.map_height_limit) return CommandCost((oldh == 0) ? STR_ERROR_ALREADY_AT_SEA_LEVEL : STR_ERROR_TOO_HIGH);
 
 	Money money = GetAvailableMoneyForCommand();
-	CommandCost cost(EXPENSES_CONSTRUCTION);
+	CommandCost cost(ExpensesType::Construction);
 	CommandCost last_error(lm == LM_LEVEL ? STR_ERROR_ALREADY_LEVELLED : INVALID_STRING_ID);
 	bool had_success = false;
 

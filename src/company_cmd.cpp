@@ -185,8 +185,8 @@ void SetLocalCompany(CompanyID new_company)
  */
 TextColour GetDrawStringCompanyColour(CompanyID company)
 {
-	if (!Company::IsValidID(company)) return GetColourGradient(Colours::White, SHADE_NORMAL).ToTextColour();
-	return GetColourGradient(_company_colours[company], SHADE_NORMAL).ToTextColour();
+	if (!Company::IsValidID(company)) return GetColourGradient(Colours::White, Shade::Normal).ToTextColour();
+	return GetColourGradient(_company_colours[company], Shade::Normal).ToTextColour();
 }
 
 /**
@@ -317,25 +317,33 @@ bool CheckCompanyHasMoney(CommandCost &cost)
  */
 void SubtractMoneyFromCompany(Company *c, const CommandCost &cost)
 {
+	using ExpensesTypes = EnumBitSet<ExpensesType, uint16_t>;
+	static constexpr ExpensesTypes EXPENSESTYPES_INCOME{
+		ExpensesType::TrainRevenue,
+		ExpensesType::RoadVehRevenue,
+		ExpensesType::AircraftRevenue,
+		ExpensesType::ShipRevenue,
+		ExpensesType::SharingRevenue,
+	};
+	static constexpr ExpensesTypes EXPENSESTYPES_EXPENSES{
+		ExpensesType::TrainRun,
+		ExpensesType::RoadVehRun,
+		ExpensesType::AircraftRun,
+		ExpensesType::ShipRun,
+		ExpensesType::Property,
+		ExpensesType::LoanInterest,
+		ExpensesType::SharingCost,
+	};
+
 	if (cost.GetCost() == 0) return;
-	assert(cost.GetExpensesType() != INVALID_EXPENSES);
+	assert(cost.GetExpensesType() != ExpensesType::Invalid);
 
 	c->money -= cost.GetCost();
 	c->yearly_expenses[0][cost.GetExpensesType()] += cost.GetCost();
 
-	if (HasBit(1 << EXPENSES_TRAIN_REVENUE    |
-	           1 << EXPENSES_ROADVEH_REVENUE  |
-	           1 << EXPENSES_AIRCRAFT_REVENUE |
-	           1 << EXPENSES_SHIP_REVENUE     |
-	           1 << EXPENSES_SHARING_INC, cost.GetExpensesType())) {
+	if (EXPENSESTYPES_INCOME.Test(cost.GetExpensesType())) {
 		c->cur_economy.income -= cost.GetCost();
-	} else if (HasBit(1 << EXPENSES_TRAIN_RUN    |
-	                  1 << EXPENSES_ROADVEH_RUN  |
-	                  1 << EXPENSES_AIRCRAFT_RUN |
-	                  1 << EXPENSES_SHIP_RUN     |
-	                  1 << EXPENSES_PROPERTY     |
-	                  1 << EXPENSES_LOAN_INTEREST |
-	                  1 << EXPENSES_SHARING_COST, cost.GetExpensesType())) {
+	} else if (EXPENSESTYPES_EXPENSES.Test(cost.GetExpensesType())) {
 		c->cur_economy.expenses -= cost.GetCost();
 	}
 
@@ -1092,7 +1100,7 @@ CommandCost CmdCompanyCtrl(DoCommandFlags flags, CompanyCtrlAction cca, CompanyI
 
 			if (!flags.Test(DoCommandFlag::Execute)) return CommandCost();
 
-			SubtractMoneyFromCompany(c, CommandCost(EXPENSES_OTHER, to_merge->current_loan - to_merge->money));
+			SubtractMoneyFromCompany(c, CommandCost(ExpensesType::Other, to_merge->current_loan - to_merge->money));
 
 			Debug(desync, 1, "merge_companies: {}, company_id: {}, merged_company_id: {}", debug_date_dumper().HexDate(), company_id, to_merge_id);
 

@@ -854,7 +854,7 @@ void CrashLog::CloseCrashLogFile(const char *end)
 		format_to_fixed_z::format_to(filename, filename_last, "{}{}.sav", _personal_dir, name);
 
 		/* Don't do a threaded saveload. */
-		return SaveOrLoad(filename, SaveLoadOperation::Save, DetailedFileType::GameFile, Subdirectory::None, false) == SL_OK;
+		return SaveOrLoad(filename, SaveLoadOperation::Save, DetailedFileType::GameFile, Subdirectory::None, false) == SaveLoadResult::Ok;
 	} catch (...) {
 		return false;
 	}
@@ -877,7 +877,7 @@ void CrashLog::CloseCrashLogFile(const char *end)
 	try {
 		format_to_fixed_z::format_to(filename, filename_last, "{}{}.sav", _personal_dir, name);
 
-		return SaveOrLoad(filename, SaveLoadOperation::Save, DetailedFileType::GameFile, Subdirectory::None, true) == SL_OK;
+		return SaveOrLoad(filename, SaveLoadOperation::Save, DetailedFileType::GameFile, Subdirectory::None, true) == SaveLoadResult::Ok;
 	} catch (...) {
 		return false;
 	}

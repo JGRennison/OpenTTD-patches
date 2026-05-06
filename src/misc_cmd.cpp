@@ -74,7 +74,7 @@ CommandCost CmdIncreaseLoan(DoCommandFlags flags, LoanCommand cmd, Money amount)
 		InvalidateCompanyWindows(c);
 	}
 
-	return CommandCost(EXPENSES_OTHER);
+	return CommandCost(ExpensesType::Other);
 }
 
 /**
@@ -240,7 +240,7 @@ CommandCost CmdMoneyCheat(DoCommandFlags flags, Money amount)
 		_cheats.money.been_used = true;
 		SetWindowDirty(WC_CHEATS, 0);
 	}
-	return CommandCost(EXPENSES_OTHER, -amount);
+	return CommandCost(ExpensesType::Other, -amount);
 }
 
 /**
@@ -254,7 +254,7 @@ CommandCost CmdMoneyCheatAdmin(DoCommandFlags flags, Money amount)
 		_cheats.money.been_used = true;
 		SetWindowDirty(WC_CHEATS, 0);
 	}
-	return CommandCost(EXPENSES_OTHER, -amount);
+	return CommandCost(ExpensesType::Other, -amount);
 }
 
 /**
@@ -346,7 +346,7 @@ CommandCost CmdCheatSetting(DoCommandFlags flags, CheatNumbers cheat, uint32_t v
 CommandCost CmdChangeBankBalance(DoCommandFlags flags, TileIndex tile, Money delta, CompanyID company, ExpensesType expenses_type)
 {
 	if (!Company::IsValidID(company)) return CMD_ERROR;
-	if (expenses_type >= EXPENSES_END) return CMD_ERROR;
+	if (expenses_type >= ExpensesType::End) return CMD_ERROR;
 	if (_current_company != OWNER_DEITY) return CMD_ERROR;
 
 	if (flags.Test(DoCommandFlag::Execute)) {
@@ -378,7 +378,7 @@ CommandCost CmdGiveMoney(DoCommandFlags flags, Money money, CompanyID dest_compa
 	if (!_settings_game.economy.give_money) return CMD_ERROR;
 
 	const Company *c = Company::Get(_current_company);
-	CommandCost amount(EXPENSES_OTHER, money);
+	CommandCost amount(ExpensesType::Other, money);
 
 	/* You can only transfer funds that is in excess of your loan */
 	if (c->money - c->current_loan < amount.GetCost() || amount.GetCost() < 0) return CommandCost(STR_ERROR_INSUFFICIENT_FUNDS);
@@ -386,7 +386,7 @@ CommandCost CmdGiveMoney(DoCommandFlags flags, Money money, CompanyID dest_compa
 
 	if (flags.Test(DoCommandFlag::Execute)) {
 		/* Add money to company */
-		SubtractMoneyFromCompany(dest_company, CommandCost(EXPENSES_OTHER, -amount.GetCost()));
+		SubtractMoneyFromCompany(dest_company, CommandCost(ExpensesType::Other, -amount.GetCost()));
 	}
 
 	/* Subtract money from local-company */

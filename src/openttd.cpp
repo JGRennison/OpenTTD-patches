@@ -492,7 +492,7 @@ static void LoadIntroGame(bool load_newgrfs = true)
 	SetupColoursAndInitialWindow();
 
 	/* Load the default opening screen savegame */
-	if (SaveOrLoad("opntitle.dat", SaveLoadOperation::Load, DetailedFileType::GameFile, Subdirectory::Baseset) != SL_OK) {
+	if (SaveOrLoad("opntitle.dat", SaveLoadOperation::Load, DetailedFileType::GameFile, Subdirectory::Baseset) != SaveLoadResult::Ok) {
 		GenerateWorld(GWM_EMPTY, 64, 64); // if failed loading, make empty world.
 		SetLocalCompany(COMPANY_SPECTATOR);
 	} else {
@@ -803,8 +803,8 @@ int openttd_main(std::span<char * const> arguments)
 			_load_check_data.Clear();
 			if (i == 'K') _load_check_data.want_debug_data = true;
 			_load_check_data.want_grf_compatibility = false;
-			SaveOrLoadResult res = SaveOrLoad(mgo.opt, SaveLoadOperation::Check, DetailedFileType::GameFile, Subdirectory::Save, false);
-			if (res != SL_OK || _load_check_data.HasErrors()) {
+			SaveLoadResult res = SaveOrLoad(mgo.opt, SaveLoadOperation::Check, DetailedFileType::GameFile, Subdirectory::Save, false);
+			if (res != SaveLoadResult::Ok || _load_check_data.HasErrors()) {
 				fprintf(stderr, "Failed to open savegame\n");
 				if (_load_check_data.HasErrors()) {
 					InitializeLanguagePacks(); // A language pack is needed for GetString()
@@ -1248,8 +1248,8 @@ bool SafeLoad(const std::string &filename, SaveLoadOperation fop, DetailedFileTy
 
 	_game_mode = newgm;
 
-	SaveOrLoadResult result = (lf == nullptr) ? SaveOrLoad(filename, fop, dft, subdir) : LoadWithFilter(std::move(lf));
-	if (result == SL_OK) return true;
+	SaveLoadResult result = (lf == nullptr) ? SaveOrLoad(filename, fop, dft, subdir) : LoadWithFilter(std::move(lf));
+	if (result == SaveLoadResult::Ok) return true;
 
 	if (error_detail != nullptr) *error_detail = GetSaveLoadErrorType().GetDecodedString() + GetSaveLoadErrorMessage().GetDecodedString();
 
@@ -1265,7 +1265,7 @@ bool SafeLoad(const std::string &filename, SaveLoadOperation fop, DetailedFileTy
 		return false;
 	}
 
-	if (result != SL_REINIT) {
+	if (result != SaveLoadResult::ReInit) {
 		_game_mode = ogm;
 		return false;
 	}
@@ -1484,7 +1484,7 @@ void SwitchToMode(SwitchMode new_mode)
 			/* Make network saved games on pause compatible to singleplayer mode */
 			SaveModeFlags flags = SMF_NONE;
 			if (_game_mode == GM_EDITOR) flags |= SMF_SCENARIO;
-			if (SaveOrLoad(_file_to_saveload.name, SaveLoadOperation::Save, DetailedFileType::GameFile, Subdirectory::None, true, flags) != SL_OK) {
+			if (SaveOrLoad(_file_to_saveload.name, SaveLoadOperation::Save, DetailedFileType::GameFile, Subdirectory::None, true, flags) != SaveLoadResult::Ok) {
 				ShowErrorMessage(GetSaveLoadErrorType(), GetSaveLoadErrorMessage(), WL_ERROR);
 			} else {
 				CloseWindowById(WC_SAVELOAD, 0);

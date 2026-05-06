@@ -80,7 +80,7 @@ static int HighlightDragPosition(int px, int max_width, int y, VehicleID selecti
 		int top = y - height / 2;
 		Rect r = {drag_hlight_left, top, drag_hlight_right, top + height - 1};
 		/* Sprite-scaling is used here as the area is from sprite size */
-		GfxFillRect(r.Shrink(ScaleSpriteTrad(1)), GetColourGradient(Colours::Grey, SHADE_LIGHTEST));
+		GfxFillRect(r.Shrink(ScaleSpriteTrad(1)), GetColourGradient(Colours::Grey, Shade::Lightest));
 	}
 
 	return drag_hlight_width;
@@ -239,7 +239,7 @@ static void TrainDetailsInfoTab(const Train *v, int left, int right, int y, uint
 	const RailVehicleInfo *rvi = RailVehInfo(v->engine_type);
 
 	auto get_speed = [&]() -> uint16_t {
-		const bool show_speed = !UsesWagonOverride(v) && (_settings_game.vehicle.wagon_speed_limits || rvi->railveh_type != RAILVEH_WAGON);
+		const bool show_speed = !UsesWagonOverride(v) && (_settings_game.vehicle.wagon_speed_limits || rvi->railveh_type != RailVehicleType::Wagon);
 		return show_speed ? GetVehicleProperty(v, PROP_TRAIN_SPEED, rvi->max_speed) : 0;
 	};
 
@@ -249,7 +249,7 @@ static void TrainDetailsInfoTab(const Train *v, int left, int right, int y, uint
 		DrawString(left, right, y, buffer);
 	};
 
-	if (rvi->railveh_type == RAILVEH_WAGON) {
+	if (rvi->railveh_type == RailVehicleType::Wagon) {
 		auto name_param = PackEngineNameDParam(v->engine_type, EngineNameContext::VehicleDetails);
 		uint16_t speed = get_speed();
 		if (speed > 0) {
@@ -476,7 +476,7 @@ void DrawTrainDetails(const Train *v, const Rect &r, int vscroll_pos, uint16_t v
 				if (vscroll_pos <= 0 && vscroll_pos > -vscroll_cap) {
 					int py = r.top - line_height * vscroll_pos + text_y_offset;
 					if (i > 0 || separate_sprite_row) {
-						if (vscroll_pos != 0) GfxFillRect(r.WithY(py - WidgetDimensions::scaled.matrix.top - 1, py - WidgetDimensions::scaled.matrix.top), GetColourGradient(Colours::Grey, SHADE_LIGHT));
+						if (vscroll_pos != 0) GfxFillRect(r.WithY(py - WidgetDimensions::scaled.matrix.top - 1, py - WidgetDimensions::scaled.matrix.top), GetColourGradient(Colours::Grey, Shade::Light));
 					}
 					switch (det_tab) {
 						case TDW_TAB_CARGO:

@@ -495,7 +495,7 @@ void Aircraft::OnPeriodic()
 
 	if (this->running_ticks == 0) return;
 
-	CommandCost cost(EXPENSES_AIRCRAFT_RUN, this->GetRunningCost() * this->running_ticks / (DAYS_IN_YEAR * DAY_TICKS));
+	CommandCost cost(ExpensesType::AircraftRun, this->GetRunningCost() * this->running_ticks / (DAYS_IN_YEAR * DAY_TICKS));
 
 	this->profit_this_year -= cost.GetCost();
 	this->running_ticks = 0;
@@ -1333,10 +1333,7 @@ static bool HandleCrashedAircraft(Aircraft *v)
  */
 static void HandleAircraftSmoke(Aircraft *v, bool mode)
 {
-	static const struct {
-		int8_t x;
-		int8_t y;
-	} smoke_pos[] = {
+	static const Coord2D<int8_t> smoke_pos[] = {
 		{  5,  5 },
 		{  6,  0 },
 		{  5, -5 },

@@ -240,7 +240,7 @@ RailTypes GetCompanyRailTypes(CompanyID company, bool introduces)
 				(e->company_avail.Test(company) || date >= e->intro_date + DAYS_IN_YEAR)) {
 			const RailVehicleInfo *rvi = &e->VehInfo<RailVehicleInfo>();
 
-			if (rvi->railveh_type != RAILVEH_WAGON) {
+			if (rvi->railveh_type != RailVehicleType::Wagon) {
 				assert(rvi->railtypes.Any());
 				if (introduces) {
 					rts.Set(GetAllIntroducesRailTypes(rvi->railtypes));
@@ -269,7 +269,7 @@ RailTypes GetRailTypes(bool introduces)
 		if (!ei->climates.Test(_settings_game.game_creation.landscape)) continue;
 
 		const RailVehicleInfo *rvi = &e->VehInfo<RailVehicleInfo>();
-		if (rvi->railveh_type != RAILVEH_WAGON) {
+		if (rvi->railveh_type != RailVehicleType::Wagon) {
 			assert(rvi->railtypes.Any());
 			if (introduces) {
 				rts.Set(GetAllIntroducesRailTypes(rvi->railtypes));

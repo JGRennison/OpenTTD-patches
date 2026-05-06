@@ -410,8 +410,8 @@ static bool TrainEngineCapacitySorter(const GUIEngineListItem &a, const GUIEngin
 	const RailVehicleInfo *rvi_a = RailVehInfo(a.engine_id);
 	const RailVehicleInfo *rvi_b = RailVehInfo(b.engine_id);
 
-	int va = cache.GetArticulatedCapacity(a.engine_id, rvi_a->railveh_type == RAILVEH_MULTIHEAD);
-	int vb = cache.GetArticulatedCapacity(b.engine_id, rvi_b->railveh_type == RAILVEH_MULTIHEAD);
+	int va = cache.GetArticulatedCapacity(a.engine_id, rvi_a->railveh_type == RailVehicleType::Multihead);
+	int vb = cache.GetArticulatedCapacity(b.engine_id, rvi_b->railveh_type == RailVehicleType::Multihead);
 	int r = va - vb;
 
 	/* Use EngineID to sort instead since we want consistent sorting */
@@ -425,8 +425,8 @@ static bool TrainEngineCapacityVsRunningCostSorter(const GUIEngineListItem &a, c
 	const RailVehicleInfo *rvi_a = RailVehInfo(a.engine_id);
 	const RailVehicleInfo *rvi_b = RailVehInfo(b.engine_id);
 
-	uint va = cache.GetArticulatedCapacity(a.engine_id, rvi_a->railveh_type == RAILVEH_MULTIHEAD);
-	uint vb = cache.GetArticulatedCapacity(b.engine_id, rvi_b->railveh_type == RAILVEH_MULTIHEAD);
+	uint va = cache.GetArticulatedCapacity(a.engine_id, rvi_a->railveh_type == RailVehicleType::Multihead);
+	uint vb = cache.GetArticulatedCapacity(b.engine_id, rvi_b->railveh_type == RailVehicleType::Multihead);
 
 	return GenericEngineValueVsRunningCostSorter(a, va, b, vb, cache);
 }
@@ -434,8 +434,8 @@ static bool TrainEngineCapacityVsRunningCostSorter(const GUIEngineListItem &a, c
 /** Determines order of train engines by engine / wagon. @copydoc GUIList::Sorter */
 static bool TrainEnginesThenWagonsSorter(const GUIEngineListItem &a, const GUIEngineListItem &b, const GUIEngineListSortCache &cache)
 {
-	int val_a = (RailVehInfo(a.engine_id)->railveh_type == RAILVEH_WAGON ? 1 : 0);
-	int val_b = (RailVehInfo(b.engine_id)->railveh_type == RAILVEH_WAGON ? 1 : 0);
+	int val_a = (RailVehInfo(a.engine_id)->railveh_type == RailVehicleType::Wagon ? 1 : 0);
+	int val_b = (RailVehInfo(b.engine_id)->railveh_type == RailVehicleType::Wagon ? 1 : 0);
 	int r = val_a - val_b;
 
 	/* Use EngineID to sort instead since we want consistent sorting */
@@ -1032,7 +1032,7 @@ int DrawVehiclePurchaseInfo(int left, int right, int y, EngineID engine_number, 
 	switch (e->type) {
 		default: NOT_REACHED();
 		case VehicleType::Train:
-			if (e->VehInfo<RailVehicleInfo>().railveh_type == RAILVEH_WAGON) {
+			if (e->VehInfo<RailVehicleInfo>().railveh_type == RailVehicleType::Wagon) {
 				y = DrawRailWagonPurchaseInfo(left, right, y, engine_number, &e->VehInfo<RailVehicleInfo>(), te);
 			} else {
 				y = DrawRailEnginePurchaseInfo(left, right, y, engine_number, &e->VehInfo<RailVehicleInfo>(), te);
@@ -1068,7 +1068,7 @@ int DrawVehiclePurchaseInfo(int left, int right, int y, EngineID engine_number, 
 	}
 
 	/* Draw details that apply to all types except rail wagons. */
-	if (e->type != VehicleType::Train || e->VehInfo<RailVehicleInfo>().railveh_type != RAILVEH_WAGON) {
+	if (e->type != VehicleType::Train || e->VehInfo<RailVehicleInfo>().railveh_type != RailVehicleType::Wagon) {
 		/* Design date - Life length */
 		DrawString(left, right, y, GetString(STR_PURCHASE_INFO_DESIGNED_LIFE, ymd.year, DateDeltaToYearDelta(e->GetLifeLengthInDays())));
 		y += GetCharacterHeight(FontSize::Normal);
@@ -1129,7 +1129,7 @@ void DrawEngineList(VehicleType type, const Rect &r, const GUIEngineList &eng_li
 	int sprite_right = GetVehicleImageCellSize(type, EIT_PURCHASE).extend_right;
 	int sprite_width = sprite_left + sprite_right;
 	int circle_width = std::max(GetScaledSpriteSize(SPR_CIRCLE_FOLDED).width, GetScaledSpriteSize(SPR_CIRCLE_UNFOLDED).width);
-	PixelColour linecolour = GetColourGradient(Colours::Orange, SHADE_NORMAL);
+	PixelColour linecolour = GetColourGradient(Colours::Orange, Shade::Normal);
 
 	auto badge_column_widths = badge_classes.GetColumnWidths();
 
@@ -1257,7 +1257,7 @@ void DrawEngineList(VehicleType type, const Rect &r, const GUIEngineList &eng_li
 				break;
 			case STR_SORT_BY_TRACTIVE_EFFORT:
 				/* Allow trucks, and allow trains that are not wagons */
-				if (type == VehicleType::Road || (type == VehicleType::Train && e->VehInfo<RailVehicleInfo>().railveh_type != RAILVEH_WAGON)) {
+				if (type == VehicleType::Road || (type == VehicleType::Train && e->VehInfo<RailVehicleInfo>().railveh_type != RailVehicleType::Wagon)) {
 					auto max_te = e->GetDisplayMaxTractiveEffort();
 					if (max_te != 0) {
 						sort_prop_detail = GetString(STR_PURCHASE_SORT_DETAILS_MAX_TE, max_te);
@@ -1284,7 +1284,7 @@ void DrawEngineList(VehicleType type, const Rect &r, const GUIEngineList &eng_li
 				}
 				break;
 			case STR_SORT_BY_RELIABILITY:
-				if (auto isWagon = e->type == VehicleType::Train && e->VehInfo<RailVehicleInfo>().railveh_type == RAILVEH_WAGON; !isWagon) {
+				if (auto isWagon = e->type == VehicleType::Train && e->VehInfo<RailVehicleInfo>().railveh_type == RailVehicleType::Wagon; !isWagon) {
 					sort_prop_detail = GetString(STR_PURCHASE_SORT_DETAILS_RELIABILITY, ToPercent16(e->reliability));
 				}
 				break;
@@ -1293,7 +1293,7 @@ void DrawEngineList(VehicleType type, const Rect &r, const GUIEngineList &eng_li
 					uint total_capacity = 0;
 					switch (type) {
 						case VehicleType::Train:
-							total_capacity = eng_list.SortParameterData().GetArticulatedCapacity(item.engine_id, e->VehInfo<RailVehicleInfo>().railveh_type == RAILVEH_MULTIHEAD);
+							total_capacity = eng_list.SortParameterData().GetArticulatedCapacity(item.engine_id, e->VehInfo<RailVehicleInfo>().railveh_type == RailVehicleType::Multihead);
 							break;
 						case VehicleType::Road:
 						case VehicleType::Ship:
@@ -1832,7 +1832,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 
 			list.emplace_back(eid, e->info.variant_id, e->display_flags, 0);
 
-			if (rvi->railveh_type != RAILVEH_WAGON) num_engines++;
+			if (rvi->railveh_type != RailVehicleType::Wagon) num_engines++;
 
 			/* Add all parent variants of this engine to the variant list */
 			EngineID parent = e->info.variant_id;
@@ -1848,7 +1848,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 			if (std::ranges::find(list, variant, &GUIEngineListItem::engine_id) == list.end()) {
 				const Engine *e = Engine::Get(variant);
 				list.emplace_back(variant, e->info.variant_id, e->display_flags | EngineDisplayFlag::Shaded, 0);
-				if (e->VehInfo<RailVehicleInfo>().railveh_type != RAILVEH_WAGON) num_engines++;
+				if (e->VehInfo<RailVehicleInfo>().railveh_type != RailVehicleType::Wagon) num_engines++;
 			}
 		}
 
@@ -2034,7 +2034,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		if (this->virtual_train_mode) {
 			Command<Commands::BuildVirtualRailVehicle>::Post(GetCmdBuildVehMsg(VehicleType::Train), CommandCallback::AddVirtualEngine, sel_eng, cargo, INVALID_CLIENT_ID, this->GetNewVirtualEngineMoveTarget());
 		} else {
-			CommandCallback callback = (this->vehicle_type == VehicleType::Train && RailVehInfo(sel_eng)->railveh_type == RAILVEH_WAGON)
+			CommandCallback callback = (this->vehicle_type == VehicleType::Train && RailVehInfo(sel_eng)->railveh_type == RailVehicleType::Wagon)
 					? CommandCallback::BuildWagon : CommandCallback::BuildPrimaryVehicle;
 			Command<Commands::BuildVehicle>::Post(GetCmdBuildVehMsg(this->vehicle_type), callback, TileIndex(this->window_number), sel_eng, true, cargo, INVALID_CLIENT_ID);
 		}
@@ -2791,7 +2791,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 				if (top_engine->info.variant_id == EngineID::Invalid()) break;
 				top_engine = Engine::Get(top_engine->info.variant_id);
 			}
-			if ((top_engine->VehInfo<RailVehicleInfo>().railveh_type == RAILVEH_WAGON) != wagon) continue;
+			if ((top_engine->VehInfo<RailVehicleInfo>().railveh_type == RailVehicleType::Wagon) != wagon) continue;
 
 			/* Filter by name or NewGRF extra text */
 			if (!FilterByText(state, engine) && !btf.Filter(engine->badges)) continue;
@@ -2864,7 +2864,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 			if (this->virtual_train_mode) {
 				Command<Commands::BuildVirtualRailVehicle>::Post(GetCmdBuildVehMsg(VehicleType::Train), CommandCallback::AddVirtualEngine, selected, cargo, INVALID_CLIENT_ID, this->GetNewVirtualEngineMoveTarget());
 			} else {
-				CommandCallback callback = (this->vehicle_type == VehicleType::Train && RailVehInfo(selected)->railveh_type == RAILVEH_WAGON)
+				CommandCallback callback = (this->vehicle_type == VehicleType::Train && RailVehInfo(selected)->railveh_type == RailVehicleType::Wagon)
 						? CommandCallback::BuildWagon : CommandCallback::BuildPrimaryVehicle;
 				Command<Commands::BuildVehicle>::Post(GetCmdBuildVehMsg(this->vehicle_type), callback, TileIndex(this->window_number), selected, true, cargo, INVALID_CLIENT_ID);
 			}

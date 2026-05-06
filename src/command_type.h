@@ -179,12 +179,12 @@ public:
 	/**
 	 * Creates a command cost return with no cost and no error
 	 */
-	constexpr CommandCost() : cost(0), expense_type(INVALID_EXPENSES), flags(CCIF_SUCCESS), message(INVALID_STRING_ID) {}
+	constexpr CommandCost() : cost(0), expense_type(ExpensesType::Invalid), flags(CCIF_SUCCESS), message(INVALID_STRING_ID) {}
 
 	/**
 	 * Creates a command return value the is failed with the given message
 	 */
-	explicit constexpr CommandCost(StringID msg) : cost(0), expense_type(INVALID_EXPENSES), flags(CCIF_NONE), message(msg) {}
+	explicit constexpr CommandCost(StringID msg) : cost(0), expense_type(ExpensesType::Invalid), flags(CCIF_NONE), message(msg) {}
 
 	CommandCost(const CommandCost &other)
 	{

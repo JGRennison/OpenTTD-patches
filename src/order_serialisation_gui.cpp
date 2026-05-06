@@ -146,7 +146,7 @@ struct OrderListImportErrorsWindow : GeneralVehicleWindow
 			return val;
 		};
 
-		auto DrawHighlight = [&](Colours c, ColourShade shade) -> void {
+		auto DrawHighlight = [&](Colours c, Shade shade) -> void {
 			GfxFillRect(highlight_ir.left, y, highlight_ir.right, y + line_height, GetColourGradient(c, shade));
 		};
 
@@ -156,8 +156,8 @@ struct OrderListImportErrorsWindow : GeneralVehicleWindow
 
 			int offset = ir.right - DrawString(ir.left, ir.right, y, str, color, SA_CENTER);
 
-			GfxFillRect(ir.left, middle_height - 1, ir.left + offset, middle_height + 1, GetColourGradient(Colours::Blue, SHADE_DARK));
-			GfxFillRect(ir.right - offset, middle_height - 1, ir.right, middle_height + 1, GetColourGradient(Colours::Blue, SHADE_DARK));
+			GfxFillRect(ir.left, middle_height - 1, ir.left + offset, middle_height + 1, GetColourGradient(Colours::Blue, Shade::Dark));
+			GfxFillRect(ir.right - offset, middle_height - 1, ir.right, middle_height + 1, GetColourGradient(Colours::Blue, Shade::Dark));
 
 			DrawString(ir.left, ir.right, y, str, color, SA_CENTER);
 
@@ -214,7 +214,7 @@ struct OrderListImportErrorsWindow : GeneralVehicleWindow
 				}
 
 				if (CheckVisibleAndIncrementRow()) {
-					if (order_has_errors && this->show_non_error_order) DrawHighlight(Colours::Red, SHADE_NORMAL);
+					if (order_has_errors && this->show_non_error_order) DrawHighlight(Colours::Red, Shade::Normal);
 					DrawOrderString(this->vehicle, order, order_index, y, false, false, ir.left, middle, ir.right);
 					y += line_height;
 				}
@@ -223,7 +223,7 @@ struct OrderListImportErrorsWindow : GeneralVehicleWindow
 					const std::vector<OrderImportErrors::Error> &errors = this->errs.order.at(order_index);
 					for (const OrderImportErrors::Error &e : errors) {
 						if (CheckVisibleAndIncrementRow()) {
-							if (this->show_non_error_order) DrawHighlight(Colours::Red, SHADE_NORMAL);
+							if (this->show_non_error_order) DrawHighlight(Colours::Red, Shade::Normal);
 							DrawRawString(e.msg, GetTColorFromError(e.type), true);
 						}
 					}

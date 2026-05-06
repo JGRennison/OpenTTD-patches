@@ -266,10 +266,10 @@ void CargoPacket::PayDeferredPayments()
 		IterateCargoPacketDeferredPayments(this->index, true, [&](Money &payment, CompanyID cid, VehicleType type) {
 			ExpensesType exp;
 			switch (type) {
-				case VehicleType::Train: exp = EXPENSES_TRAIN_REVENUE; break;
-				case VehicleType::Road: exp = EXPENSES_ROADVEH_REVENUE; break;
-				case VehicleType::Ship: exp = EXPENSES_SHIP_REVENUE; break;
-				case VehicleType::Aircraft: exp = EXPENSES_AIRCRAFT_REVENUE; break;
+				case VehicleType::Train: exp = ExpensesType::TrainRevenue; break;
+				case VehicleType::Road: exp = ExpensesType::RoadVehRevenue; break;
+				case VehicleType::Ship: exp = ExpensesType::ShipRevenue; break;
+				case VehicleType::Aircraft: exp = ExpensesType::AircraftRevenue; break;
 				default: NOT_REACHED();
 			}
 			SubtractMoneyFromCompany(cid, CommandCost(exp, -payment));

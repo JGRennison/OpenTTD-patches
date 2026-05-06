@@ -465,11 +465,11 @@ static const StringID _engine_class_value_str[] = {
 	STR_LIVERY_MAGLEV,
 };
 static const uint _engine_class_value_val[] = {
-	EC_STEAM,    ///< Steam rail engine.
-	EC_DIESEL,   ///< Diesel rail engine.
-	EC_ELECTRIC, ///< Electric rail engine.
-	EC_MONORAIL, ///< Mono rail engine.
-	EC_MAGLEV,   ///< Maglev engine.
+	to_underlying(EngineClass::Steam),    ///< Steam rail engine.
+	to_underlying(EngineClass::Diesel),   ///< Diesel rail engine.
+	to_underlying(EngineClass::Electric), ///< Electric rail engine.
+	to_underlying(EngineClass::Monorail), ///< Mono rail engine.
+	to_underlying(EngineClass::Maglev),   ///< Maglev engine.
 };
 
 /** value drop down list for engine class type strings and values */
@@ -4712,7 +4712,7 @@ private:
 	{
 		/* Highlight the slot if a vehicle is dragged over it */
 		if (item.item == this->slot_over) {
-			GfxFillRect(draw_area, GetColourGradient(Colours::Grey, SHADE_LIGHTEST));
+			GfxFillRect(draw_area, GetColourGradient(Colours::Grey, Shade::Lightest));
 		}
 
 		const bool rtl = _current_text_dir == TD_RTL;

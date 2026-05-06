@@ -364,7 +364,7 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 		ClrBit(u->vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT);
 		if (!(HasBit(u->vcache.cached_vis_effect, VE_ADVANCED_EFFECT) && GB(u->vcache.cached_vis_effect, 0, VE_ADVANCED_EFFECT) == VESM_NONE)) last_vis_effect = u;
 
-		if (rvi_v->pow_wag_power != 0 && rvi_u.railveh_type == RAILVEH_WAGON &&
+		if (rvi_v->pow_wag_power != 0 && rvi_u.railveh_type == RailVehicleType::Wagon &&
 				UsesWagonOverride(u) && !HasBit(u->vcache.cached_vis_effect, VE_DISABLE_WAGON_POWER)) {
 			/* wagon is powered */
 			u->flags.Set(VehicleRailFlag::PoweredWagon); // cache 'powered' status
@@ -387,7 +387,7 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 			}
 
 			/* max speed is the minimum of the speed limits of all vehicles in the consist */
-			if ((rvi_u.railveh_type != RAILVEH_WAGON || _settings_game.vehicle.wagon_speed_limits) && !UsesWagonOverride(u)) {
+			if ((rvi_u.railveh_type != RailVehicleType::Wagon || _settings_game.vehicle.wagon_speed_limits) && !UsesWagonOverride(u)) {
 				uint16_t speed = GetTrainVehicleMaxSpeed(u, rvi_u, this);
 				if (speed != 0) max_speed = std::min(speed, max_speed);
 			}
@@ -1469,7 +1469,10 @@ static void GetRailIcon(EngineID engine, bool rear_head, int &y, EngineImageType
 
 void DrawTrainEngine(int left, int right, int preferred_x, int y, EngineID engine, PaletteID pal, EngineImageType image_type)
 {
-	if (RailVehInfo(engine)->railveh_type == RAILVEH_MULTIHEAD) {
+	const GRFFile *grf = Engine::Get(engine)->GetGRF();
+	int vehicle_width = ScaleSpriteTrad(grf == nullptr ? TRAININFO_DEFAULT_VEHICLE_WIDTH : grf->traininfo_vehicle_width);
+
+	if (RailVehInfo(engine)->railveh_type == RailVehicleType::Multihead) {
 		int yf = y;
 		int yr = y;
 
@@ -1481,11 +1484,11 @@ void DrawTrainEngine(int left, int right, int preferred_x, int y, EngineID engin
 		Rect16 rectr = seqr.GetBounds();
 
 		preferred_x = SoftClamp(preferred_x,
-				left - UnScaleGUI(rectf.left) + ScaleSpriteTrad(14),
-				right - UnScaleGUI(rectr.right) - ScaleSpriteTrad(15));
+				left - UnScaleGUI(rectf.left) + vehicle_width / 2,
+				right - UnScaleGUI(rectr.right) - (vehicle_width - vehicle_width / 2));
 
-		seqf.Draw(preferred_x - ScaleSpriteTrad(14), yf, pal, pal == PALETTE_CRASH);
-		seqr.Draw(preferred_x + ScaleSpriteTrad(15), yr, pal, pal == PALETTE_CRASH);
+		seqf.Draw(preferred_x - vehicle_width / 2, yf, pal, pal == PALETTE_CRASH);
+		seqr.Draw(preferred_x + (vehicle_width - vehicle_width / 2), yr, pal, pal == PALETTE_CRASH);
 	} else {
 		VehicleSpriteSeq seq;
 		GetRailIcon(engine, false, y, image_type, &seq);
@@ -1522,14 +1525,17 @@ void GetTrainSpriteSize(EngineID engine, uint &width, uint &height, int &xoffs, 
 	xoffs  = UnScaleGUI(rect.left);
 	yoffs  = UnScaleGUI(rect.top);
 
-	if (RailVehInfo(engine)->railveh_type == RAILVEH_MULTIHEAD) {
+	if (RailVehInfo(engine)->railveh_type == RailVehicleType::Multihead) {
+		const GRFFile *grf = Engine::Get(engine)->GetGRF();
+		int vehicle_width = ScaleSpriteTrad(grf == nullptr ? TRAININFO_DEFAULT_VEHICLE_WIDTH : grf->traininfo_vehicle_width);
+
 		GetRailIcon(engine, true, y, image_type, &seq);
 		rect = ConvertRect<Rect16, Rect>(seq.GetBounds());
 
 		/* Calculate values relative to an imaginary center between the two sprites. */
-		width = ScaleSpriteTrad(TRAININFO_DEFAULT_VEHICLE_WIDTH) + UnScaleGUI(rect.right) - xoffs;
+		width = vehicle_width + UnScaleGUI(rect.right) - xoffs;
 		height = std::max<uint>(height, UnScaleGUI(rect.Height()));
-		xoffs  = xoffs - ScaleSpriteTrad(TRAININFO_DEFAULT_VEHICLE_WIDTH) / 2;
+		xoffs  = xoffs - vehicle_width / 2;
 		yoffs  = std::min(yoffs, UnScaleGUI(rect.top));
 	}
 }
@@ -1711,7 +1717,7 @@ CommandCost CmdBuildRailVehicle(TileIndex tile, DoCommandFlags flags, const Engi
 {
 	const RailVehicleInfo *rvi = &e->VehInfo<RailVehicleInfo>();
 
-	if (rvi->railveh_type == RAILVEH_WAGON) return CmdBuildRailWagon(tile, flags, e, ret);
+	if (rvi->railveh_type == RailVehicleType::Wagon) return CmdBuildRailWagon(tile, flags, e, ret);
 
 	/* Check if depot and new engine uses the same kind of tracks *
 	 * We need to see if the engine got power on the tile to avoid electric engines in non-electric depots */
@@ -1774,7 +1780,7 @@ CommandCost CmdBuildRailVehicle(TileIndex tile, DoCommandFlags flags, const Engi
 		if (prob.has_value()) v->flags.Set(VehicleRailFlag::Flipped, prob.value());
 		v->UpdatePosition();
 
-		if (rvi->railveh_type == RAILVEH_MULTIHEAD) {
+		if (rvi->railveh_type == RailVehicleType::Multihead) {
 			AddRearEngineToMultiheadedTrain(v);
 		} else {
 			AddArticulatedParts(v);
@@ -2469,7 +2475,7 @@ CommandCost CmdSellRailWagon(DoCommandFlags flags, Vehicle *t, bool sell_chain, 
 		return CommandCost(STR_ERROR_NO_MORE_SPACE_FOR_ORDERS);
 	}
 
-	CommandCost cost(EXPENSES_NEW_VEHICLES);
+	CommandCost cost(ExpensesType::NewVehicles);
 	for (Train *part = sell_head; part != nullptr; part = part->Next()) cost.AddCost(-part->value);
 
 	/* do it? */
@@ -3426,7 +3432,7 @@ void Train::PlayLeaveStationSound(bool force) const
 
 	if (PlayVehicleSound(this, VSE_START, force)) return;
 
-	SndPlayVehicleFx(sfx[RailVehInfo(this->engine_type)->engclass], this);
+	SndPlayVehicleFx(sfx[to_underlying(RailVehInfo(this->engine_type)->engclass)], this);
 }
 
 /**
@@ -7142,7 +7148,7 @@ void Train::OnPeriodic()
 
 		if (this->running_ticks != 0) {
 			/* running costs */
-			CommandCost cost(EXPENSES_TRAIN_RUN, this->GetRunningCost() * this->running_ticks / (DAYS_IN_YEAR  * DAY_TICKS));
+			CommandCost cost(ExpensesType::TrainRun, this->GetRunningCost() * this->running_ticks / (DAYS_IN_YEAR  * DAY_TICKS));
 
 			/* sharing fee */
 			PayDailyTrackSharingFee(this);
@@ -7320,7 +7326,7 @@ Train *BuildVirtualRailVehicle(EngineID eid, StringID &error, ClientID user, boo
 	/* Check whether the number of vehicles we need to build can be built according to pool space.
 	 * If 2 + MAX_ARTICULATED_PARTS are available, then there's no need to call CountArticulatedParts, which is potentially expensive. */
 	if (!Vehicle::CanAllocateItem(2 + MAX_ARTICULATED_PARTS)) {
-		uint num_vehicles = (rvi.railveh_type == RAILVEH_MULTIHEAD ? 2 : 1) + CountArticulatedParts(eid);
+		uint num_vehicles = (rvi.railveh_type == RailVehicleType::Multihead ? 2 : 1) + CountArticulatedParts(eid);
 		if (!Train::CanAllocateItem(num_vehicles)) {
 			error = STR_ERROR_TOO_MANY_VEHICLES_IN_GAME;
 			return nullptr;
@@ -7329,7 +7335,7 @@ Train *BuildVirtualRailVehicle(EngineID eid, StringID &error, ClientID user, boo
 
 	RegisterGameEvents(GEF_VIRT_TRAIN);
 
-	if (rvi.railveh_type == RAILVEH_WAGON) {
+	if (rvi.railveh_type == RailVehicleType::Wagon) {
 		return CmdBuildVirtualRailWagon(e, user, no_consist_change);
 	}
 
@@ -7374,7 +7380,7 @@ Train *BuildVirtualRailVehicle(EngineID eid, StringID &error, ClientID user, boo
 	v->SetEngine();
 	v->SetVirtual();
 
-	if (rvi.railveh_type == RAILVEH_MULTIHEAD) {
+	if (rvi.railveh_type == RailVehicleType::Multihead) {
 		AddRearEngineToMultiheadedTrain(v);
 	} else {
 		AddArticulatedParts(v);
@@ -7490,7 +7496,7 @@ static inline CommandCost CmdStartStopVehicle(const Vehicle *v, bool evaluate_ca
 */
 static CommandCost CmdTemplateReplaceVehicle(DoCommandFlags flags, Train *incoming, Train *&outgoing)
 {
-	CommandCost buy(EXPENSES_NEW_VEHICLES);
+	CommandCost buy(ExpensesType::NewVehicles);
 
 	const bool was_stopped = incoming->vehstatus.Test(VehState::Stopped);
 	if (!was_stopped) {
@@ -7510,7 +7516,7 @@ static CommandCost CmdTemplateReplaceVehicle(DoCommandFlags flags, Train *incomi
 	}
 	EngineID eid = tv->engine_type;
 
-	CommandCost tmp_result(EXPENSES_NEW_VEHICLES);
+	CommandCost tmp_result(ExpensesType::NewVehicles);
 
 	/* first some tests on necessity and sanity */
 	if (tv == nullptr) return CommandCost();

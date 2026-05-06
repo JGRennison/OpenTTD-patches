@@ -764,7 +764,7 @@ static CommandCost ClearTile_Town(TileIndex tile, DoCommandFlags flags)
 
 	const HouseSpec *hs = HouseSpec::Get(GetHouseType(tile));
 
-	CommandCost cost(EXPENSES_CONSTRUCTION);
+	CommandCost cost(ExpensesType::Construction);
 	cost.AddCost(hs->GetRemovalCost());
 
 	int rating = hs->remove_rating_decrease;
@@ -2353,7 +2353,7 @@ static CommandCost TownCanBePlacedHere(TileIndex tile, bool city, bool check_sur
 		}
 	}
 
-	return CommandCost(EXPENSES_OTHER);
+	return CommandCost(ExpensesType::Other);
 }
 
 /**
@@ -2423,7 +2423,7 @@ CommandCost CmdFoundTown(DoCommandFlags flags, TileIndex tile, TownSize size, bo
 	/* multidimensional arrays have to have defined length of non-first dimension */
 	static_assert(lengthof(price_mult[0]) == 4);
 
-	CommandCost cost(EXPENSES_OTHER, _price[Price::BuildTown]);
+	CommandCost cost(ExpensesType::Other, _price[Price::BuildTown]);
 	uint8_t mult = price_mult[city][size];
 
 	cost.MultiplyCost(mult);
@@ -2431,7 +2431,7 @@ CommandCost CmdFoundTown(DoCommandFlags flags, TileIndex tile, TownSize size, bo
 	/* Create the town */
 	if (flags.Test(DoCommandFlag::Execute)) {
 		if (cost.GetCost() > GetAvailableMoneyForCommand()) {
-			CommandCost result(EXPENSES_OTHER);
+			CommandCost result(ExpensesType::Other);
 			result.SetAdditionalCashRequired(cost.GetCost());
 			return result;
 		}
@@ -4132,7 +4132,7 @@ CommandCost CmdDoTownAction(DoCommandFlags flags, TownID town_id, TownAction act
 
 	if (!GetMaskOfTownActions(_current_company, t).Test(action)) return CMD_ERROR;
 
-	CommandCost cost(EXPENSES_OTHER, _price[Price::TownAction] * GetTownActionCost(action) >> 8);
+	CommandCost cost(ExpensesType::Other, _price[Price::TownAction] * GetTownActionCost(action) >> 8);
 
 	CommandCost ret = _town_action_proc[to_underlying(action)](t, flags);
 	if (ret.Failed()) return ret;
@@ -4747,7 +4747,7 @@ static CommandCost TerraformTile_Town(TileIndex tile, DoCommandFlags flags, int 
 				if (res != CALLBACK_FAILED && ConvertBooleanCallback(hs->grf_prop.grffile, CBID_HOUSE_AUTOSLOPE, res)) allow_terraform = false;
 			}
 
-			if (allow_terraform) return CommandCost(EXPENSES_CONSTRUCTION, _price[Price::BuildFoundation]);
+			if (allow_terraform) return CommandCost(ExpensesType::Construction, _price[Price::BuildFoundation]);
 		}
 	}
 

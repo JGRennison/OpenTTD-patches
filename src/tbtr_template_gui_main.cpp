@@ -716,7 +716,7 @@ public:
 
 			const int offset = (rtl ? -(int)this->fold_sprite_dim.width : (int)this->fold_sprite_dim.width) / 2;
 			const int level_width = rtl ? -WidgetDimensions::scaled.hsep_indent : WidgetDimensions::scaled.hsep_indent;
-			const PixelColour linecolour = GetColourGradient(Colours::Orange, SHADE_NORMAL);
+			const PixelColour linecolour = GetColourGradient(Colours::Orange, Shade::Normal);
 
 			if (it->indent > 0) {
 				/* Draw tree continuation lines. */
@@ -808,7 +808,7 @@ public:
 
 			/* Fill the background of the current cell in a darker tone for the currently selected template */
 			if (this->selected_template_index == (int32_t) i) {
-				GfxFillRect(r.left + 1, y, r.right, y + this->bottom_matrix_item_size, GetColourGradient(Colours::Grey, SHADE_DARK));
+				GfxFillRect(r.left + 1, y, r.right, y + this->bottom_matrix_item_size, GetColourGradient(Colours::Grey, Shade::Dark));
 			}
 
 			/* Draw the template */

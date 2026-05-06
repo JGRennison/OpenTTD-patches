@@ -117,7 +117,7 @@ Engine::Engine(EngineID index, VehicleType type, uint16_t local_id) : Engine::Po
 			this->info.string_id = STR_VEHICLE_NAME_TRAIN_ENGINE_RAIL_KIRBY_PAUL_TANK_STEAM + local_id;
 
 			/* Set the default model life of original wagons to "infinite" */
-			if (rvi.railveh_type == RAILVEH_WAGON) this->info.base_life = CalTime::YearDelta{0xFF};
+			if (rvi.railveh_type == RailVehicleType::Wagon) this->info.base_life = CalTime::YearDelta{0xFF};
 
 			break;
 		}
@@ -284,7 +284,7 @@ uint Engine::DetermineCapacity(const Vehicle *v, uint16_t *mail_capacity, CargoT
 			capacity = GetEngineProperty(this->index, PROP_TRAIN_CARGO_CAPACITY,        this->VehInfo<RailVehicleInfo>().capacity, v);
 
 			/* In purchase list add the capacity of the second head. Always use the plain property for this. */
-			if (v == nullptr && this->VehInfo<RailVehicleInfo>().railveh_type == RAILVEH_MULTIHEAD) capacity += this->VehInfo<RailVehicleInfo>().capacity;
+			if (v == nullptr && this->VehInfo<RailVehicleInfo>().railveh_type == RailVehicleType::Multihead) capacity += this->VehInfo<RailVehicleInfo>().capacity;
 			break;
 
 		case VehicleType::Road:
@@ -393,7 +393,7 @@ Money Engine::GetCost() const
 			break;
 
 		case VehicleType::Train:
-			if (this->VehInfo<RailVehicleInfo>().railveh_type == RAILVEH_WAGON) {
+			if (this->VehInfo<RailVehicleInfo>().railveh_type == RailVehicleType::Wagon) {
 				base_price = Price::BuildVehicleWagon;
 				cost_factor = GetEngineProperty(this->index, PROP_TRAIN_COST_FACTOR, this->VehInfo<RailVehicleInfo>().cost_factor);
 			} else {
@@ -477,7 +477,7 @@ uint Engine::GetDisplayWeight() const
 	/* Only trains and road vehicles have 'weight'. */
 	switch (this->type) {
 		case VehicleType::Train:
-			return GetEngineProperty(this->index, PROP_TRAIN_WEIGHT, this->VehInfo<RailVehicleInfo>().weight) << (this->VehInfo<RailVehicleInfo>().railveh_type == RAILVEH_MULTIHEAD ? 1 : 0);
+			return GetEngineProperty(this->index, PROP_TRAIN_WEIGHT, this->VehInfo<RailVehicleInfo>().weight) << (this->VehInfo<RailVehicleInfo>().railveh_type == RailVehicleType::Multihead ? 1 : 0);
 		case VehicleType::Road:
 			return GetEngineProperty(this->index, PROP_ROADVEH_WEIGHT, this->VehInfo<RoadVehicleInfo>().weight) / 4;
 
@@ -680,7 +680,7 @@ void ShowEnginePreviewWindow(EngineID engine);
 static bool IsWagon(EngineID index)
 {
 	const Engine *e = Engine::Get(index);
-	return e->type == VehicleType::Train && e->VehInfo<RailVehicleInfo>().railveh_type == RAILVEH_WAGON;
+	return e->type == VehicleType::Train && e->VehInfo<RailVehicleInfo>().railveh_type == RailVehicleType::Wagon;
 }
 
 /**
@@ -764,7 +764,7 @@ void SetYearEngineAgingStops()
 
 		/* Exclude certain engines */
 		if (!ei->climates.Test(_settings_game.game_creation.landscape)) continue;
-		if (e->type == VehicleType::Train && e->VehInfo<RailVehicleInfo>().railveh_type == RAILVEH_WAGON) continue;
+		if (e->type == VehicleType::Train && e->VehInfo<RailVehicleInfo>().railveh_type == RailVehicleType::Wagon) continue;
 
 		/* Base year ending date on half the model life */
 		CalTime::YearMonthDay ymd = CalTime::ConvertDateToYMD(ei->base_intro + (ei->lifelength.base() * DAYS_IN_LEAP_YEAR) / 2);
@@ -1410,7 +1410,7 @@ void CheckEngines()
 		if (!e->IsEnabled()) continue;
 
 		/* Don't consider train wagons, we need a powered engine available. */
-		if (e->type == VehicleType::Train && e->VehInfo<RailVehicleInfo>().railveh_type == RAILVEH_WAGON) continue;
+		if (e->type == VehicleType::Train && e->VehInfo<RailVehicleInfo>().railveh_type == RailVehicleType::Wagon) continue;
 
 		/* We have an available engine... yay! */
 		if (e->flags.Test(EngineFlag::Available) && e->company_avail.Any()) return;

@@ -1779,12 +1779,12 @@ void CallVehicleTicks()
 			t = Train::Get(*result_v);
 		}
 		Company *c = Company::Get(_current_company);
-		SubtractMoneyFromCompany(c, CommandCost(EXPENSES_NEW_VEHICLES, (Money)c->settings.engine_renew_money));
+		SubtractMoneyFromCompany(c, CommandCost(ExpensesType::NewVehicles, (Money)c->settings.engine_renew_money));
 		CommandCost res2 = Command<Commands::AutoreplaceVehicle>::Do(DoCommandFlag::Execute, t->index, true);
 		if (auto result_v = res2.GetResultData<VehicleID>(); result_v.has_value()) {
 			t = Train::Get(*result_v);
 		}
-		SubtractMoneyFromCompany(c, CommandCost(EXPENSES_NEW_VEHICLES, -(Money)c->settings.engine_renew_money));
+		SubtractMoneyFromCompany(c, CommandCost(ExpensesType::NewVehicles, -(Money)c->settings.engine_renew_money));
 
 		if (!IsLocalCompany()) continue;
 
@@ -1826,9 +1826,9 @@ void CallVehicleTicks()
 		int z = v->z_pos;
 
 		const Company *c = Company::Get(_current_company);
-		SubtractMoneyFromCompany(_current_company, CommandCost(EXPENSES_NEW_VEHICLES, (Money)c->settings.engine_renew_money));
+		SubtractMoneyFromCompany(_current_company, CommandCost(ExpensesType::NewVehicles, (Money)c->settings.engine_renew_money));
 		CommandCost res = Command<Commands::AutoreplaceVehicle>::Do(DoCommandFlag::Execute, v->index, false);
-		SubtractMoneyFromCompany(_current_company, CommandCost(EXPENSES_NEW_VEHICLES, -(Money)c->settings.engine_renew_money));
+		SubtractMoneyFromCompany(_current_company, CommandCost(ExpensesType::NewVehicles, -(Money)c->settings.engine_renew_money));
 
 		if (!IsLocalCompany()) continue;
 
@@ -1845,28 +1845,28 @@ void CallVehicleTicks()
 		Vehicle *v = Vehicle::Get(index);
 		SCOPE_INFO_FMT([v], "CallVehicleTicks: repair: {}", VehicleInfoDumper(v));
 
-		ExpensesType type = INVALID_EXPENSES;
+		ExpensesType type = ExpensesType::Invalid;
 		switch (v->type) {
 			case VehicleType::Aircraft:
-				type = EXPENSES_AIRCRAFT_RUN;
+				type = ExpensesType::AircraftRun;
 				break;
 
 			case VehicleType::Train:
-				type = EXPENSES_TRAIN_RUN;
+				type = ExpensesType::TrainRun;
 				break;
 
 			case VehicleType::Ship:
-				type = EXPENSES_SHIP_RUN;
+				type = ExpensesType::ShipRun;
 				break;
 
 			case VehicleType::Road:
-				type = EXPENSES_ROADVEH_RUN;
+				type = ExpensesType::RoadVehRun;
 				break;
 
 			default:
 				NOT_REACHED();
 		}
-		dbg_assert(type != INVALID_EXPENSES);
+		dbg_assert(type != ExpensesType::Invalid);
 
 		Money vehicle_new_value = v->GetEngine()->GetCost();
 
@@ -3128,7 +3128,7 @@ LiveryScheme GetEngineLiveryScheme(EngineID engine_type, EngineID parent_engine_
 	switch (e->type) {
 		default: NOT_REACHED();
 		case VehicleType::Train:
-			if (v != nullptr && parent_engine_type != EngineID::Invalid() && (UsesWagonOverride(v) || (v->IsArticulatedPart() && e->VehInfo<RailVehicleInfo>().railveh_type != RAILVEH_WAGON))) {
+			if (v != nullptr && parent_engine_type != EngineID::Invalid() && (UsesWagonOverride(v) || (v->IsArticulatedPart() && e->VehInfo<RailVehicleInfo>().railveh_type != RailVehicleType::Wagon))) {
 				/* Wagonoverrides use the colour scheme of the front engine.
 				 * Articulated parts use the colour scheme of the first part. (Not supported for articulated wagons) */
 				engine_type = parent_engine_type;
@@ -3139,7 +3139,7 @@ LiveryScheme GetEngineLiveryScheme(EngineID engine_type, EngineID parent_engine_
 			if (!IsValidCargoType(cargo_type)) cargo_type = e->GetDefaultCargoType();
 			if (!IsValidCargoType(cargo_type)) cargo_type = GetCargoTypeByLabel(CT_GOODS); // The vehicle does not carry anything, let's pick some freight cargo
 			assert(IsValidCargoType(cargo_type));
-			if (e->VehInfo<RailVehicleInfo>().railveh_type == RAILVEH_WAGON) {
+			if (e->VehInfo<RailVehicleInfo>().railveh_type == RailVehicleType::Wagon) {
 				if (!CargoSpec::Get(cargo_type)->is_freight) {
 					if (parent_engine_type == EngineID::Invalid()) {
 						return LS_PASSENGER_WAGON_STEAM;
@@ -3147,11 +3147,11 @@ LiveryScheme GetEngineLiveryScheme(EngineID engine_type, EngineID parent_engine_
 						bool is_mu = EngInfo(parent_engine_type)->misc_flags.Test(EngineMiscFlag::RailIsMU);
 						switch (RailVehInfo(parent_engine_type)->engclass) {
 							default: NOT_REACHED();
-							case EC_STEAM:    return LS_PASSENGER_WAGON_STEAM;
-							case EC_DIESEL:   return is_mu ? LS_DMU : LS_PASSENGER_WAGON_DIESEL;
-							case EC_ELECTRIC: return is_mu ? LS_EMU : LS_PASSENGER_WAGON_ELECTRIC;
-							case EC_MONORAIL: return LS_PASSENGER_WAGON_MONORAIL;
-							case EC_MAGLEV:   return LS_PASSENGER_WAGON_MAGLEV;
+							case EngineClass::Steam: return LS_PASSENGER_WAGON_STEAM;
+							case EngineClass::Diesel: return is_mu ? LS_DMU : LS_PASSENGER_WAGON_DIESEL;
+							case EngineClass::Electric: return is_mu ? LS_EMU : LS_PASSENGER_WAGON_ELECTRIC;
+							case EngineClass::Monorail: return LS_PASSENGER_WAGON_MONORAIL;
+							case EngineClass::Maglev: return LS_PASSENGER_WAGON_MAGLEV;
 						}
 					}
 				} else {
@@ -3162,11 +3162,11 @@ LiveryScheme GetEngineLiveryScheme(EngineID engine_type, EngineID parent_engine_
 
 				switch (e->VehInfo<RailVehicleInfo>().engclass) {
 					default: NOT_REACHED();
-					case EC_STEAM:    return LS_STEAM;
-					case EC_DIESEL:   return is_mu ? LS_DMU : LS_DIESEL;
-					case EC_ELECTRIC: return is_mu ? LS_EMU : LS_ELECTRIC;
-					case EC_MONORAIL: return LS_MONORAIL;
-					case EC_MAGLEV:   return LS_MAGLEV;
+					case EngineClass::Steam: return LS_STEAM;
+					case EngineClass::Diesel: return is_mu ? LS_DMU : LS_DIESEL;
+					case EngineClass::Electric: return is_mu ? LS_EMU : LS_ELECTRIC;
+					case EngineClass::Monorail: return LS_MONORAIL;
+					case EngineClass::Maglev: return LS_MAGLEV;
 				}
 			}
 
@@ -4193,7 +4193,7 @@ void Vehicle::UpdateVisualEffect(bool allow_power_change)
 			(!HasBit(visual_effect, VE_DISABLE_EFFECT) && GB(visual_effect, VE_TYPE_START, VE_TYPE_COUNT) == VE_TYPE_DEFAULT)) {
 		/* Only train engines have default effects.
 		 * Note: This is independent of whether the engine is a front engine or articulated part or whatever. */
-		if (e->type != VehicleType::Train || e->VehInfo<RailVehicleInfo>().railveh_type == RAILVEH_WAGON || !IsInsideMM(e->VehInfo<RailVehicleInfo>().engclass, EC_STEAM, EC_MONORAIL)) {
+		if (e->type != VehicleType::Train || e->VehInfo<RailVehicleInfo>().railveh_type == RailVehicleType::Wagon || !IsInsideMM(e->VehInfo<RailVehicleInfo>().engclass, EngineClass::Steam, EngineClass::Monorail)) {
 			if (visual_effect == VE_DEFAULT) {
 				visual_effect = 1 << VE_DISABLE_EFFECT;
 			} else {
@@ -4202,9 +4202,9 @@ void Vehicle::UpdateVisualEffect(bool allow_power_change)
 		} else {
 			if (visual_effect == VE_DEFAULT) {
 				/* Also set the offset */
-				visual_effect = (VE_OFFSET_CENTRE - (e->VehInfo<RailVehicleInfo>().engclass == EC_STEAM ? 4 : 0)) << VE_OFFSET_START;
+				visual_effect = (VE_OFFSET_CENTRE - (e->VehInfo<RailVehicleInfo>().engclass == EngineClass::Steam ? 4 : 0)) << VE_OFFSET_START;
 			}
-			SB(visual_effect, VE_TYPE_START, VE_TYPE_COUNT, e->VehInfo<RailVehicleInfo>().engclass - EC_STEAM + VE_TYPE_STEAM);
+			SB(visual_effect, VE_TYPE_START, VE_TYPE_COUNT, to_underlying(e->VehInfo<RailVehicleInfo>().engclass) - to_underlying(EngineClass::Steam) + VE_TYPE_STEAM);
 		}
 	}
 

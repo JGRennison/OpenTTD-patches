@@ -303,7 +303,7 @@ static CommandCost CheckBridgeSlope(BridgePieces bridge_piece, Axis axis, Slope 
 
 	if (f == FOUNDATION_NONE) return CommandCost();
 
-	return CommandCost(EXPENSES_CONSTRUCTION, _price[Price::BuildFoundation]);
+	return CommandCost(ExpensesType::Construction, _price[Price::BuildFoundation]);
 }
 
 /**
@@ -472,7 +472,7 @@ CommandCost CmdBuildBridge(DoCommandFlags flags, TileIndex tile_end, TileIndex t
 	if (transport_type == TRANSPORT_WATER && (tileh_start == SLOPE_FLAT || tileh_end == SLOPE_FLAT)) return CommandCost(STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION);
 	if (z_start != z_end) return CommandCost(STR_ERROR_BRIDGEHEADS_NOT_SAME_HEIGHT);
 
-	CommandCost cost(EXPENSES_CONSTRUCTION);
+	CommandCost cost(ExpensesType::Construction);
 	Owner owner;
 	bool is_new_owner;
 	bool is_upgrade = false;
@@ -1101,7 +1101,7 @@ CommandCost CmdBuildTunnel(DoCommandFlags flags, TileIndex start_tile, Transport
 		tiles++;
 	}
 	/* The cost of the digging. */
-	CommandCost cost(EXPENSES_CONSTRUCTION);
+	CommandCost cost(ExpensesType::Construction);
 	for (int i = 1; i <= tiles; i++) {
 		if (i == tiles_bump) {
 			tiles_coef++;
@@ -1375,7 +1375,7 @@ static CommandCost DoClearTunnel(TileIndex tile, DoCommandFlags flags)
 		ViewportMapInvalidateTunnelCacheByTile(tile < endtile ? tile : endtile, axis);
 	}
 
-	return CommandCost(EXPENSES_CONSTRUCTION, len * base_cost * (is_chunnel ? 2 : 1));
+	return CommandCost(ExpensesType::Construction, len * base_cost * (is_chunnel ? 2 : 1));
 }
 
 
@@ -1414,7 +1414,7 @@ static CommandCost DoClearBridge(TileIndex tile, DoCommandFlags flags)
 		ChangeTownRating(t, RATING_TUNNEL_BRIDGE_DOWN_STEP, RATING_TUNNEL_BRIDGE_MINIMUM, flags);
 	}
 
-	CommandCost cost(EXPENSES_CONSTRUCTION);
+	CommandCost cost(ExpensesType::Construction);
 
 	const bool rail = GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL;
 	TrackBits tile_tracks = TRACK_BIT_NONE;
@@ -3308,7 +3308,7 @@ static VehicleEnterTileStates VehicleEnterTile_TunnelBridge(Vehicle *v, TileInde
 
 			if (!(t->track & TRACK_BIT_WORMHOLE) && dir == vdir) {
 				if (frame == TUNNEL_SOUND_FRAME && t->IsMovingFront()) {
-					if (!PlayVehicleSound(t, VSE_TUNNEL) && RailVehInfo(t->engine_type)->engclass == 0) {
+					if (!PlayVehicleSound(t, VSE_TUNNEL) && RailVehInfo(t->engine_type)->engclass == EngineClass::Steam) {
 						SndPlayVehicleFx(SND_05_TRAIN_THROUGH_TUNNEL, v);
 					}
 					return {};
@@ -3533,7 +3533,7 @@ static CommandCost TerraformTile_TunnelBridge(TileIndex tile, DoCommandFlags fla
 		}
 
 		/* Surface slope is valid and remains unchanged? */
-		if (res.Succeeded() && (z_old == z_new) && (tileh_old == tileh_new)) return CommandCost(EXPENSES_CONSTRUCTION, _price[Price::BuildFoundation]);
+		if (res.Succeeded() && (z_old == z_new) && (tileh_old == tileh_new)) return CommandCost(ExpensesType::Construction, _price[Price::BuildFoundation]);
 	}
 
 	return Command<Commands::LandscapeClear>::Do(flags, tile);

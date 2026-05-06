@@ -132,7 +132,7 @@ CommandCost CmdBuildVehicle(DoCommandFlags flags, TileIndex tile, EngineID eid, 
 	if (cargo >= NUM_CARGO && cargo != INVALID_CARGO) return CMD_ERROR;
 
 	const Engine *e = Engine::Get(eid);
-	CommandCost value(EXPENSES_NEW_VEHICLES, e->GetCost());
+	CommandCost value(ExpensesType::NewVehicles, e->GetCost());
 
 	/* Engines without valid cargo should not be available */
 	CargoType default_cargo = e->GetDefaultCargoType();
@@ -145,7 +145,7 @@ CommandCost CmdBuildVehicle(DoCommandFlags flags, TileIndex tile, EngineID eid, 
 	if (!Vehicle::CanAllocateItem(2 + MAX_ARTICULATED_PARTS)) {
 		uint num_vehicles;
 		switch (type) {
-			case VehicleType::Train:    num_vehicles = (e->VehInfo<RailVehicleInfo>().railveh_type == RAILVEH_MULTIHEAD ? 2 : 1) + CountArticulatedParts(eid); break;
+			case VehicleType::Train:    num_vehicles = (e->VehInfo<RailVehicleInfo>().railveh_type == RailVehicleType::Multihead ? 2 : 1) + CountArticulatedParts(eid); break;
 			case VehicleType::Road:     num_vehicles = 1 + CountArticulatedParts(eid); break;
 			case VehicleType::Ship:     num_vehicles = 1 + CountArticulatedParts(eid); break;
 			case VehicleType::Aircraft: num_vehicles = e->VehInfo<AircraftVehicleInfo>().subtype & AIR_CTOL ? 2 : 3; break;
@@ -157,7 +157,7 @@ CommandCost CmdBuildVehicle(DoCommandFlags flags, TileIndex tile, EngineID eid, 
 	/* Check whether we can allocate a unit number. Autoreplace does not allocate
 	 * an unit number as it will (always) reuse the one of the replaced vehicle
 	 * and (train) wagons don't have an unit number in any scenario. */
-	UnitID unit_num = (flags.Test(DoCommandFlag::QueryCost) || flags.Test(DoCommandFlag::AutoReplace) || (type == VehicleType::Train && e->VehInfo<RailVehicleInfo>().railveh_type == RAILVEH_WAGON)) ? 0 : GetFreeUnitNumber(type);
+	UnitID unit_num = (flags.Test(DoCommandFlag::QueryCost) || flags.Test(DoCommandFlag::AutoReplace) || (type == VehicleType::Train && e->VehInfo<RailVehicleInfo>().railveh_type == RailVehicleType::Wagon)) ? 0 : GetFreeUnitNumber(type);
 	if (unit_num == UINT16_MAX) return CommandCost(STR_ERROR_TOO_MANY_VEHICLES_IN_GAME);
 
 	/* If we are refitting we need to temporarily purchase the vehicle to be able to
@@ -277,7 +277,7 @@ CommandCost CmdSellVehicle(DoCommandFlags flags, TileIndex tile, VehicleID v_id,
 	if (v->type == VehicleType::Train) {
 		ret = CmdSellRailWagon(flags, v, HasFlag(sell_flags, SellVehicleFlags::SellChain), HasFlag(sell_flags, SellVehicleFlags::BackupOrder), client_id);
 	} else {
-		ret = CommandCost(EXPENSES_NEW_VEHICLES, -front->value);
+		ret = CommandCost(ExpensesType::NewVehicles, -front->value);
 
 		if (flags.Test(DoCommandFlag::Execute)) {
 			if (front->IsPrimaryVehicle() && HasFlag(sell_flags, SellVehicleFlags::BackupOrder)) OrderBackup::Backup(front, client_id);
@@ -346,23 +346,23 @@ static CommandCost GetRefitCost(const Vehicle *v, EngineID engine_type, CargoTyp
 	switch (e->type) {
 		case VehicleType::Ship:
 			base_price = Price::BuildVehicleShip;
-			expense_type = EXPENSES_SHIP_RUN;
+			expense_type = ExpensesType::ShipRun;
 			break;
 
 		case VehicleType::Road:
 			base_price = Price::BuildVehicleRoad;
-			expense_type = EXPENSES_ROADVEH_RUN;
+			expense_type = ExpensesType::RoadVehRun;
 			break;
 
 		case VehicleType::Aircraft:
 			base_price = Price::BuildVehicleAircraft;
-			expense_type = EXPENSES_AIRCRAFT_RUN;
+			expense_type = ExpensesType::AircraftRun;
 			break;
 
 		case VehicleType::Train:
-			base_price = (e->VehInfo<RailVehicleInfo>().railveh_type == RAILVEH_WAGON) ? Price::BuildVehicleWagon : Price::BuildVehicleTrain;
+			base_price = (e->VehInfo<RailVehicleInfo>().railveh_type == RailVehicleType::Wagon) ? Price::BuildVehicleWagon : Price::BuildVehicleTrain;
 			cost_factor <<= 1;
-			expense_type = EXPENSES_TRAIN_RUN;
+			expense_type = ExpensesType::TrainRun;
 			break;
 
 		default: NOT_REACHED();
@@ -768,7 +768,7 @@ CommandCost CmdDepotSellAllVehicles(DoCommandFlags flags, TileIndex tile, Vehicl
 {
 	VehicleList list;
 
-	CommandCost cost(EXPENSES_NEW_VEHICLES);
+	CommandCost cost(ExpensesType::NewVehicles);
 
 	if (!IsCompanyBuildableVehicleType(vehicle_type)) return CMD_ERROR;
 	if (!IsDepotTile(tile)) return CMD_ERROR;
@@ -802,7 +802,7 @@ CommandCost CmdDepotSellAllVehicles(DoCommandFlags flags, TileIndex tile, Vehicl
 CommandCost CmdDepotMassAutoReplace(DoCommandFlags flags, TileIndex tile, VehicleType vehicle_type)
 {
 	VehicleList list;
-	CommandCost cost = CommandCost(EXPENSES_NEW_VEHICLES);
+	CommandCost cost = CommandCost(ExpensesType::NewVehicles);
 
 	if (!IsCompanyBuildableVehicleType(vehicle_type)) return CMD_ERROR;
 	if (!IsDepotTile(tile) || !IsInfraUsageAllowed(vehicle_type, _current_company, GetTileOwner(tile))) return CMD_ERROR;
@@ -1363,7 +1363,7 @@ CommandCost CmdDeleteTemplateReplacement(DoCommandFlags flags, GroupID group_id)
  */
 CommandCost CmdCloneVehicle(DoCommandFlags flags, TileIndex tile, VehicleID veh_id, bool share_orders)
 {
-	CommandCost total_cost(EXPENSES_NEW_VEHICLES);
+	CommandCost total_cost(ExpensesType::NewVehicles);
 
 	Vehicle *v = Vehicle::GetIfValid(veh_id);
 	if (v == nullptr || !IsCompanyBuildableVehicleType(v) || !v->IsPrimaryVehicle()) return CMD_ERROR;

@@ -700,7 +700,7 @@ struct CmdPlantTreeHelper {
 	Company *c;
 	int limit;
 
-	CmdPlantTreeHelper(DoCommandFlags flags, Company *c) : cost(EXPENSES_OTHER), flags(flags), c(c), limit((c == nullptr ? INT32_MAX : GB(c->tree_limit, 16, 16))) {}
+	CmdPlantTreeHelper(DoCommandFlags flags, Company *c) : cost(ExpensesType::Other), flags(flags), c(c), limit((c == nullptr ? INT32_MAX : GB(c->tree_limit, 16, 16))) {}
 
 	void PlantTrees(TileIndex tile, TreeType tree_to_plant, uint8_t count)
 	{
@@ -1003,9 +1003,7 @@ using DrawTreeTileOverlayFlags = EnumBitSet<DrawTreeTileOverlayFlag, uint64_t>;
 
 static void DrawTreeTileOverlay(TileInfo *ti, TreeType tree_type, TreeGrowthStage growth_stage, uint trees, DrawTreeTileOverlayFlags flags);
 
-struct TreeListEnt : PalSpriteID {
-	int8_t x, y;
-};
+struct TreeListEnt : PalSpriteID, Coord2D<int8_t> {};
 
 /** @copydoc DrawTileProc */
 static void DrawTile_Trees(TileInfo *ti, DrawTileProcParams params)
@@ -1053,7 +1051,7 @@ void DrawTreeTileOverlay(TileInfo *ti, TreeType tree_type, TreeGrowthStage growt
 	dbg_assert(index < lengthof(_tree_layout_sprite));
 
 	const PalSpriteID *s = _tree_layout_sprite[index];
-	const TreePos *d = _tree_layout_xy[GB(tmp, 2, 2)];
+	const Coord2D<uint8_t> *d = _tree_layout_xy[GB(tmp, 2, 2)];
 
 	/* combine trees into one sprite object */
 	StartSpriteCombine();
@@ -1144,7 +1142,7 @@ static CommandCost ClearTile_Trees(TileIndex tile, DoCommandFlags flags)
 		_tree_placer_memory.erase(tile);
 	}
 
-	return CommandCost(EXPENSES_CONSTRUCTION, num * _price[Price::ClearTrees]);
+	return CommandCost(ExpensesType::Construction, num * _price[Price::ClearTrees]);
 }
 
 /** @copydoc GetTileDescProc */

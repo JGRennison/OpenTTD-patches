@@ -200,13 +200,13 @@
 
 /* static */ Money ScriptCompany::GetAnnualExpenseValue(CompanyID company, uint32_t year_offset, ExpensesType expenses_type)
 {
-	EnforcePrecondition(false, expenses_type < (ExpensesType)::EXPENSES_END);
+	EnforcePrecondition(false, expenses_type < static_cast<ExpensesType>(to_underlying(::ExpensesType::End)));
 	EnforcePrecondition(false, year_offset <= 2);
 
 	company = ResolveCompanyID(company);
 	if (company == COMPANY_INVALID) return -1;
 
-	return ::Company::Get(company)->yearly_expenses[year_offset][expenses_type];
+	return ::Company::Get(company)->yearly_expenses[year_offset][static_cast<::ExpensesType>(expenses_type)];
 }
 
 
@@ -300,7 +300,7 @@
 /* static */ bool ScriptCompany::ChangeBankBalance(ScriptCompany::CompanyID company, Money delta, ExpensesType expenses_type, TileIndex tile)
 {
 	EnforceDeityMode(false);
-	EnforcePrecondition(false, expenses_type < (ExpensesType)::EXPENSES_END);
+	EnforcePrecondition(false, expenses_type < static_cast<ExpensesType>(to_underlying(::ExpensesType::End)));
 	EnforcePrecondition(false, tile == INVALID_TILE || ::IsValidTile(tile));
 
 	company = ResolveCompanyID(company);

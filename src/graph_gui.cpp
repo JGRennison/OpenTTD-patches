@@ -763,11 +763,7 @@ public:
 					DrawString(text, str, (this->highlight_state && this->highlight_range == index) ? TC_WHITE : TC_BLACK, SA_CENTER, false, FontSize::Small);
 
 					if (HasBit(this->masked_range, index)) {
-						GfxFillRect(line.Shrink(WidgetDimensions::scaled.bevel), GetColourGradient(Colours::Brown, SHADE_DARKER), FillRectMode::Checker);
-					}
-
-					if (HasBit(this->masked_range, index)) {
-						GfxFillRect(line.Shrink(WidgetDimensions::scaled.bevel), GetColourGradient(Colours::Brown, SHADE_DARKER), FillRectMode::Checker);
+						GfxFillRect(line.Shrink(WidgetDimensions::scaled.bevel), GetColourGradient(Colours::Brown, Shade::Darker), FillRectMode::Checker);
 					}
 
 					line = line.Translate(0, line_height);
@@ -945,7 +941,7 @@ public:
 			if (c == nullptr) continue;
 
 			DataSet &dataset = this->data.emplace_back();
-			dataset.colour = GetColourGradient(c->colour, SHADE_LIGHTER);
+			dataset.colour = GetColourGradient(c->colour, Shade::Lighter);
 			dataset.exclude_bit = k.base();
 
 			for (int j = this->num_on_x_axis, i = 0; --j >= 0;) {
@@ -2046,8 +2042,8 @@ struct PerformanceRatingDetailWindow : Window {
 		ScoreID score_type = (ScoreID)(widget - WID_PRD_SCORE_FIRST);
 
 		/* The colours used to show how the progress is going */
-		PixelColour colour_done = GetColourGradient(Colours::Green, SHADE_NORMAL);
-		PixelColour colour_notdone = GetColourGradient(Colours::Red, SHADE_NORMAL);
+		PixelColour colour_done = GetColourGradient(Colours::Green, Shade::Normal);
+		PixelColour colour_notdone = GetColourGradient(Colours::Red, Shade::Normal);
 
 		/* Draw all the score parts */
 		int64_t val    = _score_part[company][score_type];

@@ -781,7 +781,7 @@ static void MinimapScreenCallback(void *userdata, void *buf, uint y, uint pitch,
 	/* Fill with the company colours */
 	TypedIndexContainer<std::array<PixelColour, OWNER_END + 1>, CompanyID> owner_colours;
 	for (const Company *c : Company::Iterate()) {
-		owner_colours[c->index] = GetColourGradient(c->colour, SHADE_LIGHT);
+		owner_colours[c->index] = GetColourGradient(c->colour, Shade::Light);
 	}
 
 	/* Fill with some special colours */

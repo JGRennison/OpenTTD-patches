@@ -75,7 +75,7 @@ bool CheckAutoreplaceValidity(EngineID from, EngineID to, CompanyID company)
 			if (!GetAllCompatibleRailTypes(e_from->VehInfo<RailVehicleInfo>().railtypes).Any(GetAllCompatibleRailTypes(e_to->VehInfo<RailVehicleInfo>().railtypes))) return false;
 
 			/* make sure we do not replace wagons with engines or vice versa */
-			if ((e_from->VehInfo<RailVehicleInfo>().railveh_type == RAILVEH_WAGON) != (e_to->VehInfo<RailVehicleInfo>().railveh_type == RAILVEH_WAGON)) return false;
+			if ((e_from->VehInfo<RailVehicleInfo>().railveh_type == RailVehicleType::Wagon) != (e_to->VehInfo<RailVehicleInfo>().railveh_type == RailVehicleType::Wagon)) return false;
 			break;
 		}
 
@@ -640,7 +640,7 @@ static CommandCost ReplaceFreeUnit(Vehicle **single_unit, DoCommandFlags flags, 
 	Train *old_v = Train::From(*single_unit);
 	assert(!old_v->IsArticulatedPart() && !old_v->IsRearDualheaded());
 
-	CommandCost cost = CommandCost(EXPENSES_NEW_VEHICLES, 0);
+	CommandCost cost = CommandCost(ExpensesType::NewVehicles, 0);
 
 	/* Build and refit replacement vehicle */
 	Vehicle *new_v = nullptr;
@@ -714,7 +714,7 @@ static CommandCost ReplaceChain(Vehicle **chain, DoCommandFlags flags, bool wago
 	Vehicle *old_head = *chain;
 	assert(old_head->IsPrimaryVehicle());
 
-	CommandCost cost = CommandCost(EXPENSES_NEW_VEHICLES, 0);
+	CommandCost cost = CommandCost(ExpensesType::NewVehicles, 0);
 
 	if (old_head->type == VehicleType::Train) {
 		/* Store the length of the old vehicle chain, rounded up to whole tiles */
@@ -754,7 +754,7 @@ static CommandCost ReplaceChain(Vehicle **chain, DoCommandFlags flags, bool wago
 				for (auto it = std::rbegin(replacements); it != std::rend(replacements); ++it) {
 					Vehicle *append = it->GetVehicle();
 
-					if (RailVehInfo(append->engine_type)->railveh_type == RAILVEH_WAGON) continue;
+					if (RailVehInfo(append->engine_type)->railveh_type == RailVehicleType::Wagon) continue;
 
 					if (it->new_veh != nullptr) {
 						/* Move the old engine to a separate row with DoCommandFlag::AutoReplace. Else
@@ -781,7 +781,7 @@ static CommandCost ReplaceChain(Vehicle **chain, DoCommandFlags flags, bool wago
 					assert(last_engine != nullptr);
 					Vehicle *append = it->GetVehicle();
 
-					if (RailVehInfo(append->engine_type)->railveh_type == RAILVEH_WAGON) {
+					if (RailVehInfo(append->engine_type)->railveh_type == RailVehicleType::Wagon) {
 						/* Insert wagon after 'last_engine' */
 						CommandCost res = CmdMoveVehicle(append, last_engine, DoCommandFlag::Execute, false);
 
@@ -810,7 +810,7 @@ static CommandCost ReplaceChain(Vehicle **chain, DoCommandFlags flags, bool wago
 					if (wagon == nullptr) continue;
 					if (wagon->First() == new_head) break;
 
-					assert(RailVehInfo(wagon->engine_type)->railveh_type == RAILVEH_WAGON);
+					assert(RailVehInfo(wagon->engine_type)->railveh_type == RailVehicleType::Wagon);
 
 					/* Sell wagon */
 					[[maybe_unused]] CommandCost ret = Command<Commands::SellVehicle>::Do(DoCommandFlag::Execute, wagon->tile, wagon->index, SellVehicleFlags::None, INVALID_CLIENT_ID);
@@ -968,7 +968,7 @@ CommandCost CmdAutoreplaceVehicle(DoCommandFlags flags, VehicleID veh_id, bool s
 		w = (!free_wagon && w->type == VehicleType::Train ? Train::From(w)->GetNextUnit() : nullptr);
 	}
 
-	CommandCost cost = CommandCost(EXPENSES_NEW_VEHICLES, 0);
+	CommandCost cost = CommandCost(ExpensesType::NewVehicles, 0);
 	bool nothing_to_do = true;
 
 	if (any_replacements) {

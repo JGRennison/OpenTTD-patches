@@ -513,7 +513,7 @@ void LinkGraphOverlay::DrawContent(Blitter *blitter, const DrawPixelInfo *dpi, P
 		GfxDrawLine(blitter, dpi, pta.x, pta.y + offset_y, ptb.x, ptb.y + offset_y, colour, width, dash);
 	}
 
-	GfxDrawLine(blitter, dpi, pta.x, pta.y, ptb.x, ptb.y, GetColourGradient(Colours::Grey, SHADE_DARKEST), width);
+	GfxDrawLine(blitter, dpi, pta.x, pta.y, ptb.x, ptb.y, GetColourGradient(Colours::Grey, Shade::Darkest), width);
 }
 
 /**
@@ -534,8 +534,8 @@ void LinkGraphOverlay::DrawStationDots(Blitter *blitter, const DrawPixelInfo *dp
 		uint r = width * 2 + width * 2 * std::min<uint>(200, i.quantity) / 200;
 
 		LinkGraphOverlay::DrawVertex(blitter, dpi, pt.x, pt.y, r,
-				GetColourGradient(st->owner != OWNER_NONE ? Company::Get(st->owner)->colour : Colours::Grey, SHADE_LIGHT),
-				GetColourGradient(Colours::Grey, SHADE_DARKEST));
+				GetColourGradient(st->owner != OWNER_NONE ? Company::Get(st->owner)->colour : Colours::Grey, Shade::Light),
+				GetColourGradient(Colours::Grey, Shade::Darkest));
 	}
 }
 

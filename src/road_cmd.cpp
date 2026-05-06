@@ -680,7 +680,7 @@ static CommandCost RemoveRoad(TileIndex tile, DoCommandFlags flags, RoadBits pie
 		/* If it's the last roadtype, just clear the whole tile */
 		if (!custom_bridge_head && GetRoadType(tile, OtherRoadTramType(rtt)) == INVALID_ROADTYPE) return Command<Commands::LandscapeClear>::Do(flags, tile);
 
-		CommandCost cost(EXPENSES_CONSTRUCTION);
+		CommandCost cost(ExpensesType::Construction);
 		if (IsTileType(tile, TileType::TunnelBridge)) {
 			const RoadBits entrance_piece = DiagDirToRoadBits(GetTunnelBridgeDirection(tile));
 			const RoadBits axial_pieces = AxisToRoadBits(DiagDirToAxis(GetTunnelBridgeDirection(tile)));
@@ -860,7 +860,7 @@ static CommandCost RemoveRoad(TileIndex tile, DoCommandFlags flags, RoadBits pie
 				}
 			}
 
-			CommandCost cost(EXPENSES_CONSTRUCTION, CountBits(pieces) * RoadClearCost(existing_rt));
+			CommandCost cost(ExpensesType::Construction, CountBits(pieces) * RoadClearCost(existing_rt));
 			/* If we build a foundation we have to pay for it. */
 			if (f == FOUNDATION_NONE && GetRoadFoundation(tileh, present) != FOUNDATION_NONE) cost.AddCost(_price[Price::BuildFoundation]);
 
@@ -909,7 +909,7 @@ static CommandCost RemoveRoad(TileIndex tile, DoCommandFlags flags, RoadBits pie
 					UpdateRoadCachedOneWayStatesAroundTile(tile);
 				}
 			}
-			return CommandCost(EXPENSES_CONSTRUCTION, RoadClearCost(existing_rt) * 2);
+			return CommandCost(ExpensesType::Construction, RoadClearCost(existing_rt) * 2);
 		}
 
 		default:
@@ -953,7 +953,7 @@ static CommandCost CheckRoadSlope(Slope tileh, RoadBits *pieces, RoadBits existi
 	if (_settings_game.construction.build_on_slopes && !_invalid_tileh_slopes_road[0][tileh].Any(other | type_bits)) {
 
 		/* If we add leveling we've got to pay for it */
-		if ((other | existing).None()) return CommandCost(EXPENSES_CONSTRUCTION, _price[Price::BuildFoundation]);
+		if ((other | existing).None()) return CommandCost(ExpensesType::Construction, _price[Price::BuildFoundation]);
 
 		return CommandCost();
 	}
@@ -973,12 +973,12 @@ static CommandCost CheckRoadSlope(Slope tileh, RoadBits *pieces, RoadBits existi
 			if (_settings_game.construction.build_on_slopes) {
 
 				/* If we add foundation we've got to pay for it */
-				if ((other | existing).None()) return CommandCost(EXPENSES_CONSTRUCTION, _price[Price::BuildFoundation]);
+				if ((other | existing).None()) return CommandCost(ExpensesType::Construction, _price[Price::BuildFoundation]);
 
 				return CommandCost();
 			}
 		} else {
-			if (HasExactlyOneBit(existing) && GetRoadFoundation(tileh, existing) == FOUNDATION_NONE) return CommandCost(EXPENSES_CONSTRUCTION, _price[Price::BuildFoundation]);
+			if (HasExactlyOneBit(existing) && GetRoadFoundation(tileh, existing) == FOUNDATION_NONE) return CommandCost(ExpensesType::Construction, _price[Price::BuildFoundation]);
 			return CommandCost();
 		}
 	}
@@ -1010,7 +1010,7 @@ static bool CanConvertUnownedRoadType(Owner owner, RoadTramType rtt)
 CommandCost CmdBuildRoad(DoCommandFlags flags, TileIndex tile, RoadBits pieces, RoadType rt, DisallowedRoadDirections toggle_drd, TownID town_id, BuildRoadFlags build_flags)
 {
 	CompanyID company = _current_company;
-	CommandCost cost(EXPENSES_CONSTRUCTION);
+	CommandCost cost(ExpensesType::Construction);
 
 	RoadBits existing{};
 	RoadBits other_bits{};
@@ -1193,7 +1193,7 @@ CommandCost CmdBuildRoad(DoCommandFlags flags, TileIndex tile, RoadBits pieces, 
 				}
 				MarkTileDirtyByTile(tile);
 			}
-			return CommandCost(EXPENSES_CONSTRUCTION, 2 * RoadBuildCost(rt));
+			return CommandCost(ExpensesType::Construction, 2 * RoadBuildCost(rt));
 		}
 
 		case TileType::Station: {
@@ -1629,7 +1629,7 @@ CommandCost CmdBuildLongRoad(DoCommandFlags flags, TileIndex end_tile, TileIndex
 	 * when you just 'click' on one tile to build them. */
 	if ((drd == DisallowedRoadDirection::Northbound || drd == DisallowedRoadDirection::Southbound) && (axis == AXIS_Y) == (start_tile == end_tile && start_half == end_half)) drd.Flip({DisallowedRoadDirection::Northbound, DisallowedRoadDirection::Southbound});
 
-	CommandCost cost(EXPENSES_CONSTRUCTION);
+	CommandCost cost(ExpensesType::Construction);
 	CommandCost last_error = CMD_ERROR;
 	TileIndex tile = start_tile;
 	bool had_success = false;
@@ -1699,7 +1699,7 @@ CommandCost CmdBuildLongRoad(DoCommandFlags flags, TileIndex end_tile, TileIndex
  */
 CommandCost CmdRemoveLongRoad(DoCommandFlags flags, TileIndex end_tile, TileIndex start_tile, RoadType rt, Axis axis, bool start_half, bool end_half)
 {
-	CommandCost cost(EXPENSES_CONSTRUCTION);
+	CommandCost cost(ExpensesType::Construction);
 
 	if (start_tile >= Map::Size()) return CMD_ERROR;
 	if (!ValParamRoadType(rt) || !IsValidAxis(axis)) return CMD_ERROR;
@@ -1778,7 +1778,7 @@ CommandCost CmdBuildRoadDepot(DoCommandFlags flags, TileIndex tile, RoadType rt,
 {
 	if (!ValParamRoadType(rt) || !IsValidDiagDirection(dir)) return CMD_ERROR;
 
-	CommandCost cost(EXPENSES_CONSTRUCTION);
+	CommandCost cost(ExpensesType::Construction);
 
 	Slope tileh = GetTileSlope(tile);
 	if (tileh != SLOPE_FLAT) {
@@ -1837,7 +1837,7 @@ static CommandCost RemoveRoadDepot(TileIndex tile, DoCommandFlags flags)
 		DeleteNewGRFInspectWindow(GrfSpecFeature::RoadTypes, tile.base());
 	}
 
-	return CommandCost(EXPENSES_CONSTRUCTION, _price[Price::ClearDepotRoad]);
+	return CommandCost(ExpensesType::Construction, _price[Price::ClearDepotRoad]);
 }
 
 /** @copydoc ClearTileProc */
@@ -1849,7 +1849,7 @@ static CommandCost ClearTile_Road(TileIndex tile, DoCommandFlags flags)
 
 			/* Clear the road if only one piece is on the tile OR we are not using the DoCommandFlag::Auto flag */
 			if ((HasExactlyOneBit(b) && GetRoadBits(tile, RoadTramType::Tram).None()) || !flags.Test(DoCommandFlag::Auto)) {
-				CommandCost ret(EXPENSES_CONSTRUCTION);
+				CommandCost ret(ExpensesType::Construction);
 				for (RoadTramType rtt : ROADTRAMTYPES_ALL) {
 					if (!MayHaveRoad(tile) || GetRoadType(tile, rtt) == INVALID_ROADTYPE) continue;
 
@@ -1863,7 +1863,7 @@ static CommandCost ClearTile_Road(TileIndex tile, DoCommandFlags flags)
 		}
 
 		case RoadTileType::Crossing: {
-			CommandCost ret(EXPENSES_CONSTRUCTION);
+			CommandCost ret(ExpensesType::Construction);
 
 			if (flags.Test(DoCommandFlag::Auto)) return CommandCost(STR_ERROR_MUST_REMOVE_ROAD_FIRST);
 
@@ -3054,11 +3054,11 @@ static CommandCost TerraformTile_Road(TileIndex tile, DoCommandFlags flags, int 
 	if (_settings_game.construction.build_on_slopes && AutoslopeEnabled()) {
 		switch (GetRoadTileType(tile)) {
 			case RoadTileType::Crossing:
-				if (!IsSteepSlope(tileh_new) && (GetTileMaxZ(tile) == z_new + GetSlopeMaxZ(tileh_new)) && HasBit(VALID_LEVEL_CROSSING_SLOPES, tileh_new)) return CommandCost(EXPENSES_CONSTRUCTION, _price[Price::BuildFoundation]);
+				if (!IsSteepSlope(tileh_new) && (GetTileMaxZ(tile) == z_new + GetSlopeMaxZ(tileh_new)) && HasBit(VALID_LEVEL_CROSSING_SLOPES, tileh_new)) return CommandCost(ExpensesType::Construction, _price[Price::BuildFoundation]);
 				break;
 
 			case RoadTileType::Depot:
-				if (AutoslopeCheckForEntranceEdge(tile, z_new, tileh_new, GetRoadDepotDirection(tile))) return CommandCost(EXPENSES_CONSTRUCTION, _price[Price::BuildFoundation]);
+				if (AutoslopeCheckForEntranceEdge(tile, z_new, tileh_new, GetRoadDepotDirection(tile))) return CommandCost(ExpensesType::Construction, _price[Price::BuildFoundation]);
 				break;
 
 			case RoadTileType::Normal: {
@@ -3075,7 +3075,7 @@ static CommandCost TerraformTile_Road(TileIndex tile, DoCommandFlags flags, int 
 						z_new += ApplyFoundationToSlope(GetRoadFoundation(tileh_new, bits), tileh_new);
 
 						/* The surface slope must not be changed */
-						if ((z_old == z_new) && (tileh_old == tileh_new)) return CommandCost(EXPENSES_CONSTRUCTION, _price[Price::BuildFoundation]);
+						if ((z_old == z_new) && (tileh_old == tileh_new)) return CommandCost(ExpensesType::Construction, _price[Price::BuildFoundation]);
 					}
 				}
 				break;
@@ -3146,7 +3146,7 @@ CommandCost CmdConvertRoad(DoCommandFlags flags, TileIndex tile, TileIndex area_
 	RoadVehicleList affected_rvs;
 	RoadTramType rtt = GetRoadTramType(to_type);
 
-	CommandCost cost(EXPENSES_CONSTRUCTION);
+	CommandCost cost(ExpensesType::Construction);
 	CommandCost error = CommandCost((rtt == RoadTramType::Tram) ? STR_ERROR_NO_SUITABLE_TRAMWAY : STR_ERROR_NO_SUITABLE_ROAD); // by default, there is no road to convert.
 	bool found_convertible_road = false; // whether we actually did convert any road/tram (see bug #7633)
 

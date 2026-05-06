@@ -44,8 +44,8 @@ static void PaySharingFee(Vehicle *v, Owner infra_owner, Money cost)
 		if (cost <= 0) return;
 	}
 	v->profit_this_year -= cost;
-	SubtractMoneyFromCompanyFract(v->owner, CommandCost(EXPENSES_SHARING_COST, cost));
-	SubtractMoneyFromCompanyFract(infra_owner, CommandCost(EXPENSES_SHARING_INC, -cost));
+	SubtractMoneyFromCompanyFract(v->owner, CommandCost(ExpensesType::SharingCost, cost));
+	SubtractMoneyFromCompanyFract(infra_owner, CommandCost(ExpensesType::SharingRevenue, -cost));
 }
 
 /**
@@ -164,7 +164,7 @@ static void RemoveAndSellVehicle(Vehicle *v, bool give_money)
 		for (Vehicle *u = v->First(); u != nullptr; u = u->Next()) {
 			value += u->value;
 		}
-		SubtractMoneyFromCompany(v->owner, CommandCost(EXPENSES_NEW_VEHICLES, -value));
+		SubtractMoneyFromCompany(v->owner, CommandCost(ExpensesType::NewVehicles, -value));
 	}
 
 	/* take special measures for trains, but not when sharing is disabled or when the train is a free wagon chain */

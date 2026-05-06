@@ -22,12 +22,7 @@ static const TreeTypeRange _tree_range_by_landscape[4] = {
 
 #define MAX_TREE_COUNT_BY_LANDSCAPE 12
 
-struct TreePos {
-	uint8_t x;
-	uint8_t y;
-};
-
-static const TreePos _tree_layout_xy[][4] = {
+static const Coord2D<uint8_t> _tree_layout_xy[][4] = {
 	{ { 9, 3 }, { 1, 8 }, { 0, 0 }, { 8, 9 } },
 	{ { 4, 4 }, { 9, 1 }, { 6, 9 }, { 0, 9 } },
 	{ { 9, 1 }, { 0, 9 }, { 6, 6 }, { 3, 0 } },

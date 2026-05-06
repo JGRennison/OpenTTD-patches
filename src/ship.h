@@ -46,7 +46,7 @@ struct Ship final : public SpecializedVehicle<Ship, VehicleType::Ship, Vehicle> 
 
 	void MarkDirty() override;
 	void UpdateDeltaXY() override;
-	ExpensesType GetExpenseType(bool income) const override { return income ? EXPENSES_SHIP_REVENUE : EXPENSES_SHIP_RUN; }
+	ExpensesType GetExpenseType(bool income) const override { return income ? ExpensesType::ShipRevenue : ExpensesType::ShipRun; }
 	void PlayLeaveStationSound(bool force = false) const override;
 	bool IsPrimaryVehicle() const override { return this->Previous() == nullptr; }
 	void GetImage(Direction direction, EngineImageType image_type, VehicleSpriteSeq *result) const override;

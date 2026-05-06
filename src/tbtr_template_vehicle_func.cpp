@@ -359,7 +359,7 @@ void CmdSetTrainUnitDirectionFromTemplate(Train *t, const TemplateVehicle *tv, D
  */
 CommandCost TestBuyAllTemplateVehiclesInChain(const TemplateVehicle *tv, TileIndex tile)
 {
-	CommandCost cost(EXPENSES_NEW_VEHICLES);
+	CommandCost cost(ExpensesType::NewVehicles);
 
 	for (; tv != nullptr; tv = tv->GetNextUnit()) {
 		cost.AddCost(Command<Commands::BuildVehicle>::Do({}, tile, tv->engine_type, false, INVALID_CARGO, INVALID_CLIENT_ID));

@@ -765,7 +765,7 @@ static void CompaniesGenStatistics()
 	if (_settings_game.economy.infrastructure_maintenance) {
 		/* Improved monthly infrastructure costs. */
 		for (const Company *c : Company::Iterate()) {
-			CommandCost cost(EXPENSES_PROPERTY);
+			CommandCost cost(ExpensesType::Property);
 			uint32_t rail_total = c->infrastructure.GetRailTotal();
 			for (RailType rt = RAILTYPE_BEGIN; rt < RAILTYPE_END; rt++) {
 				if (c->infrastructure.rail[rt] != 0) cost.AddCost(RailMaintenanceCost(rt, c->infrastructure.rail[rt], rail_total));
@@ -947,9 +947,9 @@ static void CompaniesPayInterest()
 		Money up_to_previous_month = yearly_fee * EconTime::CurMonth() / 12;
 		Money up_to_this_month = yearly_fee * (EconTime::CurMonth() + 1) / 12;
 
-		SubtractMoneyFromCompany(c->index, CommandCost(EXPENSES_LOAN_INTEREST, up_to_this_month - up_to_previous_month));
+		SubtractMoneyFromCompany(c->index, CommandCost(ExpensesType::LoanInterest, up_to_this_month - up_to_previous_month));
 
-		SubtractMoneyFromCompany(c->index, CommandCost(EXPENSES_OTHER, _price[Price::StationValue] >> 2));
+		SubtractMoneyFromCompany(c->index, CommandCost(ExpensesType::Other, _price[Price::StationValue] >> 2));
 	}
 }
 
@@ -2531,7 +2531,7 @@ void PostAcquireCompany(Company *c)
  */
 CommandCost CmdBuyShareInCompany(DoCommandFlags flags, CompanyID target_company)
 {
-	CommandCost cost(EXPENSES_OTHER);
+	CommandCost cost(ExpensesType::Other);
 	Company *c = Company::GetIfValid(target_company);
 
 	/* Check if buying shares is allowed (protection against modified clients)
@@ -2598,7 +2598,7 @@ CommandCost CmdSellShareInCompany(DoCommandFlags flags, CompanyID target_company
 		InvalidateWindowData(WC_COMPANY, target_company);
 		CompanyAdminUpdate(c);
 	}
-	return CommandCost(EXPENSES_OTHER, cost);
+	return CommandCost(ExpensesType::Other, cost);
 }
 
 /**
@@ -2640,7 +2640,7 @@ CommandCost CmdBuyCompany(DoCommandFlags flags, CompanyID target_company, bool h
 	/* Get the cost here as the company is deleted in DoAcquireCompany.
 	 * For bankruptcy this amount is calculated when the offer was made;
 	 * for hostile takeover you pay the current price. */
-	CommandCost cost(EXPENSES_OTHER, hostile_takeover ? CalculateHostileTakeoverValue(c) : c->bankrupt_value);
+	CommandCost cost(ExpensesType::Other, hostile_takeover ? CalculateHostileTakeoverValue(c) : c->bankrupt_value);
 
 	if (flags.Test(DoCommandFlag::Execute)) {
 		DoAcquireCompany(c, hostile_takeover);

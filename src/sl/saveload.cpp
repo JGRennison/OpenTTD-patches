@@ -3936,7 +3936,7 @@ static void SaveFileError()
  * We have written the whole game into memory, _memory_savegame, now find
  * and appropriate compressor and start writing to file.
  */
-static SaveOrLoadResult SaveFileToDisk(bool threaded)
+static SaveLoadResult SaveFileToDisk(bool threaded)
 {
 	try {
 		uint8_t compression;
@@ -3955,7 +3955,7 @@ static SaveOrLoadResult SaveFileToDisk(bool threaded)
 
 		if (threaded) SetAsyncSaveFinish(SaveFileDone);
 
-		return SL_OK;
+		return SaveLoadResult::Ok;
 	} catch (...) {
 		ClearSaveLoadState();
 
@@ -3974,7 +3974,7 @@ static SaveOrLoadResult SaveFileToDisk(bool threaded)
 		} else {
 			asfp();
 		}
-		return SL_ERROR;
+		return SaveLoadResult::Error;
 	}
 }
 
@@ -3989,9 +3989,9 @@ void WaitTillSaved()
  * using the writer, either in threaded mode if possible, or single-threaded.
  * @param writer   The filter to write the savegame to.
  * @param threaded Whether to try to perform the saving asynchronously.
- * @return Return the result of the action. #SL_OK or #SL_ERROR
+ * @return Return the result of the action. #SaveLoadResult::Ok or #SaveLoadResult::Error
  */
-static SaveOrLoadResult DoSave(std::shared_ptr<SaveFilter> writer, bool threaded)
+static SaveLoadResult DoSave(std::shared_ptr<SaveFilter> writer, bool threaded)
 {
 	assert(!_sl.saveinprogress);
 
@@ -4009,13 +4009,13 @@ static SaveOrLoadResult DoSave(std::shared_ptr<SaveFilter> writer, bool threaded
 	if (!threaded || !StartNewThread(&_async_save_thread.save_thread, "ottd:savegame", &SaveFileToDisk, true)) {
 		if (threaded) Debug(sl, 1, "Cannot create savegame thread, reverting to single-threaded mode...");
 
-		SaveOrLoadResult result = SaveFileToDisk(false);
+		SaveLoadResult result = SaveFileToDisk(false);
 		SaveFileDone();
 
 		return result;
 	}
 
-	return SL_OK;
+	return SaveLoadResult::Ok;
 }
 
 /**
@@ -4023,9 +4023,9 @@ static SaveOrLoadResult DoSave(std::shared_ptr<SaveFilter> writer, bool threaded
  * @param writer   The filter to write the savegame to.
  * @param threaded Whether to try to perform the saving asynchronously.
  * @param flags Save mode flags.
- * @return Return the result of the action. #SL_OK or #SL_ERROR
+ * @return Return the result of the action. #SaveLoadResult::Ok or #SaveLoadResult::Error
  */
-SaveOrLoadResult SaveWithFilter(std::shared_ptr<SaveFilter> writer, bool threaded, SaveModeFlags flags)
+SaveLoadResult SaveWithFilter(std::shared_ptr<SaveFilter> writer, bool threaded, SaveModeFlags flags)
 {
 	try {
 		_sl.action = SLA_SAVE;
@@ -4033,7 +4033,7 @@ SaveOrLoadResult SaveWithFilter(std::shared_ptr<SaveFilter> writer, bool threade
 		return DoSave(std::move(writer), threaded);
 	} catch (...) {
 		ClearSaveLoadState();
-		return SL_ERROR;
+		return SaveLoadResult::Error;
 	}
 }
 
@@ -4157,9 +4157,9 @@ struct ThreadedLoadFilter : LoadFilter {
  * Actually perform the loading of a "non-old" savegame.
  * @param reader     The filter to read the savegame from.
  * @param load_check Whether to perform the checking ("preview") or actually load the game.
- * @return Return the result of the action. #SL_OK or #SL_REINIT ("unload" the game)
+ * @return Return the result of the action. #SaveLoadResult::Ok or #SaveLoadResult::ReInit ("unload" the game)
  */
-static SaveOrLoadResult DoLoad(std::shared_ptr<LoadFilter> reader, bool load_check)
+static SaveLoadResult DoLoad(std::shared_ptr<LoadFilter> reader, bool load_check)
 {
 	_sl.lf = std::move(reader);
 
@@ -4380,22 +4380,22 @@ static SaveOrLoadResult DoLoad(std::shared_ptr<LoadFilter> reader, bool load_che
 		 * might have occurred since then. If it fails, load back the old game. */
 		if (!AfterLoadGame()) {
 			GamelogStopAction();
-			return SL_REINIT;
+			return SaveLoadResult::ReInit;
 		}
 
 		GamelogStopAction();
 		SlXvSetCurrentState();
 	}
 
-	return SL_OK;
+	return SaveLoadResult::Ok;
 }
 
 /**
  * Load the game using a (reader) filter.
  * @param reader   The filter to read the savegame from.
- * @return Return the result of the action. #SL_OK or #SL_REINIT ("unload" the game)
+ * @return Return the result of the action. #SaveLoadResult::Ok or #SaveLoadResult::ReInit ("unload" the game)
  */
-SaveOrLoadResult LoadWithFilter(std::shared_ptr<LoadFilter> reader)
+SaveLoadResult LoadWithFilter(std::shared_ptr<LoadFilter> reader)
 {
 	try {
 		_sl.action = SLA_LOAD;
@@ -4406,7 +4406,7 @@ SaveOrLoadResult LoadWithFilter(std::shared_ptr<LoadFilter> reader)
 		/* Skip the "colour" character */
 		Debug(sl, 0, "{}{}", strip_leading_colours(GetSaveLoadErrorType().GetDecodedString()), GetSaveLoadErrorMessage().GetDecodedString());
 
-		return SL_REINIT;
+		return SaveLoadResult::ReInit;
 	}
 }
 
@@ -4417,15 +4417,15 @@ SaveOrLoadResult LoadWithFilter(std::shared_ptr<LoadFilter> reader)
  * @param fop Save or load mode. Load can also be a TTD(Patch) game.
  * @param sb The sub directory to save the savegame in
  * @param threaded True when threaded saving is allowed
- * @return Return the result of the action. #SL_OK, #SL_ERROR, or #SL_REINIT ("unload" the game)
+ * @return Return the result of the action. #SaveLoadResult::Ok, #SaveLoadResult::Error, or #SaveLoadResult::ReInit ("unload" the game)
  */
-SaveOrLoadResult SaveOrLoad(const std::string &filename, SaveLoadOperation fop, DetailedFileType dft, Subdirectory sb, bool threaded, SaveModeFlags save_flags)
+SaveLoadResult SaveOrLoad(const std::string &filename, SaveLoadOperation fop, DetailedFileType dft, Subdirectory sb, bool threaded, SaveModeFlags save_flags)
 {
 	/* An instance of saving is already active, so don't go saving again */
 	if (_sl.saveinprogress && fop == SaveLoadOperation::Save && dft == DetailedFileType::GameFile && threaded) {
 		/* if not an autosave, but a user action, show error message */
 		if (!_do_autosave) ShowErrorMessage(GetEncodedString(STR_ERROR_SAVE_STILL_IN_PROGRESS), {}, WL_ERROR);
-		return SL_OK;
+		return SaveLoadResult::Ok;
 	}
 	WaitTillSaved();
 
@@ -4444,18 +4444,18 @@ SaveOrLoadResult SaveOrLoad(const std::string &filename, SaveLoadOperation fop, 
 			 * for OTTD savegames which have their own NewGRF logic. */
 			ClearGRFConfigList(_grfconfig);
 			GamelogReset();
-			if (!LoadOldSaveGame(filename)) return SL_REINIT;
+			if (!LoadOldSaveGame(filename)) return SaveLoadResult::ReInit;
 			_sl_version = SL_MIN_VERSION;
 			_sl_minor_version = 0;
 			SlXvResetState();
 			GamelogStartAction(GLAT_LOAD);
 			if (!AfterLoadGame()) {
 				GamelogStopAction();
-				return SL_REINIT;
+				return SaveLoadResult::ReInit;
 			}
 			GamelogStopAction();
 			SlXvSetCurrentState();
-			return SL_OK;
+			return SaveLoadResult::Ok;
 		}
 
 		assert(dft == DetailedFileType::GameFile);
@@ -4516,7 +4516,7 @@ SaveOrLoadResult SaveOrLoad(const std::string &filename, SaveLoadOperation fop, 
 		if (fop != SaveLoadOperation::Check) Debug(sl, 0, "{}{}", strip_leading_colours(GetSaveLoadErrorType().GetDecodedString()), GetSaveLoadErrorMessage().GetDecodedString());
 
 		/* A saver/loader exception!! reinitialize all variables to prevent crash! */
-		return (fop == SaveLoadOperation::Load) ? SL_REINIT : SL_ERROR;
+		return (fop == SaveLoadOperation::Load) ? SaveLoadResult::ReInit : SaveLoadResult::Error;
 	}
 }
 
@@ -4542,7 +4542,7 @@ void DoAutoOrNetsave(FiosNumberedSaveName &counter, bool threaded, FiosNumberedS
 	}
 
 	Debug(sl, 2, "Autosaving to '{}'", filename);
-	if (SaveOrLoad(filename, SaveLoadOperation::Save, DetailedFileType::GameFile, Subdirectory::Autosave, threaded, SMF_ZSTD_OK) != SL_OK) {
+	if (SaveOrLoad(filename, SaveLoadOperation::Save, DetailedFileType::GameFile, Subdirectory::Autosave, threaded, SMF_ZSTD_OK) != SaveLoadResult::Ok) {
 		ShowErrorMessage(GetEncodedString(STR_ERROR_AUTOSAVE_FAILED), {}, WL_ERROR);
 	}
 }

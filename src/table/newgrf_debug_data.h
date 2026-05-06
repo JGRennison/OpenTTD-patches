@@ -669,7 +669,7 @@ class NIHVehicle : public NIHelper {
 						"MULTIHEAD",
 						"WAGON",
 					};
-					output.Print("    Rail veh type: {}, power: {}", engine_types[rvi.railveh_type], rvi.power);
+					output.Print("    Rail veh type: {}, power: {}", engine_types[to_underlying(rvi.railveh_type)], rvi.power);
 				}
 				if (e->type == VehicleType::Road) {
 					output.register_next_line_click_flag_toggle(16 << flag_shift);

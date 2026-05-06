@@ -30,19 +30,19 @@ using EngineID = PoolID<EngineIDTag>;
 struct Engine;
 
 /** Available types of rail vehicles. */
-enum RailVehicleTypes : uint8_t {
-	RAILVEH_SINGLEHEAD,  ///< indicates a "standalone" locomotive
-	RAILVEH_MULTIHEAD,   ///< indicates a combination of two locomotives
-	RAILVEH_WAGON,       ///< simple wagon, not motorized
+enum class RailVehicleType : uint8_t {
+	Singlehead, ///< indicates a "standalone" locomotive
+	Multihead, ///< indicates a combination of two locomotives
+	Wagon, ///< simple wagon, not motorized
 };
 
 /** Type of rail engine. */
-enum EngineClass : uint8_t {
-	EC_STEAM,    ///< Steam rail engine.
-	EC_DIESEL,   ///< Diesel rail engine.
-	EC_ELECTRIC, ///< Electric rail engine.
-	EC_MONORAIL, ///< Mono rail engine.
-	EC_MAGLEV,   ///< Maglev engine.
+enum class EngineClass : uint8_t {
+	Steam, ///< Steam rail engine.
+	Diesel, ///< Diesel rail engine.
+	Electric, ///< Electric rail engine.
+	Monorail, ///< Mono rail engine.
+	Maglev, ///< Maglev engine.
 };
 
 /** Acceleration model of a vehicle. */
@@ -75,8 +75,8 @@ enum VisualEffect : uint8_t {
 /** Information about a rail vehicle. */
 struct RailVehicleInfo {
 	uint8_t image_index = 0;
-	RailVehicleTypes railveh_type = RAILVEH_WAGON;
-	uint8_t cost_factor = 0;            ///< Purchase cost factor;      For multiheaded engines the sum of both engine prices.
+	RailVehicleType railveh_type = RailVehicleType::Wagon;
+	uint8_t cost_factor = 0;                     ///< Purchase cost factor. For multiheaded engines the sum of both engine prices.
 	RailTypes railtypes{RAILTYPE_RAIL};          ///< Railtypes, mangled if elrail is disabled.
 	RailTypes intended_railtypes{RAILTYPE_RAIL}; ///< Intended railtypes, regardless of elrail being enabled or disabled.
 	uint8_t ai_passenger_only = 0;      ///< Bit value to tell AI that this engine is for passenger use only
