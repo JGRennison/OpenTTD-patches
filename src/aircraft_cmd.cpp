@@ -1388,9 +1388,8 @@ void HandleMissingAircraftOrders(Aircraft *v)
 	 */
 	const Station *st = GetTargetAirportIfValid(v);
 	if (st == nullptr) {
-		Backup<CompanyID> cur_company(_current_company, v->owner, FILE_LINE);
+		AutoRestoreBackup cur_company(_current_company, v->owner);
 		CommandCost ret = Command<Commands::SendVehicleToDepot>::Do(DoCommandFlag::Execute, v->index, DepotCommandFlag{}, {});
-		cur_company.Restore();
 
 		if (ret.Failed()) CrashAirplane(v);
 	} else if (!v->current_order.IsType(OT_GOTO_DEPOT)) {
@@ -1765,9 +1764,8 @@ static void AircraftEventHandler_HeliTakeOff(Aircraft *v, [[maybe_unused]] const
 
 	/* Send the helicopter to a hangar if needed for replacement */
 	if (v->NeedsAutomaticServicing()) {
-		Backup<CompanyID> cur_company(_current_company, v->owner, FILE_LINE);
+		AutoRestoreBackup cur_company(_current_company, v->owner);
 		Command<Commands::SendVehicleToDepot>::Do(DoCommandFlag::Execute, v->index, DepotCommandFlag::Service, {});
-		cur_company.Restore();
 	}
 }
 
@@ -1818,9 +1816,8 @@ static void AircraftEventHandler_Landing(Aircraft *v, [[maybe_unused]] const Air
 
 	/* check if the aircraft needs to be replaced or renewed and send it to a hangar if needed */
 	if (v->NeedsAutomaticServicing()) {
-		Backup<CompanyID> cur_company(_current_company, v->owner, FILE_LINE);
+		AutoRestoreBackup cur_company(_current_company, v->owner);
 		Command<Commands::SendVehicleToDepot>::Do(DoCommandFlag::Execute, v->index, DepotCommandFlag::Service, {});
-		cur_company.Restore();
 	}
 }
 

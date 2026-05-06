@@ -716,7 +716,7 @@ static void TileLoop_Town(TileIndex tile)
 		}
 	}
 
-	Backup<CompanyID> cur_company(_current_company, OWNER_TOWN, FILE_LINE);
+	AutoRestoreBackup cur_company(_current_company, OWNER_TOWN);
 
 	if (hs->building_flags.Any(BUILDING_HAS_1_TILE) &&
 			t->flags.Test(TownFlag::IsGrowing) &&
@@ -754,8 +754,6 @@ static void TileLoop_Town(TileIndex tile)
 			TryBuildTownHouse(t, tile, modes);
 		}
 	}
-
-	cur_company.Restore();
 }
 
 /** @copydoc ClearTileProc */
@@ -2054,7 +2052,7 @@ static bool GrowTown(Town *t, TownExpandModes modes)
 	};
 
 	/* Current "company" is a town */
-	Backup<CompanyID> cur_company(_current_company, OWNER_TOWN, FILE_LINE);
+	AutoRestoreBackup cur_company(_current_company, OWNER_TOWN);
 
 	TileIndex tile = t->xy; // The tile we are working with ATM
 
@@ -2062,7 +2060,6 @@ static bool GrowTown(Town *t, TownExpandModes modes)
 	for (const auto &ptr : _town_coord_mod) {
 		if (GetTownRoadBits(tile).Any()) {
 			bool success = GrowTownAtRoad(t, tile, modes);
-			cur_company.Restore();
 			return success;
 		}
 		tile = TileAdd(tile, ToTileIndexDiff(ptr));
@@ -2078,7 +2075,6 @@ static bool GrowTown(Town *t, TownExpandModes modes)
 				if (Command<Commands::LandscapeClear>::Do({DoCommandFlag::Auto, DoCommandFlag::NoWater, DoCommandFlag::Town}, tile).Succeeded()) {
 					RoadType rt = GetTownRoadType();
 					Command<Commands::BuildRoad>::Do({DoCommandFlag::Execute, DoCommandFlag::Auto}, tile, GenRandomRoadBits(), rt, {}, t->index, BuildRoadFlags::None);
-					cur_company.Restore();
 					return true;
 				}
 			}
@@ -2086,7 +2082,6 @@ static bool GrowTown(Town *t, TownExpandModes modes)
 		}
 	}
 
-	cur_company.Restore();
 	return false;
 }
 
@@ -2670,7 +2665,6 @@ static Town *CreateRandomTown(uint attempts, uint32_t townnameparts, TownSize si
 
 		Backup<CompanyID> cur_company(_current_company, OWNER_TOWN, FILE_LINE);
 		[[maybe_unused]] CommandCost rc = Command<Commands::DeleteTown>::Do(DoCommandFlag::Execute, t->index);
-		cur_company.Restore();
 		assert(rc.Succeeded());
 
 		/* We already know that we can allocate a single town when
@@ -3877,9 +3871,8 @@ static CommandCost TownActionRoadRebuild(Town *t, DoCommandFlags flags)
  */
 static bool CheckClearTile(TileIndex tile)
 {
-	Backup<CompanyID> cur_company(_current_company, OWNER_NONE, FILE_LINE);
+	AutoRestoreBackup cur_company(_current_company, OWNER_NONE);
 	CommandCost r = Command<Commands::LandscapeClear>::Do(DoCommandFlag::Town, tile);
-	cur_company.Restore();
 	return r.Succeeded();
 }
 

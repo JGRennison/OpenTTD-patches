@@ -329,7 +329,7 @@ class BuildIndustryWindow : public Window {
 
 	void UpdateAvailability()
 	{
-		this->enabled = this->selected_type != IT_INVALID && (_game_mode == GM_EDITOR || GetIndustryProbabilityCallback(this->selected_type, IACT_USERCREATION, 1) > 0);
+		this->enabled = this->selected_type != IT_INVALID && (_game_mode == GM_EDITOR || GetIndustryProbabilityCallback(this->selected_type, IndustryAvailabilityCallType::UserCreation, 1) > 0);
 	}
 
 	void SetupArrays()
@@ -619,11 +619,10 @@ public:
 		if (Town::GetNumItems() == 0) {
 			ShowErrorMessage(GetEncodedString(STR_ERROR_CAN_T_GENERATE_INDUSTRIES), GetEncodedString(STR_ERROR_MUST_FOUND_TOWN_FIRST), WL_INFO);
 		} else {
-			Backup<bool> old_generating_world(_generating_world, true, FILE_LINE);
+			AutoRestoreBackup old_generating_world(_generating_world, true);
 			BasePersistentStorageArray::SwitchMode(PSM_ENTER_GAMELOOP);
 			GenerateIndustries();
 			BasePersistentStorageArray::SwitchMode(PSM_LEAVE_GAMELOOP);
-			old_generating_world.Restore();
 		}
 	}
 
@@ -2281,7 +2280,7 @@ struct CargoesField {
 					GfxDrawLine(colpos, top, colpos, bot, CARGO_LINE_COLOUR);
 					colpos++;
 					const CargoSpec *csp = CargoSpec::Get(this->u.cargo.vertical_cargoes[i]);
-					GfxFillRect(colpos, top, colpos + CargoesField::cargo_line.width - 2, bot, csp->legend_colour, FILLRECT_OPAQUE);
+					GfxFillRect(colpos, top, colpos + CargoesField::cargo_line.width - 2, bot, csp->legend_colour, FillRectMode::Opaque);
 					colpos += CargoesField::cargo_line.width - 2;
 					GfxDrawLine(colpos, top, colpos, bot, CARGO_LINE_COLOUR);
 					colpos += 1 + CargoesField::cargo_space.width;
@@ -2432,7 +2431,7 @@ private:
 	static void DrawHorConnection(int left, int right, int top, const CargoSpec *csp)
 	{
 		GfxDrawLine(left, top, right, top, CARGO_LINE_COLOUR);
-		GfxFillRect(left, top + 1, right, top + CargoesField::cargo_line.height - 2, csp->legend_colour, FILLRECT_OPAQUE);
+		GfxFillRect(left, top + 1, right, top + CargoesField::cargo_line.height - 2, csp->legend_colour, FillRectMode::Opaque);
 		GfxDrawLine(left, top + CargoesField::cargo_line.height - 1, right, top + CargoesField::cargo_line.height - 1, CARGO_LINE_COLOUR);
 	}
 };

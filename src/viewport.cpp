@@ -3825,7 +3825,7 @@ static void ViewportMapDrawSelection(const Viewport * const vp)
 
 	if (BlitterFactory::GetCurrentBlitter()->GetScreenDepth() == 32) {
 		static std::array<Point, 4> points{ start_pt, mid1_pt, end_pt, mid2_pt };
-		GfxFillPolygon(points, 0, FILLRECT_FUNCTOR, [](void *dst, int count) {
+		GfxFillPolygon(points, 0, FillRectMode::Functor, [](void *dst, int count) {
 			uint32_t *buf = reinterpret_cast<uint32_t *>(dst);
 			for (int i = 0; i < count; i++) {
 				PixelBlend(buf + i, 0x40FCFCFC);
@@ -4386,7 +4386,7 @@ static void ViewportDoDrawPhase3(Viewport *vp)
 	if (_vdd->display_flags.Any({ NWidgetDisplayFlag::ShadeGrey, NWidgetDisplayFlag::ShadeDimmed })) {
 		DrawPixelInfo dp = _vdd->MakeDPIForText();
 		GfxFillRect(BlitterFactory::GetCurrentBlitter(), &dp, dp.left, dp.top, dp.left + dp.width, dp.top + dp.height,
-				_vdd->display_flags.Test(NWidgetDisplayFlag::ShadeDimmed) ? PALETTE_TO_TRANSPARENT : PALETTE_NEWSPAPER, FILLRECT_RECOLOUR);
+				_vdd->display_flags.Test(NWidgetDisplayFlag::ShadeDimmed) ? PALETTE_TO_TRANSPARENT : PALETTE_NEWSPAPER, FillRectMode::Recolour);
 	}
 
 	_vdd->bridge_to_map_x.clear();

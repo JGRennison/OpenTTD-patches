@@ -121,11 +121,11 @@ uint32_t _gfx_debug_flags;
  * @param top Minimum Y (inclusive)
  * @param right Maximum X (inclusive)
  * @param bottom Maximum Y (inclusive)
- * @param colour A 8 bit palette index (FILLRECT_OPAQUE and FILLRECT_CHECKER) or a recolour spritenumber (FILLRECT_RECOLOUR)
+ * @param colour A 8 bit palette index (FillRectMode::Opaque and FillRectMode::Checker) or a recolour spritenumber (FillRectMode::Recolour)
  * @param mode
- *         FILLRECT_OPAQUE:   Fill the rectangle with the specified colour
- *         FILLRECT_CHECKER:  Like FILLRECT_OPAQUE, but only draw every second pixel (used to grey out things)
- *         FILLRECT_RECOLOUR:  Apply a recolour sprite to every pixel in the rectangle currently on screen
+ *         FillRectMode::Opaque: Fill the rectangle with the specified colour
+ *         FillRectMode::Checker: Like FillRectMode::Opaque, but only draw every second pixel (used to grey out things)
+ *         FillRectMode::Recolour: Apply a recolour sprite to every pixel in the rectangle currently on screen
  */
 void GfxFillRect(Blitter *blitter, const DrawPixelInfo *dpi, int left, int top, int right, int bottom, PixelColourOrPaletteID colour, FillRectMode mode)
 {
@@ -155,15 +155,15 @@ void GfxFillRect(Blitter *blitter, const DrawPixelInfo *dpi, int left, int top, 
 	dst = blitter->MoveTo(dpi->dst_ptr, left, top);
 
 	switch (mode) {
-		default: // FILLRECT_OPAQUE
+		default: // FillRectMode::Opaque
 			blitter->DrawRect(dst, right, bottom, colour.AsPixelColour());
 			break;
 
-		case FILLRECT_RECOLOUR:
+		case FillRectMode::Recolour:
 			blitter->DrawColourMappingRect(dst, right, bottom, GB(colour.AsPaletteID(), 0, PALETTE_WIDTH));
 			break;
 
-		case FILLRECT_CHECKER: {
+		case FillRectMode::Checker: {
 			uint8_t bo = (oleft - left + dpi->left + otop - top + dpi->top) & 1;
 			PixelColour pc = colour.AsPixelColour();
 			do {
@@ -223,12 +223,12 @@ static std::vector<LineSegment> MakePolygonSegments(std::span<const Point> shape
  * @note For rectangles the GfxFillRect function will be faster.
  * @pre dpi->zoom == ZoomLevel::Min
  * @param shape List of points on the polygon.
- * @param colour An 8 bit palette index (FILLRECT_OPAQUE and FILLRECT_CHECKER) or a recolour spritenumber (FILLRECT_RECOLOUR).
+ * @param colour An 8 bit palette index (FillRectMode::Opaque and FillRectMode::Checker) or a recolour spritenumber (FillRectMode::Recolour).
  * @param mode
- *         FILLRECT_OPAQUE:   Fill the polygon with the specified colour.
- *         FILLRECT_CHECKER:  Fill every other pixel with the specified colour, in a checkerboard pattern.
- *         FILLRECT_RECOLOUR: Apply a recolour sprite to every pixel in the polygon.
- *         FILLRECT_FUNCTOR:  Apply a functor to a line of pixels.
+ *         FillRectMode::Opaque:   Fill the polygon with the specified colour.
+ *         FillRectMode::Checker:  Fill every other pixel with the specified colour, in a checkerboard pattern.
+ *         FillRectMode::Recolour: Apply a recolour sprite to every pixel in the polygon.
+ *         FillRectMode::Functor:  Apply a functor to a line of pixels.
  */
 void GfxFillPolygon(std::span<const Point> shape, PixelColourOrPaletteID colour, FillRectMode mode, GfxFillRectModeFunctor *fill_functor)
 {
@@ -298,13 +298,13 @@ void GfxFillPolygon(std::span<const Point> shape, PixelColourOrPaletteID colour,
 			/* Fill line y from x1 to x2. */
 			void *dst = blitter->MoveTo(dpi->dst_ptr, x1, y);
 			switch (mode) {
-				default: // FILLRECT_OPAQUE
+				default: // FillRectMode::Opaque
 					blitter->DrawRect(dst, x2 - x1, 1, colour.AsPixelColour());
 					break;
-				case FILLRECT_RECOLOUR:
+				case FillRectMode::Recolour:
 					blitter->DrawColourMappingRect(dst, x2 - x1, 1, GB(colour.AsPaletteID(), 0, PALETTE_WIDTH));
 					break;
-				case FILLRECT_CHECKER: {
+				case FillRectMode::Checker: {
 					/* Fill every other pixel, offset such that the sum of filled pixels' X and Y coordinates is odd.
 					 * This creates a checkerboard effect. */
 					PixelColour pc = colour.AsPixelColour();
@@ -313,7 +313,7 @@ void GfxFillPolygon(std::span<const Point> shape, PixelColourOrPaletteID colour,
 					}
 					break;
 				}
-				case FILLRECT_FUNCTOR:
+				case FillRectMode::Functor:
 					/* Call the provided fill functor. */
 					fill_functor(dst, x2 - x1);
 					break;
@@ -1866,7 +1866,7 @@ void DrawDirtyBlocks()
 		if (unlikely(HasBit(_gfx_debug_flags, GDF_SHOW_RECT_DIRTY))) {
 			ViewportDoDrawProcessAllPending();
 			for (const Rect &r : _dirty_blocks) {
-				GfxFillRect(r.left, r.top, r.right, r.bottom, _string_colourmap[(_dirty_block_colour.fetch_add(1, std::memory_order_relaxed) + 1) & 0xF], FILLRECT_CHECKER);
+				GfxFillRect(r.left, r.top, r.right, r.bottom, _string_colourmap[(_dirty_block_colour.fetch_add(1, std::memory_order_relaxed) + 1) & 0xF], FillRectMode::Checker);
 			}
 		}
 	}

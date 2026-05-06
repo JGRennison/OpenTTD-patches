@@ -312,7 +312,7 @@ WidgetID GetWidgetFromPos(const Window *w, int x, int y)
 void DrawFrameRect(int left, int top, int right, int bottom, Colours colour, FrameFlags flags)
 {
 	if (flags.Test(FrameFlag::Transparent)) {
-		GfxFillRect(left, top, right, bottom, PALETTE_TO_TRANSPARENT, FILLRECT_RECOLOUR);
+		GfxFillRect(left, top, right, bottom, PALETTE_TO_TRANSPARENT, FillRectMode::Recolour);
 	} else {
 		assert(colour < Colours::End);
 
@@ -535,7 +535,7 @@ static inline void DrawVerticalScrollbar(const Rect &r, Colours colour, bool up_
 	/* draw "shaded" background */
 	Rect bg = r.Shrink(0, height);
 	GfxFillRect(bg, c2);
-	GfxFillRect(bg, c1, FILLRECT_CHECKER);
+	GfxFillRect(bg, c1, FillRectMode::Checker);
 
 	/* track positions. These fractions are based on original 1x dimensions, but scale better. */
 	int left  = r.left + r.Width() * 3 / 11; /*  left track is positioned 3/11ths from the left */
@@ -575,7 +575,7 @@ static inline void DrawHorizontalScrollbar(const Rect &r, Colours colour, bool l
 	/* draw "shaded" background */
 	Rect bg = r.Shrink(width, 0);
 	GfxFillRect(bg, c2);
-	GfxFillRect(bg, c1, FILLRECT_CHECKER);
+	GfxFillRect(bg, c1, FillRectMode::Checker);
 
 	/* track positions. These fractions are based on original 1x dimensions, but scale better. */
 	int top    = r.top + r.Height() * 3 / 11; /*    top track is positioned 3/11ths from the top */
@@ -1889,7 +1889,7 @@ void NWidgetSpacer::Draw(const Window *w)
 
 	if (_draw_widget_outlines && this->current_x != 0 && this->current_y != 0) {
 		/* Spacers indicate a potential design issue, so get extra highlighting. */
-		GfxFillRect(this->GetCurrentRect(), PC_WHITE, FILLRECT_CHECKER);
+		GfxFillRect(this->GetCurrentRect(), PC_WHITE, FillRectMode::Checker);
 
 		DrawOutline(w, this);
 	}
@@ -2329,7 +2329,7 @@ void NWidgetBackground::Draw(const Window *w)
 	if (this->child != nullptr) this->child->Draw(w);
 
 	if (this->IsDisabled()) {
-		GfxFillRect(r.Shrink(WidgetDimensions::scaled.bevel), GetColourGradient(this->colour, SHADE_DARKER), FILLRECT_CHECKER);
+		GfxFillRect(r.Shrink(WidgetDimensions::scaled.bevel), GetColourGradient(this->colour, SHADE_DARKER), FillRectMode::Checker);
 	}
 
 	DrawOutline(w, this);
@@ -2614,7 +2614,7 @@ void NWidgetScrollbar::Draw(const Window *w)
 	}
 
 	if (this->IsDisabled()) {
-		GfxFillRect(r.Shrink(WidgetDimensions::scaled.bevel), GetColourGradient(this->colour, SHADE_DARKER), FILLRECT_CHECKER);
+		GfxFillRect(r.Shrink(WidgetDimensions::scaled.bevel), GetColourGradient(this->colour, SHADE_DARKER), FillRectMode::Checker);
 	}
 
 	DrawOutline(w, this);
@@ -3004,7 +3004,7 @@ void NWidgetLeaf::Draw(const Window *w)
 		case WWT_EMPTY:
 			/* WWT_EMPTY used as a spacer indicates a potential design issue. */
 			if (this->index == -1 && _draw_widget_outlines) {
-				GfxFillRect(r, PC_BLACK, FILLRECT_CHECKER);
+				GfxFillRect(r, PC_BLACK, FillRectMode::Checker);
 			}
 			break;
 
@@ -3114,7 +3114,7 @@ void NWidgetLeaf::Draw(const Window *w)
 
 	if (this->IsDisabled() && this->type != WWT_BOOLBTN) {
 		/* WWT_BOOLBTN is excluded as it draws its own disabled state. */
-		GfxFillRect(r.Shrink(WidgetDimensions::scaled.bevel), GetColourGradient(this->colour, SHADE_DARKER), FILLRECT_CHECKER);
+		GfxFillRect(r.Shrink(WidgetDimensions::scaled.bevel), GetColourGradient(this->colour, SHADE_DARKER), FillRectMode::Checker);
 	}
 
 	DrawOutline(w, this);

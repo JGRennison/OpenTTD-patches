@@ -2170,7 +2170,7 @@ void BaseVehicleListWindow::DrawVehicleListItems(VehicleID selected_vehicle, int
 				if (c != nullptr) {
 					ccolour = GetColourGradient(c->colour, SHADE_LIGHTER);
 				}
-				GfxFillRect((tr.right - 1) - (GetCharacterHeight(FontSize::Small) - 2), ir.top + 1, tr.right - 1, (ir.top + 1) + (GetCharacterHeight(FontSize::Small) - 2), ccolour, FILLRECT_OPAQUE);
+				GfxFillRect((tr.right - 1) - (GetCharacterHeight(FontSize::Small) - 2), ir.top + 1, tr.right - 1, (ir.top + 1) + (GetCharacterHeight(FontSize::Small) - 2), ccolour, FillRectMode::Opaque);
 			}
 		} else {
 			StringID str = STR_JUST_STRING2;

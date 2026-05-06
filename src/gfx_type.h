@@ -343,17 +343,17 @@ static constexpr uint8_t PALETTE_ANIM_SIZE = 28; ///< number of animated colours
 static constexpr uint8_t PALETTE_ANIM_START = 227; ///< Index in  the _palettes array from which all animations are taking places (table/palettes.h)
 
 /** Define the operation GfxFillRect performs */
-enum FillRectMode : uint8_t {
-	FILLRECT_OPAQUE,  ///< Fill rectangle with a single colour
-	FILLRECT_CHECKER, ///< Draw only every second pixel, used for greying-out
-	FILLRECT_RECOLOUR, ///< Apply a recolour sprite to the screen content
-	FILLRECT_FUNCTOR, ///<  Apply a functor to a line of pixels
+enum class FillRectMode : uint8_t {
+	Opaque, ///< Fill rectangle with a single colour
+	Checker, ///< Draw only every second pixel, used for greying-out
+	Recolour, ///< Apply a recolour sprite to the screen content
+	Functor, ///< Apply a functor to a line of pixels
 };
 
 typedef void GfxFillRectModeFunctor(void *pixel, int count);
 
 /** Palettes OpenTTD supports. */
-enum PaletteType : uint8_t {
+enum class PaletteType : uint8_t {
 	DOS, ///< Use the DOS palette.
 	Windows, ///< Use the Windows palette.
 };

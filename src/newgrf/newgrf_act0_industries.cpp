@@ -386,7 +386,7 @@ static ChangeInfoResult IndustriesChangeInfo(uint first, uint last, int prop, co
 					indsp->grf_prop.SetGRFFile(_cur_gps.grffile);
 					/* If the grf industry needs to check its surrounding upon creation, it should
 					 * rely on callbacks, not on the original placement functions */
-					indsp->check_proc = CHECK_NOTHING;
+					indsp->check_proc = IndustryCheck::None;
 				}
 				break;
 			}

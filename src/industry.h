@@ -140,7 +140,7 @@ struct Industry : IndustryPool::PoolItem<&_industry_pool> {
 	PartsOfSubsidy part_of_subsidy{};         ///< NOSAVE: is this industry a source/destination of a subsidy?
 
 	Owner founder = INVALID_OWNER;            ///< Founder of the industry
-	uint8_t construction_type;                ///< Way the industry was constructed (@see IndustryConstructionType)
+	IndustryConstructionType construction_type{}; ///< Way the industry was constructed (@see IndustryConstructionType)
 	uint8_t selected_layout;                  ///< Which tile layout was used when creating the industry
 	Owner exclusive_supplier = INVALID_OWNER; ///< Which company has exclusive rights to deliver cargo (INVALID_OWNER = anyone)
 	Owner exclusive_consumer = INVALID_OWNER; ///< Which company has exclusive rights to take cargo (INVALID_OWNER = anyone)

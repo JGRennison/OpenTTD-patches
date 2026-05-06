@@ -1588,7 +1588,7 @@ void StateGameLoop()
 
 		/* All these actions has to be done from OWNER_NONE
 		 *  for multiplayer compatibility */
-		Backup<CompanyID> cur_company(_current_company, OWNER_NONE, FILE_LINE);
+		AutoRestoreBackup cur_company(_current_company, OWNER_NONE);
 
 		BasePersistentStorageArray::SwitchMode(PSM_ENTER_GAMELOOP);
 		DateDetail::_tick_skip_counter++;
@@ -1673,7 +1673,6 @@ void StateGameLoop()
 				UpdateStateChecksum(c->infrastructure.airport);
 			}
 		}
-		cur_company.Restore();
 	}
 	if (_extra_aspects > 0) FlushDeferredAspectUpdates();
 

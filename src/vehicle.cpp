@@ -1806,11 +1806,10 @@ void CallVehicleTicks()
 	if (!_vehicles_to_templatereplace.empty()) RecordSyncEvent(NSRE_VEH_TBTR);
 
 	/* do Auto Replacement */
-	Backup<CompanyID> cur_company(_current_company, FILE_LINE);
 	for (auto &it : _vehicles_to_autoreplace) {
 		v = Vehicle::Get(it.first);
 		/* Autoreplace needs the current company set as the vehicle owner */
-		cur_company.Change(v->owner);
+		AutoRestoreBackup cur_company(_current_company, v->owner);
 
 		if (v->type == VehicleType::Train) {
 			assert(!_vehicles_to_templatereplace.count(v->index));
@@ -1840,7 +1839,6 @@ void CallVehicleTicks()
 
 		ShowAutoReplaceAdviceMessage(res, v);
 	}
-	cur_company.Restore();
 	if (!_vehicles_to_autoreplace.empty()) RecordSyncEvent(NSRE_VEH_AUTOREPLACE);
 
 	for (VehicleID index : _vehicles_to_pay_repair) {
@@ -1891,14 +1889,13 @@ void RemoveVirtualTrainsOfUser(uint32_t user)
 {
 	if (!_tick_caches_valid || HasChickenBit(DCBF_VEH_TICK_CACHE)) RebuildVehicleTickCaches();
 
-	Backup<CompanyID> cur_company(_current_company, FILE_LINE);
+	AutoRestoreBackup cur_company(_current_company, AutoRestoreBackupNoNewValueTag{});
 	for (const Train *front : _tick_train_front_cache) {
 		if (front->IsVirtual() && front->motion_counter == user) {
-			cur_company.Change(front->owner);
+			_current_company = front->owner;
 			Command<Commands::DeleteVirtualTrain>::Post(front->index);
 		}
 	}
-	cur_company.Restore();
 }
 
 /**
@@ -2776,9 +2773,8 @@ void VehicleEnterDepot(Vehicle *v)
 		}
 
 		if (v->current_order.IsRefit()) {
-			Backup<CompanyID> cur_company(_current_company, v->owner, FILE_LINE);
+			AutoRestoreBackup cur_company(_current_company, v->owner);
 			CommandCost cost = Command<Commands::RefitVehicle>::Do(DoCommandFlag::Execute, v->index, v->current_order.GetRefitCargo(), 0xFF, false, false, 0);
-			cur_company.Restore();
 
 			if (cost.Failed()) {
 				_vehicles_to_autoreplace[v->index] = false;

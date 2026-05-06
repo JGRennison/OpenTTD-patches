@@ -2378,9 +2378,8 @@ bool AfterLoadGame()
 			if (IsBuoyTile(t) || IsDriveThroughStopTile(t) || IsTileType(t, TileType::Water)) {
 				Owner o = GetTileOwner(t);
 				if (o < MAX_COMPANIES && !Company::IsValidID(o)) {
-					Backup<CompanyID> cur_company(_current_company, o, FILE_LINE);
+					AutoRestoreBackup cur_company(_current_company, o);
 					ChangeTileOwner(t, o, INVALID_OWNER);
-					cur_company.Restore();
 				}
 				if (IsBuoyTile(t)) {
 					/* reset buoy owner to OWNER_NONE in the station struct

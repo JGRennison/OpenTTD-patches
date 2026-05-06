@@ -452,7 +452,7 @@ uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(uint8_t p
 		case 0xAC: return this->industry->was_cargo_delivered;
 
 		case 0xB0: return ClampTo<uint16_t>(this->industry->construction_date - CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR); // Date when built since 1920 (in days)
-		case 0xB3: return this->industry->construction_type; // Construction type
+		case 0xB3: return to_underlying(this->industry->construction_type); // Construction type
 		case 0xB4: {
 			const auto &acc = this->industry->Accepted();
 			if (acc.empty()) return 0;
@@ -596,7 +596,7 @@ CommandCost CheckIfCallBackAllowsCreation(TileIndex tile, IndustryType type, siz
 	ind.founder = founder;
 	ind.psa = nullptr;
 
-	IndustriesResolverObject object(tile, &ind, type, seed, CBID_INDUSTRY_LOCATION, 0, creation_type);
+	IndustriesResolverObject object(tile, &ind, type, seed, CBID_INDUSTRY_LOCATION, 0, to_underlying(creation_type));
 	uint16_t result = object.ResolveCallback();
 
 	/* Unlike the "normal" cases, not having a valid result means we allow
@@ -618,7 +618,7 @@ uint32_t GetIndustryProbabilityCallback(IndustryType type, IndustryAvailabilityC
 	const IndustrySpec *indspec = GetIndustrySpec(type);
 
 	if (indspec->callback_mask.Test(IndustryCallbackMask::Probability)) {
-		uint16_t res = GetIndustryCallback(CBID_INDUSTRY_PROBABILITY, 0, creation_type, nullptr, type, INVALID_TILE);
+		uint16_t res = GetIndustryCallback(CBID_INDUSTRY_PROBABILITY, 0, to_underlying(creation_type), nullptr, type, INVALID_TILE);
 		if (res != CALLBACK_FAILED) {
 			if (indspec->grf_prop.grffile->grf_version < 8) {
 				/* Disallow if result != 0 */

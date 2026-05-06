@@ -1242,7 +1242,7 @@ static void DoFloodTile(TileIndex target)
 
 	bool flooded = false; // Will be set to true if something is changed.
 
-	Backup<CompanyID> cur_company(_current_company, OWNER_WATER, FILE_LINE);
+	AutoRestoreBackup cur_company(_current_company, OWNER_WATER);
 
 	Slope tileh = GetTileSlope(target);
 	if (tileh != SLOPE_FLAT) {
@@ -1327,8 +1327,6 @@ static void DoFloodTile(TileIndex target)
 
 		if (IsPossibleDockingTile(target)) CheckForDockingTile(target);
 	}
-
-	cur_company.Restore();
 }
 
 /**
@@ -1337,7 +1335,7 @@ static void DoFloodTile(TileIndex target)
  */
 static void DoDryUp(TileIndex tile)
 {
-	Backup<CompanyID> cur_company(_current_company, OWNER_WATER, FILE_LINE);
+	AutoRestoreBackup cur_company(_current_company, OWNER_WATER);
 
 	switch (GetTileType(tile)) {
 		case TileType::Railway:
@@ -1378,8 +1376,6 @@ static void DoDryUp(TileIndex tile)
 
 		default: NOT_REACHED();
 	}
-
-	cur_company.Restore();
 }
 
 /**

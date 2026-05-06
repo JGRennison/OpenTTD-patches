@@ -131,9 +131,9 @@ struct PixelColourOrPaletteID {
 	PaletteID AsPaletteID() const { return static_cast<PaletteID>(this->value); }
 };
 
-void GfxFillRect(class Blitter *blitter, const DrawPixelInfo *dpi, int left, int top, int right, int bottom, PixelColourOrPaletteID colour, FillRectMode mode = FILLRECT_OPAQUE);
-void GfxFillRect(int left, int top, int right, int bottom, PixelColourOrPaletteID colour, FillRectMode mode = FILLRECT_OPAQUE);
-void GfxFillPolygon(std::span<const Point> shape, PixelColourOrPaletteID colour, FillRectMode mode = FILLRECT_OPAQUE, GfxFillRectModeFunctor *fill_functor = nullptr);
+void GfxFillRect(class Blitter *blitter, const DrawPixelInfo *dpi, int left, int top, int right, int bottom, PixelColourOrPaletteID colour, FillRectMode mode = FillRectMode::Opaque);
+void GfxFillRect(int left, int top, int right, int bottom, PixelColourOrPaletteID colour, FillRectMode mode = FillRectMode::Opaque);
+void GfxFillPolygon(std::span<const Point> shape, PixelColourOrPaletteID colour, FillRectMode mode = FillRectMode::Opaque, GfxFillRectModeFunctor *fill_functor = nullptr);
 void GfxDrawLine(class Blitter * blitter, const DrawPixelInfo *dpi, int left, int top, int right, int bottom, PixelColour colour, int width = 1, int dash = 0);
 void GfxDrawLine(int left, int top, int right, int bottom, PixelColour colour, int width = 1, int dash = 0);
 void DrawBox(const DrawPixelInfo *dpi, int x, int y, int dx1, int dy1, int dx2, int dy2, int dx3, int dy3);
@@ -203,7 +203,7 @@ inline bool DrawStringMultiLineWithClipping(const Rect &r, std::string_view str,
 	return DrawStringMultiLineWithClipping(r.left, r.right, r.top, r.bottom, str, colour, align, underline, fontsize);
 }
 
-inline void GfxFillRect(const Rect &r, PixelColourOrPaletteID colour, FillRectMode mode = FILLRECT_OPAQUE)
+inline void GfxFillRect(const Rect &r, PixelColourOrPaletteID colour, FillRectMode mode = FillRectMode::Opaque)
 {
 	GfxFillRect(r.left, r.top, r.right, r.bottom, colour, mode);
 }
