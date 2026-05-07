@@ -894,6 +894,7 @@ struct EconomySettings {
 	uint16_t industry_cargo_scale;           ///< scale cargo production of industries by this percentage.
 	CargoScalingMode town_cargo_scale_mode;  ///< scaling mode for town cargo.
 	CargoScalingMode industry_cargo_scale_mode; ///< industry mode for town cargo.
+	uint8_t  cargo_aging_rate;               ///< scale the delivery time factor of cargo delivery payments by this percentage.
 	uint8_t  day_length_factor;              ///< factor which the length of day is multiplied
 	uint16_t random_road_reconstruction;     ///< chance out of 1000 per tile loop for towns to start random road re-construction
 	bool     disable_inflation_newgrf_flag;  ///< Disable NewGRF inflation flag

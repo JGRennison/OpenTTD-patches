@@ -962,6 +962,7 @@ SettingsContainer &GetSettingsTree()
 			accounting->Add(new SettingEntry("difficulty.vehicle_costs_in_depot"));
 			accounting->Add(new SettingEntry("difficulty.vehicle_costs_when_stopped"));
 			accounting->Add(new SettingEntry("difficulty.construction_cost"));
+			accounting->Add(new SettingEntry("economy.cargo_aging_rate"));
 			accounting->Add(new SettingEntry("economy.payment_algorithm"));
 		}
 
