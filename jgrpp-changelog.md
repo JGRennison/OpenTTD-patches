@@ -2,6 +2,12 @@
 
 * * *
 
+### v0.72.2 (2026-05-08)
+* Fix multiplayer disconnection when a client attempts to set a company password.
+* Fix not being to find a nearest depot when driving backwards, and multiplayer desyncs that could occur when this is attempted.
+* Fix tropic mode map generation not creating desert tiles.
+* Bump trunk base from commit 8b5c4ae96b75925dc0c04b1adf204373a2e6681a to commit 4decdedff468b5149cb5357a5d026f2906cd73f6.
+
 ### v0.72.1 (2026-05-04)
 * Fix crash which could occur when showing vehicle overshot station news items.
 * Fix crash when dragging/sizing drop-down related window.
