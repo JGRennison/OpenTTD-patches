@@ -1019,7 +1019,7 @@ static void CreateDesertOrRainForest(uint desert_tropic_line)
 			return (t != INVALID_TILE && (TileHeight(t) >= desert_tropic_line || IsTileType(t, TileType::Water)));
 		});
 		if (ok) {
-			SetTropicZone(tile, TropicZone::Rainforest);
+			SetTropicZone(tile, TropicZone::Desert);
 		}
 	}
 
