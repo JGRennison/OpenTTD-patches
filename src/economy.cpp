@@ -1509,7 +1509,7 @@ static OrderLoadType GetLoadType(const Vehicle *v)
  * @param v A pointer to a vehicle.
  * @return The unload type of this vehicle.
  */
-static OrderUnloadFlags GetUnloadType(const Vehicle *v)
+static OrderUnloadType GetUnloadType(const Vehicle *v)
 {
 	return v->First()->current_order.GetCargoUnloadType(v->cargo_type);
 }
@@ -1537,10 +1537,10 @@ void PrepareUnload(Vehicle *front_v)
 	front_v->cargo_payment = CargoPayment::Create(front_v);
 
 	CargoStationIDVectorSet next_station = front_v->GetNextStoppingStation();
-	if (front_v->orders == nullptr || (front_v->current_order.GetUnloadType() & OUFB_NO_UNLOAD) == 0) {
+	if (front_v->orders == nullptr || (front_v->current_order.GetUnloadType() != OrderUnloadType::NoUnload)) {
 		Station *st = Station::Get(front_v->last_station_visited);
 		for (Vehicle *v = front_v; v != nullptr; v = v->Next()) {
-			if (GetUnloadType(v) & OUFB_NO_UNLOAD) continue;
+			if (GetUnloadType(v) == OrderUnloadType::NoUnload) continue;
 			const GoodsEntry *ge = &st->goods[v->cargo_type];
 			if (v->cargo_cap > 0 && v->cargo.TotalCount() > 0) {
 				v->cargo.Stage(
@@ -2099,14 +2099,15 @@ static void LoadUnloadVehicle(Vehicle *front)
 			v->vehicle_flags.Reset(VehicleFlag::CargoUnloading);
 		}
 
-		if (v->vehicle_flags.Test(VehicleFlag::CargoUnloading) && (GetUnloadType(v) & OUFB_NO_UNLOAD) == 0) {
+		if (v->vehicle_flags.Test(VehicleFlag::CargoUnloading) && (GetUnloadType(v) != OrderUnloadType::NoUnload)) {
 			uint cargo_count = v->cargo.UnloadCount();
 			uint amount_unloaded = _settings_game.order.gradual_loading ? std::min(cargo_count, GetLoadAmount(v)) : cargo_count;
 			bool remaining = false; // Are there cargo entities in this vehicle that can still be unloaded here?
 
 			if (!ge->status.Test(GoodsEntry::State::Acceptance) && v->cargo.ActionCount(VehicleCargoList::MTA_DELIVER) > 0) {
 				/* The station does not accept our goods anymore. */
-				if (GetUnloadType(v) & (OUFB_TRANSFER | OUFB_UNLOAD)) {
+				OrderUnloadType unload_type = GetUnloadType(v);
+				if (unload_type == OrderUnloadType::Transfer || unload_type == OrderUnloadType::Unload) {
 					/* Transfer instead of delivering. */
 					v->cargo.Reassign<VehicleCargoList::MTA_DELIVER, VehicleCargoList::MTA_TRANSFER>(
 							v->cargo.ActionCount(VehicleCargoList::MTA_DELIVER));

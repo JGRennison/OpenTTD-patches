@@ -85,13 +85,13 @@ NLOHMANN_JSON_SERIALIZE_ENUM(OrderLeaveType, {
 	{OLT_LEAVE_EARLY_FULL_ALL, "leave-early-if-all-cargo-full"}
 })
 
-NLOHMANN_JSON_SERIALIZE_ENUM(OrderUnloadFlags, {
-	{static_cast<OrderUnloadFlags>(-1), nullptr},
-	{OUF_UNLOAD_IF_POSSIBLE, "normal"},
-	{OUFB_UNLOAD, "unload"},
-	{OUFB_UNLOAD, "unload-and-leave-empty"}, // Import only
-	{OUFB_TRANSFER, "transfer"},
-	{OUFB_NO_UNLOAD, "no-unload"},
+NLOHMANN_JSON_SERIALIZE_ENUM(OrderUnloadType, {
+	{static_cast<OrderUnloadType>(-1), nullptr},
+	{OrderUnloadType::UnloadIfPossible, "normal"},
+	{OrderUnloadType::Unload, "unload"},
+	{OrderUnloadType::Unload, "unload-and-leave-empty"}, // Import only
+	{OrderUnloadType::Transfer, "transfer"},
+	{OrderUnloadType::NoUnload, "no-unload"},
 })
 
 NLOHMANN_JSON_SERIALIZE_ENUM(DiagDirection, {

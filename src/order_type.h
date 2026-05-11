@@ -125,15 +125,14 @@ inline bool IsDeparturesOrderLabelSubType(OrderLabelSubType subtype)
 }
 
 /**
- * Flags related to the unloading order.
+ * Unloading order types.
  */
-enum OrderUnloadFlags : uint8_t {
-	OUF_UNLOAD_IF_POSSIBLE = 0,      ///< Unload all cargo that the station accepts.
-	OUFB_UNLOAD            = 1 << 0, ///< Force unloading all cargo onto the platform, possibly not getting paid.
-	OUFB_TRANSFER          = 1 << 1, ///< Transfer all cargo onto the platform.
-	OUFB_NO_UNLOAD         = 1 << 2, ///< Totally no unloading will be done.
-	OUFB_CARGO_TYPE_UNLOAD = 1 << 3, ///< Unload actions are defined per cargo type.
-	OUFB_CARGO_TYPE_UNLOAD_ENCODING = (1 << 0) | (1 << 2), ///< Raw encoding of OUFB_CARGO_TYPE_UNLOAD
+enum class OrderUnloadType : uint8_t {
+	UnloadIfPossible = 0, ///< Unload all cargo that the station accepts.
+	Unload           = 1, ///< Force unloading all cargo onto the platform, possibly not getting paid.
+	Transfer         = 2, ///< Transfer all cargo onto the platform.
+	NoUnload         = 4, ///< Totally no unloading will be done.
+	CargoTypeUnload  = 5, ///< Unload actions are defined per cargo type.
 };
 
 /**

@@ -3379,7 +3379,7 @@ static void VehicleIncreaseStats(const Vehicle *front)
 				last_loading_station != StationID::Invalid() &&
 				last_loading_station != front->last_station_visited &&
 				(front->current_order.GetCargoLoadType(v->cargo_type) != OrderLoadType::NoLoad ||
-				(front->current_order.GetCargoUnloadType(v->cargo_type) & OUFB_NO_UNLOAD) == 0)) {
+				front->current_order.GetCargoUnloadType(v->cargo_type) != OrderUnloadType::NoUnload)) {
 			/* The cargo count can indeed be higher than the refit_cap if
 			 * wagons have been auto-replaced and subsequently auto-
 			 * refitted to a higher capacity. The cargo gets redistributed
@@ -3589,7 +3589,7 @@ void Vehicle::LeaveStation()
 	if (this->current_order.GetNonStopType() != ONSF_STOP_EVERYWHERE) UpdateVehicleTimetable(this, false);
 
 	CargoTypes cargoes_can_load_unload = this->current_order.FilterLoadUnloadTypeCargoMask([&](const Order *o, CargoType cargo) {
-		return (o->GetCargoLoadType(cargo) != OrderLoadType::NoLoad) || ((o->GetCargoUnloadType(cargo) & OUFB_NO_UNLOAD) == 0);
+		return (o->GetCargoLoadType(cargo) != OrderLoadType::NoLoad) || (o->GetCargoUnloadType(cargo) != OrderUnloadType::NoUnload);
 	});
 	CargoTypes has_cargo_mask = this->GetLastLoadingStationValidCargoMask();
 	CargoTypes cargoes_can_leave_with_cargo = FilterCargoMask([&](CargoType cargo) {

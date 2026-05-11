@@ -345,7 +345,7 @@ uint16_t Order::MapOldOrder() const
 	uint16_t order = this->GetType();
 	switch (this->GetType()) {
 		case OT_GOTO_STATION:
-			if (this->GetUnloadType() & OUFB_UNLOAD) SetBit(order, 5);
+			if (this->GetUnloadType() == OrderUnloadType::Unload) SetBit(order, 5);
 			if (this->IsFullLoadOrder()) SetBit(order, 6);
 			if (this->GetNonStopType() & ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS) SetBit(order, 7);
 			order |= GB(this->GetDestination().value, 0, 8) << 8;
@@ -358,7 +358,7 @@ uint16_t Order::MapOldOrder() const
 		case OT_LOADING:
 			if (this->IsFullLoadOrder()) SetBit(order, 6);
 			/* If both "no load" and "no unload" are set, return nothing order instead */
-			if ((this->GetLoadType() == OrderLoadType::NoLoad) && (this->GetUnloadType() & OUFB_NO_UNLOAD)) {
+			if ((this->GetLoadType() == OrderLoadType::NoLoad) && (this->GetUnloadType() == OrderUnloadType::NoUnload)) {
 				order = OT_NOTHING;
 			}
 			break;
@@ -446,7 +446,7 @@ void Order::AssignOrder(const Order &other)
 
 	this->occupancy = other.occupancy;
 
-	if (other.extra != nullptr && (this->GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD || this->GetLoadType() == OrderLoadType::CargoTypeLoad
+	if (other.extra != nullptr && (this->GetUnloadType() == OrderUnloadType::CargoTypeUnload || this->GetLoadType() == OrderLoadType::CargoTypeLoad
 			|| (this->IsType(OT_LABEL) && this->GetLabelSubType() == OLST_TEXT)
 			|| other.extra->xdata != 0 || other.extra->xdata2 != 0 || other.extra->xflags != 0 || other.extra->dispatch_index != 0 || other.extra->colour != 0)) {
 		this->AllocExtraInfo();
@@ -600,14 +600,14 @@ const Order *OrderList::GetNextDecisionNode(const Order *next, uint hops, CargoT
 			(next->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0) {
 		if (cargo_mask.None()) {
 			can_load_or_unload = true;
-		} else if (next->GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD || next->GetLoadType() == OrderLoadType::CargoTypeLoad) {
+		} else if (next->GetUnloadType() == OrderUnloadType::CargoTypeUnload || next->GetLoadType() == OrderLoadType::CargoTypeLoad) {
 			/* This is a cargo-specific load/unload order.
 			 * If the first cargo is both a no-load and no-unload order, skip it.
 			 * Drop cargoes which don't match the first one. */
 			can_load_or_unload = CargoMaskValueFilter<bool>(cargo_mask, [&](CargoType cargo) {
-				return ((next->GetCargoLoadType(cargo) != OrderLoadType::NoLoad) || (next->GetCargoUnloadType(cargo) & OUFB_NO_UNLOAD) == 0);
+				return (next->GetCargoLoadType(cargo) != OrderLoadType::NoLoad) || (next->GetCargoUnloadType(cargo) != OrderUnloadType::NoUnload);
 			});
-		} else if ((next->GetLoadType() != OrderLoadType::NoLoad) || (next->GetUnloadType() & OUFB_NO_UNLOAD) == 0) {
+		} else if ((next->GetLoadType() != OrderLoadType::NoLoad) || (next->GetUnloadType() != OrderUnloadType::NoUnload)) {
 			can_load_or_unload = true;
 		}
 	}
@@ -700,7 +700,8 @@ CargoMaskedStationIDVector OrderList::GetNextStoppingStation(const Vehicle *v, C
 			 * Don't return a next stop if first cargo has transfer or unload set.
 			 * Drop cargoes which don't match the first one. */
 			bool invalid = CargoMaskValueFilter<bool>(cargo_mask, [&](CargoType cargo) {
-				return ((next->GetCargoUnloadType(cargo) & (OUFB_TRANSFER | OUFB_UNLOAD)) != 0);
+				const OrderUnloadType unload_type = next->GetCargoUnloadType(cargo);
+				return unload_type == OrderUnloadType::Transfer || unload_type == OrderUnloadType::Unload;
 			});
 			if (invalid) return CargoMaskedStationIDVector(cargo_mask);
 		}
@@ -1073,8 +1074,12 @@ static CommandCost PreInsertOrderCheck(Vehicle *v, const Order &new_order, CmdIn
 					return CMD_ERROR;
 			}
 			switch (new_order.GetUnloadType()) {
-				case OUF_UNLOAD_IF_POSSIBLE: case OUFB_UNLOAD: case OUFB_TRANSFER: case OUFB_NO_UNLOAD: break;
-				case OUFB_CARGO_TYPE_UNLOAD:
+				case OrderUnloadType::UnloadIfPossible:
+				case OrderUnloadType::Unload:
+				case OrderUnloadType::Transfer:
+				case OrderUnloadType::NoUnload:
+					break;
+				case OrderUnloadType::CargoTypeUnload:
 					if (insert_flags.Test(CmdInsertOrderIntlFlag::AllowLoadByCargoType)) break;
 					return CMD_ERROR;
 				default: return CMD_ERROR;
@@ -2017,17 +2022,27 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 
 		case MOF_CARGO_TYPE_UNLOAD:
 			if (cargo_id >= NUM_CARGO && cargo_id != INVALID_CARGO) return CMD_ERROR;
-			if (data == OUFB_CARGO_TYPE_UNLOAD) return CMD_ERROR;
+			if (data == to_underlying(OrderUnloadType::CargoTypeUnload)) return CMD_ERROR;
 			/* FALL THROUGH */
-		case MOF_UNLOAD:
+		case MOF_UNLOAD: {
 			if (order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) return CMD_ERROR;
-			if ((data & ~(OUFB_UNLOAD | OUFB_TRANSFER | OUFB_NO_UNLOAD | OUFB_CARGO_TYPE_UNLOAD)) != 0) return CMD_ERROR;
-			/* Unload and no-unload are mutual exclusive and so are transfer and no unload. */
-			if (data != 0 && (data & OUFB_CARGO_TYPE_UNLOAD) == 0 && ((data & (OUFB_UNLOAD | OUFB_TRANSFER)) != 0) == ((data & OUFB_NO_UNLOAD) != 0)) return CMD_ERROR;
-			/* Cargo-type-unload exclude all the other flags. */
-			if ((data & OUFB_CARGO_TYPE_UNLOAD) != 0 && data != OUFB_CARGO_TYPE_UNLOAD) return CMD_ERROR;
-			if (data == order->GetUnloadType()) return CMD_ERROR;
+
+			OrderUnloadType unload_type = static_cast<OrderUnloadType>(data);
+			if (unload_type == order->GetUnloadType()) return CMD_ERROR;
+
+			/* Test for invalid types. */
+			switch (unload_type) {
+				case OrderUnloadType::UnloadIfPossible:
+				case OrderUnloadType::Unload:
+				case OrderUnloadType::Transfer:
+				case OrderUnloadType::NoUnload:
+				case OrderUnloadType::CargoTypeUnload:
+					break;
+
+				default: return CMD_ERROR;
+			}
 			break;
+		}
 
 		case MOF_CARGO_TYPE_LOAD:
 			if (cargo_id >= NUM_CARGO && cargo_id != INVALID_CARGO) return CMD_ERROR;
@@ -2317,7 +2332,7 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 				if ((data & ONSF_NO_STOP_AT_DESTINATION_STATION) && order->IsType(OT_GOTO_STATION)) {
 					order->SetRefit(CARGO_NO_REFIT);
 					order->SetLoadType(OrderLoadType::LoadIfPossible);
-					order->SetUnloadType(OUF_UNLOAD_IF_POSSIBLE);
+					order->SetUnloadType(OrderUnloadType::UnloadIfPossible);
 					if (order->IsWaitTimetabled() || order->GetWaitTime() > 0) {
 						Command<Commands::ChangeTimetable>::Do(flags, v->index, sel_ord, MTF_WAIT_TIME, 0, MTCF_CLEAR_FIELD);
 					}
@@ -2332,16 +2347,16 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 				break;
 
 			case MOF_UNLOAD:
-				order->SetUnloadType((OrderUnloadFlags)data);
+				order->SetUnloadType(static_cast<OrderUnloadType>(data));
 				break;
 
 			case MOF_CARGO_TYPE_UNLOAD:
 				if (cargo_id == INVALID_CARGO) {
 					for (CargoType i{}; i < NUM_CARGO; i++) {
-						order->SetUnloadType((OrderUnloadFlags)data, i);
+						order->SetUnloadType(static_cast<OrderUnloadType>(data), i);
 					}
 				} else {
-					order->SetUnloadType((OrderUnloadFlags)data, cargo_id);
+					order->SetUnloadType(static_cast<OrderUnloadType>(data), cargo_id);
 				}
 				break;
 
@@ -2665,10 +2680,10 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 					case MOF_CARGO_TYPE_UNLOAD:
 						if (cargo_id == INVALID_CARGO) {
 							for (CargoType i{}; i < NUM_CARGO; i++) {
-								u->current_order.SetUnloadType((OrderUnloadFlags)data, i);
+								u->current_order.SetUnloadType(static_cast<OrderUnloadType>(data), i);
 							}
 						} else {
-							u->current_order.SetUnloadType((OrderUnloadFlags)data, cargo_id);
+							u->current_order.SetUnloadType(static_cast<OrderUnloadType>(data), cargo_id);
 						}
 						break;
 
@@ -4289,8 +4304,8 @@ bool Order::UseOccupancyValueForAverage() const
 	if (this->GetOccupancy() > 1) return true;
 
 	if (this->IsType(OT_GOTO_STATION)) {
-		OrderUnloadFlags unload_type = this->GetUnloadType();
-		if ((unload_type == OUFB_TRANSFER || unload_type == OUFB_UNLOAD) && this->GetLoadType() == OrderLoadType::NoLoad) return false;
+		OrderUnloadType unload_type = this->GetUnloadType();
+		if ((unload_type == OrderUnloadType::Transfer || unload_type == OrderUnloadType::Unload) && this->GetLoadType() == OrderLoadType::NoLoad) return false;
 	}
 
 	return true;
@@ -4339,8 +4354,14 @@ bool Order::ShouldStopAtStation(const Vehicle *v, StationID station, bool waypoi
  */
 bool Order::CanLeaveWithCargo(bool has_cargo, CargoType cargo) const
 {
-	return (this->GetCargoLoadType(cargo) != OrderLoadType::NoLoad) || (has_cargo &&
-			(this->GetCargoUnloadType(cargo) & (OUFB_UNLOAD | OUFB_TRANSFER)) == 0);
+	if (this->GetCargoLoadType(cargo) != OrderLoadType::NoLoad) return true;
+
+	if (has_cargo) {
+		const OrderUnloadType unload_type = this->GetCargoUnloadType(cargo);
+		return unload_type == OrderUnloadType::Unload || unload_type == OrderUnloadType::Transfer;
+	} else {
+		return false;
+	}
 }
 
 /**

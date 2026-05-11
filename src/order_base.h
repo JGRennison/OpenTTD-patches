@@ -396,24 +396,22 @@ public:
 	 * How must the consist be unloaded?
 	 * @return The way to unload the vehicle.
 	 */
-	inline OrderUnloadFlags GetUnloadType() const
+	inline OrderUnloadType GetUnloadType() const
 	{
-		OrderUnloadFlags type = (OrderUnloadFlags)GB(this->flags, 0, 3);
-		if (type == OUFB_CARGO_TYPE_UNLOAD_ENCODING) type = OUFB_CARGO_TYPE_UNLOAD;
-		return type;
+		return static_cast<OrderUnloadType>(GB(this->flags, 0, 3));
 	}
 
 	/**
 	 * How must the consist be unloaded for this type of cargo?
-	 * @pre GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD
+	 * @pre GetUnloadType() == OrderUnloadType::CargoTypeUnload
 	 * @param cargo_id The cargo type index.
 	 * @return The unload type for this cargo.
 	 */
-	inline OrderUnloadFlags GetCargoUnloadTypeRaw(CargoType cargo_id) const
+	inline OrderUnloadType GetCargoUnloadTypeRaw(CargoType cargo_id) const
 	{
 		assert(cargo_id < NUM_CARGO);
-		if (!this->extra) return OUF_UNLOAD_IF_POSSIBLE;
-		return (OrderUnloadFlags) GB(this->extra->cargo_type_flags[cargo_id], 0, 4);
+		if (!this->extra) return OrderUnloadType::UnloadIfPossible;
+		return static_cast<OrderUnloadType>(GB(this->extra->cargo_type_flags[cargo_id], 0, 4));
 	}
 
 	/**
@@ -421,17 +419,17 @@ public:
 	 * @param cargo_id The cargo type index.
 	 * @return The unload type for this cargo.
 	 */
-	inline OrderUnloadFlags GetCargoUnloadType(CargoType cargo_id) const
+	inline OrderUnloadType GetCargoUnloadType(CargoType cargo_id) const
 	{
 		assert(cargo_id < NUM_CARGO);
-		OrderUnloadFlags ouf = this->GetUnloadType();
-		if (ouf == OUFB_CARGO_TYPE_UNLOAD) ouf = this->GetCargoUnloadTypeRaw(cargo_id);
+		OrderUnloadType ouf = this->GetUnloadType();
+		if (ouf == OrderUnloadType::CargoTypeUnload) ouf = this->GetCargoUnloadTypeRaw(cargo_id);
 		return ouf;
 	}
 
 	template <typename F> CargoTypes FilterLoadUnloadTypeCargoMask(F filter_func, CargoTypes cargo_mask = ALL_CARGOTYPES)
 	{
-		if ((this->GetLoadType() == OrderLoadType::CargoTypeLoad) || (this->GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD)) {
+		if ((this->GetLoadType() == OrderLoadType::CargoTypeLoad) || (this->GetUnloadType() == OrderUnloadType::CargoTypeUnload)) {
 			CargoTypes output_mask = cargo_mask;
 			for (CargoType cargo : cargo_mask) {
 				if (!filter_func(this, cargo)) output_mask.Reset(cargo);
@@ -529,23 +527,22 @@ public:
 	 * Set how the consist must be unloaded.
 	 * @param unload_type The new unload type, i.e. whether to unload.
 	 */
-	inline void SetUnloadType(OrderUnloadFlags unload_type)
+	inline void SetUnloadType(OrderUnloadType unload_type)
 	{
-		if (unload_type == OUFB_CARGO_TYPE_UNLOAD) unload_type = OUFB_CARGO_TYPE_UNLOAD_ENCODING;
-		SB(this->flags, 0, 3, unload_type);
+		SB(this->flags, 0, 3, to_underlying(unload_type));
 	}
 
 	/**
 	 * Set how the consist must be unloaded for this type of cargo.
-	 * @pre GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD
+	 * @pre GetUnloadType() == OrderUnloadType::CargoTypeUnload
 	 * @param unload_type The unload type.
 	 * @param cargo_id The cargo type index.
 	 */
-	inline void SetUnloadType(OrderUnloadFlags unload_type, CargoType cargo_id)
+	inline void SetUnloadType(OrderUnloadType unload_type, CargoType cargo_id)
 	{
 		assert(cargo_id < NUM_CARGO);
 		this->CheckExtraInfoAlloced();
-		SB(this->extra->cargo_type_flags[cargo_id], 0, 4, unload_type);
+		SB(this->extra->cargo_type_flags[cargo_id], 0, 4, to_underlying(unload_type));
 	}
 
 	/**

@@ -2239,8 +2239,8 @@ bool AfterLoadGame()
 	} else if (IsSavegameVersionBefore(SLV_94)) {
 		/* Unload and transfer are now mutual exclusive. */
 		IterateVehicleAndOrderListOrders([](Order *order) {
-			if ((order->GetUnloadType() & (OUFB_UNLOAD | OUFB_TRANSFER)) == (OUFB_UNLOAD | OUFB_TRANSFER)) {
-				order->SetUnloadType(OUFB_TRANSFER);
+			if (order->GetUnloadType() == OrderUnloadType{3}) { // 3 used to mean transfer and don't load.
+				order->SetUnloadType(OrderUnloadType::Transfer);
 				order->SetLoadType(OrderLoadType::NoLoad);
 			}
 		});

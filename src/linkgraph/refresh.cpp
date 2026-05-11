@@ -36,9 +36,9 @@
 		CargoTypes iter_cargo_mask = cargo_mask;
 		for (const Order *o : v->Orders()) {
 			if (o->IsType(OT_GOTO_STATION) || o->IsType(OT_IMPLICIT)) {
-				if (o->GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD) {
-					CargoMaskValueFilter<uint>(iter_cargo_mask, [&](CargoType cargo) -> uint {
-						return o->GetCargoUnloadType(cargo) & (OUFB_TRANSFER | OUFB_UNLOAD | OUFB_NO_UNLOAD);
+				if (o->GetUnloadType() == OrderUnloadType::CargoTypeUnload) {
+					CargoMaskValueFilter<OrderUnloadType>(iter_cargo_mask, [&](CargoType cargo) -> OrderUnloadType {
+						return o->GetCargoUnloadType(cargo);
 					});
 				}
 				if (o->GetLoadType() == OrderLoadType::CargoTypeLoad) {

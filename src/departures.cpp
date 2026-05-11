@@ -146,7 +146,7 @@ static bool DepartureLoadFilter(const Order *order)
 
 static bool ArrivalLoadFilter(const Order *order)
 {
-	return order->GetUnloadType() != OUFB_NO_UNLOAD;
+	return order->GetUnloadType() != OrderUnloadType::NoUnload;
 }
 
 bool DepartureCallingSettings::IsDeparture(const Order *order, const DepartureOrderDestinationDetector &source) const
@@ -724,7 +724,7 @@ bool DepartureViaTerminusState::CheckOrder(const Vehicle *v, Departure *d, const
 	/* If we reach the original station again, then use it as the terminus. */
 	if (order->GetType() == OT_GOTO_STATION &&
 			source.OrderMatches(order) &&
-			(order->GetUnloadType() != OUFB_NO_UNLOAD || calling_settings.ShowAllStops()) &&
+			(order->GetUnloadType() != OrderUnloadType::NoUnload || calling_settings.ShowAllStops()) &&
 			(((order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0) || ((d->order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) != 0))) {
 		/* If we're not calling anywhere, then skip this departure. */
 		this->found_terminus = (d->calling_at.size() > 0);
@@ -765,7 +765,7 @@ bool DepartureViaTerminusState::HandleCallingPoint(Departure *d, const Order *or
 	if (order->IsType(OT_GOTO_WAYPOINT) || order->IsType(OT_GOTO_DEPOT)) {
 		if (!calling_settings.ShowAllStops()) return false;
 	} else {
-		if (!calling_settings.ShowAllStops() && order->GetUnloadType() == OUFB_NO_UNLOAD) return false;
+		if (!calling_settings.ShowAllStops() && order->GetUnloadType() == OrderUnloadType::NoUnload) return false;
 	}
 
 	/* If this order's station is already in the calling, then the previous called at station is the terminus. */
@@ -793,7 +793,7 @@ bool DepartureViaTerminusState::HandleCallingPoint(Departure *d, const Order *or
 	}
 
 	/* If we unload all at this station and departure load tests are not disabled, then it is the terminus. */
-	if (order->GetType() == OT_GOTO_STATION && order->GetUnloadType() == OUFB_UNLOAD && !calling_settings.DepartureNoLoadTest()) {
+	if (order->GetType() == OT_GOTO_STATION && order->GetUnloadType() == OrderUnloadType::Unload && !calling_settings.DepartureNoLoadTest()) {
 		if (d->calling_at.size() > 0) {
 			this->found_terminus = true;
 		}
@@ -827,7 +827,7 @@ static bool ProcessArrivalHistory(Departure *d, std::span<ArrivalHistoryEntry> a
 			if (source.StationMatches(o->GetDestination().ToStationID())) {
 				/* Same as source order, remove all possible origins */
 				possible_origins.clear();
-			} else if (!calling_settings.ShowAllStops() && o->IsType(OT_GOTO_STATION) && o->GetLoadType() == OrderLoadType::NoLoad && (o->GetUnloadType() & (OUFB_TRANSFER | OUFB_UNLOAD)) != 0) {
+			} else if (!calling_settings.ShowAllStops() && o->IsType(OT_GOTO_STATION) && o->GetLoadType() == OrderLoadType::NoLoad && (o->GetUnloadType() == OrderUnloadType::Transfer || o->GetUnloadType() == OrderUnloadType::Unload)) {
 				/* All cargo unloaded, remove all possible origins */
 				possible_origins.clear();
 			} else {

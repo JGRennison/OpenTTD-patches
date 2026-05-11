@@ -78,11 +78,11 @@ void Order::ConvertFromOldSavegame()
 
 		/* Finally fix the unload flags */
 		if ((old_flags & 1) != 0) { // OFB_TRANSFER
-			this->SetUnloadType(OUFB_TRANSFER);
+			this->SetUnloadType(OrderUnloadType::Transfer);
 		} else if ((old_flags & 2) != 0) { // OFB_UNLOAD
-			this->SetUnloadType(OUFB_UNLOAD);
+			this->SetUnloadType(OrderUnloadType::Unload);
 		} else {
-			this->SetUnloadType(OUF_UNLOAD_IF_POSSIBLE);
+			this->SetUnloadType(OrderUnloadType::UnloadIfPossible);
 		}
 	} else {
 		/* Then the depot action flags */

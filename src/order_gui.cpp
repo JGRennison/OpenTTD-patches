@@ -66,11 +66,11 @@ static const uint32_t _cargo_type_load_order_dropdown_hidden_mask = 0xA; // 0101
 
 /** Cargo type orders strings for unload dropdowns. */
 static const StringID _cargo_type_unload_order_dropdown[] = {
-	STR_ORDER_DROP_UNLOAD_IF_ACCEPTED, // OUF_UNLOAD_IF_POSSIBLE
-	STR_ORDER_DROP_UNLOAD,             // OUFB_UNLOAD
-	STR_ORDER_DROP_TRANSFER,           // OUFB_TRANSFER
+	STR_ORDER_DROP_UNLOAD_IF_ACCEPTED, // OrderUnloadType::UnloadIfPossible
+	STR_ORDER_DROP_UNLOAD,             // OrderUnloadType::Unload
+	STR_ORDER_DROP_TRANSFER,           // OrderUnloadType::Transfer
 	STR_EMPTY,
-	STR_ORDER_DROP_NO_UNLOADING,       // OUFB_NO_UNLOAD
+	STR_ORDER_DROP_NO_UNLOADING,       // OrderUnloadType::NoUnload
 };
 static const uint32_t _cargo_type_unload_order_dropdown_hidden_mask = 0x8; // 01000
 
@@ -140,12 +140,12 @@ private:
 	/**
 	 * Returns the load/unload type of this order for the specified cargo.
 	 * @param cargo_id The cargo index for which we want the load/unload type.
-	 * @return an OrderLoadType if \c load_variant = true, an OrderUnloadFlags otherwise.
+	 * @return an OrderLoadType if \c load_variant = true, an OrderUnloadType otherwise.
 	 */
 	uint8_t GetOrderActionTypeForCargo(CargoType cargo_id)
 	{
 		const Order *order = this->vehicle->GetOrder(this->order_id);
-		return (this->variant == CTOWV_LOAD) ? to_underlying(order->GetCargoLoadTypeRaw(cargo_id)) : (uint8_t) order->GetCargoUnloadTypeRaw(cargo_id);
+		return (this->variant == CTOWV_LOAD) ? to_underlying(order->GetCargoLoadTypeRaw(cargo_id)) : to_underlying(order->GetCargoUnloadTypeRaw(cargo_id));
 	}
 
 	bool CheckOrderStillValid() const
@@ -432,7 +432,7 @@ void ShowCargoTypeOrdersWindow(const Vehicle *v, Window *parent, VehicleOrderID 
 
 
 /** Order load types that could be given to station orders. */
-static const StringID _station_load_types[][9][8] = {
+static const StringID _station_load_types[][8][8] = {
 	{
 		/* No refitting. */
 		{
@@ -476,15 +476,6 @@ static const StringID _station_load_types[][9][8] = {
 			STR_ORDER_NO_UNLOAD_CARGO_TYPE_LOAD,
 			INVALID_STRING_ID,
 		}, {
-			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
-			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
-		}, {
-			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
-			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
-		}, {
-			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
-			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
-		}, {
 			STR_ORDER_CARGO_TYPE_UNLOAD,
 			INVALID_STRING_ID,
 			STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD,
@@ -493,6 +484,12 @@ static const StringID _station_load_types[][9][8] = {
 			INVALID_STRING_ID,
 			STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD,
 			INVALID_STRING_ID,
+		}, {
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+		}, {
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
 		}
 	}, {
 		/* With auto-refitting. No loading and auto-refitting do not work together. */
@@ -537,15 +534,6 @@ static const StringID _station_load_types[][9][8] = {
 			STR_ORDER_NO_UNLOAD_CARGO_TYPE_LOAD_REFIT,
 			INVALID_STRING_ID,
 		}, {
-			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
-			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
-		}, {
-			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
-			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
-		}, {
-			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
-			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
-		}, {
 			STR_ORDER_CARGO_TYPE_UNLOAD_REFIT,
 			INVALID_STRING_ID,
 			STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_REFIT,
@@ -554,6 +542,12 @@ static const StringID _station_load_types[][9][8] = {
 			INVALID_STRING_ID,
 			STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD_REFIT,
 			INVALID_STRING_ID,
+		}, {
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+		}, {
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
 		}
 	}
 };
@@ -581,9 +575,6 @@ static const StringID _order_unload_dropdown[] = {
 	STR_ORDER_DROP_TRANSFER,
 	STR_EMPTY,
 	STR_ORDER_DROP_NO_UNLOADING,
-	STR_EMPTY,
-	STR_EMPTY,
-	STR_EMPTY,
 	STR_ORDER_DROP_CARGO_TYPE_UNLOAD,
 };
 
@@ -890,7 +881,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 
 		case OT_GOTO_STATION: {
 			OrderLoadType load = order->GetLoadType();
-			OrderUnloadFlags unload = order->GetUnloadType();
+			OrderUnloadType unload = order->GetUnloadType();
 			bool valid_station = CanVehicleUseStation(v, Station::Get(order->GetDestination().ToStationID()));
 
 			AppendStringInPlace(line, valid_station ? STR_ORDER_GO_TO_STATION : STR_ORDER_GO_TO_STATION_CAN_T_USE_STATION,
@@ -907,7 +898,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 			} else {
 				/* Show non-stop, refit and stop location only in the order window. */
 				if (!(order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION)) {
-					StringID str = _station_load_types[order->IsRefit()][unload][to_underlying(load)];
+					StringID str = _station_load_types[order->IsRefit()][to_underlying(unload)][to_underlying(load)];
 					if (str != INVALID_STRING_ID) {
 						if (order->IsRefit()) {
 							AppendStringInPlace(line, str, order->IsAutoRefit() ? STR_ORDER_AUTO_REFIT_ANY : CargoSpec::Get(order->GetRefitCargo())->name);
@@ -1880,7 +1871,7 @@ private:
 	 * @param unload_type Unload flag to apply. If matches existing unload type, toggles to default of 'unload if possible'.
 	 * @param toggle If we toggle or not (used for hotkey behavior)
 	 */
-	void OrderClick_Unload(OrderUnloadFlags unload_type, bool toggle = false)
+	void OrderClick_Unload(OrderUnloadType unload_type, bool toggle = false)
 	{
 		VehicleOrderID sel_ord = this->OrderGetSel();
 		const Order *order = this->vehicle->GetOrder(sel_ord);
@@ -1888,19 +1879,19 @@ private:
 		if (order == nullptr) return;
 
 		if (toggle && order->GetUnloadType() == unload_type) {
-			unload_type = OUF_UNLOAD_IF_POSSIBLE;
+			unload_type = OrderUnloadType::UnloadIfPossible;
 		}
-		if (order->GetUnloadType() == unload_type && unload_type != OUFB_CARGO_TYPE_UNLOAD) return; // If we still match, do nothing
+		if (order->GetUnloadType() == unload_type && unload_type != OrderUnloadType::CargoTypeUnload) return; // If we still match, do nothing
 
 		if (order->GetUnloadType() != unload_type) {
-			this->ModifyOrder(sel_ord, MOF_UNLOAD, unload_type);
+			this->ModifyOrder(sel_ord, MOF_UNLOAD, to_underlying(unload_type));
 		}
 
-		if (unload_type == OUFB_TRANSFER || unload_type == OUFB_UNLOAD) {
+		if (unload_type == OrderUnloadType::Transfer || unload_type == OrderUnloadType::Unload) {
 			/* Transfer and unload orders with leave empty as default */
 			this->ModifyOrder(sel_ord, MOF_LOAD, to_underlying(OrderLoadType::NoLoad), false);
 			this->SetWidgetDirty(WID_O_FULL_LOAD);
-		} else if (unload_type == OUFB_CARGO_TYPE_UNLOAD) {
+		} else if (unload_type == OrderUnloadType::CargoTypeUnload) {
 			ShowCargoTypeOrdersWindow(this->vehicle, this, sel_ord, CTOWV_UNLOAD);
 		}
 	}
@@ -2375,7 +2366,7 @@ public:
 						this->SetWidgetLoweredState(WID_O_NON_STOP, order->GetNonStopType() & ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS);
 					}
 					this->SetWidgetLoweredState(WID_O_FULL_LOAD, order->GetLoadType() == OrderLoadType::FullLoadAny);
-					this->SetWidgetLoweredState(WID_O_UNLOAD, order->GetUnloadType() == OUFB_UNLOAD);
+					this->SetWidgetLoweredState(WID_O_UNLOAD, order->GetUnloadType() == OrderUnloadType::Unload);
 
 					/* Can only do refitting when stopping at the destination and loading cargo.
 					 * Also enable the button if a refit is already set to allow clearing it. */
@@ -3203,9 +3194,9 @@ public:
 
 			case WID_O_UNLOAD:
 				if (this->GetWidget<NWidgetLeaf>(widget)->ButtonHit(pt)) {
-					this->OrderClick_Unload(OUFB_UNLOAD, true);
+					this->OrderClick_Unload(OrderUnloadType::Unload, true);
 				} else {
-					ShowDropDownMenu(this, _order_unload_dropdown, this->vehicle->GetOrder(this->OrderGetSel())->GetUnloadType(), WID_O_UNLOAD, 0, 0xE8 /* 1110 1000 */, 0, DDSF_SHARED);
+					ShowDropDownMenu(this, _order_unload_dropdown, to_underlying(this->vehicle->GetOrder(this->OrderGetSel())->GetUnloadType()), WID_O_UNLOAD, 0, 0x08 /* 00 1000 */, 0, DDSF_SHARED);
 				}
 				break;
 
@@ -3729,7 +3720,7 @@ public:
 				break;
 
 			case WID_O_UNLOAD:
-				this->OrderClick_Unload((OrderUnloadFlags)index);
+				this->OrderClick_Unload(static_cast<OrderUnloadType>(index));
 				break;
 
 			case WID_O_GOTO:
@@ -4012,11 +4003,11 @@ public:
 			case OHK_NONSTOP:        this->OrderClick_Nonstop(-1); break;
 			case OHK_VIA:            this->OrderClick_Nonstop(-2); break;
 			case OHK_FULLLOAD:       this->OrderClick_FullLoad(OrderLoadType::FullLoadAny, true); break;
-			case OHK_UNLOAD:         this->OrderClick_Unload(OUFB_UNLOAD, true); break;
+			case OHK_UNLOAD:         this->OrderClick_Unload(OrderUnloadType::Unload, true); break;
 			case OHK_NEAREST_DEPOT:  this->OrderClick_NearestDepot(); break;
 			case OHK_ALWAYS_SERVICE: this->OrderClick_Service(-1); break;
-			case OHK_TRANSFER:       this->OrderClick_Unload(OUFB_TRANSFER, true); break;
-			case OHK_NO_UNLOAD:      this->OrderClick_Unload(OUFB_NO_UNLOAD, true); break;
+			case OHK_TRANSFER:       this->OrderClick_Unload(OrderUnloadType::Transfer, true); break;
+			case OHK_NO_UNLOAD:      this->OrderClick_Unload(OrderUnloadType::NoUnload, true); break;
 			case OHK_NO_LOAD:        this->OrderClick_FullLoad(OrderLoadType::NoLoad, true); break;
 			case OHK_REFIT:          this->OrderClick_RefitHotkey(); break;
 			case OHK_DUPLICATE:      this->OrderClick_DuplicateHotkey(); break;

@@ -223,7 +223,7 @@ static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 			json[OFName::LOAD] = o.GetLoadType();
 		}
 
-		if (o.GetUnloadType() != OUFB_CARGO_TYPE_UNLOAD && o.GetUnloadType() != OUF_UNLOAD_IF_POSSIBLE) {
+		if (o.GetUnloadType() != OrderUnloadType::CargoTypeUnload && o.GetUnloadType() != OrderUnloadType::UnloadIfPossible) {
 			json[OFName::UNLOAD] = o.GetUnloadType();
 		}
 
@@ -232,7 +232,7 @@ static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 				json[OFName::LOAD_BY_CARGO_TYPE][std::to_string(i)][OFName::LOAD] = o.GetCargoLoadType(i);
 			}
 
-			if (o.GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD && o.GetCargoUnloadType(i) != OUF_UNLOAD_IF_POSSIBLE) {
+			if (o.GetUnloadType() == OrderUnloadType::CargoTypeUnload && o.GetCargoUnloadType(i) != OrderUnloadType::UnloadIfPossible) {
 				json[OFName::LOAD_BY_CARGO_TYPE][std::to_string(i)][OFName::UNLOAD] = o.GetCargoUnloadType(i);
 			}
 		}
@@ -1086,7 +1086,7 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order>
 	json_importer.TryApplyModifyOrder<uint16_t>(OFName::COUNTER_VALUE, MOF_COUNTER_VALUE, JOIET_MAJOR);
 
 	json_importer.TryApplyModifyOrder<OrderLoadType>(OFName::LOAD, MOF_LOAD, JOIET_MAJOR);
-	json_importer.TryApplyModifyOrder<OrderUnloadFlags>(OFName::UNLOAD, MOF_UNLOAD, JOIET_MAJOR);
+	json_importer.TryApplyModifyOrder<OrderUnloadType>(OFName::UNLOAD, MOF_UNLOAD, JOIET_MAJOR);
 
 	if (auto it = json.find(OFName::LOAD_BY_CARGO_TYPE); it != json.end()) {
 		if (it->is_object()) {
@@ -1108,7 +1108,7 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order>
 				}
 
 				if (val.contains(OFName::UNLOAD)) {
-					json_importer[OFName::LOAD_BY_CARGO_TYPE][key].TryApplyModifyOrder<OrderUnloadFlags>(OFName::UNLOAD, MOF_CARGO_TYPE_UNLOAD, JOIET_MAJOR, std::nullopt, cargo_id);
+					json_importer[OFName::LOAD_BY_CARGO_TYPE][key].TryApplyModifyOrder<OrderUnloadType>(OFName::UNLOAD, MOF_CARGO_TYPE_UNLOAD, JOIET_MAJOR, std::nullopt, cargo_id);
 				}
 			}
 		} else {
