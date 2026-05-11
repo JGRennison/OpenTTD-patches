@@ -444,7 +444,7 @@ public:
 	 * Where must we stop at the platform?
 	 * @return Where at the platform to stop.
 	 */
-	inline OrderStopLocation GetStopLocation() const { return (OrderStopLocation)GB(this->type, 4, 2); }
+	inline OrderStopLocation GetStopLocation() const { return static_cast<OrderStopLocation>(GB(this->type, 4, 2)); }
 	/**
 	 * What caused us going to the depot?
 	 * @return The reason to go to the depot.
@@ -551,7 +551,7 @@ public:
 	 * Set where we must stop at the platform.
 	 * @param stop_location The location to stop at.
 	 */
-	inline void SetStopLocation(OrderStopLocation stop_location) { SB(this->type, 4, 2, stop_location); }
+	inline void SetStopLocation(OrderStopLocation stop_location) { SB(this->type, 4, 2, to_underlying(stop_location)); }
 	/**
 	 * Set the cause to go to the depot.
 	 * @param depot_order_type The reason to go to the depot.

@@ -939,8 +939,8 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 
 				if (v->type == VehicleType::Train && (order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0) {
 					/* Only show the stopping location if other than the default chosen by the player. */
-					if (!_settings_client.gui.hide_default_stop_location || order->GetStopLocation() != (OrderStopLocation)(_settings_client.gui.stop_location)) {
-						AppendStringInPlace(line, STR_ORDER_STOP_LOCATION_NEAR_END + order->GetStopLocation());
+					if (!_settings_client.gui.hide_default_stop_location || order->GetStopLocation() != _settings_client.gui.stop_location) {
+						AppendStringInPlace(line, STR_ORDER_STOP_LOCATION_NEAR_END + to_underlying(order->GetStopLocation()));
 					}
 				}
 				if (v->type == VehicleType::Road && order->GetRoadVehTravelDirection() != INVALID_DIAGDIR) {
@@ -1509,7 +1509,7 @@ static Order GetOrderCmdFromTile(const Vehicle *v, TileIndex tile)
 				order.MakeGoToStation(st->index);
 				if (_ctrl_pressed) order.SetLoadType(OLF_FULL_LOAD_ANY);
 				if ((_settings_client.gui.new_nonstop || _settings_game.order.nonstop_only) && v->IsGroundVehicle()) order.SetNonStopType(ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS);
-				order.SetStopLocation(v->type == VehicleType::Train ? (OrderStopLocation)(_settings_client.gui.stop_location) : OSL_PLATFORM_FAR_END);
+				order.SetStopLocation(v->type == VehicleType::Train ? _settings_client.gui.stop_location : OrderStopLocation::FarEnd);
 				return order;
 			}
 		}
@@ -3036,20 +3036,20 @@ public:
 						return;
 					}
 					if (this->vehicle->type == VehicleType::Train) {
-						int osl = ((order->GetStopLocation() + 1) % OSL_END);
-						if (osl == OSL_PLATFORM_THROUGH && !_settings_client.gui.show_adv_load_mode_features) {
-							osl = OSL_PLATFORM_NEAR_END;
+						OrderStopLocation osl = static_cast<OrderStopLocation>((to_underlying(order->GetStopLocation()) + 1) % to_underlying(OrderStopLocation::End));
+						if (osl == OrderStopLocation::Through && !_settings_client.gui.show_adv_load_mode_features) {
+							osl = OrderStopLocation::NearEnd;
 						}
-						if (osl == OSL_PLATFORM_THROUGH) {
+						if (osl == OrderStopLocation::Through) {
 							for (const Vehicle *u = this->vehicle; u != nullptr; u = u->Next()) {
 								/* Passengers may not be through-loaded */
 								if (u->cargo_cap > 0 && IsCargoInClass(u->cargo_type, CargoClass::Passengers)) {
-									osl = OSL_PLATFORM_NEAR_END;
+									osl = OrderStopLocation::NearEnd;
 									break;
 								}
 							}
 						}
-						this->ModifyOrder(sel, MOF_STOP_LOCATION, osl);
+						this->ModifyOrder(sel, MOF_STOP_LOCATION, to_underlying(osl));
 					}
 					if (this->vehicle->type == VehicleType::Road) {
 						DiagDirection current = order->GetRoadVehTravelDirection();
@@ -3102,10 +3102,10 @@ public:
 				if (this->vehicle->type == VehicleType::Train && order->IsType(OT_GOTO_STATION) && (order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) == 0) {
 					const OrderStopLocation osl = order->GetStopLocation();
 					list.push_back(MakeDropDownListDividerItem());
-					list.push_back(MakeDropDownListCheckedItem(osl == OSL_PLATFORM_NEAR_END, STR_ORDER_STOP_LOCATION_NEAR_END, 0x200 + OSL_PLATFORM_NEAR_END, false));
-					list.push_back(MakeDropDownListCheckedItem(osl == OSL_PLATFORM_MIDDLE, STR_ORDER_STOP_LOCATION_MIDDLE, 0x200 + OSL_PLATFORM_MIDDLE, false));
-					list.push_back(MakeDropDownListCheckedItem(osl == OSL_PLATFORM_FAR_END, STR_ORDER_STOP_LOCATION_FAR_END, 0x200 + OSL_PLATFORM_FAR_END, false));
-					if (osl == OSL_PLATFORM_THROUGH || _settings_client.gui.show_adv_load_mode_features) {
+					list.push_back(MakeDropDownListCheckedItem(osl == OrderStopLocation::NearEnd, STR_ORDER_STOP_LOCATION_NEAR_END, 0x200 + to_underlying(OrderStopLocation::NearEnd), false));
+					list.push_back(MakeDropDownListCheckedItem(osl == OrderStopLocation::Middle, STR_ORDER_STOP_LOCATION_MIDDLE, 0x200 + to_underlying(OrderStopLocation::Middle), false));
+					list.push_back(MakeDropDownListCheckedItem(osl == OrderStopLocation::FarEnd, STR_ORDER_STOP_LOCATION_FAR_END, 0x200 + to_underlying(OrderStopLocation::FarEnd), false));
+					if (osl == OrderStopLocation::Through || _settings_client.gui.show_adv_load_mode_features) {
 						bool allowed = _settings_client.gui.show_adv_load_mode_features;
 						if (allowed) {
 							for (const Vehicle *u = this->vehicle; u != nullptr; u = u->Next()) {
@@ -3116,7 +3116,7 @@ public:
 								}
 							}
 						}
-						list.push_back(MakeDropDownListCheckedItem(osl == OSL_PLATFORM_THROUGH, STR_ORDER_STOP_LOCATION_THROUGH, 0x200 + OSL_PLATFORM_THROUGH, !allowed));
+						list.push_back(MakeDropDownListCheckedItem(osl == OrderStopLocation::Through, STR_ORDER_STOP_LOCATION_THROUGH, 0x200 + to_underlying(OrderStopLocation::Through), !allowed));
 					}
 				}
 
@@ -3956,7 +3956,7 @@ public:
 					this->ModifyOrder(this->OrderGetSel(), MOF_COLOUR, index & 0xFF);
 					break;
 				}
-				if (index >= 0x200 && index < 0x200 + OSL_END) {
+				if (index >= 0x200 && index < 0x200 + to_underlying(OrderStopLocation::End)) {
 					this->ModifyOrder(this->OrderGetSel(), MOF_STOP_LOCATION, index & 0xFF);
 					break;
 				}

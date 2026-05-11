@@ -2683,7 +2683,7 @@ bool AfterLoadGame()
 	/* Trains could now stop in a specific location. */
 	if (IsSavegameVersionBefore(SLV_117)) {
 		IterateVehicleAndOrderListOrders([](Order *o) {
-			if (o->IsType(OT_GOTO_STATION)) o->SetStopLocation(OSL_PLATFORM_FAR_END);
+			if (o->IsType(OT_GOTO_STATION)) o->SetStopLocation(OrderStopLocation::FarEnd);
 		});
 	}
 

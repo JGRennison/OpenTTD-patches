@@ -162,12 +162,12 @@ enum OrderNonStopFlags : uint8_t {
 /**
  * Where to stop the trains.
  */
-enum OrderStopLocation : uint8_t {
-	OSL_PLATFORM_NEAR_END = 0, ///< Stop at the near end of the platform
-	OSL_PLATFORM_MIDDLE   = 1, ///< Stop at the middle of the platform
-	OSL_PLATFORM_FAR_END  = 2, ///< Stop at the far end of the platform
-	OSL_PLATFORM_THROUGH  = 3, ///< Load/unload through the platform
-	OSL_END
+enum class OrderStopLocation : uint8_t {
+	NearEnd  = 0, ///< Stop at the near end of the platform
+	Middle   = 1, ///< Stop at the middle of the platform
+	FarEnd   = 2, ///< Stop at the far end of the platform
+	Through  = 3, ///< Load/unload through the platform
+	End,          ///< End marker.
 };
 
 /**

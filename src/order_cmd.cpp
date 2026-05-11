@@ -1082,13 +1082,13 @@ static CommandCost PreInsertOrderCheck(Vehicle *v, const Order &new_order, CmdIn
 
 			/* Filter invalid stop locations */
 			switch (new_order.GetStopLocation()) {
-				case OSL_PLATFORM_NEAR_END:
-				case OSL_PLATFORM_MIDDLE:
-				case OSL_PLATFORM_THROUGH:
+				case OrderStopLocation::NearEnd:
+				case OrderStopLocation::Middle:
+				case OrderStopLocation::Through:
 					if (v->type != VehicleType::Train) return CMD_ERROR;
 					[[fallthrough]];
 
-				case OSL_PLATFORM_FAR_END:
+				case OrderStopLocation::FarEnd:
 					break;
 
 				default:
@@ -2012,7 +2012,7 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 
 		case MOF_STOP_LOCATION:
 			if (v->type != VehicleType::Train) return CMD_ERROR;
-			if (data >= OSL_END) return CMD_ERROR;
+			if (data >= to_underlying(OrderStopLocation::End)) return CMD_ERROR;
 			break;
 
 		case MOF_CARGO_TYPE_UNLOAD:
@@ -2328,7 +2328,7 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 				break;
 
 			case MOF_STOP_LOCATION:
-				order->SetStopLocation((OrderStopLocation)data);
+				order->SetStopLocation(static_cast<OrderStopLocation>(data));
 				break;
 
 			case MOF_UNLOAD:

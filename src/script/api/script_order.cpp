@@ -519,7 +519,7 @@ static ScriptOrder::OrderPosition RealOrderPositionToScriptOrderPosition(Vehicle
 			order.MakeGoToStation(::GetStationIndex(destination));
 			order.SetLoadType((OrderLoadFlags)GB(order_flags, 5, 3));
 			order.SetUnloadType((OrderUnloadFlags)GB(order_flags, 2, 3));
-			order.SetStopLocation(OSL_PLATFORM_FAR_END);
+			order.SetStopLocation(OrderStopLocation::FarEnd);
 			break;
 
 		case OT_GOTO_WAYPOINT:

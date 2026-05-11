@@ -283,6 +283,8 @@ enum class OskActivation : uint8_t {
 	Immediately, ///< Focusing click already opens OSK.
 };
 
+enum class OrderStopLocation : uint8_t;
+
 /** Settings related to the GUI and other stuff that is not saved in the savegame. */
 struct GUISettings : public TimeSettings {
 	bool        sg_full_load_any;                                ///< new full load calculation, any cargo must be full read from pre v93 savegames
@@ -295,7 +297,7 @@ struct GUISettings : public TimeSettings {
 	bool        show_finances;                                   ///< show finances at end of year
 	bool        sg_new_nonstop;                                  ///< ttdpatch compatible nonstop handling read from pre v93 savegames
 	bool        new_nonstop;                                     ///< ttdpatch compatible nonstop handling
-	uint8_t     stop_location;                                   ///< what is the default stop location of trains?
+	OrderStopLocation stop_location;                             ///< what is the default stop location of trains?
 	uint8_t     auto_scrolling;                                  ///< scroll when moving mouse to the edge (see #ViewportAutoscrolling)
 	uint8_t     errmsg_duration;                                 ///< duration of error message
 	uint16_t    hover_delay_ms;                                  ///< time required to activate a hover event, in milliseconds

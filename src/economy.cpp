@@ -1957,7 +1957,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 	if (front->type == VehicleType::Train && front->cur_real_order_index < front->GetNumOrders()) {
 		Order *order = front->GetOrder(front->cur_real_order_index);
 		if (order->IsType(OT_GOTO_STATION) && order->GetDestination() == last_visited &&
-				order->GetStopLocation() == OSL_PLATFORM_THROUGH) {
+				order->GetStopLocation() == OrderStopLocation::Through) {
 			pull_through_mode = true;
 			for (Vehicle *v = front; v != nullptr; v = v->Next()) {
 				/* Passengers may not be through-loaded */

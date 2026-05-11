@@ -553,26 +553,26 @@ int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, bool up
 
 	/* Default to the middle of the station for stations stops that are not in
 	 * the order list like intermediate stations when non-stop is disabled */
-	OrderStopLocation osl = OSL_PLATFORM_MIDDLE;
+	OrderStopLocation osl = OrderStopLocation::Middle;
 	if (front->current_order.IsType(OT_GOTO_STATION) && front->current_order.GetDestination() == station_id) {
 		osl = front->current_order.GetStopLocation();
 	} else if (front->current_order.IsType(OT_LOADING_ADVANCE) && front->current_order.GetDestination() == station_id) {
-		osl = OSL_PLATFORM_THROUGH;
+		osl = OrderStopLocation::Through;
 	} else if (front->current_order.IsType(OT_GOTO_WAYPOINT) && front->current_order.GetDestination() == station_id) {
-		osl = OSL_PLATFORM_FAR_END;
+		osl = OrderStopLocation::FarEnd;
 	}
 	int overhang = front->gcache.cached_total_length - *station_length;
 	int adjust = 0;
-	if (osl == OSL_PLATFORM_THROUGH && overhang > 0) {
+	if (osl == OrderStopLocation::Through && overhang > 0) {
 		for (Train *u = front; u != nullptr; u = u->Next()) {
 			/* Passengers may not be through-loaded */
 			if (u->cargo_cap > 0 && IsCargoInClass(u->cargo_type, CargoClass::Passengers)) {
-				osl = OSL_PLATFORM_FAR_END;
+				osl = OrderStopLocation::FarEnd;
 				break;
 			}
 		}
 	}
-	if (osl == OSL_PLATFORM_THROUGH && overhang > 0) {
+	if (osl == OrderStopLocation::Through && overhang > 0) {
 		/* The train is longer than the station, and we can run through the station to load/unload */
 		bool advance_beyond_platform_end = false;
 		if (update_train_state) {
@@ -616,7 +616,7 @@ int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, bool up
 		if (overhang < 0) adjust += overhang;
 	} else if (overhang >= 0) {
 		/* The train is longer than the station, make it stop at the far end of the platform */
-		osl = OSL_PLATFORM_FAR_END;
+		osl = OrderStopLocation::FarEnd;
 	}
 
 	/* The stop location of the FRONT! of the train */
@@ -624,16 +624,16 @@ int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, bool up
 	switch (osl) {
 		default: NOT_REACHED();
 
-		case OSL_PLATFORM_NEAR_END:
+		case OrderStopLocation::NearEnd:
 			stop = front->gcache.cached_total_length;
 			break;
 
-		case OSL_PLATFORM_MIDDLE:
+		case OrderStopLocation::Middle:
 			stop = *station_length - (*station_length - front->gcache.cached_total_length) / 2;
 			break;
 
-		case OSL_PLATFORM_FAR_END:
-		case OSL_PLATFORM_THROUGH:
+		case OrderStopLocation::FarEnd:
+		case OrderStopLocation::Through:
 			stop = *station_length;
 			break;
 	}
@@ -643,7 +643,7 @@ int GetTrainStopLocation(StationID station_id, TileIndex tile, Train *v, bool up
 	uint8_t rounding = v->IsDrivingBackwards() ? 2 : 1;
 	int result = stop - ((v->gcache.cached_veh_length + rounding) / 2) + adjust;
 
-	if (osl == OSL_PLATFORM_THROUGH && v != v->GetMovingFront()) {
+	if (osl == OrderStopLocation::Through && v != v->GetMovingFront()) {
 		/* Check front of train for obstructions */
 
 		Train *moving_front = v->GetMovingFront();
@@ -799,27 +799,27 @@ int PredictStationStoppingLocation(const Train *v, const Order *order, int stati
 {
 	/* Default to the middle of the station for stations stops that are not in
 	 * the order list like intermediate stations when non-stop is disabled */
-	OrderStopLocation osl = OSL_PLATFORM_MIDDLE;
+	OrderStopLocation osl = OrderStopLocation::Middle;
 	if (order->IsType(OT_GOTO_STATION) && order->GetDestination() == dest) {
 		osl = order->GetStopLocation();
 	} else if (order->IsType(OT_LOADING_ADVANCE) && order->GetDestination() == dest) {
-		osl = OSL_PLATFORM_THROUGH;
+		osl = OrderStopLocation::Through;
 	} else if (order->IsType(OT_GOTO_WAYPOINT) && order->GetDestination() == dest) {
-		osl = OSL_PLATFORM_FAR_END;
+		osl = OrderStopLocation::FarEnd;
 	}
 
 	int overhang = v->gcache.cached_total_length - station_length;
 	int adjust = 0;
-	if (osl == OSL_PLATFORM_THROUGH && overhang > 0) {
+	if (osl == OrderStopLocation::Through && overhang > 0) {
 		for (const Train *u = v; u != nullptr; u = u->Next()) {
 			/* Passengers may not be through-loaded */
 			if (u->cargo_cap > 0 && IsCargoInClass(u->cargo_type, CargoClass::Passengers)) {
-				osl = OSL_PLATFORM_FAR_END;
+				osl = OrderStopLocation::FarEnd;
 				break;
 			}
 		}
 	}
-	if (osl == OSL_PLATFORM_THROUGH && overhang > 0) {
+	if (osl == OrderStopLocation::Through && overhang > 0) {
 		/* The train is longer than the station, and we can run through the station to load/unload */
 		const Train *moving_front = v->GetMovingFront();
 
@@ -863,23 +863,23 @@ int PredictStationStoppingLocation(const Train *v, const Order *order, int stati
 		}
 	} else if (overhang >= 0) {
 		/* The train is longer than the station, make it stop at the far end of the platform */
-		osl = OSL_PLATFORM_FAR_END;
+		osl = OrderStopLocation::FarEnd;
 	}
 
 	int stop;
 	switch (osl) {
 		default: NOT_REACHED();
 
-		case OSL_PLATFORM_NEAR_END:
+		case OrderStopLocation::NearEnd:
 			stop = v->gcache.cached_total_length;
 			break;
 
-		case OSL_PLATFORM_MIDDLE:
+		case OrderStopLocation::Middle:
 			stop = station_length - (station_length - v->gcache.cached_total_length) / 2;
 			break;
 
-		case OSL_PLATFORM_FAR_END:
-		case OSL_PLATFORM_THROUGH:
+		case OrderStopLocation::FarEnd:
+		case OrderStopLocation::Through:
 			stop = station_length;
 			break;
 	}

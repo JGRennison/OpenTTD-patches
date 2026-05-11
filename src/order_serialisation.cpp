@@ -509,7 +509,7 @@ std::string OrderListToJSONString(const OrderList *ol)
 
 	auto &game_properties = json[FName::GameProperties::OBJKEY];
 
-	game_properties[FName::GameProperties::DEFAULT_STOP_LOCATION] = (OrderStopLocation)_settings_client.gui.stop_location;
+	game_properties[FName::GameProperties::DEFAULT_STOP_LOCATION] = _settings_client.gui.stop_location;
 	game_properties[FName::GameProperties::NEW_NONSTOP] = _settings_client.gui.new_nonstop;
 
 	if (_settings_time.time_in_minutes) {
@@ -570,7 +570,7 @@ struct JSONImportSettings {
 	OrderStopLocation stop_location;
 	bool new_nonstop;
 
-	JSONImportSettings() : stop_location((OrderStopLocation)_settings_client.gui.stop_location), new_nonstop(_settings_client.gui.new_nonstop) {}
+	JSONImportSettings() : stop_location(_settings_client.gui.stop_location), new_nonstop(_settings_client.gui.new_nonstop) {}
 };
 
 struct JSONBulkOrderCommandBuffer {
@@ -918,7 +918,7 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order>
 		case OT_GOTO_STATION:
 			new_order.MakeGoToStation(destination.ToStationID());
 			if (veh->type != VehicleType::Train) {
-				new_order.SetStopLocation(OSL_PLATFORM_FAR_END);
+				new_order.SetStopLocation(OrderStopLocation::FarEnd);
 			}
 			break;
 
@@ -1352,8 +1352,8 @@ OrderImportErrors ImportJsonOrderList(const Vehicle *veh, std::string_view json_
 			return fmt::format("'{}' missing or invalid in '{}', this may cause discrepancies when loading the orderlist", field, FName::GameProperties::OBJKEY);
 		};
 
-		OrderStopLocation osl = game_properties.value<OrderStopLocation>(FName::GameProperties::DEFAULT_STOP_LOCATION, OSL_END);
-		if (osl == OSL_END) {
+		OrderStopLocation osl = game_properties.value<OrderStopLocation>(FName::GameProperties::DEFAULT_STOP_LOCATION, OrderStopLocation::End);
+		if (osl == OrderStopLocation::End) {
 			errors.global.push_back({
 				makeMissingErrString(FName::GameProperties::DEFAULT_STOP_LOCATION),
 				JOIET_MAJOR

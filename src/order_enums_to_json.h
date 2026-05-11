@@ -25,11 +25,11 @@ NLOHMANN_JSON_SERIALIZE_ENUM(OrderNonStopFlags, {
 })
 
 NLOHMANN_JSON_SERIALIZE_ENUM(OrderStopLocation, {
-	{OSL_END, nullptr},
-	{OSL_PLATFORM_NEAR_END, "near-end"},
-	{OSL_PLATFORM_MIDDLE, "middle"},
-	{OSL_PLATFORM_FAR_END, "far-end"},
-	{OSL_PLATFORM_THROUGH, "through"}
+	{OrderStopLocation::End, nullptr},
+	{OrderStopLocation::NearEnd, "near-end"},
+	{OrderStopLocation::Middle, "middle"},
+	{OrderStopLocation::FarEnd, "far-end"},
+	{OrderStopLocation::Through, "through"}
 })
 
 NLOHMANN_JSON_SERIALIZE_ENUM(OrderLabelSubType, {
