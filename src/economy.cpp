@@ -1497,7 +1497,7 @@ Money CargoPayment::PayTransfer(CargoType cargo, CargoPacket *cp, uint count, Ti
  * @param v A pointer to a vehicle.
  * @return the load type of this vehicle.
  */
-static OrderLoadFlags GetLoadType(const Vehicle *v)
+static OrderLoadType GetLoadType(const Vehicle *v)
 {
 	return v->First()->current_order.GetCargoLoadType(v->cargo_type);
 }
@@ -1758,7 +1758,7 @@ struct FinalizeRefitAction
 	 */
 	bool operator()(Vehicle *v)
 	{
-		if (this->do_reserve || (cargo_type_loading == nullptr || (cargo_type_loading->current_order.GetCargoLoadTypeRaw(v->cargo_type) & OLFB_FULL_LOAD))) {
+		if (this->do_reserve || (cargo_type_loading == nullptr || IsFullLoadOrderLoadType(cargo_type_loading->current_order.GetCargoLoadTypeRaw(v->cargo_type)))) {
 			this->st->goods[v->cargo_type].CreateData().cargo.Reserve(v->cargo_cap - v->cargo.RemainingCount(),
 					&v->cargo, this->next_station.Get(v->cargo_type), v->GetCargoTile());
 		}
@@ -1789,12 +1789,12 @@ static void HandleStationRefit(Vehicle *v, Vehicle *v_start, CargoArray &consist
 	IterateVehicleParts(v_start, PrepareRefitAction(consist_capleft, refit_mask));
 
 	bool is_auto_refit = new_cid == CARGO_AUTO_REFIT;
-	bool check_order = (v->First()->current_order.GetLoadType() == OLFB_CARGO_TYPE_LOAD);
+	bool check_order = (v->First()->current_order.GetLoadType() == OrderLoadType::CargoTypeLoad);
 	if (is_auto_refit) {
 		/* Get a refittable cargo type with waiting cargo for next_station or StationID::Invalid(). */
 		new_cid = v_start->cargo_type;
 		for (CargoType cid : refit_mask) {
-			if (check_order && v->First()->current_order.GetCargoLoadType(cid) == OLFB_NO_LOAD) continue;
+			if (check_order && v->First()->current_order.GetCargoLoadType(cid) == OrderLoadType::NoLoad) continue;
 			if (st->goods[cid].data != nullptr && st->goods[cid].data->cargo.HasCargoFor(next_station.Get(cid))) {
 				/* Try to find out if auto-refitting would succeed. In case the refit is allowed,
 				 * the returned refit capacity will be greater than zero. */
@@ -1827,8 +1827,8 @@ static void HandleStationRefit(Vehicle *v, Vehicle *v_start, CargoArray &consist
 
 	/* Add new capacity to consist capacity and reserve cargo */
 	IterateVehicleParts(v_start, FinalizeRefitAction(consist_capleft, st, next_station,
-			is_auto_refit || (v->First()->current_order.GetLoadType() & OLFB_FULL_LOAD) != 0,
-			(v->First()->current_order.GetLoadType() == OLFB_CARGO_TYPE_LOAD) ? v->First() : nullptr));
+			is_auto_refit || v->First()->current_order.IsFullLoadOrder(),
+			(v->First()->current_order.GetLoadType() == OrderLoadType::CargoTypeLoad) ? v->First() : nullptr));
 }
 
 /**
@@ -1857,9 +1857,9 @@ struct ReserveCargoAction {
 		if (v->type == VehicleType::Train && Train::From(v)->flags.Test(VehicleRailFlag::BeyondPlatformEnd)) return true;
 
 		if (cargo_type_loading != nullptr) {
-			OrderLoadFlags flags = cargo_type_loading->current_order.GetCargoLoadTypeRaw(v->cargo_type);
-			if (flags & OLFB_NO_LOAD) return true;
-			if (!(flags & OLFB_FULL_LOAD) && !through_load) return true;
+			OrderLoadType load_type = cargo_type_loading->current_order.GetCargoLoadTypeRaw(v->cargo_type);
+			if (load_type == OrderLoadType::NoLoad) return true;
+			if (!IsFullLoadOrderLoadType(load_type) && !through_load) return true;
 		}
 		if (v->cargo_cap > v->cargo.RemainingCount() && MayLoadUnderExclusiveRights(st, v)) {
 			st->goods[v->cargo_type].CreateData().cargo.Reserve(v->cargo_cap - v->cargo.RemainingCount(),
@@ -1904,9 +1904,9 @@ static void ReserveConsist(Station *st, Vehicle *u, CargoArray *consist_capleft,
 		}
 		if (consist_capleft == nullptr || v->cargo_cap == 0) continue;
 		if (cargo_type_loading) {
-			OrderLoadFlags flags = u->current_order.GetCargoLoadTypeRaw(v->cargo_type);
-			if (flags & OLFB_NO_LOAD) continue;
-			if (!(flags & OLFB_FULL_LOAD) && !through_load) continue;
+			OrderLoadType load_type = u->current_order.GetCargoLoadTypeRaw(v->cargo_type);
+			if (load_type == OrderLoadType::NoLoad) continue;
+			if (!IsFullLoadOrderLoadType(load_type) && !through_load) continue;
 		 }
 		(*consist_capleft)[v->cargo_type] += v->cargo_cap - v->cargo.RemainingCount();
 	}
@@ -1998,9 +1998,10 @@ static void LoadUnloadVehicle(Vehicle *front)
 	if (_settings_game.order.improved_load && use_autorefit) {
 		if (front->cargo_payment == nullptr) should_reserve_consist = true;
 	} else {
-		if ((front->current_order.GetLoadType() & OLFB_FULL_LOAD) || (front->current_order.GetLoadType() == OLFB_CARGO_TYPE_LOAD) || pull_through_mode) {
+		const OrderLoadType load_type = front->current_order.GetLoadType();
+		if (IsFullLoadOrderLoadType(load_type) || (load_type == OrderLoadType::CargoTypeLoad) || pull_through_mode) {
 			should_reserve_consist = true;
-			reserve_consist_cargo_type_loading = (front->current_order.GetLoadType() == OLFB_CARGO_TYPE_LOAD);
+			reserve_consist_cargo_type_loading = (load_type == OrderLoadType::CargoTypeLoad);
 		}
 	}
 	if (should_reserve_consist) {
@@ -2166,7 +2167,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 
 		/* Do not pick up goods when we have no-load set or loading is stopped.
 		 * Per-cargo no-load orders can only be checked after attempting to refit. */
-		if (front->current_order.GetLoadType() & OLFB_NO_LOAD || front->vehicle_flags.Test(VehicleFlag::StopLoading)) continue;
+		if (front->current_order.GetLoadType() == OrderLoadType::NoLoad || front->vehicle_flags.Test(VehicleFlag::StopLoading)) continue;
 
 		/* This order has a refit, if this is the first vehicle part carrying cargo and the whole vehicle is empty, try refitting. */
 		if (front->current_order.IsRefit() && artic_part == 1) {
@@ -2183,7 +2184,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 		if (suppress_artic_load) continue;
 
 		/* Do not pick up goods when we have no-load set. */
-		if (GetLoadType(v) & OLFB_NO_LOAD) continue;
+		if (GetLoadType(v) == OrderLoadType::NoLoad) continue;
 
 		/* As we're loading here the following link can carry the full capacity of the vehicle. */
 		v->refit_cap = v->cargo_cap;
@@ -2293,11 +2294,11 @@ static void LoadUnloadVehicle(Vehicle *front)
 	front->vehicle_flags.Reset(VehicleFlag::StopLoading);
 
 	CargoTypes full_load_cargo_mask{};
-	if (front->current_order.GetLoadType() & OLFB_FULL_LOAD) {
+	if (front->current_order.IsFullLoadOrder()) {
 		full_load_cargo_mask = ALL_CARGOTYPES;
-	} else if (front->current_order.GetLoadType() == OLFB_CARGO_TYPE_LOAD) {
+	} else if (front->current_order.GetLoadType() == OrderLoadType::CargoTypeLoad) {
 		for (Vehicle *v = front; v != nullptr; v = v->Next()) {
-			if (front->current_order.GetCargoLoadTypeRaw(v->cargo_type) & OLFB_FULL_LOAD) {
+			if (IsFullLoadOrderLoadType(front->current_order.GetCargoLoadTypeRaw(v->cargo_type))) {
 				full_load_cargo_mask.Set(v->cargo_type);
 			}
 		}
@@ -2345,7 +2346,7 @@ static void LoadUnloadVehicle(Vehicle *front)
 		UpdateLoadUnloadTicks(front, st, 20, platform_length_left); // We need the ticks for link refreshing.
 		bool finished_loading = true;
 		if (full_load_cargo_mask.Any()) {
-			const bool full_load_any_order = front->current_order.GetLoadType() == OLF_FULL_LOAD_ANY;
+			const bool full_load_any_order = front->current_order.GetLoadType() == OrderLoadType::FullLoadAny;
 			if (full_load_any_order) {
 				/* if the aircraft carries passengers and is NOT full, then
 				 * continue loading, no matter how much mail is in */

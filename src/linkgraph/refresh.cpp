@@ -41,9 +41,9 @@
 						return o->GetCargoUnloadType(cargo) & (OUFB_TRANSFER | OUFB_UNLOAD | OUFB_NO_UNLOAD);
 					});
 				}
-				if (o->GetLoadType() == OLFB_CARGO_TYPE_LOAD) {
-					CargoMaskValueFilter<uint>(iter_cargo_mask, [&](CargoType cargo) -> uint {
-						return o->GetCargoLoadType(cargo) & (OLFB_NO_LOAD);
+				if (o->GetLoadType() == OrderLoadType::CargoTypeLoad) {
+					CargoMaskValueFilter<bool>(iter_cargo_mask, [&](CargoType cargo) -> bool {
+						return o->GetCargoLoadType(cargo) == OrderLoadType::NoLoad;
 					});
 				}
 			}
@@ -319,7 +319,7 @@ void LinkRefresher::RefreshStats(const Order *cur, const Order *next, uint32_t t
 			}
 
 			/* A link is at least partly restricted if a vehicle can't load at its source. */
-			EdgeUpdateModes restricted_modes = (cur->GetCargoLoadType(cargo) & OLFB_NO_LOAD) == 0 ?
+			EdgeUpdateModes restricted_modes = (cur->GetCargoLoadType(cargo) != OrderLoadType::NoLoad) ?
 						EdgeUpdateMode::Unrestricted : EdgeUpdateMode::Restricted;
 			/* This estimates the travel time of the link as the time needed
 			 * to travel between the stations at half the max speed of the consist.
@@ -386,7 +386,7 @@ void LinkRefresher::RefreshLinks(const Order *cur, const Order *next, TimetableT
 				LinkRefresher backup(*this);
 				for (CargoType cargo{}; cargo != NUM_CARGO; ++cargo) {
 					if (!CargoSpec::Get(cargo)->IsValid()) continue;
-					if (next->GetCargoLoadType(cargo) == OLFB_NO_LOAD) continue;
+					if (next->GetCargoLoadType(cargo) == OrderLoadType::NoLoad) continue;
 					if (this->HandleRefit(cargo)) {
 						this->RefreshLinks(cur, next, travel, flags, num_hops);
 						*this = backup;

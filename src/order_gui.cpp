@@ -56,11 +56,11 @@ enum CargoTypeOrdersWindowVariant {
 
 /** Cargo type orders strings for load dropdowns. */
 static const StringID _cargo_type_load_order_dropdown[] = {
-	STR_ORDER_DROP_LOAD_IF_POSSIBLE,      // OLF_LOAD_IF_POSSIBLE
+	STR_ORDER_DROP_LOAD_IF_POSSIBLE,      // OrderLoadType::LoadIfPossible
 	STR_EMPTY,
-	STR_CARGO_TYPE_ORDERS_DROP_FULL_LOAD, // OLFB_FULL_LOAD
+	STR_CARGO_TYPE_ORDERS_DROP_FULL_LOAD, // OrderLoadType::FullLoad
 	STR_EMPTY,
-	STR_ORDER_DROP_NO_LOADING,            // OLFB_NO_LOAD
+	STR_ORDER_DROP_NO_LOADING,            // OrderLoadType::NoLoad
 };
 static const uint32_t _cargo_type_load_order_dropdown_hidden_mask = 0xA; // 01010
 
@@ -140,12 +140,12 @@ private:
 	/**
 	 * Returns the load/unload type of this order for the specified cargo.
 	 * @param cargo_id The cargo index for which we want the load/unload type.
-	 * @return an OrderLoadFlags if \c load_variant = true, an OrderUnloadFlags otherwise.
+	 * @return an OrderLoadType if \c load_variant = true, an OrderUnloadFlags otherwise.
 	 */
 	uint8_t GetOrderActionTypeForCargo(CargoType cargo_id)
 	{
 		const Order *order = this->vehicle->GetOrder(this->order_id);
-		return (this->variant == CTOWV_LOAD) ? (uint8_t) order->GetCargoLoadTypeRaw(cargo_id) : (uint8_t) order->GetCargoUnloadTypeRaw(cargo_id);
+		return (this->variant == CTOWV_LOAD) ? to_underlying(order->GetCargoLoadTypeRaw(cargo_id)) : (uint8_t) order->GetCargoUnloadTypeRaw(cargo_id);
 	}
 
 	bool CheckOrderStillValid() const
@@ -432,7 +432,7 @@ void ShowCargoTypeOrdersWindow(const Vehicle *v, Window *parent, VehicleOrderID 
 
 
 /** Order load types that could be given to station orders. */
-static const StringID _station_load_types[][9][9] = {
+static const StringID _station_load_types[][9][8] = {
 	{
 		/* No refitting. */
 		{
@@ -442,9 +442,8 @@ static const StringID _station_load_types[][9][9] = {
 			STR_ORDER_FULL_LOAD_ANY,
 			STR_ORDER_NO_LOAD,
 			INVALID_STRING_ID,
-			INVALID_STRING_ID,
-			INVALID_STRING_ID,
 			STR_ORDER_CARGO_TYPE_LOAD,
+			INVALID_STRING_ID,
 		}, {
 			STR_ORDER_UNLOAD,
 			INVALID_STRING_ID,
@@ -452,9 +451,8 @@ static const StringID _station_load_types[][9][9] = {
 			STR_ORDER_UNLOAD_FULL_LOAD_ANY,
 			STR_ORDER_UNLOAD_NO_LOAD,
 			INVALID_STRING_ID,
-			INVALID_STRING_ID,
-			INVALID_STRING_ID,
 			STR_ORDER_UNLOAD_CARGO_TYPE_LOAD,
+			INVALID_STRING_ID,
 		}, {
 			STR_ORDER_TRANSFER,
 			INVALID_STRING_ID,
@@ -462,14 +460,12 @@ static const StringID _station_load_types[][9][9] = {
 			STR_ORDER_TRANSFER_FULL_LOAD_ANY,
 			STR_ORDER_TRANSFER_NO_LOAD,
 			INVALID_STRING_ID,
-			INVALID_STRING_ID,
-			INVALID_STRING_ID,
 			STR_ORDER_TRANSFER_CARGO_TYPE_LOAD,
+			INVALID_STRING_ID,
 		}, {
 			/* Unload and transfer do not work together. */
-			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
-			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
-			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
 		}, {
 			STR_ORDER_NO_UNLOAD,
 			INVALID_STRING_ID,
@@ -477,21 +473,17 @@ static const StringID _station_load_types[][9][9] = {
 			STR_ORDER_NO_UNLOAD_FULL_LOAD_ANY,
 			STR_ORDER_NO_UNLOAD_NO_LOAD,
 			INVALID_STRING_ID,
-			INVALID_STRING_ID,
-			INVALID_STRING_ID,
 			STR_ORDER_NO_UNLOAD_CARGO_TYPE_LOAD,
+			INVALID_STRING_ID,
 		}, {
-			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
-			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
-			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
 		}, {
-			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
-			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
-			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
 		}, {
-			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
-			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
-			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
 		}, {
 			STR_ORDER_CARGO_TYPE_UNLOAD,
 			INVALID_STRING_ID,
@@ -499,9 +491,8 @@ static const StringID _station_load_types[][9][9] = {
 			STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_ANY,
 			STR_ORDER_CARGO_TYPE_UNLOAD_NO_LOAD,
 			INVALID_STRING_ID,
-			INVALID_STRING_ID,
-			INVALID_STRING_ID,
 			STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD,
+			INVALID_STRING_ID,
 		}
 	}, {
 		/* With auto-refitting. No loading and auto-refitting do not work together. */
@@ -512,9 +503,8 @@ static const StringID _station_load_types[][9][9] = {
 			STR_ORDER_FULL_LOAD_ANY_REFIT,
 			INVALID_STRING_ID,
 			INVALID_STRING_ID,
-			INVALID_STRING_ID,
-			INVALID_STRING_ID,
 			STR_ORDER_CARGO_TYPE_LOAD_REFIT,
+			INVALID_STRING_ID,
 		}, {
 			STR_ORDER_UNLOAD_REFIT,
 			INVALID_STRING_ID,
@@ -522,9 +512,8 @@ static const StringID _station_load_types[][9][9] = {
 			STR_ORDER_UNLOAD_FULL_LOAD_ANY_REFIT,
 			INVALID_STRING_ID,
 			INVALID_STRING_ID,
-			INVALID_STRING_ID,
-			INVALID_STRING_ID,
 			STR_ORDER_UNLOAD_CARGO_TYPE_LOAD_REFIT,
+			INVALID_STRING_ID,
 		}, {
 			STR_ORDER_TRANSFER_REFIT,
 			INVALID_STRING_ID,
@@ -532,14 +521,12 @@ static const StringID _station_load_types[][9][9] = {
 			STR_ORDER_TRANSFER_FULL_LOAD_ANY_REFIT,
 			INVALID_STRING_ID,
 			INVALID_STRING_ID,
-			INVALID_STRING_ID,
-			INVALID_STRING_ID,
 			STR_ORDER_TRANSFER_CARGO_TYPE_LOAD_REFIT,
+			INVALID_STRING_ID,
 		}, {
 			/* Unload and transfer do not work together. */
-			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
-			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
-			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
 		}, {
 			STR_ORDER_NO_UNLOAD_REFIT,
 			INVALID_STRING_ID,
@@ -547,21 +534,17 @@ static const StringID _station_load_types[][9][9] = {
 			STR_ORDER_NO_UNLOAD_FULL_LOAD_ANY_REFIT,
 			INVALID_STRING_ID,
 			INVALID_STRING_ID,
-			INVALID_STRING_ID,
-			INVALID_STRING_ID,
 			STR_ORDER_NO_UNLOAD_CARGO_TYPE_LOAD_REFIT,
+			INVALID_STRING_ID,
 		}, {
-			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
-			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
-			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
 		}, {
-			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
-			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
-			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
 		}, {
-			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
-			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
-			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
+			INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID, INVALID_STRING_ID,
 		}, {
 			STR_ORDER_CARGO_TYPE_UNLOAD_REFIT,
 			INVALID_STRING_ID,
@@ -569,9 +552,8 @@ static const StringID _station_load_types[][9][9] = {
 			STR_ORDER_CARGO_TYPE_UNLOAD_FULL_LOAD_ANY_REFIT,
 			INVALID_STRING_ID,
 			INVALID_STRING_ID,
-			INVALID_STRING_ID,
-			INVALID_STRING_ID,
 			STR_ORDER_CARGO_TYPE_UNLOAD_CARGO_TYPE_LOAD_REFIT,
+			INVALID_STRING_ID,
 		}
 	}
 };
@@ -589,8 +571,6 @@ static const StringID _order_full_load_dropdown[] = {
 	STR_ORDER_DROP_FULL_LOAD_ALL,
 	STR_ORDER_DROP_FULL_LOAD_ANY,
 	STR_ORDER_DROP_NO_LOADING,
-	STR_EMPTY,
-	STR_EMPTY,
 	STR_EMPTY,
 	STR_ORDER_DROP_CARGO_TYPE_LOAD,
 };
@@ -909,7 +889,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 			break;
 
 		case OT_GOTO_STATION: {
-			OrderLoadFlags load = order->GetLoadType();
+			OrderLoadType load = order->GetLoadType();
 			OrderUnloadFlags unload = order->GetUnloadType();
 			bool valid_station = CanVehicleUseStation(v, Station::Get(order->GetDestination().ToStationID()));
 
@@ -927,7 +907,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 			} else {
 				/* Show non-stop, refit and stop location only in the order window. */
 				if (!(order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION)) {
-					StringID str = _station_load_types[order->IsRefit()][unload][load];
+					StringID str = _station_load_types[order->IsRefit()][unload][to_underlying(load)];
 					if (str != INVALID_STRING_ID) {
 						if (order->IsRefit()) {
 							AppendStringInPlace(line, str, order->IsAutoRefit() ? STR_ORDER_AUTO_REFIT_ANY : CargoSpec::Get(order->GetRefitCargo())->name);
@@ -1507,7 +1487,7 @@ static Order GetOrderCmdFromTile(const Vehicle *v, TileIndex tile)
 			}
 			if (st->facilities.Any(facil)) {
 				order.MakeGoToStation(st->index);
-				if (_ctrl_pressed) order.SetLoadType(OLF_FULL_LOAD_ANY);
+				if (_ctrl_pressed) order.SetLoadType(OrderLoadType::FullLoadAny);
 				if ((_settings_client.gui.new_nonstop || _settings_game.order.nonstop_only) && v->IsGroundVehicle()) order.SetNonStopType(ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS);
 				order.SetStopLocation(v->type == VehicleType::Train ? _settings_client.gui.stop_location : OrderStopLocation::FarEnd);
 				return order;
@@ -1794,7 +1774,7 @@ private:
 	 * @param load_type Load flag to apply. If matches existing load type, toggles to default of 'load if possible'.
 	 * @param toggle If we toggle or not (used for hotkey behavior)
 	 */
-	void OrderClick_FullLoad(OrderLoadFlags load_type, bool toggle = false)
+	void OrderClick_FullLoad(OrderLoadType load_type, bool toggle = false)
 	{
 		VehicleOrderID sel_ord = this->OrderGetSel();
 		const Order *order = this->vehicle->GetOrder(sel_ord);
@@ -1802,13 +1782,13 @@ private:
 		if (order == nullptr) return;
 
 		if (toggle && order->GetLoadType() == load_type) {
-			load_type = OLF_LOAD_IF_POSSIBLE; // reset to 'default'
+			load_type = OrderLoadType::LoadIfPossible; // reset to 'default'
 		}
 		if (order->GetLoadType() != load_type) {
-			this->ModifyOrder(sel_ord, MOF_LOAD, load_type);
+			this->ModifyOrder(sel_ord, MOF_LOAD, to_underlying(load_type));
 		}
 
-		if (load_type == OLFB_CARGO_TYPE_LOAD) ShowCargoTypeOrdersWindow(this->vehicle, this, sel_ord, CTOWV_LOAD);
+		if (load_type == OrderLoadType::CargoTypeLoad) ShowCargoTypeOrdersWindow(this->vehicle, this, sel_ord, CTOWV_LOAD);
 	}
 
 	/**
@@ -1918,7 +1898,7 @@ private:
 
 		if (unload_type == OUFB_TRANSFER || unload_type == OUFB_UNLOAD) {
 			/* Transfer and unload orders with leave empty as default */
-			this->ModifyOrder(sel_ord, MOF_LOAD, OLFB_NO_LOAD, false);
+			this->ModifyOrder(sel_ord, MOF_LOAD, to_underlying(OrderLoadType::NoLoad), false);
 			this->SetWidgetDirty(WID_O_FULL_LOAD);
 		} else if (unload_type == OUFB_CARGO_TYPE_UNLOAD) {
 			ShowCargoTypeOrdersWindow(this->vehicle, this, sel_ord, CTOWV_UNLOAD);
@@ -2394,13 +2374,13 @@ public:
 						this->EnableWidget(WID_O_NON_STOP);
 						this->SetWidgetLoweredState(WID_O_NON_STOP, order->GetNonStopType() & ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS);
 					}
-					this->SetWidgetLoweredState(WID_O_FULL_LOAD, order->GetLoadType() == OLF_FULL_LOAD_ANY);
+					this->SetWidgetLoweredState(WID_O_FULL_LOAD, order->GetLoadType() == OrderLoadType::FullLoadAny);
 					this->SetWidgetLoweredState(WID_O_UNLOAD, order->GetUnloadType() == OUFB_UNLOAD);
 
 					/* Can only do refitting when stopping at the destination and loading cargo.
 					 * Also enable the button if a refit is already set to allow clearing it. */
 					this->SetWidgetDisabledState(WID_O_REFIT_DROPDOWN,
-							order->GetLoadType() == OLFB_NO_LOAD || (order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) ||
+							order->GetLoadType() == OrderLoadType::NoLoad || (order->GetNonStopType() & ONSF_NO_STOP_AT_DESTINATION_STATION) ||
 							((!this->can_do_refit || !this->can_do_autorefit) && !order->IsRefit()));
 
 					break;
@@ -3215,9 +3195,9 @@ public:
 
 			case WID_O_FULL_LOAD:
 				if (this->GetWidget<NWidgetLeaf>(widget)->ButtonHit(pt)) {
-					this->OrderClick_FullLoad(OLF_FULL_LOAD_ANY, true);
+					this->OrderClick_FullLoad(OrderLoadType::FullLoadAny, true);
 				} else {
-					ShowDropDownMenu(this, _order_full_load_dropdown, this->vehicle->GetOrder(this->OrderGetSel())->GetLoadType(), WID_O_FULL_LOAD, 0, 0xE2 /* 1110 0010 */, 0, DDSF_SHARED);
+					ShowDropDownMenu(this, _order_full_load_dropdown, to_underlying(this->vehicle->GetOrder(this->OrderGetSel())->GetLoadType()), WID_O_FULL_LOAD, 0, 0x22 /* 010 0010 */, 0, DDSF_SHARED);
 				}
 				break;
 
@@ -3745,7 +3725,7 @@ public:
 				break;
 
 			case WID_O_FULL_LOAD:
-				this->OrderClick_FullLoad((OrderLoadFlags)index);
+				this->OrderClick_FullLoad(static_cast<OrderLoadType>(index));
 				break;
 
 			case WID_O_UNLOAD:
@@ -4031,13 +4011,13 @@ public:
 			case OHK_GOTO:           this->OrderClick_Goto(OPOS_GOTO); break;
 			case OHK_NONSTOP:        this->OrderClick_Nonstop(-1); break;
 			case OHK_VIA:            this->OrderClick_Nonstop(-2); break;
-			case OHK_FULLLOAD:       this->OrderClick_FullLoad(OLF_FULL_LOAD_ANY, true); break;
+			case OHK_FULLLOAD:       this->OrderClick_FullLoad(OrderLoadType::FullLoadAny, true); break;
 			case OHK_UNLOAD:         this->OrderClick_Unload(OUFB_UNLOAD, true); break;
 			case OHK_NEAREST_DEPOT:  this->OrderClick_NearestDepot(); break;
 			case OHK_ALWAYS_SERVICE: this->OrderClick_Service(-1); break;
 			case OHK_TRANSFER:       this->OrderClick_Unload(OUFB_TRANSFER, true); break;
 			case OHK_NO_UNLOAD:      this->OrderClick_Unload(OUFB_NO_UNLOAD, true); break;
-			case OHK_NO_LOAD:        this->OrderClick_FullLoad(OLFB_NO_LOAD, true); break;
+			case OHK_NO_LOAD:        this->OrderClick_FullLoad(OrderLoadType::NoLoad, true); break;
 			case OHK_REFIT:          this->OrderClick_RefitHotkey(); break;
 			case OHK_DUPLICATE:      this->OrderClick_DuplicateHotkey(); break;
 			case OHK_RETARGET_JUMP:  this->OrderClick_RetargetJumpHotkey(); break;

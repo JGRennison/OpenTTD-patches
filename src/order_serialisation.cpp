@@ -219,7 +219,7 @@ static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 	}
 
 	if (o.IsType(OT_GOTO_STATION)) {
-		if (o.GetLoadType() != OLFB_CARGO_TYPE_LOAD && o.GetLoadType() != OLF_LOAD_IF_POSSIBLE) {
+		if (o.GetLoadType() != OrderLoadType::CargoTypeLoad && o.GetLoadType() != OrderLoadType::LoadIfPossible) {
 			json[OFName::LOAD] = o.GetLoadType();
 		}
 
@@ -228,7 +228,7 @@ static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 		}
 
 		for (CargoType i{}; i < NUM_CARGO; i++) {
-			if (o.GetLoadType() == OLFB_CARGO_TYPE_LOAD && o.GetCargoLoadType(i) != OLF_LOAD_IF_POSSIBLE) {
+			if (o.GetLoadType() == OrderLoadType::CargoTypeLoad && o.GetCargoLoadType(i) != OrderLoadType::LoadIfPossible) {
 				json[OFName::LOAD_BY_CARGO_TYPE][std::to_string(i)][OFName::LOAD] = o.GetCargoLoadType(i);
 			}
 
@@ -1085,7 +1085,7 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order>
 	json_importer.TryApplyModifyOrder<uint8_t>(OFName::COUNTER_OPERATION, MOF_COUNTER_OP, JOIET_MAJOR);
 	json_importer.TryApplyModifyOrder<uint16_t>(OFName::COUNTER_VALUE, MOF_COUNTER_VALUE, JOIET_MAJOR);
 
-	json_importer.TryApplyModifyOrder<OrderLoadFlags>(OFName::LOAD, MOF_LOAD, JOIET_MAJOR);
+	json_importer.TryApplyModifyOrder<OrderLoadType>(OFName::LOAD, MOF_LOAD, JOIET_MAJOR);
 	json_importer.TryApplyModifyOrder<OrderUnloadFlags>(OFName::UNLOAD, MOF_UNLOAD, JOIET_MAJOR);
 
 	if (auto it = json.find(OFName::LOAD_BY_CARGO_TYPE); it != json.end()) {
@@ -1104,7 +1104,7 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order>
 				};
 
 				if (val.contains(OFName::LOAD)) {
-					json_importer[OFName::LOAD_BY_CARGO_TYPE][key].TryApplyModifyOrder<OrderLoadFlags>(OFName::LOAD, MOF_CARGO_TYPE_LOAD, JOIET_MAJOR, std::nullopt, cargo_id);
+					json_importer[OFName::LOAD_BY_CARGO_TYPE][key].TryApplyModifyOrder<OrderLoadType>(OFName::LOAD, MOF_CARGO_TYPE_LOAD, JOIET_MAJOR, std::nullopt, cargo_id);
 				}
 
 				if (val.contains(OFName::UNLOAD)) {

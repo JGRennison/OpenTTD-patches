@@ -141,7 +141,7 @@ bool IsArrivalDepartureTest(DepartureCallingSettings settings, const Order *orde
 
 static bool DepartureLoadFilter(const Order *order)
 {
-	return order->GetLoadType() != OLFB_NO_LOAD;
+	return order->GetLoadType() != OrderLoadType::NoLoad;
 }
 
 static bool ArrivalLoadFilter(const Order *order)
@@ -827,7 +827,7 @@ static bool ProcessArrivalHistory(Departure *d, std::span<ArrivalHistoryEntry> a
 			if (source.StationMatches(o->GetDestination().ToStationID())) {
 				/* Same as source order, remove all possible origins */
 				possible_origins.clear();
-			} else if (!calling_settings.ShowAllStops() && o->IsType(OT_GOTO_STATION) && o->GetLoadType() == OLFB_NO_LOAD && (o->GetUnloadType() & (OUFB_TRANSFER | OUFB_UNLOAD)) != 0) {
+			} else if (!calling_settings.ShowAllStops() && o->IsType(OT_GOTO_STATION) && o->GetLoadType() == OrderLoadType::NoLoad && (o->GetUnloadType() & (OUFB_TRANSFER | OUFB_UNLOAD)) != 0) {
 				/* All cargo unloaded, remove all possible origins */
 				possible_origins.clear();
 			} else {
@@ -841,7 +841,7 @@ static bool ProcessArrivalHistory(Departure *d, std::span<ArrivalHistoryEntry> a
 				if (o->IsType(OT_GOTO_WAYPOINT) || o->IsType(OT_GOTO_DEPOT)) {
 					if (calling_settings.ShowAllStops()) possible_origins.push_back({ o->GetDestination().ToStationID(), i });
 				} else {
-					if (calling_settings.ShowAllStops() || o->GetLoadType() != OLFB_NO_LOAD) possible_origins.push_back({ o->GetDestination().ToStationID(), i });
+					if (calling_settings.ShowAllStops() || o->GetLoadType() != OrderLoadType::NoLoad) possible_origins.push_back({ o->GetDestination().ToStationID(), i });
 				}
 			}
 		}
@@ -864,7 +864,7 @@ static bool ProcessArrivalHistory(Departure *d, std::span<ArrivalHistoryEntry> a
 			d->show_as = DSA_NO_LOAD;
 		}
 		auto check_order = [&](const Order *o) {
-			if (check_no_load_mode && o->IsType(OT_GOTO_STATION) && o->GetLoadType() != OLFB_NO_LOAD) {
+			if (check_no_load_mode && o->IsType(OT_GOTO_STATION) && o->GetLoadType() != OrderLoadType::NoLoad) {
 				d->show_as = DSA_NORMAL;
 				check_no_load_mode = false;
 			}
@@ -883,7 +883,7 @@ static bool ProcessArrivalHistory(Departure *d, std::span<ArrivalHistoryEntry> a
 			const Order *o = arrival_history[i].order;
 			if (IsCallingPointTargetOrder(o)) {
 				check_order(o);
-				if (o->IsType(OT_GOTO_STATION) && (o->GetLoadType() != OLFB_NO_LOAD || calling_settings.ShowAllStops())) {
+				if (o->IsType(OT_GOTO_STATION) && (o->GetLoadType() != OrderLoadType::NoLoad || calling_settings.ShowAllStops())) {
 					d->calling_at.push_back(make_call_at(arrival_history[i]));
 				} else if ((o->IsType(OT_GOTO_WAYPOINT) || o->IsType(OT_GOTO_DEPOT))&& calling_settings.ShowAllStops()) {
 					d->calling_at.push_back(make_call_at(arrival_history[i]));

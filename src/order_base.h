@@ -349,27 +349,34 @@ public:
 	bool UpdateJumpCounter(uint8_t percent, bool dry_run);
 
 	/**
+	 * Is this order a OrderLoadType::FullLoad or OrderLoadType::FullLoadAny?
+	 * @return true iff the order is a full load or full load any order.
+	 */
+	inline bool IsFullLoadOrder() const
+	{
+		return IsFullLoadOrderLoadType(this->GetLoadType());
+	}
+
+	/**
 	 * How must the consist be loaded?
 	 * @return The way to load the vehicle.
 	 */
-	inline OrderLoadFlags GetLoadType() const
+	inline OrderLoadType GetLoadType() const
 	{
-		OrderLoadFlags type = (OrderLoadFlags)GB(this->flags, 4, 3);
-		if (type == OLFB_CARGO_TYPE_LOAD_ENCODING) type = OLFB_CARGO_TYPE_LOAD;
-		return type;
+		return static_cast<OrderLoadType>(GB(this->flags, 4, 3));
 	}
 
 	/**
 	 * How must the consist be loaded for this type of cargo?
-	 * @pre GetLoadType() == OLFB_CARGO_TYPE_LOAD
+	 * @pre GetLoadType() == OrderLoadType::CargoTypeLoad
 	 * @param cargo_id The cargo type index.
 	 * @return The load type for this cargo.
 	 */
-	inline OrderLoadFlags GetCargoLoadTypeRaw(CargoType cargo_id) const
+	inline OrderLoadType GetCargoLoadTypeRaw(CargoType cargo_id) const
 	{
 		assert(cargo_id < NUM_CARGO);
-		if (!this->extra) return OLF_LOAD_IF_POSSIBLE;
-		return (OrderLoadFlags) GB(this->extra->cargo_type_flags[cargo_id], 4, 4);
+		if (!this->extra) return OrderLoadType::LoadIfPossible;
+		return static_cast<OrderLoadType>(GB(this->extra->cargo_type_flags[cargo_id], 4, 4));
 	}
 
 	/**
@@ -377,11 +384,11 @@ public:
 	 * @param cargo_id The cargo type index.
 	 * @return The load type for this cargo.
 	 */
-	inline OrderLoadFlags GetCargoLoadType(CargoType cargo_id) const
+	inline OrderLoadType GetCargoLoadType(CargoType cargo_id) const
 	{
 		assert(cargo_id < NUM_CARGO);
-		OrderLoadFlags olf = this->GetLoadType();
-		if (olf == OLFB_CARGO_TYPE_LOAD) olf = this->GetCargoLoadTypeRaw(cargo_id);
+		OrderLoadType olf = this->GetLoadType();
+		if (olf == OrderLoadType::CargoTypeLoad) olf = this->GetCargoLoadTypeRaw(cargo_id);
 		return olf;
 	}
 
@@ -424,7 +431,7 @@ public:
 
 	template <typename F> CargoTypes FilterLoadUnloadTypeCargoMask(F filter_func, CargoTypes cargo_mask = ALL_CARGOTYPES)
 	{
-		if ((this->GetLoadType() == OLFB_CARGO_TYPE_LOAD) || (this->GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD)) {
+		if ((this->GetLoadType() == OrderLoadType::CargoTypeLoad) || (this->GetUnloadType() == OUFB_CARGO_TYPE_UNLOAD)) {
 			CargoTypes output_mask = cargo_mask;
 			for (CargoType cargo : cargo_mask) {
 				if (!filter_func(this, cargo)) output_mask.Reset(cargo);
@@ -500,23 +507,22 @@ public:
 	 * Set how the consist must be loaded.
 	 * @param load_type The new load type, i.e. whether to load.
 	 */
-	inline void SetLoadType(OrderLoadFlags load_type)
+	inline void SetLoadType(OrderLoadType load_type)
 	{
-		if (load_type == OLFB_CARGO_TYPE_LOAD) load_type = OLFB_CARGO_TYPE_LOAD_ENCODING;
-		SB(this->flags, 4, 3, load_type);
+		SB(this->flags, 4, 3, to_underlying(load_type));
 	}
 
 	/**
 	 * Set how the consist must be loaded for this type of cargo.
-	 * @pre GetLoadType() == OLFB_CARGO_TYPE_LOAD
+	 * @pre GetLoadType() == OrderLoadType::CargoTypeLoad
 	 * @param load_type The load type.
 	 * @param cargo_id The cargo type index.
 	 */
-	inline void SetLoadType(OrderLoadFlags load_type, CargoType cargo_id)
+	inline void SetLoadType(OrderLoadType load_type, CargoType cargo_id)
 	{
 		assert(cargo_id < NUM_CARGO);
 		this->CheckExtraInfoAlloced();
-		SB(this->extra->cargo_type_flags[cargo_id], 4, 4, load_type);
+		SB(this->extra->cargo_type_flags[cargo_id], 4, 4, to_underlying(load_type));
 	}
 
 	/**

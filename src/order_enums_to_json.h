@@ -69,12 +69,12 @@ NLOHMANN_JSON_SERIALIZE_ENUM(OrderDepotAction, {
 	{DA_ALWAYS_GO, "always-go"}
 })
 
-NLOHMANN_JSON_SERIALIZE_ENUM(OrderLoadFlags, {
-	{static_cast<OrderLoadFlags>(-1), nullptr},
-	{OLF_LOAD_IF_POSSIBLE, "normal"},
-	{OLFB_FULL_LOAD, "full-load"},
-	{OLF_FULL_LOAD_ANY, "full-load-any"},
-	{OLFB_NO_LOAD, "no-load"}
+NLOHMANN_JSON_SERIALIZE_ENUM(OrderLoadType, {
+	{static_cast<OrderLoadType>(-1), nullptr},
+	{OrderLoadType::LoadIfPossible, "normal"},
+	{OrderLoadType::FullLoad, "full-load"},
+	{OrderLoadType::FullLoadAny, "full-load-any"},
+	{OrderLoadType::NoLoad, "no-load"}
 })
 
 NLOHMANN_JSON_SERIALIZE_ENUM(OrderLeaveType, {

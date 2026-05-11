@@ -326,7 +326,7 @@ static ScriptOrder::OrderPosition RealOrderPositionToScriptOrderPosition(Vehicle
 			break;
 
 		case OT_GOTO_STATION:
-			order_flags |= (ScriptOrderFlags)(order->GetLoadType()   << 5);
+			order_flags |= static_cast<ScriptOrderFlags>(to_underlying(order->GetLoadType())   << 5);
 			order_flags |= (ScriptOrderFlags)(order->GetUnloadType() << 2);
 			break;
 
@@ -517,7 +517,7 @@ static ScriptOrder::OrderPosition RealOrderPositionToScriptOrderPosition(Vehicle
 
 		case OT_GOTO_STATION:
 			order.MakeGoToStation(::GetStationIndex(destination));
-			order.SetLoadType((OrderLoadFlags)GB(order_flags, 5, 3));
+			order.SetLoadType(static_cast<OrderLoadType>(GB(order_flags, 5, 3)));
 			order.SetUnloadType((OrderUnloadFlags)GB(order_flags, 2, 3));
 			order.SetStopLocation(OrderStopLocation::FarEnd);
 			break;

@@ -137,16 +137,20 @@ enum OrderUnloadFlags : uint8_t {
 };
 
 /**
- * Flags related to the loading order.
+ * Loading order types.
  */
-enum OrderLoadFlags : uint8_t {
-	OLF_LOAD_IF_POSSIBLE = 0,      ///< Load as long as there is cargo that fits in the train.
-	OLFB_FULL_LOAD       = 1 << 1, ///< Full load all cargoes of the consist.
-	OLF_FULL_LOAD_ANY    = 3,      ///< Full load a single cargo of the consist.
-	OLFB_NO_LOAD         = 4,      ///< Do not load anything.
-	OLFB_CARGO_TYPE_LOAD = 1 << 3, ///< Load actions are defined per cargo type.
-	OLFB_CARGO_TYPE_LOAD_ENCODING = (1 << 1) | 4, ///< Raw encoding of OLFB_CARGO_TYPE_LOAD
+enum class OrderLoadType : uint8_t {
+	LoadIfPossible = 0, ///< Load as long as there is cargo that fits in the train.
+	FullLoad       = 2, ///< Full load all cargoes of the consist.
+	FullLoadAny    = 3, ///< Full load a single cargo of the consist.
+	NoLoad         = 4, ///< Do not load anything.
+	CargoTypeLoad  = 6, ///< Load actions are defined per cargo type.
 };
+
+constexpr inline bool IsFullLoadOrderLoadType(OrderLoadType load_type)
+{
+	return load_type == OrderLoadType::FullLoad || load_type == OrderLoadType::FullLoadAny;
+}
 
 /**
  * Non-stop order flags.

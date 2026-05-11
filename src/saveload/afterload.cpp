@@ -2241,7 +2241,7 @@ bool AfterLoadGame()
 		IterateVehicleAndOrderListOrders([](Order *order) {
 			if ((order->GetUnloadType() & (OUFB_UNLOAD | OUFB_TRANSFER)) == (OUFB_UNLOAD | OUFB_TRANSFER)) {
 				order->SetUnloadType(OUFB_TRANSFER);
-				order->SetLoadType(OLFB_NO_LOAD);
+				order->SetLoadType(OrderLoadType::NoLoad);
 			}
 		});
 	}
@@ -3873,8 +3873,8 @@ bool AfterLoadGame()
 	if (SlXvIsFeaturePresent(XSLFI_SPRINGPP)) {
 		/* convert wait for cargo orders to ordinary load if possible */
 		IterateVehicleAndOrderListOrders([](Order *order) {
-			if ((order->IsType(OT_GOTO_STATION) || order->IsType(OT_LOADING) || order->IsType(OT_IMPLICIT)) && order->GetLoadType() == static_cast<OrderLoadFlags>(1)) {
-				order->SetLoadType(OLF_LOAD_IF_POSSIBLE);
+			if ((order->IsType(OT_GOTO_STATION) || order->IsType(OT_LOADING) || order->IsType(OT_IMPLICIT)) && order->GetLoadType() == static_cast<OrderLoadType>(1)) {
+				order->SetLoadType(OrderLoadType::LoadIfPossible);
 			}
 		});
 	}

@@ -2612,8 +2612,8 @@ uint8_t CalcPercentVehicleFilled(const Vehicle *front, StringID *colour)
 	const Station *st = Station::GetIfValid(front->last_station_visited);
 	assert(colour == nullptr || (st != nullptr && is_loading));
 
-	bool order_no_load = is_loading && (front->current_order.GetLoadType() & OLFB_NO_LOAD);
-	bool order_full_load = is_loading && (front->current_order.GetLoadType() & OLFB_FULL_LOAD);
+	bool order_no_load = is_loading && (front->current_order.GetLoadType() == OrderLoadType::NoLoad);
+	bool order_full_load = is_loading && front->current_order.IsFullLoadOrder();
 
 	/* Count up max and used */
 	for (const Vehicle *v = front; v != nullptr; v = v->Next()) {
@@ -3378,7 +3378,7 @@ static void VehicleIncreaseStats(const Vehicle *front)
 		if (v->refit_cap > 0 &&
 				last_loading_station != StationID::Invalid() &&
 				last_loading_station != front->last_station_visited &&
-				((front->current_order.GetCargoLoadType(v->cargo_type) & OLFB_NO_LOAD) == 0 ||
+				(front->current_order.GetCargoLoadType(v->cargo_type) != OrderLoadType::NoLoad ||
 				(front->current_order.GetCargoUnloadType(v->cargo_type) & OUFB_NO_UNLOAD) == 0)) {
 			/* The cargo count can indeed be higher than the refit_cap if
 			 * wagons have been auto-replaced and subsequently auto-
@@ -3589,7 +3589,7 @@ void Vehicle::LeaveStation()
 	if (this->current_order.GetNonStopType() != ONSF_STOP_EVERYWHERE) UpdateVehicleTimetable(this, false);
 
 	CargoTypes cargoes_can_load_unload = this->current_order.FilterLoadUnloadTypeCargoMask([&](const Order *o, CargoType cargo) {
-		return ((o->GetCargoLoadType(cargo) & OLFB_NO_LOAD) == 0) || ((o->GetCargoUnloadType(cargo) & OUFB_NO_UNLOAD) == 0);
+		return (o->GetCargoLoadType(cargo) != OrderLoadType::NoLoad) || ((o->GetCargoUnloadType(cargo) & OUFB_NO_UNLOAD) == 0);
 	});
 	CargoTypes has_cargo_mask = this->GetLastLoadingStationValidCargoMask();
 	CargoTypes cargoes_can_leave_with_cargo = FilterCargoMask([&](CargoType cargo) {
@@ -3869,10 +3869,10 @@ void Vehicle::HandleWaiting(bool stop_waiting, bool process_orders)
 bool Vehicle::HasFullLoadOrder() const
 {
 	for (const Order *o : this->Orders()) {
-		if (o->IsType(OT_GOTO_STATION) && o->GetLoadType() & (OLFB_FULL_LOAD | OLF_FULL_LOAD_ANY)) return true;
-		if (o->IsType(OT_GOTO_STATION) && o->GetLoadType() == OLFB_CARGO_TYPE_LOAD) {
+		if (o->IsType(OT_GOTO_STATION) && o->IsFullLoadOrder()) return true;
+		if (o->IsType(OT_GOTO_STATION) && o->GetLoadType() == OrderLoadType::CargoTypeLoad) {
 			for (CargoType cid{}; cid < NUM_CARGO; cid++) {
-				if (o->GetCargoLoadType(cid) & (OLFB_FULL_LOAD | OLF_FULL_LOAD_ANY)) return true;
+				if (IsFullLoadOrderLoadType(o->GetCargoLoadType(cid))) return true;
 			}
 		}
 	}
