@@ -159,7 +159,7 @@ static void ChangeTimetable(Vehicle *v, VehicleOrderID order_number, uint32_t va
  * @param mtf Timetable data to change (@see ModifyTimetableFlags)
  * @param data The data to modify as specified by \c mtf.
  *             0 to clear times, UINT16_MAX to clear speed limit.
- * @param ctrl_flags Control flags (MTCF_CLEAR_FIELD to clear timetable wait/travel time)
+ * @param ctrl_flags Control flags (ModifyTimetableCtrlFlag::ClearField to clear timetable wait/travel time)
  * @return the cost of this operation or an error
  */
 CommandCost CmdChangeTimetable(DoCommandFlags flags, VehicleID veh, VehicleOrderID order_number, ModifyTimetableFlags mtf, uint32_t data, ModifyTimetableCtrlFlags ctrl_flags)
@@ -175,7 +175,7 @@ CommandCost CmdChangeTimetable(DoCommandFlags flags, VehicleID veh, VehicleOrder
 
 	if (mtf >= MTF_END) return CMD_ERROR;
 
-	bool clear_field = HasFlag(ctrl_flags, MTCF_CLEAR_FIELD);
+	bool clear_field = ctrl_flags.Test(ModifyTimetableCtrlFlag::ClearField);
 
 	TimetableTicks wait_time   = order->GetWaitTime();
 	TimetableTicks travel_time = order->GetTravelTime();
@@ -339,7 +339,7 @@ CommandCost CmdChangeTimetable(DoCommandFlags flags, VehicleID veh, VehicleOrder
  * @param mtf Timetable data to change (@see ModifyTimetableFlags)
  * @param data The data to modify as specified by \c mtf.
  *             0 to clear times, UINT16_MAX to clear speed limit.
- * @param ctrl_flags Control flags (MTCF_CLEAR_FIELD to clear timetable wait/travel time)
+ * @param ctrl_flags Control flags (ModifyTimetableCtrlFlag::ClearField to clear timetable wait/travel time)
  * @return the cost of this operation or an error
  */
 CommandCost CmdBulkChangeTimetable(DoCommandFlags flags, VehicleID veh, ModifyTimetableFlags mtf, uint32_t data, ModifyTimetableCtrlFlags ctrl_flags)
@@ -360,7 +360,7 @@ CommandCost CmdBulkChangeTimetable(DoCommandFlags flags, VehicleID veh, ModifyTi
 			if (order == nullptr || order->IsType(OT_IMPLICIT)) continue;
 
 			/* Exclude waypoints from set all wait times command */
-			if (mtf == MTF_WAIT_TIME && !HasFlag(ctrl_flags, MTCF_CLEAR_FIELD) && order->IsType(OT_GOTO_WAYPOINT)) continue;
+			if (mtf == MTF_WAIT_TIME && !ctrl_flags.Test(ModifyTimetableCtrlFlag::ClearField) && order->IsType(OT_GOTO_WAYPOINT)) continue;
 
 			Command<Commands::ChangeTimetable>::Do(flags, v->index, order_number, mtf, data, ctrl_flags);
 		}

@@ -812,7 +812,7 @@ public:
 		return this->ParserFuncWrapper<T>(field, std::nullopt, error_type,
 			[&](T val) {
 				if (oid != INVALID_VEH_ORDER_ID) this->cmd_buffer.op_serialiser.SeekTo(oid);
-				this->cmd_buffer.op_serialiser.Timetable(mtf, val, MTCF_NONE);
+				this->cmd_buffer.op_serialiser.Timetable(mtf, val, {});
 				return true;
 			}
 		);
@@ -1490,7 +1490,7 @@ OrderImportErrors ImportJsonOrderList(const Vehicle *veh, std::string_view json_
 		cmd_buffer.StartOrder();
 		if (auto sched_idx = local_importer.TryGetField<uint16_t>(FName::Orders::SCHEDULE_INDEX, JOIET_MAJOR); sched_idx.has_value()) {
 			local_importer.cmd_buffer.op_serialiser.SeekTo(order_id);
-			local_importer.cmd_buffer.op_serialiser.Timetable(MTF_ASSIGN_SCHEDULE, *sched_idx + schedule_insert_offset, MTCF_NONE);
+			local_importer.cmd_buffer.op_serialiser.Timetable(MTF_ASSIGN_SCHEDULE, *sched_idx + schedule_insert_offset, {});
 		}
 
 		std::string jump_label;

@@ -2334,10 +2334,10 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 					order->SetLoadType(OrderLoadType::LoadIfPossible);
 					order->SetUnloadType(OrderUnloadType::UnloadIfPossible);
 					if (order->IsWaitTimetabled() || order->GetWaitTime() > 0) {
-						Command<Commands::ChangeTimetable>::Do(flags, v->index, sel_ord, MTF_WAIT_TIME, 0, MTCF_CLEAR_FIELD);
+						Command<Commands::ChangeTimetable>::Do(flags, v->index, sel_ord, MTF_WAIT_TIME, 0, ModifyTimetableCtrlFlag::ClearField);
 					}
 					if (order->IsScheduledDispatchOrder(false)) {
-						Command<Commands::ChangeTimetable>::Do(flags, v->index, sel_ord, MTF_ASSIGN_SCHEDULE, -1, MTCF_NONE);
+						Command<Commands::ChangeTimetable>::Do(flags, v->index, sel_ord, MTF_ASSIGN_SCHEDULE, -1, {});
 					}
 				}
 				break;

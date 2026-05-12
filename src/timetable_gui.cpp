@@ -998,10 +998,12 @@ struct TimetableWindow : GeneralVehicleWindow {
 		uint order_number = (selected + 1) / 2;
 		if (order_number >= v->GetNumOrders()) order_number = 0;
 
+		ModifyTimetableCtrlFlags flags{};
+		if (clear) flags.Set(ModifyTimetableCtrlFlag::ClearField);
 		if (bulk) {
-			Command<Commands::BulkChangeTimetable>::Post(v->index, mtf, data, clear ? MTCF_CLEAR_FIELD : MTCF_NONE);
+			Command<Commands::BulkChangeTimetable>::Post(v->index, mtf, data, flags);
 		} else {
-			Command<Commands::ChangeTimetable>::Post(v->index, order_number, mtf, data, clear ? MTCF_CLEAR_FIELD : MTCF_NONE);
+			Command<Commands::ChangeTimetable>::Post(v->index, order_number, mtf, data, flags);
 		}
 	}
 

@@ -32,11 +32,10 @@ enum ModifyTimetableFlags : uint8_t {
 /**
  * Control flags for #CmdChangeTimetable.
  */
-enum ModifyTimetableCtrlFlags : uint8_t {
-	MTCF_NONE        = 0,      ///< No flags set
-	MTCF_CLEAR_FIELD = 1 << 0, ///< Clear field
+enum class ModifyTimetableCtrlFlag : uint8_t {
+	ClearField, ///< Clear field.
 };
-DECLARE_ENUM_AS_BIT_SET(ModifyTimetableCtrlFlags)
+using ModifyTimetableCtrlFlags = EnumBitSet<ModifyTimetableCtrlFlag, uint8_t>;
 
 struct ScheduledDispatchSlotSet {
 	static constexpr bool command_payload_as_ref = true;
