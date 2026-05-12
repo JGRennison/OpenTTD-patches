@@ -461,7 +461,7 @@ public:
 	 */
 	inline OrderDepotActionFlags GetDepotActionType() const { return (OrderDepotActionFlags)GB(this->flags, 3, 4); }
 	/** Extra depot flags. */
-	inline OrderDepotExtraFlags GetDepotExtraFlags() const { return (OrderDepotExtraFlags)GB(this->flags, 8, 8); }
+	inline OrderDepotExtraFlags GetDepotExtraFlags() const { return static_cast<OrderDepotExtraFlags>(GB(this->flags, 8, 8)); }
 	/** What waypoint flags? */
 	inline OrderWaypointFlags GetWaypointFlags() const { return static_cast<OrderWaypointFlags>(GB(this->flags, 0, 3)); }
 
@@ -566,7 +566,7 @@ public:
 	 */
 	inline void SetDepotActionType(OrderDepotActionFlags depot_service_type) { SB(this->flags, 3, 4, depot_service_type); }
 	/** Set what we are going to do in the depot. */
-	inline void SetDepotExtraFlags(OrderDepotExtraFlags depot_extra_flags) { SB(this->flags, 8, 8, depot_extra_flags); }
+	inline void SetDepotExtraFlags(OrderDepotExtraFlags depot_extra_flags) { SB(this->flags, 8, 8, depot_extra_flags.base()); }
 	/** Set waypoint flags. */
 	inline void SetWaypointFlags(OrderWaypointFlags waypoint_flags) { SB(this->flags, 0, 3, waypoint_flags.base()); }
 

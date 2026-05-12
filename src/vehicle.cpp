@@ -2761,7 +2761,7 @@ void VehicleEnterDepot(Vehicle *v)
 		}
 
 		/* Test whether we are heading for this depot. If not, do nothing. */
-		if ((v->current_order.GetDepotExtraFlags() & ODEFB_SPECIFIC) &&
+		if (v->current_order.GetDepotExtraFlags().Test(OrderDepotExtraFlag::Specific) &&
 				(v->type == VehicleType::Aircraft ? v->current_order.GetDestination() != GetStationIndex(v->tile) : v->dest_tile != v->tile)) {
 			/* We are heading for another depot, keep driving. */
 			return;
@@ -4127,7 +4127,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlags flags, DepotCommandFlags command
 			this->current_order.SetDepotActionType(ODATFB_HALT);
 		}
 		if (command.Test(DepotCommandFlag::Specific)) {
-			this->current_order.SetDepotExtraFlags(ODEFB_SPECIFIC);
+			this->current_order.SetDepotExtraFlags({OrderDepotExtraFlag::Specific});
 		}
 		InvalidateWindowData(WC_VEHICLE_VIEW, this->index);
 
