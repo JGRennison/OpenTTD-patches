@@ -1224,6 +1224,7 @@ uint DeliverGoodsToIndustryEqually(const Station *st, CargoType cargo_type, uint
 		if (e.delivered == 0) return;
 		include(_cargo_delivery_destinations, e.ind);
 		e.acc->waiting += e.delivered;
+		e.acc->GetOrCreateHistory()[THIS_MONTH].accepted += e.delivered;
 		e.acc->last_accepted = EconTime::CurDate();
 		AddCargoDelivery(cargo_type, company, e.delivered, Source::Make<SourceType::Industry>(source), st, e.ind->index);
 	};
