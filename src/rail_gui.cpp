@@ -705,7 +705,11 @@ struct BuildRailToolbarWindow : Window {
 			case WID_RAT_BUILD_X: return GetRailTypeInfo(_cur_railtype)->cursor.rail_swne;
 			case WID_RAT_BUILD_EW: return GetRailTypeInfo(_cur_railtype)->cursor.rail_ew;
 			case WID_RAT_BUILD_Y: return GetRailTypeInfo(_cur_railtype)->cursor.rail_nwse;
-			case WID_RAT_AUTORAIL: return GetRailTypeInfo(_cur_railtype)->cursor.autorail;
+
+			case WID_RAT_AUTORAIL:
+			case WID_RAT_POLYRAIL:
+				return GetRailTypeInfo(_cur_railtype)->cursor.autorail;
+
 			case WID_RAT_DEMOLISH: return ANIMCURSOR_DEMOLISH;
 			case WID_RAT_BUILD_DEPOT: return GetRailTypeInfo(_cur_railtype)->cursor.depot;
 			case WID_RAT_BUILD_WAYPOINT: return SPR_CURSOR_WAYPOINT;
