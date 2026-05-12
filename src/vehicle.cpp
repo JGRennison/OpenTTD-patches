@@ -377,7 +377,7 @@ bool Vehicle::NeedsAutomaticServicing() const
 	if (this->HasDepotOrder()) return false;
 	if (this->current_order.IsType(OT_LOADING)) return false;
 	if (this->current_order.IsType(OT_LOADING_ADVANCE)) return false;
-	if (this->current_order.IsType(OT_GOTO_DEPOT) && (this->current_order.GetDepotOrderType() & ODTFB_SERVICE) == 0) return false;
+	if (this->current_order.IsType(OT_GOTO_DEPOT) && !this->current_order.GetDepotOrderType().Test(OrderDepotTypeFlag::Service)) return false;
 	return NeedsServicing();
 }
 
@@ -2389,7 +2389,7 @@ bool Vehicle::HandleBreakdown()
 				this->vehstatus.Set(VehState::AircraftBroken);
 				if(this->breakdown_type == BREAKDOWN_AIRCRAFT_SPEED ||
 						(this->current_order.IsType(OT_GOTO_DEPOT) &&
-						(this->current_order.GetDepotOrderType() & ODTFB_BREAKDOWN) &&
+						this->current_order.GetDepotOrderType().Test(OrderDepotTypeFlag::Breakdown) &&
 						GetTargetAirportIfValid(Aircraft::From(this)) != nullptr)) return false;
 				FindBreakdownDestination(Aircraft::From(this));
 			} else if (this->type == VehicleType::Train) {
@@ -2753,7 +2753,7 @@ void VehicleEnterDepot(Vehicle *v)
 
 		/* Test whether we are heading for this depot. If not, do nothing.
 		 * Note: The target depot for nearest-/manual-depot-orders is only updated on junctions, but we want to accept every depot. */
-		if ((v->current_order.GetDepotOrderType() & ODTFB_PART_OF_ORDERS) &&
+		if (v->current_order.GetDepotOrderType().Test(OrderDepotTypeFlag::PartOfOrders) &&
 				real_order != nullptr && !(real_order->GetDepotActionType() & ODATFB_NEAREST_DEPOT) &&
 				(v->type == VehicleType::Aircraft ? v->current_order.GetDestination() != GetStationIndex(v->tile) : v->dest_tile != v->tile)) {
 			/* We are heading for another depot, keep driving. */
@@ -2790,10 +2790,10 @@ void VehicleEnterDepot(Vehicle *v)
 			}
 		}
 
-		/* Handle the ODTFB_PART_OF_ORDERS case. If there is a timetabled wait time, hold the train, otherwise skip to the next order.
+		/* Handle the OrderDepotTypeFlag::PartOfOrders case. If there is a timetabled wait time, hold the train, otherwise skip to the next order.
 		Note that if there is a only a travel_time, but no wait_time defined for the order, and the train arrives to the depot sooner as scheduled,
 		he doesn't wait in it, as it would in stations. Thus, the original behaviour is maintained if there's no defined wait_time.*/
-		if (v->current_order.GetDepotOrderType() & ODTFB_PART_OF_ORDERS) {
+		if (v->current_order.GetDepotOrderType().Test(OrderDepotTypeFlag::PartOfOrders)) {
 			v->DeleteUnreachedImplicitOrders();
 			UpdateVehicleTimetable(v, true);
 			if (v->current_order.IsWaitTimetabled() && !(v->current_order.GetDepotActionType() & ODATFB_HALT)) {
@@ -4031,7 +4031,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlags flags, DepotCommandFlags command
 		if (flags.Test(DoCommandFlag::Execute)) {
 			/* If the orders to 'goto depot' are in the orders list (forced servicing),
 			 * then skip to the next order; effectively cancelling this forced service */
-			if (this->current_order.GetDepotOrderType() & ODTFB_PART_OF_ORDERS) this->IncrementRealOrderIndex();
+			if (this->current_order.GetDepotOrderType().Test(OrderDepotTypeFlag::PartOfOrders)) this->IncrementRealOrderIndex();
 
 			if (this->IsGroundVehicle()) {
 				uint16_t &gv_flags = this->GetGroundVehicleFlags();
@@ -4039,7 +4039,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlags flags, DepotCommandFlags command
 			}
 
 			/* We don't cancel a breakdown-related goto depot order, we only change whether to halt or not */
-			if (this->current_order.GetDepotOrderType() & ODTFB_BREAKDOWN) {
+			if (this->current_order.GetDepotOrderType().Test(OrderDepotTypeFlag::Breakdown)) {
 				this->current_order.SetDepotActionType(this->current_order.GetDepotActionType() == ODATFB_HALT ? ODATF_SERVICE_ONLY : ODATFB_HALT);
 			} else {
 				this->ClearSeparation();
@@ -4071,7 +4071,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlags flags, DepotCommandFlags command
 			 * Now we change the setting to apply the new one and let the vehicle head for the same depot.
 			 * Note: the if is (true for requesting service == true for ordered to stop in depot)          */
 			if (flags.Test(DoCommandFlag::Execute)) {
-				if (!(this->current_order.GetDepotOrderType() & ODTFB_BREAKDOWN)) this->current_order.SetDepotOrderType(ODTF_MANUAL);
+				if (!this->current_order.GetDepotOrderType().Test(OrderDepotTypeFlag::Breakdown)) this->current_order.SetDepotOrderType({});
 				this->current_order.SetDepotActionType(command.Test(DepotCommandFlag::Sell) ? ODATFB_HALT | ODATFB_SELL : (command.Test(DepotCommandFlag::Service) ? ODATF_SERVICE_ONLY : ODATFB_HALT));
 				this->ClearSeparation();
 				if (this->vehicle_flags.Test(VehicleFlag::TimetableSeparation)) this->vehicle_flags.Reset(VehicleFlag::TimetableStarted);
@@ -4120,7 +4120,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlags flags, DepotCommandFlags command
 		}
 
 		this->SetDestTile(closest_depot.location);
-		this->current_order.MakeGoToDepot(closest_depot.destination.ToDepotID(), ODTF_MANUAL);
+		this->current_order.MakeGoToDepot(closest_depot.destination.ToDepotID(), {});
 		if (command.Test(DepotCommandFlag::Sell)) {
 			this->current_order.SetDepotActionType(ODATFB_HALT | ODATFB_SELL);
 		} else if (!command.Test(DepotCommandFlag::Service)) {

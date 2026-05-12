@@ -89,9 +89,10 @@ void Order::ConvertFromOldSavegame()
 		this->SetDepotActionType(((old_flags & 6) == 4) ? ODATFB_HALT : ODATF_SERVICE_ONLY);
 
 		/* Finally fix the depot type flags */
-		uint t = ((old_flags & 6) == 6) ? ODTFB_SERVICE : ODTF_MANUAL;
-		if ((old_flags & 2) != 0) t |= ODTFB_PART_OF_ORDERS;
-		this->SetDepotOrderType((OrderDepotTypeFlags)t);
+		OrderDepotTypeFlags type_flags{};
+		if ((old_flags & 6) == 6) type_flags.Set(OrderDepotTypeFlag::Service);
+		if ((old_flags & 2) != 0) type_flags.Set(OrderDepotTypeFlag::PartOfOrders);
+		this->SetDepotOrderType(type_flags);
 	}
 }
 

@@ -448,7 +448,7 @@ static void CheckIfAircraftNeedsService(Aircraft *v)
 
 	/* only goto depot if the target airport has a depot */
 	if (st->airport.HasHangar() && CanVehicleUseStation(v, st)) {
-		v->current_order.MakeGoToDepot(st->index, ODTFB_SERVICE);
+		v->current_order.MakeGoToDepot(st->index, {OrderDepotTypeFlag::Service});
 		SetWindowWidgetDirty(WC_VEHICLE_VIEW, v->index, WID_VV_START_STOP);
 	} else if (v->current_order.IsType(OT_GOTO_DEPOT)) {
 		v->current_order.MakeDummy();
@@ -1241,14 +1241,14 @@ void FindBreakdownDestination(Aircraft *v)
 
 	if (destination != StationID::Invalid()) {
 		if (destination != v->current_order.GetDestination()) {
-			v->current_order.MakeGoToDepot(destination.ToDepotID(), ODTFB_BREAKDOWN);
+			v->current_order.MakeGoToDepot(destination.ToDepotID(), {OrderDepotTypeFlag::Breakdown});
 			if (v->state == FLYING) {
 				/* Do not change airport if in the middle of another airport's state machine,
 				 * as this can result in the airport being left in a blocked state */
 				AircraftNextAirportPos_and_Order(v);
 			}
 		} else {
-			v->current_order.MakeGoToDepot(destination.ToDepotID(), ODTFB_BREAKDOWN);
+			v->current_order.MakeGoToDepot(destination.ToDepotID(), {OrderDepotTypeFlag::Breakdown});
 		}
 	} else {
 		if (v->state != FLYING && v->targetairport != StationID::Invalid()) {
@@ -2324,7 +2324,7 @@ void UpdateAirplanesOnNewStation(const Station *st)
 		Order *o = &v->current_order;
 		/* The aircraft is heading to a hangar, but the new station doesn't have one,
 		 * or the aircraft can't land on the new station. Cancel current order. */
-		if (o->IsType(OT_GOTO_DEPOT) && !(o->GetDepotOrderType() & ODTFB_PART_OF_ORDERS) && o->GetDestination() == st->index &&
+		if (o->IsType(OT_GOTO_DEPOT) && !o->GetDepotOrderType().Test(OrderDepotTypeFlag::PartOfOrders) && o->GetDestination() == st->index &&
 				(!st->airport.HasHangar() || !CanVehicleUseStation(v, st))) {
 			o->MakeDummy();
 			SetWindowWidgetDirty(WC_VEHICLE_VIEW, v->index, WID_VV_START_STOP);

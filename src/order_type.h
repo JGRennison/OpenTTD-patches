@@ -176,12 +176,12 @@ enum class OrderStopLocation : uint8_t {
 /**
  * Reasons that could cause us to go to the depot.
  */
-enum OrderDepotTypeFlags : uint8_t {
-	ODTF_MANUAL          = 0,      ///< Manually initiated order.
-	ODTFB_SERVICE        = 1 << 0, ///< This depot order is because of the servicing limit.
-	ODTFB_PART_OF_ORDERS = 1 << 1, ///< This depot order is because of a regular order.
-	ODTFB_BREAKDOWN      = 1 << 2, ///< This depot order is because of a breakdown.
+enum class OrderDepotTypeFlag : uint8_t {
+	Service              = 0, ///< This depot order is because of the servicing limit.
+	PartOfOrders         = 1, ///< This depot order is because of a regular order.
+	Breakdown            = 2, ///< This depot order is because of a breakdown.
 };
+using OrderDepotTypeFlags = EnumBitSet<OrderDepotTypeFlag, uint8_t>;
 
 /**
  * Actions that can be performed when the vehicle enters the depot.

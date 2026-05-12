@@ -454,7 +454,7 @@ public:
 	 * What caused us going to the depot?
 	 * @return The reason to go to the depot.
 	 */
-	inline OrderDepotTypeFlags GetDepotOrderType() const { return (OrderDepotTypeFlags)GB(this->flags, 0, 3); }
+	inline OrderDepotTypeFlags GetDepotOrderType() const { return static_cast<OrderDepotTypeFlags>(GB(this->flags, 0, 3)); }
 	/**
 	 * What are we going to do when in the depot.
 	 * @return What to do in the depot.
@@ -559,7 +559,7 @@ public:
 	 * Set the cause to go to the depot.
 	 * @param depot_order_type The reason to go to the depot.
 	 */
-	inline void SetDepotOrderType(OrderDepotTypeFlags depot_order_type) { SB(this->flags, 0, 3, depot_order_type); }
+	inline void SetDepotOrderType(OrderDepotTypeFlags depot_order_type) { SB(this->flags, 0, 3, depot_order_type.base()); }
 	/**
 	 * Set what we are going to do in the depot.
 	 * @param depot_service_type What to do in the depot.

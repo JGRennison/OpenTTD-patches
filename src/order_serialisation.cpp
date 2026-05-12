@@ -173,7 +173,7 @@ static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 			json[OFName::DEPOT_ACTION] = DA_STOP;
 		} else if (o.GetDepotActionType() & ODATFB_UNBUNCH) {
 			json[OFName::DEPOT_ACTION] = DA_UNBUNCH;
-		} else if (o.GetDepotOrderType() & ODTFB_SERVICE) {
+		} else if (o.GetDepotOrderType().Test(OrderDepotTypeFlag::Service)) {
 			json[OFName::DEPOT_ACTION] = DA_SERVICE;
 		}
 	}
@@ -927,7 +927,7 @@ static void ImportJsonOrder(JSONToVehicleCommandParser<JSONToVehicleMode::Order>
 			break;
 
 		case OT_GOTO_DEPOT:
-			new_order.MakeGoToDepot(destination, ODTFB_PART_OF_ORDERS);
+			new_order.MakeGoToDepot(destination, {OrderDepotTypeFlag::PartOfOrders});
 			if (destination == DepotID::Invalid()) {
 				new_order.SetDepotActionType(ODATFB_NEAREST_DEPOT);
 			}

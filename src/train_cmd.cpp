@@ -767,7 +767,7 @@ void AdvanceOrderIndex(const Vehicle *v, VehicleOrderID &index)
 		switch (order->GetType()) {
 			case OT_GOTO_DEPOT:
 				/* Skip service in depot orders when the train doesn't need service. */
-				if ((order->GetDepotOrderType() & ODTFB_SERVICE) && !v->NeedsServicing()) break;
+				if ((order->GetDepotOrderType().Test(OrderDepotTypeFlag::Service)) && !v->NeedsServicing()) break;
 				[[fallthrough]];
 			case OT_GOTO_STATION:
 			case OT_GOTO_WAYPOINT:
@@ -4204,7 +4204,7 @@ public:
 			switch (order->GetType()) {
 				case OT_GOTO_DEPOT:
 					/* Skip service in depot orders when the train doesn't need service. */
-					if ((order->GetDepotOrderType() & ODTFB_SERVICE) && !this->v->NeedsServicing()) break;
+					if ((order->GetDepotOrderType().Test(OrderDepotTypeFlag::Service)) && !this->v->NeedsServicing()) break;
 					[[fallthrough]];
 				case OT_GOTO_STATION:
 				case OT_GOTO_WAYPOINT:
@@ -7115,7 +7115,7 @@ static void CheckIfTrainNeedsService(Train *v)
 	}
 
 	SetBit(v->gv_flags, GVF_SUPPRESS_IMPLICIT_ORDERS);
-	v->current_order.MakeGoToDepot(depot, ODTFB_SERVICE, ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS, ODATFB_NEAREST_DEPOT);
+	v->current_order.MakeGoToDepot(depot, {OrderDepotTypeFlag::Service}, ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS, ODATFB_NEAREST_DEPOT);
 	v->dest_tile = tfdd.tile;
 	SetWindowWidgetDirty(WC_VEHICLE_VIEW, v->index, WID_VV_START_STOP);
 

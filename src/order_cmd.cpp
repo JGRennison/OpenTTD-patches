@@ -351,7 +351,7 @@ uint16_t Order::MapOldOrder() const
 			order |= GB(this->GetDestination().value, 0, 8) << 8;
 			break;
 		case OT_GOTO_DEPOT:
-			if (!(this->GetDepotOrderType() & ODTFB_PART_OF_ORDERS)) SetBit(order, 6);
+			if (!this->GetDepotOrderType().Test(OrderDepotTypeFlag::PartOfOrders)) SetBit(order, 6);
 			SetBit(order, 7);
 			order |= GB(this->GetDestination().value, 0, 8) << 8;
 			break;
@@ -1145,11 +1145,17 @@ static CommandCost PreInsertOrderCheck(Vehicle *v, const Order &new_order, CmdIn
 
 			if (new_order.GetNonStopType() != ONSF_STOP_EVERYWHERE && !v->IsGroundVehicle()) return CMD_ERROR;
 			if (_settings_game.order.nonstop_only && !(new_order.GetNonStopType() & ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS) && v->IsGroundVehicle()) return CMD_ERROR;
-			if (new_order.GetDepotOrderType() & ~(ODTFB_PART_OF_ORDERS | ((new_order.GetDepotOrderType() & ODTFB_PART_OF_ORDERS) != 0 ? ODTFB_SERVICE : 0))) return CMD_ERROR;
+
+			/* Check depot order type is valid. */
+			OrderDepotTypeFlags depot_order_type = new_order.GetDepotOrderType();
+			if (depot_order_type.Test(OrderDepotTypeFlag::PartOfOrders)) depot_order_type.Reset(OrderDepotTypeFlag::Service);
+			depot_order_type.Reset(OrderDepotTypeFlag::PartOfOrders);
+			if (depot_order_type.Any()) return CMD_ERROR;
+
 			if (new_order.GetDepotActionType() & ~(ODATFB_HALT | ODATFB_SELL | ODATFB_NEAREST_DEPOT | ODATFB_UNBUNCH)) return CMD_ERROR;
 
 			/* Vehicles cannot have a "service if needed" order that also has a depot action. */
-			if ((new_order.GetDepotOrderType() & ODTFB_SERVICE) && (new_order.GetDepotActionType() & (ODATFB_HALT | ODATFB_UNBUNCH))) return CMD_ERROR;
+			if (new_order.GetDepotOrderType().Test(OrderDepotTypeFlag::Service) && (new_order.GetDepotActionType() & (ODATFB_HALT | ODATFB_UNBUNCH))) return CMD_ERROR;
 
 			/* Check if we're allowed to have a new unbunching order. */
 			if ((new_order.GetDepotActionType() & ODATFB_UNBUNCH)) {
@@ -1787,7 +1793,7 @@ static void AdjustTravelAfterOrderReverse(std::span<Order> orders)
 	auto is_usable = [](const Order &o) -> bool {
 		if (o.HasNoTimetableTimes()) return false;
 		if (o.IsType(OT_CONDITIONAL)) return false;
-		if (o.IsType(OT_GOTO_DEPOT) && (o.GetDepotOrderType() & ODTFB_SERVICE)) return false;
+		if (o.IsType(OT_GOTO_DEPOT) && o.GetDepotOrderType().Test(OrderDepotTypeFlag::Service)) return false;
 		return true;
 	};
 
@@ -2379,30 +2385,30 @@ CommandCost CmdModifyOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID s
 				OrderDepotActionFlags base_order_action_type = order->GetDepotActionType() & ~(ODATFB_HALT | ODATFB_SELL | ODATFB_UNBUNCH);
 				switch (data) {
 					case DA_ALWAYS_GO:
-						order->SetDepotOrderType((OrderDepotTypeFlags)(order->GetDepotOrderType() & ~ODTFB_SERVICE));
+						order->SetDepotOrderType(OrderDepotTypeFlags{order->GetDepotOrderType()}.Reset(OrderDepotTypeFlag::Service));
 						order->SetDepotActionType((OrderDepotActionFlags)(base_order_action_type));
 						break;
 
 					case DA_SERVICE:
-						order->SetDepotOrderType((OrderDepotTypeFlags)(order->GetDepotOrderType() | ODTFB_SERVICE));
+						order->SetDepotOrderType(OrderDepotTypeFlags{order->GetDepotOrderType()}.Set(OrderDepotTypeFlag::Service));
 						order->SetDepotActionType((OrderDepotActionFlags)(base_order_action_type));
 						order->SetRefit(CARGO_NO_REFIT);
 						break;
 
 					case DA_STOP:
-						order->SetDepotOrderType((OrderDepotTypeFlags)(order->GetDepotOrderType() & ~ODTFB_SERVICE));
+						order->SetDepotOrderType(OrderDepotTypeFlags{order->GetDepotOrderType()}.Reset(OrderDepotTypeFlag::Service));
 						order->SetDepotActionType((OrderDepotActionFlags)(base_order_action_type | ODATFB_HALT));
 						order->SetRefit(CARGO_NO_REFIT);
 						break;
 
 					case DA_SELL:
-						order->SetDepotOrderType((OrderDepotTypeFlags)(order->GetDepotOrderType() & ~ODTFB_SERVICE));
+						order->SetDepotOrderType(OrderDepotTypeFlags{order->GetDepotOrderType()}.Reset(OrderDepotTypeFlag::Service));
 						order->SetDepotActionType((OrderDepotActionFlags)(base_order_action_type | ODATFB_HALT | ODATFB_SELL));
 						order->SetRefit(CARGO_NO_REFIT);
 						break;
 
 					case DA_UNBUNCH:
-						order->SetDepotOrderType((OrderDepotTypeFlags)(order->GetDepotOrderType() & ~ODTFB_SERVICE));
+						order->SetDepotOrderType(OrderDepotTypeFlags{order->GetDepotOrderType()}.Reset(OrderDepotTypeFlag::Service));
 						order->SetDepotActionType((OrderDepotActionFlags)(base_order_action_type | ODATFB_UNBUNCH));
 						break;
 
@@ -3124,6 +3130,8 @@ CommandCost CmdOrderRefit(DoCommandFlags flags, VehicleID veh, VehicleOrderID or
 	Order *order = v->GetOrder(order_number);
 	if (order == nullptr) return CMD_ERROR;
 
+	if (!order->IsType(OT_GOTO_DEPOT) && !order->IsType(OT_GOTO_STATION)) return CMD_ERROR;
+
 	/* Automatic refit cargo is only supported for goto station orders. */
 	if (cargo == CARGO_AUTO_REFIT && !order->IsType(OT_GOTO_STATION)) return CMD_ERROR;
 
@@ -3134,7 +3142,7 @@ CommandCost CmdOrderRefit(DoCommandFlags flags, VehicleID veh, VehicleOrderID or
 
 		/* Make the depot order an 'always go' order. */
 		if (cargo != CARGO_NO_REFIT && order->IsType(OT_GOTO_DEPOT)) {
-			order->SetDepotOrderType((OrderDepotTypeFlags)(order->GetDepotOrderType() & ~ODTFB_SERVICE));
+			order->SetDepotOrderType(OrderDepotTypeFlags{order->GetDepotOrderType()}.Reset(OrderDepotTypeFlag::Service));
 			order->SetDepotActionType((OrderDepotActionFlags)(order->GetDepotActionType() & ~(ODATFB_HALT | ODATFB_SELL)));
 		}
 
@@ -3142,8 +3150,8 @@ CommandCost CmdOrderRefit(DoCommandFlags flags, VehicleID veh, VehicleOrderID or
 			/* Update any possible open window of the vehicle */
 			InvalidateVehicleOrder(u, VIWD_MODIFY_ORDERS);
 
-			/* If the vehicle already got the current depot set as current order, then update current order as well */
-			if (u->cur_real_order_index == order_number && (u->current_order.GetDepotOrderType() & ODTFB_PART_OF_ORDERS)) {
+			/* If the vehicle has already got the order to modify as the current order, then update the current order as well */
+			if (u->cur_real_order_index == order_number && (!order->IsType(OT_GOTO_DEPOT) || u->current_order.GetDepotOrderType().Test(OrderDepotTypeFlag::PartOfOrders))) {
 				u->current_order.SetRefit(cargo);
 			}
 		}
@@ -3909,7 +3917,7 @@ VehicleOrderID AdvanceOrderIndexDeferred(const Vehicle *v, VehicleOrderID index)
 
 		switch (order->GetType()) {
 			case OT_GOTO_DEPOT:
-				if ((order->GetDepotOrderType() & ODTFB_SERVICE) && !v->NeedsServicing()) {
+				if (order->GetDepotOrderType().Test(OrderDepotTypeFlag::Service) && !v->NeedsServicing()) {
 					break;
 				} else {
 					return index;
@@ -4027,7 +4035,7 @@ bool UpdateOrderDest(Vehicle *v, const Order *order, int conditional_depth, bool
 			return true;
 
 		case OT_GOTO_DEPOT:
-			if ((order->GetDepotOrderType() & ODTFB_SERVICE) && !v->NeedsServicing()) {
+			if (order->GetDepotOrderType().Test(OrderDepotTypeFlag::Service) && !v->NeedsServicing()) {
 				assert(!pbs_look_ahead);
 				UpdateVehicleTimetable(v, true);
 				v->IncrementRealOrderIndex();
@@ -4202,7 +4210,7 @@ bool ProcessOrders(Vehicle *v)
 	switch (v->current_order.GetType()) {
 		case OT_GOTO_DEPOT:
 			/* Let a depot order in the orderlist interrupt. */
-			if (!(v->current_order.GetDepotOrderType() & ODTFB_PART_OF_ORDERS)) return false;
+			if (!v->current_order.GetDepotOrderType().Test(OrderDepotTypeFlag::PartOfOrders)) return false;
 			break;
 
 		case OT_LOADING:
@@ -4325,7 +4333,7 @@ bool Order::ShouldStopAtStation(StationID last_station_visited, StationID statio
 	if (this->IsType(OT_LOADING_ADVANCE) && this->dest == station) return true;
 	bool is_dest_station = this->IsType(OT_GOTO_STATION) && this->dest == station;
 
-	return (!this->IsType(OT_GOTO_DEPOT) || (this->GetDepotOrderType() & ODTFB_PART_OF_ORDERS) != 0) &&
+	return (!this->IsType(OT_GOTO_DEPOT) || this->GetDepotOrderType().Test(OrderDepotTypeFlag::PartOfOrders)) &&
 			(last_station_visited != station) && // Do stop only when we've not just been there
 			/* Finally do stop when there is no non-stop flag set for this type of station. */
 			!(this->GetNonStopType() & (is_dest_station ? ONSF_NO_STOP_AT_DESTINATION_STATION : ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS));

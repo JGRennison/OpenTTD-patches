@@ -63,7 +63,7 @@ static const Order *ResolveOrder(VehicleID vehicle_id, ScriptOrder::OrderPositio
 	const Vehicle *v = ::Vehicle::Get(vehicle_id);
 	if (order_position == ScriptOrder::ORDER_CURRENT) {
 		const Order *order = &v->current_order;
-		if (order->GetType() == OT_GOTO_DEPOT && !(order->GetDepotOrderType() & ODTFB_PART_OF_ORDERS)) return order;
+		if (order->GetType() == OT_GOTO_DEPOT && !order->GetDepotOrderType().Test(OrderDepotTypeFlag::PartOfOrders)) return order;
 		order_position = ScriptOrder::ResolveOrderPosition(vehicle_id, order_position);
 		if (order_position == ScriptOrder::ORDER_INVALID) return nullptr;
 	}
@@ -181,7 +181,7 @@ static ScriptOrder::OrderPosition RealOrderPositionToScriptOrderPosition(Vehicle
 
 	const Order *order = &::Vehicle::Get(vehicle_id)->current_order;
 	if (order->GetType() != OT_GOTO_DEPOT) return true;
-	return (order->GetDepotOrderType() & ODTFB_PART_OF_ORDERS) != 0;
+	return order->GetDepotOrderType().Test(OrderDepotTypeFlag::PartOfOrders);
 }
 
 /* static */ ScriptOrder::OrderPosition ScriptOrder::ResolveOrderPosition(VehicleID vehicle_id, OrderPosition order_position)
@@ -320,7 +320,7 @@ static ScriptOrder::OrderPosition RealOrderPositionToScriptOrderPosition(Vehicle
 	order_flags |= (ScriptOrderFlags)order->GetNonStopType();
 	switch (order->GetType()) {
 		case OT_GOTO_DEPOT:
-			if (order->GetDepotOrderType() & ODTFB_SERVICE) order_flags |= OF_SERVICE_IF_NEEDED;
+			if (order->GetDepotOrderType().Test(OrderDepotTypeFlag::Service)) order_flags |= OF_SERVICE_IF_NEEDED;
 			if (order->GetDepotActionType() & ODATFB_HALT) order_flags |= OF_STOP_IN_DEPOT;
 			if (order->GetDepotActionType() & ODATFB_NEAREST_DEPOT) order_flags |= OF_GOTO_NEAREST_DEPOT;
 			break;
@@ -495,7 +495,9 @@ static ScriptOrder::OrderPosition RealOrderPositionToScriptOrderPosition(Vehicle
 	OrderType ot = (order_flags & OF_GOTO_NEAREST_DEPOT) ? OT_GOTO_DEPOT : ::GetOrderTypeByTile(destination);
 	switch (ot) {
 		case OT_GOTO_DEPOT: {
-			OrderDepotTypeFlags odtf = (OrderDepotTypeFlags)(ODTFB_PART_OF_ORDERS | ((order_flags & OF_SERVICE_IF_NEEDED) ? ODTFB_SERVICE : 0));
+			OrderDepotTypeFlags odtf = OrderDepotTypeFlag::PartOfOrders;
+			if ((order_flags & OF_SERVICE_IF_NEEDED) != 0) odtf.Set(OrderDepotTypeFlag::Service);
+
 			OrderDepotActionFlags odaf = (OrderDepotActionFlags)(ODATF_SERVICE_ONLY | ((order_flags & OF_STOP_IN_DEPOT) ? ODATFB_HALT : 0));
 			if (order_flags & OF_GOTO_NEAREST_DEPOT) odaf |= ODATFB_NEAREST_DEPOT;
 			OrderNonStopFlags onsf = (OrderNonStopFlags)((order_flags & OF_NON_STOP_INTERMEDIATE) ? ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS : ONSF_STOP_EVERYWHERE);

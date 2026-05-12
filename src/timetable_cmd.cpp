@@ -689,7 +689,7 @@ std::vector<TimetableProgress> PopulateSeparationState(const Vehicle *v_start)
 		const Order *order = v->GetOrder(n);
 		if (order->IsType(OT_CONDITIONAL)) continue;
 		if (!IsOrderUsableForSeparation(order)) separation_valid = false;
-		if (order->IsType(OT_GOTO_DEPOT) && (order->GetDepotOrderType() & ODTFB_SERVICE || order->GetDepotActionType() & ODATFB_HALT)) {
+		if (order->IsType(OT_GOTO_DEPOT) && (order->GetDepotOrderType().Test(OrderDepotTypeFlag::Service) || order->GetDepotActionType() & ODATFB_HALT)) {
 			// Do not try to separate vehicles on depot service or halt orders
 			separation_valid = false;
 		}
@@ -1014,7 +1014,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 		int32_t new_time;
 		if (travelling) {
 			new_time = time_taken;
-			if (new_time > (int32_t)timetabled * 4 && new_time > (int32_t)timetabled + 3000 && !(real_timetable_order->IsType(OT_GOTO_DEPOT) && (real_timetable_order->GetDepotOrderType() & ODTFB_SERVICE))) {
+			if (new_time > (int32_t)timetabled * 4 && new_time > (int32_t)timetabled + 3000 && !(real_timetable_order->IsType(OT_GOTO_DEPOT) && real_timetable_order->GetDepotOrderType().Test(OrderDepotTypeFlag::Service))) {
 				/* Possible jam, clear time and restart timetable for all vehicles.
 				 * Otherwise we risk trains blocking 1-lane stations for long times. */
 				ChangeTimetable(v, v->cur_timetable_order_index, 0, travel_field ? MTF_TRAVEL_TIME : MTF_WAIT_TIME, false);

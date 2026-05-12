@@ -757,7 +757,7 @@ static int DepotActionStringIndex(const Order *order)
 		return DA_STOP;
 	} else if (order->GetDepotActionType() & ODATFB_UNBUNCH) {
 		return DA_SERVICE;
-	} else if (order->GetDepotOrderType() & ODTFB_SERVICE) {
+	} else if (order->GetDepotOrderType().Test(OrderDepotTypeFlag::Service)) {
 		return DA_SERVICE;
 	} else {
 		return DA_ALWAYS_GO;
@@ -818,7 +818,7 @@ StringID OrderStringForVariable(const Vehicle *v, OrderConditionVariable ocv)
 
 static StringID GetDepotOrderGoToString(const Order &order)
 {
-	if (order.GetDepotOrderType() & ODTFB_SERVICE) {
+	if (order.GetDepotOrderType().Test(OrderDepotTypeFlag::Service)) {
 		return (order.GetNonStopType() & ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS) ? STR_ORDER_SERVICE_NON_STOP_AT : STR_ORDER_SERVICE_AT;
 	} else {
 		return (order.GetNonStopType() & ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS) ? STR_ORDER_GO_NON_STOP_TO : STR_ORDER_GO_TO;
@@ -1425,10 +1425,10 @@ static Order GetOrderCmdFromTile(const Vehicle *v, TileIndex tile)
 			return order;
 		}
 		order.MakeGoToDepot(GetDepotDestinationIndex(tile),
-				ODTFB_PART_OF_ORDERS,
+				{OrderDepotTypeFlag::PartOfOrders},
 				((_settings_client.gui.new_nonstop || _settings_game.order.nonstop_only) && v->IsGroundVehicle()) ? ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS : ONSF_STOP_EVERYWHERE);
 
-		if (_ctrl_pressed) order.SetDepotOrderType((OrderDepotTypeFlags)(order.GetDepotOrderType() ^ ODTFB_SERVICE));
+		if (_ctrl_pressed) order.SetDepotOrderType((order.GetDepotOrderType() ^ OrderDepotTypeFlags{OrderDepotTypeFlag::Service}));
 
 		return order;
 	}
@@ -1793,7 +1793,7 @@ private:
 		if (i < 0) {
 			const Order *order = this->vehicle->GetOrder(sel_ord);
 			if (order == nullptr) return;
-			i = (order->GetDepotOrderType() & ODTFB_SERVICE) ? DA_ALWAYS_GO : DA_SERVICE;
+			i = (order->GetDepotOrderType().Test(OrderDepotTypeFlag::Service)) ? DA_ALWAYS_GO : DA_SERVICE;
 		}
 		this->ModifyOrder(sel_ord, MOF_DEPOT_ACTION, i);
 	}
@@ -1804,7 +1804,7 @@ private:
 	void OrderClick_NearestDepot()
 	{
 		Order order;
-		order.MakeGoToDepot(DepotID::Invalid(), ODTFB_PART_OF_ORDERS,
+		order.MakeGoToDepot(DepotID::Invalid(), {OrderDepotTypeFlag::PartOfOrders},
 				(_settings_client.gui.new_nonstop || _settings_game.order.nonstop_only) && this->vehicle->IsGroundVehicle() ? ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS : ONSF_STOP_EVERYWHERE);
 		order.SetDepotActionType(ODATFB_NEAREST_DEPOT);
 
@@ -2407,7 +2407,7 @@ public:
 					/* Disable refit button if the order is no 'always go' order.
 					 * However, keep the service button enabled for refit-orders to allow clearing refits (without knowing about ctrl). */
 					this->SetWidgetDisabledState(WID_O_REFIT,
-							(order->GetDepotOrderType() & ODTFB_SERVICE) || (order->GetDepotActionType() & ODATFB_HALT) ||
+							order->GetDepotOrderType().Test(OrderDepotTypeFlag::Service) || (order->GetDepotActionType() & ODATFB_HALT) ||
 							(!this->can_do_refit && !order->IsRefit()));
 					break;
 
@@ -2861,7 +2861,7 @@ public:
 				/* Select the current action selected in the dropdown. The flags don't match the dropdown so we can't just use an index. */
 				if (order->GetDepotActionType() & ODATFB_SELL) {
 					return GetString( STR_ORDER_DROP_SELL_DEPOT);
-				} else if (order->GetDepotOrderType() & ODTFB_SERVICE) {
+				} else if (order->GetDepotOrderType().Test(OrderDepotTypeFlag::Service)) {
 					return GetString(STR_ORDER_DROP_SERVICE_DEPOT);
 				} else if (order->GetDepotActionType() & ODATFB_HALT) {
 					return GetString(STR_ORDER_DROP_HALT_DEPOT);
