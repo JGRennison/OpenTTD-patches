@@ -33,12 +33,15 @@
 #	include <signal.h>
 #	define STDIN 0  /* file descriptor for standard input */
 
+std::atomic<bool> _dedicated_exit_requested;
+
 /* Signal handlers */
 static void DedicatedSignalHandler(int sig)
 {
-	if (_game_mode == GM_NORMAL && _settings_client.gui.autosave_on_exit) DoExitSave();
-	_exit_game = true;
+	_dedicated_exit_requested = true;
+#ifndef WITH_SIGACTION
 	signal(sig, DedicatedSignalHandler);
+#endif
 }
 #endif
 
@@ -197,9 +200,20 @@ void VideoDriver_Dedicated::MainLoop()
 {
 	/* Signal handlers */
 #if defined(UNIX)
+#ifdef WITH_SIGACTION
+	struct sigaction sa;
+	memset(&sa, 0, sizeof(sa));
+	sa.sa_flags = SA_RESTART;
+	sigemptyset(&sa.sa_mask);
+	sa.sa_handler = DedicatedSignalHandler;
+	sigaction(SIGTERM, &sa, nullptr);
+	sigaction(SIGINT, &sa, nullptr);
+	sigaction(SIGQUIT, &sa, nullptr);
+#else
 	signal(SIGTERM, DedicatedSignalHandler);
 	signal(SIGINT, DedicatedSignalHandler);
 	signal(SIGQUIT, DedicatedSignalHandler);
+#endif
 #endif
 
 	SetSelfAsGameThread();
@@ -224,5 +238,12 @@ void VideoDriver_Dedicated::MainLoop()
 
 		this->Tick();
 		this->SleepTillNextTick();
+
+#if defined(UNIX)
+		if (_dedicated_exit_requested) {
+			if (_game_mode == GM_NORMAL && _settings_client.gui.autosave_on_exit) DoExitSave();
+			_exit_game = true;
+		}
+#endif
 	}
 }
