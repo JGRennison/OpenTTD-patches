@@ -2047,29 +2047,6 @@ static DepartureList MakeDepartureListScheduleMode(DepartureOrderDestinationDete
 	return result;
 }
 
-void HandleDeparturesVehicleCycleTrackingSeparateMode(const DepartureList &departures, DepartureList &arrivals)
-{
-	struct Record {
-		uint32_t vehicle_idx;
-		StateTicks tick;
-	};
-	robin_hood::unordered_flat_map<uint32_t, Record> seq_to_vehicle_idx;
-
-	for (const std::unique_ptr<Departure> &d : departures) {
-		if (d->vehicle_idx > 0) {
-			seq_to_vehicle_idx[d->sequence_id] = { d->vehicle_idx, d->scheduled_tick };
-		}
-	}
-	for (std::unique_ptr<Departure> &d : arrivals) {
-		if (d->sequence_id == 0) continue;
-		auto it = seq_to_vehicle_idx.find(d->sequence_id);
-		if (it != seq_to_vehicle_idx.end()) {
-			const Record &record = it->second;
-			if (d->scheduled_tick > record.tick) d->vehicle_idx = record.vehicle_idx;
-		}
-	}
-}
-
 /**
  * Compute an up-to-date list of departures for a station.
  * @param source_mode the departure source mode to use
