@@ -1475,6 +1475,7 @@ std::pair<const Order *, StateTicks> DepartureListScheduleModeSlotEvaluator::Eva
 		if (order == source_order) {
 			/* If we're not calling anywhere, then skip this departure. */
 			via_state.found_terminus = (d.calling_at.size() > 0);
+			next_state.first = order;
 			break;
 		}
 
