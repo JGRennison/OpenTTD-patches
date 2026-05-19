@@ -409,17 +409,17 @@ static constexpr NWidgetPart _nested_load_orderlist_dialog_widgets[] = {
 };
 
 /** Text colours of #DetailedFileType fios entries in the window. */
-static const EnumIndexArray<TextColour, DetailedFileType, DetailedFileType::End> _fios_colours = {
-	TC_LIGHT_BROWN, // DetailedFileType::OldGameFile
-	TC_ORANGE, // DetailedFileType::GameFile
-	TC_YELLOW, // DetailedFileType::HeightmapBmp
-	TC_ORANGE, // DetailedFileType::HeightmapPng
-	TC_LIGHT_BROWN, // DetailedFileType::TownDataJson
-	TC_WHITE, // DetailedFileType::OrderlistJson
-	TC_LIGHT_BLUE, // DetailedFileType::FiosDrive
-	TC_DARK_GREEN, // DetailedFileType::FiosParent
-	TC_DARK_GREEN, // DetailedFileType::FiosDirectory
-	TC_ORANGE, // DetailedFileType::FiosDirect
+static const EnumIndexArray<ExtendedTextColour, DetailedFileType, DetailedFileType::End> _fios_colours = {
+	TextColour::LightBrown, // DetailedFileType::OldGameFile
+	TextColour::Orange, // DetailedFileType::GameFile
+	TextColour::Yellow, // DetailedFileType::HeightmapBmp
+	TextColour::Orange, // DetailedFileType::HeightmapPng
+	TextColour::LightBrown, // DetailedFileType::TownDataJson
+	TextColour::White, // DetailedFileType::OrderlistJson
+	TextColour::LightBlue, // DetailedFileType::FiosDrive
+	TextColour::DarkGreen, // DetailedFileType::FiosParent
+	TextColour::DarkGreen, // DetailedFileType::FiosDirectory
+	TextColour::Orange, // DetailedFileType::FiosDirect
 };
 
 /**
@@ -665,7 +665,7 @@ public:
 				} else {
 					DrawString(ir.left, ir.right, ir.top + GetCharacterHeight(FontSize::Normal), STR_ERROR_UNABLE_TO_READ_DRIVE);
 				}
-				DrawString(ir.left, ir.right, ir.top, path, TC_BLACK);
+				DrawString(ir.left, ir.right, ir.top, path, TextColour::Black);
 				break;
 			}
 
@@ -707,7 +707,7 @@ public:
 
 		/* Create the nice lighter rectangle at the details top */
 		GfxFillRect(r.WithHeight(HEADER_HEIGHT).Shrink(WidgetDimensions::scaled.bevel.left, WidgetDimensions::scaled.bevel.top, WidgetDimensions::scaled.bevel.right, 0), GetColourGradient(Colours::Grey, Shade::Lightest));
-		DrawString(hr.left, hr.right, hr.top, STR_SAVELOAD_DETAIL_CAPTION, TC_FROMSTRING, SA_HOR_CENTER);
+		DrawString(hr.left, hr.right, hr.top, STR_SAVELOAD_DETAIL_CAPTION, TextColour::FromString, SA_HOR_CENTER);
 
 		if (this->selected == nullptr) return;
 
@@ -716,7 +716,7 @@ public:
 		if (tr.top > tr.bottom) return;
 
 		if (!_load_check_data.version_name.empty()) {
-			tr.top = DrawStringMultiLine(tr, GetString(STR_JUST_RAW_STRING, _load_check_data.version_name), TC_GREEN);
+			tr.top = DrawStringMultiLine(tr, GetString(STR_JUST_RAW_STRING, _load_check_data.version_name), TextColour::Green);
 		}
 
 		if (!_load_check_data.checkable) {
@@ -725,7 +725,7 @@ public:
 			tr.top += GetCharacterHeight(FontSize::Normal);
 		} else if (_load_check_data.error != INVALID_STRING_ID) {
 			/* Incompatible / broken savegame */
-			tr.top = DrawStringMultiLine(tr, GetString(_load_check_data.error, _load_check_data.error_msg), TC_RED);
+			tr.top = DrawStringMultiLine(tr, GetString(_load_check_data.error, _load_check_data.error_msg), TextColour::Red);
 		} else {
 			/* Warning if save unique id differ when saving */
 			if (this->fop == SaveLoadOperation::Save) {

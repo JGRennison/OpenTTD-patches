@@ -263,28 +263,29 @@ static void LoadLiveries(CompanyProperties *c, uint num_liveries, const SaveLoad
 	bool update_in_use = IsSavegameVersionBefore(SLV_GROUP_LIVERIES);
 
 	for (uint i = 0; i < num_liveries; i++) {
-		SlObjectLoadFiltered(&c->livery[i], slt);
-		if (update_in_use && i != LS_DEFAULT) {
-			if (c->livery[i].in_use.base() == 0) {
-				c->livery[i].colour1 = c->livery[LS_DEFAULT].colour1;
-				c->livery[i].colour2 = c->livery[LS_DEFAULT].colour2;
+		Livery &livery = c->livery[static_cast<LiveryScheme>(i)];
+		SlObjectLoadFiltered(&livery, slt);
+		if (update_in_use && i != to_underlying(LiveryScheme::Default)) {
+			if (livery.in_use.base() == 0) {
+				livery.colour1 = c->livery[LiveryScheme::Default].colour1;
+				livery.colour2 = c->livery[LiveryScheme::Default].colour2;
 			} else {
-				c->livery[i].in_use = {Livery::Flag::Primary, Livery::Flag::Secondary};
+				livery.in_use = {Livery::Flag::Primary, Livery::Flag::Secondary};
 			}
 		}
 	}
 
-	if (num_liveries < LS_END) {
+	if (num_liveries < to_underlying(LiveryScheme::End)) {
 		/* We want to insert some liveries somewhere in between. This means some have to be moved. */
-		memmove(&c->livery[LS_FREIGHT_WAGON], &c->livery[LS_PASSENGER_WAGON_MONORAIL], (LS_END - LS_FREIGHT_WAGON) * sizeof(c->livery[0]));
-		c->livery[LS_PASSENGER_WAGON_MONORAIL] = c->livery[LS_MONORAIL];
-		c->livery[LS_PASSENGER_WAGON_MAGLEV]   = c->livery[LS_MAGLEV];
+		memmove(&c->livery[LiveryScheme::FreightWagon], &c->livery[LiveryScheme::PassengerWagonMonorail], (to_underlying(LiveryScheme::End) - to_underlying(LiveryScheme::FreightWagon)) * sizeof(c->livery[LiveryScheme::Begin]));
+		c->livery[LiveryScheme::PassengerWagonMonorail] = c->livery[LiveryScheme::Monorail];
+		c->livery[LiveryScheme::PassengerWagonMaglev]   = c->livery[LiveryScheme::Maglev];
 	}
 
-	if (num_liveries == LS_END - 4) {
+	if (num_liveries == to_underlying(LiveryScheme::End) - 4) {
 		/* Copy bus/truck liveries over to trams */
-		c->livery[LS_PASSENGER_TRAM] = c->livery[LS_BUS];
-		c->livery[LS_FREIGHT_TRAM]   = c->livery[LS_TRUCK];
+		c->livery[LiveryScheme::PassengerTram] = c->livery[LiveryScheme::Bus];
+		c->livery[LiveryScheme::FreightTram] = c->livery[LiveryScheme::Truck];
 	}
 }
 
@@ -392,15 +393,15 @@ struct CompanyLiveriesStructHandler final : public TypedSaveLoadStructHandler<Co
 
 	void Save(CompanyProperties *cprops) const override
 	{
-		SlSetStructListLength(LS_END);
-		for (int i = 0; i < LS_END; i++) {
-			SlObjectSaveFiltered(&cprops->livery[i], this->GetLoadDescription());
+		SlSetStructListLength(to_underlying(LiveryScheme::End));
+		for (int i = 0; i < to_underlying(LiveryScheme::End); i++) {
+			SlObjectSaveFiltered(&cprops->livery[static_cast<LiveryScheme>(i)], this->GetLoadDescription());
 		}
 	}
 
 	void Load(CompanyProperties *cprops) const override
 	{
-		uint num_liveries = static_cast<uint>(SlGetStructListLength(LS_END));
+		uint num_liveries = static_cast<uint>(SlGetStructListLength(to_underlying(LiveryScheme::End)));
 		LoadLiveries(cprops, num_liveries, this->GetLoadDescription());
 	}
 
@@ -555,7 +556,8 @@ void PLYRNonTableHelper::Load_PLYR_common(Company *c, CompanyProperties *cprops)
 	}
 
 	/* Write each livery entry. */
-	uint num_liveries = IsSavegameVersionBefore(SLV_63) ? LS_END - 4 : (IsSavegameVersionBefore(SLV_85) ? LS_END - 2: LS_END);
+	static_assert(to_underlying(LiveryScheme::End) == 23);
+	uint num_liveries = IsSavegameVersionBefore(SLV_63) ? to_underlying(LiveryScheme::End) - 4 : (IsSavegameVersionBefore(SLV_85) ? to_underlying(LiveryScheme::End) - 2 : to_underlying(LiveryScheme::End));
 
 	if (c != nullptr) {
 		LoadLiveries(cprops, num_liveries, this->liveries_desc);

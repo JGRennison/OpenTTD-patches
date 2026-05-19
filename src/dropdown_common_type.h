@@ -97,7 +97,7 @@ public:
 		this->TBase::Draw(full, r.Indent(this->dim.width, rtl), sel, click_result, bg_colour);
 	}
 
-	void SetColourFlags(TextColour colour_flags) { this->colour_flags = colour_flags; }
+	void SetColourFlags(ExtendedTextColourFlags colour_flags) { this->colour_flags = colour_flags; }
 
 	/**
 	 * Natural sorting comparator function for DropDownList::sort().

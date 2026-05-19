@@ -793,12 +793,12 @@ struct TimetableWindow : GeneralVehicleWindow {
 							order = v->orders->GetNext(order);
 						}
 					} else {
-						TextColour colour = (i == selected) ? TC_WHITE : TC_BLACK;
+						ExtendedTextColour colour = (i == selected) ? TextColour::White : TextColour::Black;
 						if (order->IsType(OT_CONDITIONAL) || order->HasNoTimetableTimes()) {
 							GetStringInPlace(buffer, STR_TIMETABLE_NO_TRAVEL);
 						} else if (order->IsType(OT_IMPLICIT)) {
 							GetStringInPlace(buffer, STR_TIMETABLE_NOT_TIMETABLEABLE);
-							colour = ((i == selected) ? TC_SILVER : TC_GREY) | TC_NO_SHADE;
+							colour = ExtendedTextColour{(i == selected) ? TextColour::Silver : TextColour::Grey, ExtendedTextColourFlag::NoShade};
 						} else if (!order->IsTravelTimetabled()) {
 							if (order->GetTravelTime() > 0) {
 								auto [str, value] = GetTimetableParameters(order->GetTravelTime());
@@ -870,7 +870,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 				Rect time = tr.WithWidth(this->deparr_time_width, !rtl);
 
 				format_buffer buffer;
-				auto draw_time = [&]<typename... T>(TextColour colour, StringID str, T&&... params) {
+				auto draw_time = [&]<typename... T>(ExtendedTextColour colour, StringID str, T&&... params) {
 					DrawString(time.left, time.right, tr.top, GetStringInPlace(buffer, str, std::forward<T>(params)...), colour);
 				};
 
@@ -883,19 +883,19 @@ struct TimetableWindow : GeneralVehicleWindow {
 
 					if (i % 2 == 0) {
 						if (arr_dep[i / 2].arrival != INVALID_TICKS) {
-							DrawString(abbr.left, abbr.right, tr.top, arrival_abbr, i == selected ? TC_WHITE : TC_BLACK);
+							DrawString(abbr.left, abbr.right, tr.top, arrival_abbr, i == selected ? TextColour::White : TextColour::Black);
 							if (this->show_expected && i / 2 == earlyID) {
-								draw_time(TC_GREEN, STR_JUST_TT_TIME, _state_ticks + arr_dep[i / 2].arrival);
+								draw_time(TextColour::Green, STR_JUST_TT_TIME, _state_ticks + arr_dep[i / 2].arrival);
 							} else {
-								draw_time(HasBit(arr_dep[i / 2].flags, TADF_ARRIVAL_PREDICTED) ? (TextColour)(TC_IS_PALETTE_COLOUR | TC_NO_SHADE | 4) : (show_late ? TC_RED : i == selected ? TC_WHITE : TC_BLACK),
+								draw_time(HasBit(arr_dep[i / 2].flags, TADF_ARRIVAL_PREDICTED) ? ExtendedTextColour{PixelColour(4), ExtendedTextColourFlag::NoShade} : (show_late ? TextColour::Red : i == selected ? TextColour::White : TextColour::Black),
 										STR_JUST_TT_TIME,
 										_state_ticks + arr_dep[i / 2].arrival + (HasBit(arr_dep[i / 2].flags, TADF_ARRIVAL_NO_OFFSET) ? 0 : offset));
 							}
 						}
 					} else {
 						if (arr_dep[i / 2].departure != INVALID_TICKS) {
-							DrawString(abbr.left, abbr.right, tr.top, departure_abbr, i == selected ? TC_WHITE : TC_BLACK);
-							draw_time(HasBit(arr_dep[i / 2].flags, TADF_DEPARTURE_PREDICTED) ? (TextColour)(TC_IS_PALETTE_COLOUR | TC_NO_SHADE | 4) : (show_late ? TC_RED : i == selected ? TC_WHITE : TC_BLACK),
+							DrawString(abbr.left, abbr.right, tr.top, departure_abbr, i == selected ? TextColour::White : TextColour::Black);
+							draw_time(HasBit(arr_dep[i / 2].flags, TADF_DEPARTURE_PREDICTED) ? ExtendedTextColour{PixelColour(4), ExtendedTextColourFlag::NoShade} : (show_late ? TextColour::Red : i == selected ? TextColour::White : TextColour::Black),
 									STR_JUST_TT_TIME,
 									_state_ticks + arr_dep[i/2].departure + (HasBit(arr_dep[i / 2].flags, TADF_DEPARTURE_NO_OFFSET) ? 0 : offset));
 						}

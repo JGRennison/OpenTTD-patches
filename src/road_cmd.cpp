@@ -2284,7 +2284,7 @@ void DrawRoadBits(TileInfo *ti, RoadBits road, RoadBits tram, Roadside roadside,
 	}
 
 	/* Return if full detail is disabled, or we are zoomed fully out. */
-	if (!HasBit(_display_opt, DO_FULL_DETAIL) || _cur_dpi->zoom > ZoomLevel::Detail) return;
+	if (!_display_opt.Test(DisplayOption::FullDetail) || _cur_dpi->zoom > ZoomLevel::Detail) return;
 
 	/* Do not draw details (street lights, trees) under low bridge */
 	if (IsBridgeAbove(ti->tile) && (roadside == Roadside::Trees || roadside == Roadside::StreetLights)) {
@@ -2676,7 +2676,7 @@ static void TileLoop_Road(TileIndex tile)
 			if ((t->road_build_months != 0 || Chance16(_settings_game.economy.random_road_reconstruction, 1000)) &&
 					(DistanceManhattan(t->xy, tile) < 8 || grp != HouseZone::TownEdge) &&
 					IsNormalRoad(tile) && !HasAtMostOneBit(GetAllRoadBits(tile))) {
-				if (std::get<0>(GetFoundationSlope(tile)) == SLOPE_FLAT && EnsureNoVehicleOnGround(tile).Succeeded() && Chance16(1, 40)) {
+				if (std::get<Slope>(GetFoundationSlope(tile)) == SLOPE_FLAT && EnsureNoVehicleOnGround(tile).Succeeded() && Chance16(1, 40)) {
 					StartRoadWorks(tile);
 
 					if (_settings_client.sound.ambient) SndPlayTileFx(SND_21_ROAD_WORKS, tile);

@@ -383,7 +383,7 @@ private:
 		if (g_id == NEW_GROUP) return;
 
 		/* draw the selected group in white, else we draw it in black */
-		TextColour colour = g_id == this->vli.ToGroupID() ? TC_WHITE : TC_BLACK;
+		TextColour colour = g_id == this->vli.ToGroupID() ? TextColour::White : TextColour::Black;
 		const GroupStatistics &stats = GroupStatistics::Get(this->vli.company, g_id, this->vli.vtype);
 		bool rtl = _current_text_dir == TD_RTL;
 
@@ -732,17 +732,17 @@ public:
 				const int right = r.right - WidgetDimensions::scaled.framerect.right - WidgetDimensions::scaled.vsep_wide;
 
 				int y = r.top + (1 + r.bottom - r.top - (3 * GetCharacterHeight(FontSize::Normal))) / 2;
-				DrawString(left, right, y, STR_GROUP_PROFIT_THIS_YEAR, TC_BLACK);
-				DrawString(left, right, y, GetString(STR_JUST_CURRENCY_LONG, this->money_this_year), TC_BLACK, SA_RIGHT);
+				DrawString(left, right, y, STR_GROUP_PROFIT_THIS_YEAR, TextColour::Black);
+				DrawString(left, right, y, GetString(STR_JUST_CURRENCY_LONG, this->money_this_year), TextColour::Black, SA_RIGHT);
 
 				y += GetCharacterHeight(FontSize::Normal);
-				DrawString(left, right, y, STR_GROUP_PROFIT_LAST_YEAR, TC_BLACK);
-				DrawString(left, right, y, GetString(STR_JUST_CURRENCY_LONG, this->money_last_year), TC_BLACK, SA_RIGHT);
+				DrawString(left, right, y, STR_GROUP_PROFIT_LAST_YEAR, TextColour::Black);
+				DrawString(left, right, y, GetString(STR_JUST_CURRENCY_LONG, this->money_last_year), TextColour::Black, SA_RIGHT);
 
 				y += GetCharacterHeight(FontSize::Normal);
-				DrawString(left, right, y, STR_GROUP_OCCUPANCY, TC_BLACK);
+				DrawString(left, right, y, STR_GROUP_OCCUPANCY, TextColour::Black);
 				if (this->vehicles.size() > 0) {
-					DrawString(left, right, y, GetString(STR_GROUP_OCCUPANCY_VALUE, this->occupancy_ratio), TC_BLACK, SA_RIGHT);
+					DrawString(left, right, y, GetString(STR_GROUP_OCCUPANCY_VALUE, this->occupancy_ratio), TextColour::Black, SA_RIGHT);
 				}
 
 				break;

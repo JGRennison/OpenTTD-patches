@@ -2343,7 +2343,7 @@ static void DrawTile_TunnelBridge(TileInfo *ti, DrawTileProcParams params)
 		if (transport_type == TRANSPORT_RAIL && IsRailCustomBridgeHead(ti->tile)) {
 			const RailTypeInfo *rti = GetRailTypeInfo(GetRailType(ti->tile));
 			DrawTrackBits(ti, GetCustomBridgeHeadTrackBits(ti->tile));
-			if (HasBit(_display_opt, DO_FULL_DETAIL)) {
+			if (_display_opt.Test(DisplayOption::FullDetail)) {
 				extern void DrawTrackDetails(const TileInfo *ti, const RailTypeInfo *rti, const RailGroundType rgt, PaletteID pal);
 				DrawTrackDetails(ti, rti, GetTunnelBridgeGroundType(ti->tile), GetCompanyPalette(GetTileOwner(ti->tile)));
 			}

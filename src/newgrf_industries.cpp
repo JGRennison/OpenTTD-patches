@@ -287,7 +287,7 @@ uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(uint8_t p
 			const Company *c = Company::GetIfValid(this->industry->founder);
 			if (c != nullptr) {
 				is_ai = c->is_ai;
-				colours = c->GetCompanyRecolourOffset(LS_DEFAULT);
+				colours = c->GetCompanyRecolourOffset(LiveryScheme::Default);
 			}
 
 			return this->industry->founder.base() | (is_ai ? 0x10000 : 0) | (colours << 24);

@@ -2204,7 +2204,7 @@ STR_SCHDISPATCH_ADD                                             :{BLACK}增加�
 STR_SCHDISPATCH_ADD_MULTIPLE_SLOTS                              :{BLACK}增加多個發車時間
 STR_SCHDISPATCH_ADD_TOOLTIP                                     :{BLACK}為此時刻表增加發車時間
 STR_SCHDISPATCH_ADD_TOOLTIP_EXTRA                               :{BLACK}{STRING}按住 <Ctrl> 鍵點擊以增加多個發車時間
-STR_SCHDISPATCH_ADD_CAPTION                                     :{BLACK}發車時間
+STR_SCHDISPATCH_ADD_CAPTION                                     :發車時間
 STR_SCHDISPATCH_DURATION                                        :{BLACK}持續長度
 STR_SCHDISPATCH_DURATION_TOOLTIP                                :{BLACK}設定本時刻表的持續時間長度
 STR_SCHDISPATCH_DURATION_CAPTION_MINUTE                         :{BLACK}持續長度（分鐘）

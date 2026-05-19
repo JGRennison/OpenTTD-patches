@@ -83,7 +83,7 @@ struct GraphLegendWindow : Window {
 		DrawCompanyIcon(cid, rtl ? ir.right - d.width : ir.left, CentreBounds(ir.top, ir.bottom, d.height));
 
 		const Rect tr = ir.Indent(d.width + WidgetDimensions::scaled.hsep_normal, rtl);
-		DrawString(tr.left, tr.right, CentreBounds(tr.top, tr.bottom, GetCharacterHeight(FontSize::Normal)), GetString(STR_COMPANY_NAME_COMPANY_NUM, cid, cid), _legend_excluded_companies.Test(cid) ? TC_BLACK : TC_WHITE);
+		DrawString(tr.left, tr.right, CentreBounds(tr.top, tr.bottom, GetCharacterHeight(FontSize::Normal)), GetString(STR_COMPANY_NAME_COMPANY_NUM, cid, cid), _legend_excluded_companies.Test(cid) ? TextColour::Black : TextColour::White);
 	}
 
 	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
@@ -188,7 +188,7 @@ protected:
 	static const int ECONOMY_QUARTER_MINUTES = 3;  ///< Minutes per economic quarter.
 	static const int ECONOMY_MONTH_MINUTES = 1;  ///< Minutes per economic month.
 
-	static const TextColour GRAPH_AXIS_LABEL_COLOUR = TC_BLACK; ///< colour of the graph axis label.
+	static const TextColour GRAPH_AXIS_LABEL_COLOUR = TextColour::Black; ///< colour of the graph axis label.
 
 	static const int MIN_GRAPH_NUM_LINES_Y  =   9; ///< Minimal number of horizontal lines to draw.
 	static const int MIN_GRID_PIXEL_SIZE    =  20; ///< Minimum distance between graph lines.
@@ -760,7 +760,7 @@ public:
 					if (lowered) DrawFrameRect(line, Colours::Brown, FrameFlag::Lowered);
 
 					const Rect text = line.Shrink(WidgetDimensions::scaled.framerect);
-					DrawString(text, str, (this->highlight_state && this->highlight_range == index) ? TC_WHITE : TC_BLACK, SA_CENTER, false, FontSize::Small);
+					DrawString(text, str, (this->highlight_state && this->highlight_range == index) ? TextColour::White : TextColour::Black, SA_CENTER, false, FontSize::Small);
 
 					if (HasBit(this->masked_range, index)) {
 						GfxFillRect(line.Shrink(WidgetDimensions::scaled.bevel), GetColourGradient(Colours::Brown, Shade::Darker), FillRectMode::Checker);
@@ -780,7 +780,7 @@ public:
 					/* Redraw frame if selected */
 					if (selected_month_increment == scale.month_increment) DrawFrameRect(line, Colours::Brown, FrameFlag::Lowered);
 
-					DrawString(line.Shrink(WidgetDimensions::scaled.framerect), GetString(scale.label, scale.label_param), TC_BLACK, SA_CENTER, false, FontSize::Small);
+					DrawString(line.Shrink(WidgetDimensions::scaled.framerect), GetString(scale.label, scale.label_param), TextColour::Black, SA_CENTER, false, FontSize::Small);
 
 					line = line.Translate(0, line_height);
 				}
@@ -1000,7 +1000,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_operating_profit_wid
 	NWidget(WWT_PANEL, Colours::Brown, WID_GRAPH_BACKGROUND),
 		NWidget(WWT_EMPTY, Colours::Invalid, WID_GRAPH_GRAPH), SetMinimalSize(576, 160), SetFill(1, 1), SetResize(1, 1),
 		NWidget(NWID_HORIZONTAL),
-			NWidget(WWT_TEXT, Colours::Invalid, WID_GRAPH_FOOTER), SetFill(1, 0), SetResize(1, 0), SetPadding(2, 0, 2, 0), SetTextStyle(TC_BLACK, FontSize::Small), SetAlignment(SA_CENTER),
+			NWidget(WWT_TEXT, Colours::Invalid, WID_GRAPH_FOOTER), SetFill(1, 0), SetResize(1, 0), SetPadding(2, 0, 2, 0), SetTextStyle(TextColour::Black, FontSize::Small), SetAlignment(SA_CENTER),
 			NWidget(WWT_RESIZEBOX, Colours::Brown, WID_GRAPH_RESIZE), SetResizeWidgetTypeTip(ResizeWidgetType::HideBevel, STR_TOOLTIP_RESIZE),
 		EndContainer(),
 	EndContainer(),
@@ -1053,7 +1053,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_income_graph_widgets
 	NWidget(WWT_PANEL, Colours::Brown, WID_GRAPH_BACKGROUND),
 		NWidget(WWT_EMPTY, Colours::Invalid, WID_GRAPH_GRAPH), SetMinimalSize(576, 128), SetFill(1, 1), SetResize(1, 1),
 		NWidget(NWID_HORIZONTAL),
-			NWidget(WWT_TEXT, Colours::Invalid, WID_GRAPH_FOOTER), SetFill(1, 0), SetResize(1, 0), SetPadding(2, 0, 2, 0), SetTextStyle(TC_BLACK, FontSize::Small), SetAlignment(SA_CENTER),
+			NWidget(WWT_TEXT, Colours::Invalid, WID_GRAPH_FOOTER), SetFill(1, 0), SetResize(1, 0), SetPadding(2, 0, 2, 0), SetTextStyle(TextColour::Black, FontSize::Small), SetAlignment(SA_CENTER),
 			NWidget(WWT_RESIZEBOX, Colours::Brown, WID_GRAPH_RESIZE), SetResizeWidgetTypeTip(ResizeWidgetType::HideBevel, STR_TOOLTIP_RESIZE),
 		EndContainer(),
 	EndContainer(),
@@ -1459,7 +1459,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_performance_history_
 	NWidget(WWT_PANEL, Colours::Brown, WID_GRAPH_BACKGROUND),
 		NWidget(WWT_EMPTY, Colours::Invalid, WID_GRAPH_GRAPH), SetMinimalSize(576, 224), SetFill(1, 1), SetResize(1, 1),
 		NWidget(NWID_HORIZONTAL),
-			NWidget(WWT_TEXT, Colours::Invalid, WID_GRAPH_FOOTER), SetFill(1, 0), SetResize(1, 0), SetPadding(2, 0, 2, 0), SetTextStyle(TC_BLACK, FontSize::Small), SetAlignment(SA_CENTER),
+			NWidget(WWT_TEXT, Colours::Invalid, WID_GRAPH_FOOTER), SetFill(1, 0), SetResize(1, 0), SetPadding(2, 0, 2, 0), SetTextStyle(TextColour::Black, FontSize::Small), SetAlignment(SA_CENTER),
 			NWidget(WWT_RESIZEBOX, Colours::Brown, WID_GRAPH_RESIZE), SetResizeWidgetTypeTip(ResizeWidgetType::HideBevel, STR_TOOLTIP_RESIZE),
 		EndContainer(),
 	EndContainer(),
@@ -1510,7 +1510,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_company_value_graph_
 	NWidget(WWT_PANEL, Colours::Brown, WID_GRAPH_BACKGROUND),
 		NWidget(WWT_EMPTY, Colours::Invalid, WID_GRAPH_GRAPH), SetMinimalSize(576, 224), SetFill(1, 1), SetResize(1, 1),
 		NWidget(NWID_HORIZONTAL),
-			NWidget(WWT_TEXT, Colours::Invalid, WID_GRAPH_FOOTER), SetFill(1, 0), SetResize(1, 0), SetPadding(2, 0, 2, 0), SetTextStyle(TC_BLACK, FontSize::Small), SetAlignment(SA_CENTER),
+			NWidget(WWT_TEXT, Colours::Invalid, WID_GRAPH_FOOTER), SetFill(1, 0), SetResize(1, 0), SetPadding(2, 0, 2, 0), SetTextStyle(TextColour::Black, FontSize::Small), SetAlignment(SA_CENTER),
 			NWidget(WWT_RESIZEBOX, Colours::Brown, WID_GRAPH_RESIZE), SetResizeWidgetTypeTip(ResizeWidgetType::HideBevel, STR_TOOLTIP_RESIZE),
 		EndContainer(),
 	EndContainer(),
@@ -2062,7 +2062,7 @@ struct PerformanceRatingDetailWindow : Window {
 		DrawString(this->score_info_left, this->score_info_right, text_top, STR_PERFORMANCE_DETAIL_VEHICLES + to_underlying(score_type));
 
 		/* Draw the score */
-		DrawString(this->score_info_left, this->score_info_right, text_top, GetString(STR_JUST_COMMA, score), TC_BLACK, SA_RIGHT);
+		DrawString(this->score_info_left, this->score_info_right, text_top, GetString(STR_JUST_COMMA, score), TextColour::Black, SA_RIGHT);
 
 		/* Calculate the %-bar */
 		uint x = Clamp<int64_t>(val, 0, needed) * this->bar_width / needed;
@@ -2078,7 +2078,7 @@ struct PerformanceRatingDetailWindow : Window {
 		if (x != this->bar_right) GfxFillRect(x,              bar_top, this->bar_right, bar_top + this->bar_height - 1, rtl ? colour_done : colour_notdone);
 
 		/* Draw it */
-		DrawString(this->bar_left, this->bar_right, text_top, GetString(STR_PERFORMANCE_DETAIL_PERCENT, Clamp<int64_t>(val, 0, needed) * 100 / needed), TC_FROMSTRING, SA_HOR_CENTER);
+		DrawString(this->bar_left, this->bar_right, text_top, GetString(STR_PERFORMANCE_DETAIL_PERCENT, Clamp<int64_t>(val, 0, needed) * 100 / needed), TextColour::FromString, SA_HOR_CENTER);
 
 		/* ScoreID::Loan is inverted */
 		if (score_type == ScoreID::Loan) val = needed - val;
@@ -2326,7 +2326,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_industry_production_
 			NWidget(NWID_SPACER), SetMinimalSize(5, 0), SetFill(0, 1), SetResize(0, 1),
 		EndContainer(),
 		NWidget(NWID_HORIZONTAL),
-			NWidget(WWT_TEXT, Colours::Invalid, WID_GRAPH_FOOTER), SetFill(1, 0), SetResize(1, 0), SetPadding(2, 0, 2, 0), SetTextStyle(TC_BLACK, FontSize::Small), SetAlignment(SA_CENTER),
+			NWidget(WWT_TEXT, Colours::Invalid, WID_GRAPH_FOOTER), SetFill(1, 0), SetResize(1, 0), SetPadding(2, 0, 2, 0), SetTextStyle(TextColour::Black, FontSize::Small), SetAlignment(SA_CENTER),
 			NWidget(WWT_RESIZEBOX, Colours::Brown, WID_GRAPH_RESIZE), SetResizeWidgetTypeTip(ResizeWidgetType::HideBevel, STR_TOOLTIP_RESIZE),
 		EndContainer(),
 	EndContainer(),
@@ -2495,7 +2495,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_town_cargo_graph_wid
 			NWidget(NWID_SPACER), SetMinimalSize(5, 0), SetFill(0, 1), SetResize(0, 1),
 		EndContainer(),
 		NWidget(NWID_HORIZONTAL),
-			NWidget(WWT_TEXT, Colours::Invalid, WID_GRAPH_FOOTER), SetFill(1, 0), SetResize(1, 0), SetPadding(2, 0, 2, 0), SetTextStyle(TC_BLACK, FontSize::Small), SetAlignment(SA_CENTER),
+			NWidget(WWT_TEXT, Colours::Invalid, WID_GRAPH_FOOTER), SetFill(1, 0), SetResize(1, 0), SetPadding(2, 0, 2, 0), SetTextStyle(TextColour::Black, FontSize::Small), SetAlignment(SA_CENTER),
 			NWidget(WWT_RESIZEBOX, Colours::Brown, WID_GRAPH_RESIZE), SetResizeWidgetTypeTip(ResizeWidgetType::HideBevel, STR_TOOLTIP_RESIZE),
 		EndContainer(),
 	EndContainer(),

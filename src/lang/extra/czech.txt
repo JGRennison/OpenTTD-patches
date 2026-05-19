@@ -1815,7 +1815,7 @@ STR_SCHDISPATCH_ENABLED_TOOLTIP                                 :{BLACK}Zapnout 
 STR_SCHDISPATCH_ADD                                             :{BLACK}Přidat pořadí
 STR_SCHDISPATCH_ADD_TOOLTIP                                     :{BLACK}Přidá do rozvrhu vypravení nové pořadové číslo.
 STR_SCHDISPATCH_ADD_TOOLTIP_EXTRA                               :{BLACK}{STRING} Ctrl+kliknutí přidá více pořadí najednou.
-STR_SCHDISPATCH_ADD_CAPTION                                     :{BLACK}Pořadové číslo
+STR_SCHDISPATCH_ADD_CAPTION                                     :Pořadové číslo
 STR_SCHDISPATCH_DURATION                                        :{BLACK}Délka
 STR_SCHDISPATCH_DURATION_TOOLTIP                                :{BLACK}Nastaví dobu trvání rozvrhu.
 STR_SCHDISPATCH_DURATION_CAPTION_MINUTE                         :{BLACK}Délka (minuty)

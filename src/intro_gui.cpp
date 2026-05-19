@@ -301,11 +301,11 @@ struct SelectGameWindow : public Window {
 	{
 		switch (widget) {
 			case WID_SGI_BASESET:
-				DrawStringMultiLine(r, GetString(STR_INTRO_BASESET, _missing_extra_graphics), TC_FROMSTRING, SA_CENTER);
+				DrawStringMultiLine(r, GetString(STR_INTRO_BASESET, _missing_extra_graphics), TextColour::FromString, SA_CENTER);
 				break;
 
 			case WID_SGI_TRANSLATION:
-				DrawStringMultiLine(r, GetString(STR_INTRO_TRANSLATION, _current_language->missing), TC_FROMSTRING, SA_CENTER);
+				DrawStringMultiLine(r, GetString(STR_INTRO_TRANSLATION, _current_language->missing), TextColour::FromString, SA_CENTER);
 				break;
 		}
 	}
@@ -481,11 +481,11 @@ struct TraditionalSelectGameWindow : public Window {
 	{
 		switch (widget) {
 			case WID_SGI_BASESET:
-				DrawStringMultiLine(r, GetString(STR_INTRO_BASESET, _missing_extra_graphics), TC_FROMSTRING, SA_CENTER);
+				DrawStringMultiLine(r, GetString(STR_INTRO_BASESET, _missing_extra_graphics), TextColour::FromString, SA_CENTER);
 				break;
 
 			case WID_SGI_TRANSLATION:
-				DrawStringMultiLine(r, GetString(STR_INTRO_TRANSLATION, _current_language->missing), TC_FROMSTRING, SA_CENTER);
+				DrawStringMultiLine(r, GetString(STR_INTRO_TRANSLATION, _current_language->missing), TextColour::FromString, SA_CENTER);
 				break;
 		}
 	}

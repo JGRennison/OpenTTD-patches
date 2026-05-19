@@ -4071,7 +4071,7 @@ static void DrawTile_Rail(TileInfo *ti, DrawTileProcParams params)
 
 		DrawTrackBits(ti, rails);
 
-		if (HasBit(_display_opt, DO_FULL_DETAIL)) DrawTrackDetails(ti, rti, GetRailGroundType(ti->tile), pal);
+		if (_display_opt.Test(DisplayOption::FullDetail)) DrawTrackDetails(ti, rti, GetRailGroundType(ti->tile), pal);
 
 		const RailType secondary_railtype = GetTileSecondaryRailTypeIfValid(ti->tile);
 

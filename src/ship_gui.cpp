@@ -105,7 +105,7 @@ void DrawShipDetails(const Vehicle *v, const Rect &r)
 
 			format_buffer capacity_str;
 			AppendStringInPlace(capacity_str, STR_VEHICLE_DETAILS_TRAIN_ARTICULATED_RV_CAPACITY, capacity);
-			DrawString(r.left, r.right, y, capacity_str, TC_BLUE);
+			DrawString(r.left, r.right, y, capacity_str, TextColour::Blue);
 			y += GetCharacterHeight(FontSize::Normal) + WidgetDimensions::scaled.vsep_normal;
 		}
 

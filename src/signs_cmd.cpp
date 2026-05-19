@@ -88,7 +88,7 @@ CommandCost CmdRenameSign(DoCommandFlags flags, SignID sign_id, const std::strin
 		}
 	} else { // Delete sign
 		if (flags.Test(DoCommandFlag::Execute)) {
-			if (HasBit(_display_opt, DO_SHOW_SIGNS) && !(si->IsCompetitorOwned() && !HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS))) {
+			if (_display_opt.Test(DisplayOption::ShowSigns) && !(si->IsCompetitorOwned() && !_display_opt.Test(DisplayOption::ShowCompetitorSigns))) {
 				si->sign.MarkDirty(ZoomLevel::SpriteMax);
 			}
 			if (_viewport_sign_kdtree_valid && si->sign.kdtree_valid) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeSign(si->index));

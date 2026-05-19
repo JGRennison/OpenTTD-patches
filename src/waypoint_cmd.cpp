@@ -704,8 +704,8 @@ CommandCost CmdSetWaypointLabelHidden(DoCommandFlags flags, StationID waypoint_i
 	if (flags.Test(DoCommandFlag::Execute)) {
 		AssignBit(wp->waypoint_flags, WPF_HIDE_LABEL, hidden);
 
-		if (HasBit(_display_opt, DO_SHOW_WAYPOINT_NAMES) &&
-				!(_local_company != wp->owner && wp->owner != OWNER_NONE && !HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS))) {
+		if (_display_opt.Test(DisplayOption::ShowWaypointNames) &&
+				!(_local_company != wp->owner && wp->owner != OWNER_NONE && !_display_opt.Test(DisplayOption::ShowCompetitorSigns))) {
 			wp->sign.MarkDirty(ZoomLevel::SpriteMax);
 		}
 

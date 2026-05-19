@@ -112,11 +112,11 @@ void DrawSpriteCustomRemap(SpriteID img, std::span<uint8_t, 256> pal, int x, int
 void DrawSpriteIgnorePadding(SpriteID img, PaletteID pal, const Rect &r, StringAlignment align); /* widget.cpp */
 std::unique_ptr<uint32_t[]> DrawSpriteToRgbaBuffer(SpriteID spriteId, ZoomLevel zoom = _gui_zoom);
 
-int DrawString(int left, int right, int top, std::string_view str, TextColour colour = TC_FROMSTRING, StringAlignment align = SA_LEFT, bool underline = false, FontSize fontsize = FontSize::Normal);
-int DrawString(int left, int right, int top, StringID str, TextColour colour = TC_FROMSTRING, StringAlignment align = SA_LEFT, bool underline = false, FontSize fontsize = FontSize::Normal);
-int DrawStringMultiLine(int left, int right, int top, int bottom, std::string_view str, TextColour colour = TC_FROMSTRING, StringAlignment align = (SA_TOP | SA_LEFT), bool underline = false, FontSize fontsize = FontSize::Normal);
-int DrawStringMultiLine(int left, int right, int top, int bottom, StringID str, TextColour colour = TC_FROMSTRING, StringAlignment align = (SA_TOP | SA_LEFT), bool underline = false, FontSize fontsize = FontSize::Normal);
-bool DrawStringMultiLineWithClipping(int left, int right, int top, int bottom, std::string_view str, TextColour colour = TC_FROMSTRING, StringAlignment align = (SA_TOP | SA_LEFT), bool underline = false, FontSize fontsize = FontSize::Normal);
+int DrawString(int left, int right, int top, std::string_view str, ExtendedTextColour colour = TextColour::FromString, StringAlignment align = SA_LEFT, bool underline = false, FontSize fontsize = FontSize::Normal);
+int DrawString(int left, int right, int top, StringID str, ExtendedTextColour colour = TextColour::FromString, StringAlignment align = SA_LEFT, bool underline = false, FontSize fontsize = FontSize::Normal);
+int DrawStringMultiLine(int left, int right, int top, int bottom, std::string_view str, ExtendedTextColour colour = TextColour::FromString, StringAlignment align = (SA_TOP | SA_LEFT), bool underline = false, FontSize fontsize = FontSize::Normal);
+int DrawStringMultiLine(int left, int right, int top, int bottom, StringID str, ExtendedTextColour colour = TextColour::FromString, StringAlignment align = (SA_TOP | SA_LEFT), bool underline = false, FontSize fontsize = FontSize::Normal);
+bool DrawStringMultiLineWithClipping(int left, int right, int top, int bottom, std::string_view str, ExtendedTextColour colour = TextColour::FromString, StringAlignment align = (SA_TOP | SA_LEFT), bool underline = false, FontSize fontsize = FontSize::Normal);
 
 void DrawCharCentered(char32_t c, const Rect &r, TextColour colour);
 
@@ -150,13 +150,13 @@ void DrawRectOutline(const Rect &r, PixelColour colour, int width = 1, int dash 
  * @param fontsize The size of the initial characters.
  * @return In case of left or center alignment the right most pixel we have drawn to. In case of right alignment the left most pixel we have drawn to.
  */
-inline int DrawString(const Rect &r, std::string_view str, TextColour colour = TC_FROMSTRING, StringAlignment align = SA_LEFT, bool underline = false, FontSize fontsize = FontSize::Normal)
+inline int DrawString(const Rect &r, std::string_view str, ExtendedTextColour colour = TextColour::FromString, StringAlignment align = SA_LEFT, bool underline = false, FontSize fontsize = FontSize::Normal)
 {
 	return DrawString(r.left, r.right, r.top, str, colour, align, underline, fontsize);
 }
 
-/** @copydoc DrawString(const Rect &r, std::string_view str, TextColour colour = TC_FROMSTRING, StringAlignment align = SA_LEFT, bool underline = false, FontSize fontsize = FontSize::Normal) */
-inline int DrawString(const Rect &r, StringID str, TextColour colour = TC_FROMSTRING, StringAlignment align = SA_LEFT, bool underline = false, FontSize fontsize = FontSize::Normal)
+/** @copydoc DrawString(const Rect &r, std::string_view str, ExtendedTextColour colour = TextColour::FromString, StringAlignment align = SA_LEFT, bool underline = false, FontSize fontsize = FontSize::Normal) */
+inline int DrawString(const Rect &r, StringID str, ExtendedTextColour colour = TextColour::FromString, StringAlignment align = SA_LEFT, bool underline = false, FontSize fontsize = FontSize::Normal)
 {
 	return DrawString(r.left, r.right, r.top, str, colour, align, underline, fontsize);
 }
@@ -173,13 +173,13 @@ inline int DrawString(const Rect &r, StringID str, TextColour colour = TC_FROMST
  *
  * @return If \a align is #SA_BOTTOM, the top to where we have written, else the bottom to where we have written.
  */
-inline int DrawStringMultiLine(const Rect &r, std::string_view str, TextColour colour = TC_FROMSTRING, StringAlignment align = (SA_TOP | SA_LEFT), bool underline = false, FontSize fontsize = FontSize::Normal)
+inline int DrawStringMultiLine(const Rect &r, std::string_view str, ExtendedTextColour colour = TextColour::FromString, StringAlignment align = (SA_TOP | SA_LEFT), bool underline = false, FontSize fontsize = FontSize::Normal)
 {
 	return DrawStringMultiLine(r.left, r.right, r.top, r.bottom, str, colour, align, underline, fontsize);
 }
 
-/** @copydoc DrawStringMultiLine(const Rect &r, std::string_view str, TextColour colour = TC_FROMSTRING, StringAlignment align = (SA_TOP | SA_LEFT), bool underline = false, FontSize fontsize = FontSize::Normal) */
-inline int DrawStringMultiLine(const Rect &r, StringID str, TextColour colour = TC_FROMSTRING, StringAlignment align = (SA_TOP | SA_LEFT), bool underline = false, FontSize fontsize = FontSize::Normal)
+/** @copydoc DrawStringMultiLine(const Rect &r, std::string_view str, ExtendedTextColour colour = TextColour::FromString, StringAlignment align = (SA_TOP | SA_LEFT), bool underline = false, FontSize fontsize = FontSize::Normal) */
+inline int DrawStringMultiLine(const Rect &r, StringID str, ExtendedTextColour colour = TextColour::FromString, StringAlignment align = (SA_TOP | SA_LEFT), bool underline = false, FontSize fontsize = FontSize::Normal)
 {
 	return DrawStringMultiLine(r.left, r.right, r.top, r.bottom, str, colour, align, underline, fontsize);
 }
@@ -198,7 +198,7 @@ inline int DrawStringMultiLine(const Rect &r, StringID str, TextColour colour = 
  *
  * @return \c true iff the string was drawn.
  */
-inline bool DrawStringMultiLineWithClipping(const Rect &r, std::string_view str, TextColour colour = TC_FROMSTRING, StringAlignment align = (SA_TOP | SA_LEFT), bool underline = false, FontSize fontsize = FontSize::Normal)
+inline bool DrawStringMultiLineWithClipping(const Rect &r, std::string_view str, ExtendedTextColour colour = TextColour::FromString, StringAlignment align = (SA_TOP | SA_LEFT), bool underline = false, FontSize fontsize = FontSize::Normal)
 {
 	return DrawStringMultiLineWithClipping(r.left, r.right, r.top, r.bottom, str, colour, align, underline, fontsize);
 }

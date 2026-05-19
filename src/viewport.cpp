@@ -2126,11 +2126,11 @@ static void ViewportAddKdtreeSigns(ViewportDrawerDynamic *vdd, DrawPixelInfo *dp
 	Rect search_rect{ dpi->left, dpi->top, dpi->left + dpi->width, dpi->top + dpi->height };
 	search_rect = ExpandRectWithViewportSignMargins(search_rect, dpi->zoom);
 
-	bool show_stations = HasBit(_display_opt, DO_SHOW_STATION_NAMES) && _game_mode != GM_MENU && !towns_only;
-	bool show_waypoints = HasBit(_display_opt, DO_SHOW_WAYPOINT_NAMES) && _game_mode != GM_MENU && !towns_only;
-	bool show_towns = HasBit(_display_opt, DO_SHOW_TOWN_NAMES) && _game_mode != GM_MENU;
-	bool show_signs = HasBit(_display_opt, DO_SHOW_SIGNS) && !vdd->IsInvisibilitySet(TO_SIGNS) && !towns_only;
-	bool show_competitors = HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS) && !towns_only;
+	bool show_stations = _display_opt.Test(DisplayOption::ShowStationNames) && _game_mode != GM_MENU && !towns_only;
+	bool show_waypoints = _display_opt.Test(DisplayOption::ShowWaypointNames) && _game_mode != GM_MENU && !towns_only;
+	bool show_towns = _display_opt.Test(DisplayOption::ShowTownNames) && _game_mode != GM_MENU;
+	bool show_signs = _display_opt.Test(DisplayOption::ShowSigns) && !vdd->IsInvisibilitySet(TO_SIGNS) && !towns_only;
+	bool show_competitors = _display_opt.Test(DisplayOption::ShowCompetitorSigns) && !towns_only;
 	bool hide_hidden_waypoints = _settings_client.gui.allow_hiding_waypoint_labels && !HasBit(_extra_display_opt, XDO_SHOW_HIDDEN_SIGNS);
 
 	/* Collect all the items first and draw afterwards, to ensure layering */
@@ -2590,16 +2590,16 @@ static void ViewportDrawStrings(ViewportDrawerDynamic *vdd, ZoomLevel zoom, cons
 		format_buffer string;
 		AppendStringInPlace(string, ss.string, ss.params[0], ss.params[1]);
 
-		TextColour colour = TC_WHITE;
+		ExtendedTextColour colour{TextColour::White};
 		if (ss.flags.Test(ViewportStringFlag::ColourRect)) {
 			if (ss.colour != Colours::Invalid) DrawFrameRect(x, y, x + w - 1, y + h - 1, ss.colour, {});
-			colour = TC_BLACK;
+			colour = TextColour::Black;
 		} else if (ss.flags.Test(ViewportStringFlag::TransparentRect)) {
 			DrawFrameRect(x, y, x + w - 1, y + h - 1, ss.colour, FrameFlag::Transparent);
 		}
 
 		if (ss.flags.Test(ViewportStringFlag::TextColour)) {
-			if (ss.colour != Colours::Invalid) colour = GetColourGradient(ss.colour, Shade::Lighter).ToTextColour();
+			if (ss.colour != Colours::Invalid) colour = ExtendedTextColour{GetColourGradient(ss.colour, Shade::Lighter)};
 		}
 
 		int left = x + WidgetDimensions::scaled.fullbevel.left;
@@ -2610,7 +2610,7 @@ static void ViewportDrawStrings(ViewportDrawerDynamic *vdd, ZoomLevel zoom, cons
 		if (small && ss.flags.Test(ViewportStringFlag::Shadow)) {
 			/* Shadow needs to be shifted 1 pixel. */
 			shadow_offset = WidgetDimensions::scaled.fullbevel.top;
-			DrawString(left + shadow_offset, right + shadow_offset, top, string, TC_BLACK | TC_FORCED, SA_HOR_CENTER, false, FontSize::Small);
+			DrawString(left + shadow_offset, right + shadow_offset, top, string, ExtendedTextColour{TextColour::Black, ExtendedTextColourFlag::Forced}, SA_HOR_CENTER, false, FontSize::Small);
 		}
 
 		DrawString(left, right, top - shadow_offset, string, colour, SA_HOR_CENTER, false, small ? FontSize::Small : FontSize::Normal);
@@ -2867,7 +2867,7 @@ static void DrawRouteStep(const Viewport * const vp, const TileIndex tile, const
 	if (list.size() > max_rank_order_type_count) {
 		/* Write order overflow item */
 		DrawString(dpi_for_text.left + x_str, dpi_for_text.left + x_str + str_width - 1, dpi_for_text.top + y2,
-				GetString(STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_OVERFLOW, list.size()), TC_FROMSTRING, SA_CENTER, false, FontSize::Small);
+				GetString(STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_OVERFLOW, list.size()), TextColour::FromString, SA_CENTER, false, FontSize::Small);
 	} else {
 		for (RankOrderTypeList::const_iterator cit = list.begin(); cit != list.end(); cit++, y2 += char_height) {
 			StringID str = INVALID_STRING_ID;
@@ -2893,7 +2893,7 @@ static void DrawRouteStep(const Viewport * const vp, const TileIndex tile, const
 			if (str != INVALID_STRING_ID) {
 				/* Write order info */
 				DrawString(dpi_for_text.left + x_str, dpi_for_text.left + x_str + str_width - 1, dpi_for_text.top + y2,
-						GetString(STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP, cit->first, str), TC_FROMSTRING, SA_CENTER, false, FontSize::Small);
+						GetString(STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP, cit->first, str), TextColour::FromString, SA_CENTER, false, FontSize::Small);
 			}
 		}
 	}
@@ -5225,11 +5225,11 @@ static bool CheckClickOnViewportSign(const Viewport *vp, int x, int y)
 	Rect search_rect{ x - 1, y - 1, x + 1, y + 1 };
 	search_rect = ExpandRectWithViewportSignMargins(search_rect, vp->zoom);
 
-	bool show_stations = HasBit(_display_opt, DO_SHOW_STATION_NAMES) && !IsInvisibilitySet(TO_SIGNS);
-	bool show_waypoints = HasBit(_display_opt, DO_SHOW_WAYPOINT_NAMES) && !IsInvisibilitySet(TO_SIGNS);
-	bool show_towns = HasBit(_display_opt, DO_SHOW_TOWN_NAMES);
-	bool show_signs = HasBit(_display_opt, DO_SHOW_SIGNS) && !IsInvisibilitySet(TO_SIGNS);
-	bool show_competitors = HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS);
+	bool show_stations = _display_opt.Test(DisplayOption::ShowStationNames) && !IsInvisibilitySet(TO_SIGNS);
+	bool show_waypoints = _display_opt.Test(DisplayOption::ShowWaypointNames) && !IsInvisibilitySet(TO_SIGNS);
+	bool show_towns = _display_opt.Test(DisplayOption::ShowTownNames);
+	bool show_signs = _display_opt.Test(DisplayOption::ShowSigns) && !IsInvisibilitySet(TO_SIGNS);
+	bool show_competitors = _display_opt.Test(DisplayOption::ShowCompetitorSigns);
 	bool hide_hidden_waypoints = _settings_client.gui.allow_hiding_waypoint_labels && !HasBit(_extra_display_opt, XDO_SHOW_HIDDEN_SIGNS);
 
 	/* Topmost of each type that was hit */

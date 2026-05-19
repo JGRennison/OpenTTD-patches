@@ -522,7 +522,7 @@ struct NewGRFInspectWindow final : Window {
 
 		if (offset < 0 || offset >= this->vscroll->GetCapacity()) return;
 
-		::DrawString(r.Shrink(WidgetDimensions::scaled.frametext).Shrink(0, offset * this->resize.step_height, 0, 0), view, TC_BLACK);
+		::DrawString(r.Shrink(WidgetDimensions::scaled.frametext).Shrink(0, offset * this->resize.step_height, 0, 0), view, TextColour::Black);
 	}
 
 	/**
@@ -548,7 +548,7 @@ struct NewGRFInspectWindow final : Window {
 					uint count = 0;
 					for (const Vehicle *u = v->First(); u != nullptr; u = u->Next()) count++;
 					buffer.format("Part {} of {}", this->chain_index + 1, count);
-					::DrawString(ir.left, ir.right, ir.top, buffer, TC_BLACK);
+					::DrawString(ir.left, ir.right, ir.top, buffer, TextColour::Black);
 					break;
 				}
 				int total_width = 0;
@@ -630,7 +630,7 @@ struct NewGRFInspectWindow final : Window {
 			offset -= this->vscroll->GetPosition();
 			if (offset < 0 || offset >= this->vscroll->GetCapacity()) return;
 
-			::DrawString(ir.left, ir.right, ir.top + (offset * this->resize.step_height), buf, TC_BLACK);
+			::DrawString(ir.left, ir.right, ir.top + (offset * this->resize.step_height), buf, TextColour::Black);
 		};
 		const_cast<NewGRFInspectWindow *>(this)->sprite_group_lines.clear();
 		const_cast<NewGRFInspectWindow *>(this)->highlight_tag_lines.clear();
@@ -683,11 +683,11 @@ struct NewGRFInspectWindow final : Window {
 				if (group != nullptr) const_cast<NewGRFInspectWindow *>(this)->sprite_group_lines[offset] = group;
 				if (highlight_tag != 0) const_cast<NewGRFInspectWindow *>(this)->highlight_tag_lines[offset] = highlight_tag;
 
-				TextColour colour = (this->selected_sprite_group == group && group != nullptr) ? TC_LIGHT_BLUE : TC_BLACK;
+				TextColour colour = (this->selected_sprite_group == group && group != nullptr) ? TextColour::LightBlue : TextColour::Black;
 				if (highlight_tag != 0) {
 					for (uint i = 0; i < std::size(this->selected_highlight_tags); i++) {
 						if (this->selected_highlight_tags[i] == highlight_tag) {
-							static const TextColour text_colours[] = { TC_YELLOW, TC_GREEN, TC_ORANGE, TC_CREAM, TC_BROWN, TC_RED };
+							static const TextColour text_colours[] = { TextColour::Yellow, TextColour::Green, TextColour::Orange, TextColour::Cream, TextColour::Brown, TextColour::Red };
 							static_assert(std::tuple_size_v<decltype(this->selected_highlight_tags)> == lengthof(text_colours));
 							colour = text_colours[i];
 							break;
@@ -790,10 +790,10 @@ struct NewGRFInspectWindow final : Window {
 							i++;
 							if (offset >= 0 && offset < this->vscroll->GetCapacity()) {
 								Rect sr = r.Shrink(WidgetDimensions::scaled.frametext).Shrink(0, offset * this->resize.step_height, 0, 0);
-								int edge = ::DrawString(sr.left, sr.right, sr.top, buffer, TC_BLACK);
+								int edge = ::DrawString(sr.left, sr.right, sr.top, buffer, TextColour::Black);
 								buffer.clear();
 								buffer.format("{:08x} ({})", value, niv.name);
-								::DrawString(std::max(edge, sr.left + prefix_width), sr.right, sr.top, buffer, TC_BLACK);
+								::DrawString(std::max(edge, sr.left + prefix_width), sr.right, sr.top, buffer, TextColour::Black);
 							}
 						}
 					}
@@ -1616,9 +1616,9 @@ struct SpriteAlignerWindow : Window {
 				for (auto it = first; it != last; ++it) {
 					const SpriteFile *file = GetOriginFile(*it);
 					if (file == nullptr) {
-						DrawString(ir, GetString(STR_JUST_COMMA, *it), *it == this->current_sprite ? TC_WHITE : (TC_GREY | TC_NO_SHADE), SA_RIGHT | SA_FORCE);
+						DrawString(ir, GetString(STR_JUST_COMMA, *it), *it == this->current_sprite ? TextColour::White : ExtendedTextColour{TextColour::Grey, ExtendedTextColourFlag::NoShade}, SA_RIGHT | SA_FORCE);
 					} else {
-						DrawString(ir, GetString(STR_SPRITE_ALIGNER_SPRITE, file->GetSimplifiedFilename(), GetSpriteLocalID(*it)), *it == this->current_sprite ? TC_WHITE : TC_BLACK);
+						DrawString(ir, GetString(STR_SPRITE_ALIGNER_SPRITE, file->GetSimplifiedFilename(), GetSpriteLocalID(*it)), *it == this->current_sprite ? TextColour::White : TextColour::Black);
 					}
 					ir.top += step_size;
 				}

@@ -1430,7 +1430,7 @@ void TileLoopWaterFlooding(FloodingBehaviour flooding_behaviour, TileIndex tile)
 		}
 
 		case FLOOD_DRYUP: {
-			Slope slope_here = std::get<0>(GetFoundationSlope(tile)) & ~SLOPE_HALFTILE_MASK & ~SLOPE_STEEP;
+			Slope slope_here = std::get<Slope>(GetFoundationSlope(tile)) & ~SLOPE_HALFTILE_MASK & ~SLOPE_STEEP;
 			for (Direction dir : _flood_from_dirs[slope_here].IterateSetBits()) {
 				TileIndex dest = AddTileIndexDiffCWrap(tile, TileIndexDiffCByDir(dir));
 				/* Contrary to flooding, drying up does consider TileType::Void tiles. */

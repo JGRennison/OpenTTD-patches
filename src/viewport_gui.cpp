@@ -246,7 +246,7 @@ enum StationTooltipNameMode : uint8_t {
 void ShowTownNameTooltip(Window *w, const TileIndex tile)
 {
 	if (_settings_client.gui.town_name_tooltip_mode == TNTM_OFF) return;
-	if (HasBit(_display_opt, DO_SHOW_TOWN_NAMES) && _settings_client.gui.town_name_tooltip_mode == TNTM_ON_IF_HIDDEN) return; // No need for a town name tooltip when it is already displayed
+	if (_display_opt.Test(DisplayOption::ShowTownNames) && _settings_client.gui.town_name_tooltip_mode == TNTM_ON_IF_HIDDEN) return; // No need for a town name tooltip when it is already displayed
 
 	TownID town_id = GetTownIndex(tile);
 	const Town *town = Town::Get(town_id);
@@ -282,7 +282,7 @@ void ShowTownNameTooltip(Window *w, const TileIndex tile)
 void ShowWaypointViewportTooltip(Window *w, const TileIndex tile)
 {
 	if (_settings_client.gui.waypoint_viewport_tooltip_name == WTNM_OFF ||
-			(_settings_client.gui.waypoint_viewport_tooltip_name == WTNM_ON_IF_HIDDEN && HasBit(_display_opt, DO_SHOW_WAYPOINT_NAMES))) return;
+			(_settings_client.gui.waypoint_viewport_tooltip_name == WTNM_ON_IF_HIDDEN && _display_opt.Test(DisplayOption::ShowWaypointNames))) return;
 
 	GuiShowTooltips(w, GetEncodedString(STR_WAYPOINT_NAME, GetStationIndex(tile)), TCC_HOVER_VIEWPORT);
 }
@@ -297,7 +297,7 @@ void ShowStationViewportTooltip(Window *w, const TileIndex tile)
 	format_buffer msg;
 
 	if ( _settings_client.gui.station_viewport_tooltip_name == STNM_ALWAYS_ON ||
-			(_settings_client.gui.station_viewport_tooltip_name == STNM_ON_IF_HIDDEN && !HasBit(_display_opt, DO_SHOW_STATION_NAMES))) {
+			(_settings_client.gui.station_viewport_tooltip_name == STNM_ON_IF_HIDDEN && !_display_opt.Test(DisplayOption::ShowStationNames))) {
 		AppendStringInPlace(msg, STR_STATION_VIEW_NAME_TOOLTIP, station_id, station->facilities);
 	}
 

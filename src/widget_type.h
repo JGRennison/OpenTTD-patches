@@ -206,7 +206,7 @@ public:
 	 * Get the colour of the highlighted text.
 	 * @return The highlight colour.
 	 */
-	virtual TextColour GetHighlightColour() const { return TC_INVALID; }
+	virtual TextColour GetHighlightColour() const { return TextColour::Invalid; }
 
 	/**
 	 * Highlight the widget or not.
@@ -586,7 +586,7 @@ inline WidgetID NWidgetCore::GetScrollbarIndex() const
 
 inline void NWidgetCore::SetHighlighted(TextColour highlight_colour)
 {
-	highlight_colour != TC_INVALID ? this->disp_flags.Set(NWidgetDisplayFlag::Highlight) : this->disp_flags.Reset(NWidgetDisplayFlag::Highlight);
+	highlight_colour != TextColour::Invalid ? this->disp_flags.Set(NWidgetDisplayFlag::Highlight) : this->disp_flags.Reset(NWidgetDisplayFlag::Highlight);
 	this->highlight_colour = highlight_colour;
 }
 

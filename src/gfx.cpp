@@ -76,7 +76,7 @@ struct GfxBlitterCtx {
 
 	GfxBlitterCtx(const DrawPixelInfo *dpi) : dpi(dpi) {}
 
-	void SetColourRemap(TextColour colour);
+	void SetColourRemap(ExtendedTextColour colour);
 };
 
 static void GfxMainBlitterViewport(const GfxBlitterCtx &ctx, const Sprite *sprite, int x, int y, BlitterMode mode, const SubSprite *sub = nullptr, SpriteID sprite_id = SPR_CURSOR_MOUSE);
@@ -502,18 +502,17 @@ void DrawRectOutline(const Rect &r, PixelColour colour, int width, int dash)
  * Set the colour remap to be for the given colour.
  * @param colour the new colour of the remap.
  */
-void GfxBlitterCtx::SetColourRemap(TextColour colour)
+void GfxBlitterCtx::SetColourRemap(ExtendedTextColour colour)
 {
-	if (colour == TC_INVALID) return;
+	if (colour == TextColour::Invalid) return;
 
 	/* Black strings have no shading ever; the shading is black, so it
 	 * would be invisible at best, but it actually makes it illegible. */
-	bool no_shade   = (colour & TC_NO_SHADE) != 0 || (colour & ~TC_FORCED) == TC_BLACK;
-	bool raw_colour = (colour & TC_IS_PALETTE_COLOUR) != 0;
-	colour &= ~(TC_NO_SHADE | TC_IS_PALETTE_COLOUR | TC_FORCED);
+	bool no_shade = colour.flags.Test(ExtendedTextColourFlag::NoShade) || colour.colour == TextColour::Black;
+	bool raw_colour = colour.flags.Test(ExtendedTextColourFlag::IsPaletteColour);
 
 	this->string_colourremap[0] = 0;
-	this->string_colourremap[1] = raw_colour ? (uint8_t)colour : _string_colourmap[colour].p;
+	this->string_colourremap[1] = raw_colour ? to_underlying(colour.colour) : _string_colourmap[to_underlying(colour.colour)].p;
 	this->string_colourremap[2] = no_shade ? 0 : 1;
 	this->colour_remap_ptr = this->string_colourremap;
 }
@@ -534,7 +533,7 @@ void GfxBlitterCtx::SetColourRemap(TextColour colour)
  * @return In case of left or center alignment the right most pixel we have drawn to.
  *         In case of right alignment the left most pixel we have drawn to.
  */
-static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, int right, StringAlignment align, bool underline, bool truncation, TextColour default_colour)
+static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, int right, StringAlignment align, bool underline, bool truncation, ExtendedTextColour default_colour)
 {
 	if (line.CountRuns() == 0) return 0;
 
@@ -618,11 +617,11 @@ static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, 
 
 	const uint shadow_offset = ScaleGUITrad(1);
 
-	auto draw_line = [&](const ParagraphLayouter::Line &line, bool do_shadow, int left, int min_x, int max_x, bool truncation, TextColour initial_colour) -> TextColour {
+	auto draw_line = [&](const ParagraphLayouter::Line &line, bool do_shadow, int left, int min_x, int max_x, bool truncation, ExtendedTextColour initial_colour) -> ExtendedTextColour {
 		const DrawPixelInfo *dpi = _cur_dpi;
 		int dpi_left = dpi->left;
 		int dpi_right = dpi->left + dpi->width - 1;
-		TextColour last_colour = initial_colour;
+		ExtendedTextColour last_colour{initial_colour};
 
 		for (size_t run_index = 0; run_index < line.CountRuns(); run_index++) {
 			const ParagraphLayouter::VisualRun &run = line.GetVisualRun(run_index);
@@ -631,13 +630,13 @@ static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, 
 			const Font *f = run.GetFont();
 
 			FontCache *fc = f->fc;
-			TextColour colour = f->colour;
-			if (colour == TC_INVALID || HasFlag(default_colour, TC_FORCED)) colour = initial_colour;
-			bool colour_has_shadow = (colour & TC_NO_SHADE) == 0 && (colour & ~TC_FORCED) != TC_BLACK;
+			ExtendedTextColour colour{f->colour};
+			if (colour == TextColour::Invalid || initial_colour.flags.Test(ExtendedTextColourFlag::Forced)) colour = initial_colour;
+			bool colour_has_shadow = !colour.flags.Test(ExtendedTextColourFlag::NoShade) && colour != TextColour::Black;
 			/* Update the last colour for the truncation ellipsis. */
 			last_colour = colour;
 			if (do_shadow && (!fc->GetDrawGlyphShadow() || !colour_has_shadow)) continue;
-			ctx.SetColourRemap(do_shadow ? TC_BLACK : colour); // the last run also sets the colour for the truncation dots
+			ctx.SetColourRemap(do_shadow ? ExtendedTextColour{TextColour::Black} : colour); // the last run also sets the colour for the truncation dots
 
 			for (size_t i = 0; i < run.GetGlyphCount(); i++) {
 				GlyphID glyph = glyphs[i];
@@ -667,7 +666,7 @@ static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, 
 
 	/* Draw shadow, then foreground */
 	for (bool do_shadow : {true, false}) {
-		TextColour colour = draw_line(line, do_shadow, left - offset_x, min_x, max_x, truncation, default_colour);
+		ExtendedTextColour colour = draw_line(line, do_shadow, left - offset_x, min_x, max_x, truncation, default_colour);
 
 		if (truncation) {
 			int x = (_current_text_dir == TD_RTL) ? left : (right - truncation_width);
@@ -699,7 +698,7 @@ static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, 
  * @return In case of left or center alignment the right most pixel we have drawn to.
  *         In case of right alignment the left most pixel we have drawn to.
  */
-int DrawString(int left, int right, int top, std::string_view str, TextColour colour, StringAlignment align, bool underline, FontSize fontsize)
+int DrawString(int left, int right, int top, std::string_view str, ExtendedTextColour colour, StringAlignment align, bool underline, FontSize fontsize)
 {
 	/* The string may contain control chars to change the font, just use the biggest font for clipping. */
 	int max_height = std::max({GetCharacterHeight(FontSize::Small), GetCharacterHeight(FontSize::Normal), GetCharacterHeight(FontSize::Large), GetCharacterHeight(FontSize::Monospace)});
@@ -735,7 +734,7 @@ int DrawString(int left, int right, int top, std::string_view str, TextColour co
  * @return In case of left or center alignment the right most pixel we have drawn to.
  *         In case of right alignment the left most pixel we have drawn to.
  */
-int DrawString(int left, int right, int top, StringID str, TextColour colour, StringAlignment align, bool underline, FontSize fontsize)
+int DrawString(int left, int right, int top, StringID str, ExtendedTextColour colour, StringAlignment align, bool underline, FontSize fontsize)
 {
 	format_buffer buf;
 	AppendStringWithArgsInPlace(buf, str, {});
@@ -822,7 +821,7 @@ Dimension GetStringMultiLineBoundingBox(std::string_view str, const Dimension &s
  *
  * @return If \a align is #SA_BOTTOM, the top to where we have written, else the bottom to where we have written.
  */
-int DrawStringMultiLine(int left, int right, int top, int bottom, std::string_view str, TextColour colour, StringAlignment align, bool underline, FontSize fontsize)
+int DrawStringMultiLine(int left, int right, int top, int bottom, std::string_view str, ExtendedTextColour colour, StringAlignment align, bool underline, FontSize fontsize)
 {
 	int maxw = right - left + 1;
 	int maxh = bottom - top + 1;
@@ -884,7 +883,7 @@ int DrawStringMultiLine(int left, int right, int top, int bottom, std::string_vi
  *
  * @return If \a align is #SA_BOTTOM, the top to where we have written, else the bottom to where we have written.
  */
-int DrawStringMultiLine(int left, int right, int top, int bottom, StringID str, TextColour colour, StringAlignment align, bool underline, FontSize fontsize)
+int DrawStringMultiLine(int left, int right, int top, int bottom, StringID str, ExtendedTextColour colour, StringAlignment align, bool underline, FontSize fontsize)
 {
 	format_buffer buf;
 	AppendStringWithArgsInPlace(buf, str, {});
@@ -909,7 +908,7 @@ int DrawStringMultiLine(int left, int right, int top, int bottom, StringID str, 
  *
  * @return true iff the string was drawn.
  */
-bool DrawStringMultiLineWithClipping(int left, int right, int top, int bottom, std::string_view str, TextColour colour, StringAlignment align, bool underline, FontSize fontsize)
+bool DrawStringMultiLineWithClipping(int left, int right, int top, int bottom, std::string_view str, ExtendedTextColour colour, StringAlignment align, bool underline, FontSize fontsize)
 {
 	/* The string may contain control chars to change the font, just use the biggest font for clipping. */
 	int max_height = std::max({GetCharacterHeight(FontSize::Small), GetCharacterHeight(FontSize::Normal), GetCharacterHeight(FontSize::Large), GetCharacterHeight(FontSize::Monospace)});

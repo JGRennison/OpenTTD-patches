@@ -646,10 +646,10 @@ void ResetNewGRFData()
 	/* Reset misc GRF features and train list display variables */
 	_misc_grf_features = {};
 
-	_loaded_newgrf_features.has_2CC           = false;
-	_loaded_newgrf_features.used_liveries     = 1 << LS_DEFAULT;
-	_loaded_newgrf_features.shore             = ShoreReplacement::None;
-	_loaded_newgrf_features.tram              = TramDepotReplacement::None;
+	_loaded_newgrf_features.has_2CC = false;
+	_loaded_newgrf_features.used_liveries = LiveryScheme::Default;
+	_loaded_newgrf_features.shore = ShoreReplacement::None;
+	_loaded_newgrf_features.tram = TramDepotReplacement::None;
 
 	/* Clear all GRF overrides */
 	_grf_id_overrides.clear();
@@ -1056,23 +1056,23 @@ static void FinaliseEngineArray()
 		/* Skip wagons, there livery is defined via the engine */
 		if (e->type != VehicleType::Train || e->VehInfo<RailVehicleInfo>().railveh_type != RailVehicleType::Wagon) {
 			LiveryScheme ls = GetEngineLiveryScheme(e->index, EngineID::Invalid(), nullptr);
-			SetBit(_loaded_newgrf_features.used_liveries, ls);
+			_loaded_newgrf_features.used_liveries.Set(ls);
 			/* Note: For ships and roadvehicles we assume that they cannot be refitted between passenger and freight */
 
 			if (e->type == VehicleType::Train) {
-				SetBit(_loaded_newgrf_features.used_liveries, LS_FREIGHT_WAGON);
+				_loaded_newgrf_features.used_liveries.Set(LiveryScheme::FreightWagon);
 				switch (ls) {
-					case LS_STEAM:
-					case LS_DIESEL:
-					case LS_ELECTRIC:
-					case LS_MONORAIL:
-					case LS_MAGLEV:
-						SetBit(_loaded_newgrf_features.used_liveries, LS_PASSENGER_WAGON_STEAM + ls - LS_STEAM);
+					case LiveryScheme::Steam:
+					case LiveryScheme::Diesel:
+					case LiveryScheme::Electric:
+					case LiveryScheme::Monorail:
+					case LiveryScheme::Maglev:
+						_loaded_newgrf_features.used_liveries.Set(LiveryScheme::PassengerWagonSteam + ls - LiveryScheme::Steam);
 						break;
 
-					case LS_DMU:
-					case LS_EMU:
-						SetBit(_loaded_newgrf_features.used_liveries, LS_PASSENGER_WAGON_DIESEL + ls - LS_DMU);
+					case LiveryScheme::DMU:
+					case LiveryScheme::EMU:
+						_loaded_newgrf_features.used_liveries.Set(LiveryScheme::PassengerWagonDiesel + ls - LiveryScheme::DMU);
 						break;
 
 					default: NOT_REACHED();
@@ -1960,7 +1960,7 @@ void LoadNewGRF(SpriteID load_index, uint num_baseset)
 	uint64_t scaled_tick_counter = _scaled_tick_counter;
 	StateTicks state_ticks = _state_ticks;
 	StateTicksDelta state_ticks_offset = DateDetail::_state_ticks_offset;
-	uint8_t display_opt = _display_opt;
+	DisplayOptions display_opt = _display_opt;
 
 	if (_networking) {
 		CalTime::Detail::now = CalTime::Detail::NewState(_settings_game.game_creation.starting_year);
@@ -1968,7 +1968,7 @@ void LoadNewGRF(SpriteID load_index, uint num_baseset)
 		_tick_counter = 0;
 		_scaled_tick_counter = 0;
 		_state_ticks = StateTicks{0};
-		_display_opt  = 0;
+		_display_opt.Reset();
 		UpdateCachedSnowLine();
 		RecalculateStateTicksOffset();
 	}

@@ -153,7 +153,7 @@ void NetworkFreeLocalCommandQueue();
 void NetworkSyncCommandQueue(NetworkClientSocket *cs);
 
 void ShowNetworkError(StringID error_string);
-void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send, std::string_view name, std::string_view str = {}, NetworkTextMessageData data = NetworkTextMessageData(), std::string_view data_str = {});
+void NetworkTextMessage(NetworkAction action, ExtendedTextColour colour, bool self_send, std::string_view name, std::string_view str = {}, NetworkTextMessageData data = NetworkTextMessageData(), std::string_view data_str = {});
 uint NetworkCalculateLag(const NetworkClientSocket *cs);
 StringID GetNetworkErrorMsg(NetworkErrorCode err);
 bool NetworkMakeClientNameUnique(std::string &new_name);

@@ -182,35 +182,35 @@ public:
 			}
 
 			/* if there are no reachable trackdirs on new tile, we have end of road */
-			TrackFollower F(Yapf().GetVehicle());
-			if (!F.Follow(tile, trackdir)) break;
+			TrackFollower follower_local{Yapf().GetVehicle()};
+			if (!follower_local.Follow(tile, trackdir)) break;
 
 			/* if we skipped some tunnel tiles, add their cost */
 			/* with custom bridge heads, this cost must be added before checking if the segment has ended */
-			segment_cost += F.tiles_skipped * YAPF_TILE_LENGTH;
-			tiles += F.tiles_skipped + 1;
+			segment_cost += follower_local.tiles_skipped * YAPF_TILE_LENGTH;
+			tiles += follower_local.tiles_skipped + 1;
 
 			/* if there are more trackdirs available & reachable, we are at the end of segment */
-			if (KillFirstBit(F.new_td_bits) != TRACKDIR_BIT_NONE) break;
+			if (KillFirstBit(follower_local.new_td_bits) != TRACKDIR_BIT_NONE) break;
 			if (tiles > MAX_RV_PF_TILES) break;
 
-			Trackdir new_td = (Trackdir)FindFirstBit(F.new_td_bits);
+			Trackdir new_td = (Trackdir)FindFirstBit(follower_local.new_td_bits);
 
 			/* stop if RV is on simple loop with no junctions */
-			if (F.new_tile == n.key.tile && new_td == n.key.td) return false;
+			if (follower_local.new_tile == n.key.tile && new_td == n.key.td) return false;
 
 			/* add hilly terrain penalty */
-			segment_cost += Yapf().SlopeCost(tile, F.new_tile, trackdir);
+			segment_cost += Yapf().SlopeCost(tile, follower_local.new_tile, trackdir);
 
 			/* add min/max speed penalties */
 			int min_speed = 0;
 			int max_veh_speed = std::min<int>(v->GetDisplayMaxSpeed(), v->current_order.GetMaxSpeed() * 2);
-			int max_speed = F.GetSpeedLimit(&min_speed);
-			if (max_speed < max_veh_speed) segment_cost += YAPF_TILE_LENGTH * (max_veh_speed - max_speed) * (4 + F.tiles_skipped) / max_veh_speed;
+			int max_speed = follower_local.GetSpeedLimit(&min_speed);
+			if (max_speed < max_veh_speed) segment_cost += YAPF_TILE_LENGTH * (max_veh_speed - max_speed) * (4 + follower_local.tiles_skipped) / max_veh_speed;
 			if (min_speed > max_veh_speed) segment_cost += YAPF_TILE_LENGTH * (min_speed - max_veh_speed);
 
 			/* move to the next tile */
-			tile = F.new_tile;
+			tile = follower_local.new_tile;
 			trackdir = new_td;
 		}
 
@@ -369,9 +369,9 @@ public:
 	/** @copydoc CYapfBaseT::PfFollowNodeFunc */
 	inline void PfFollowNode(Node &old_node)
 	{
-		TrackFollower F(Yapf().GetVehicle());
-		if (F.Follow(old_node.segment_last_tile, old_node.segment_last_td)) {
-			Yapf().AddMultipleNodes(&old_node, F);
+		TrackFollower follower{Yapf().GetVehicle()};
+		if (follower.Follow(old_node.segment_last_tile, old_node.segment_last_td)) {
+			Yapf().AddMultipleNodes(&old_node, follower);
 		}
 	}
 

@@ -2176,7 +2176,7 @@ STR_SCHDISPATCH_ADD                                             :{BLACK}Engadir 
 STR_SCHDISPATCH_ADD_MULTIPLE_SLOTS                              :{BLACK}Engadir slots
 STR_SCHDISPATCH_ADD_TOOLTIP                                     :{BLACK}Engadir novo slot de saída para este programa.
 STR_SCHDISPATCH_ADD_TOOLTIP_EXTRA                               :{BLACK}{STRING} Ctrl+Click para engadir múltiples slots de saída á vez.
-STR_SCHDISPATCH_ADD_CAPTION                                     :{BLACK}Slot de saída
+STR_SCHDISPATCH_ADD_CAPTION                                     :Slot de saída
 STR_SCHDISPATCH_DURATION                                        :{BLACK}Duración
 STR_SCHDISPATCH_DURATION_TOOLTIP                                :{BLACK}Fixa a duración deste programa.
 STR_SCHDISPATCH_DURATION_CAPTION_MINUTE                         :{BLACK}Duración (minutos)

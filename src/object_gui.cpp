@@ -254,7 +254,7 @@ public:
 							str = GetGRFStringWithTextStack(spec->grf_prop.grffile, GRFSTR_MISC_GRF_TEXT + callback_res, GetRegisterRange(0x100));
 						}
 						if (!str.empty()) {
-							tr.top = DrawStringMultiLine(tr, str, TC_ORANGE);
+							tr.top = DrawStringMultiLine(tr, str, TextColour::Orange);
 						}
 					}
 				}

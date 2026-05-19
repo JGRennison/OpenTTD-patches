@@ -36,7 +36,7 @@ public:
 	int result; ///< Result value to return to window on selection.
 	bool masked; ///< Masked and unselectable item.
 	bool shaded; ///< Shaded item, affects text colour.
-	TextColour colour_flags = TC_BEGIN;
+	ExtendedTextColourFlags colour_flags{};
 
 	explicit DropDownListItem(int result, bool masked = false, bool shaded = false) : result(result), masked(masked), shaded(shaded) {}
 	virtual ~DropDownListItem() = default;
@@ -94,10 +94,10 @@ public:
 	 * @param sel Whether the item is selected or not.
 	 * @return The text colour.
 	 */
-	TextColour GetColour(bool sel) const
+	ExtendedTextColour GetColour(bool sel) const
 	{
-		if (this->shaded) return (sel ? TC_SILVER : TC_GREY) | TC_NO_SHADE;
-		return (sel ? TC_WHITE : TC_BLACK) | this->colour_flags;
+		if (this->shaded) return ExtendedTextColour{sel ? TextColour::Silver : TextColour::Grey, ExtendedTextColourFlag::NoShade};
+		return ExtendedTextColour{sel ? TextColour::White : TextColour::Black, this->colour_flags};
 	}
 };
 

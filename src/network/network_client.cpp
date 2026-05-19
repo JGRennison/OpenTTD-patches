@@ -1296,7 +1296,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::ReceiveServerExternalChat(Pack
 	if (this->status != STATUS_ACTIVE) return NETWORK_RECV_STATUS_MALFORMED_PACKET;
 
 	std::string source = p.Recv_string(NETWORK_CHAT_LENGTH);
-	TextColour colour = (TextColour)p.Recv_uint16();
+	ExtendedTextColour colour = ExtendedTextColour::FromNetwork(p.Recv_uint16());
 	std::string user = p.Recv_string(NETWORK_CHAT_LENGTH);
 	std::string msg = p.Recv_string(NETWORK_CHAT_LENGTH);
 
@@ -1419,7 +1419,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::ReceiveServerRemoteConsoleComm
 	static_assert(std::tuple_size<decltype(NetworkSharedSecrets::shared_data)>::value == 64);
 	if (crypto_aead_unlock(message.data(), mac.data(), this->last_rcon_shared_secrets.shared_data.data() + 32, nonce.data(), nullptr, 0, message.data(), message.size()) == 0) {
 		SubPacketDeserialiser spd(p, message);
-		TextColour colour_code = (TextColour)spd.Recv_uint16();
+		ExtendedTextColour colour_code = ExtendedTextColour::FromNetwork(spd.Recv_uint16());
 		if (!IsValidConsoleColour(colour_code)) return NETWORK_RECV_STATUS_MALFORMED_PACKET;
 
 		std::string rcon_out = spd.Recv_string(NETWORK_RCONCOMMAND_LENGTH);

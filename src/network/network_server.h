@@ -124,7 +124,7 @@ public:
 	NetworkRecvStatus SendError(NetworkErrorCode error, std::string_view reason = {});
 	NetworkRecvStatus SendDesyncLog(std::string_view log);
 	NetworkRecvStatus SendChat(NetworkAction action, ClientID client_id, bool self_send, std::string_view msg, NetworkTextMessageData data);
-	NetworkRecvStatus SendExternalChat(std::string_view source, TextColour colour, std::string_view user, std::string_view msg);
+	NetworkRecvStatus SendExternalChat(std::string_view source, ExtendedTextColour colour, std::string_view user, std::string_view msg);
 	NetworkRecvStatus SendJoin(ClientID client_id);
 	NetworkRecvStatus SendFrame();
 	NetworkRecvStatus SendSync();

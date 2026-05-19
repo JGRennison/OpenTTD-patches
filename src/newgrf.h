@@ -11,6 +11,7 @@
 #define NEWGRF_H
 
 #include "cargotype.h"
+#include "livery.h"
 #include "rail_type.h"
 #include "road_type.h"
 #include "fileio_type.h"
@@ -435,10 +436,10 @@ enum class TramDepotReplacement : uint8_t {
 
 /** State of features loaded by NewGRFs. */
 struct GRFLoadedFeatures {
-	bool has_2CC;              ///< Set if any vehicle is loaded which uses 2cc (two company colours).
-	uint64_t used_liveries;    ///< Bitmask of #LiveryScheme used by the defined engines.
-	ShoreReplacement shore;    ///< In which way shore sprites were replaced.
-	TramDepotReplacement tram; ///< In which way tram depots were replaced.
+	bool has_2CC;                ///< Set if any vehicle is loaded which uses 2cc (two company colours).
+	LiverySchemes used_liveries; ///< Bitmask of #LiveryScheme used by the defined engines.
+	ShoreReplacement shore;      ///< In which way shore sprites were replaced.
+	TramDepotReplacement tram;   ///< In which way tram depots were replaced.
 };
 
 /**

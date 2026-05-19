@@ -281,7 +281,7 @@ const Livery *GetParentLivery(const Group *g)
 {
 	if (g->parent == GroupID::Invalid()) {
 		const Company *c = Company::Get(g->owner);
-		return &c->livery[LS_DEFAULT];
+		return &c->livery[LiveryScheme::Default];
 	}
 
 	const Group *pg = Group::Get(g->parent);
@@ -385,13 +385,13 @@ static void PropagateChildLivery(const Group *g, bool reset_cache)
 }
 
 /**
- * Update group liveries for a company. This is called when the LS_DEFAULT scheme is changed, to update groups with
+ * Update group liveries for a company. This is called when the LiveryScheme::Default scheme is changed, to update groups with
  * colours set to default.
  * @param c Company to update.
  */
 void UpdateCompanyGroupLiveries(const Company *c)
 {
-	PropagateChildLivery(GroupID::Invalid(), c->index, c->livery[LS_DEFAULT]);
+	PropagateChildLivery(GroupID::Invalid(), c->index, c->livery[LiveryScheme::Default]);
 }
 
 struct GroupChangeDeferredUpdates {
@@ -555,8 +555,8 @@ CommandCost CmdCreateGroup(DoCommandFlags flags, VehicleType vt, GroupID parent_
 		Company *c = Company::Get(g->owner);
 		g->number = c->freegroups.UseID(c->freegroups.NextID());
 		if (pg == nullptr) {
-			g->livery.colour1 = c->livery[LS_DEFAULT].colour1;
-			g->livery.colour2 = c->livery[LS_DEFAULT].colour2;
+			g->livery.colour1 = c->livery[LiveryScheme::Default].colour1;
+			g->livery.colour2 = c->livery[LiveryScheme::Default].colour2;
 			if (c->settings.renew_keep_length) g->flags.Set(GroupFlag::ReplaceWagonRemoval);
 		} else {
 			g->parent = pg->index;

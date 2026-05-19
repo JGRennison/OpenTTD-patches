@@ -115,7 +115,7 @@ struct SignList {
 	/** Filter sign list by owner. @copydoc GUIList::FilterFunction */
 	static bool OwnerVisibilityFilter(const Sign * const *item, [[maybe_unused]] StringFilter &filter)
 	{
-		assert(!HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS));
+		assert(!_display_opt.Test(DisplayOption::ShowCompetitorSigns));
 		/* Hide sign if non-own signs are hidden in the viewport */
 		return (*item)->owner == _local_company || (*item)->owner == OWNER_DEITY;
 	}
@@ -125,7 +125,7 @@ struct SignList {
 	{
 		this->signs.Filter(&SignNameFilter, this->string_filter);
 		if (_game_mode != GM_EDITOR) this->signs.Filter(&OwnerDeityFilter, this->string_filter);
-		if (!HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS)) {
+		if (!_display_opt.Test(DisplayOption::ShowCompetitorSigns)) {
 			this->signs.Filter(&OwnerVisibilityFilter, this->string_filter);
 		}
 	}
@@ -216,7 +216,7 @@ struct SignListWindow : Window, SignList {
 
 					if (si->owner != OWNER_NONE) DrawCompanyIcon(si->owner, icon_left, tr.top + sprite_offset_y);
 
-					DrawString(tr.left, tr.right, tr.top + text_offset_y, GetString(STR_SIGN_NAME, si->index), TC_YELLOW);
+					DrawString(tr.left, tr.right, tr.top + text_offset_y, GetString(STR_SIGN_NAME, si->index), TextColour::Yellow);
 					tr.top += this->resize.step_height;
 				}
 				break;
@@ -601,7 +601,7 @@ struct SignWindow : Window, SignList {
 static constexpr std::initializer_list<NWidgetPart> _nested_query_sign_edit_widgets = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, Colours::Grey),
-		NWidget(WWT_CAPTION, Colours::Grey, WID_QES_CAPTION), SetTextStyle(TC_WHITE),
+		NWidget(WWT_CAPTION, Colours::Grey, WID_QES_CAPTION), SetTextStyle(TextColour::White),
 		NWidget(WWT_PUSHIMGBTN, Colours::Grey, WID_QES_LOCATION), SetAspect(WidgetDimensions::ASPECT_LOCATION), SetSpriteTip(SPR_GOTO_LOCATION, STR_EDIT_SIGN_LOCATION_TOOLTIP),
 	EndContainer(),
 	NWidget(WWT_PANEL, Colours::Grey),

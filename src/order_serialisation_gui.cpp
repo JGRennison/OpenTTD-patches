@@ -135,7 +135,7 @@ struct OrderListImportErrorsWindow : GeneralVehicleWindow
 			return res;
 		};
 
-		auto DrawRawString = [&](std::string_view str, TextColour color = TC_BLACK, bool indented = false) -> int {
+		auto DrawRawString = [&](std::string_view str, TextColour color = TextColour::Black, bool indented = false) -> int {
 			int val;
 			if (indented) {
 				val = DrawString(rtl ? left : middle, rtl ? middle : ir.right, y, str, color);
@@ -150,7 +150,7 @@ struct OrderListImportErrorsWindow : GeneralVehicleWindow
 			GfxFillRect(highlight_ir.left, y, highlight_ir.right, y + line_height, GetColourGradient(c, shade));
 		};
 
-		auto DrawSectionTitle = [&](std::string_view str, TextColour color = TC_BLACK) -> void {
+		auto DrawSectionTitle = [&](std::string_view str, TextColour color = TextColour::Black) -> void {
 			if (!CheckVisibleAndIncrementRow()) return;
 			int middle_height = y + line_height / 2;
 
@@ -166,10 +166,10 @@ struct OrderListImportErrorsWindow : GeneralVehicleWindow
 
 		auto GetTColorFromError = [&](JsonOrderImportErrorType etype) -> TextColour {
 			switch (OrderErrorTypeToColour(etype)) {
-				case Colours::Red: return TC_RED;
-				case Colours::Orange: return TC_ORANGE;
-				case Colours::Cream: return TC_CREAM;
-				default: return TC_BLACK;
+				case Colours::Red: return TextColour::Red;
+				case Colours::Orange: return TextColour::Orange;
+				case Colours::Cream: return TextColour::Cream;
+				default: return TextColour::Black;
 			}
 		};
 

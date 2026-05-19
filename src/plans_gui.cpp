@@ -510,12 +510,12 @@ public:
 						} else {
 							AppendStringInPlace(buf, STR_PLANS_LIST_ITEM_PLAN, list[i].plan_id + 1, p->lines.size(), p->creation_date);
 						}
-						DrawString(text_left, text_right, y + (this->resize.step_height - GetCharacterHeight(FontSize::Normal)) / 2, buf, _colour_value[p->colour].ToTextColour());
+						DrawString(text_left, text_right, y + (this->resize.step_height - GetCharacterHeight(FontSize::Normal)) / 2, buf, _colour_value[p->colour]);
 					} else {
 						PlanLine &pl = p->lines[list[i].line_id];
 						DrawBoolButton(btn_left, y + (this->resize.step_height - SETTING_BUTTON_HEIGHT) / 2, Colours::Yellow, Colours::Grey, pl.visible, true);
 						std::string str = GetString(STR_PLANS_LIST_ITEM_LINE, list[i].line_id + 1, pl.tiles.size() - 1);
-						DrawString(text_left, text_right, y + (this->resize.step_height - GetCharacterHeight(FontSize::Normal)) / 2, str, TC_WHITE);
+						DrawString(text_left, text_right, y + (this->resize.step_height - GetCharacterHeight(FontSize::Normal)) / 2, str, TextColour::White);
 					}
 					y += this->resize.step_height;
 				}

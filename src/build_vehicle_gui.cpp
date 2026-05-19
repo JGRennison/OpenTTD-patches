@@ -68,7 +68,7 @@ uint GetEngineListHeight(VehicleType type)
 static constexpr std::initializer_list<NWidgetPart> _nested_build_vehicle_widgets = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, Colours::Grey),
-		NWidget(WWT_CAPTION, Colours::Grey, WID_BV_CAPTION), SetTextStyle(TC_WHITE),
+		NWidget(WWT_CAPTION, Colours::Grey, WID_BV_CAPTION), SetTextStyle(TextColour::White),
 		NWidget(NWID_SELECTION, Colours::Invalid, WID_BV_TOGGLE_DUAL_PANE_SEL),
 			NWidget(WWT_IMGBTN, Colours::Grey, WID_BV_TOGGLE_DUAL_PANE), SetSpriteTip(SPR_LARGE_SMALL_WINDOW, STR_BUY_VEHICLE_TRAIN_TOGGLE_DUAL_PANE_TOOLTIP), SetAspect(WidgetDimensions::ASPECT_TOGGLE_SIZE),
 		EndContainer(),
@@ -114,7 +114,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_build_vehicle_widget
 static constexpr NWidgetPart _nested_build_vehicle_widgets_train_advanced[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, Colours::Grey),
-		NWidget(WWT_CAPTION, Colours::Grey, WID_BV_CAPTION), SetTextStyle(TC_WHITE),
+		NWidget(WWT_CAPTION, Colours::Grey, WID_BV_CAPTION), SetTextStyle(TextColour::White),
 		NWidget(WWT_IMGBTN, Colours::Grey, WID_BV_TOGGLE_DUAL_PANE), SetSpriteTip(SPR_LARGE_SMALL_WINDOW, STR_BUY_VEHICLE_TRAIN_TOGGLE_DUAL_PANE_TOOLTIP), SetAspect(WidgetDimensions::ASPECT_TOGGLE_SIZE),
 		NWidget(WWT_SHADEBOX, Colours::Grey),
 		NWidget(WWT_DEFSIZEBOX, Colours::Grey),
@@ -126,7 +126,7 @@ static constexpr NWidgetPart _nested_build_vehicle_widgets_train_advanced[] = {
 		NWidget(NWID_VERTICAL),
 			NWidget(NWID_HORIZONTAL),
 				NWidget(WWT_PANEL, Colours::Grey), SetFill(1, 0),
-					NWidget(WWT_LABEL, Colours::Invalid, WID_BV_CAPTION_LOCO), SetTextStyle(TC_WHITE), SetResize(1, 0), SetFill(1, 0),
+					NWidget(WWT_LABEL, Colours::Invalid, WID_BV_CAPTION_LOCO), SetTextStyle(TextColour::White), SetResize(1, 0), SetFill(1, 0),
 				EndContainer(),
 			EndContainer(),
 			NWidget(NWID_VERTICAL),
@@ -167,7 +167,7 @@ static constexpr NWidgetPart _nested_build_vehicle_widgets_train_advanced[] = {
 		NWidget(NWID_VERTICAL),
 			NWidget(NWID_HORIZONTAL),
 				NWidget(WWT_PANEL, Colours::Grey), SetFill(1, 0),
-					NWidget(WWT_LABEL, Colours::Invalid, WID_BV_CAPTION_WAGON), SetTextStyle(TC_WHITE), SetResize(1, 0), SetFill(1, 0),
+					NWidget(WWT_LABEL, Colours::Invalid, WID_BV_CAPTION_WAGON), SetTextStyle(TextColour::White), SetResize(1, 0), SetFill(1, 0),
 				EndContainer(),
 			EndContainer(),
 			NWidget(NWID_VERTICAL),
@@ -993,7 +993,7 @@ static uint ShowAdditionalText(int left, int right, int y, EngineID engine)
 {
 	auto text = GetNewGRFAdditionalText(engine);
 	if (!text) return y;
-	return DrawStringMultiLine(left, right, y, INT32_MAX, *text, TC_BLACK);
+	return DrawStringMultiLine(left, right, y, INT32_MAX, *text, TextColour::Black);
 }
 
 void TestedEngineDetails::FillDefaultCapacities(const Engine *e)
@@ -1092,7 +1092,7 @@ int DrawVehiclePurchaseInfo(int left, int right, int y, EngineID engine_number, 
 	const GRFConfig *config = GetGRFConfig(e->GetGRFID());
 	if (_settings_client.gui.show_newgrf_name && config != nullptr)
 	{
-		DrawString(left, right, y, config->GetName(), TC_BLACK);
+		DrawString(left, right, y, config->GetName(), TextColour::Black);
 		y += GetCharacterHeight(FontSize::Normal);
 	}
 
@@ -1218,7 +1218,7 @@ void DrawEngineList(VehicleType type, const Rect &r, const GUIEngineList &eng_li
 			Rect cr = tr.WithWidth(count_width, !rtl);
 			tr = tr.Indent(count_width + WidgetDimensions::scaled.hsep_normal, !rtl);
 
-			DrawString(cr.left, cr.right, textr.top + small_text_y_offset, GetString(STR_JUST_COMMA, num_engines), TC_BLACK, SA_RIGHT | SA_FORCE, false, FontSize::Small);
+			DrawString(cr.left, cr.right, textr.top + small_text_y_offset, GetString(STR_JUST_COMMA, num_engines), TextColour::Black, SA_RIGHT | SA_FORCE, false, FontSize::Small);
 
 			if (EngineHasReplacementForCompany(Company::Get(_local_company), item.engine_id, selected_group)) {
 				DrawSpriteIgnorePadding(SPR_GROUP_REPLACE_ACTIVE, num_engines == 0 ? PALETTE_CRASH : PAL_NONE, rr, SA_CENTER);
@@ -1233,7 +1233,7 @@ void DrawEngineList(VehicleType type, const Rect &r, const GUIEngineList &eng_li
 
 		bool hidden = e->company_hidden.Test(_local_company);
 		StringID str = hidden ? STR_HIDDEN_ENGINE_NAME : STR_ENGINE_NAME;
-		TextColour tc = (item.engine_id == selected_id) ? TC_WHITE : ((hidden | shaded) ? (TC_GREY | TC_FORCED | TC_NO_SHADE) : TC_BLACK);
+		ExtendedTextColour tc = (item.engine_id == selected_id) ? TextColour::White : ((hidden | shaded) ? ExtendedTextColour{TextColour::Grey, {ExtendedTextColourFlag::Forced, ExtendedTextColourFlag::NoShade}} : TextColour::Black);
 
 		/* Draw the value of the currently selected sort property to the right (or left in RTL), if applicable */
 		std::string sort_prop_detail;
@@ -2145,7 +2145,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 
 			default:
 				if (IsInsideMM(widget, this->badge_filters.first, this->badge_filters.second)) {
-					PaletteID palette = SPR_2CCMAP_BASE + Company::Get(_local_company)->GetCompanyRecolourOffset(LS_DEFAULT);
+					PaletteID palette = SPR_2CCMAP_BASE + Company::Get(_local_company)->GetCompanyRecolourOffset(LiveryScheme::Default);
 					ShowDropDownList(this, this->GetWidget<NWidgetBadgeFilter>(widget)->GetDropDownList(palette), -1, widget, 0, DropDownOption::Filterable);
 				}
 				break;

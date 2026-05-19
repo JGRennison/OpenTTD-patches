@@ -984,10 +984,10 @@ void DeparturesWindow::RecomputeDateWidth()
 
 	auto eval_tick = [&](StateTicks tick) {
 		auto params = MakeParameters(
-				TC_ORANGE,
+				TextColour::Orange,
 				STR_JUST_TT_TIME_ABS,
 				tick,
-				TC_ORANGE,
+				TextColour::Orange,
 				STR_JUST_TT_TIME_ABS,
 				tick);
 
@@ -1152,15 +1152,15 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 			int offset = 0;
 			switch (d->show_as) {
 				default:
-					time_colour = TC_ORANGE;
+					time_colour = TextColour::Orange;
 					break;
 
 				case DSA_VIA:
-					time_colour = TC_SILVER;
+					time_colour = TextColour::Silver;
 					break;
 
 				case DSA_NO_LOAD:
-					time_colour = TC_YELLOW;
+					time_colour = TextColour::Yellow;
 					break;
 			}
 			if (this->mode == DM_COMBINED && d->EffectiveWaitingTime() != Departure::MISSING_WAIT_TICKS) {
@@ -1250,7 +1250,7 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 
 		/* Arrival time */
 		if (arrival_time_width != 0 && d->terminus.scheduled_tick != 0) {
-			std::string str = GetString(STR_DEPARTURES_TIME, TC_ORANGE, STR_JUST_TT_TIME_ABS, d->terminus.scheduled_tick);
+			std::string str = GetString(STR_DEPARTURES_TIME, TextColour::Orange, STR_JUST_TT_TIME_ABS, d->terminus.scheduled_tick);
 			if (ltr) {
 				const int left = text_left + time_width + type_width + ScaleGUITrad(6);
 				DrawString(left, left + arrival_time_width, y + 1, str);
@@ -1371,7 +1371,7 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 			const int veh_right = ltr ? text_right - PadWidth(toc_width) - PadWidth(group_width) : text_left + PadWidth(toc_width) + PadWidth(group_width) + veh_width;
 
 			if (this->order_list_filter != nullptr && this->source_mode == DSM_SCHEDULE_24H) {
-				if (d->vehicle_idx > 0) DrawString(veh_left, veh_right, y + 1, GetString(STR_JUST_COMMA, d->vehicle_idx), TC_SILVER);
+				if (d->vehicle_idx > 0) DrawString(veh_left, veh_right, y + 1, GetString(STR_JUST_COMMA, d->vehicle_idx), TextColour::Silver);
 			} else {
 				DrawString(veh_left, veh_right, y + 1, GetString(STR_DEPARTURES_VEH, d->vehicle->index.base() | (_settings_client.gui.departure_show_group ? VEHICLE_NAME_NO_GROUP : 0)));
 			}
@@ -1390,16 +1390,16 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 			const int toc_left = ltr ? text_right - toc_width : text_left;
 			const int toc_right = ltr ? text_right : text_left + toc_width;
 
-			DrawString(toc_left, toc_right, y + 1, GetString(STR_DEPARTURES_TOC, d->vehicle->owner), TC_FROMSTRING, SA_RIGHT);
+			DrawString(toc_left, toc_right, y + 1, GetString(STR_DEPARTURES_TOC, d->vehicle->owner), TextColour::FromString, SA_RIGHT);
 		}
 
 		int bottom_y = y + this->entry_height - small_font_size - (_settings_client.gui.departure_larger_font ? 1 : 3);
 
 		/* Calling at */
 		if (ltr) {
-			DrawString(                    text_left,  text_left + calling_at_width, bottom_y, STR_DEPARTURES_CALLING_AT, TC_FROMSTRING, SA_LEFT, false, calling_font_size);
+			DrawString(                    text_left,  text_left + calling_at_width, bottom_y, STR_DEPARTURES_CALLING_AT, TextColour::FromString, SA_LEFT, false, calling_font_size);
 		} else {
-			DrawString(text_right - calling_at_width,                    text_right, bottom_y, STR_DEPARTURES_CALLING_AT, TC_FROMSTRING, SA_LEFT, false, calling_font_size);
+			DrawString(text_right - calling_at_width,                    text_right, bottom_y, STR_DEPARTURES_CALLING_AT, TextColour::FromString, SA_LEFT, false, calling_font_size);
 		}
 
 		format_buffer buffer;
@@ -1466,8 +1466,8 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 
 		/* Draw the whole list if it will fit. Otherwise scroll it. */
 		if (list_width < text_right - (text_left + calling_at_width + 2)) {
-			ltr ? DrawString(text_left + calling_at_width + 2,                        text_right, bottom_y, buffer, TC_ORANGE, SA_LEFT, false, calling_font_size)
-				: DrawString(                       text_left, text_right - calling_at_width - 2, bottom_y, buffer, TC_ORANGE, SA_LEFT, false, calling_font_size);
+			ltr ? DrawString(text_left + calling_at_width + 2,                        text_right, bottom_y, buffer, TextColour::Orange, SA_LEFT, false, calling_font_size)
+				: DrawString(                       text_left, text_right - calling_at_width - 2, bottom_y, buffer, TextColour::Orange, SA_LEFT, false, calling_font_size);
 		} else {
 			this->scroll_refresh = true;
 
@@ -1486,8 +1486,8 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 				? text_right - (elapsed_scroll_px % (list_width + text_right - text_left))
 				:  text_left + (elapsed_scroll_px % (list_width + text_right - text_left));
 
-			ltr ? DrawString(       pos, INT16_MAX, 0, buffer, TC_ORANGE,  SA_LEFT | SA_FORCE, false, calling_font_size)
-				: DrawString(-INT16_MAX,       pos, 0, buffer, TC_ORANGE, SA_RIGHT | SA_FORCE, false, calling_font_size);
+			ltr ? DrawString(       pos, INT16_MAX, 0, buffer, TextColour::Orange,  SA_LEFT | SA_FORCE, false, calling_font_size)
+				: DrawString(-INT16_MAX,       pos, 0, buffer, TextColour::Orange, SA_RIGHT | SA_FORCE, false, calling_font_size);
 		}
 
 		y += this->entry_height;

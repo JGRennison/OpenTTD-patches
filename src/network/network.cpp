@@ -333,7 +333,7 @@ bool NetworkCompanyIsPassworded(CompanyID company_id)
  * @param data Arbitrary extra data, depending on the action. For example a client's ID or an amount of money that was given.
  * @param data_str Arbitrary extra data string view.
  */
-void NetworkTextMessage(NetworkAction action, TextColour colour, bool self_send, std::string_view name, std::string_view str, NetworkTextMessageData data, std::string_view data_str)
+void NetworkTextMessage(NetworkAction action, ExtendedTextColour colour, bool self_send, std::string_view name, std::string_view str, NetworkTextMessageData data, std::string_view data_str)
 {
 	std::string replacement_name;
 

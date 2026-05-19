@@ -867,7 +867,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_company_stations_wid
 		NWidget(WWT_TEXTBTN, Colours::Grey, WID_STL_BUS), SetAspect(WidgetDimensions::ASPECT_VEHICLE_ICON), SetStringTip(STR_BUS, STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE_TOOLTIP), SetFill(0, 1),
 		NWidget(WWT_TEXTBTN, Colours::Grey, WID_STL_SHIP), SetAspect(WidgetDimensions::ASPECT_VEHICLE_ICON), SetStringTip(STR_SHIP, STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE_TOOLTIP), SetFill(0, 1),
 		NWidget(WWT_TEXTBTN, Colours::Grey, WID_STL_AIRPLANE), SetAspect(WidgetDimensions::ASPECT_VEHICLE_ICON), SetStringTip(STR_PLANE, STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE_TOOLTIP), SetFill(0, 1),
-		NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_STL_FACILALL), SetAspect(WidgetDimensions::ASPECT_VEHICLE_ICON), SetStringTip(STR_ABBREV_ALL, STR_STATION_LIST_SELECT_ALL_FACILITIES_TOOLTIP), SetTextStyle(TC_BLACK, FontSize::Small), SetFill(0, 1),
+		NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_STL_FACILALL), SetAspect(WidgetDimensions::ASPECT_VEHICLE_ICON), SetStringTip(STR_ABBREV_ALL, STR_STATION_LIST_SELECT_ALL_FACILITIES_TOOLTIP), SetTextStyle(TextColour::Black, FontSize::Small), SetFill(0, 1),
 		NWidget(WWT_PANEL, Colours::Grey), SetMinimalSize(5, 0), SetFill(0, 1), EndContainer(),
 		NWidget(WWT_DROPDOWN, Colours::Grey, WID_STL_CARGODROPDOWN), SetFill(1, 0), SetToolTip(STR_STATION_LIST_USE_CTRL_TO_SELECT_MORE_TOOLTIP),
 		NWidget(WWT_PANEL, Colours::Grey), SetResize(1, 0), SetFill(1, 1), EndContainer(),
@@ -2013,7 +2013,7 @@ struct StationViewWindow : public Window {
 							sym = "+";
 						}
 					}
-					if (!sym.empty()) DrawString(shrink.left, shrink.right, y + text_y_offset, sym, TC_YELLOW);
+					if (!sym.empty()) DrawString(shrink.left, shrink.right, y + text_y_offset, sym, TextColour::Yellow);
 				}
 				this->SetDisplayedRow(cd);
 			}
@@ -2069,7 +2069,7 @@ struct StationViewWindow : public Window {
 			if (!ge->HasRating()) {
 				if (!ge->IsSupplyAllowed()) {
 					Rect rating_rect = tr.Indent(WidgetDimensions::scaled.hsep_indent, rtl);
-					int x = DrawString(rating_rect, cs->name, TC_WHITE);
+					int x = DrawString(rating_rect, cs->name, TextColour::White);
 					if (x != 0) {
 						int line_y = rating_rect.top + (GetCharacterHeight(FontSize::Normal) / 2) - 1;
 						GfxDrawLine(rating_rect.left, line_y, x, line_y, PC_WHITE, 1);
@@ -2767,7 +2767,7 @@ int GetWaitingCargoRating(const Station *st, const GoodsEntry *ge);
 int GetStatueRating(const Station *st);
 int GetVehicleAgeRating(const GoodsEntry *ge);
 
-static const TextColour _rate_colours[] = { TC_ORANGE, TC_GOLD, TC_YELLOW, TC_GREEN };
+static const TextColour _rate_colours[] = { TextColour::Orange, TextColour::Gold, TextColour::Yellow, TextColour::Green };
 
 struct StationRatingTooltipWindow : public Window
 {
@@ -2891,9 +2891,9 @@ public:
 
 				TextColour colour;
 				if (ge->last_speed == 255) {
-					colour = TC_GREEN;
+					colour = TextColour::Green;
 				} else if (rounded_speed_rating == 0) {
-					colour = TC_RED;
+					colour = TextColour::Red;
 				} else {
 					colour = _rate_colours[std::min(3, speed_rating / 42)];
 				}
@@ -2915,16 +2915,16 @@ public:
 			{
 				const auto wait_time_rating = GetWaitTimeRating(cs, ge);
 
-				TextColour wait_time_stage = TC_RED;
+				TextColour wait_time_stage = TextColour::Red;
 
 				if (wait_time_rating >= 130) {
-					wait_time_stage = TC_GREEN;
+					wait_time_stage = TextColour::Green;
 				} else if (wait_time_rating >= 95) {
-					wait_time_stage = TC_YELLOW;
+					wait_time_stage = TextColour::Yellow;
 				} else if (wait_time_rating >= 50) {
-					wait_time_stage = TC_GOLD;
+					wait_time_stage = TextColour::Gold;
 				} else if (wait_time_rating >= 25) {
-					wait_time_stage = TC_ORANGE;
+					wait_time_stage = TextColour::Orange;
 				}
 
 				this->data[line_nr] = GetString((ge->last_vehicle_type == VehicleType::Ship) ? STR_STATION_RATING_TOOLTIP_WAITTIME_SHIP : STR_STATION_RATING_TOOLTIP_WAITTIME,
@@ -2944,16 +2944,16 @@ public:
 			{
 				const auto cargo_rating = GetWaitingCargoRating(st, ge);
 
-				TextColour wait_units_stage = TC_RED;
+				TextColour wait_units_stage = TextColour::Red;
 
 				if (cargo_rating >= 40) {
-					wait_units_stage = TC_GREEN;
+					wait_units_stage = TextColour::Green;
 				} else if (cargo_rating >= 30) {
-					wait_units_stage = TC_YELLOW;
+					wait_units_stage = TextColour::Yellow;
 				} else if (cargo_rating >= 0) {
-					wait_units_stage = TC_GOLD;
+					wait_units_stage = TextColour::Gold;
 				} else if (cargo_rating >= -35) {
-					wait_units_stage = TC_ORANGE;
+					wait_units_stage = TextColour::Orange;
 				}
 
 				this->data[line_nr] = GetString(STR_STATION_RATING_TOOLTIP_WAITUNITS,
@@ -2988,14 +2988,14 @@ public:
 			{
 				const auto age_rating = GetVehicleAgeRating(ge);
 
-				TextColour age_stage = TC_ORANGE;
+				TextColour age_stage = TextColour::Orange;
 
 				if (age_rating >= 33) {
-					age_stage = TC_GREEN;
+					age_stage = TextColour::Green;
 				} else if (age_rating >= 20) {
-					age_stage = TC_YELLOW;
+					age_stage = TextColour::Yellow;
 				} else if (age_rating >= 10) {
-					age_stage = TC_GOLD;
+					age_stage = TextColour::Gold;
 				}
 
 				this->data[line_nr] = GetString(STR_STATION_RATING_TOOLTIP_AGE,
@@ -3053,7 +3053,7 @@ public:
 		const int left0 = r.left + WidgetDimensions::scaled.framerect.left + 1;
 		const int right0 = r.right - WidgetDimensions::scaled.framerect.right - 1;
 
-		DrawString(left0, right0, y, this->data[0], TC_LIGHT_BLUE, SA_CENTER);
+		DrawString(left0, right0, y, this->data[0], TextColour::LightBlue, SA_CENTER);
 
 		y += GetCharacterHeight(FontSize::Normal) + WidgetDimensions::scaled.vsep_normal;
 
@@ -3070,7 +3070,7 @@ public:
 				}
 			}
 
-			DrawString(left, right, y, this->data[i], TC_BLACK);
+			DrawString(left, right, y, this->data[i], TextColour::Black);
 
 			y += GetCharacterHeight(FontSize::Normal) + WidgetDimensions::scaled.vsep_normal;
 		}
@@ -3091,8 +3091,8 @@ void GuiShowStationRatingTooltip(Window *parent, const Station *st, const CargoS
 
 bool ShouldShowBaseStationViewportLabel(const BaseStation *bst)
 {
-	if (!HasBit(_display_opt, Station::IsExpected(bst) ? DO_SHOW_STATION_NAMES : DO_SHOW_WAYPOINT_NAMES)) return false;
-	if (HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS) && (_local_company != bst->owner && bst->owner != OWNER_NONE)) return false;
+	if (!_display_opt.Test(Station::IsExpected(bst) ? DisplayOption::ShowStationNames : DisplayOption::ShowWaypointNames)) return false;
+	if (_display_opt.Test(DisplayOption::ShowCompetitorSigns) && (_local_company != bst->owner && bst->owner != OWNER_NONE)) return false;
 	if (Waypoint::IsExpected(bst) && HasBit(Waypoint::From(bst)->waypoint_flags, WPF_HIDE_LABEL) && _settings_client.gui.allow_hiding_waypoint_labels &&
 			!HasBit(_extra_display_opt, XDO_SHOW_HIDDEN_SIGNS)) return false;
 	return true;

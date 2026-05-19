@@ -1590,7 +1590,7 @@ STR_SCHDISPATCH_ENABLED_TOOLTIP                                 :{BLACK}Aktivier
 STR_SCHDISPATCH_ADD                                             :{BLACK}Füge Abfahrtslot hinzu
 STR_SCHDISPATCH_ADD_TOOLTIP                                     :{BLACK}Füge für diesen Fahrplan einen neuen Abfahrtslot hinzu.
 STR_SCHDISPATCH_ADD_TOOLTIP_EXTRA                               :{BLACK}{STRING} Strg+Klick zum hinzufügen mehrerer Abfahrtslots auf einmal.
-STR_SCHDISPATCH_ADD_CAPTION                                     :{BLACK}Abfahrtslot
+STR_SCHDISPATCH_ADD_CAPTION                                     :Abfahrtslot
 STR_SCHDISPATCH_DURATION                                        :{BLACK}Dauer
 STR_SCHDISPATCH_DURATION_TOOLTIP                                :{BLACK}Setze die Dauer für diesen Fahrplan.
 STR_SCHDISPATCH_DURATION_CAPTION_MINUTE                         :{BLACK}Dauer (Minuten)

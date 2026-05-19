@@ -244,7 +244,7 @@ public:
 
 	std::pair<std::string, TextColour> PrepareActionInfoString(int action_index) const
 	{
-		TextColour colour = TC_FROMSTRING;
+		TextColour colour = TextColour::FromString;
 		std::string text;
 		if (action_index >= 0x100) {
 			StringID param = STR_NULL;
@@ -270,7 +270,7 @@ public:
 			}
 			text = GetString(STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_TEXT, STR_LOCAL_AUTHORITY_SETTING_OVERRIDE_ALLOW_ROADS + action_index - 0x100, param);
 		} else {
-			colour = TC_YELLOW;
+			colour = TextColour::Yellow;
 			StringID str = STR_NULL;
 			switch (action_index) {
 				case 0:
@@ -327,7 +327,7 @@ public:
 				for (int i = 0; buttons; i++, buttons >>= 1) {
 					if ((buttons & 1) && --pos < 0) {
 						DrawString(ir.left, ir.right, y,
-								STR_LOCAL_AUTHORITY_ACTION_SMALL_ADVERTISING_CAMPAIGN + i, this->sel_index == i ? TC_WHITE : TC_ORANGE);
+								STR_LOCAL_AUTHORITY_ACTION_SMALL_ADVERTISING_CAMPAIGN + i, this->sel_index == i ? TextColour::White : TextColour::Orange);
 						y += GetCharacterHeight(FontSize::Normal);
 					}
 				}
@@ -335,7 +335,7 @@ public:
 					if (--pos < 0) {
 						const bool disabled = ChangeSettingsDisabled();
 						const bool selected = (this->sel_index == (0x100 + i));
-						const TextColour tc = disabled ? (TC_NO_SHADE | (selected ? TC_SILVER : TC_GREY)) : (selected ? TC_WHITE : TC_ORANGE);
+						const ExtendedTextColour tc = disabled ? ExtendedTextColour{selected ? TextColour::Silver : TextColour::Grey, ExtendedTextColourFlag::NoShade} : (selected ? TextColour::White : TextColour::Orange);
 						const bool overridden = HasBit(this->town->override_flags, i);
 
 						format_buffer buf;
@@ -642,7 +642,7 @@ public:
 
 			const CargoSpec *cargo = FindFirstCargoWithTownAcceptanceEffect((TownAcceptanceEffect)i);
 			if (cargo == nullptr) {
-				DrawString(tr.Indent(20, rtl), STR_NEWGRF_INVALID_CARGO, TC_RED);
+				DrawString(tr.Indent(20, rtl), STR_NEWGRF_INVALID_CARGO, TextColour::Red);
 				tr.top += GetCharacterHeight(FontSize::Normal);
 				continue;
 			}
@@ -687,7 +687,7 @@ public:
 		}
 
 		if (!this->town->text.empty()) {
-			tr.top = DrawStringMultiLine(tr, this->town->text.GetDecodedString(), TC_BLACK);
+			tr.top = DrawStringMultiLine(tr, this->town->text.GetDecodedString(), TextColour::Black);
 		}
 	}
 

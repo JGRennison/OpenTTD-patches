@@ -227,7 +227,7 @@ public:
 			int text_left  = rtl ? ir.left : rect_right + WidgetDimensions::scaled.framerect.left;
 			int text_right = rtl ? rect_left - WidgetDimensions::scaled.framerect.left : ir.right;
 			int text_top   = ir.top;
-			DrawString(text_left, text_right, text_top, GetString(cs->name), TC_BLACK);
+			DrawString(text_left, text_right, text_top, GetString(cs->name), TextColour::Black);
 		}
 	}
 
@@ -852,15 +852,15 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 		DrawSprite(sprite, PAL_NONE, rtl ? right -     sprite_size.width : left,                     y + ((int)GetCharacterHeight(FontSize::Normal) - (int)sprite_size.height) / 2);
 	}
 
-	TextColour colour = TC_BLACK;
+	ExtendedTextColour colour{TextColour::Black};
 	if (order->IsType(OT_IMPLICIT)) {
-		colour = (selected ? TC_SILVER : TC_GREY) | TC_NO_SHADE;
+		colour = ExtendedTextColour{selected ? TextColour::Silver : TextColour::Grey, ExtendedTextColourFlag::NoShade};
 	} else {
 		if (selected) {
-			colour = TC_WHITE;
+			colour = TextColour::White;
 		} else {
 			Colours order_colour = order->GetColour();
-			if (order_colour != Colours::Invalid) colour = _colour_value[order_colour].ToTextColour();
+			if (order_colour != Colours::Invalid) colour = _colour_value[order_colour];
 		}
 	}
 
@@ -2674,7 +2674,7 @@ public:
 
 		if (this->vscroll->IsVisible(i)) {
 			StringID str = this->vehicle->IsOrderListShared() ? STR_ORDERS_END_OF_SHARED_ORDERS : STR_ORDERS_END_OF_ORDERS;
-			DrawString(rtl ? ir.left : middle, rtl ? middle : ir.right, y, str, (i == this->selected_order) ? TC_WHITE : TC_BLACK);
+			DrawString(rtl ? ir.left : middle, rtl ? middle : ir.right, y, str, (i == this->selected_order) ? TextColour::White : TextColour::Black);
 		}
 	}
 
@@ -2695,11 +2695,11 @@ public:
 
 			uint8_t occupancy = order->GetOccupancy();
 			if (occupancy > 0) {
-				TextColour colour;
+				ExtendedTextColour colour;
 				if (order->UseOccupancyValueForAverage()) {
-					colour = (i == this->selected_order) ? TC_WHITE : TC_BLACK;
+					colour = (i == this->selected_order) ? TextColour::White : TextColour::Black;
 				} else {
-					colour = ((i == this->selected_order) ? TC_SILVER : TC_GREY) | TC_NO_SHADE;
+					colour = ExtendedTextColour{(i == this->selected_order) ? TextColour::Silver : TextColour::Grey, ExtendedTextColourFlag::NoShade};
 				}
 				DrawString(ir.left, ir.right, y, GetString(STR_ORDERS_OCCUPANCY_PERCENT, occupancy - 1), colour);
 			}
@@ -2730,7 +2730,7 @@ public:
 			}
 		}
 		int offset = std::max(0, ((int)(r.bottom - r.top + 1) - (int)d.height) / 2); // Offset for rendering the text vertically centered
-		DrawString(left, right, r.top + offset + clicked, STR_ORDERS_TIMETABLE_VIEW, TC_FROMSTRING, SA_HOR_CENTER);
+		DrawString(left, right, r.top + offset + clicked, STR_ORDERS_TIMETABLE_VIEW, TextColour::FromString, SA_HOR_CENTER);
 	}
 
 	std::string GetWidgetString(WidgetID widget, StringID stringid) const override

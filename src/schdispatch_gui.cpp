@@ -751,9 +751,9 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					bool veh = veh_dispatch == (int32_t)slot.offset;
 					TextColour colour;
 					if (this->selected_slots.count(slot.offset) > 0) {
-						colour = TC_WHITE;
+						colour = TextColour::White;
 					} else {
-						colour = draw_time >= end_tick ? TC_RED : TC_BLACK;
+						colour = draw_time >= end_tick ? TextColour::Red : TextColour::Black;
 					}
 					auto flags = slot.flags;
 					if (ds.GetScheduledDispatchReuseSlots()) ClrBit(flags, DispatchSlot::SDSF_REUSE_SLOT);
@@ -846,7 +846,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					} else {
 						left += (warning_dimensions.width + 10);
 					}
-					DrawStringMultiLine(left, right, y, ir.bottom, STR_CANNOT_ENABLE_BECAUSE_TIME_UNITS_UNUSABLE, TC_BLACK);
+					DrawStringMultiLine(left, right, y, ir.bottom, STR_CANNOT_ENABLE_BECAUSE_TIME_UNITS_UNUSABLE, TextColour::Black);
 					break;
 				}
 
@@ -876,9 +876,9 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					y += GetCharacterHeight(FontSize::Normal) * 2;
 
 					if (v->vehicle_flags.Test(VehicleFlag::TimetableSeparation)) {
-						draw_warning_generic(GetString(STR_CANNOT_ENABLE_BECAUSE_AUTO_SEPARATION), TC_BLACK);
+						draw_warning_generic(GetString(STR_CANNOT_ENABLE_BECAUSE_AUTO_SEPARATION), TextColour::Black);
 					} else if (v->HasUnbunchingOrder()) {
-						draw_warning_generic(GetString(STR_CANNOT_ENABLE_BECAUSE_UNBUNCHING), TC_BLACK);
+						draw_warning_generic(GetString(STR_CANNOT_ENABLE_BECAUSE_UNBUNCHING), TextColour::Black);
 					}
 				} else {
 					const DispatchSchedule &ds = this->GetSelectedSchedule();
@@ -887,7 +887,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					uint extra_lines = 0;
 
 					auto draw_warning = [&]<typename... T>(StringID text, T&&... params) {
-						draw_warning_generic(GetString(text, std::forward<T>(params)...), TC_FROMSTRING);
+						draw_warning_generic(GetString(text, std::forward<T>(params)...), TextColour::FromString);
 						warnings++;
 					};
 
@@ -1256,7 +1256,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				DropDownList list;
 				auto add_str_item = [&](std::string &&str, int result) {
 					std::unique_ptr<DropDownListStringItem> item = std::make_unique<DropDownListStringItem>(std::move(str), result, false);
-					item->SetColourFlags(TC_FORCED);
+					item->SetColourFlags(ExtendedTextColourFlag::Forced);
 					list.emplace_back(std::move(item));
 				};
 				auto add_item = [&](StringID str, int result) {
@@ -1283,12 +1283,12 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 				std::vector<std::pair<DispatchSlotRouteID, std::string_view>> route_names = schedule.GetSortedRouteIDNames();
 				if (!route_names.empty()) {
 					auto item = std::make_unique<DropDownUnselectable<DropDownListStringItem>>(GetString(STR_SCHDISPATCH_EDIT_DEPARTURE_ROUTE), -1);
-					item->SetColourFlags(TC_FORCED);
+					item->SetColourFlags(ExtendedTextColourFlag::Forced);
 					list.push_back(std::move(item));
 
 					for (const auto &it : route_names) {
 						auto item = std::make_unique<DropDownListIndentStringItem>(1, std::string{it.second}, SCH_MD_EDIT_ROUTE | (it.first << 16));
-						item->SetColourFlags(TC_FORCED);
+						item->SetColourFlags(ExtendedTextColourFlag::Forced);
 						list.push_back(std::move(item));
 					}
 				}
@@ -2157,7 +2157,7 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 static constexpr NWidgetPart _nested_scheduled_dispatch_add_widgets[] = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(WWT_CLOSEBOX, Colours::Brown),
-		NWidget(WWT_CAPTION, Colours::Brown), SetTextStyle(TC_WHITE | TC_FORCED), SetStringTip(STR_SCHDISPATCH_ADD_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
+		NWidget(WWT_CAPTION, Colours::Brown), SetStringTip(STR_SCHDISPATCH_ADD_CAPTION, STR_TOOLTIP_WINDOW_TITLE_DRAG_THIS),
 	EndContainer(),
 	NWidget(WWT_PANEL, Colours::Brown),
 		NWidget(NWID_VERTICAL), SetPIP(6, 6, 6),

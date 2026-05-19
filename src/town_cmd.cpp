@@ -240,7 +240,7 @@ void Town::UpdateLabel()
 {
 	if (!(_game_mode == GM_EDITOR) && (_local_company < MAX_COMPANIES)) {
 		if (!this->have_ratings.Test(_local_company)) {
-			this->town_label_rating = TC_WHITE;
+			this->town_label_rating = to_underlying(TextColour::White);
 			return;
 		}
 
@@ -251,8 +251,8 @@ void Town::UpdateLabel()
 		if (r > RATING_GOOD)      town_rating++; // Very Good
 		if (r > RATING_VERYGOOD)  town_rating++; // Excellent and Outstanding
 
-		static const uint8_t tcs[] = { TC_RED, TC_ORANGE, TC_YELLOW, TC_WHITE, TC_GREEN };
-		this->town_label_rating = tcs[town_rating];
+		static const TextColour tcs[] = { TextColour::Red, TextColour::Orange, TextColour::Yellow, TextColour::White, TextColour::Green };
+		this->town_label_rating = to_underlying(tcs[town_rating]);
 	}
 }
 
@@ -265,7 +265,7 @@ uint64_t Town::LabelParam2() const
 	if (!(_game_mode == GM_EDITOR) && (_local_company < MAX_COMPANIES)) {
 		SB(value, 32, 8, this->town_label_rating);
 	} else {
-		SB(value, 32, 8, TC_WHITE);
+		SB(value, 32, 8, to_underlying(TextColour::White));
 	}
 	if (_settings_client.gui.population_in_label) SetBit(value, 40);
 	if (_settings_client.gui.city_in_label && this->larger_town) SetBit(value, 41);
@@ -462,7 +462,7 @@ void Town::UpdateVirtCoord(bool only_if_label_changed)
 	if (_viewport_sign_kdtree_valid && this->cache.sign.kdtree_valid) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeTown(this->index));
 
 	auto params = MakeParameters(this->index, this->LabelParam2());
-	this->cache.sign.UpdatePosition(HasBit(_display_opt, DO_SHOW_TOWN_NAMES) ? ZoomLevel::Out32x : ZoomLevel::End, pt.x, pt.y - 24 * ZOOM_BASE, params, STR_VIEWPORT_TOWN_LABEL, STR_TOWN_NAME);
+	this->cache.sign.UpdatePosition(_display_opt.Test(DisplayOption::ShowTownNames) ? ZoomLevel::Out32x : ZoomLevel::End, pt.x, pt.y - 24 * ZOOM_BASE, params, STR_VIEWPORT_TOWN_LABEL, STR_TOWN_NAME);
 
 	if (_viewport_sign_kdtree_valid) _viewport_sign_kdtree.Insert(ViewportSignKdtreeItem::MakeTown(this->index));
 
@@ -1129,7 +1129,7 @@ static bool IsRoadAllowedHere(Town *t, TileIndex tile, DiagDirection dir)
 		}
 	}
 
-	Slope cur_slope = _settings_game.construction.build_on_slopes ? std::get<0>(GetFoundationSlope(tile)) : GetTileSlope(tile);
+	Slope cur_slope = _settings_game.construction.build_on_slopes ? std::get<Slope>(GetFoundationSlope(tile)) : GetTileSlope(tile);
 	bool ret = !IsNeighbourRoadTile(tile, dir, t->layout == TL_ORIGINAL ? 1 : 2);
 	if (cur_slope == SLOPE_FLAT) return ret;
 

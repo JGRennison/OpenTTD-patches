@@ -2272,7 +2272,7 @@ STR_SCHDISPATCH_ADD                                             :{BLACK}Add Slot
 STR_SCHDISPATCH_ADD_MULTIPLE_SLOTS                              :{BLACK}Add Slots
 STR_SCHDISPATCH_ADD_TOOLTIP                                     :{BLACK}Add new departure slot for this schedule.
 STR_SCHDISPATCH_ADD_TOOLTIP_EXTRA                               :{BLACK}{STRING} Ctrl+Click to add multiple departure slots at once.
-STR_SCHDISPATCH_ADD_CAPTION                                     :{BLACK}Departure slot
+STR_SCHDISPATCH_ADD_CAPTION                                     :Departure slot
 STR_SCHDISPATCH_DURATION                                        :{BLACK}Duration
 STR_SCHDISPATCH_DURATION_TOOLTIP                                :{BLACK}Set duration of this schedule.
 STR_SCHDISPATCH_DURATION_CAPTION_MINUTE                         :{BLACK}Duration (minutes)

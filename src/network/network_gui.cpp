@@ -382,7 +382,7 @@ protected:
 
 		info = info.Shrink(WidgetDimensions::scaled.framerect);
 		name = name.Shrink(WidgetDimensions::scaled.framerect);
-		DrawString(name.left, name.right, y + text_y_offset, cur_item->info.server_name, TC_BLACK);
+		DrawString(name.left, name.right, y + text_y_offset, cur_item->info.server_name, TextColour::Black);
 
 		/* only draw details if the server is online */
 		if (cur_item->status == NGLS_ONLINE) {
@@ -390,7 +390,7 @@ protected:
 				Rect clients = nwid->GetCurrentRect();
 				DrawString(clients.left, clients.right, y + text_y_offset,
 					GetString(STR_NETWORK_SERVER_LIST_GENERAL_ONLINE, cur_item->info.clients_on, cur_item->info.clients_max, cur_item->info.companies_on, cur_item->info.companies_max),
-					TC_FROMSTRING, SA_HOR_CENTER);
+					TextColour::FromString, SA_HOR_CENTER);
 			}
 
 			if (const NWidgetBase *nwid = this->GetWidget<NWidgetBase>(WID_NG_MAPSIZE); nwid->current_x != 0) {
@@ -398,14 +398,14 @@ protected:
 				Rect mapsize = nwid->GetCurrentRect();
 				DrawString(mapsize.left, mapsize.right, y + text_y_offset,
 					GetString(STR_NETWORK_SERVER_LIST_MAP_SIZE_SHORT, cur_item->info.map_width, cur_item->info.map_height),
-					TC_FROMSTRING, SA_HOR_CENTER);
+					TextColour::FromString, SA_HOR_CENTER);
 			}
 
 			if (const NWidgetBase *nwid = this->GetWidget<NWidgetBase>(WID_NG_DATE); nwid->current_x != 0) {
 				/* current date */
 				Rect date = nwid->GetCurrentRect();
 				CalTime::YearMonthDay ymd = CalTime::ConvertDateToYMD(cur_item->info.calendar_date);
-				DrawString(date.left, date.right, y + text_y_offset, GetString(STR_JUST_INT, ymd.year), TC_BLACK, SA_HOR_CENTER);
+				DrawString(date.left, date.right, y + text_y_offset, GetString(STR_JUST_INT, ymd.year), TextColour::Black, SA_HOR_CENTER);
 			}
 
 			if (const NWidgetBase *nwid = this->GetWidget<NWidgetBase>(WID_NG_YEARS); nwid->current_x != 0) {
@@ -414,7 +414,7 @@ protected:
 				const auto play_time = cur_item->info.ticks_playing / TICKS_PER_SECOND;
 				DrawString(years.left, years.right, y + text_y_offset,
 					GetString(STR_NETWORK_SERVER_LIST_PLAY_TIME_SHORT, play_time / 60 / 60, (play_time / 60) % 60),
-					TC_BLACK, SA_HOR_CENTER);
+					TextColour::Black, SA_HOR_CENTER);
 			}
 
 			/* Set top and bottom of info rect to current row. */
@@ -655,12 +655,12 @@ public:
 		/* Draw the right menu */
 		/* Create the nice darker rectangle at the details top */
 		GfxFillRect(r.WithHeight(header_height).Shrink(WidgetDimensions::scaled.bevel), GetColourGradient(Colours::LightBlue, Shade::Normal));
-		hr.top = DrawStringMultiLine(hr, header_msg, TC_FROMSTRING, SA_HOR_CENTER);
+		hr.top = DrawStringMultiLine(hr, header_msg, TextColour::FromString, SA_HOR_CENTER);
 		if (sel == nullptr) return;
 
-		hr.top = DrawStringMultiLine(hr, sel->info.server_name, TC_ORANGE, SA_HOR_CENTER); // game name
+		hr.top = DrawStringMultiLine(hr, sel->info.server_name, TextColour::Orange, SA_HOR_CENTER); // game name
 		if (sel->status != NGLS_ONLINE) {
-			tr.top = DrawStringMultiLine(tr, header_msg, TC_FROMSTRING, SA_HOR_CENTER);
+			tr.top = DrawStringMultiLine(tr, header_msg, TextColour::FromString, SA_HOR_CENTER);
 		} else { // show game info
 			tr.top = DrawStringMultiLine(tr, GetString(STR_NETWORK_SERVER_LIST_CLIENTS, sel->info.clients_on, sel->info.clients_max, sel->info.companies_on, sel->info.companies_max));
 
@@ -687,12 +687,12 @@ public:
 			tr.top += WidgetDimensions::scaled.vsep_wide;
 
 			if (!sel->info.compatible) {
-				DrawStringMultiLine(tr, sel->info.version_compatible ? STR_NETWORK_SERVER_LIST_GRF_MISMATCH : STR_NETWORK_SERVER_LIST_VERSION_MISMATCH, TC_FROMSTRING, SA_HOR_CENTER); // server mismatch
+				DrawStringMultiLine(tr, sel->info.version_compatible ? STR_NETWORK_SERVER_LIST_GRF_MISMATCH : STR_NETWORK_SERVER_LIST_VERSION_MISMATCH, TextColour::FromString, SA_HOR_CENTER); // server mismatch
 			} else if (sel->info.clients_on == sel->info.clients_max) {
 				/* Show: server full, when clients_on == max_clients */
-				DrawStringMultiLine(tr, STR_NETWORK_SERVER_LIST_SERVER_FULL, TC_FROMSTRING, SA_HOR_CENTER); // server full
+				DrawStringMultiLine(tr, STR_NETWORK_SERVER_LIST_SERVER_FULL, TextColour::FromString, SA_HOR_CENTER); // server full
 			} else if (sel->info.use_password) {
-				DrawStringMultiLine(tr, STR_NETWORK_SERVER_LIST_PASSWORD, TC_FROMSTRING, SA_HOR_CENTER); // password warning
+				DrawStringMultiLine(tr, STR_NETWORK_SERVER_LIST_PASSWORD, TextColour::FromString, SA_HOR_CENTER); // password warning
 			}
 		}
 	}
@@ -1037,7 +1037,7 @@ struct NetworkStartServerWindow : public Window {
 		switch (widget) {
 			case WID_NSS_SETPWD:
 				/* If password is set, draw red '*' next to 'Set password' button. */
-				if (!_settings_client.network.server_password.empty()) DrawString(r.right + WidgetDimensions::scaled.framerect.left, this->width - WidgetDimensions::scaled.framerect.right, r.top, "*", TC_RED);
+				if (!_settings_client.network.server_password.empty()) DrawString(r.right + WidgetDimensions::scaled.framerect.left, this->width - WidgetDimensions::scaled.framerect.right, r.top, "*", TextColour::Red);
 		}
 	}
 
@@ -1540,11 +1540,11 @@ public:
 
 		Rect tr = r.CentreToHeight(GetCharacterHeight(FontSize::Normal)).Indent(d.width + WidgetDimensions::scaled.hsep_normal, rtl);
 		if (this->company_id == COMPANY_SPECTATOR) {
-			DrawString(tr, STR_NETWORK_CLIENT_LIST_SPECTATORS, TC_SILVER);
+			DrawString(tr, STR_NETWORK_CLIENT_LIST_SPECTATORS, TextColour::Silver);
 		} else if (this->company_id == COMPANY_NEW_COMPANY) {
-			DrawString(tr, STR_NETWORK_CLIENT_LIST_NEW_COMPANY, TC_WHITE);
+			DrawString(tr, STR_NETWORK_CLIENT_LIST_NEW_COMPANY, TextColour::White);
 		} else {
-			DrawString(tr, GetString(STR_COMPANY_NAME, this->company_id, this->company_id), TC_SILVER);
+			DrawString(tr, GetString(STR_COMPANY_NAME, this->company_id, this->company_id), TextColour::Silver);
 		}
 	};
 
@@ -1584,7 +1584,7 @@ public:
 			tr = tr.Indent(d.width + WidgetDimensions::scaled.hsep_normal, rtl);
 		}
 
-		DrawString(tr, GetString(STR_JUST_RAW_STRING, ci->client_name), TC_BLACK);
+		DrawString(tr, GetString(STR_JUST_RAW_STRING, ci->client_name), TextColour::Black);
 	}
 
 	std::optional<EncodedString> GetTooltip(Rect r, const Point &pt) const override
@@ -2126,21 +2126,21 @@ struct NetworkJoinStatusWindow : Window {
 						break;
 				}
 				DrawFrameRect(ir.WithWidth(ir.Width() * progress / 100, _current_text_dir == TD_RTL), Colours::Mauve, {});
-				DrawString(ir.left, ir.right, CentreBounds(ir.top, ir.bottom, GetCharacterHeight(FontSize::Normal)), STR_NETWORK_CONNECTING_1 + to_underlying(_network_join_status), TC_FROMSTRING, SA_HOR_CENTER);
+				DrawString(ir.left, ir.right, CentreBounds(ir.top, ir.bottom, GetCharacterHeight(FontSize::Normal)), STR_NETWORK_CONNECTING_1 + to_underlying(_network_join_status), TextColour::FromString, SA_HOR_CENTER);
 				break;
 			}
 
 			case WID_NJS_PROGRESS_TEXT:
 				switch (_network_join_status) {
 					case NetworkJoinStatus::Waiting:
-						DrawStringMultiLine(r, GetString(STR_NETWORK_CONNECTING_WAITING, _network_join_waiting), TC_FROMSTRING, SA_CENTER);
+						DrawStringMultiLine(r, GetString(STR_NETWORK_CONNECTING_WAITING, _network_join_waiting), TextColour::FromString, SA_CENTER);
 						break;
 
 					case NetworkJoinStatus::Downloading:
 						if (_network_join_bytes_total == 0) {
-							DrawStringMultiLine(r, GetString(STR_NETWORK_CONNECTING_DOWNLOADING_1, _network_join_bytes), TC_FROMSTRING, SA_CENTER);
+							DrawStringMultiLine(r, GetString(STR_NETWORK_CONNECTING_DOWNLOADING_1, _network_join_bytes), TextColour::FromString, SA_CENTER);
 						} else {
-							DrawStringMultiLine(r, GetString(STR_NETWORK_CONNECTING_DOWNLOADING_2, _network_join_bytes, _network_join_bytes_total), TC_FROMSTRING, SA_CENTER);
+							DrawStringMultiLine(r, GetString(STR_NETWORK_CONNECTING_DOWNLOADING_2, _network_join_bytes, _network_join_bytes_total), TextColour::FromString, SA_CENTER);
 						}
 						break;
 
@@ -2270,7 +2270,7 @@ struct NetworkCompanyPasswordWindow : public Window {
 	{
 		if (widget != WID_NCP_WARNING) return;
 
-		DrawStringMultiLine(r, STR_WARNING_PASSWORD_SECURITY, TC_FROMSTRING, SA_CENTER);
+		DrawStringMultiLine(r, STR_WARNING_PASSWORD_SECURITY, TextColour::FromString, SA_CENTER);
 	}
 
 	void OnOk()
@@ -2384,7 +2384,7 @@ struct NetworkAskRelayWindow : public Window {
 	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		if (widget == WID_NAR_TEXT) {
-			DrawStringMultiLine(r, GetString(STR_NETWORK_ASK_RELAY_TEXT, this->server_connection_string, this->relay_connection_string), TC_FROMSTRING, SA_CENTER);
+			DrawStringMultiLine(r, GetString(STR_NETWORK_ASK_RELAY_TEXT, this->server_connection_string, this->relay_connection_string), TextColour::FromString, SA_CENTER);
 		}
 	}
 
@@ -2484,7 +2484,7 @@ struct NetworkAskSurveyWindow : public Window {
 	void DrawWidget(const Rect &r, WidgetID widget) const override
 	{
 		if (widget == WID_NAS_TEXT) {
-			DrawStringMultiLine(r, STR_NETWORK_ASK_SURVEY_TEXT, TC_BLACK, SA_CENTER);
+			DrawStringMultiLine(r, STR_NETWORK_ASK_SURVEY_TEXT, TextColour::Black, SA_CENTER);
 		}
 	}
 

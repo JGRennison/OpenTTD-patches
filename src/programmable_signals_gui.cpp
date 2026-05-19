@@ -220,7 +220,7 @@ static void DrawInstructionString(const SignalInstruction *instruction, int y, b
 	}
 
 	bool rtl = _current_text_dir == TD_RTL;
-	DrawString(left + (rtl ? 0 : ScaleGUITrad(indent * 16)), right - (rtl ? ScaleGUITrad(indent * 16) : 0), y, instruction_string, selected ? TC_WHITE : TC_BLACK);
+	DrawString(left + (rtl ? 0 : ScaleGUITrad(indent * 16)), right - (rtl ? ScaleGUITrad(indent * 16) : 0), y, instruction_string, selected ? TextColour::White : TextColour::Black);
 }
 
 struct GuiInstruction {

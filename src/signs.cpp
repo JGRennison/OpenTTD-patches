@@ -43,7 +43,7 @@ void Sign::UpdateVirtCoord()
 
 	if (_viewport_sign_kdtree_valid && this->sign.kdtree_valid) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeSign(this->index));
 
-	bool shown = HasBit(_display_opt, DO_SHOW_SIGNS) && !(this->IsCompetitorOwned() && !HasBit(_display_opt, DO_SHOW_COMPETITOR_SIGNS));
+	bool shown = _display_opt.Test(DisplayOption::ShowSigns) && !(this->IsCompetitorOwned() && !_display_opt.Test(DisplayOption::ShowCompetitorSigns));
 	auto params = MakeParameters(this->index);
 	this->sign.UpdatePosition(shown ? ZoomLevel::SpriteMax : ZoomLevel::End, pt.x, pt.y - 6 * ZOOM_BASE, params, STR_WHITE_SIGN);
 

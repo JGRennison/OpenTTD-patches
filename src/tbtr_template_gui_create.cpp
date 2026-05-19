@@ -292,7 +292,7 @@ public:
 			case TCW_NEW_TMPL_PANEL: {
 				if (this->virtual_train) {
 					DrawTrainImage(this->virtual_train, r.Shrink(TRAIN_FRONT_SPACE, 2, 25, 0), this->sel, EIT_IN_DEPOT, this->hscroll->GetPosition(), this->vehicle_over);
-					DrawString(r.left, r.right, r.top, GetString(STR_JUST_DECIMAL, CeilDiv(this->virtual_train->gcache.cached_total_length * 10, TILE_SIZE), 1), TC_BLACK, SA_RIGHT, false, FontSize::Small);
+					DrawString(r.left, r.right, r.top, GetString(STR_JUST_DECIMAL, CeilDiv(this->virtual_train->gcache.cached_total_length * 10, TILE_SIZE), 1), TextColour::Black, SA_RIGHT, false, FontSize::Small);
 				}
 				break;
 			}
@@ -385,7 +385,7 @@ public:
 					y += GetCharacterHeight(FontSize::Normal);
 					for (CargoType i{}; i < NUM_CARGO; ++i) {
 						if (cargo_caps[i] > 0) {
-							DrawString(left, right, y, GetString(STR_TMPL_CARGO_SUMMARY, i, cargo_caps[i]), TC_LIGHT_BLUE, SA_LEFT);
+							DrawString(left, right, y, GetString(STR_TMPL_CARGO_SUMMARY, i, cargo_caps[i]), TextColour::LightBlue, SA_LEFT);
 							y += GetCharacterHeight(FontSize::Normal);
 						}
 					}

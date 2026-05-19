@@ -1019,7 +1019,7 @@ DropDownList GetSlotDropDownList(Owner owner, TraceRestrictSlotID slot_id, int &
 		}
 	} else {
 		std::unique_ptr<DropDownListStringItem> new_item = std::make_unique<DropDownListStringItem>(GetString(STR_TRACE_RESTRICT_SLOT_CREATE_CAPTION), NEW_TRACE_RESTRICT_SLOT_ID.base(), false);
-		new_item->SetColourFlags(TC_FORCED);
+		new_item->SetColourFlags(ExtendedTextColourFlag::Forced);
 		dlist.emplace_back(std::move(new_item));
 		dlist.push_back(MakeDropDownListDividerItem());
 
@@ -1120,7 +1120,7 @@ DropDownList GetCounterDropDownList(Owner owner, TraceRestrictCounterID ctr_id, 
 		}
 	} else {
 		std::unique_ptr<DropDownListStringItem> new_item = std::make_unique<DropDownListStringItem>(GetString(STR_TRACE_RESTRICT_COUNTER_CREATE_CAPTION), NEW_TRACE_RESTRICT_COUNTER_ID.base(), false);
-		new_item->SetColourFlags(TC_FORCED);
+		new_item->SetColourFlags(ExtendedTextColourFlag::Forced);
 		dlist.emplace_back(std::move(new_item));
 		dlist.push_back(MakeDropDownListDividerItem());
 
@@ -2206,8 +2206,8 @@ static void DrawInstructionString(const TraceRestrictProgram *prog, TraceRestric
 	FillInstructionString(instruction_string, prog, instruction_record, index, owner, flags);
 
 	bool rtl = _current_text_dir == TD_RTL;
-	TextColour colour = selected ? TC_WHITE : TC_BLACK;
-	if (selected && instruction_record.instruction.GetType() == TRIT_GUI_LABEL) colour |= TC_FORCED;
+	ExtendedTextColour colour = selected ? TextColour::White : TextColour::Black;
+	if (selected && instruction_record.instruction.GetType() == TRIT_GUI_LABEL) colour.flags.Set(ExtendedTextColourFlag::Forced);
 	DrawString(left + (rtl ? 0 : ScaleGUITrad(indent * 16)), right - (rtl ? ScaleGUITrad(indent * 16) : 0), y, instruction_string, colour);
 }
 
@@ -4719,7 +4719,7 @@ private:
 		Rect info_area = draw_area.Indent(WidgetDimensions::scaled.hsep_normal + this->column_size[VGC_FOLD].width, rtl).Indent(WidgetDimensions::scaled.hsep_normal, !rtl);
 
 		/* draw the selected slot in white, else we draw it in black */
-		TextColour colour = item.item == this->slot_sel ? TC_WHITE : TC_BLACK;
+		TextColour colour = item.item == this->slot_sel ? TextColour::White : TextColour::Black;
 
 		Rect r = info_area.Indent(WidgetDimensions::scaled.vsep_wide + this->column_size[VGC_NUMBER].width, !rtl);
 
@@ -5579,7 +5579,7 @@ private:
 		bool rtl = _current_text_dir == TD_RTL;
 
 		/* draw the selected counter in white, else we draw it in black */
-		TextColour colour = ctr_id == this->selected ? TC_WHITE : TC_BLACK;
+		TextColour colour = ctr_id == this->selected ? TextColour::White : TextColour::Black;
 
 		Rect r = info_area.Indent(this->value_col_width + WidgetDimensions::scaled.vsep_wide + this->public_col_width, !rtl);
 		DrawString(r.left, r.right, r.top + (this->tiny_step_height - GetCharacterHeight(FontSize::Normal)) / 2, GetString(STR_TRACE_RESTRICT_COUNTER_NAME, ctr_id), colour);

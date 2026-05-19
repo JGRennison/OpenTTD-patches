@@ -2041,7 +2041,7 @@ STR_SCHDISPATCH_ENABLED_TOOLTIP                                 :{BLACK}Вклю
 STR_SCHDISPATCH_ADD                                             :{BLACK}Добавить слот
 STR_SCHDISPATCH_ADD_TOOLTIP                                     :{BLACK}Добавить новый слот отправления для этого расписания.
 STR_SCHDISPATCH_ADD_TOOLTIP_EXTRA                               :{BLACK}{STRING} Ctrl+клик добавить сразу несколько слотов отправления.
-STR_SCHDISPATCH_ADD_CAPTION                                     :{BLACK}Слот отправления
+STR_SCHDISPATCH_ADD_CAPTION                                     :Слот отправления
 STR_SCHDISPATCH_DURATION                                        :{BLACK}Продолжительность
 STR_SCHDISPATCH_DURATION_TOOLTIP                                :{BLACK}Установить продолжительность этого расписания.
 STR_SCHDISPATCH_DURATION_CAPTION_MINUTE                         :{BLACK}Продолжительность (минуты)

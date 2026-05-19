@@ -311,7 +311,7 @@ void SettingEntry::DrawSettingString(uint left, uint right, int y, bool highligh
 {
 	const IntSettingDesc *sd = this->setting;
 	auto [param1, param2] = sd->GetValueParams(value);
-	int edge = DrawString(left, right, y, GetString(sd->GetTitle(), STR_CONFIG_SETTING_VALUE, param1, param2), highlight ? TC_WHITE : TC_LIGHT_BLUE);
+	int edge = DrawString(left, right, y, GetString(sd->GetTitle(), STR_CONFIG_SETTING_VALUE, param1, param2), highlight ? TextColour::White : TextColour::LightBlue);
 
 	if (this->setting->guiproc != nullptr && edge != 0) {
 		SettingOnGuiCtrlData data;
@@ -343,7 +343,7 @@ void CargoDestPerCargoSettingEntry::DrawSettingString(uint left, uint right, int
 	assert(this->setting->str == STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO);
 	auto [param1, param2] = this->setting->GetValueParams(value);
 	std::string str = GetString(STR_CONFIG_SETTING_DISTRIBUTION_PER_CARGO_PARAM, CargoSpec::Get(this->cargo)->name, STR_CONFIG_SETTING_VALUE, param1, param2);
-	DrawString(left, right, y, str, highlight ? TC_WHITE : TC_LIGHT_BLUE);
+	DrawString(left, right, y, str, highlight ? TextColour::White : TextColour::LightBlue);
 }
 
 bool CargoDestPerCargoSettingEntry::UpdateFilterState(SettingFilter &filter, bool force_visible)
@@ -641,7 +641,7 @@ void SettingsPage::DrawSetting(GameSettings *, int left, int right, int y, bool)
 {
 	bool rtl = _current_text_dir == TD_RTL;
 	DrawSprite((this->folded ? SPR_CIRCLE_FOLDED : SPR_CIRCLE_UNFOLDED), PAL_NONE, rtl ? right - BaseSettingEntry::circle_size.width : left, y + (BaseSettingEntry::line_height - BaseSettingEntry::circle_size.height) / 2);
-	DrawString(rtl ? left : left + BaseSettingEntry::circle_size.width + WidgetDimensions::scaled.hsep_normal, rtl ? right - BaseSettingEntry::circle_size.width - WidgetDimensions::scaled.hsep_normal : right, y + (BaseSettingEntry::line_height - GetCharacterHeight(FontSize::Normal)) / 2, this->title, TC_ORANGE);
+	DrawString(rtl ? left : left + BaseSettingEntry::circle_size.width + WidgetDimensions::scaled.hsep_normal, rtl ? right - BaseSettingEntry::circle_size.width - WidgetDimensions::scaled.hsep_normal : right, y + (BaseSettingEntry::line_height - GetCharacterHeight(FontSize::Normal)) / 2, this->title, TextColour::Orange);
 }
 
 /**

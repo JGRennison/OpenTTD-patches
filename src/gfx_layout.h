@@ -30,29 +30,35 @@
  * of the same text, e.g. on line breaks.
  */
 struct FontState {
-	FontSize fontsize;       ///< Current font size.
-	TextColour cur_colour;   ///< Current text colour.
+	FontSize fontsize;             ///< Current font size.
+	ExtendedTextColour cur_colour; ///< Current text colour.
 
-	struct ColourStack : public std::stack<TextColour, ankerl::svector<TextColour, 3>> {
-		typedef std::stack<TextColour, ankerl::svector<TextColour, 3>> Stack;
+	struct ColourStack : public std::stack<ExtendedTextColour, ankerl::svector<ExtendedTextColour, 3>> {
+		typedef std::stack<ExtendedTextColour, ankerl::svector<ExtendedTextColour, 3>> Stack;
 		using Stack::Stack;
 		using Stack::operator=;
 		using Stack::c; // expose underlying container
 	};
 	ColourStack colour_stack; ///< Stack of colours to assist with colour switching.
 
-	FontState() : fontsize(FontSize::End), cur_colour(TC_INVALID) {}
-	FontState(TextColour colour, FontSize fontsize) : fontsize(fontsize), cur_colour(colour) {}
+	/** Create the font state with an invalid state. */
+	FontState() : fontsize(FontSize::End), cur_colour(TextColour::Invalid) {}
+	/**
+	 * Create the font state.
+	 * @param colour The colour of the font.
+	 * @param fontsize The size of the font.
+	 */
+	FontState(ExtendedTextColour colour, FontSize fontsize) : fontsize(fontsize), cur_colour(colour) {}
 
 	/**
 	 * Switch to new colour \a c.
 	 * @param c New colour to use.
 	 */
-	inline void SetColour(TextColour c)
+	inline void SetColour(ExtendedTextColour c)
 	{
-		assert(((c & TC_COLOUR_MASK) >= TC_BLUE && (c & TC_COLOUR_MASK) <= TC_BLACK) || (c & TC_COLOUR_MASK) == TC_INVALID);
-		assert((c & (TC_COLOUR_MASK | TC_FLAGS_MASK)) == c);
-		if ((this->cur_colour & TC_FORCED) == 0) this->cur_colour = c;
+		assert((c.colour >= TextColour::Begin && c.colour < TextColour::End) || c.colour == TextColour::Invalid);
+		assert(!c.flags.Test(ExtendedTextColourFlag::IsPaletteColour));
+		if (!this->cur_colour.flags.Test(ExtendedTextColourFlag::Forced)) this->cur_colour = c;
 	}
 
 	/**
@@ -61,7 +67,7 @@ struct FontState {
 	inline void PopColour()
 	{
 		if (colour_stack.empty()) return;
-		if ((this->cur_colour & TC_FORCED) == 0) this->cur_colour = colour_stack.top();
+		if (!this->cur_colour.flags.Test(ExtendedTextColourFlag::Forced)) this->cur_colour = colour_stack.top();
 		colour_stack.pop();
 	}
 
@@ -70,7 +76,9 @@ struct FontState {
 	 */
 	inline void PushColour()
 	{
-		colour_stack.push(this->cur_colour & ~TC_FORCED);
+		ExtendedTextColour colour = this->cur_colour;
+		colour.flags.Reset(ExtendedTextColourFlag::Forced);
+		colour_stack.push(colour);
 	}
 
 	/**
@@ -89,9 +97,9 @@ struct FontState {
 class Font {
 public:
 	FontCache *fc;     ///< The font we are using.
-	TextColour colour; ///< The colour this font has to be.
+	ExtendedTextColour colour; ///< The colour this font has to be.
 
-	Font(FontSize size, TextColour colour);
+	Font(FontSize size, ExtendedTextColour colour);
 };
 
 /** Mapping from index to font. The pointer is owned by FontColourMap. */
@@ -258,7 +266,7 @@ class Layouter : public std::vector<const ParagraphLayouter::Line *> {
 		size_t hash_font_state(const FontState &fs) const noexcept
 		{
 			size_t result = 0;
-			HashCombine(result, robin_hood::hash_int(to_underlying(fs.fontsize) << 16 | fs.cur_colour));
+			HashCombine(result, robin_hood::hash_int(to_underlying(fs.fontsize) << 16 | fs.cur_colour.ToNetwork()));
 			const auto &colour_stack = fs.colour_stack.c;
 			if (!colour_stack.empty()) {
 				HashCombine(result, robin_hood::hash_bytes(colour_stack.data(), colour_stack.size() * sizeof(colour_stack[0])));
@@ -301,10 +309,10 @@ private:
 	static LineCacheItem &GetCachedParagraphLayout(std::string_view str, const FontState &state);
 	static void ReduceLineCache();
 
-	using FontColourMap = btree::btree_map<TextColour, std::unique_ptr<Font>>;
+	using FontColourMap = btree::btree_map<ExtendedTextColour, std::unique_ptr<Font>>;
 	static EnumIndexArray<FontColourMap, FontSize, FontSize::End> fonts; ///< The colour mapping of each of the fonts.
 public:
-	static Font *GetFont(FontSize size, TextColour colour);
+	static Font *GetFont(FontSize size, ExtendedTextColour colour);
 
 	Layouter(std::string_view str, int maxw = INT32_MAX, FontSize fontsize = FontSize::Normal);
 	Dimension GetBounds();
