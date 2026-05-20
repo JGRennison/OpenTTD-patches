@@ -205,19 +205,20 @@ bool Vehicle::NeedsAutorenewing(const Company *c, bool use_renew_setting) const
 void VehicleServiceInDepot(Vehicle *v)
 {
 	dbg_assert(v != nullptr);
-	const Engine *e = Engine::Get(v->engine_type);
 	if (v->type == VehicleType::Train) {
 		Train *t = Train::From(v);
-		if (t->Next() != nullptr) VehicleServiceInDepot(t->Next());
-		if (!(t->IsEngine()) && !(t->IsRearDualheaded())) return;
-		t->flags.Reset({VehicleRailFlag::NeedRepair, VehicleRailFlag::HasHitRoadVehicle, VehicleRailFlag::ConsistBreakdown});
-		t->critical_breakdown_count = 0;
-		const RailVehicleInfo &rvi = e->VehInfo<RailVehicleInfo>();
-		t->vcache.cached_max_speed = rvi.max_speed;
+		for (Train *u = t; u != nullptr; u = u->Next()) {
+			if (u->IsEngine() || u->IsRearDualheaded()) {
+				u->flags.Reset({VehicleRailFlag::NeedRepair, VehicleRailFlag::HasHitRoadVehicle, VehicleRailFlag::ConsistBreakdown});
+				u->critical_breakdown_count = 0;
+				const RailVehicleInfo &rvi = u->GetEngine()->VehInfo<RailVehicleInfo>();
+				u->vcache.cached_max_speed = rvi.max_speed;
+			}
+		}
 		if (t->IsFrontEngine()) {
-			t->ConsistChanged(CCF_REFIT);
 			t->flags.Reset(VehicleRailFlag::BreakdownBraking);
 			t->flags.Reset(VehicleRailFlagsIsBroken);
+			t->ConsistChanged(CCF_REFIT);
 		}
 	} else if (v->type == VehicleType::Road) {
 		RoadVehicle::From(v)->critical_breakdown_count = 0;
@@ -231,7 +232,7 @@ void VehicleServiceInDepot(Vehicle *v)
 	do {
 		v->date_of_last_service = EconTime::CurDate();
 		v->date_of_last_service_newgrf = CalTime::CurDate();
-		if (_settings_game.vehicle.pay_for_repair && v->breakdowns_since_last_service) {
+		if (_settings_game.vehicle.pay_for_repair && v->breakdowns_since_last_service > 0) {
 			_vehicles_to_pay_repair.insert(v->index);
 		} else {
 			v->breakdowns_since_last_service = 0;
