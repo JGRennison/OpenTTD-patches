@@ -348,7 +348,7 @@ struct NewGRFParametersWindow : public Window {
 				if (this->editable && !this->action14present && !this->grf_config.param.empty()) {
 					this->grf_config.param.pop_back();
 					this->InvalidateData();
-					SetWindowDirty(WC_GAME_OPTIONS, WN_GAME_OPTIONS_NEWGRF_STATE);
+					SetWindowDirty(WC_GAME_OPTIONS, GameOptionsWindowNumber::NewGRFState);
 				}
 				break;
 
@@ -356,7 +356,7 @@ struct NewGRFParametersWindow : public Window {
 				if (this->editable && !this->action14present && this->grf_config.param.size() < this->grf_config.num_valid_params) {
 					this->grf_config.param.emplace_back(0);
 					this->InvalidateData();
-					SetWindowDirty(WC_GAME_OPTIONS, WN_GAME_OPTIONS_NEWGRF_STATE);
+					SetWindowDirty(WC_GAME_OPTIONS, GameOptionsWindowNumber::NewGRFState);
 				}
 				break;
 
@@ -443,7 +443,7 @@ struct NewGRFParametersWindow : public Window {
 				if (!this->editable) break;
 				this->grf_config.SetParameterDefaults();
 				this->InvalidateData();
-				SetWindowDirty(WC_GAME_OPTIONS, WN_GAME_OPTIONS_NEWGRF_STATE);
+				SetWindowDirty(WC_GAME_OPTIONS, GameOptionsWindowNumber::NewGRFState);
 				break;
 		}
 	}
@@ -659,7 +659,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 		this->GetWidget<NWidgetStacked>(WID_NS_SHOW_REMOVE)->SetDisplayedPlane(this->editable ? 0 : 1);
 		this->GetWidget<NWidgetStacked>(WID_NS_SHOW_EDIT)->SetDisplayedPlane(this->editable ? 0 : (this->show_params ? 1 : SZSP_HORIZONTAL));
 		this->GetWidget<NWidgetStacked>(WID_NS_SHOW_APPLY)->SetDisplayedPlane(this->editable && this->execute ? 0 : SZSP_VERTICAL);
-		this->FinishInitNested(WN_GAME_OPTIONS_NEWGRF_STATE);
+		this->FinishInitNested(GameOptionsWindowNumber::NewGRFState);
 
 		this->querystrings[WID_NS_FILTER] = &this->filter_editbox;
 		this->filter_editbox.cancel_button = QueryString::ACTION_CLEAR;
@@ -2191,7 +2191,7 @@ struct SavePresetWindow : public Window {
 			}
 
 			case WID_SVP_SAVE: {
-				Window *w = FindWindowById(WC_GAME_OPTIONS, WN_GAME_OPTIONS_NEWGRF_STATE);
+				Window *w = FindWindowById(WC_GAME_OPTIONS, GameOptionsWindowNumber::NewGRFState);
 				if (w != nullptr) {
 					std::string_view text = this->presetname_editbox.text.GetText();
 					if (!text.empty()) w->OnQueryTextFinished(std::string{text});

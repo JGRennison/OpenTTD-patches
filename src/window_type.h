@@ -23,28 +23,45 @@ using WidgetID = int;
 /** An invalid widget index. */
 static constexpr WidgetID INVALID_WIDGET = -1;
 
-/** %Window numbers. */
-enum WindowNumberEnum : uint8_t {
-	WN_GAME_OPTIONS_AI = 0,          ///< AI settings.
-	WN_GAME_OPTIONS_GS,              ///< GS settings.
-	WN_GAME_OPTIONS_ABOUT,           ///< About window.
-	WN_GAME_OPTIONS_NEWGRF_STATE,    ///< NewGRF settings.
-	WN_GAME_OPTIONS_GAME_OPTIONS,    ///< Game options.
-	WN_GAME_OPTIONS_GAME_SETTINGS,   ///< Game settings.
-
-	WN_QUERY_STRING = 0,  ///< Query string.
-	WN_QUERY_STRING_SIGN, ///< Query string for signs.
-
-	WN_CONFIRM_POPUP_QUERY = 0,       ///< Query popup confirm.
-	WN_CONFIRM_POPUP_QUERY_BOOTSTRAP, ///< Query popup confirm for bootstrap.
-
-	WN_NETWORK_WINDOW_GAME = 0,     ///< Network game window.
-	WN_NETWORK_WINDOW_CONTENT_LIST, ///< Network content list.
-	WN_NETWORK_WINDOW_START,        ///< Network start server.
-
-	WN_NETWORK_STATUS_WINDOW_JOIN = 0,         ///< Network join status.
-	WN_NETWORK_STATUS_WINDOW_CONTENT_DOWNLOAD, ///< Network content download status.
+/** Window numbers for GameOptions windows. */
+enum class GameOptionsWindowNumber : uint8_t {
+	AI, ///< AI settings.
+	GS, ///< GS settings.
+	About, ///< About window.
+	NewGRFState, ///< NewGRF settings.
+	GameOptions, ///< Game options.
+	GameSettings, ///< Game settings.
 };
+DECLARE_CONVERTIBLE_TO_WINDOW_NUMBER(GameOptionsWindowNumber)
+
+/** Window numbers for QueryString windows. */
+enum class QueryStringWindowNumber : uint8_t {
+	Default, ///< Query string.
+	Sign, ///< Query string for signs.
+};
+DECLARE_CONVERTIBLE_TO_WINDOW_NUMBER(QueryStringWindowNumber)
+
+/** Window numbers for PopupQuery windows. */
+enum class ConfirmPopupQueryWindowNumber : uint8_t {
+	Default, ///< Query popup confirm.
+	Bootstrap, ///< Query popup confirm for bootstrap.
+};
+DECLARE_CONVERTIBLE_TO_WINDOW_NUMBER(ConfirmPopupQueryWindowNumber)
+
+/** Window numbers for network windows. */
+enum class NetworkWindowNumber : uint8_t {
+	Game, ///< Network game window.
+	ContentList, ///< Network content list.
+	StartServer, ///< Network start server.
+};
+DECLARE_CONVERTIBLE_TO_WINDOW_NUMBER(NetworkWindowNumber)
+
+/** Window number for network status windows. */
+enum class NetworkStatusWindowNumber : uint8_t {
+	Join, ///< Network join status.
+	ContentDownload, ///< Network content download status.
+};
+DECLARE_CONVERTIBLE_TO_WINDOW_NUMBER(NetworkStatusWindowNumber)
 
 /** %Window classes. */
 enum WindowClass : uint16_t {
@@ -129,15 +146,15 @@ enum WindowClass : uint16_t {
 
 	/**
 	 * Query string window; %Window numbers:
-	 *   - #WN_QUERY_STRING = #QueryStringWidgets
-	 *   - #WN_QUERY_STRING_SIGN = #QueryEditSignWidgets
+	 *   - #QueryStringWindowNumber::Default = #QueryStringWidgets
+	 *   - #QueryStringWindowNumber::Sign = #QueryEditSignWidgets
 	 */
 	WC_QUERY_STRING,
 
 	/**
 	 * Popup with confirm question; %Window numbers:
-	 *   - #WN_CONFIRM_POPUP_QUERY = #QueryWidgets
-	 *   - #WN_CONFIRM_POPUP_QUERY_BOOTSTRAP = #BootstrapAskForDownloadWidgets
+	 *   - #ConfirmPopupQueryWindowNumber::Default = #QueryWidgets
+	 *   - #ConfirmPopupQueryWindowNumber::Bootstrap = #BootstrapAskForDownloadWidgets
 	 */
 	WC_CONFIRM_POPUP_QUERY,
 
@@ -513,9 +530,9 @@ enum WindowClass : uint16_t {
 
 	/**
 	 * Network window; %Window numbers:
-	 *   - #WN_NETWORK_WINDOW_GAME = #NetworkGameWidgets
-	 *   - #WN_NETWORK_WINDOW_CONTENT_LIST = #NetworkContentListWidgets
-	 *   - #WN_NETWORK_WINDOW_START = #NetworkStartServerWidgets
+	 *   - #NetworkWindowNumber::Game = #NetworkGameWidgets
+	 *   - #NetworkWindowNumber::ContentList = #NetworkContentListWidgets
+	 *   - #NetworkWindowNumber::StartServer = #NetworkStartServerWidgets
 	 */
 	WC_NETWORK_WINDOW,
 
@@ -527,8 +544,8 @@ enum WindowClass : uint16_t {
 
 	/**
 	 * Network status window; %Window numbers:
-	 *   - #WN_NETWORK_STATUS_WINDOW_JOIN = #NetworkJoinStatusWidgets
-	 *   - #WN_NETWORK_STATUS_WINDOW_CONTENT_DOWNLOAD = #NetworkContentDownloadStatusWidgets
+	 *   - #NetworkStatusWindowNumber::Join = #NetworkJoinStatusWidgets
+	 *   - #NetworkStatusWindowNumber::ContentDownload = #NetworkContentDownloadStatusWidgets
 	 */
 	WC_NETWORK_STATUS_WINDOW,
 
@@ -675,12 +692,12 @@ enum WindowClass : uint16_t {
 
 	/**
 	 * Game options window; %Window numbers:
-	 *   - #WN_GAME_OPTIONS_AI = #AIConfigWidgets
-	 *   - #WN_GAME_OPTIONS_GS = #GSConfigWidgets
-	 *   - #WN_GAME_OPTIONS_ABOUT = #AboutWidgets
-	 *   - #WN_GAME_OPTIONS_NEWGRF_STATE = #NewGRFStateWidgets
-	 *   - #WN_GAME_OPTIONS_GAME_OPTIONS = #GameOptionsWidgets
-	 *   - #WN_GAME_OPTIONS_GAME_SETTINGS = #GameSettingsWidgets
+	 *   - #GameOptionsWindowNumber::AI = #AIConfigWidgets
+	 *   - #GameOptionsWindowNumber::GS = #GSConfigWidgets
+	 *   - #GameOptionsWindowNumber::About = #AboutWidgets
+	 *   - #GameOptionsWindowNumber::NewGRFState = #NewGRFStateWidgets
+	 *   - #GameOptionsWindowNumber::GameOptions = #GameOptionsWidgets
+	 *   - #GameOptionsWindowNumber::GameSettings = #GameSettingsWidgets
 	 */
 	WC_GAME_OPTIONS,
 

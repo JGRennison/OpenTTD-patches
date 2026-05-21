@@ -422,9 +422,9 @@ void GenerateClearTile()
 	i = Map::ScaleBySize(GB(Random(), 0, 10) + 0x400);
 	gi = Map::ScaleBySize(GB(Random(), 0, 7) + 0x80);
 
-	SetGeneratingWorldProgress(GWP_ROUGH_ROCKY, gi + i);
+	SetGeneratingWorldProgress(GenWorldProgress::RoughAndRocks, gi + i);
 	do {
-		IncreaseGeneratingWorldProgress(GWP_ROUGH_ROCKY);
+		IncreaseGeneratingWorldProgress(GenWorldProgress::RoughAndRocks);
 		tile = RandomTile();
 		if (IsTileType(tile, TileType::Clear) && !IsClearGround(tile, ClearGround::Desert)) SetClearGroundDensity(tile, ClearGround::Rough, 3);
 	} while (--i);
@@ -435,7 +435,7 @@ void GenerateClearTile()
 		uint32_t r = Random();
 		tile = RandomTileSeed(r);
 
-		IncreaseGeneratingWorldProgress(GWP_ROUGH_ROCKY);
+		IncreaseGeneratingWorldProgress(GenWorldProgress::RoughAndRocks);
 		if (IsTileType(tile, TileType::Clear)) {
 			uint j = GB(r, 16, 4) + _settings_game.game_creation.amount_of_rocks + ((int)TileHeight(tile) * _settings_game.game_creation.height_affects_rocks);
 			for (;;) {

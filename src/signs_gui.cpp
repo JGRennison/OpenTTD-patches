@@ -420,7 +420,7 @@ struct SignWindow : Window, SignList {
 		this->name_editbox.ok_button = WID_QES_OK;
 		this->cur_sign = si->index;
 
-		this->InitNested(WN_QUERY_STRING_SIGN);
+		this->InitNested(QueryStringWindowNumber::Sign);
 
 		if (_game_mode != GameMode::GM_EDITOR) {
 			this->GetWidget<NWidgetStacked>(WID_QES_COLOUR_PANE)->SetDisplayedPlane(SZSP_VERTICAL);
@@ -663,7 +663,7 @@ void ShowRenameSignWindow(const Sign *si)
  */
 void DeleteRenameSignWindow(SignID sign)
 {
-	SignWindow *w = dynamic_cast<SignWindow *>(FindWindowById(WC_QUERY_STRING, WN_QUERY_STRING_SIGN));
+	SignWindow *w = dynamic_cast<SignWindow *>(FindWindowById(WC_QUERY_STRING, QueryStringWindowNumber::Sign));
 
 	if (w != nullptr && w->cur_sign == sign) w->Close();
 }

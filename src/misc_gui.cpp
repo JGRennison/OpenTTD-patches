@@ -461,7 +461,7 @@ struct AboutWindow : public Window {
 
 	AboutWindow() : Window(_about_desc)
 	{
-		this->InitNested(WN_GAME_OPTIONS_ABOUT);
+		this->InitNested(GameOptionsWindowNumber::About);
 
 		this->text_position = this->GetWidget<NWidgetBase>(WID_A_SCROLLING_TEXT)->pos_y + this->GetWidget<NWidgetBase>(WID_A_SCROLLING_TEXT)->current_y;
 	}
@@ -1056,7 +1056,7 @@ private:
 		}
 		this->GetWidget<NWidgetStacked>(WID_QS_DEFAULT_SEL)->SetDisplayedPlane((this->flags.Test(QueryStringFlag::EnableDefault)) ? 0 : SZSP_NONE);
 		this->GetWidget<NWidgetStacked>(WID_QS_MOVE_SEL)->SetDisplayedPlane((this->flags.Test(QueryStringFlag::EnableMove)) ? 0 : SZSP_NONE);
-		this->FinishInitNested(WN_QUERY_STRING);
+		this->FinishInitNested(QueryStringWindowNumber::Default);
 		this->UpdateWarningStringSize();
 
 		this->parent = parent;
@@ -1345,7 +1345,7 @@ struct QueryWindow : public Window {
 		this->parent = parent;
 
 		this->CreateNestedTree();
-		this->FinishInitNested(WN_CONFIRM_POPUP_QUERY);
+		this->FinishInitNested(ConfirmPopupQueryWindowNumber::Default);
 	}
 
 	void Close([[maybe_unused]] int data = 0) override

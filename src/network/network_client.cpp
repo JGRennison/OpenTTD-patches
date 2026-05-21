@@ -224,7 +224,7 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 		this->CloseConnection(res);
 		_networking = false;
 
-		CloseWindowById(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
+		CloseWindowById(WC_NETWORK_STATUS_WINDOW, NetworkStatusWindowNumber::Join);
 		return;
 	}
 
@@ -257,7 +257,7 @@ void ClientNetworkGameSocketHandler::ClientError(NetworkRecvStatus res)
 	}
 
 	CloseNetworkClientWindows();
-	CloseWindowById(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
+	CloseWindowById(WC_NETWORK_STATUS_WINDOW, NetworkStatusWindowNumber::Join);
 
 	if (_game_mode != GM_MENU) _switch_mode = SM_MENU;
 	_networking = false;
@@ -470,7 +470,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::SendJoin()
 {
 	my_client->status = STATUS_JOIN;
 	_network_join_status = NetworkJoinStatus::Authorizing;
-	SetWindowDirty(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
+	SetWindowDirty(WC_NETWORK_STATUS_WINDOW, NetworkStatusWindowNumber::Join);
 
 	auto p = std::make_unique<Packet>(my_client, PacketGameType::ClientJoin);
 	p->Send_string(GetNetworkRevisionString());
@@ -1055,7 +1055,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::ReceiveServerWaitForMap(Packet
 	/* But... only now we set the join status to waiting, instead of requesting. */
 	_network_join_status = NetworkJoinStatus::Waiting;
 	_network_join_waiting = p.Recv_uint8();
-	SetWindowDirty(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
+	SetWindowDirty(WC_NETWORK_STATUS_WINDOW, NetworkStatusWindowNumber::Join);
 
 	return NETWORK_RECV_STATUS_OKAY;
 }
@@ -1075,7 +1075,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::ReceiveServerMapBegin(Packet &
 	_network_join_bytes_total = 0;
 
 	_network_join_status = NetworkJoinStatus::Downloading;
-	SetWindowDirty(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
+	SetWindowDirty(WC_NETWORK_STATUS_WINDOW, NetworkStatusWindowNumber::Join);
 
 	return NETWORK_RECV_STATUS_OKAY;
 }
@@ -1086,7 +1086,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::ReceiveServerMapSize(Packet &p
 	if (this->savegame == nullptr) return NETWORK_RECV_STATUS_MALFORMED_PACKET;
 
 	_network_join_bytes_total = p.Recv_uint32();
-	SetWindowDirty(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
+	SetWindowDirty(WC_NETWORK_STATUS_WINDOW, NetworkStatusWindowNumber::Join);
 
 	return NETWORK_RECV_STATUS_OKAY;
 }
@@ -1100,7 +1100,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::ReceiveServerMapData(Packet &p
 	this->savegame->AddPacket(p);
 
 	_network_join_bytes = (uint32_t)this->savegame->written_bytes;
-	SetWindowDirty(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
+	SetWindowDirty(WC_NETWORK_STATUS_WINDOW, NetworkStatusWindowNumber::Join);
 
 	return NETWORK_RECV_STATUS_OKAY;
 }
@@ -1111,7 +1111,7 @@ NetworkRecvStatus ClientNetworkGameSocketHandler::ReceiveServerMapDone(Packet &)
 	if (this->savegame == nullptr) return NETWORK_RECV_STATUS_MALFORMED_PACKET;
 
 	_network_join_status = NetworkJoinStatus::Processing;
-	SetWindowDirty(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
+	SetWindowDirty(WC_NETWORK_STATUS_WINDOW, NetworkStatusWindowNumber::Join);
 
 	this->savegame->Reset();
 

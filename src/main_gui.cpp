@@ -475,7 +475,7 @@ struct MainWindow : Window
 			case GHK_SWITCH_VIEWPORT_ROUTE_OVERLAY_MODE:
 				if (_settings_client.gui.show_vehicle_route_mode != 0) {
 					_settings_client.gui.show_vehicle_route_mode ^= 3;
-					SetWindowDirty(WC_GAME_OPTIONS, WN_GAME_OPTIONS_GAME_SETTINGS);
+					SetWindowDirty(WC_GAME_OPTIONS, GameOptionsWindowNumber::GameSettings);
 				}
 				break;
 			case GHK_SWITCH_VIEWPORT_MAP_SLOPE_MODE: {

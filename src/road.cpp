@@ -969,7 +969,7 @@ void PostProcessNetworks(AyStar &finder, const std::vector<std::unique_ptr<TownN
 			PublicRoadFindPath(finder, town_a, second_closest_town);
 			PublicRoadFindPath(finder, town_a, third_closest_town);
 
-			IncreaseGeneratingWorldProgress(GWP_PUBLIC_ROADS);
+			IncreaseGeneratingWorldProgress(GenWorldProgress::PublicRoads);
 		}
 	}
 }
@@ -1000,7 +1000,7 @@ void GeneratePublicRoads(PublicRoadsConstruction build_mode, RoadType road_type 
 		return;
 	}
 
-	SetGeneratingWorldProgress(GWP_PUBLIC_ROADS, uint(towns.size() * 2));
+	SetGeneratingWorldProgress(GenWorldProgress::PublicRoads, uint(towns.size() * 2));
 
 
 	// Create a list of networks which also contain a value indicating how many times we failed to connect to them.
@@ -1028,7 +1028,7 @@ void GeneratePublicRoads(PublicRoadsConstruction build_mode, RoadType road_type 
 
 	town_to_network_map[main_town] = main_network;
 
-	IncreaseGeneratingWorldProgress(GWP_PUBLIC_ROADS);
+	IncreaseGeneratingWorldProgress(GenWorldProgress::PublicRoads);
 
 	auto town_network_distance = [](const TileIndex town, const TownNetwork *network) -> uint {
 		uint best = UINT_MAX;
@@ -1132,7 +1132,7 @@ void GeneratePublicRoads(PublicRoadsConstruction build_mode, RoadType road_type 
 			}
 		}
 
-		IncreaseGeneratingWorldProgress(GWP_PUBLIC_ROADS);
+		IncreaseGeneratingWorldProgress(GenWorldProgress::PublicRoads);
 	}
 
 	PostProcessNetworks(finder, networks);

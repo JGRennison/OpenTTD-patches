@@ -71,7 +71,7 @@ static CompanyID _admin_company_id = CompanyID::Invalid(); ///< For what company
  */
 void UpdateNetworkGameWindow()
 {
-	InvalidateWindowData(WC_NETWORK_WINDOW, WN_NETWORK_WINDOW_GAME, 0);
+	InvalidateWindowData(WC_NETWORK_WINDOW, NetworkWindowNumber::Game, 0);
 }
 
 /**
@@ -454,7 +454,7 @@ public:
 	{
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_NG_SCROLLBAR);
-		this->FinishInitNested(WN_NETWORK_WINDOW_GAME);
+		this->FinishInitNested(NetworkWindowNumber::Game);
 
 		this->querystrings[WID_NG_CLIENT] = &this->name_editbox;
 		this->name_editbox.text.Assign(_settings_client.network.client_name);
@@ -971,7 +971,7 @@ static WindowDesc _network_game_window_desc(__FILE__, __LINE__,
 void ShowNetworkGameWindow()
 {
 	static bool first = true;
-	CloseWindowById(WC_NETWORK_WINDOW, WN_NETWORK_WINDOW_START);
+	CloseWindowById(WC_NETWORK_WINDOW, NetworkWindowNumber::StartServer);
 
 	/* Only show once */
 	if (first) {
@@ -996,7 +996,7 @@ struct NetworkStartServerWindow : public Window {
 	 */
 	NetworkStartServerWindow(WindowDesc &desc) : Window(desc), name_editbox(NETWORK_NAME_LENGTH)
 	{
-		this->InitNested(WN_NETWORK_WINDOW_START);
+		this->InitNested(NetworkWindowNumber::StartServer);
 
 		this->querystrings[WID_NSS_GAMENAME] = &this->name_editbox;
 		this->name_editbox.text.Assign(_settings_client.network.server_name);
@@ -1249,7 +1249,7 @@ static void ShowNetworkStartServerWindow()
 {
 	if (!NetworkValidateOurClientName()) return;
 
-	CloseWindowById(WC_NETWORK_WINDOW, WN_NETWORK_WINDOW_GAME);
+	CloseWindowById(WC_NETWORK_WINDOW, NetworkWindowNumber::Game);
 
 	new NetworkStartServerWindow(_network_start_server_window_desc);
 }
@@ -2094,8 +2094,8 @@ struct NetworkJoinStatusWindow : Window {
 	 */
 	NetworkJoinStatusWindow(WindowDesc &desc) : Window(desc)
 	{
-		this->parent = FindWindowById(WC_NETWORK_WINDOW, WN_NETWORK_WINDOW_GAME);
-		this->InitNested(WN_NETWORK_STATUS_WINDOW_JOIN);
+		this->parent = FindWindowById(WC_NETWORK_WINDOW, NetworkWindowNumber::Game);
+		this->InitNested(NetworkStatusWindowNumber::Join);
 	}
 
 	void DrawWidget(const Rect &r, WidgetID widget) const override
@@ -2219,7 +2219,7 @@ static WindowDesc _network_join_status_window_desc(__FILE__, __LINE__,
 /** Open the window showing the status of joining the server. */
 void ShowJoinStatusWindow()
 {
-	CloseWindowById(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
+	CloseWindowById(WC_NETWORK_STATUS_WINDOW, NetworkStatusWindowNumber::Join);
 	new NetworkJoinStatusWindow(_network_join_status_window_desc);
 }
 
@@ -2230,7 +2230,7 @@ void ShowJoinStatusWindow()
  */
 void ShowNetworkNeedPassword(NetworkPasswordType npt, std::shared_ptr<NetworkAuthenticationPasswordRequest> request)
 {
-	NetworkJoinStatusWindow *w = dynamic_cast<NetworkJoinStatusWindow *>(FindWindowById(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN));
+	NetworkJoinStatusWindow *w = dynamic_cast<NetworkJoinStatusWindow *>(FindWindowById(WC_NETWORK_STATUS_WINDOW, NetworkStatusWindowNumber::Join));
 	if (w == nullptr) return;
 	w->request = std::move(request);
 

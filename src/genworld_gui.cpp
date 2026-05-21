@@ -1047,7 +1047,7 @@ struct GenerateLandscapeWindow : public Window {
 			case WID_GL_TOWNNAME_DROPDOWN: // Town names
 				if (_game_mode == GM_MENU || Town::GetNumItems() == 0) {
 					_settings_newgame.game_creation.town_name = index;
-					SetWindowDirty(WC_GAME_OPTIONS, WN_GAME_OPTIONS_GAME_OPTIONS);
+					SetWindowDirty(WC_GAME_OPTIONS, GameOptionsWindowNumber::GameOptions);
 				}
 				break;
 
@@ -1542,7 +1542,8 @@ struct GenWorldStatus {
 	static inline bool single_section; ///< Whether to only use the current section for the overall percentage
 };
 
-static const StringID _generation_class_table[]  = {
+/** Strings used for the steps of the world generation progress bar. */
+static const EnumIndexArray<StringID, GenWorldProgress, GenWorldProgress::End> _generation_class_table = {
 	STR_GENERATION_WORLD_GENERATION,
 	STR_GENERATION_LANDSCAPE_GENERATION,
 	STR_GENERATION_RIVER_GENERATION,
@@ -1558,8 +1559,6 @@ static const StringID _generation_class_table[]  = {
 	STR_GENERATION_PREPARING_SCRIPT,
 	STR_GENERATION_PREPARING_GAME
 };
-static_assert(lengthof(_generation_class_table) == GWP_CLASS_COUNT);
-
 
 static void AbortGeneratingWorldCallback(Window *, bool confirmed)
 {
@@ -1604,8 +1603,8 @@ struct GenerateProgressWindow : public Window {
 			}
 
 			case WID_GP_PROGRESS_TEXT:
-				for (uint i = 0; i < GWP_CLASS_COUNT; i++) {
-					size.width = std::max(size.width, GetStringBoundingBox(_generation_class_table[i]).width + padding.width);
+				for (StringID str : _generation_class_table) {
+					size.width = std::max(size.width, GetStringBoundingBox(str).width + padding.width);
 				}
 				size.height = GetCharacterHeight(FontSize::Normal) * 2 + WidgetDimensions::scaled.vsep_normal;
 				break;
@@ -1659,8 +1658,8 @@ void ShowGenerateWorldProgress()
 static void _SetGeneratingWorldProgress(GenWorldProgress cls, uint progress, uint total)
 {
 	static const int percent_table[] = {0, 7, 14, 22, 29, 36, 41, 44, 51, 58, 65, 73, 80, 90, 100 };
-	static_assert(lengthof(percent_table) == GWP_CLASS_COUNT + 1);
-	assert(cls < GWP_CLASS_COUNT);
+	static_assert(lengthof(percent_table) == to_underlying(GenWorldProgress::End) + 1);
+	assert(cls < GenWorldProgress::End);
 
 	/* Check if we really are generating the world.
 	 * For example, placing trees via the SE also calls this function, but
@@ -1681,14 +1680,15 @@ static void _SetGeneratingWorldProgress(GenWorldProgress cls, uint progress, uin
 		GenWorldStatus::cls     = _generation_class_table[cls];
 		GenWorldStatus::current = progress;
 		GenWorldStatus::total   = total;
-		GenWorldStatus::percent = percent_table[cls];
+		GenWorldStatus::percent = percent_table[to_underlying(cls)];
 	}
 
 	/* Percentage is about the number of completed tasks, so 'current - 1' */
 	if (GenWorldStatus::single_section) {
 		GenWorldStatus::percent = (100 * (GenWorldStatus::current == 0 ? 0 : GenWorldStatus::current - 1)) / GenWorldStatus::total;
 	} else {
-		GenWorldStatus::percent = percent_table[cls] + (percent_table[cls + 1] - percent_table[cls]) * (GenWorldStatus::current == 0 ? 0 : GenWorldStatus::current - 1) / GenWorldStatus::total;
+		const auto clsnum = to_underlying(cls);
+		GenWorldStatus::percent = percent_table[clsnum] + (percent_table[clsnum + 1] - percent_table[clsnum]) * (GenWorldStatus::current == 0 ? 0 : GenWorldStatus::current - 1) / GenWorldStatus::total;
 	}
 
 	if (_network_dedicated) {

@@ -965,7 +965,7 @@ CommandCost CmdCompanyCtrl(DoCommandFlags flags, CompanyCtrlAction cca, CompanyI
 			NetworkClientInfo *ci = NetworkClientInfo::GetByClientID(client_id);
 
 			/* Delete multiplayer progress bar */
-			CloseWindowById(WC_NETWORK_STATUS_WINDOW, WN_NETWORK_STATUS_WINDOW_JOIN);
+			CloseWindowById(WC_NETWORK_STATUS_WINDOW, NetworkStatusWindowNumber::Join);
 
 			Company *c = DoStartupNewCompany(DSNC_NONE);
 

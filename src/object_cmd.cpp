@@ -1182,7 +1182,7 @@ static bool TryBuildTransmitter()
 void GenerateObjects()
 {
 	/* Set a guestimate on how much we progress */
-	SetGeneratingWorldProgress(GWP_OBJECT, (uint)ObjectSpec::Count());
+	SetGeneratingWorldProgress(GenWorldProgress::Objects, static_cast<uint>(ObjectSpec::Count()));
 
 	/* Determine number of water tiles at map border needed for freeform_edges */
 	uint num_water_tiles = 0;
@@ -1237,7 +1237,7 @@ void GenerateObjects()
 				}
 				break;
 		}
-		IncreaseGeneratingWorldProgress(GWP_OBJECT);
+		IncreaseGeneratingWorldProgress(GenWorldProgress::Objects);
 	}
 }
 
