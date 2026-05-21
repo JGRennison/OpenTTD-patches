@@ -2026,20 +2026,18 @@ public:
 			case WID_BS_DRAG_SIGNALS_DENSITY_DECREASE:
 				if (_settings_client.gui.drag_signals_density > 1) {
 					_settings_client.gui.drag_signals_density--;
-					SetWindowDirty(WindowClass::GameOptions, GameOptionsWindowNumber::GameSettings);
 				}
 				break;
 
 			case WID_BS_DRAG_SIGNALS_DENSITY_INCREASE:
 				if (_settings_client.gui.drag_signals_density < MAX_SIGNAL_DRAG_DISTANCE) {
 					_settings_client.gui.drag_signals_density++;
-					SetWindowDirty(WindowClass::GameOptions, GameOptionsWindowNumber::GameSettings);
 				}
 				break;
 
 			case WID_BS_TOGGLE_SIZE:
 				_settings_client.gui.signal_gui_mode = (_settings_client.gui.signal_gui_mode == SIGNAL_GUI_ALL) ? SIGNAL_GUI_PATH : SIGNAL_GUI_ALL;
-				SetWindowDirty(WindowClass::GameOptions, GameOptionsWindowNumber::GameSettings);
+				SetWindowDirty(WindowClass::GameOptions, GameOptionsWindowNumber::GameOptions);
 				this->SetSignalUIMode();
 				this->ReInit();
 				break;

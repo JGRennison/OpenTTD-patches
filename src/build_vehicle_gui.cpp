@@ -1543,7 +1543,7 @@ struct BuildVehicleWindowBase : Window {
 	void ChangeDualPaneMode(bool new_value)
 	{
 		_settings_client.gui.dual_pane_train_purchase_window = new_value;
-		SetWindowDirty(WindowClass::GameOptions, GameOptionsWindowNumber::GameSettings);
+		SetWindowDirty(WindowClass::GameOptions, GameOptionsWindowNumber::GameOptions);
 
 		if (this->virtual_train_out != nullptr) {
 			ShowTemplateTrainBuildVehicleWindow(this->virtual_train_out);

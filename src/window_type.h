@@ -30,7 +30,6 @@ enum class GameOptionsWindowNumber : uint8_t {
 	About, ///< About window.
 	NewGRFState, ///< NewGRF settings.
 	GameOptions, ///< Game options.
-	GameSettings, ///< Game settings.
 };
 DECLARE_CONVERTIBLE_TO_WINDOW_NUMBER(GameOptionsWindowNumber)
 
@@ -697,7 +696,6 @@ enum class WindowClass : uint16_t {
 	 *   - #GameOptionsWindowNumber::About = #AboutWidgets
 	 *   - #GameOptionsWindowNumber::NewGRFState = #NewGRFStateWidgets
 	 *   - #GameOptionsWindowNumber::GameOptions = #GameOptionsWidgets
-	 *   - #GameOptionsWindowNumber::GameSettings = #GameSettingsWidgets
 	 */
 	GameOptions,
 
