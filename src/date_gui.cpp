@@ -347,14 +347,14 @@ static constexpr NWidgetPart _nested_set_minutes_widgets[] = {
 /** Description of the date setting window. */
 static WindowDesc _set_date_desc(__FILE__, __LINE__,
 	WindowPosition::Center, nullptr, 0, 0,
-	WC_SET_DATE, WC_NONE,
+	WindowClass::SetDate, WindowClass::None,
 	{},
 	_nested_set_date_widgets
 );
 
 static WindowDesc _set_minutes_desc(__FILE__, __LINE__,
 	WindowPosition::Center, nullptr, 0, 0,
-	WC_SET_DATE, WC_NONE,
+	WindowClass::SetDate, WindowClass::None,
 	{},
 	_nested_set_minutes_widgets
 );
@@ -372,7 +372,7 @@ static WindowDesc _set_minutes_desc(__FILE__, __LINE__,
 void ShowSetDateWindow(Window *parent, int window_number, StateTicks initial_tick, EconTime::Year min_year, EconTime::Year max_year,
 		SetTickCallback *callback, void *callback_data, StringID button_text, StringID button_tooltip)
 {
-	CloseWindowByClass(WC_SET_DATE);
+	CloseWindowByClass(WindowClass::SetDate);
 
 	if (!_settings_time.time_in_minutes) {
 		new SetDateWindow(_set_date_desc, window_number, parent, StateTicksToDate(initial_tick), min_year, max_year, callback, callback_data, button_text, button_tooltip);

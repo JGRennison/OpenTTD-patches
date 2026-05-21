@@ -170,7 +170,7 @@ SpriteID TileZoneCheckStationCatchmentEvaluation(TileIndex tile, Owner owner, bo
 
 	for (const Station *st : stations.GetStations()) {
 		if (st->owner == owner) {
-			if (!open_window_only || FindWindowById(WC_STATION_VIEW, st->index) != nullptr) {
+			if (!open_window_only || FindWindowById(WindowClass::StationView, st->index) != nullptr) {
 				return SPR_ZONING_INNER_HIGHLIGHT_LIGHT_BLUE;
 			}
 		}

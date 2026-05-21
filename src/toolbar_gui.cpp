@@ -228,7 +228,7 @@ static CallBackFunction SelectSignTool()
 		ResetObjectToPlace();
 		return CallBackFunction::None;
 	} else {
-		SetObjectToPlace(SPR_CURSOR_SIGN, PAL_NONE, HT_RECT, WC_MAIN_TOOLBAR, 0);
+		SetObjectToPlace(SPR_CURSOR_SIGN, PAL_NONE, HT_RECT, WindowClass::MainToolbar, 0);
 		return CallBackFunction::PlaceSign;
 	}
 }
@@ -369,7 +369,7 @@ static CallBackFunction MenuClickSettings(int index)
 		case OptionMenuEntries::ShowSigns: _display_opt.Flip(DisplayOption::ShowSigns); break;
 		case OptionMenuEntries::ShowCompetitorSigns:
 			_display_opt.Flip(DisplayOption::ShowCompetitorSigns);
-			InvalidateWindowClassesData(WC_SIGN_LIST, -1);
+			InvalidateWindowClassesData(WindowClass::SignList, -1);
 			break;
 		case OptionMenuEntries::FullAnimation:           _display_opt.Flip(DisplayOption::FullAnimation); CheckBlitter(); break;
 		case OptionMenuEntries::FullDetails:             _display_opt.Flip(DisplayOption::FullDetail); break;
@@ -1245,7 +1245,7 @@ static CallBackFunction PlaceLandBlockInfo()
 		ResetObjectToPlace();
 		return CallBackFunction::None;
 	} else {
-		SetObjectToPlace(SPR_CURSOR_QUERY, PAL_NONE, HT_RECT, WC_MAIN_TOOLBAR, 0);
+		SetObjectToPlace(SPR_CURSOR_QUERY, PAL_NONE, HT_RECT, WindowClass::MainToolbar, 0);
 		return CallBackFunction::PlaceLandInfo;
 	}
 }
@@ -1257,7 +1257,7 @@ static CallBackFunction PlacePickerTool()
 		ResetObjectToPlace();
 		return CallBackFunction::None;
 	} else {
-		SetObjectToPlace(SPR_CURSOR_QUERY, PAL_NONE, HT_RECT, WC_MAIN_TOOLBAR, 0);
+		SetObjectToPlace(SPR_CURSOR_QUERY, PAL_NONE, HT_RECT, WindowClass::MainToolbar, 0);
 		SetSelectionPalette(SPR_ZONING_INNER_HIGHLIGHT_GREEN);
 		return CallBackFunction::PlacePicker;
 	}
@@ -2374,7 +2374,7 @@ struct MainToolbarWindow : Window {
 	void OnInvalidateData([[maybe_unused]] int data = 0, [[maybe_unused]] bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
-		Window *w = FindWindowById(WC_MAIN_WINDOW, 0);
+		Window *w = FindWindowById(WindowClass::MainWindow, 0);
 		if (w != nullptr) HandleZoomMessage(this, w->viewport, WID_TN_ZOOM_IN, WID_TN_ZOOM_OUT);
 	}
 
@@ -2509,9 +2509,10 @@ static constexpr std::initializer_list<NWidgetPart> _nested_toolbar_normal_widge
 	NWidgetFunction(MakeMainToolbar),
 };
 
+/** Window definition for the normal (top) toolbar. */
 static WindowDesc _toolb_normal_desc(__FILE__, __LINE__,
 	WindowPosition::Manual, nullptr, 0, 0,
-	WC_MAIN_TOOLBAR, WC_NONE,
+	WindowClass::MainToolbar, WindowClass::None,
 	{WindowDefaultFlag::NoFocus, WindowDefaultFlag::NoClose},
 	_nested_toolbar_normal_widgets,
 	&MainToolbarWindow::hotkeys
@@ -2781,7 +2782,7 @@ struct ScenarioEditorToolbarWindow : Window {
 	void OnInvalidateData([[maybe_unused]] int data = 0, [[maybe_unused]] bool gui_scope = true) override
 	{
 		if (!gui_scope) return;
-		Window *w = FindWindowById(WC_MAIN_WINDOW, 0);
+		Window *w = FindWindowById(WindowClass::MainWindow, 0);
 		if (w != nullptr) HandleZoomMessage(this, w->viewport, WID_TE_ZOOM_IN, WID_TE_ZOOM_OUT);
 	}
 
@@ -2876,9 +2877,10 @@ static constexpr std::initializer_list<NWidgetPart> _nested_toolb_scen_widgets =
 	NWidgetFunction(MakeScenarioToolbar),
 };
 
+/** Window definition for the scenario editor (top) toolbar window. */
 static WindowDesc _toolb_scen_desc(__FILE__, __LINE__,
 	WindowPosition::Manual, nullptr, 0, 0,
-	WC_MAIN_TOOLBAR, WC_NONE,
+	WindowClass::MainToolbar, WindowClass::None,
 	{WindowDefaultFlag::NoFocus, WindowDefaultFlag::NoClose},
 	_nested_toolb_scen_widgets,
 	&ScenarioEditorToolbarWindow::hotkeys

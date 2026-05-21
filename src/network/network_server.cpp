@@ -226,7 +226,7 @@ ServerNetworkGameSocketHandler::~ServerNetworkGameSocketHandler()
 		this->savegame = nullptr;
 	}
 
-	InvalidateWindowData(WC_CLIENT_LIST, 0);
+	InvalidateWindowData(WindowClass::NetworkClientList, 0);
 }
 
 bool ServerNetworkGameSocketHandler::ParseKeyPasswordPacket(Packet &p, NetworkSharedSecrets &ss, const std::string &password, std::string *payload, size_t length)
@@ -1238,7 +1238,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::ReceiveClientMapOk(Packet &)
 		std::string client_name = this->GetClientName();
 
 		NetworkTextMessage(NetworkAction::ClientJoin, CC_DEFAULT, false, client_name, {}, this->client_id);
-		InvalidateWindowData(WC_CLIENT_LIST, 0);
+		InvalidateWindowData(WindowClass::NetworkClientList, 0);
 
 		Debug(net, 3, "[{}] Client #{} ({}) joined as {}, pubkey: {}",
 				ServerNetworkGameSocketHandler::GetName(), this->client_id, this->GetClientIP(), client_name, this->GetPeerPublicKey());
@@ -1769,7 +1769,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::ReceiveClientSetName(Packet &p
 					ServerNetworkGameSocketHandler::GetName(), this->client_id, this->GetClientIP(), ci->client_name, client_name, this->GetPeerPublicKey());
 			ci->client_name = std::move(client_name);
 			NetworkUpdateClientInfo(ci->client_id);
-			InvalidateWindowData(WC_CLIENT_LIST, 0);
+			InvalidateWindowData(WindowClass::NetworkClientList, 0);
 		}
 	}
 	return NETWORK_RECV_STATUS_OKAY;
@@ -2384,7 +2384,7 @@ void NetworkServerUpdateCompanyPassworded(CompanyID company_id, bool passworded)
 	if (NetworkCompanyIsPassworded(company_id) == passworded) return;
 
 	_network_company_passworded.Set(company_id, passworded);
-	SetWindowClassesDirty(WC_COMPANY);
+	SetWindowClassesDirty(WindowClass::Company);
 
 	for (NetworkClientSocket *cs : NetworkClientSocket::Iterate()) {
 		if (cs->status >= NetworkClientSocket::STATUS_PRE_ACTIVE) cs->SendCompanyUpdate();
@@ -2432,7 +2432,7 @@ void NetworkServerDoMove(ClientID client_id, CompanyID company_id)
 		NetworkServerSendChat(NetworkAction::CompanyJoin, NetworkChatDestinationType::Broadcast, 0, company_name, client_id);
 	}
 
-	InvalidateWindowData(WC_CLIENT_LIST, 0);
+	InvalidateWindowData(WindowClass::NetworkClientList, 0);
 
 	OrderBackup::ResetUser(client_id);
 }

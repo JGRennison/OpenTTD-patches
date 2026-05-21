@@ -192,14 +192,14 @@ struct ScriptListWindow : public Window {
 				}
 			}
 		}
-		InvalidateWindowData(WC_GAME_OPTIONS, this->slot == OWNER_DEITY ? GameOptionsWindowNumber::GS : GameOptionsWindowNumber::AI);
-		InvalidateWindowClassesData(WC_SCRIPT_SETTINGS);
-		InvalidateWindowClassesData(WC_SCRIPT_DEBUG, -1);
-		CloseWindowByClass(WC_QUERY_STRING);
-		InvalidateWindowClassesData(WC_TEXTFILE);
+		InvalidateWindowData(WindowClass::GameOptions, this->slot == OWNER_DEITY ? GameOptionsWindowNumber::GS : GameOptionsWindowNumber::AI);
+		InvalidateWindowClassesData(WindowClass::ScriptSettings);
+		InvalidateWindowClassesData(WindowClass::ScriptDebug, -1);
+		CloseWindowByClass(WindowClass::QueryString);
+		InvalidateWindowClassesData(WindowClass::Textfile);
 		if (_game_mode == GM_NORMAL && slot == OWNER_DEITY) {
-			InvalidateWindowData(WC_SCRIPT_DEBUG, 0, -1);
-			SetWindowClassesDirty(WC_SCRIPT_DEBUG);
+			InvalidateWindowData(WindowClass::ScriptDebug, 0, -1);
+			SetWindowClassesDirty(WindowClass::ScriptDebug);
 		}
 	}
 
@@ -275,7 +275,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_script_list_widgets 
 /** Window definition for the ai list window. */
 static WindowDesc _script_list_desc(__FILE__, __LINE__,
 	WindowPosition::Center, "settings_script_list", 200, 234,
-	WC_SCRIPT_LIST, WC_NONE,
+	WindowClass::ScriptList, WindowClass::None,
 	{},
 	_nested_script_list_widgets
 );
@@ -287,7 +287,7 @@ static WindowDesc _script_list_desc(__FILE__, __LINE__,
  */
 void ShowScriptListWindow(CompanyID slot, bool show_all)
 {
-	CloseWindowByClass(WC_SCRIPT_LIST);
+	CloseWindowByClass(WindowClass::ScriptList);
 	new ScriptListWindow(_script_list_desc, slot, show_all);
 }
 
@@ -422,7 +422,7 @@ struct ScriptSettingsWindow : public Window {
 
 				int num = it - this->visible_settings.begin();
 				if (this->clicked_row != num) {
-					this->CloseChildWindows(WC_QUERY_STRING);
+					this->CloseChildWindows(WindowClass::QueryString);
 					HideDropDownMenu(this);
 					this->clicked_row = num;
 					this->clicked_dropdown = false;
@@ -551,7 +551,7 @@ struct ScriptSettingsWindow : public Window {
 		if (this->script_config->GetConfigList()->empty()) this->Close();
 		this->RebuildVisibleSettings();
 		HideDropDownMenu(this);
-		this->CloseChildWindows(WC_QUERY_STRING);
+		this->CloseChildWindows(WindowClass::QueryString);
 	}
 
 private:
@@ -595,7 +595,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_script_settings_widg
 /** Window definition for the Script settings window. */
 static WindowDesc _script_settings_desc(__FILE__, __LINE__,
 	WindowPosition::Center, "settings_script", 500, 208,
-	WC_SCRIPT_SETTINGS, WC_NONE,
+	WindowClass::ScriptSettings, WindowClass::None,
 	{},
 	_nested_script_settings_widgets
 );
@@ -606,8 +606,8 @@ static WindowDesc _script_settings_desc(__FILE__, __LINE__,
  */
 void ShowScriptSettingsWindow(CompanyID slot)
 {
-	CloseWindowByClass(WC_SCRIPT_LIST);
-	CloseWindowByClass(WC_SCRIPT_SETTINGS);
+	CloseWindowByClass(WindowClass::ScriptList);
+	CloseWindowByClass(WindowClass::ScriptSettings);
 	new ScriptSettingsWindow(_script_settings_desc, slot);
 }
 
@@ -650,7 +650,7 @@ struct ScriptTextfileWindow : public TextfileWindow {
  */
 void ShowScriptTextfileWindow(Window *parent, TextfileType file_type, CompanyID slot)
 {
-	parent->CloseChildWindowById(WC_TEXTFILE, file_type);
+	parent->CloseChildWindowById(WindowClass::Textfile, file_type);
 	new ScriptTextfileWindow(parent, file_type, slot);
 }
 
@@ -1009,7 +1009,7 @@ struct ScriptDebugWindow : public Window {
 		this->highlight_row = -1; // The highlight of one Script make little sense for another Script.
 
 		/* Close AI settings window to prevent confusion */
-		CloseWindowByClass(WC_SCRIPT_SETTINGS);
+		CloseWindowByClass(WindowClass::ScriptSettings);
 
 		this->InvalidateData(-1);
 
@@ -1278,7 +1278,7 @@ EndContainer(),
 /** Window definition for the Script debug window. */
 static WindowDesc _script_debug_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "script_debug", 600, 450,
-	WC_SCRIPT_DEBUG, WC_NONE,
+	WindowClass::ScriptDebug, WindowClass::None,
 	{},
 	_nested_script_debug_widgets,
 	&ScriptDebugWindow::hotkeys
@@ -1296,17 +1296,17 @@ Window *ShowScriptDebugWindow(CompanyID show_company, bool new_window)
 		int i = 0;
 		if (new_window) {
 			/* find next free window number for script debug */
-			while (FindWindowById(WC_SCRIPT_DEBUG, i) != nullptr) i++;
+			while (FindWindowById(WindowClass::ScriptDebug, i) != nullptr) i++;
 		} else {
 			/* Find existing window showing show_company. */
 			for (Window *w : Window::Iterate()) {
-				if (w->window_class == WC_SCRIPT_DEBUG && static_cast<ScriptDebugWindow *>(w)->filter.script_debug_company == show_company) {
+				if (w->window_class == WindowClass::ScriptDebug && static_cast<ScriptDebugWindow *>(w)->filter.script_debug_company == show_company) {
 					return BringWindowToFrontById(w->window_class, w->window_number);
 				}
 			}
 
 			/* Maybe there's a window showing a different company which can be switched. */
-			ScriptDebugWindow *w = static_cast<ScriptDebugWindow *>(FindWindowByClass(WC_SCRIPT_DEBUG));
+			ScriptDebugWindow *w = static_cast<ScriptDebugWindow *>(FindWindowByClass(WindowClass::ScriptDebug));
 			if (w != nullptr) {
 				BringWindowToFrontById(w->window_class, w->window_number);
 				w->ChangeToScript(show_company);

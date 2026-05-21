@@ -214,8 +214,8 @@ CommandCost CmdPause(DoCommandFlags flags, PauseMode mode, bool pause)
 			VideoDriver::GetInstance()->SetScreensaverInhibited(_pause_mode.None());
 		}
 
-		SetWindowDirty(WC_STATUS_BAR, 0);
-		SetWindowDirty(WC_MAIN_TOOLBAR, 0);
+		SetWindowDirty(WindowClass::Statusbar, 0);
+		SetWindowDirty(WindowClass::MainToolbar, 0);
 	}
 	return CommandCost();
 }
@@ -238,7 +238,7 @@ CommandCost CmdMoneyCheat(DoCommandFlags flags, Money amount)
 	if (_networking && !_settings_game.difficulty.money_cheat_in_multiplayer) return CMD_ERROR;
 	if (flags.Test(DoCommandFlag::Execute)) {
 		_cheats.money.been_used = true;
-		SetWindowDirty(WC_CHEATS, 0);
+		SetWindowDirty(WindowClass::Cheat, 0);
 	}
 	return CommandCost(ExpensesType::Other, -amount);
 }
@@ -252,7 +252,7 @@ CommandCost CmdMoneyCheatAdmin(DoCommandFlags flags, Money amount)
 {
 	if (flags.Test(DoCommandFlag::Execute)) {
 		_cheats.money.been_used = true;
-		SetWindowDirty(WC_CHEATS, 0);
+		SetWindowDirty(WindowClass::Cheat, 0);
 	}
 	return CommandCost(ExpensesType::Other, -amount);
 }
@@ -289,7 +289,7 @@ CommandCost CmdCheatSetting(DoCommandFlags flags, CheatNumbers cheat, uint32_t v
 					_cheats.inflation_cost.been_used = true;
 				}
 				RecomputePrices();
-				SetWindowDirty(WC_CHEATS, 0);
+				SetWindowDirty(WindowClass::Cheat, 0);
 			}
 			return CommandCost();
 
@@ -302,7 +302,7 @@ CommandCost CmdCheatSetting(DoCommandFlags flags, CheatNumbers cheat, uint32_t v
 					_cheats.inflation_income.been_used = true;
 				}
 				RecomputePrices();
-				SetWindowDirty(WC_CHEATS, 0);
+				SetWindowDirty(WindowClass::Cheat, 0);
 			}
 			return CommandCost();
 
@@ -320,7 +320,7 @@ CommandCost CmdCheatSetting(DoCommandFlags flags, CheatNumbers cheat, uint32_t v
 	if (flags.Test(DoCommandFlag::Execute)) {
 		cht->value = value;
 		cht->been_used = true;
-		SetWindowDirty(WC_CHEATS, 0);
+		SetWindowDirty(WindowClass::Cheat, 0);
 
 		if (cheat == CHT_STATION_RATING) {
 			extern void UpdateAllStationRatings();

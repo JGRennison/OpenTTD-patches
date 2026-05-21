@@ -273,7 +273,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 	void Close(int data = 0) override
 	{
-		FocusWindowById(WC_VEHICLE_VIEW, this->window_number);
+		FocusWindowById(WindowClass::VehicleView, this->window_number);
 		this->GeneralVehicleWindow::Close();
 	}
 
@@ -1192,7 +1192,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		const Vehicle *v = this->vehicle;
 
 		this->clicked_widget = widget;
-		this->CloseChildWindows(WC_QUERY_STRING);
+		this->CloseChildWindows(WindowClass::QueryString);
 
 		switch (widget) {
 			case WID_SCHDISPATCH_MATRIX: { /* List */
@@ -1680,7 +1680,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 void CcAddNewSchDispatchSchedule(const CommandCost &result, VehicleID veh, StateTicks start_tick, uint32_t duration)
 {
-	SchdispatchWindow *w = dynamic_cast<SchdispatchWindow *>(FindWindowById(WC_SCHDISPATCH_SLOTS, veh));
+	SchdispatchWindow *w = dynamic_cast<SchdispatchWindow *>(FindWindowById(WindowClass::ScheduledDispatchSlots, veh));
 	if (w != nullptr) {
 		w->schedule_index = INT_MAX;
 		w->AutoSelectSchedule();
@@ -1690,7 +1690,7 @@ void CcAddNewSchDispatchSchedule(const CommandCost &result, VehicleID veh, State
 
 void CcSwapSchDispatchSchedules(const CommandCost &result, VehicleID veh, uint32_t schedule_index_1, uint32_t schedule_index_2)
 {
-	SchdispatchWindow *w = dynamic_cast<SchdispatchWindow *>(FindWindowById(WC_SCHDISPATCH_SLOTS, veh));
+	SchdispatchWindow *w = dynamic_cast<SchdispatchWindow *>(FindWindowById(WindowClass::ScheduledDispatchSlots, veh));
 	if (w != nullptr) {
 		w->schedule_index = schedule_index_1;
 		w->AutoSelectSchedule();
@@ -1702,7 +1702,7 @@ void CcAdjustSchDispatch(const CommandCost &result, VehicleID veh, uint32_t sche
 {
 	if (!result.Succeeded()) return;
 
-	SchdispatchWindow *w = dynamic_cast<SchdispatchWindow *>(FindWindowById(WC_SCHDISPATCH_SLOTS, veh));
+	SchdispatchWindow *w = dynamic_cast<SchdispatchWindow *>(FindWindowById(WindowClass::ScheduledDispatchSlots, veh));
 	if (w != nullptr && w->schedule_index == static_cast<int>(schedule_index)) {
 		const DispatchSchedule &ds = w->GetSelectedSchedule();
 		btree::btree_set<uint32_t> new_selection;
@@ -1719,7 +1719,7 @@ void CcAdjustSchDispatchSlot(const CommandCost &result, VehicleID veh, uint32_t 
 	auto changes = result.GetLargeResult<ScheduledDispatchAdjustSlotResult>();
 	if (changes == nullptr) return;
 
-	SchdispatchWindow *w = dynamic_cast<SchdispatchWindow *>(FindWindowById(WC_SCHDISPATCH_SLOTS, veh));
+	SchdispatchWindow *w = dynamic_cast<SchdispatchWindow *>(FindWindowById(WindowClass::ScheduledDispatchSlots, veh));
 	if (w != nullptr && w->schedule_index == static_cast<int>(schedule_index)) {
 		btree::btree_set<uint32_t> new_selection;
 		for (const ScheduledDispatchAdjustSlotResult::Change &change : changes->changes) {
@@ -1782,7 +1782,7 @@ static constexpr NWidgetPart _nested_schdispatch_widgets[] = {
 
 static WindowDesc _schdispatch_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "scheduled_dispatch_slots", 400, 130,
-	WC_SCHDISPATCH_SLOTS, WC_VEHICLE_TIMETABLE,
+	WindowClass::ScheduledDispatchSlots, WindowClass::VehicleTimetable,
 	WindowDefaultFlag::Construction,
 	_nested_schdispatch_widgets
 );
@@ -2235,30 +2235,30 @@ static constexpr NWidgetPart _nested_scheduled_dispatch_add_widgets[] = {
 
 static WindowDesc _scheduled_dispatch_add_desc(__FILE__, __LINE__,
 	WindowPosition::Center, nullptr, 0, 0,
-	WC_SET_DATE, WC_NONE,
+	WindowClass::SetDate, WindowClass::None,
 	{},
 	_nested_scheduled_dispatch_add_widgets
 );
 
 void ShowScheduledDispatchAddSlotsWindow(SchdispatchWindow *parent, WindowNumber window_number, bool multiple)
 {
-	CloseWindowByClass(WC_SET_DATE);
+	CloseWindowByClass(WindowClass::SetDate);
 
 	new ScheduledDispatchAddSlotsWindow(_scheduled_dispatch_add_desc, window_number, parent, multiple);
 }
 
 void SchdispatchInvalidateWindows(const Vehicle *v)
 {
-	if (_pause_mode.Any()) InvalidateWindowClassesData(WC_DEPARTURES_BOARD);
+	if (_pause_mode.Any()) InvalidateWindowClassesData(WindowClass::DepartureBoard);
 
-	if (!HaveWindowByClass(WC_VEHICLE_TIMETABLE) && !HaveWindowByClass(WC_SCHDISPATCH_SLOTS) && !HaveWindowByClass(WC_VEHICLE_ORDERS)) return;
+	if (!HaveWindowByClass(WindowClass::VehicleTimetable) && !HaveWindowByClass(WindowClass::ScheduledDispatchSlots) && !HaveWindowByClass(WindowClass::VehicleOrders)) return;
 
 	v = v->FirstShared();
 	for (Window *w : Window::Iterate()) {
-		if (w->window_class == WC_VEHICLE_TIMETABLE) {
+		if (w->window_class == WindowClass::VehicleTimetable) {
 			if (static_cast<GeneralVehicleWindow *>(w)->vehicle->FirstShared() == v) w->SetDirty();
 		}
-		if (w->window_class == WC_SCHDISPATCH_SLOTS || w->window_class == WC_VEHICLE_ORDERS) {
+		if (w->window_class == WindowClass::ScheduledDispatchSlots || w->window_class == WindowClass::VehicleOrders) {
 			if (static_cast<GeneralVehicleWindow *>(w)->vehicle->FirstShared() == v) w->InvalidateData(VIWD_MODIFY_ORDERS, false);
 		}
 	}

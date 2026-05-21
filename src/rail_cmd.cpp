@@ -1816,7 +1816,7 @@ CommandCost CmdBuildSingleSignal(DoCommandFlags flags, TileIndex tile, Track tra
 			if (IsTunnelBridgeWithSignalSimulation(tile)) {
 				c->infrastructure.signal += GetTunnelBridgeSignalSimulationSignalCount(tile, tile_exit);
 				if (IsTunnelBridgeRestrictedSignal(tile) || IsTunnelBridgeRestrictedSignal(tile_exit)) {
-					InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+					InvalidateWindowClassesData(WindowClass::TraceRestrict);
 				}
 			}
 			DirtyCompanyInfrastructureWindows(GetTileOwner(tile));
@@ -2645,8 +2645,8 @@ CommandCost CmdConvertRail(DoCommandFlags flags, TileIndex tile, TileIndex area_
 							YapfNotifyTrackLayoutChange(tile, GetRailDepotTrack(tile));
 
 							/* Update build vehicle window related to this depot */
-							InvalidateWindowData(WC_VEHICLE_DEPOT, tile.base());
-							InvalidateWindowData(WC_BUILD_VEHICLE, tile.base());
+							InvalidateWindowData(WindowClass::VehicleDepot, tile.base());
+							InvalidateWindowData(WindowClass::BuildVehicle, tile.base());
 						}
 						found_convertible_track = true;
 						cost.AddCost(RailConvertCost(type, totype));
@@ -2950,8 +2950,8 @@ CommandCost CmdConvertRailTrack(DoCommandFlags flags, TileIndex end_tile, TileIn
 							YapfNotifyTrackLayoutChange(tile, GetRailDepotTrack(tile));
 
 							/* Update build vehicle window related to this depot */
-							InvalidateWindowData(WC_VEHICLE_DEPOT, tile.base());
-							InvalidateWindowData(WC_BUILD_VEHICLE, tile.base());
+							InvalidateWindowData(WindowClass::VehicleDepot, tile.base());
+							InvalidateWindowData(WindowClass::BuildVehicle, tile.base());
 						}
 						found_convertible_track = true;
 						cost.AddCost(RailConvertCost(type, totype));
@@ -4790,7 +4790,7 @@ static VehicleEnterTileStates VehicleEnterTile_Rail(Vehicle *u, TileIndex tile, 
 			VehicleEnterDepot(consist);
 		}
 
-		InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile.base());
+		InvalidateWindowData(WindowClass::VehicleDepot, v->tile.base());
 		return VehicleEnterTileState::EnteredWormhole;
 	}
 

@@ -96,7 +96,7 @@ static void CleanupGeneration()
 	GenWorldInfo::proc     = nullptr;
 	GenWorldInfo::abortp   = nullptr;
 
-	CloseWindowByClass(WC_MODAL_PROGRESS);
+	CloseWindowByClass(WindowClass::ModalProgress);
 	ShowFirstError();
 	MarkWholeScreenDirty();
 }
@@ -121,7 +121,7 @@ static void _GenerateWorld()
 		_settings_game.game_creation.generation_unique_id = _interactive_random.Next(UINT32_MAX - 1) + 1; /* Generates between [1,UINT32_MAX] */
 
 		SetGeneratingWorldProgress(GenWorldProgress::Init, 2);
-		SetObjectToPlace(SPR_CURSOR_ZZZ, PAL_NONE, HT_NONE, WC_MAIN_WINDOW, 0);
+		SetObjectToPlace(SPR_CURSOR_ZZZ, PAL_NONE, HT_NONE, WindowClass::MainWindow, 0);
 		ScriptObject::InitializeRandomizers();
 
 		BasePersistentStorageArray::SwitchMode(PSM_ENTER_GAMELOOP);
@@ -365,7 +365,7 @@ void GenerateWorld(GenWorldMode mode, uint size_x, uint size_y, bool reset_setti
 
 	/* Create toolbars */
 	SetupColoursAndInitialWindow();
-	SetObjectToPlace(SPR_CURSOR_ZZZ, PAL_NONE, HT_NONE, WC_MAIN_WINDOW, 0);
+	SetObjectToPlace(SPR_CURSOR_ZZZ, PAL_NONE, HT_NONE, WindowClass::MainWindow, 0);
 
 	UnshowCriticalError();
 	CloseAllNonVitalWindows();
@@ -374,7 +374,7 @@ void GenerateWorld(GenWorldMode mode, uint size_x, uint size_y, bool reset_setti
 	ShowGenerateWorldProgress();
 
 	/* Centre the view on the map */
-	if (FindWindowById(WC_MAIN_WINDOW, 0) != nullptr) {
+	if (FindWindowById(WindowClass::MainWindow, 0) != nullptr) {
 		ScrollMainWindowToTile(TileXY(Map::SizeX() / 2, Map::SizeY() / 2), true);
 	}
 
@@ -405,7 +405,7 @@ void ExecuteWithGenerateWorld(std::function<void()> func)
 	GenWorldInfo::proc     = nullptr;
 	GenWorldInfo::abortp   = nullptr;
 
-	CloseWindowByClass(WC_MODAL_PROGRESS);
+	CloseWindowByClass(WindowClass::ModalProgress);
 	MarkWholeScreenDirty();
 }
 

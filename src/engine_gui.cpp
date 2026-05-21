@@ -275,9 +275,10 @@ struct EnginePreviewWindow : Window {
 	}
 };
 
+/** Window definition for the engine preview window. */
 static WindowDesc _engine_preview_desc(__FILE__, __LINE__,
 	WindowPosition::Center, nullptr, 0, 0,
-	WC_ENGINE_PREVIEW, WC_NONE,
+	WindowClass::EnginePreview, WindowClass::None,
 	WindowDefaultFlag::Construction,
 	_nested_engine_preview_widgets
 );
@@ -285,7 +286,7 @@ static WindowDesc _engine_preview_desc(__FILE__, __LINE__,
 
 void ShowEnginePreviewWindow(EngineID engine)
 {
-	EnginePreviewWindow *w = dynamic_cast<EnginePreviewWindow *>(FindWindowByClass(WC_ENGINE_PREVIEW));
+	EnginePreviewWindow *w = dynamic_cast<EnginePreviewWindow *>(FindWindowByClass(WindowClass::EnginePreview));
 	if (w == nullptr) {
 		new EnginePreviewWindow(_engine_preview_desc, engine);
 	} else {

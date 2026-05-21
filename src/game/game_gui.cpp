@@ -77,7 +77,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_gs_config_widgets = 
 /** Window definition for the configure GS window. */
 static WindowDesc _gs_config_desc(__FILE__, __LINE__,
 	WindowPosition::Center, "settings_gs_config", 500, 350,
-	WC_GAME_OPTIONS, WC_NONE,
+	WindowClass::GameOptions, WindowClass::None,
 	{},
 	_nested_gs_config_widgets
 );
@@ -118,7 +118,7 @@ struct GSConfigWindow : public Window {
 	void Close([[maybe_unused]] int data = 0) override
 	{
 		HideDropDownMenu(this);
-		CloseWindowByClass(WC_SCRIPT_LIST);
+		CloseWindowByClass(WindowClass::ScriptList);
 		this->Window::Close();
 	}
 
@@ -266,7 +266,7 @@ struct GSConfigWindow : public Window {
 
 				int num = it - this->visible_settings.begin();
 				if (this->clicked_row != num) {
-					this->CloseChildWindows(WC_QUERY_STRING);
+					this->CloseChildWindows(WindowClass::QueryString);
 					HideDropDownMenu(this);
 					this->clicked_row = num;
 					this->clicked_dropdown = false;
@@ -411,7 +411,7 @@ struct GSConfigWindow : public Window {
 		}
 		this->RebuildVisibleSettings();
 		HideDropDownMenu(this);
-		this->CloseChildWindows(WC_QUERY_STRING);
+		this->CloseChildWindows(WindowClass::QueryString);
 	}
 private:
 	bool IsEditableItem(const ScriptConfigItem &config_item) const
@@ -434,6 +434,6 @@ private:
 /** Open the GS config window. */
 void ShowGSConfigWindow()
 {
-	CloseWindowByClass(WC_GAME_OPTIONS);
+	CloseWindowByClass(WindowClass::GameOptions);
 	new GSConfigWindow();
 }

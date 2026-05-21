@@ -136,7 +136,7 @@ struct BaseSetTextfileWindow : public TextfileWindow {
 template <class TBaseSet>
 void ShowBaseSetTextfileWindow(Window *parent, TextfileType file_type, const TBaseSet *baseset, StringID content_type)
 {
-	parent->CloseChildWindowById(WC_TEXTFILE, file_type);
+	parent->CloseChildWindowById(WindowClass::Textfile, file_type);
 	auto textfile = baseset->GetTextfile(file_type);
 	if (textfile.has_value()) {
 		new BaseSetTextfileWindow(parent, file_type, baseset->name, textfile.value(), content_type);
@@ -482,7 +482,7 @@ struct GameOptionsWindow : Window {
 
 	void Close([[maybe_unused]] int data = 0) override
 	{
-		CloseWindowById(WC_CUSTOM_CURRENCY, 0);
+		CloseWindowById(WindowClass::CustomCurrenty, 0);
 		if (this->reload) _switch_mode = SM_MENU;
 		this->Window::Close();
 	}
@@ -1130,7 +1130,7 @@ struct GameOptionsWindow : Window {
 				this->SetWidgetLoweredState(WID_GO_GUI_TRAD_INTRO_TOOLBAR, _settings_client.gui.traditional_intro_menu);
 				this->SetDirty();
 
-				InvalidateWindowClassesData(WC_SELECT_GAME);
+				InvalidateWindowClassesData(WindowClass::SelectGame);
 				break;
 			}
 
@@ -1190,7 +1190,7 @@ struct GameOptionsWindow : Window {
 						SetEffectVolume(vol);
 					}
 					this->SetWidgetDirty(widget);
-					SetWindowClassesDirty(WC_MUSIC_WINDOW);
+					SetWindowClassesDirty(WindowClass::Music);
 				}
 
 				if (click_count > 0) this->mouse_capture_widget = widget;
@@ -1563,7 +1563,7 @@ struct GameOptionsWindow : Window {
 
 			case WID_GO_LANG_DROPDOWN: // Change interface language
 				ReadLanguagePack(&_languages[index]);
-				CloseWindowByClass(WC_QUERY_STRING);
+				CloseWindowByClass(WindowClass::QueryString);
 				CheckForMissingGlyphs();
 				ClearAllCachedNames();
 				UpdateAllVirtCoords();
@@ -1590,7 +1590,7 @@ struct GameOptionsWindow : Window {
 
 			case WID_GO_BASE_GRF_DROPDOWN:
 				if (_game_mode == GM_MENU) {
-					CloseWindowByClass(WC_GRF_PARAMETERS);
+					CloseWindowByClass(WindowClass::NewGRFParameters);
 					auto set = BaseGraphics::GetSet(index);
 					BaseGraphics::SetSet(set);
 					this->reload = true;
@@ -1990,9 +1990,10 @@ static constexpr std::initializer_list<NWidgetPart> _nested_game_options_widgets
 	EndContainer(),
 };
 
+/** Window definition for the game options window. */
 static WindowDesc _game_options_desc(__FILE__, __LINE__,
 	WindowPosition::Center, "game_options", 510, 450,
-	WC_GAME_OPTIONS, WC_NONE,
+	WindowClass::GameOptions, WindowClass::None,
 	{},
 	_nested_game_options_widgets
 );
@@ -2000,7 +2001,7 @@ static WindowDesc _game_options_desc(__FILE__, __LINE__,
 /** Open the game options window. */
 void ShowGameOptions()
 {
-	CloseWindowByClass(WC_GAME_OPTIONS);
+	CloseWindowByClass(WindowClass::GameOptions);
 	new GameOptionsWindow(_game_options_desc);
 }
 
@@ -2333,9 +2334,10 @@ static constexpr std::initializer_list<NWidgetPart> _nested_cust_currency_widget
 	EndContainer(),
 };
 
+/** Window definition for the custom currency window. */
 static WindowDesc _cust_currency_desc(__FILE__, __LINE__,
 	WindowPosition::Center, nullptr, 0, 0,
-	WC_CUSTOM_CURRENCY, WC_NONE,
+	WindowClass::CustomCurrenty, WindowClass::None,
 	{},
 	_nested_cust_currency_widgets
 );
@@ -2343,6 +2345,6 @@ static WindowDesc _cust_currency_desc(__FILE__, __LINE__,
 /** Open custom currency window. */
 static void ShowCustCurrency()
 {
-	CloseWindowById(WC_CUSTOM_CURRENCY, 0);
+	CloseWindowById(WindowClass::CustomCurrenty, 0);
 	new CustomCurrencyWindow(_cust_currency_desc);
 }

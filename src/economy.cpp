@@ -339,7 +339,7 @@ int UpdateCompanyRatingAndValue(Company *c, bool update)
 		c->old_economy[0].company_value = CalculateCompanyValue(c);
 	}
 
-	SetWindowDirty(WC_PERFORMANCE_DETAIL, 0);
+	SetWindowDirty(WindowClass::PerformanceDetail, 0);
 	return score;
 }
 
@@ -672,7 +672,7 @@ static void CompanyCheckBankrupt(Company *c)
 		int previous_months_of_bankruptcy = CeilDiv(c->months_of_bankruptcy, 3);
 		c->months_of_bankruptcy = 0;
 		c->bankrupt_asked = CompanyMask{};
-		CloseWindowById(WC_BUY_COMPANY, c->index);
+		CloseWindowById(WindowClass::BuyCompany, c->index);
 		if (previous_months_of_bankruptcy != 0) CompanyAdminUpdate(c);
 		return;
 	}
@@ -799,12 +799,12 @@ static void CompaniesGenStatistics()
 		if (c->block_preview != 0) c->block_preview--;
 	}
 
-	SetWindowDirty(WC_INCOME_GRAPH, 0);
-	SetWindowDirty(WC_OPERATING_PROFIT, 0);
-	SetWindowDirty(WC_DELIVERED_CARGO, 0);
-	SetWindowDirty(WC_PERFORMANCE_HISTORY, 0);
-	SetWindowDirty(WC_COMPANY_VALUE, 0);
-	SetWindowDirty(WC_COMPANY_LEAGUE, 0);
+	SetWindowDirty(WindowClass::IncomeGraph, 0);
+	SetWindowDirty(WindowClass::OperatingProfitGraph, 0);
+	SetWindowDirty(WindowClass::DeliveredCargoGraph, 0);
+	SetWindowDirty(WindowClass::PerformanceGraph, 0);
+	SetWindowDirty(WindowClass::CompanyValueGraph, 0);
+	SetWindowDirty(WindowClass::CompanyLeague, 0);
 }
 
 /**
@@ -913,12 +913,12 @@ void RecomputePrices()
 		cs->current_payment = (cs->initial_payment * (int64_t)_economy.inflation_payment) >> 16;
 	}
 
-	SetWindowClassesDirty(WC_BUILD_VEHICLE);
-	SetWindowClassesDirty(WC_BUILD_VIRTUAL_TRAIN);
-	SetWindowClassesDirty(WC_REPLACE_VEHICLE);
-	SetWindowClassesDirty(WC_VEHICLE_DETAILS);
-	SetWindowClassesDirty(WC_COMPANY_INFRASTRUCTURE);
-	InvalidateWindowData(WC_PAYMENT_RATES, 0);
+	SetWindowClassesDirty(WindowClass::BuildVehicle);
+	SetWindowClassesDirty(WindowClass::BuildVirtualTrain);
+	SetWindowClassesDirty(WindowClass::ReplaceVehicle);
+	SetWindowClassesDirty(WindowClass::VehicleDetails);
+	SetWindowClassesDirty(WindowClass::CompanyInfrastructure);
+	InvalidateWindowData(WindowClass::CargoPaymentRatesGraph, 0);
 }
 
 /** Let all companies pay the monthly interest on their loan. */
@@ -1382,7 +1382,7 @@ static void TriggerIndustryProduction(Industry *i)
 		if (cbm.Test(IndustryCallbackMask::ProductionCargoArrival)) {
 			IndustryProductionCallback(i, 0);
 		} else {
-			SetWindowDirty(WC_INDUSTRY_VIEW, i->index);
+			SetWindowDirty(WindowClass::IndustryView, i->index);
 		}
 	} else {
 		for (auto &acc : i->Accepted()) {
@@ -2418,13 +2418,13 @@ static void LoadUnloadVehicle(Vehicle *front)
 
 	if (dirty_vehicle) {
 		DirtyVehicleListWindowForVehicle(front);
-		SetWindowDirty(WC_VEHICLE_DETAILS, front->index);
+		SetWindowDirty(WindowClass::VehicleDetails, front->index);
 		front->MarkDirty();
 	}
 	if (dirty_station) {
 		st->MarkTilesDirty(true);
-		SetWindowDirty(WC_STATION_VIEW, st->index);
-		SetWindowDirty(WC_STATION_LIST, st->owner);
+		SetWindowDirty(WindowClass::StationView, st->index);
+		SetWindowDirty(WindowClass::StationList, st->owner);
 	}
 }
 
@@ -2516,13 +2516,13 @@ void PostAcquireCompany(Company *c)
 	c->bankrupt_asked = CompanyMask{};
 
 	CloseCompanyWindows(c->index);
-	InvalidateWindowClassesData(WC_TRAINS_LIST, 0);
-	InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS, 0);
-	InvalidateWindowClassesData(WC_SHIPS_LIST, 0);
-	InvalidateWindowClassesData(WC_ROADVEH_LIST, 0);
-	InvalidateWindowClassesData(WC_AIRCRAFT_LIST, 0);
-	InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 0);
-	InvalidateWindowData(WC_CLIENT_LIST, 0);
+	InvalidateWindowClassesData(WindowClass::TrainList, 0);
+	InvalidateWindowClassesData(WindowClass::TraceRestrictSlots, 0);
+	InvalidateWindowClassesData(WindowClass::ShipList, 0);
+	InvalidateWindowClassesData(WindowClass::RoadVehicleList, 0);
+	InvalidateWindowClassesData(WindowClass::AircraftList, 0);
+	InvalidateWindowClassesData(WindowClass::DepartureBoard, 0);
+	InvalidateWindowData(WindowClass::NetworkClientList, 0);
 
 	delete c;
 
@@ -2567,7 +2567,7 @@ CommandCost CmdBuyShareInCompany(DoCommandFlags flags, CompanyID target_company)
 		if (std::all_of(c->share_owners.begin(), c->share_owners.end(), current_company_owns_share)) {
 			DoAcquireCompany(c, true);
 		}
-		InvalidateWindowData(WC_COMPANY, target_company);
+		InvalidateWindowData(WindowClass::Company, target_company);
 		CompanyAdminUpdate(c);
 	}
 	return cost;
@@ -2601,7 +2601,7 @@ CommandCost CmdSellShareInCompany(DoCommandFlags flags, CompanyID target_company
 		auto our_owner = std::find(c->share_owners.begin(), c->share_owners.end(), _current_company);
 		assert(our_owner != c->share_owners.end()); // share owners is guaranteed to contain at least one INVALID_OWNER
 		*our_owner = INVALID_OWNER;
-		InvalidateWindowData(WC_COMPANY, target_company);
+		InvalidateWindowData(WindowClass::Company, target_company);
 		CompanyAdminUpdate(c);
 	}
 	return CommandCost(ExpensesType::Other, cost);

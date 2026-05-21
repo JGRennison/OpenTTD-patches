@@ -1487,14 +1487,14 @@ void SwitchToMode(SwitchMode new_mode)
 			if (SaveOrLoad(_file_to_saveload.name, SaveLoadOperation::Save, DetailedFileType::GameFile, Subdirectory::None, true, flags) != SaveLoadResult::Ok) {
 				ShowErrorMessage(GetSaveLoadErrorType(), GetSaveLoadErrorMessage(), WL_ERROR);
 			} else {
-				CloseWindowById(WC_SAVELOAD, 0);
+				CloseWindowById(WindowClass::SaveLoad, 0);
 			}
 			break;
 		}
 
 		case SM_SAVE_HEIGHTMAP: // Save heightmap.
 			MakeHeightmapScreenshot(_file_to_saveload.name.c_str());
-			CloseWindowById(WC_SAVELOAD, 0);
+			CloseWindowById(WindowClass::SaveLoad, 0);
 			break;
 
 		case SM_GENRANDLAND: // Generate random land within scenario editor
@@ -1601,7 +1601,7 @@ void StateGameLoop()
 				(_state_ticks.base() % (_settings_client.gui.autosave_interval * (60000 / MILLISECONDS_PER_TICK))) == 0) {
 			_do_autosave = true;
 			_check_special_modes = true;
-			SetWindowDirty(WC_STATUS_BAR, 0);
+			SetWindowDirty(WindowClass::Statusbar, 0);
 		}
 
 		RunAuxiliaryTileLoop();
@@ -1678,7 +1678,7 @@ void StateGameLoop()
 
 	if (_pause_countdown > 0 && --_pause_countdown == 0) {
 		_pause_mode = PauseMode::Normal;
-		SetWindowDirty(WC_MAIN_TOOLBAR, 0);
+		SetWindowDirty(WindowClass::MainToolbar, 0);
 	}
 
 	dbg_assert(IsLocalCompany());
@@ -1719,7 +1719,7 @@ static IntervalTimer<TimerGameRealtime> _autosave_interval({std::chrono::millise
 	_do_autosave = true;
 	DoAutosave();
 	_do_autosave = false;
-	SetWindowDirty(WC_STATUS_BAR, 0);
+	SetWindowDirty(WindowClass::Statusbar, 0);
 });
 
 /**
@@ -1760,7 +1760,7 @@ void GameLoopSpecial()
 	if (_do_autosave) {
 		DoAutosave();
 		_do_autosave = false;
-		SetWindowDirty(WC_STATUS_BAR, 0);
+		SetWindowDirty(WindowClass::Statusbar, 0);
 	}
 
 	extern std::string _switch_baseset;

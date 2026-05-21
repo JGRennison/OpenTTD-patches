@@ -213,7 +213,7 @@ void VideoDriver::SleepTillNextTick()
 
 void VideoDriver::InvalidateGameOptionsWindow()
 {
-	InvalidateWindowClassesData(WC_GAME_OPTIONS, 3);
+	InvalidateWindowClassesData(WindowClass::GameOptions, 3);
 }
 
 /**

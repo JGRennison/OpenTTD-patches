@@ -366,7 +366,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_sign_list_widgets = 
 
 static WindowDesc _sign_list_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "list_signs", 358, 138,
-	WC_SIGN_LIST, WC_NONE,
+	WindowClass::SignList, WindowClass::None,
 	{},
 	_nested_sign_list_widgets,
 	&SignListWindow::hotkeys
@@ -621,9 +621,10 @@ static constexpr std::initializer_list<NWidgetPart> _nested_query_sign_edit_widg
 	EndContainer(),
 };
 
+/** Window definition for the sign editor window. */
 static WindowDesc _query_sign_edit_desc(__FILE__, __LINE__,
 	WindowPosition::Center, nullptr, 0, 0,
-	WC_QUERY_STRING, WC_NONE,
+	WindowClass::QueryString, WindowClass::None,
 	WindowDefaultFlag::Construction,
 	_nested_query_sign_edit_widgets
 );
@@ -652,7 +653,7 @@ void HandleClickOnSign(const Sign *si)
 void ShowRenameSignWindow(const Sign *si)
 {
 	/* Delete all other edit windows */
-	CloseWindowByClass(WC_QUERY_STRING);
+	CloseWindowByClass(WindowClass::QueryString);
 
 	new SignWindow(_query_sign_edit_desc, si);
 }
@@ -663,7 +664,7 @@ void ShowRenameSignWindow(const Sign *si)
  */
 void DeleteRenameSignWindow(SignID sign)
 {
-	SignWindow *w = dynamic_cast<SignWindow *>(FindWindowById(WC_QUERY_STRING, QueryStringWindowNumber::Sign));
+	SignWindow *w = dynamic_cast<SignWindow *>(FindWindowById(WindowClass::QueryString, QueryStringWindowNumber::Sign));
 
 	if (w != nullptr && w->cur_sign == sign) w->Close();
 }

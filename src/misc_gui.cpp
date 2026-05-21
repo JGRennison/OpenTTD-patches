@@ -58,9 +58,10 @@ static constexpr std::initializer_list<NWidgetPart> _nested_land_info_widgets = 
 	NWidget(WWT_PANEL, Colours::Grey, WID_LI_BACKGROUND), EndContainer(),
 };
 
+/** Window definition for the land information window. */
 static WindowDesc _land_info_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, nullptr, 0, 0,
-	WC_LAND_INFO, WC_NONE,
+	WindowClass::LandInfo, WindowClass::None,
 	{},
 	_nested_land_info_widgets
 );
@@ -352,7 +353,7 @@ public:
  */
 void ShowLandInfo(TileIndex tile)
 {
-	CloseWindowById(WC_LAND_INFO, 0);
+	CloseWindowById(WindowClass::LandInfo, 0);
 	new LandInfoWindow(tile);
 }
 
@@ -374,9 +375,10 @@ static constexpr std::initializer_list<NWidgetPart> _nested_about_widgets = {
 	EndContainer(),
 };
 
+/** Window definition for the about window. */
 static WindowDesc _about_desc(__FILE__, __LINE__,
 	WindowPosition::Center, nullptr, 0, 0,
-	WC_GAME_OPTIONS, WC_NONE,
+	WindowClass::GameOptions, WindowClass::None,
 	{},
 	_nested_about_widgets
 );
@@ -526,7 +528,7 @@ struct AboutWindow : public Window {
 
 void ShowAboutWindow()
 {
-	CloseWindowByClass(WC_GAME_OPTIONS);
+	CloseWindowByClass(WindowClass::GameOptions);
 	new AboutWindow();
 }
 
@@ -641,9 +643,10 @@ static constexpr std::initializer_list<NWidgetPart> _nested_tooltips_widgets = {
 	NWidget(WWT_EMPTY, Colours::Invalid, WID_TT_BACKGROUND),
 };
 
+/** Window definition for the tool tip window. */
 static WindowDesc _tool_tips_desc(__FILE__, __LINE__,
 	WindowPosition::Manual, nullptr, 0, 0, // Coordinates and sizes are not used,
-	WC_TOOLTIPS, WC_NONE,
+	WindowClass::ToolTips, WindowClass::None,
 	{WindowDefaultFlag::NoFocus, WindowDefaultFlag::NoClose},
 	_nested_tooltips_widgets
 );
@@ -759,7 +762,7 @@ struct TooltipsWindow : public Window
  */
 void GuiShowTooltips(Window *parent, EncodedString &&text, TooltipCloseCondition close_tooltip)
 {
-	CloseWindowById(WC_TOOLTIPS, 0);
+	CloseWindowById(WindowClass::ToolTips, 0);
 
 	if (text.empty() || !_cursor.in_window) return;
 
@@ -772,7 +775,7 @@ void QueryString::HandleEditBox(Window *w, WidgetID wid)
 		w->SetWidgetDirty(wid);
 
 		/* For the OSK also invalidate the parent window */
-		if (w->window_class == WC_OSK) w->InvalidateData();
+		if (w->window_class == WindowClass::OnScreenKeyboard) w->InvalidateData();
 	}
 }
 
@@ -957,7 +960,7 @@ void QueryString::ClickEditBox(Window *w, Point pt, WidgetID wid, int click_coun
 		return;
 	}
 
-	if (w->window_class != WC_OSK && _settings_client.gui.osk_activation != OskActivation::Disabled &&
+	if (w->window_class != WindowClass::OnScreenKeyboard && _settings_client.gui.osk_activation != OskActivation::Disabled &&
 		(!focus_changed || _settings_client.gui.osk_activation == OskActivation::Immediately) &&
 		(click_count == 2 || _settings_client.gui.osk_activation != OskActivation::DoubleClick)) {
 		/* Open the OSK window */
@@ -1212,8 +1215,8 @@ private:
 	void ClearViewportRect()
 	{
 		if (this->parent != nullptr) {
-			if (this->parent->window_class == WC_STATION_VIEW) SetViewportStationRect(Station::Get(this->parent->window_number), false);
-			if (this->parent->window_class == WC_WAYPOINT_VIEW) SetViewportWaypointRect(Waypoint::Get(this->parent->window_number), false);
+			if (this->parent->window_class == WindowClass::StationView) SetViewportStationRect(Station::Get(this->parent->window_number), false);
+			if (this->parent->window_class == WindowClass::WaypointView) SetViewportWaypointRect(Waypoint::Get(this->parent->window_number), false);
 		}
 	}
 
@@ -1267,9 +1270,10 @@ static constexpr std::initializer_list<NWidgetPart> _nested_query_string_widgets
 	EndContainer(),
 };
 
+/** Window definition for the string query window. */
 static WindowDesc _query_string_desc(__FILE__, __LINE__,
 	WindowPosition::Center, nullptr, 0, 0,
-	WC_QUERY_STRING, WC_NONE,
+	WindowClass::QueryString, WindowClass::None,
 	{},
 	_nested_query_string_widgets
 );
@@ -1283,14 +1287,14 @@ static WindowDesc _query_string_desc(__FILE__, __LINE__,
  * @param flags various flags, @see QueryStringFlags
  */
 void ShowQueryString(const std::span<QueryEditboxDescription, 1> &ed, StringID window_caption, Window *parent, QueryStringFlags flags) {
-	CloseWindowByClass(WC_QUERY_STRING);
+	CloseWindowByClass(WindowClass::QueryString);
 	new QueryStringWindow<1>(ed, GetEncodedString(window_caption), _query_string_desc, parent, flags);
 }
 
 /** Ditto, but with two textboxes. */
 void ShowQueryString(const std::span<QueryEditboxDescription, 2> &ed, StringID window_caption, Window *parent, QueryStringFlags flags)
 {
-	CloseWindowByClass(WC_QUERY_STRING);
+	CloseWindowByClass(WindowClass::QueryString);
 	new QueryStringWindow<2>(ed, GetEncodedString(window_caption), _query_string_desc, parent, flags);
 }
 
@@ -1303,7 +1307,7 @@ void ShowQueryString(std::string_view str, StringID caption, uint maxsize, Windo
 	QueryEditboxDescription ed[1]{
 		{str, caption, INVALID_STRING_ID, afilter, maxsize }
 	};
-	CloseWindowByClass(WC_QUERY_STRING);
+	CloseWindowByClass(WindowClass::QueryString);
 	new QueryStringWindow<1>(ed, GetEncodedString(caption), _query_string_desc, parent, flags);
 }
 
@@ -1317,7 +1321,7 @@ void ShowQueryString(std::string_view str, EncodedString &&caption, uint maxsize
 	QueryEditboxDescription ed[1]{
 		{str, STR_EMPTY, INVALID_STRING_ID, afilter, maxsize }
 	};
-	CloseWindowByClass(WC_QUERY_STRING);
+	CloseWindowByClass(WindowClass::QueryString);
 	new QueryStringWindow<1>(ed, std::move(caption), _query_string_desc, parent, flags);
 }
 
@@ -1327,7 +1331,7 @@ void ShowQueryString(std::string_view str, EncodedString &&caption, uint maxsize
  */
 void UpdateQueryStringDefault(std::string_view str)
 {
-	QueryStringWindow<1> *w = dynamic_cast<QueryStringWindow<1> *>(FindWindowByClass(WC_QUERY_STRING));
+	QueryStringWindow<1> *w = dynamic_cast<QueryStringWindow<1> *>(FindWindowByClass(WindowClass::QueryString));
 	if (w != nullptr) w->editboxes[0].orig = str;
 }
 
@@ -1446,18 +1450,19 @@ static constexpr std::initializer_list<NWidgetPart> _nested_query_widgets = {
 	EndContainer(),
 };
 
+/** Window definition for the query window. */
 static WindowDesc _query_desc(__FILE__, __LINE__,
 	WindowPosition::Center, nullptr, 0, 0,
-	WC_CONFIRM_POPUP_QUERY, WC_NONE,
+	WindowClass::ConfirmPopupQuery, WindowClass::None,
 	WindowDefaultFlag::Modal,
 	_nested_query_widgets
 );
 
 static void RemoveExistingQueryWindow(Window *parent, QueryCallbackProc *callback)
 {
-	if (!HaveWindowByClass(WC_CONFIRM_POPUP_QUERY)) return;
+	if (!HaveWindowByClass(WindowClass::ConfirmPopupQuery)) return;
 	for (Window *w : Window::IterateFromBack()) {
-		if (w->window_class != WC_CONFIRM_POPUP_QUERY) continue;
+		if (w->window_class != WindowClass::ConfirmPopupQuery) continue;
 
 		QueryWindow *qw = dynamic_cast<QueryWindow *>(w);
 		assert(qw != nullptr);
@@ -1474,7 +1479,7 @@ static void RemoveExistingQueryWindow(Window *parent, QueryCallbackProc *callbac
  * @param caption string shown as window caption
  * @param message string that will be shown for the window
  * @param parent pointer to parent window, if this pointer is nullptr the parent becomes
- * the main window WC_MAIN_WINDOW
+ * the main window WindowClass::MainWindow
  * @param callback callback function pointer to set in the window descriptor
  * @param focus whether the window should be focussed (by default false)
  */
@@ -1564,7 +1569,7 @@ struct ModifierKeyToggleWindow : Window {
 
 static WindowDesc _modifier_key_toggle_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "modifier_key_toggle", 0, 0,
-	WC_MODIFIER_KEY_TOGGLE, WC_NONE,
+	WindowClass::ModifierKeyToggle, WindowClass::None,
 	WindowDefaultFlag::NoFocus,
 	_modifier_key_toggle_widgets
 );

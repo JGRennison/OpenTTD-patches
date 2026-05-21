@@ -94,7 +94,7 @@ struct BuildAirToolbarWindow : Window {
 	void Close([[maybe_unused]] int data = 0) override
 	{
 		if (this->IsWidgetLowered(WID_AT_AIRPORT)) SetViewportCatchmentStation(nullptr, true);
-		if (_settings_client.gui.link_terraform_toolbar) CloseWindowById(WC_SCEN_LAND_GEN, 0, false);
+		if (_settings_client.gui.link_terraform_toolbar) CloseWindowById(WindowClass::ScenarioGenerateLandscape, 0, false);
 		this->Window::Close();
 	}
 
@@ -110,7 +110,7 @@ struct BuildAirToolbarWindow : Window {
 		bool can_build = CanBuildVehicleInfrastructure(VehicleType::Aircraft);
 		this->SetWidgetDisabledState(WID_AT_AIRPORT, !can_build);
 		if (!can_build) {
-			CloseWindowById(WC_BUILD_STATION, TRANSPORT_AIR);
+			CloseWindowById(WindowClass::BuildStation, TRANSPORT_AIR);
 
 			/* Show in the tooltip why this button is disabled. */
 			this->GetWidget<NWidgetCore>(WID_AT_AIRPORT)->SetToolTip(STR_TOOLBAR_DISABLED_NO_VEHICLE_AVAILABLE);
@@ -177,8 +177,8 @@ struct BuildAirToolbarWindow : Window {
 
 		this->RaiseButtons();
 
-		CloseWindowById(WC_BUILD_STATION, TRANSPORT_AIR);
-		CloseWindowById(WC_SELECT_STATION, 0);
+		CloseWindowById(WindowClass::BuildStation, TRANSPORT_AIR);
+		CloseWindowById(WindowClass::JoinStation, 0);
 	}
 
 	/**
@@ -215,7 +215,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_air_toolbar_widgets 
 
 static WindowDesc _air_toolbar_desc(__FILE__, __LINE__,
 	WindowPosition::Manual, "toolbar_air", 0, 0,
-	WC_BUILD_TOOLBAR, WC_NONE,
+	WindowClass::BuildToolbar, WindowClass::None,
 	WindowDefaultFlag::Construction,
 	_nested_air_toolbar_widgets,
 	&BuildAirToolbarWindow::hotkeys
@@ -232,7 +232,7 @@ Window *ShowBuildAirToolbar()
 {
 	if (!Company::IsValidID(_local_company)) return nullptr;
 
-	CloseWindowByClass(WC_BUILD_TOOLBAR);
+	CloseWindowByClass(WindowClass::BuildToolbar);
 	return AllocateWindowDescFront<BuildAirToolbarWindow>(_air_toolbar_desc, TRANSPORT_AIR);
 }
 
@@ -296,7 +296,7 @@ public:
 
 	void Close([[maybe_unused]] int data = 0) override
 	{
-		CloseWindowById(WC_SELECT_STATION, 0);
+		CloseWindowById(WindowClass::JoinStation, 0);
 		this->PickerWindowBase::Close();
 	}
 
@@ -623,9 +623,10 @@ static constexpr std::initializer_list<NWidgetPart> _nested_build_airport_widget
 	EndContainer(),
 };
 
+/** Window definition for the airport build window. */
 static WindowDesc _build_airport_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, nullptr, 0, 0,
-	WC_BUILD_STATION, WC_BUILD_TOOLBAR,
+	WindowClass::BuildStation, WindowClass::BuildToolbar,
 	WindowDefaultFlag::Construction,
 	_nested_build_airport_widgets
 );

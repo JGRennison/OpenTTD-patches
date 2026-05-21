@@ -42,9 +42,10 @@ static constexpr std::initializer_list<NWidgetPart> _nested_errmsg_widgets = {
 	EndContainer(),
 };
 
+/** Window definition for the error message window. */
 static WindowDesc _errmsg_desc(__FILE__, __LINE__,
 	WindowPosition::Manual, nullptr, 0, 0,
-	WC_ERRMSG, WC_NONE,
+	WindowClass::ErrorMessage, WindowClass::None,
 	{},
 	_nested_errmsg_widgets
 );
@@ -62,9 +63,10 @@ static constexpr std::initializer_list<NWidgetPart> _nested_errmsg_face_widgets 
 	EndContainer(),
 };
 
+/** Window definition for the error message with company president face window. */
 static WindowDesc _errmsg_face_desc(__FILE__, __LINE__,
 	WindowPosition::Manual, nullptr, 0, 0,
-	WC_ERRMSG, WC_NONE,
+	WindowClass::ErrorMessage, WindowClass::None,
 	{},
 	_nested_errmsg_face_widgets
 );
@@ -269,7 +271,7 @@ void ShowFirstError()
  */
 void UnshowCriticalError()
 {
-	ErrmsgWindow *w = dynamic_cast<ErrmsgWindow *>(FindWindowById(WC_ERRMSG, 0));
+	ErrmsgWindow *w = dynamic_cast<ErrmsgWindow *>(FindWindowById(WindowClass::ErrorMessage, 0));
 	if (_window_system_initialized && w != nullptr) {
 		if (w->IsCritical()) _error_list.push_front(*w);
 		_window_system_initialized = false;
@@ -332,7 +334,7 @@ void ShowErrorMessage(EncodedString &&summary_msg, EncodedString &&detailed_msg,
 
 	ErrorMessageData data(std::move(summary_msg), std::move(detailed_msg), no_timeout ? 0 : _settings_client.gui.errmsg_duration, x, y, std::move(extra_msg), company);
 
-	ErrmsgWindow *w = dynamic_cast<ErrmsgWindow *>(FindWindowById(WC_ERRMSG, 0));
+	ErrmsgWindow *w = dynamic_cast<ErrmsgWindow *>(FindWindowById(WindowClass::ErrorMessage, 0));
 	if (w != nullptr) {
 		if (w->IsCritical()) {
 			/* A critical error is currently shown. */
@@ -356,7 +358,7 @@ void ShowErrorMessage(EncodedString &&summary_msg, EncodedString &&detailed_msg,
  */
 bool HideActiveErrorMessage()
 {
-	ErrmsgWindow *w = dynamic_cast<ErrmsgWindow *>(FindWindowById(WC_ERRMSG, 0));
+	ErrmsgWindow *w = dynamic_cast<ErrmsgWindow *>(FindWindowById(WindowClass::ErrorMessage, 0));
 	if (w == nullptr) return false;
 	w->Close();
 	return true;

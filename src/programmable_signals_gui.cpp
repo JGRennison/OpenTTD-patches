@@ -1000,7 +1000,7 @@ static constexpr NWidgetPart _nested_program_widgets[] = {
 
 static WindowDesc _program_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "signal_program", 384, 100,
-	WC_SIGNAL_PROGRAM, WC_BUILD_SIGNAL,
+	WindowClass::ProgrammablePresigProgram, WindowClass::BuildSignal,
 	WindowDefaultFlag::Construction,
 	_nested_program_widgets
 );
@@ -1008,7 +1008,7 @@ static WindowDesc _program_desc(__FILE__, __LINE__,
 void ShowSignalProgramWindow(SignalReference ref)
 {
 	uint32_t window_id = (ref.tile.base() << 3) | ref.track;
-	if (BringWindowToFrontById(WC_SIGNAL_PROGRAM, window_id) != nullptr) return;
+	if (BringWindowToFrontById(WindowClass::ProgrammablePresigProgram, window_id) != nullptr) return;
 
 	new ProgramWindow(_program_desc, ref);
 }

@@ -715,7 +715,7 @@ void IndustryProductionCallback(Industry *ind, int reason)
 		SB(object.callback_param2, 24, 8, again);
 	}
 
-	SetWindowDirty(WC_INDUSTRY_VIEW, ind->index);
+	SetWindowDirty(WindowClass::IndustryView, ind->index);
 }
 
 /**

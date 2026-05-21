@@ -94,28 +94,28 @@ static constexpr std::initializer_list<NWidgetPart> _nested_train_depot_widgets 
 
 static WindowDesc _train_depot_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "depot_train", 362, 123,
-	WC_VEHICLE_DEPOT, WC_NONE,
+	WindowClass::VehicleDepot, WindowClass::None,
 	{},
 	_nested_train_depot_widgets
 );
 
 static WindowDesc _road_depot_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "depot_roadveh", 316, 97,
-	WC_VEHICLE_DEPOT, WC_NONE,
+	WindowClass::VehicleDepot, WindowClass::None,
 	{},
 	_nested_train_depot_widgets
 );
 
 static WindowDesc _ship_depot_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "depot_ship", 306, 99,
-	WC_VEHICLE_DEPOT, WC_NONE,
+	WindowClass::VehicleDepot, WindowClass::None,
 	{},
 	_nested_train_depot_widgets
 );
 
 static WindowDesc _aircraft_depot_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "depot_aircraft", 332, 99,
-	WC_VEHICLE_DEPOT, WC_NONE,
+	WindowClass::VehicleDepot, WindowClass::None,
 	{},
 	_nested_train_depot_widgets
 );
@@ -313,7 +313,7 @@ struct DepotWindow : Window {
 
 	void Close([[maybe_unused]] int data = 0) override
 	{
-		CloseWindowById(WC_BUILD_VEHICLE, this->window_number);
+		CloseWindowById(WindowClass::BuildVehicle, this->window_number);
 		CloseWindowById(GetWindowClassForVehicleType(this->type), VehicleListIdentifier(VL_DEPOT_LIST, this->type, this->owner, this->GetDestinationIndex()).ToWindowNumber(), false);
 		OrderBackup::Reset(TileIndex(this->window_number));
 		this->Window::Close();
@@ -1216,7 +1216,7 @@ static void DepotSellAllConfirmationCallback(Window *win, bool confirmed)
  */
 void ShowDepotWindow(TileIndex tile, VehicleType type)
 {
-	if (BringWindowToFrontById(WC_VEHICLE_DEPOT, tile.base()) != nullptr) return;
+	if (BringWindowToFrontById(WindowClass::VehicleDepot, tile.base()) != nullptr) return;
 
 	switch (type) {
 		default: NOT_REACHED();
@@ -1240,7 +1240,7 @@ void DeleteDepotHighlightOfVehicle(const Vehicle *v)
 	 */
 	if (_special_mouse_mode != WSM_DRAGDROP) return;
 
-	w = dynamic_cast<DepotWindow*>(FindWindowById(WC_VEHICLE_DEPOT, v->tile.base()));
+	w = dynamic_cast<DepotWindow*>(FindWindowById(WindowClass::VehicleDepot, v->tile.base()));
 	if (w != nullptr) {
 		if (w->sel == v->index) ResetObjectToPlace();
 	}

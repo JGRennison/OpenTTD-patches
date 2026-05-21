@@ -198,7 +198,7 @@ void UpdateSmallMapSelectedIndustries()
 
 	/* Only notify the smallmap window if it exists. In particular, do not
 	 * bring it to the front to prevent messing up any nice layout of the user. */
-	InvalidateWindowClassesData(WC_SMALLMAP, 0);
+	InvalidateWindowClassesData(WindowClass::SmallMap, 0);
 }
 
 /**
@@ -650,7 +650,7 @@ static constexpr VehicleTypeIndexArray<PixelColour, VehicleType::End> _vehicle_t
 /** Notify the industry chain window to stop sending newly selected industries. */
 /* static */ void SmallMapWindow::BreakIndustryChainLink()
 {
-	InvalidateWindowClassesData(WC_INDUSTRY_CARGOES, NUM_INDUSTRYTYPES);
+	InvalidateWindowClassesData(WindowClass::IndustryCargoes, NUM_INDUSTRYTYPES);
 }
 
 inline Point SmallMapWindow::TileToPixel(int tx, int ty) const
@@ -1983,7 +1983,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_smallmap_widgets = {
 
 static WindowDesc _smallmap_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "smallmap", 484, 314,
-	WC_SMALLMAP, WC_NONE,
+	WindowClass::SmallMap, WindowClass::None,
 	{},
 	_nested_smallmap_widgets
 );
@@ -2014,7 +2014,7 @@ bool ScrollMainWindowTo(int x, int y, int z, bool instant)
 
 	if (res) return res;
 
-	SmallMapWindow *w = dynamic_cast<SmallMapWindow*>(FindWindowById(WC_SMALLMAP, 0));
+	SmallMapWindow *w = dynamic_cast<SmallMapWindow*>(FindWindowById(WindowClass::SmallMap, 0));
 	if (w != nullptr) w->SmallMapCenterOnCurrentPos();
 
 	return res;

@@ -85,7 +85,7 @@ IConsoleModes _iconsole_mode;
 static void IConsoleClearCommand()
 {
 	_iconsole_cmdline.DeleteAll();
-	SetWindowDirty(WC_CONSOLE, 0);
+	SetWindowDirty(WindowClass::Console, 0);
 }
 
 static inline void IConsoleResetHistoryPos()
@@ -102,9 +102,10 @@ static constexpr std::initializer_list<NWidgetPart> _nested_console_window_widge
 	NWidget(WWT_EMPTY, Colours::Invalid, WID_C_BACKGROUND), SetResize(1, 1),
 };
 
+/** Window definition for the console window. */
 static WindowDesc _console_window_desc(__FILE__, __LINE__,
 	WindowPosition::Manual, nullptr, 0, 0,
-	WC_CONSOLE, WC_NONE,
+	WindowClass::Console, WindowClass::None,
 	{},
 	_nested_console_window_widgets
 );
@@ -397,7 +398,7 @@ void IConsoleSwitch()
 			break;
 
 		case ICONSOLE_OPENED: case ICONSOLE_FULL:
-			CloseWindowById(WC_CONSOLE, 0);
+			CloseWindowById(WindowClass::Console, 0);
 			break;
 	}
 
@@ -544,7 +545,7 @@ static void IConsoleTabCompletion()
 void IConsoleGUIPrint(ExtendedTextColour colour_code, std::string str)
 {
 	_iconsole_buffer.push_front(IConsoleLine(std::move(str), colour_code));
-	SetWindowDirty(WC_CONSOLE, 0);
+	SetWindowDirty(WindowClass::Console, 0);
 }
 
 /**

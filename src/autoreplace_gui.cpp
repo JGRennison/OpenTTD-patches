@@ -59,7 +59,7 @@ void InvalidateAutoreplaceWindow(EngineID e, GroupID id_g)
 		/* We don't have any of this engine type.
 		 * Either we just sold the last one, we build a new one or we stopped replacing it.
 		 * In all cases, we need to update the left list */
-		InvalidateWindowData(WC_REPLACE_VEHICLE, Engine::Get(e)->type, 1);
+		InvalidateWindowData(WindowClass::ReplaceVehicle, Engine::Get(e)->type, 1);
 	}
 }
 
@@ -69,9 +69,9 @@ void InvalidateAutoreplaceWindow(EngineID e, GroupID id_g)
  */
 void AddRemoveEngineFromAutoreplaceAndBuildWindows(VehicleType type)
 {
-	InvalidateWindowData(WC_REPLACE_VEHICLE, type, 0); // Update the autoreplace window
-	InvalidateWindowClassesData(WC_BUILD_VEHICLE); // The build windows needs updating as well
-	InvalidateWindowClassesData(WC_BUILD_VIRTUAL_TRAIN);
+	InvalidateWindowData(WindowClass::ReplaceVehicle, type, 0); // Update the autoreplace window
+	InvalidateWindowClassesData(WindowClass::BuildVehicle); // The build windows needs updating as well
+	InvalidateWindowClassesData(WindowClass::BuildVirtualTrain);
 }
 
 static const StringID _start_replace_dropdown[] = {
@@ -604,9 +604,9 @@ public:
 						Engine *engine = Engine::Get(item.variant_id);
 						engine->display_flags.Flip(EngineDisplayFlag::IsFolded);
 
-						InvalidateWindowData(WC_REPLACE_VEHICLE, (VehicleType)this->window_number, 0); // Update the autoreplace window
-						InvalidateWindowClassesData(WC_BUILD_VEHICLE); // The build windows needs updating as well
-						InvalidateWindowClassesData(WC_BUILD_VIRTUAL_TRAIN);
+						InvalidateWindowData(WindowClass::ReplaceVehicle, (VehicleType)this->window_number, 0); // Update the autoreplace window
+						InvalidateWindowClassesData(WindowClass::BuildVehicle); // The build windows needs updating as well
+						InvalidateWindowClassesData(WindowClass::BuildVirtualTrain);
 						return;
 					}
 					if (!item.flags.Test(EngineDisplayFlag::Shaded)) e = item.engine_id;
@@ -768,7 +768,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_replace_rail_vehicle
 
 static WindowDesc _replace_rail_vehicle_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "replace_vehicle_train", 500, 140,
-	WC_REPLACE_VEHICLE, WC_NONE,
+	WindowClass::ReplaceVehicle, WindowClass::None,
 	WindowDefaultFlag::Construction,
 	_nested_replace_rail_vehicle_widgets
 );
@@ -826,7 +826,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_replace_road_vehicle
 
 static WindowDesc _replace_road_vehicle_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "replace_vehicle_road", 500, 140,
-	WC_REPLACE_VEHICLE, WC_NONE,
+	WindowClass::ReplaceVehicle, WindowClass::None,
 	WindowDefaultFlag::Construction,
 	_nested_replace_road_vehicle_widgets
 );
@@ -880,7 +880,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_replace_vehicle_widg
 
 static WindowDesc _replace_vehicle_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "replace_vehicle", 456, 118,
-	WC_REPLACE_VEHICLE, WC_NONE,
+	WindowClass::ReplaceVehicle, WindowClass::None,
 	WindowDefaultFlag::Construction,
 	_nested_replace_vehicle_widgets
 );
@@ -892,7 +892,7 @@ static WindowDesc _replace_vehicle_desc(__FILE__, __LINE__,
  */
 void ShowReplaceGroupVehicleWindow(GroupID id_g, VehicleType vehicletype)
 {
-	CloseWindowById(WC_REPLACE_VEHICLE, vehicletype);
+	CloseWindowById(WindowClass::ReplaceVehicle, vehicletype);
 	switch (vehicletype) {
 		case VehicleType::Train: new ReplaceVehicleWindow(_replace_rail_vehicle_desc, vehicletype, id_g); break;
 		case VehicleType::Road: new ReplaceVehicleWindow(_replace_road_vehicle_desc, vehicletype, id_g); break;

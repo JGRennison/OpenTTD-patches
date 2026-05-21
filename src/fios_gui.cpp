@@ -588,7 +588,7 @@ public:
 		if (_game_mode != GM_MENU && !_networking && _game_mode != GM_EDITOR) {
 			Command<Commands::Pause>::Post(PauseMode::SaveLoad, true);
 		}
-		SetObjectToPlace(SPR_CURSOR_ZZZ, PAL_NONE, HT_NONE, WC_MAIN_WINDOW, 0);
+		SetObjectToPlace(SPR_CURSOR_ZZZ, PAL_NONE, HT_NONE, WindowClass::MainWindow, 0);
 
 		this->OnInvalidateData(SLIWD_RESCAN_FILES);
 
@@ -1197,7 +1197,7 @@ public:
 /** Load game/scenario */
 static WindowDesc _load_dialog_desc(__FILE__, __LINE__,
 	WindowPosition::Center, "load_game", 500, 294,
-	WC_SAVELOAD, WC_NONE,
+	WindowClass::SaveLoad, WindowClass::None,
 	{},
 	_nested_load_dialog_widgets
 );
@@ -1205,7 +1205,7 @@ static WindowDesc _load_dialog_desc(__FILE__, __LINE__,
 /** Load heightmap */
 static WindowDesc _load_heightmap_dialog_desc(__FILE__, __LINE__,
 	WindowPosition::Center, "load_heightmap", 257, 320,
-	WC_SAVELOAD, WC_NONE,
+	WindowClass::SaveLoad, WindowClass::None,
 	{},
 	_nested_load_heightmap_dialog_widgets
 );
@@ -1213,7 +1213,7 @@ static WindowDesc _load_heightmap_dialog_desc(__FILE__, __LINE__,
 /** Load town data */
 static WindowDesc _load_town_data_dialog_desc(__FILE__, __LINE__,
 	WindowPosition::Center, "load_town_data", 257, 320,
-	WC_SAVELOAD, WC_NONE,
+	WindowClass::SaveLoad, WindowClass::None,
 	{},
 	_nested_load_town_data_dialog_widgets
 );
@@ -1221,7 +1221,7 @@ static WindowDesc _load_town_data_dialog_desc(__FILE__, __LINE__,
 /** Load orderlist */
 static WindowDesc _load_orderlist_dialog_desc(__FILE__, __LINE__,
 	WindowPosition::Center, "load_orderlist", 257, 320,
-	WC_SAVELOAD, WC_NONE,
+	WindowClass::SaveLoad, WindowClass::None,
 	{},
 	_nested_load_orderlist_dialog_widgets
 );
@@ -1229,7 +1229,7 @@ static WindowDesc _load_orderlist_dialog_desc(__FILE__, __LINE__,
 /** Save game/scenario */
 static WindowDesc _save_dialog_desc(__FILE__, __LINE__,
 	WindowPosition::Center, "save_game", 500, 294,
-	WC_SAVELOAD, WC_NONE,
+	WindowClass::SaveLoad, WindowClass::None,
 	{},
 	_nested_save_dialog_widgets
 );
@@ -1237,7 +1237,7 @@ static WindowDesc _save_dialog_desc(__FILE__, __LINE__,
 /** Save orderlist */
 static WindowDesc _save_orderlist_dialog_desc(__FILE__, __LINE__,
 	WindowPosition::Center, "save_orderlist", 257, 320,
-	WC_SAVELOAD, WC_NONE,
+	WindowClass::SaveLoad, WindowClass::None,
 	{},
 	_nested_save_orderlist_dialog_widgets
 );
@@ -1249,7 +1249,7 @@ static WindowDesc _save_orderlist_dialog_desc(__FILE__, __LINE__,
  */
 void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fop, std::optional<FiosOrderListInfo> order_list_info)
 {
-	CloseWindowById(WC_SAVELOAD, 0);
+	CloseWindowById(WindowClass::SaveLoad, 0);
 
 	if (fop == SaveLoadOperation::Save) {
 		switch (abstract_filetype) {

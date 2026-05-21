@@ -1301,14 +1301,14 @@ static constexpr std::initializer_list<NWidgetPart> _nested_newgrf_inspect_widge
 
 static WindowDesc _newgrf_inspect_chain_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "newgrf_inspect_chain", 400, 300,
-	WC_NEWGRF_INSPECT, WC_NONE,
+	WindowClass::NewGRFInspect, WindowClass::None,
 	{},
 	_nested_newgrf_inspect_chain_widgets
 );
 
 static WindowDesc _newgrf_inspect_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "newgrf_inspect", 400, 300,
-	WC_NEWGRF_INSPECT, WC_NONE,
+	WindowClass::NewGRFInspect, WindowClass::None,
 	{},
 	_nested_newgrf_inspect_widgets
 );
@@ -1316,11 +1316,11 @@ static WindowDesc _newgrf_inspect_desc(__FILE__, __LINE__,
 template <typename F>
 bool IterateNewGRFInspectWindows(InspectTargetId target_id, F handler)
 {
-	if (!HaveWindowByClass(WC_NEWGRF_INSPECT)) return false;
+	if (!HaveWindowByClass(WindowClass::NewGRFInspect)) return false;
 
 	bool found = false;
 	for (Window *w : Window::IterateFromFront()) {
-		if (w->window_class == WC_NEWGRF_INSPECT) {
+		if (w->window_class == WindowClass::NewGRFInspect) {
 			NewGRFInspectWindow *inspect_w = dynamic_cast<NewGRFInspectWindow *>(w);
 			if (inspect_w != nullptr && inspect_w->target_id == target_id) {
 				/* Found existing window */
@@ -1396,7 +1396,7 @@ void DeleteNewGRFInspectWindow(GrfSpecFeature feature, uint index)
 	/* Reinitialise the land information window to remove the "debug" sprite if needed.
 	 * Note: Since we might be called from a command here, it is important to not execute
 	 * the invalidation immediately. The landinfo window tests commands itself. */
-	InvalidateWindowData(WC_LAND_INFO, 0, 1);
+	InvalidateWindowData(WindowClass::LandInfo, 0, 1);
 }
 
 /**
@@ -1866,7 +1866,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_sprite_aligner_widge
 
 static WindowDesc _sprite_aligner_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "sprite_aligner", 400, 300,
-	WC_SPRITE_ALIGNER, WC_NONE,
+	WindowClass::SpriteAligner, WindowClass::None,
 	{},
 	_nested_sprite_aligner_widgets
 );

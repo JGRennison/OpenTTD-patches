@@ -440,7 +440,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 
 	void Close(int data = 0) override
 	{
-		FocusWindowById(WC_VEHICLE_VIEW, this->window_number);
+		FocusWindowById(WindowClass::VehicleView, this->window_number);
 		this->GeneralVehicleWindow::Close();
 	}
 
@@ -1012,7 +1012,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 		const Vehicle *v = this->vehicle;
 
 		this->clicked_widget = widget;
-		this->CloseChildWindows(WC_QUERY_STRING);
+		this->CloseChildWindows(WindowClass::QueryString);
 
 		switch (widget) {
 			case WID_VT_ORDER_VIEW: // Order view button
@@ -1299,7 +1299,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 
 void InvalidateTimetableListWindowOnOrderMove(VehicleID veh, VehicleOrderID from, VehicleOrderID to, uint16_t count)
 {
-	TimetableWindow *w = dynamic_cast<TimetableWindow *>(FindWindowById(WC_VEHICLE_TIMETABLE, veh));
+	TimetableWindow *w = dynamic_cast<TimetableWindow *>(FindWindowById(WindowClass::VehicleTimetable, veh));
 	if (w != nullptr) {
 		w->SetDirty();
 		w->OnOrderMove(from, to, count);
@@ -1365,7 +1365,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_timetable_widgets = 
 
 static WindowDesc _timetable_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "view_vehicle_timetable", 400, 130,
-	WC_VEHICLE_TIMETABLE, WC_VEHICLE_VIEW,
+	WindowClass::VehicleTimetable, WindowClass::VehicleView,
 	WindowDefaultFlag::Construction,
 	_nested_timetable_widgets
 );
@@ -1376,26 +1376,26 @@ static WindowDesc _timetable_desc(__FILE__, __LINE__,
  */
 void ShowTimetableWindow(const Vehicle *v)
 {
-	CloseWindowById(WC_VEHICLE_DETAILS, v->index, false);
-	CloseWindowById(WC_VEHICLE_ORDERS, v->index, false);
+	CloseWindowById(WindowClass::VehicleDetails, v->index, false);
+	CloseWindowById(WindowClass::VehicleOrders, v->index, false);
 	AllocateWindowDescFront<TimetableWindow>(_timetable_desc, v->index);
 }
 
 void SetTimetableWindowsDirty(const Vehicle *v, SetTimetableWindowsDirtyFlags flags)
 {
-	if (_pause_mode.Any()) InvalidateWindowClassesData(WC_DEPARTURES_BOARD);
+	if (_pause_mode.Any()) InvalidateWindowClassesData(WindowClass::DepartureBoard);
 
-	if (!(HaveWindowByClass(WC_VEHICLE_TIMETABLE) ||
-			((flags & STWDF_SCHEDULED_DISPATCH) && HaveWindowByClass(WC_SCHDISPATCH_SLOTS)) ||
-			((flags & STWDF_ORDERS) && HaveWindowByClass(WC_VEHICLE_ORDERS)))) {
+	if (!(HaveWindowByClass(WindowClass::VehicleTimetable) ||
+			((flags & STWDF_SCHEDULED_DISPATCH) && HaveWindowByClass(WindowClass::ScheduledDispatchSlots)) ||
+			((flags & STWDF_ORDERS) && HaveWindowByClass(WindowClass::VehicleOrders)))) {
 		return;
 	}
 
 	v = v->FirstShared();
 	for (Window *w : Window::Iterate()) {
-		if (w->window_class == WC_VEHICLE_TIMETABLE ||
-				((flags & STWDF_SCHEDULED_DISPATCH) && w->window_class == WC_SCHDISPATCH_SLOTS) ||
-				((flags & STWDF_ORDERS) && w->window_class == WC_VEHICLE_ORDERS)) {
+		if (w->window_class == WindowClass::VehicleTimetable ||
+				((flags & STWDF_SCHEDULED_DISPATCH) && w->window_class == WindowClass::ScheduledDispatchSlots) ||
+				((flags & STWDF_ORDERS) && w->window_class == WindowClass::VehicleOrders)) {
 			if (static_cast<GeneralVehicleWindow *>(w)->vehicle->FirstShared() == v) w->SetDirty();
 		}
 	}

@@ -443,18 +443,18 @@ static void InvalidateCurrentCompanyGroupWindows(VehicleType vt, bool new_group)
 			}
 		}
 	}
-	if (vt == VehicleType::Train && _current_company == _local_company) InvalidateWindowData(WC_TEMPLATEGUI_MAIN, 0, 0);
+	if (vt == VehicleType::Train && _current_company == _local_company) InvalidateWindowData(WindowClass::TemplateReplacementGuiMain, 0, 0);
 
 	if (!new_group && (_settings_client.gui.departure_show_vehicle || _settings_client.gui.departure_show_group)) {
-		SetWindowClassesDirty(WC_DEPARTURES_BOARD);
+		SetWindowClassesDirty(WindowClass::DepartureBoard);
 	}
 }
 
 static void BulkUpdateVehicleWindowsOnGroupChange(VehicleID veh_id = VehicleID::Invalid())
 {
 	/* Iterate all applicable vehicle windows in one pass. */
-	if (HaveWindowByClass(WC_VEHICLE_VIEW) || HaveWindowByClass(WC_VEHICLE_DETAILS) || HaveWindowByClass(WC_VEHICLE_ORDERS) ||
-			HaveWindowByClass(WC_VEHICLE_TIMETABLE) || HaveWindowByClass(WC_SCHDISPATCH_SLOTS)) {
+	if (HaveWindowByClass(WindowClass::VehicleView) || HaveWindowByClass(WindowClass::VehicleDetails) || HaveWindowByClass(WindowClass::VehicleOrders) ||
+			HaveWindowByClass(WindowClass::VehicleTimetable) || HaveWindowByClass(WindowClass::ScheduledDispatchSlots)) {
 		for (Window *w : Window::Iterate()) {
 			if (veh_id != VehicleID::Invalid()) {
 				if (w->window_number != veh_id) continue;
@@ -462,14 +462,14 @@ static void BulkUpdateVehicleWindowsOnGroupChange(VehicleID veh_id = VehicleID::
 				if (w->owner != _current_company) continue;
 			}
 			switch (w->window_class) {
-				case WC_VEHICLE_DETAILS:
+				case WindowClass::VehicleDetails:
 					w->InvalidateData(0, false);
 					break;
 
-				case WC_VEHICLE_VIEW:
-				case WC_VEHICLE_ORDERS:
-				case WC_VEHICLE_TIMETABLE:
-				case WC_SCHDISPATCH_SLOTS:
+				case WindowClass::VehicleView:
+				case WindowClass::VehicleOrders:
+				case WindowClass::VehicleTimetable:
+				case WindowClass::ScheduledDispatchSlots:
 					/* Set widget 0 (caption) dirty. */
 					w->SetWidgetDirty(0);
 					break;
@@ -489,7 +489,7 @@ void GroupChangeDeferredUpdates::Flush()
 	}
 	if (this->changed_groups) {
 		BulkUpdateVehicleWindowsOnGroupChange(); // Individual vehicle windows
-		SetWindowWidgetDirty(WC_TRACE_RESTRICT_SLOTS, VehicleListIdentifier(VL_SLOT_LIST, vt, _current_company).ToWindowNumber(), 0); // Slots vehicle panel
+		SetWindowWidgetDirty(WindowClass::TraceRestrictSlots, VehicleListIdentifier(VL_SLOT_LIST, vt, _current_company).ToWindowNumber(), 0); // Slots vehicle panel
 	} else if (this->veh_id_count > 0) {
 		for (uint i = 0; i < this->veh_id_count; i++) {
 			BulkUpdateVehicleWindowsOnGroupChange(this->veh_ids[i]->index); // Individual vehicle windows
@@ -498,7 +498,7 @@ void GroupChangeDeferredUpdates::Flush()
 	}
 
 	if (this->veh_id_count != 0 || this->new_group || this->changed_groups) {
-		SetWindowDirty(WC_REPLACE_VEHICLE, this->vt);
+		SetWindowDirty(WindowClass::ReplaceVehicle, this->vt);
 		GroupStatistics::UpdateAutoreplace(_current_company);
 
 		/* Group/vehicle lists, template window.
@@ -569,7 +569,7 @@ CommandCost CmdCreateGroup(DoCommandFlags flags, VehicleType vt, GroupID parent_
 		cost.SetResultData(g->index);
 
 		_group_change_deferred_updates.RegisterNewGroup();
-		InvalidateWindowData(WC_COMPANY_COLOUR, g->owner, g->vehicle_type);
+		InvalidateWindowData(WindowClass::CompanyLivery, g->owner, g->vehicle_type);
 	}
 
 	return cost;
@@ -623,11 +623,11 @@ CommandCost CmdDeleteGroup(DoCommandFlags flags, GroupID group_id)
 		TraceRestrictRemoveGroupID(g->index);
 
 		/* Delete the Replace Vehicle Windows */
-		CloseWindowById(WC_REPLACE_VEHICLE, g->vehicle_type);
+		CloseWindowById(WindowClass::ReplaceVehicle, g->vehicle_type);
 		delete g;
 
 		_group_change_deferred_updates.RegisterChangedGroup();
-		InvalidateWindowData(WC_COMPANY_COLOUR, _current_company, vt);
+		InvalidateWindowData(WindowClass::CompanyLivery, _current_company, vt);
 	}
 
 	return CommandCost();
@@ -705,10 +705,10 @@ CommandCost CmdAlterGroup(DoCommandFlags flags, AlterGroupMode mode, GroupID gro
 	}
 
 	if (flags.Test(DoCommandFlag::Execute)) {
-		InvalidateWindowData(WC_REPLACE_VEHICLE, g->vehicle_type, 1);
+		InvalidateWindowData(WindowClass::ReplaceVehicle, g->vehicle_type, 1);
 		InvalidateCurrentCompanyGroupWindows(g->vehicle_type, false);
-		SetWindowWidgetDirty(WC_TRACE_RESTRICT_SLOTS, VehicleListIdentifier(VL_SLOT_LIST, g->vehicle_type, _current_company).ToWindowNumber(), 0); // Vehicle panel
-		InvalidateWindowData(WC_COMPANY_COLOUR, g->owner, g->vehicle_type);
+		SetWindowWidgetDirty(WindowClass::TraceRestrictSlots, VehicleListIdentifier(VL_SLOT_LIST, g->vehicle_type, _current_company).ToWindowNumber(), 0); // Vehicle panel
+		InvalidateWindowData(WindowClass::CompanyLivery, g->owner, g->vehicle_type);
 		BulkUpdateVehicleWindowsOnGroupChange();
 	}
 
@@ -790,7 +790,7 @@ static void AddVehicleToGroup(Vehicle *v, GroupID new_g)
 			break;
 	}
 
-	SetWindowDirty(WC_VEHICLE_DEPOT, v->tile.base());
+	SetWindowDirty(WindowClass::VehicleDepot, v->tile.base());
 	_group_change_deferred_updates.AddVehicle(v);
 
 	GroupStatistics::CountVehicle(v, 1);
@@ -1046,7 +1046,7 @@ CommandCost CmdSetGroupFlag(DoCommandFlags flags, GroupID group_id, GroupFlag fl
 		SetGroupFlag(g, flag, value, recursive);
 
 		SetWindowDirty(GetWindowClassForVehicleType(g->vehicle_type), VehicleListIdentifier(VL_GROUP_LIST, g->vehicle_type, _current_company).ToWindowNumber());
-		InvalidateWindowData(WC_REPLACE_VEHICLE, g->vehicle_type);
+		InvalidateWindowData(WindowClass::ReplaceVehicle, g->vehicle_type);
 	}
 
 	return CommandCost();
@@ -1078,7 +1078,7 @@ void SetTrainGroupID(Train *v, GroupID new_g)
 
 	/* Update the Replace Vehicle Windows */
 	GroupStatistics::UpdateAutoreplace(v->owner);
-	SetWindowDirty(WC_REPLACE_VEHICLE, VehicleType::Train);
+	SetWindowDirty(WindowClass::ReplaceVehicle, VehicleType::Train);
 }
 
 
@@ -1105,7 +1105,7 @@ void UpdateTrainGroupID(Train *v)
 
 	/* Update the Replace Vehicle Windows */
 	GroupStatistics::UpdateAutoreplace(v->owner);
-	SetWindowDirty(WC_REPLACE_VEHICLE, VehicleType::Train);
+	SetWindowDirty(WindowClass::ReplaceVehicle, VehicleType::Train);
 }
 
 /**

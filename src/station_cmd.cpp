@@ -515,7 +515,7 @@ void Station::UpdateCargoHistory()
 	}
 	this->station_cargo_history_offset++;
 	if (this->station_cargo_history_offset == MAX_STATION_CARGO_HISTORY_DAYS) this->station_cargo_history_offset = 0;
-	if (update_window) InvalidateWindowData(WC_STATION_VIEW, this->index, -1);
+	if (update_window) InvalidateWindowData(WindowClass::StationView, this->index, -1);
 }
 
 static bool CheckStationCargoHistroyOverflow(const std::array<uint16_t, MAX_STATION_CARGO_HISTORY_DAYS> &history, const uint8_t history_offset)
@@ -596,7 +596,7 @@ void Station::UpdateVirtCoord()
 
 	if (_viewport_sign_kdtree_valid) _viewport_sign_kdtree.Insert(ViewportSignKdtreeItem::MakeStation(this->index));
 
-	SetWindowDirty(WC_STATION_VIEW, this->index);
+	SetWindowDirty(WindowClass::StationView, this->index);
 }
 
 /**
@@ -813,7 +813,7 @@ void UpdateStationAcceptance(Station *st, bool show_msg)
 	}
 
 	/* redraw the station view since acceptance changed */
-	SetWindowWidgetDirty(WC_STATION_VIEW, st->index, WID_SV_ACCEPT_RATING_LIST);
+	SetWindowWidgetDirty(WindowClass::StationView, st->index, WID_SV_ACCEPT_RATING_LIST);
 }
 
 static void UpdateStationSignCoord(BaseStation *st)
@@ -891,7 +891,7 @@ static void DeleteStationIfEmpty(BaseStation *st)
 {
 	if (!st->IsInUse()) {
 		st->delete_ctr = 0;
-		InvalidateWindowData(WC_STATION_LIST, st->owner, 0);
+		InvalidateWindowData(WindowClass::StationList, st->owner, 0);
 	}
 	/* station remains but it probably lost some parts - station sign should stay in the station boundaries */
 	UpdateStationSignCoord(st);
@@ -906,20 +906,20 @@ void Station::AfterStationTileSetChange(bool adding, StationType type)
 {
 	this->UpdateVirtCoord();
 	DirtyCompanyInfrastructureWindows(this->owner);
-	if (adding) InvalidateWindowData(WC_STATION_LIST, this->owner, 0);
+	if (adding) InvalidateWindowData(WindowClass::StationList, this->owner, 0);
 
 	switch (type) {
 		case StationType::Rail:
-			SetWindowWidgetDirty(WC_STATION_VIEW, this->index, WID_SV_TRAINS);
+			SetWindowWidgetDirty(WindowClass::StationView, this->index, WID_SV_TRAINS);
 			break;
 		case StationType::Airport:
 			break;
 		case StationType::Truck:
 		case StationType::Bus:
-			SetWindowWidgetDirty(WC_STATION_VIEW, this->index, WID_SV_ROADVEHS);
+			SetWindowWidgetDirty(WindowClass::StationView, this->index, WID_SV_ROADVEHS);
 			break;
 		case StationType::Dock:
-			SetWindowWidgetDirty(WC_STATION_VIEW, this->index, WID_SV_SHIPS);
+			SetWindowWidgetDirty(WindowClass::StationView, this->index, WID_SV_SHIPS);
 			break;
 		default: NOT_REACHED();
 	}
@@ -927,7 +927,7 @@ void Station::AfterStationTileSetChange(bool adding, StationType type)
 	if (adding) {
 		this->RecomputeCatchment();
 		UpdateStationAcceptance(this, false);
-		InvalidateWindowData(WC_SELECT_STATION, 0, 0);
+		InvalidateWindowData(WindowClass::JoinStation, 0, 0);
 	} else {
 		DeleteStationIfEmpty(this);
 		this->RecomputeCatchment();
@@ -2024,8 +2024,8 @@ CommandCost RemoveFromRailBaseStation(TileArea ta, std::vector<T *> &affected_st
 		/* if we deleted the whole station, delete the train facility. */
 		if (st->train_station.tile == INVALID_TILE) {
 			st->facilities.Reset(StationFacility::Train);
-			SetWindowClassesDirty(WC_VEHICLE_ORDERS);
-			SetWindowWidgetDirty(WC_STATION_VIEW, st->index, WID_SV_TRAINS);
+			SetWindowClassesDirty(WindowClass::VehicleOrders);
+			SetWindowWidgetDirty(WindowClass::StationView, st->index, WID_SV_TRAINS);
 			st->UpdateVirtCoord();
 			DeleteStationIfEmpty(st);
 		}
@@ -2058,7 +2058,7 @@ CommandCost CmdRemoveFromRailStation(DoCommandFlags flags, TileIndex start, Tile
 	/* Do all station specific functions here. */
 	for (Station *st : affected_stations) {
 
-		if (st->train_station.tile == INVALID_TILE) SetWindowWidgetDirty(WC_STATION_VIEW, st->index, WID_SV_TRAINS);
+		if (st->train_station.tile == INVALID_TILE) SetWindowWidgetDirty(WindowClass::StationView, st->index, WID_SV_TRAINS);
 		st->MarkTilesDirty(false);
 		st->RecomputeCatchment();
 	}
@@ -2434,7 +2434,7 @@ CommandCost RemoveRoadWaypointStop(TileIndex tile, DoCommandFlags flags, int rep
 			if (wp->road_waypoint_area.tile == INVALID_TILE) {
 				wp->facilities.Reset(StationFacility::BusStop);
 				wp->facilities.Reset(StationFacility::TruckStop);
-				SetWindowWidgetDirty(WC_STATION_VIEW, wp->index, WID_SV_ROADVEHS);
+				SetWindowWidgetDirty(WindowClass::StationView, wp->index, WID_SV_ROADVEHS);
 				wp->UpdateVirtCoord();
 				DeleteStationIfEmpty(wp);
 			}
@@ -2509,7 +2509,7 @@ CommandCost RemoveRoadStop(TileIndex tile, DoCommandFlags flags, int replacement
 			/* removed the only stop? */
 			if (*primary_stop == nullptr) {
 				st->facilities.Reset(is_truck ? StationFacility::TruckStop : StationFacility::BusStop);
-				SetWindowClassesDirty(WC_VEHICLE_ORDERS);
+				SetWindowClassesDirty(WindowClass::VehicleOrders);
 			}
 		} else {
 			/* tell the predecessor in the list to skip this stop */
@@ -2942,7 +2942,7 @@ CommandCost CmdBuildAirport(DoCommandFlags flags, TileIndex tile, uint8_t airpor
 			for (uint i = 0; i < st->airport.GetNumHangars(); ++i) {
 				TileIndex tile_cur = st->airport.GetHangarTile(i);
 				OrderBackup::Reset(tile_cur, false);
-				CloseWindowById(WC_VEHICLE_DEPOT, tile_cur.base());
+				CloseWindowById(WindowClass::VehicleDepot, tile_cur.base());
 			}
 
 			uint old_dist;
@@ -2951,7 +2951,7 @@ CommandCost CmdBuildAirport(DoCommandFlags flags, TileIndex tile, uint8_t airpor
 			if (old_nearest != nearest) {
 				old_nearest->noise_reached -= GetAirportNoiseLevelForDistance(st->airport.GetSpec(), old_dist);
 				if (_settings_game.economy.station_noise_level) {
-					SetWindowDirty(WC_TOWN_VIEW, st->town->index);
+					SetWindowDirty(WindowClass::TownView, st->town->index);
 				}
 			}
 
@@ -2999,10 +2999,10 @@ CommandCost CmdBuildAirport(DoCommandFlags flags, TileIndex tile, uint8_t airpor
 
 		st->AfterStationTileSetChange(true, StationType::Airport);
 		ZoningMarkDirtyStationCoverageArea(st);
-		InvalidateWindowData(WC_STATION_VIEW, st->index, -1);
+		InvalidateWindowData(WindowClass::StationView, st->index, -1);
 
 		if (_settings_game.economy.station_noise_level) {
-			SetWindowDirty(WC_TOWN_VIEW, nearest->index);
+			SetWindowDirty(WindowClass::TownView, nearest->index);
 		}
 	}
 
@@ -3031,7 +3031,7 @@ static CommandCost RemoveAirport(TileIndex tile, DoCommandFlags flags)
 		for (uint i = 0; i < st->airport.GetNumHangars(); ++i) {
 			TileIndex tile_cur = st->airport.GetHangarTile(i);
 			OrderBackup::Reset(tile_cur, false);
-			CloseWindowById(WC_VEHICLE_DEPOT, tile_cur.base());
+			CloseWindowById(WindowClass::VehicleDepot, tile_cur.base());
 		}
 
 		ZoningMarkDirtyStationCoverageArea(st);
@@ -3043,7 +3043,7 @@ static CommandCost RemoveAirport(TileIndex tile, DoCommandFlags flags)
 		nearest->noise_reached -= GetAirportNoiseLevelForDistance(st->airport.GetSpec(), dist);
 
 		if (_settings_game.economy.station_noise_level) {
-			SetWindowDirty(WC_TOWN_VIEW, nearest->index);
+			SetWindowDirty(WindowClass::TownView, nearest->index);
 		}
 
 		for (TileIndex tile_cur : st->airport) {
@@ -3061,9 +3061,9 @@ static CommandCost RemoveAirport(TileIndex tile, DoCommandFlags flags)
 
 		st->airport.Clear();
 		st->facilities.Reset(StationFacility::Airport);
-		SetWindowClassesDirty(WC_VEHICLE_ORDERS);
+		SetWindowClassesDirty(WindowClass::VehicleOrders);
 
-		InvalidateWindowData(WC_STATION_VIEW, st->index, -1);
+		InvalidateWindowData(WindowClass::StationView, st->index, -1);
 
 		Company::Get(st->owner)->infrastructure.airport--;
 
@@ -3093,7 +3093,7 @@ CommandCost CmdOpenCloseAirport(DoCommandFlags flags, StationID station_id)
 
 	if (flags.Test(DoCommandFlag::Execute)) {
 		st->airport.blocks.Flip(AirportBlock::AirportClosed);
-		SetWindowWidgetDirty(WC_STATION_VIEW, st->index, WID_SV_CLOSE_AIRPORT);
+		SetWindowWidgetDirty(WindowClass::StationView, st->index, WID_SV_CLOSE_AIRPORT);
 	}
 	return CommandCost();
 }
@@ -3334,7 +3334,7 @@ static CommandCost RemoveDock(TileIndex tile, DoCommandFlags flags)
 			st->docking_station.Clear();
 			st->docking_tiles.clear();
 			st->facilities.Reset(StationFacility::Dock);
-			SetWindowClassesDirty(WC_VEHICLE_ORDERS);
+			SetWindowClassesDirty(WindowClass::VehicleOrders);
 		}
 
 		Company::Get(st->owner)->infrastructure.station -= 2;
@@ -4125,7 +4125,7 @@ static VehicleEnterTileStates VehicleEnterTile_Station(Vehicle *v, TileIndex til
 					consist->DeleteUnreachedImplicitOrders();
 					UpdateVehicleTimetable(consist, true);
 					consist->last_station_visited = station_id;
-					SetWindowDirty(WC_VEHICLE_VIEW, consist->index);
+					SetWindowDirty(WindowClass::VehicleView, consist->index);
 					consist->current_order.MakeWaiting();
 					consist->current_order.SetNonStopType(ONSF_NO_STOP_AT_ANY_STATION);
 					return {};
@@ -4525,9 +4525,9 @@ static void UpdateStationRating(Station *st)
 	StationID index = st->index;
 
 	if (waiting_changed) {
-		SetWindowDirty(WC_STATION_VIEW, index); // update whole window
+		SetWindowDirty(WindowClass::StationView, index); // update whole window
 	} else {
-		SetWindowWidgetDirty(WC_STATION_VIEW, index, WID_SV_ACCEPT_RATING_LIST); // update only ratings list
+		SetWindowWidgetDirty(WindowClass::StationView, index, WID_SV_ACCEPT_RATING_LIST); // update only ratings list
 	}
 }
 
@@ -4807,7 +4807,7 @@ void StationDailyLoop()
 		for (Station *st : Station::Iterate()) {
 			st->UpdateCargoHistory();
 		}
-		InvalidateWindowClassesData(WC_STATION_CARGO);
+		InvalidateWindowClassesData(WindowClass::StationCargoGraph);
 	}
 }
 
@@ -4869,7 +4869,7 @@ static uint UpdateStationWaiting(Station *st, CargoType cargo, uint amount, Sour
 	if (lg != nullptr) (*lg)[ge.node].UpdateSupply(amount);
 
 	if (!ge.HasRating()) {
-		InvalidateWindowData(WC_STATION_LIST, st->owner);
+		InvalidateWindowData(WindowClass::StationList, st->owner);
 		ge.status.Set(GoodsEntry::State::Rating);
 	}
 
@@ -4879,7 +4879,7 @@ static uint UpdateStationWaiting(Station *st, CargoType cargo, uint amount, Sour
 	TriggerRoadStopRandomisation(st, st->xy, StationRandomTrigger::NewCargo, cargo);
 	TriggerRoadStopAnimation(st, st->xy, StationAnimationTrigger::NewCargo, cargo);
 
-	SetWindowDirty(WC_STATION_VIEW, st->index);
+	SetWindowDirty(WindowClass::StationView, st->index);
 	st->MarkTilesDirty(true);
 	return amount;
 }
@@ -4941,7 +4941,7 @@ CommandCost CmdRenameStation(DoCommandFlags flags, StationID station_id, bool ge
 		}
 
 		st->UpdateVirtCoord();
-		InvalidateWindowData(WC_STATION_LIST, st->owner, 1);
+		InvalidateWindowData(WindowClass::StationList, st->owner, 1);
 	}
 
 	return CommandCost();
@@ -5038,7 +5038,7 @@ CommandCost CmdExchangeStationNames(DoCommandFlags flags, StationID station_id1,
 		std::swap(st->extra_name_index, st2->extra_name_index);
 		st->UpdateVirtCoord();
 		st2->UpdateVirtCoord();
-		InvalidateWindowData(WC_STATION_LIST, st->owner, 1);
+		InvalidateWindowData(WindowClass::StationList, st->owner, 1);
 	}
 
 	return CommandCost();
@@ -5065,7 +5065,7 @@ CommandCost CmdSetStationCargoAllowedSupply(DoCommandFlags flags, StationID stat
 	if (flags.Test(DoCommandFlag::Execute)) {
 		GoodsEntry &ge = st->goods[cargo];
 		ge.status.Set(GoodsEntry::State::NoCargoSupply, !allow);
-		InvalidateWindowData(WC_STATION_VIEW, st->index, -1);
+		InvalidateWindowData(WindowClass::StationView, st->index, -1);
 	}
 
 	return CommandCost();
@@ -5370,7 +5370,7 @@ static void ChangeTileOwner_Station(TileIndex tile, Owner old_owner, Owner new_o
 
 		/* for buoys, owner of tile is owner of water, st->owner == OWNER_NONE */
 		SetTileOwner(tile, new_owner);
-		InvalidateWindowClassesData(WC_STATION_LIST, 0);
+		InvalidateWindowClassesData(WindowClass::StationList, 0);
 	} else {
 		if (IsDriveThroughStopTile(tile)) {
 			/* Remove the drive-through road stop */

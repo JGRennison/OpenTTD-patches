@@ -2623,23 +2623,23 @@ static inline Vehicle *GetVehicleFromWindow(const Window *w)
 		WindowClass wc = w->window_class;
 		WindowNumber wn = w->window_number;
 
-		if (wc == WC_DROPDOWN_MENU) GetDropDownParentWindowInfo(w, wc, wn);
+		if (wc == WindowClass::DropdownMenu) GetDropDownParentWindowInfo(w, wc, wn);
 
 		switch (wc) {
-			case WC_VEHICLE_VIEW:
-			case WC_VEHICLE_ORDERS:
-			case WC_VEHICLE_TIMETABLE:
-			case WC_VEHICLE_DETAILS:
-			case WC_VEHICLE_REFIT:
-			case WC_VEHICLE_CARGO_TYPE_LOAD_ORDERS:
-			case WC_VEHICLE_CARGO_TYPE_UNLOAD_ORDERS:
-			case WC_SCHDISPATCH_SLOTS:
+			case WindowClass::VehicleView:
+			case WindowClass::VehicleOrders:
+			case WindowClass::VehicleTimetable:
+			case WindowClass::VehicleDetails:
+			case WindowClass::VehicleRefit:
+			case WindowClass::VehicleCargoTypeLoadOrders:
+			case WindowClass::VehicleCargoTypeUnloadOrders:
+			case WindowClass::ScheduledDispatchSlots:
 				if (wn != VehicleID::Invalid()) return Vehicle::GetIfValid(wn);
 				break;
-			case WC_TRAINS_LIST:
-			case WC_ROADVEH_LIST:
-			case WC_SHIPS_LIST:
-			case WC_AIRCRAFT_LIST: {
+			case WindowClass::TrainList:
+			case WindowClass::RoadVehicleList:
+			case WindowClass::ShipList:
+			case WindowClass::AircraftList: {
 				VehicleListIdentifier vli = VehicleListIdentifier::UnPack(wn);
 				if (vli.type == VL_SHARED_ORDERS) {
 					return Vehicle::GetIfValid(vli.index);
@@ -5496,7 +5496,7 @@ HandleViewportClickedResult HandleViewportClicked(const Viewport *vp, int x, int
 			WindowClass wc = _thd.GetCallbackWnd()->window_class;
 			if (_ctrl_pressed && IsVehicleControlAllowed(v, _local_company)) {
 				StartStopVehicle(v, true);
-			} else if (wc != WC_CREATE_TEMPLATE && wc != WC_TEMPLATEGUI_MAIN) {
+			} else if (wc != WindowClass::TemplateReplacementCreateTemplate && wc != WindowClass::TemplateReplacementGuiMain) {
 				ShowVehicleViewWindow(v);
 			}
 		}
@@ -5848,7 +5848,7 @@ static inline void ShowMeasurementTooltips(EncodedString &&text, TooltipCloseCon
 
 static void HideMeasurementTooltips()
 {
-	CloseWindowById(WC_TOOLTIPS, 0);
+	CloseWindowById(WindowClass::ToolTips, 0);
 }
 
 /**
@@ -6875,7 +6875,7 @@ void SetObjectToPlaceWnd(CursorID icon, PaletteID pal, HighLightStyle mode, Wind
  */
 void SetObjectToPlace(CursorID icon, PaletteID pal, HighLightStyle mode, WindowClass window_class, WindowNumber window_num, WindowToken window_token)
 {
-	if (_thd.window_class != WC_INVALID) {
+	if (_thd.window_class != WindowClass::Invalid) {
 		/* Undo clicking on button and drag & drop */
 		Window *w = _thd.GetCallbackWnd();
 		/* Call the abort function, but set the window class to something
@@ -6883,7 +6883,7 @@ void SetObjectToPlace(CursorID icon, PaletteID pal, HighLightStyle mode, WindowC
 		 * the 'next' window class must not be done because recursion into
 		 * this function might in some cases reset the newly set object to
 		 * place or not properly reset the original selection. */
-		_thd.window_class = WC_INVALID;
+		_thd.window_class = WindowClass::Invalid;
 		_thd.window_token = WindowToken(0);
 		if (w != nullptr) {
 			w->OnPlaceObjectAbort();
@@ -6924,7 +6924,7 @@ void SetObjectToPlace(CursorID icon, PaletteID pal, HighLightStyle mode, WindowC
 /** Reset the cursor and mouse mode handling back to default (normal cursor, only clicking in windows). */
 void ResetObjectToPlace()
 {
-	SetObjectToPlace(SPR_CURSOR_MOUSE, PAL_NONE, HT_NONE, WC_MAIN_WINDOW, 0);
+	SetObjectToPlace(SPR_CURSOR_MOUSE, PAL_NONE, HT_NONE, WindowClass::MainWindow, 0);
 }
 
 void ChangeRenderMode(Viewport *vp, bool down) {
@@ -7173,12 +7173,12 @@ void ResetRailPlacementSnapping()
 
 static void SetWindowDirtyForViewportCatchment()
 {
-	if (_viewport_highlight_station != nullptr) SetWindowDirty(WC_STATION_VIEW, _viewport_highlight_station->index);
-	if (_viewport_highlight_station_rect != nullptr) SetWindowDirty(WC_STATION_VIEW, _viewport_highlight_station_rect->index);
-	if (_viewport_highlight_waypoint != nullptr) SetWindowDirty(WC_WAYPOINT_VIEW, _viewport_highlight_waypoint->index);
-	if (_viewport_highlight_waypoint_rect != nullptr) SetWindowDirty(WC_WAYPOINT_VIEW, _viewport_highlight_waypoint_rect->index);
-	if (_viewport_highlight_town != nullptr) SetWindowDirty(WC_TOWN_VIEW, _viewport_highlight_town->index);
-	if (_viewport_highlight_tracerestrict_program != nullptr) InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+	if (_viewport_highlight_station != nullptr) SetWindowDirty(WindowClass::StationView, _viewport_highlight_station->index);
+	if (_viewport_highlight_station_rect != nullptr) SetWindowDirty(WindowClass::StationView, _viewport_highlight_station_rect->index);
+	if (_viewport_highlight_waypoint != nullptr) SetWindowDirty(WindowClass::WaypointView, _viewport_highlight_waypoint->index);
+	if (_viewport_highlight_waypoint_rect != nullptr) SetWindowDirty(WindowClass::WaypointView, _viewport_highlight_waypoint_rect->index);
+	if (_viewport_highlight_town != nullptr) SetWindowDirty(WindowClass::TownView, _viewport_highlight_town->index);
+	if (_viewport_highlight_tracerestrict_program != nullptr) InvalidateWindowClassesData(WindowClass::TraceRestrict);
 }
 
 static void ClearViewportCatchment()
@@ -7212,7 +7212,7 @@ void SetViewportCatchmentStation(const Station *st, bool sel)
 		_viewport_highlight_station = nullptr;
 	}
 	/* Redraw the currently selected station window */
-	if (_viewport_highlight_station != nullptr) SetWindowDirty(WC_STATION_VIEW, _viewport_highlight_station->index);
+	if (_viewport_highlight_station != nullptr) SetWindowDirty(WindowClass::StationView, _viewport_highlight_station->index);
 }
 
 /**
@@ -7235,7 +7235,7 @@ void SetViewportStationRect(const Station *st, bool sel)
 		_viewport_highlight_station_rect = nullptr;
 	}
 	/* Redraw the currently selected station window */
-	if (_viewport_highlight_station_rect != nullptr) SetWindowDirty(WC_STATION_VIEW, _viewport_highlight_station_rect->index);
+	if (_viewport_highlight_station_rect != nullptr) SetWindowDirty(WindowClass::StationView, _viewport_highlight_station_rect->index);
 }
 
 /**
@@ -7258,7 +7258,7 @@ void SetViewportCatchmentWaypoint(const Waypoint *wp, bool sel)
 		_viewport_highlight_waypoint = nullptr;
 	}
 	/* Redraw the currently selected waypoint window */
-	if (_viewport_highlight_waypoint != nullptr) SetWindowDirty(WC_WAYPOINT_VIEW, _viewport_highlight_waypoint->index);
+	if (_viewport_highlight_waypoint != nullptr) SetWindowDirty(WindowClass::WaypointView, _viewport_highlight_waypoint->index);
 }
 
 /**
@@ -7281,7 +7281,7 @@ void SetViewportWaypointRect(const Waypoint *wp, bool sel)
 		_viewport_highlight_waypoint_rect = nullptr;
 	}
 	/* Redraw the currently selected waypoint window */
-	if (_viewport_highlight_waypoint_rect != nullptr) SetWindowDirty(WC_WAYPOINT_VIEW, _viewport_highlight_waypoint_rect->index);
+	if (_viewport_highlight_waypoint_rect != nullptr) SetWindowDirty(WindowClass::WaypointView, _viewport_highlight_waypoint_rect->index);
 }
 
 /**
@@ -7304,7 +7304,7 @@ void SetViewportCatchmentTown(const Town *t, bool sel)
 		MarkWholeNonMapViewportsDirty();
 	}
 	/* Redraw the currently selected town window */
-	if (_viewport_highlight_town != nullptr) SetWindowDirty(WC_TOWN_VIEW, _viewport_highlight_town->index);
+	if (_viewport_highlight_town != nullptr) SetWindowDirty(WindowClass::TownView, _viewport_highlight_town->index);
 }
 
 void SetViewportCatchmentTraceRestrictProgram(const TraceRestrictProgram *prog, bool sel)
@@ -7318,7 +7318,7 @@ void SetViewportCatchmentTraceRestrictProgram(const TraceRestrictProgram *prog, 
 		_viewport_highlight_tracerestrict_program = nullptr;
 		MarkWholeNonMapViewportsDirty();
 	}
-	if (_viewport_highlight_tracerestrict_program != nullptr) InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+	if (_viewport_highlight_tracerestrict_program != nullptr) InvalidateWindowClassesData(WindowClass::TraceRestrict);
 }
 
 int GetSlopeTreeBrightnessAdjust(Slope slope)
@@ -7371,10 +7371,10 @@ void ViewportData::CancelFollow(const Window &viewport_window)
 {
 	if (this->follow_vehicle == VehicleID::Invalid()) return;
 
-	if (viewport_window.window_class == WC_MAIN_WINDOW) {
+	if (viewport_window.window_class == WindowClass::MainWindow) {
 		/* We're cancelling follow in the main viewport, so we need to check for a vehicle view window
 		 * to raise the location follow widget. */
-		Window *vehicle_window = FindWindowById(WC_VEHICLE_VIEW, this->follow_vehicle);
+		Window *vehicle_window = FindWindowById(WindowClass::VehicleView, this->follow_vehicle);
 		if (vehicle_window != nullptr) vehicle_window->RaiseWidgetWhenLowered(WID_VV_LOCATION);
 	}
 

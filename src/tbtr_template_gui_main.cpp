@@ -186,8 +186,8 @@ static WindowDesc _template_replace_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic,
 	"template_replace",
 	456, 156,
-	WC_TEMPLATEGUI_MAIN,
-	WC_NONE,                     // parent window class
+	WindowClass::TemplateReplacementGuiMain,
+	WindowClass::None,                     // parent window class
 	WindowDefaultFlag::Construction,
 	_template_replace_widgets
 );
@@ -247,7 +247,7 @@ public:
 	}
 
 	void Close(int data = 0) override {
-		CloseWindowById(WC_CREATE_TEMPLATE, this->window_number);
+		CloseWindowById(WindowClass::TemplateReplacementCreateTemplate, this->window_number);
 		this->Window::Close();
 	}
 
@@ -1027,7 +1027,7 @@ public:
 
 void ShowTemplateReplaceWindow()
 {
-	if (BringWindowToFrontById(WC_TEMPLATEGUI_MAIN, 0) == nullptr) {
+	if (BringWindowToFrontById(WindowClass::TemplateReplacementGuiMain, 0) == nullptr) {
 		new TemplateReplaceWindow(_template_replace_desc);
 	}
 }

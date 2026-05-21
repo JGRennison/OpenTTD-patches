@@ -135,7 +135,7 @@ bool DoZoomInOutWindow(ZoomStateChange how, Window *w)
 			break;
 		case ZOOM_OUT:
 			if (vp->zoom >= _settings_client.gui.zoom_max) return false;
-			if (w->window_class != WC_MAIN_WINDOW && w->window_class != WC_EXTRA_VIEWPORT && vp->zoom >= ZoomLevel::SpriteMax) return false;
+			if (w->window_class != WindowClass::MainWindow && w->window_class != WindowClass::ExtraViewport && vp->zoom >= ZoomLevel::SpriteMax) return false;
 			vp->zoom = (ZoomLevel)((int)vp->zoom + 1);
 
 			w->viewport->scrollpos_x -= vp->virtual_width >> 1;
@@ -475,7 +475,7 @@ struct MainWindow : Window
 			case GHK_SWITCH_VIEWPORT_ROUTE_OVERLAY_MODE:
 				if (_settings_client.gui.show_vehicle_route_mode != 0) {
 					_settings_client.gui.show_vehicle_route_mode ^= 3;
-					SetWindowDirty(WC_GAME_OPTIONS, GameOptionsWindowNumber::GameSettings);
+					SetWindowDirty(WindowClass::GameOptions, GameOptionsWindowNumber::GameSettings);
 				}
 				break;
 			case GHK_SWITCH_VIEWPORT_MAP_SLOPE_MODE: {
@@ -548,7 +548,7 @@ struct MainWindow : Window
 	{
 		if (!gui_scope) return;
 		/* Forward the message to the appropriate toolbar (ingame or scenario editor) */
-		InvalidateWindowData(WC_MAIN_TOOLBAR, 0, data, true);
+		InvalidateWindowData(WindowClass::MainToolbar, 0, data, true);
 	}
 
 	virtual void OnMouseOver(Point pt, WidgetID widget) override
@@ -614,9 +614,10 @@ struct MainWindow : Window
 	}};
 };
 
+/** Window definition for the main window. */
 static WindowDesc _main_window_desc(__FILE__, __LINE__,
 	WindowPosition::Manual, nullptr, 0, 0,
-	WC_MAIN_WINDOW, WC_NONE,
+	WindowClass::MainWindow, WindowClass::None,
 	WindowDefaultFlag::NoClose,
 	_nested_main_window_widgets,
 	&MainWindow::hotkeys

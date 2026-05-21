@@ -133,9 +133,10 @@ static constexpr std::initializer_list<NWidgetPart> _nested_dropdown_menu_widget
 	EndContainer(),
 };
 
+/** Window description for dropdown menus. */
 static WindowDesc _dropdown_desc(__FILE__, __LINE__,
 	WindowPosition::Manual, nullptr, 0, 0,
-	WC_DROPDOWN_MENU, WC_NONE,
+	WindowClass::DropdownMenu, WindowClass::None,
 	{},
 	_nested_dropdown_menu_widgets
 );
@@ -586,7 +587,7 @@ struct DropdownWindow : Window {
 static DropdownWindow *GetDropDownWindowForParent(Window *parent)
 {
 	for (Window *w : Window::IterateFromFront()) {
-		if (w->window_class != WC_DROPDOWN_MENU) continue;
+		if (w->window_class != WindowClass::DropdownMenu) continue;
 
 		DropdownWindow *dw = dynamic_cast<DropdownWindow *>(w);
 		assert(dw != nullptr);
@@ -635,7 +636,7 @@ Dimension GetDropDownListDimension(const DropDownList &list)
  */
 void ShowDropDownListAt(Window *w, DropDownList &&list, int selected, WidgetID button, Rect wi_rect, Colours wi_colour, DropDownOptions options, DropDownSyncFocus sync_parent_focus, std::string * const persistent_filter_text)
 {
-	CloseWindowByClass(WC_DROPDOWN_MENU);
+	CloseWindowByClass(WindowClass::DropdownMenu);
 	new DropdownWindow(w, std::move(list), selected, button, wi_rect, wi_colour, options, sync_parent_focus, persistent_filter_text);
 }
 
@@ -733,7 +734,7 @@ void GetDropDownParentWindowInfo(const Window *w, WindowClass &parent_wc, Window
 		parent_wc = parent->window_class;
 		parent_wn = parent->window_number;
 	} else {
-		parent_wc = WC_INVALID;
+		parent_wc = WindowClass::Invalid;
 		parent_wn = 0;
 	}
 }

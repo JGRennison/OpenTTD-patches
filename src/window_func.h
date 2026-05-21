@@ -79,10 +79,23 @@ void CloseWindowByClass(WindowClass cls, int data = 0);
 
 bool FocusWindowById(WindowClass cls, WindowNumber number);
 
+class WindowClassBitset {
+	std::bitset<to_underlying(WindowClass::End)> data{};
+
+public:
+	bool operator[](WindowClass wc) const { return wc < WindowClass::End ? this->data[to_underlying(wc)] : false; }
+	void set(WindowClass wc) { this->data.set(to_underlying(wc)); }
+	void reset(WindowClass wc) { this->data.reset(to_underlying(wc)); }
+	void clear() { this->data.reset(); }
+	bool none() const { return this->data.none(); }
+
+	void operator &=(const WindowClassBitset other) { this->data &= other.data; }
+};
+
 inline bool HaveWindowByClass(WindowClass wc)
 {
-	extern std::bitset<WC_END> _present_window_types;
-	return wc < WC_END && _present_window_types[wc];
+	extern WindowClassBitset _present_window_types;
+	return _present_window_types[wc];
 }
 
 bool EditBoxInGlobalFocus();

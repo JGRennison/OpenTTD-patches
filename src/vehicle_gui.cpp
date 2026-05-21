@@ -1052,7 +1052,7 @@ struct RefitWindow : public Window {
 	void Close(int data = 0) override
 	{
 		if (this->window_number != VehicleID::Invalid()) {
-			FocusWindowById(WC_VEHICLE_VIEW, this->window_number);
+			FocusWindowById(WindowClass::VehicleView, this->window_number);
 		}
 		this->Window::Close();
 	}
@@ -1525,7 +1525,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_vehicle_refit_widget
 
 static WindowDesc _vehicle_refit_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "view_vehicle_refit", 240, 174,
-	WC_VEHICLE_REFIT, WC_VEHICLE_VIEW,
+	WindowClass::VehicleRefit, WindowClass::VehicleView,
 	WindowDefaultFlag::Construction,
 	_nested_vehicle_refit_widgets
 );
@@ -1539,7 +1539,7 @@ static WindowDesc _vehicle_refit_desc(__FILE__, __LINE__,
  */
 void ShowVehicleRefitWindow(const Vehicle *v, VehicleOrderID order, Window *parent, bool auto_refit, bool is_virtual_train)
 {
-	CloseWindowById(WC_VEHICLE_REFIT, v->index);
+	CloseWindowById(WindowClass::VehicleRefit, v->index);
 	RefitWindow *w = new RefitWindow(_vehicle_refit_desc, v, order, auto_refit, is_virtual_train);
 	w->parent = parent;
 }
@@ -1845,11 +1845,11 @@ static inline void ChangeVehicleWindow(WindowClass window_class, VehicleID from_
  */
 void ChangeVehicleViewWindow(VehicleID from_index, VehicleID to_index)
 {
-	ChangeVehicleWindow(WC_VEHICLE_VIEW,      from_index, to_index);
-	ChangeVehicleWindow(WC_VEHICLE_ORDERS,    from_index, to_index);
-	ChangeVehicleWindow(WC_VEHICLE_REFIT,     from_index, to_index);
-	ChangeVehicleWindow(WC_VEHICLE_DETAILS,   from_index, to_index);
-	ChangeVehicleWindow(WC_VEHICLE_TIMETABLE, from_index, to_index);
+	ChangeVehicleWindow(WindowClass::VehicleView,      from_index, to_index);
+	ChangeVehicleWindow(WindowClass::VehicleOrders,    from_index, to_index);
+	ChangeVehicleWindow(WindowClass::VehicleRefit,     from_index, to_index);
+	ChangeVehicleWindow(WindowClass::VehicleDetails,   from_index, to_index);
+	ChangeVehicleWindow(WindowClass::VehicleTimetable, from_index, to_index);
 	ChangeFixedViewportRoutePath(from_index, to_index);
 }
 
@@ -2846,28 +2846,28 @@ static WindowDesc _vehicle_list_desc[] = {
 	{
 		__FILE__, __LINE__,
 		WindowPosition::Automatic, "list_vehicles_train", 325, 246,
-		WC_TRAINS_LIST, WC_NONE,
+		WindowClass::TrainList, WindowClass::None,
 		{},
 		_nested_vehicle_list
 	},
 	{
 		__FILE__, __LINE__,
 		WindowPosition::Automatic, "list_vehicles_roadveh", 260, 246,
-		WC_ROADVEH_LIST, WC_NONE,
+		WindowClass::RoadVehicleList, WindowClass::None,
 		{},
 		_nested_vehicle_list
 	},
 	{
 		__FILE__, __LINE__,
 		WindowPosition::Automatic, "list_vehicles_ship", 260, 246,
-		WC_SHIPS_LIST, WC_NONE,
+		WindowClass::ShipList, WindowClass::None,
 		{},
 		_nested_vehicle_list
 	},
 	{
 		__FILE__, __LINE__,
 		WindowPosition::Automatic, "list_vehicles_aircraft", 260, 246,
-		WC_AIRCRAFT_LIST, WC_NONE,
+		WindowClass::AircraftList, WindowClass::None,
 		{},
 		_nested_vehicle_list
 	}
@@ -2914,10 +2914,10 @@ void ShowVehicleListWindow(CompanyID company, VehicleType vehicle_type, TileInde
 void DirtyVehicleListWindowForVehicle(const Vehicle *v)
 {
 	const VehicleType vt = v->type;
-	WindowClass cls = static_cast<WindowClass>(WC_TRAINS_LIST + vt);
-	if (!HaveWindowByClass(cls) && !HaveWindowByClass(WC_TRACE_RESTRICT_SLOTS)) return;
+	WindowClass cls = static_cast<WindowClass>(WindowClass::TrainList + vt);
+	if (!HaveWindowByClass(cls) && !HaveWindowByClass(WindowClass::TraceRestrictSlots)) return;
 	for (Window *w : Window::Iterate()) {
-		if (w->window_class == cls || (w->window_class == WC_TRACE_RESTRICT_SLOTS && VehicleListIdentifier::UnPackVehicleType(w->window_number) == vt)) {
+		if (w->window_class == cls || (w->window_class == WindowClass::TraceRestrictSlots && VehicleListIdentifier::UnPackVehicleType(w->window_number) == vt)) {
 			BaseVehicleListWindow *listwin = static_cast<BaseVehicleListWindow *>(w);
 			if (listwin->vehgroups.NeedRebuild()) continue;
 			uint max = std::min<uint>(listwin->vscroll->GetPosition() + listwin->vscroll->GetCapacity(), (uint)listwin->vehgroups.size());
@@ -3092,7 +3092,7 @@ struct VehicleDetailsWindow : Window {
 	void Close(int data = 0) override
 	{
 		if (this->window_number != VehicleID::Invalid()) {
-			FocusWindowById(WC_VEHICLE_VIEW, this->window_number);
+			FocusWindowById(WindowClass::VehicleView, this->window_number);
 		}
 		this->Window::Close();
 	}
@@ -3743,7 +3743,7 @@ struct VehicleDetailsWindow : Window {
 /** Vehicle details window descriptor. */
 static WindowDesc _train_vehicle_details_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "view_vehicle_details_train", 405, 178,
-	WC_VEHICLE_DETAILS, WC_VEHICLE_VIEW,
+	WindowClass::VehicleDetails, WindowClass::VehicleView,
 	{},
 	_nested_train_vehicle_details_widgets
 );
@@ -3751,7 +3751,7 @@ static WindowDesc _train_vehicle_details_desc(__FILE__, __LINE__,
 /** Vehicle details window descriptor for other vehicles than a train. */
 static WindowDesc _nontrain_vehicle_details_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "view_vehicle_details", 405, 113,
-	WC_VEHICLE_DETAILS, WC_VEHICLE_VIEW,
+	WindowClass::VehicleDetails, WindowClass::VehicleView,
 	{},
 	_nested_nontrain_vehicle_details_widgets
 );
@@ -3762,8 +3762,8 @@ static WindowDesc _nontrain_vehicle_details_desc(__FILE__, __LINE__,
  */
 static void ShowVehicleDetailsWindow(const Vehicle *v)
 {
-	CloseWindowById(WC_VEHICLE_ORDERS, v->index, false);
-	CloseWindowById(WC_VEHICLE_TIMETABLE, v->index, false);
+	CloseWindowById(WindowClass::VehicleOrders, v->index, false);
+	CloseWindowById(WindowClass::VehicleTimetable, v->index, false);
 	AllocateWindowDescFront<VehicleDetailsWindow>((v->type == VehicleType::Train) ? _train_vehicle_details_desc : _nontrain_vehicle_details_desc, v->index);
 }
 
@@ -4069,11 +4069,11 @@ public:
 
 	void Close([[maybe_unused]] int data = 0) override
 	{
-		CloseWindowById(WC_VEHICLE_ORDERS, this->window_number, false);
-		CloseWindowById(WC_VEHICLE_REFIT, this->window_number, false);
-		CloseWindowById(WC_VEHICLE_DETAILS, this->window_number, false);
-		CloseWindowById(WC_VEHICLE_TIMETABLE, this->window_number, false);
-		CloseWindowById(WC_SCHDISPATCH_SLOTS, this->window_number, false);
+		CloseWindowById(WindowClass::VehicleOrders, this->window_number, false);
+		CloseWindowById(WindowClass::VehicleRefit, this->window_number, false);
+		CloseWindowById(WindowClass::VehicleDetails, this->window_number, false);
+		CloseWindowById(WindowClass::VehicleTimetable, this->window_number, false);
+		CloseWindowById(WindowClass::ScheduledDispatchSlots, this->window_number, false);
 
 		if (this->fixed_route_overlay_active) {
 			RemoveFixedViewportRoutePath(this->window_number);
@@ -4751,7 +4751,7 @@ public:
 /** Vehicle view window descriptor for all vehicles but trains. */
 static WindowDesc _vehicle_view_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "view_vehicle", 250, 116,
-	WC_VEHICLE_VIEW, WC_NONE,
+	WindowClass::VehicleView, WindowClass::None,
 	{},
 	_nested_vehicle_view_widgets,
 	&VehicleViewWindow::hotkeys
@@ -4763,7 +4763,7 @@ static WindowDesc _vehicle_view_desc(__FILE__, __LINE__,
  */
 static WindowDesc _train_view_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "view_vehicle_train", 250, 134,
-	WC_VEHICLE_VIEW, WC_NONE,
+	WindowClass::VehicleView, WindowClass::None,
 	{},
 	_nested_vehicle_view_widgets,
 	&VehicleViewWindow::hotkeys
@@ -4780,11 +4780,11 @@ void ShowVehicleViewWindow(const Vehicle *v)
 
 void DirtySharedVehicleViewWindowTitles(const Vehicle *v)
 {
-	if (!HaveWindowByClass(WC_VEHICLE_VIEW)) return;
+	if (!HaveWindowByClass(WindowClass::VehicleView)) return;
 
 	v = v->FirstShared();
 	for (Window *w : Window::Iterate()) {
-		if (w->window_class == WC_VEHICLE_VIEW && Vehicle::Get(w->window_number)->FirstShared() == v) {
+		if (w->window_class == WindowClass::VehicleView && Vehicle::Get(w->window_number)->FirstShared() == v) {
 			w->SetWidgetDirty(WID_VV_CAPTION);
 		}
 	}
@@ -4835,7 +4835,7 @@ bool VehicleClicked(const GUIVehicleGroup &vehgroup)
 
 void StopGlobalFollowVehicle(const Vehicle *v)
 {
-	Window *w = FindWindowById(WC_MAIN_WINDOW, 0);
+	Window *w = FindWindowById(WindowClass::MainWindow, 0);
 	if (w != nullptr && w->viewport->follow_vehicle == v->index) {
 		const Vehicle *moving_front = v->GetMovingFront();
 		ScrollMainWindowTo(moving_front->x_pos, moving_front->y_pos, moving_front->z_pos, true); // lock the main view on the vehicle's last position
@@ -4961,13 +4961,13 @@ void SetMouseCursorVehicle(const Vehicle *v, EngineImageType image_type)
 
 void InvalidateVehicleListWindows(VehicleType vt)
 {
-	extern std::bitset<WC_END> _present_window_types;
-	std::bitset<WC_END> types;
+	extern WindowClassBitset _present_window_types;
+	WindowClassBitset types;
 
 	/* These window types only require one invalidation, not a second queued one. */
-	types.set(WC_TRAINS_LIST + vt);
-	types.set(WC_TRACE_RESTRICT_SLOTS);
-	types.set(WC_DEPARTURES_BOARD);
+	types.set(WindowClass::TrainList + vt);
+	types.set(WindowClass::TraceRestrictSlots);
+	types.set(WindowClass::DepartureBoard);
 
 	types &= _present_window_types;
 

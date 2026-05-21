@@ -2253,7 +2253,7 @@ class TraceRestrictWindow : public Window {
 
 	void TraceRestrictShowQueryString(std::string_view str, StringID caption, uint maxsize, CharSetFilter afilter, QueryStringFlags flags, QuerySubMode query_submode = QSM_DEFAULT)
 	{
-		CloseWindowByClass(WC_QUERY_STRING);
+		CloseWindowByClass(WindowClass::QueryString);
 		this->query_submode = query_submode;
 		ShowQueryString(str, caption, maxsize, this, afilter, flags);
 	}
@@ -4438,7 +4438,7 @@ static constexpr NWidgetPart _nested_program_widgets[] = {
 
 static WindowDesc _program_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "trace_restrict_gui", 384, 100,
-	WC_TRACE_RESTRICT, WC_BUILD_SIGNAL,
+	WindowClass::TraceRestrict, WindowClass::BuildSignal,
 	WindowDefaultFlag::Construction,
 	_nested_program_widgets
 );
@@ -4448,7 +4448,7 @@ static WindowDesc _program_desc(__FILE__, __LINE__,
  */
 void ShowTraceRestrictProgramWindow(TileIndex tile, Track track)
 {
-	if (BringWindowToFrontById(WC_TRACE_RESTRICT, MakeTraceRestrictRefId(tile, track)) != nullptr) {
+	if (BringWindowToFrontById(WindowClass::TraceRestrict, MakeTraceRestrictRefId(tile, track)) != nullptr) {
 		return;
 	}
 
@@ -4904,7 +4904,7 @@ public:
 
 		/* Process ID-invalidation in command-scope as well */
 		if (this->slot_query.IsInvalid()) {
-			CloseWindowByClass(WC_QUERY_STRING);
+			CloseWindowByClass(WindowClass::QueryString);
 			this->slot_query = {};
 		}
 		if (this->slot_sel.IsInvalid()) {
@@ -5433,7 +5433,7 @@ void CcCreateTraceRestrictSlot(const CommandCost &result)
 
 static WindowDesc _slot_window_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "list_tr_slots", 525, 246,
-	WC_TRACE_RESTRICT_SLOTS, WC_NONE,
+	WindowClass::TraceRestrictSlots, WindowClass::None,
 	{},
 	_nested_slot_widgets
 );
@@ -5461,7 +5461,7 @@ void DeleteTraceRestrictSlotHighlightOfVehicle(const Vehicle *v)
 	 */
 	if (_special_mouse_mode != WSM_DRAGDROP) return;
 
-	TraceRestrictSlotWindow *w = (TraceRestrictSlotWindow *)FindWindowById(WC_TRACE_RESTRICT_SLOTS, VehicleListIdentifier(VL_SLOT_LIST, v->type, v->owner).ToWindowNumber());
+	TraceRestrictSlotWindow *w = (TraceRestrictSlotWindow *)FindWindowById(WindowClass::TraceRestrictSlots, VehicleListIdentifier(VL_SLOT_LIST, v->type, v->owner).ToWindowNumber());
 	if (w != nullptr) w->UnselectVehicle(v->index);
 }
 
@@ -5638,7 +5638,7 @@ public:
 
 		if (this->ctr_qt_op != INVALID_TRACE_RESTRICT_COUNTER_ID && this->ctr_qt_op != NEW_TRACE_RESTRICT_COUNTER_ID &&
 				!TraceRestrictCounter::IsValidID(this->ctr_qt_op)) {
-			CloseWindowByClass(WC_QUERY_STRING);
+			CloseWindowByClass(WindowClass::QueryString);
 			this->ctr_qt_op = INVALID_TRACE_RESTRICT_COUNTER_ID;
 		}
 
@@ -5818,7 +5818,7 @@ void CcCreateTraceRestrictCounter(const CommandCost &result)
 
 static WindowDesc _counter_window_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "list_tr_counters", 525, 246,
-	WC_TRACE_RESTRICT_COUNTERS, WC_NONE,
+	WindowClass::TraceRestrictCounters, WindowClass::None,
 	{},
 	_nested_counter_widgets
 );

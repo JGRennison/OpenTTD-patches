@@ -227,14 +227,14 @@ static void CheckIfShipNeedsService(Vehicle *v)
 	if (depot == nullptr) {
 		if (v->current_order.IsType(OT_GOTO_DEPOT)) {
 			v->current_order.MakeDummy();
-			SetWindowWidgetDirty(WC_VEHICLE_VIEW, v->index, WID_VV_START_STOP);
+			SetWindowWidgetDirty(WindowClass::VehicleView, v->index, WID_VV_START_STOP);
 		}
 		return;
 	}
 
 	v->current_order.MakeGoToDepot(depot->index, {OrderDepotTypeFlag::Service});
 	v->SetDestTile(depot->xy);
-	SetWindowWidgetDirty(WC_VEHICLE_VIEW, v->index, WID_VV_START_STOP);
+	SetWindowWidgetDirty(WindowClass::VehicleView, v->index, WID_VV_START_STOP);
 }
 
 /**
@@ -306,7 +306,7 @@ void Ship::OnPeriodic()
 
 	SubtractMoneyFromCompanyFract(this->owner, cost);
 
-	SetWindowDirty(WC_VEHICLE_DETAILS, this->index);
+	SetWindowDirty(WindowClass::VehicleDetails, this->index);
 	/* we need this for the profit */
 	DirtyVehicleListWindowForVehicle(this);
 }
@@ -462,12 +462,12 @@ static bool CheckShipStayInDepot(Ship *v)
 
 	v->cur_speed = 0;
 	v->UpdateViewport(true, true);
-	SetWindowDirty(WC_VEHICLE_DEPOT, v->tile.base());
+	SetWindowDirty(WindowClass::VehicleDepot, v->tile.base());
 
 	VehicleServiceInDepot(v);
 	v->LeaveUnbunchingDepot();
 	v->PlayLeaveStationSound();
-	InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile.base());
+	InvalidateWindowData(WindowClass::VehicleDepot, v->tile.base());
 	DirtyVehicleListWindowForVehicle(v);
 
 	return false;
@@ -480,7 +480,7 @@ static inline void UpdateShipSpeed(Vehicle *v, uint speed)
 	v->cur_speed = speed;
 
 	/* updates statusbar only if speed have changed to save CPU time */
-	SetWindowWidgetDirty(WC_VEHICLE_VIEW, v->index, WID_VV_START_STOP);
+	SetWindowWidgetDirty(WindowClass::VehicleView, v->index, WID_VV_START_STOP);
 
 	if (HasBit(v->vcache.cached_veh_flags, VCF_REDRAW_ON_SPEED_CHANGE)) {
 		v->InvalidateImageCacheOfChain();
@@ -967,7 +967,7 @@ static void ShipController(Ship *v)
 
 						v->PlayLeaveStationSound();
 
-						SetWindowWidgetDirty(WC_VEHICLE_VIEW, v->index, WID_VV_START_STOP);
+						SetWindowWidgetDirty(WindowClass::VehicleView, v->index, WID_VV_START_STOP);
 						if (may_reverse && CheckReverseShip(v)) return ReverseShip(v);
 						/* Test if continuing forward would lead to a dead-end, moving into the dock. */
 						const DiagDirection exitdir = VehicleExitDir(v->direction, v->state);

@@ -87,7 +87,7 @@ static void GenerateDesertArea(TileIndex end, TileIndex start)
 		MarkTileDirtyByTile(tile);
 	}
 	old_generating_world.Restore();
-	InvalidateWindowClassesData(WC_TOWN_VIEW, 0);
+	InvalidateWindowClassesData(WindowClass::TownView, 0);
 }
 
 /**
@@ -338,7 +338,7 @@ struct TerraformToolbarWindow : Window {
 	Point OnInitialPosition(int16_t sm_width, int16_t sm_height, int window_number) override
 	{
 		Point pt = GetToolbarAlignedWindowPosition(sm_width);
-		if (FindWindowByClass(WC_BUILD_TOOLBAR) != nullptr && !_settings_client.gui.link_terraform_toolbar) pt.y += sm_height;
+		if (FindWindowByClass(WindowClass::BuildToolbar) != nullptr && !_settings_client.gui.link_terraform_toolbar) pt.y += sm_height;
 
 		return pt;
 	}
@@ -429,7 +429,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_terraform_widgets = 
 
 static WindowDesc _terraform_desc(__FILE__, __LINE__,
 	WindowPosition::Manual, "toolbar_landscape", 0, 0,
-	WC_SCEN_LAND_GEN, WC_NONE,
+	WindowClass::ScenarioGenerateLandscape, WindowClass::None,
 	WindowDefaultFlag::Construction,
 	_nested_terraform_widgets,
 	&TerraformToolbarWindow::hotkeys
@@ -445,7 +445,7 @@ Window *ShowTerraformToolbar(Window *link)
 	if (!Company::IsValidID(_local_company)) return nullptr;
 
 	/* Delete the terraform toolbar to place it again. */
-	CloseWindowById(WC_SCEN_LAND_GEN, 0, true);
+	CloseWindowById(WindowClass::ScenarioGenerateLandscape, 0, true);
 
 	if (link == nullptr) return AllocateWindowDescFront<TerraformToolbarWindow>(_terraform_desc, 0);
 
@@ -467,9 +467,9 @@ static uint8_t _terraform_size = 1;
  * @todo : Incorporate into game itself to allow for ingame raising/lowering of
  *         larger chunks at the same time OR remove altogether, as we have 'level land' ?
  * @param tile The top-left tile where the terraforming will start
- * @param mode 1 for raising, 0 for lowering land
+ * @param mode true for raising, false for lowering land
  */
-static void CommonRaiseLowerBigLand(TileIndex tile, int mode)
+static void CommonRaiseLowerBigLand(TileIndex tile, bool mode)
 {
 	if (_terraform_size == 1) {
 		StringID msg =
@@ -486,7 +486,7 @@ static void CommonRaiseLowerBigLand(TileIndex tile, int mode)
 		if (_settings_client.sound.confirm) SndPlayTileFx(SND_1F_CONSTRUCTION_OTHER, tile);
 
 		uint h;
-		if (mode != 0) {
+		if (mode) {
 			/* Raise land */
 			h = MAX_TILE_HEIGHT;
 			for (TileIndex tile2 : ta) {
@@ -652,7 +652,7 @@ static constexpr NWidgetPart _nested_scen_edit_public_roads_widgets[] = {
 
 static WindowDesc _public_roads_window_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "public_roads_window", 0, 0,
-	WC_SCEN_PUBLIC_ROADS, WC_NONE,
+	WindowClass::ScenarioPublicRoads, WindowClass::None,
 	WindowDefaultFlag::Construction,
 	_nested_scen_edit_public_roads_widgets
 );
@@ -686,9 +686,9 @@ static constexpr std::initializer_list<NWidgetPart> _nested_scen_edit_land_gen_w
 			NWidget(WWT_IMGBTN, Colours::Grey, WID_ETT_DEMOLISH), SetToolbarMinimalSize(1),
 										SetFill(0, 1), SetSpriteTip(SPR_IMG_DYNAMITE, STR_TOOLTIP_DEMOLISH_BUILDINGS_ETC),
 			NWidget(WWT_IMGBTN, Colours::Grey, WID_ETT_LOWER_LAND), SetToolbarMinimalSize(1),
-										SetFill(0, 1), SetSpriteTip(SPR_IMG_TERRAFORM_DOWN, STR_LANDSCAPING_TOOLTIP_LOWER_A_CORNER_OF_LAND),
+										SetFill(0, 1), SetSpriteTip(SPR_IMG_TERRAFORM_DOWN, STR_TERRAFORM_TOOLTIP_LOWER_A_CORNER_OF_LAND),
 			NWidget(WWT_IMGBTN, Colours::Grey, WID_ETT_RAISE_LAND), SetToolbarMinimalSize(1),
-										SetFill(0, 1), SetSpriteTip(SPR_IMG_TERRAFORM_UP, STR_LANDSCAPING_TOOLTIP_RAISE_A_CORNER_OF_LAND),
+										SetFill(0, 1), SetSpriteTip(SPR_IMG_TERRAFORM_UP, STR_TERRAFORM_TOOLTIP_RAISE_A_CORNER_OF_LAND),
 			NWidget(WWT_IMGBTN, Colours::Grey, WID_ETT_LEVEL_LAND), SetToolbarMinimalSize(1),
 										SetFill(0, 1), SetSpriteTip(SPR_IMG_LEVEL_LAND, STR_LANDSCAPING_LEVEL_LAND_TOOLTIP),
 			NWidget(WWT_IMGBTN, Colours::Grey, WID_ETT_PLACE_ROCKS), SetToolbarMinimalSize(1),
@@ -812,12 +812,12 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 				break;
 
 			case WID_ETT_LOWER_LAND: // Lower land button
-				HandlePlacePushButton(this, WID_ETT_LOWER_LAND, ANIMCURSOR_LOWERLAND, HT_POINT);
+				HandlePlacePushButton(this, WID_ETT_LOWER_LAND, ANIMCURSOR_LOWERLAND, HT_POINT | HT_DIAGONAL);
 				this->last_user_action = widget;
 				break;
 
 			case WID_ETT_RAISE_LAND: // Raise land button
-				HandlePlacePushButton(this, WID_ETT_RAISE_LAND, ANIMCURSOR_RAISELAND, HT_POINT);
+				HandlePlacePushButton(this, WID_ETT_RAISE_LAND, ANIMCURSOR_RAISELAND, HT_POINT | HT_DIAGONAL);
 				this->last_user_action = widget;
 				break;
 
@@ -885,11 +885,19 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 				break;
 
 			case WID_ETT_LOWER_LAND: // Lower land button
-				CommonRaiseLowerBigLand(tile, 0);
+				if (_terraform_size == 1) {
+					VpStartPlaceSizing(tile, VPM_X_AND_Y, DDSP_LOWER_AND_LEVEL_AREA);
+				} else {
+					CommonRaiseLowerBigLand(tile, false);
+				}
 				break;
 
 			case WID_ETT_RAISE_LAND: // Raise land button
-				CommonRaiseLowerBigLand(tile, 1);
+				if (_terraform_size == 1) {
+					VpStartPlaceSizing(tile, VPM_X_AND_Y, DDSP_RAISE_AND_LEVEL_AREA);
+				} else {
+					CommonRaiseLowerBigLand(tile, true);
+				}
 				break;
 
 			case WID_ETT_LEVEL_LAND: // Level land button
@@ -982,7 +990,7 @@ struct ScenarioEditorLandscapeGenerationWindow : Window {
 
 static WindowDesc _scen_edit_land_gen_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "toolbar_landscape_scen", 0, 0,
-	WC_SCEN_LAND_GEN, WC_NONE,
+	WindowClass::ScenarioGenerateLandscape, WindowClass::None,
 	WindowDefaultFlag::Construction,
 	_nested_scen_edit_land_gen_widgets,
 	&ScenarioEditorLandscapeGenerationWindow::hotkeys

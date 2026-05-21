@@ -30,7 +30,7 @@ static void SettingMarkWholeScreenDirty(T new_value)
 
 static void InvalidateSettingsWindows(int32_t new_value)
 {
-	InvalidateWindowClassesData(WC_GAME_OPTIONS);
+	InvalidateWindowClassesData(WindowClass::GameOptions);
 }
 
 /****************************

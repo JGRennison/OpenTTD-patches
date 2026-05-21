@@ -188,7 +188,7 @@ public:
 
 	void Close(int data = 0) override
 	{
-		FocusWindowById(WC_VEHICLE_ORDERS, this->window_number);
+		FocusWindowById(WindowClass::VehicleOrders, this->window_number);
 		this->Window::Close();
 	}
 
@@ -401,7 +401,7 @@ static constexpr NWidgetPart _nested_cargo_type_orders_widgets[] = {
 /** Window description for the 'load' variant of CargoTypeOrdersWindow. */
 static WindowDesc _cargo_type_load_orders_widgets (__FILE__, __LINE__,
 	WindowPosition::Automatic, nullptr, 195, 186,
-	WC_VEHICLE_CARGO_TYPE_LOAD_ORDERS, WC_VEHICLE_ORDERS,
+	WindowClass::VehicleCargoTypeLoadOrders, WindowClass::VehicleOrders,
 	WindowDefaultFlag::Construction,
 	_nested_cargo_type_orders_widgets
 );
@@ -409,7 +409,7 @@ static WindowDesc _cargo_type_load_orders_widgets (__FILE__, __LINE__,
 /** Window description for the 'unload' variant of CargoTypeOrdersWindow. */
 static WindowDesc _cargo_type_unload_orders_widgets (__FILE__, __LINE__,
 	WindowPosition::Automatic, nullptr, 195, 186,
-	WC_VEHICLE_CARGO_TYPE_UNLOAD_ORDERS, WC_VEHICLE_ORDERS,
+	WindowClass::VehicleCargoTypeUnloadOrders, WindowClass::VehicleOrders,
 	WindowDefaultFlag::Construction,
 	_nested_cargo_type_orders_widgets
 );
@@ -2088,9 +2088,9 @@ public:
 
 	void Close(int data = 0) override
 	{
-		CloseWindowById(WC_VEHICLE_CARGO_TYPE_LOAD_ORDERS, this->window_number, false);
-		CloseWindowById(WC_VEHICLE_CARGO_TYPE_UNLOAD_ORDERS, this->window_number, false);
-		FocusWindowById(WC_VEHICLE_VIEW, this->window_number);
+		CloseWindowById(WindowClass::VehicleCargoTypeLoadOrders, this->window_number, false);
+		CloseWindowById(WindowClass::VehicleCargoTypeUnloadOrders, this->window_number, false);
+		FocusWindowById(WindowClass::VehicleView, this->window_number);
 		this->GeneralVehicleWindow::Close();
 	}
 
@@ -2203,8 +2203,8 @@ public:
 		this->vscroll->SetCount(this->vehicle->GetNumOrders() + 1);
 		if (gui_scope) {
 			this->UpdateButtonState();
-			InvalidateWindowClassesData(WC_VEHICLE_CARGO_TYPE_LOAD_ORDERS, 0);
-			InvalidateWindowClassesData(WC_VEHICLE_CARGO_TYPE_UNLOAD_ORDERS, 0);
+			InvalidateWindowClassesData(WindowClass::VehicleCargoTypeLoadOrders, 0);
+			InvalidateWindowClassesData(WindowClass::VehicleCargoTypeUnloadOrders, 0);
 		}
 	}
 
@@ -4228,7 +4228,7 @@ public:
 
 void InvalidateOrderListWindowOnOrderMove(VehicleID veh, VehicleOrderID from, VehicleOrderID to, uint16_t count)
 {
-	OrdersWindow *w = dynamic_cast<OrdersWindow *>(FindWindowById(WC_VEHICLE_ORDERS, veh));
+	OrdersWindow *w = dynamic_cast<OrdersWindow *>(FindWindowById(WindowClass::VehicleOrders, veh));
 	if (w != nullptr) {
 		w->InvalidateData(VIWD_MODIFY_ORDERS, false);
 		w->OnOrderMove(from, to, count);
@@ -4386,7 +4386,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_orders_train_widgets
 
 static WindowDesc _orders_train_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "view_vehicle_orders_train", 384, 100,
-	WC_VEHICLE_ORDERS, WC_VEHICLE_VIEW,
+	WindowClass::VehicleOrders, WindowClass::VehicleView,
 	WindowDefaultFlag::Construction,
 	_nested_orders_train_widgets,
 	&OrdersWindow::hotkeys
@@ -4547,7 +4547,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_orders_widgets = {
 
 static WindowDesc _orders_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "view_vehicle_orders", 384, 100,
-	WC_VEHICLE_ORDERS, WC_VEHICLE_VIEW,
+	WindowClass::VehicleOrders, WindowClass::VehicleView,
 	WindowDefaultFlag::Construction,
 	_nested_orders_widgets,
 	&OrdersWindow::hotkeys
@@ -4579,7 +4579,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_other_orders_widgets
 
 static WindowDesc _other_orders_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "view_vehicle_orders_competitor", 384, 86,
-	WC_VEHICLE_ORDERS, WC_VEHICLE_VIEW,
+	WindowClass::VehicleOrders, WindowClass::VehicleView,
 	WindowDefaultFlag::Construction,
 	_nested_other_orders_widgets,
 	&OrdersWindow::hotkeys
@@ -4587,9 +4587,9 @@ static WindowDesc _other_orders_desc(__FILE__, __LINE__,
 
 void ShowOrdersWindow(const Vehicle *v)
 {
-	CloseWindowById(WC_VEHICLE_DETAILS, v->index, false);
-	CloseWindowById(WC_VEHICLE_TIMETABLE, v->index, false);
-	if (BringWindowToFrontById(WC_VEHICLE_ORDERS, v->index) != nullptr) return;
+	CloseWindowById(WindowClass::VehicleDetails, v->index, false);
+	CloseWindowById(WindowClass::VehicleTimetable, v->index, false);
+	if (BringWindowToFrontById(WindowClass::VehicleOrders, v->index) != nullptr) return;
 
 	/* Using a different WindowDescs for _local_company causes problems.
 	 * Due to this we have to close order windows in ChangeWindowOwner/CloseCompanyWindows,
@@ -4611,7 +4611,7 @@ void CcInsertOrder(const CommandCost &result, const InsertOrderCmdData &data)
 	auto pos = result.GetResultData<VehicleOrderID>();
 	if (!pos.has_value()) return;
 
-	OrdersWindow *w = dynamic_cast<OrdersWindow *>(FindWindowById(WC_VEHICLE_ORDERS, data.veh));
+	OrdersWindow *w = dynamic_cast<OrdersWindow *>(FindWindowById(WindowClass::VehicleOrders, data.veh));
 	if (w == nullptr) return;
 
 	w->ScrollTowardsOrder(*pos);
@@ -4621,7 +4621,7 @@ void CcInsertOrdersFromVehicle(const CommandCost &result, VehicleID veh_dst, Veh
 {
 	if (!result.Succeeded()) return;
 
-	OrdersWindow *w = dynamic_cast<OrdersWindow *>(FindWindowById(WC_VEHICLE_ORDERS, veh_dst));
+	OrdersWindow *w = dynamic_cast<OrdersWindow *>(FindWindowById(WindowClass::VehicleOrders, veh_dst));
 	if (w == nullptr) return;
 
 	w->ScrollTowardsOrder(insert_pos);

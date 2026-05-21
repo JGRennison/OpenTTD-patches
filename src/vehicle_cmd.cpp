@@ -211,9 +211,9 @@ CommandCost CmdBuildVehicle(DoCommandFlags flags, TileIndex tile, EngineID eid, 
 				NormalizeTrainVehInDepot(Train::From(v));
 			}
 
-			InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile.base());
+			InvalidateWindowData(WindowClass::VehicleDepot, v->tile.base());
 			InvalidateVehicleListWindows(type);
-			SetWindowDirty(WC_COMPANY, _current_company);
+			SetWindowDirty(WindowClass::Company, _current_company);
 			if (IsLocalCompany()) {
 				InvalidateAutoreplaceWindow(v->engine_type, v->group_id); // updates the auto replace window (must be called before incrementing num_engines)
 			}
@@ -599,14 +599,14 @@ CommandCost CmdRefitVehicle(DoCommandFlags flags, VehicleID veh_id, CargoType ne
 		front->MarkDirty();
 
 		if (!free_wagon) {
-			InvalidateWindowData(WC_VEHICLE_DETAILS, front->index);
+			InvalidateWindowData(WindowClass::VehicleDetails, front->index);
 			InvalidateVehicleListWindows(v->type);
 		}
 		/* virtual vehicles get their cargo changed by the TemplateCreateWindow, so set this dirty instead of a depot window */
 		if (HasBit(front->subtype, GVSF_VIRTUAL)) {
-			SetWindowClassesDirty(WC_CREATE_TEMPLATE);
+			SetWindowClassesDirty(WindowClass::TemplateReplacementCreateTemplate);
 		} else {
-			SetWindowDirty(WC_VEHICLE_DEPOT, front->tile.base());
+			SetWindowDirty(WindowClass::VehicleDepot, front->tile.base());
 		}
 	} else {
 		/* Always invalidate the cache; querycost might have filled it. */
@@ -713,10 +713,10 @@ CommandCost CmdStartStopVehicle(DoCommandFlags flags, VehicleID veh_id, bool eva
 		}
 
 		v->MarkDirty();
-		SetWindowWidgetDirty(WC_VEHICLE_VIEW, v->index, WID_VV_START_STOP);
-		SetWindowDirty(WC_VEHICLE_DEPOT, v->GetMovingFront()->tile.base());
+		SetWindowWidgetDirty(WindowClass::VehicleView, v->index, WID_VV_START_STOP);
+		SetWindowDirty(WindowClass::VehicleDepot, v->GetMovingFront()->tile.base());
 		DirtyVehicleListWindowForVehicle(v);
-		InvalidateWindowData(WC_VEHICLE_VIEW, v->index);
+		InvalidateWindowData(WindowClass::VehicleView, v->index);
 	}
 	return CommandCost();
 }
@@ -939,7 +939,7 @@ CommandCost CmdChangeFlagTemplateReplace(DoCommandFlags flags, TemplateID templa
 			default:
 				return CMD_ERROR;
 		}
-		InvalidateWindowClassesData(WC_TEMPLATEGUI_MAIN);
+		InvalidateWindowClassesData(WindowClass::TemplateReplacementGuiMain);
 	}
 
 	return CommandCost();
@@ -974,7 +974,7 @@ CommandCost CmdRenameTemplateReplace(DoCommandFlags flags, TemplateID template_i
 			template_vehicle->name = name;
 		}
 
-		InvalidateWindowClassesData(WC_TEMPLATEGUI_MAIN);
+		InvalidateWindowClassesData(WindowClass::TemplateReplacementGuiMain);
 	}
 
 	return CommandCost();
@@ -1231,7 +1231,7 @@ CommandCost CmdReplaceTemplateVehicle(DoCommandFlags flags, TemplateID template_
 			MarkTrainsUsingTemplateAsPendingTemplateReplacement(template_vehicle);
 		}
 
-		InvalidateWindowClassesData(WC_TEMPLATEGUI_MAIN);
+		InvalidateWindowClassesData(WindowClass::TemplateReplacementGuiMain);
 	}
 
 	return CommandCost();
@@ -1274,7 +1274,7 @@ CommandCost CmdTemplateVehicleFromTrain(DoCommandFlags flags, VehicleID veh_id)
 
 		tmp->First()->SetRealLength(CeilDiv(init_clicked->gcache.cached_total_length * 10, TILE_SIZE));
 
-		InvalidateWindowClassesData(WC_TEMPLATEGUI_MAIN);
+		InvalidateWindowClassesData(WindowClass::TemplateReplacementGuiMain);
 	}
 
 	return CommandCost();
@@ -1300,8 +1300,8 @@ CommandCost CmdDeleteTemplateVehicle(DoCommandFlags flags, TemplateID template_i
 		RemoveTemplateReplacementsReferencingTemplate(del->index);
 		delete del;
 
-		InvalidateWindowClassesData(WC_CREATE_TEMPLATE, 0);
-		InvalidateWindowClassesData(WC_TEMPLATEGUI_MAIN);
+		InvalidateWindowClassesData(WindowClass::TemplateReplacementCreateTemplate, 0);
+		InvalidateWindowClassesData(WindowClass::TemplateReplacementGuiMain);
 	}
 
 	return CommandCost();
@@ -1326,7 +1326,7 @@ CommandCost CmdIssueTemplateReplacement(DoCommandFlags flags, GroupID group_id, 
 
 	if (flags.Test(DoCommandFlag::Execute)) {
 		IssueTemplateReplacement(group_id, template_id);
-		InvalidateWindowClassesData(WC_TEMPLATEGUI_MAIN);
+		InvalidateWindowClassesData(WindowClass::TemplateReplacementGuiMain);
 	}
 
 	return CommandCost();
@@ -1346,7 +1346,7 @@ CommandCost CmdDeleteTemplateReplacement(DoCommandFlags flags, GroupID group_id)
 
 	if (flags.Test(DoCommandFlag::Execute)) {
 		RemoveTemplateReplacement(group_id);
-		InvalidateWindowClassesData(WC_TEMPLATEGUI_MAIN);
+		InvalidateWindowClassesData(WindowClass::TemplateReplacementGuiMain);
 	}
 
 	return CommandCost();
@@ -1686,7 +1686,7 @@ CommandCost CmdRenameVehicle(DoCommandFlags flags, VehicleID veh_id, const std::
 			v->name = text;
 		}
 		InvalidateWindowClassesData(GetWindowClassForVehicleType(v->type), 1);
-		InvalidateWindowClassesData(WC_DEPARTURES_BOARD);
+		InvalidateWindowClassesData(WindowClass::DepartureBoard);
 		MarkWholeScreenDirty();
 	}
 
@@ -1724,7 +1724,7 @@ CommandCost CmdChangeServiceInt(DoCommandFlags flags, VehicleID veh_id, uint16_t
 		v->SetServiceInterval(serv_int);
 		v->SetServiceIntervalIsCustom(is_custom);
 		v->SetServiceIntervalIsPercent(is_percent);
-		SetWindowDirty(WC_VEHICLE_DETAILS, v->index);
+		SetWindowDirty(WindowClass::VehicleDetails, v->index);
 	}
 
 	return CommandCost();

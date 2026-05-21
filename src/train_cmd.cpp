@@ -460,13 +460,13 @@ void Train::ConsistChanged(ConsistChangeFlags allowed_changes)
 
 	this->UpdateAcceleration();
 	if (this->IsFrontEngine()) {
-		if (!HasBit(this->subtype, GVSF_VIRTUAL)) SetWindowDirty(WC_VEHICLE_DETAILS, this->index);
-		InvalidateWindowData(WC_VEHICLE_REFIT, this->index, VIWD_CONSIST_CHANGED);
-		InvalidateWindowData(WC_VEHICLE_ORDERS, this->index, VIWD_CONSIST_CHANGED);
+		if (!HasBit(this->subtype, GVSF_VIRTUAL)) SetWindowDirty(WindowClass::VehicleDetails, this->index);
+		InvalidateWindowData(WindowClass::VehicleRefit, this->index, VIWD_CONSIST_CHANGED);
+		InvalidateWindowData(WindowClass::VehicleOrders, this->index, VIWD_CONSIST_CHANGED);
 		InvalidateNewGRFInspectWindow(GrfSpecFeature::Trains, this->index.base());
 
 		/* If the consist is changed while in a depot, the vehicle view window must be invalidated to update the availability of refitting. */
-		InvalidateWindowData(WC_VEHICLE_VIEW, this->index, VIWD_CONSIST_CHANGED);
+		InvalidateWindowData(WindowClass::VehicleView, this->index, VIWD_CONSIST_CHANGED);
 	}
 	if (allowed_changes.Test(ConsistChangeFlag::Length)) {
 		for (Train *u = this->Next(); u != nullptr; u = u->Next()) {
@@ -1584,7 +1584,7 @@ static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlags flags, const
 		v->SetWagon();
 
 		v->SetFreeWagon();
-		InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile.base());
+		InvalidateWindowData(WindowClass::VehicleDepot, v->tile.base());
 
 		v->cargo_type = e->GetDefaultCargoType();
 		assert(IsValidCargoType(v->cargo_type));
@@ -2171,8 +2171,8 @@ static void NormaliseTrainHead(Train *head)
 	if (!head->IsFrontEngine()) return;
 
 	/* Update the refit button and window */
-	InvalidateWindowData(WC_VEHICLE_REFIT, head->index, VIWD_CONSIST_CHANGED);
-	SetWindowWidgetDirty(WC_VEHICLE_VIEW, head->index, WID_VV_REFIT);
+	InvalidateWindowData(WindowClass::VehicleRefit, head->index, VIWD_CONSIST_CHANGED);
+	SetWindowWidgetDirty(WindowClass::VehicleView, head->index, WID_VV_REFIT);
 
 	/* If we don't have a unit number yet, set one. */
 	if (head->unitnumber != 0 || HasBit(head->subtype, GVSF_VIRTUAL)) return;
@@ -2348,15 +2348,15 @@ CommandCost CmdMoveRailVehicle(DoCommandFlags flags, VehicleID src_veh, VehicleI
 		 */
 		if (src == original_src_head && src->IsEngine() && (!src->IsFrontEngine() || new_head)) {
 			/* Cases #2 and #3: the front engine gets trashed. */
-			CloseWindowById(WC_VEHICLE_VIEW, src->index);
-			CloseWindowById(WC_VEHICLE_ORDERS, src->index);
-			CloseWindowById(WC_VEHICLE_REFIT, src->index);
-			CloseWindowById(WC_VEHICLE_DETAILS, src->index);
-			CloseWindowById(WC_VEHICLE_TIMETABLE, src->index);
-			CloseWindowById(WC_SCHDISPATCH_SLOTS, src->index);
-			CloseWindowById(WC_VEHICLE_ORDER_IMPORT_ERRORS, src->index);
+			CloseWindowById(WindowClass::VehicleView, src->index);
+			CloseWindowById(WindowClass::VehicleOrders, src->index);
+			CloseWindowById(WindowClass::VehicleRefit, src->index);
+			CloseWindowById(WindowClass::VehicleDetails, src->index);
+			CloseWindowById(WindowClass::VehicleTimetable, src->index);
+			CloseWindowById(WindowClass::ScheduledDispatchSlots, src->index);
+			CloseWindowById(WindowClass::VehicleOrderImportErrors, src->index);
 			DeleteNewGRFInspectWindow(GrfSpecFeature::Trains, src->index.base());
-			SetWindowDirty(WC_COMPANY, _current_company);
+			SetWindowDirty(WindowClass::Company, _current_company);
 
 			if (src_head != nullptr && src_head->IsFrontEngine()) {
 				/* Cases #?b: Transfer order, unit number and other stuff
@@ -2384,7 +2384,7 @@ CommandCost CmdMoveRailVehicle(DoCommandFlags flags, VehicleID src_veh, VehicleI
 		 * we should be put in the default group. */
 		if ((original_src_head != src || new_head) && dst_head == src) {
 			SetTrainGroupID(src, DEFAULT_GROUP);
-			SetWindowDirty(WC_COMPANY, _current_company);
+			SetWindowDirty(WindowClass::Company, _current_company);
 		}
 
 		/* Handle 'new engine' part of cases #1b, #2b, #3b, #4b and #5 in NormaliseTrainHead. */
@@ -2416,7 +2416,7 @@ CommandCost CmdMoveRailVehicle(DoCommandFlags flags, VehicleID src_veh, VehicleI
 		/* We are undoubtedly changing something in the depot and train list. */
 		/* But only if the moved vehicle is not virtual */
 		if (!HasBit(src->subtype, GVSF_VIRTUAL)) {
-			InvalidateWindowData(WC_VEHICLE_DEPOT, src->tile.base());
+			InvalidateWindowData(WindowClass::VehicleDepot, src->tile.base());
 			InvalidateVehicleListWindows(VehicleType::Train);
 		}
 	} else {
@@ -2507,7 +2507,7 @@ CommandCost CmdSellRailWagon(DoCommandFlags flags, Vehicle *t, bool sell_chain, 
 		/* We are undoubtedly changing something in the depot and train list. */
 		/* Unless its a virtual train */
 		if (!HasBit(v->subtype, GVSF_VIRTUAL)) {
-			InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile.base());
+			InvalidateWindowData(WindowClass::VehicleDepot, v->tile.base());
 			InvalidateVehicleListWindows(VehicleType::Train);
 		}
 
@@ -2602,10 +2602,10 @@ static void MarkTrainAsStuck(Train *consist, bool waiting_restriction = false)
 		consist->subspeed = 0;
 		consist->SetLastSpeed();
 
-		SetWindowWidgetDirty(WC_VEHICLE_VIEW, consist->index, WID_VV_START_STOP);
+		SetWindowWidgetDirty(WindowClass::VehicleView, consist->index, WID_VV_START_STOP);
 	} else if (waiting_restriction != consist->flags.Test(VehicleRailFlag::WaitingRestriction)) {
 		consist->flags.Flip(VehicleRailFlag::WaitingRestriction);
-		SetWindowWidgetDirty(WC_VEHICLE_VIEW, consist->index, WID_VV_START_STOP);
+		SetWindowWidgetDirty(WindowClass::VehicleView, consist->index, WID_VV_START_STOP);
 	}
 }
 
@@ -3035,7 +3035,7 @@ static void ReverseTrainDirection(Train *consist)
 	Train *moving_front = consist->GetMovingFront();
 	if (IsRailDepotTile(moving_front->tile)) {
 		if (IsWholeTrainInsideDepot(consist)) return;
-		InvalidateWindowData(WC_VEHICLE_DEPOT, moving_front->tile.base());
+		InvalidateWindowData(WindowClass::VehicleDepot, moving_front->tile.base());
 	}
 
 	if (_local_company == consist->owner && (consist->current_order.IsType(OT_LOADING_ADVANCE) || moving_front->flags.Test(VehicleRailFlag::BeyondPlatformEnd))) {
@@ -3154,7 +3154,7 @@ static void ReverseTrainDirection(Train *consist)
 	ClrBit(consist->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST);
 
 	if (IsRailDepotTile(moving_front->tile)) {
-		InvalidateWindowData(WC_VEHICLE_DEPOT, moving_front->tile.base());
+		InvalidateWindowData(WindowClass::VehicleDepot, moving_front->tile.base());
 	}
 
 	consist->flags.Flip(VehicleRailFlag::Reversed);
@@ -3189,7 +3189,7 @@ static void ReverseTrainDirection(Train *consist)
 	/* If we are inside a depot after reversing, don't bother with path reserving. */
 	if (moving_front->track == TRACK_BIT_DEPOT) {
 		/* Can't be stuck here as inside a depot is always a safe tile. */
-		if (consist->flags.Test(VehicleRailFlag::Stuck)) SetWindowWidgetDirty(WC_VEHICLE_VIEW, consist->index, WID_VV_START_STOP);
+		if (consist->flags.Test(VehicleRailFlag::Stuck)) SetWindowWidgetDirty(WindowClass::VehicleView, consist->index, WID_VV_START_STOP);
 		consist->flags.Reset(VehicleRailFlag::Stuck);
 		return;
 	}
@@ -3301,9 +3301,9 @@ CommandCost CmdReverseTrainDirection(DoCommandFlags flags, VehicleID veh_id, boo
 			v->flags.Flip(VehicleRailFlag::Flipped);
 
 			front->ConsistChanged(CCF_ARRANGE);
-			SetWindowDirty(WC_VEHICLE_DEPOT, front->tile.base());
-			SetWindowDirty(WC_VEHICLE_DETAILS, front->index);
-			SetWindowDirty(WC_VEHICLE_VIEW, front->index);
+			SetWindowDirty(WindowClass::VehicleDepot, front->tile.base());
+			SetWindowDirty(WindowClass::VehicleDetails, front->index);
+			SetWindowDirty(WindowClass::VehicleView, front->index);
 			DirtyVehicleListWindowForVehicle(front);
 		}
 	} else {
@@ -3328,7 +3328,7 @@ CommandCost CmdReverseTrainDirection(DoCommandFlags flags, VehicleID veh_id, boo
 
 			/* We cancel any 'skip signal at dangers' here */
 			v->force_proceed = TFP_NONE;
-			InvalidateWindowData(WC_VEHICLE_VIEW, v->index);
+			InvalidateWindowData(WindowClass::VehicleView, v->index);
 
 			if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL && v->cur_speed != 0) {
 				v->flags.Flip(VehicleRailFlag::Reversing);
@@ -3387,7 +3387,7 @@ CommandCost CmdForceTrainProceed(DoCommandFlags flags, VehicleID veh_id)
 
 	if (flags.Test(DoCommandFlag::Execute)) {
 		t->force_proceed = DetermineNextTrainForceProceeding(t);
-		InvalidateWindowData(WC_VEHICLE_VIEW, t->index);
+		InvalidateWindowData(WindowClass::VehicleView, t->index);
 
 		/* Unbunching data is no longer valid. */
 		t->ResetDepotUnbunching();
@@ -3517,7 +3517,7 @@ static bool CheckTrainStayInDepot(Train *v)
 	/* if the train got no power, then keep it in the depot */
 	if (v->gcache.cached_power == 0) {
 		v->vehstatus.Set(VehState::Stopped);
-		SetWindowDirty(WC_VEHICLE_DEPOT, v->tile.base());
+		SetWindowDirty(WindowClass::VehicleDepot, v->tile.base());
 		return true;
 	}
 
@@ -3533,7 +3533,7 @@ static bool CheckTrainStayInDepot(Train *v)
 
 	if (v->reverse_distance > 0) {
 		v->reverse_distance--;
-		if (v->reverse_distance == 0) SetWindowWidgetDirty(WC_VEHICLE_VIEW, v->index, WID_VV_START_STOP);
+		if (v->reverse_distance == 0) SetWindowWidgetDirty(WindowClass::VehicleView, v->index, WID_VV_START_STOP);
 		return true;
 	}
 
@@ -3596,7 +3596,7 @@ static bool CheckTrainStayInDepot(Train *v)
 				int delta = (skipped * TILE_SIZE) - v->gcache.cached_total_length;
 				int speed = std::max(1, v->GetCurrentMaxSpeed());
 				v->reverse_distance = (1 + (((192 * 3 / 2) * delta) / speed));
-				SetWindowWidgetDirty(WC_VEHICLE_VIEW, v->index, WID_VV_START_STOP);
+				SetWindowWidgetDirty(WindowClass::VehicleView, v->index, WID_VV_START_STOP);
 			}
 
 			/* If preserving direction, flip driving end. */
@@ -3622,8 +3622,8 @@ static bool CheckTrainStayInDepot(Train *v)
 			}
 			v->ConsistChanged(CCF_TRACK);
 
-			InvalidateWindowData(WC_VEHICLE_DEPOT, depot_tile.base());
-			InvalidateWindowData(WC_VEHICLE_DEPOT, behind_depot_tile.base());
+			InvalidateWindowData(WindowClass::VehicleDepot, depot_tile.base());
+			InvalidateWindowData(WindowClass::VehicleDepot, behind_depot_tile.base());
 			return true;
 		}
 	}
@@ -3657,7 +3657,7 @@ static bool CheckTrainStayInDepot(Train *v)
 	moving_front->UpdatePosition();
 	UpdateSignalsOnSegment(v->tile, INVALID_DIAGDIR, v->owner);
 	v->UpdateAcceleration();
-	InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile.base());
+	InvalidateWindowData(WindowClass::VehicleDepot, v->tile.base());
 
 	return false;
 }
@@ -4808,7 +4808,7 @@ static ChooseTrainTrackResult ChooseTrainTrack(Train *consist, const TileIndex t
 			final_dest != INVALID_TILE && IsRailDepotTile(final_dest)) {
 		consist->current_order.SetDestination(GetDepotIndex(final_dest));
 		consist->dest_tile = final_dest;
-		SetWindowWidgetDirty(WC_VEHICLE_VIEW, consist->index, WID_VV_START_STOP);
+		SetWindowWidgetDirty(WindowClass::VehicleView, consist->index, WID_VV_START_STOP);
 	}
 
 	return { best_track, result_flags };
@@ -4893,7 +4893,7 @@ TryPathReserveResultFlags TryPathReserveWithResultFlags(Train *consist, bool mar
 	/* If we have a reserved path and the path ends at a safe tile, we are finished already. */
 	if (origin.okay && (moving_front->tile != origin.tile || first_tile_okay)) {
 		/* Can't be stuck then. */
-		if (consist->flags.Test(VehicleRailFlag::Stuck)) SetWindowWidgetDirty(WC_VEHICLE_VIEW, consist->index, WID_VV_START_STOP);
+		if (consist->flags.Test(VehicleRailFlag::Stuck)) SetWindowWidgetDirty(WindowClass::VehicleView, consist->index, WID_VV_START_STOP);
 		consist->flags.Reset(VehicleRailFlag::Stuck);
 		if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) {
 			FillTrainReservationLookAhead(consist);
@@ -4937,7 +4937,7 @@ TryPathReserveResultFlags TryPathReserveWithResultFlags(Train *consist, bool mar
 
 	if (consist->flags.Test(VehicleRailFlag::Stuck)) {
 		consist->wait_counter = 0;
-		SetWindowWidgetDirty(WC_VEHICLE_VIEW, consist->index, WID_VV_START_STOP);
+		SetWindowWidgetDirty(WindowClass::VehicleView, consist->index, WID_VV_START_STOP);
 	}
 	consist->flags.Reset(VehicleRailFlag::Stuck);
 	if (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) FillTrainReservationLookAhead(consist);
@@ -5056,7 +5056,7 @@ static void TrainEnterStation(Train *consist, StationID station)
 		UpdateVehicleTimetable(consist, true);
 		consist->last_station_visited = station;
 		consist->force_proceed = TFP_NONE;
-		SetWindowDirty(WC_VEHICLE_VIEW, consist->index);
+		SetWindowDirty(WindowClass::VehicleView, consist->index);
 		consist->current_order.MakeWaiting();
 		consist->current_order.SetNonStopType(ONSF_NO_STOP_AT_ANY_STATION);
 		consist->cur_speed = 0;
@@ -5079,7 +5079,7 @@ static void TrainEnterStation(Train *consist, StationID station)
 	}
 
 	consist->force_proceed = TFP_NONE;
-	InvalidateWindowData(WC_VEHICLE_VIEW, consist->index);
+	InvalidateWindowData(WindowClass::VehicleView, consist->index);
 
 	consist->BeginLoading();
 
@@ -5699,11 +5699,11 @@ static void HandleTraceRestrictSpeedRestrictionAction(const TraceRestrictProgram
 	}
 	if (out.flags & TRPRF_SPEED_ADAPT_EXEMPT && !consist->flags.Test(VehicleRailFlag::SpeedAdaptationExempt)) {
 		consist->flags.Set(VehicleRailFlag::SpeedAdaptationExempt);
-		SetWindowDirty(WC_VEHICLE_DETAILS, consist->index);
+		SetWindowDirty(WindowClass::VehicleDetails, consist->index);
 	}
 	if (out.flags & TRPRF_RM_SPEED_ADAPT_EXEMPT && consist->flags.Test(VehicleRailFlag::SpeedAdaptationExempt)) {
 		consist->flags.Reset(VehicleRailFlag::SpeedAdaptationExempt);
-		SetWindowDirty(WC_VEHICLE_DETAILS, consist->index);
+		SetWindowDirty(WindowClass::VehicleDetails, consist->index);
 	}
 }
 
@@ -5869,7 +5869,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 							/* However, we do not want to be stopped by PBS signals
 							 * entered via the back. */
 							first->force_proceed = (first->force_proceed == TFP_SIGNAL) ? TFP_STUCK : TFP_NONE;
-							InvalidateWindowData(WC_VEHICLE_VIEW, first->index);
+							InvalidateWindowData(WindowClass::VehicleView, first->index);
 						}
 					}
 
@@ -5945,7 +5945,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 									if (out.flags & TRPRF_REVERSE_BEHIND && GetSignalType(gp.new_tile, TrackdirToTrack(dir)) == SIGTYPE_PBS &&
 											!HasSignalOnTrackdir(gp.new_tile, dir)) {
 										first->reverse_distance = first->gcache.cached_total_length + (IsDiagonalTrack(TrackdirToTrack(dir)) ? 16 : 8);
-										SetWindowDirty(WC_VEHICLE_VIEW, first->index);
+										SetWindowDirty(WindowClass::VehicleView, first->index);
 									}
 								});
 							}
@@ -6502,10 +6502,10 @@ static void DeleteLastWagon(Train *v)
 		 * If v == first, then it is updated in PreDestructor(). */
 
 		if (first->track == TRACK_BIT_DEPOT) {
-			SetWindowDirty(WC_VEHICLE_DEPOT, first->tile.base());
+			SetWindowDirty(WindowClass::VehicleDepot, first->tile.base());
 		}
 		if (v->track == TRACK_BIT_DEPOT) {
-			SetWindowDirty(WC_VEHICLE_DEPOT, v->tile.base());
+			SetWindowDirty(WindowClass::VehicleDepot, v->tile.base());
 		}
 		v->last_station_visited = first->last_station_visited; // for PreDestructor
 	}
@@ -6836,7 +6836,7 @@ static bool TrainLocoHandler(Train *consist, bool mode)
 
 	if (consist->force_proceed != TFP_NONE) {
 		consist->flags.Reset(VehicleRailFlag::Stuck);
-		SetWindowWidgetDirty(WC_VEHICLE_VIEW, consist->index, WID_VV_START_STOP);
+		SetWindowWidgetDirty(WindowClass::VehicleView, consist->index, WID_VV_START_STOP);
 	}
 
 	/* train is broken down? */
@@ -6887,7 +6887,7 @@ static bool TrainLocoHandler(Train *consist, bool mode)
 			if (consist->current_order.ShouldStopAtStation(consist, station_id, true)) {
 				UpdateVehicleTimetable(consist, true);
 				consist->last_station_visited = station_id;
-				SetWindowDirty(WC_VEHICLE_VIEW, consist->index);
+				SetWindowDirty(WindowClass::VehicleView, consist->index);
 				consist->current_order.MakeWaiting();
 				consist->current_order.SetNonStopType(ONSF_NO_STOP_AT_ANY_STATION);
 				return true;
@@ -6924,7 +6924,7 @@ static bool TrainLocoHandler(Train *consist, bool mode)
 			if (consist->force_proceed == TFP_NONE) return true;
 			consist->flags.Reset(VehicleRailFlag::Stuck);
 			consist->wait_counter = 0;
-			SetWindowWidgetDirty(WC_VEHICLE_VIEW, consist->index, WID_VV_START_STOP);
+			SetWindowWidgetDirty(WindowClass::VehicleView, consist->index, WID_VV_START_STOP);
 		}
 	}
 
@@ -6954,7 +6954,7 @@ static bool TrainLocoHandler(Train *consist, bool mode)
 			ReverseTrainDirection(consist);
 		}
 
-		SetWindowWidgetDirty(WC_VEHICLE_VIEW, consist->index, WID_VV_START_STOP);
+		SetWindowWidgetDirty(WindowClass::VehicleView, consist->index, WID_VV_START_STOP);
 		return true;
 	}
 
@@ -6970,7 +6970,7 @@ static bool TrainLocoHandler(Train *consist, bool mode)
 	if (consist->cur_speed == 0 && consist->vehstatus.Test(VehState::Stopped)) {
 		/* If we manually stopped, we're not force-proceeding anymore. */
 		consist->force_proceed = TFP_NONE;
-		InvalidateWindowData(WC_VEHICLE_VIEW, consist->index);
+		InvalidateWindowData(WindowClass::VehicleView, consist->index);
 	}
 
 	Train *moving_front = consist->GetMovingFront();
@@ -7101,7 +7101,7 @@ static void CheckIfTrainNeedsService(Train *v)
 			 * suddenly moved farther away, we continue our normal
 			 * schedule? */
 			v->current_order.MakeDummy();
-			SetWindowWidgetDirty(WC_VEHICLE_VIEW, v->index, WID_VV_START_STOP);
+			SetWindowWidgetDirty(WindowClass::VehicleView, v->index, WID_VV_START_STOP);
 		}
 		return;
 	}
@@ -7117,7 +7117,7 @@ static void CheckIfTrainNeedsService(Train *v)
 	SetBit(v->gv_flags, GVF_SUPPRESS_IMPLICIT_ORDERS);
 	v->current_order.MakeGoToDepot(depot, {OrderDepotTypeFlag::Service}, ONSF_NO_STOP_AT_INTERMEDIATE_STATIONS, ODATFB_NEAREST_DEPOT);
 	v->dest_tile = tfdd.tile;
-	SetWindowWidgetDirty(WC_VEHICLE_VIEW, v->index, WID_VV_START_STOP);
+	SetWindowWidgetDirty(WindowClass::VehicleView, v->index, WID_VV_START_STOP);
 
 	for (Train *u = v; u != nullptr; u = u->Next()) {
 		u->flags.Reset(VehicleRailFlag::BeyondPlatformEnd);
@@ -7158,7 +7158,7 @@ void Train::OnPeriodic()
 
 			SubtractMoneyFromCompanyFract(this->owner, cost);
 
-			SetWindowDirty(WC_VEHICLE_DETAILS, this->index);
+			SetWindowDirty(WindowClass::VehicleDetails, this->index);
 			DirtyVehicleListWindowForVehicle(this);
 		}
 	}
@@ -7464,15 +7464,15 @@ CommandCost CmdBuildVirtualRailVehicle(DoCommandFlags flags, EngineID eid, Cargo
 void ClearVehicleWindows(const Train *v)
 {
 	if (v->IsPrimaryVehicle()) {
-		CloseWindowById(WC_VEHICLE_VIEW, v->index);
-		CloseWindowById(WC_VEHICLE_ORDERS, v->index);
-		CloseWindowById(WC_VEHICLE_REFIT, v->index);
-		CloseWindowById(WC_VEHICLE_DETAILS, v->index);
-		CloseWindowById(WC_VEHICLE_TIMETABLE, v->index);
-		CloseWindowById(WC_SCHDISPATCH_SLOTS, v->index);
-		CloseWindowById(WC_VEHICLE_CARGO_TYPE_LOAD_ORDERS, v->index);
-		CloseWindowById(WC_VEHICLE_CARGO_TYPE_UNLOAD_ORDERS, v->index);
-		CloseWindowById(WC_VEHICLE_ORDER_IMPORT_ERRORS, v->index);
+		CloseWindowById(WindowClass::VehicleView, v->index);
+		CloseWindowById(WindowClass::VehicleOrders, v->index);
+		CloseWindowById(WindowClass::VehicleRefit, v->index);
+		CloseWindowById(WindowClass::VehicleDetails, v->index);
+		CloseWindowById(WindowClass::VehicleTimetable, v->index);
+		CloseWindowById(WindowClass::ScheduledDispatchSlots, v->index);
+		CloseWindowById(WindowClass::VehicleCargoTypeLoadOrders, v->index);
+		CloseWindowById(WindowClass::VehicleCargoTypeUnloadOrders, v->index);
+		CloseWindowById(WindowClass::VehicleOrderImportErrors, v->index);
 	}
 }
 
@@ -7807,7 +7807,7 @@ static CommandCost CmdTemplateReplaceVehicle(DoCommandFlags flags, Train *incomi
 	}
 
 	/* Redraw main gui for changed statistics */
-	SetWindowClassesDirty(WC_TEMPLATEGUI_MAIN);
+	SetWindowClassesDirty(WindowClass::TemplateReplacementGuiMain);
 
 	return buy;
 }
@@ -8043,7 +8043,7 @@ void Train::UpdateTrainSpeedAdaptationLimitInternal(uint16_t speed)
 {
 	this->signal_speed_restriction = speed;
 	if (!this->flags.Test(VehicleRailFlag::SpeedAdaptationExempt)) {
-		SetWindowDirty(WC_VEHICLE_DETAILS, this->index);
+		SetWindowDirty(WindowClass::VehicleDetails, this->index);
 	}
 }
 
@@ -8071,7 +8071,7 @@ CommandCost CmdSetTrainSpeedRestriction(DoCommandFlags flags, VehicleID veh_id, 
 		}
 		v->speed_restriction = speed;
 
-		SetWindowDirty(WC_VEHICLE_DETAILS, v->index);
+		SetWindowDirty(WindowClass::VehicleDetails, v->index);
 	}
 	return CommandCost();
 }

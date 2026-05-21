@@ -99,7 +99,7 @@ struct ContentTextfileWindow : public TextfileWindow {
  */
 static void ShowContentTextfileWindow(Window *parent, TextfileType file_type, const ContentInfo *ci)
 {
-	parent->CloseChildWindowById(WC_TEXTFILE, file_type);
+	parent->CloseChildWindowById(WindowClass::Textfile, file_type);
 	new ContentTextfileWindow(parent, file_type, ci);
 }
 
@@ -118,7 +118,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_network_content_down
 /** Window description for the download window */
 static WindowDesc _network_content_download_status_window_desc(__FILE__, __LINE__,
 	WindowPosition::Center, nullptr, 0, 0,
-	WC_NETWORK_STATUS_WINDOW, WC_NONE,
+	WindowClass::NetworkStatus, WindowClass::None,
 	WindowDefaultFlag::Modal,
 	_nested_network_content_download_status_window_widgets
 );
@@ -214,7 +214,7 @@ public:
 	 */
 	NetworkContentDownloadStatusWindow() : BaseNetworkContentDownloadStatusWindow(_network_content_download_status_window_desc)
 	{
-		this->parent = FindWindowById(WC_NETWORK_WINDOW, NetworkWindowNumber::ContentList);
+		this->parent = FindWindowById(WindowClass::Network, NetworkWindowNumber::ContentList);
 	}
 
 	void Close([[maybe_unused]] int data = 0) override
@@ -268,17 +268,17 @@ public:
 
 				case ContentType::BaseGraphics:
 					BaseGraphics::FindSets();
-					SetWindowDirty(WC_GAME_OPTIONS, GameOptionsWindowNumber::GameOptions);
+					SetWindowDirty(WindowClass::GameOptions, GameOptionsWindowNumber::GameOptions);
 					break;
 
 				case ContentType::BaseSounds:
 					BaseSounds::FindSets();
-					SetWindowDirty(WC_GAME_OPTIONS, GameOptionsWindowNumber::GameOptions);
+					SetWindowDirty(WindowClass::GameOptions, GameOptionsWindowNumber::GameOptions);
 					break;
 
 				case ContentType::BaseMusic:
 					BaseMusic::FindSets();
-					SetWindowDirty(WC_GAME_OPTIONS, GameOptionsWindowNumber::GameOptions);
+					SetWindowDirty(WindowClass::GameOptions, GameOptionsWindowNumber::GameOptions);
 					break;
 
 				case ContentType::NewGRF:
@@ -288,7 +288,7 @@ public:
 				case ContentType::Scenario:
 				case ContentType::Heightmap:
 					ScanScenarios();
-					InvalidateWindowData(WC_SAVELOAD, 0, 0);
+					InvalidateWindowData(WindowClass::SaveLoad, 0, 0);
 					break;
 
 				default:
@@ -297,7 +297,7 @@ public:
 		}
 
 		/* Always invalidate the download window; tell it we are going to be gone */
-		InvalidateWindowData(WC_NETWORK_WINDOW, NetworkWindowNumber::ContentList, 2);
+		InvalidateWindowData(WindowClass::Network, NetworkWindowNumber::ContentList, 2);
 
 		this->BaseNetworkContentDownloadStatusWindow::Close();
 	}
@@ -311,7 +311,7 @@ public:
 			} else {
 				/* If downloading succeeded, close the online content window. This will close
 				 * the current window as well. */
-				CloseWindowById(WC_NETWORK_WINDOW, NetworkWindowNumber::ContentList);
+				CloseWindowById(WindowClass::Network, NetworkWindowNumber::ContentList);
 			}
 		}
 	}
@@ -873,7 +873,7 @@ public:
 				break;
 
 			case WID_NCL_DOWNLOAD:
-				if (BringWindowToFrontById(WC_NETWORK_STATUS_WINDOW, NetworkStatusWindowNumber::ContentDownload) == nullptr) new NetworkContentDownloadStatusWindow();
+				if (BringWindowToFrontById(WindowClass::NetworkStatus, NetworkStatusWindowNumber::ContentDownload) == nullptr) new NetworkContentDownloadStatusWindow();
 				break;
 
 			case WID_NCL_SEARCH_EXTERNAL:
@@ -1008,7 +1008,7 @@ public:
 		}
 
 		/* If data == 2 then the status window caused this OnInvalidate */
-		this->SetWidgetDisabledState(WID_NCL_DOWNLOAD, this->filesize_sum == 0 || (FindWindowById(WC_NETWORK_STATUS_WINDOW, NetworkStatusWindowNumber::ContentDownload) != nullptr && data != 2));
+		this->SetWidgetDisabledState(WID_NCL_DOWNLOAD, this->filesize_sum == 0 || (FindWindowById(WindowClass::NetworkStatus, NetworkStatusWindowNumber::ContentDownload) != nullptr && data != 2));
 		this->SetWidgetDisabledState(WID_NCL_UNSELECT, this->filesize_sum == 0);
 		this->SetWidgetDisabledState(WID_NCL_SELECT_ALL, !show_select_all);
 		this->SetWidgetDisabledState(WID_NCL_SELECT_UPDATE, !show_select_upgrade || !this->filter_data.string_filter.IsEmpty());
@@ -1123,7 +1123,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_network_content_list
 /** Window description of the content list */
 static WindowDesc _network_content_list_desc(__FILE__, __LINE__,
 	WindowPosition::Center, "list_content", 630, 460,
-	WC_NETWORK_WINDOW, WC_NONE,
+	WindowClass::Network, WindowClass::None,
 	{},
 	_nested_network_content_list_widgets
 );
@@ -1152,7 +1152,7 @@ void ShowNetworkContentListWindow(ContentVector *cv, ContentType type1, ContentT
 		_network_content_client.RequestContentList(cv, true);
 	}
 
-	CloseWindowById(WC_NETWORK_WINDOW, NetworkWindowNumber::ContentList);
+	CloseWindowById(WindowClass::Network, NetworkWindowNumber::ContentList);
 	new NetworkContentListWindow(_network_content_list_desc, cv != nullptr, types);
 #else
 	ShowErrorMessage(

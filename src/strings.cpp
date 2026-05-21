@@ -2707,15 +2707,15 @@ bool ReadLanguagePack(const LanguageMetadata *lang)
 	SortIndustryTypes();
 	BuildIndustriesLegend();
 	BuildContentTypeStringList();
-	InvalidateWindowClassesData(WC_BUILD_VEHICLE);      // Build vehicle window.
-	InvalidateWindowClassesData(WC_BUILD_VIRTUAL_TRAIN);// Build template trains window.
-	InvalidateWindowClassesData(WC_TRAINS_LIST);        // Train group window.
-	InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);// Trace restrict slots window.
-	InvalidateWindowClassesData(WC_ROADVEH_LIST);       // Road vehicle group window.
-	InvalidateWindowClassesData(WC_SHIPS_LIST);         // Ship group window.
-	InvalidateWindowClassesData(WC_AIRCRAFT_LIST);      // Aircraft group window.
-	InvalidateWindowClassesData(WC_INDUSTRY_DIRECTORY); // Industry directory window.
-	InvalidateWindowClassesData(WC_STATION_LIST);       // Station list window.
+	InvalidateWindowClassesData(WindowClass::BuildVehicle);       // Build vehicle window.
+	InvalidateWindowClassesData(WindowClass::BuildVirtualTrain);  // Build template trains window.
+	InvalidateWindowClassesData(WindowClass::TrainList);          // Train group window.
+	InvalidateWindowClassesData(WindowClass::TraceRestrictSlots); // Trace restrict slots window.
+	InvalidateWindowClassesData(WindowClass::RoadVehicleList);    // Road vehicle group window.
+	InvalidateWindowClassesData(WindowClass::ShipList);           // Ship group window.
+	InvalidateWindowClassesData(WindowClass::AircraftList);       // Aircraft group window.
+	InvalidateWindowClassesData(WindowClass::IndustryDirectory);  // Industry directory window.
+	InvalidateWindowClassesData(WindowClass::StationList);        // Station list window.
 
 	if (old_text_dir != _current_text_dir) {
 		InvalidateTemplateReplacementImages();

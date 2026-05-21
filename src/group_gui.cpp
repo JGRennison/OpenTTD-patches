@@ -624,7 +624,7 @@ public:
 
 		/* Process ID-invalidation in command-scope as well */
 		if (this->group_rename != GroupID::Invalid() && !Group::IsValidID(this->group_rename)) {
-			CloseWindowByClass(WC_QUERY_STRING);
+			CloseWindowByClass(WindowClass::QueryString);
 			this->group_rename = GroupID::Invalid();
 		}
 
@@ -951,7 +951,7 @@ public:
 					GetEncodedString(STR_QUERY_GROUP_DELETE_CAPTION),
 					GetEncodedString(STR_GROUP_DELETE_QUERY_TEXT),
 					this, DeleteGroupCallback);
-				InvalidateWindowData(WC_TEMPLATEGUI_MAIN, 0, 0);
+				InvalidateWindowData(WindowClass::TemplateReplacementGuiMain, 0, 0);
 				break;
 			}
 
@@ -1373,28 +1373,28 @@ static WindowDesc _vehicle_group_desc[] = {
 	{
 		__FILE__, __LINE__,
 		WindowPosition::Automatic, "list_groups_train", 525, 246,
-		WC_TRAINS_LIST, WC_NONE,
+		WindowClass::TrainList, WindowClass::None,
 		{},
 		_nested_group_widgets
 	},
 	{
 		__FILE__, __LINE__,
 		WindowPosition::Automatic, "list_groups_roadveh", 460, 246,
-		WC_ROADVEH_LIST, WC_NONE,
+		WindowClass::RoadVehicleList, WindowClass::None,
 		{},
 		_nested_group_widgets
 	},
 	{
 		__FILE__, __LINE__,
 		WindowPosition::Automatic, "list_groups_ship", 460, 246,
-		WC_SHIPS_LIST, WC_NONE,
+		WindowClass::ShipList, WindowClass::None,
 		{},
 		_nested_group_widgets
 	},
 	{
 		__FILE__, __LINE__,
 		WindowPosition::Automatic, "list_groups_aircraft", 460, 246,
-		WC_AIRCRAFT_LIST, WC_NONE,
+		WindowClass::AircraftList, WindowClass::None,
 		{},
 		_nested_group_widgets
 	},

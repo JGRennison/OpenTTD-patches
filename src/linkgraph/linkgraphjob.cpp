@@ -186,7 +186,7 @@ void LinkGraphJob::FinaliseJob()
 		}
 		geflows.SortStorage();
 		ge.RemoveDataIfUnused();
-		InvalidateWindowData(WC_STATION_VIEW, st->index, this->Cargo());
+		InvalidateWindowData(WindowClass::StationView, st->index, this->Cargo());
 	}
 }
 

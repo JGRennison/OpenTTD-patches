@@ -656,7 +656,7 @@ void EngineOverrideManager::ReIndex()
  */
 void SetupEngines()
 {
-	CloseWindowByClass(WC_ENGINE_PREVIEW);
+	CloseWindowByClass(WindowClass::EnginePreview);
 	_engine_pool.CleanPool();
 
 	assert(_engine_mngr.mappings.size() >= EngineOverrideManager::NUM_DEFAULT_ENGINES);
@@ -901,11 +901,11 @@ void StartupEngines()
 	}
 
 	/* Invalidate any open purchase lists */
-	InvalidateWindowClassesData(WC_BUILD_VEHICLE);
-	InvalidateWindowClassesData(WC_BUILD_VIRTUAL_TRAIN);
+	InvalidateWindowClassesData(WindowClass::BuildVehicle);
+	InvalidateWindowClassesData(WindowClass::BuildVirtualTrain);
 
-	SetWindowClassesDirty(WC_BUILD_VEHICLE);
-	SetWindowClassesDirty(WC_REPLACE_VEHICLE);
+	SetWindowClassesDirty(WindowClass::BuildVehicle);
+	SetWindowClassesDirty(WindowClass::ReplaceVehicle);
 }
 
 /**
@@ -929,10 +929,10 @@ static void EnableEngineForCompany(EngineID eid, CompanyID company)
 		AddRemoveEngineFromAutoreplaceAndBuildWindows(e->type);
 
 		/* Update the toolbar. */
-		InvalidateWindowData(WC_MAIN_TOOLBAR, 0);
-		if (e->type == VehicleType::Road) InvalidateWindowData(WC_BUILD_TOOLBAR, TRANSPORT_ROAD);
-		if (e->type == VehicleType::Ship) InvalidateWindowData(WC_BUILD_TOOLBAR, TRANSPORT_WATER);
-		if (e->type == VehicleType::Aircraft) InvalidateWindowData(WC_BUILD_TOOLBAR, TRANSPORT_AIR);
+		InvalidateWindowData(WindowClass::MainToolbar, 0);
+		if (e->type == VehicleType::Road) InvalidateWindowData(WindowClass::BuildToolbar, TRANSPORT_ROAD);
+		if (e->type == VehicleType::Ship) InvalidateWindowData(WindowClass::BuildToolbar, TRANSPORT_WATER);
+		if (e->type == VehicleType::Aircraft) InvalidateWindowData(WindowClass::BuildToolbar, TRANSPORT_AIR);
 	}
 }
 
@@ -979,7 +979,7 @@ static void AcceptEnginePreview(EngineID eid, CompanyID company, int recursion_d
 	 *       In singleplayer this function is called from the preview window, so
 	 *       we have to use the GUI-scope scheduling of InvalidateWindowData.
 	 */
-	InvalidateWindowClassesData(WC_ENGINE_PREVIEW);
+	InvalidateWindowClassesData(WindowClass::EnginePreview);
 
 	/* Don't search for variants to include if we are 10 levels deep already. */
 	if (recursion_depth >= 10) return;
@@ -1058,7 +1058,7 @@ void EnginesDailyLoop()
 		if (e->flags.Test(EngineFlag::ExclusivePreview)) {
 			if (e->preview_company != CompanyID::Invalid()) {
 				if (!--e->preview_wait) {
-					InvalidateWindowClassesData(WC_ENGINE_PREVIEW);
+					InvalidateWindowClassesData(WindowClass::EnginePreview);
 					e->preview_company = CompanyID::Invalid();
 				}
 			} else if (CountBits(e->preview_asked.base()) < MAX_COMPANIES) {
@@ -1215,12 +1215,12 @@ static void NewVehicleAvailable(Engine *e)
 	}
 
 	/* Update the toolbar. */
-	if (e->type == VehicleType::Road) InvalidateWindowData(WC_BUILD_TOOLBAR, TRANSPORT_ROAD);
-	if (e->type == VehicleType::Ship) InvalidateWindowData(WC_BUILD_TOOLBAR, TRANSPORT_WATER);
-	if (e->type == VehicleType::Aircraft) InvalidateWindowData(WC_BUILD_TOOLBAR, TRANSPORT_AIR);
+	if (e->type == VehicleType::Road) InvalidateWindowData(WindowClass::BuildToolbar, TRANSPORT_ROAD);
+	if (e->type == VehicleType::Ship) InvalidateWindowData(WindowClass::BuildToolbar, TRANSPORT_WATER);
+	if (e->type == VehicleType::Aircraft) InvalidateWindowData(WindowClass::BuildToolbar, TRANSPORT_AIR);
 
 	/* Remove from preview windows */
-	InvalidateWindowClassesData(WC_ENGINE_PREVIEW);
+	InvalidateWindowClassesData(WindowClass::EnginePreview);
 }
 
 /** Monthly update of the availability, reliability, and preview offers of the engines. */
@@ -1270,13 +1270,13 @@ void EnginesMonthlyLoop()
 			}
 		}
 
-		InvalidateWindowClassesData(WC_BUILD_VEHICLE); // rebuild the purchase list (esp. when sorted by reliability)
-		InvalidateWindowClassesData(WC_BUILD_VIRTUAL_TRAIN);
+		InvalidateWindowClassesData(WindowClass::BuildVehicle); // rebuild the purchase list (esp. when sorted by reliability)
+		InvalidateWindowClassesData(WindowClass::BuildVirtualTrain);
 
 		if (refresh) {
-			SetWindowClassesDirty(WC_BUILD_VEHICLE);
-			SetWindowClassesDirty(WC_BUILD_VIRTUAL_TRAIN);
-			SetWindowClassesDirty(WC_REPLACE_VEHICLE);
+			SetWindowClassesDirty(WindowClass::BuildVehicle);
+			SetWindowClassesDirty(WindowClass::BuildVirtualTrain);
+			SetWindowClassesDirty(WindowClass::ReplaceVehicle);
 		}
 	}
 }

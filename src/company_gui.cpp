@@ -612,7 +612,7 @@ struct CompanyFinancesWindow : Window {
 
 static WindowDesc _company_finances_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "company_finances", 0, 0,
-	WC_FINANCES, WC_NONE,
+	WindowClass::Finances, WindowClass::None,
 	{},
 	_nested_company_finances_widgets
 );
@@ -625,7 +625,7 @@ static WindowDesc _company_finances_desc(__FILE__, __LINE__,
 void ShowCompanyFinances(CompanyID company)
 {
 	if (!Company::IsValidID(company)) return;
-	if (BringWindowToFrontById(WC_FINANCES, company)) return;
+	if (BringWindowToFrontById(WindowClass::Finances, company)) return;
 
 	new CompanyFinancesWindow(_company_finances_desc, company);
 }
@@ -1153,14 +1153,14 @@ static constexpr std::initializer_list<NWidgetPart> _nested_select_company_liver
 
 static WindowDesc _select_company_livery_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "company_colour_scheme", 0, 0,
-	WC_COMPANY_COLOUR, WC_NONE,
+	WindowClass::CompanyLivery, WindowClass::None,
 	{},
 	_nested_select_company_livery_widgets
 );
 
 void ShowCompanyLiveryWindow(CompanyID company, GroupID group)
 {
-	SelectCompanyLiveryWindow *w = (SelectCompanyLiveryWindow *)BringWindowToFrontById(WC_COMPANY_COLOUR, company);
+	SelectCompanyLiveryWindow *w = (SelectCompanyLiveryWindow *)BringWindowToFrontById(WindowClass::CompanyLivery, company);
 	if (w == nullptr) {
 		new SelectCompanyLiveryWindow(_select_company_livery_desc, company, group);
 	} else if (group != GroupID::Invalid()) {
@@ -1575,7 +1575,7 @@ public:
 /** Company manager face selection window description */
 static WindowDesc _select_company_manager_face_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, nullptr, 0, 0,
-	WC_COMPANY_MANAGER_FACE, WC_NONE,
+	WindowClass::CompanyManagerFace, WindowClass::None,
 	WindowDefaultFlag::Construction,
 	_nested_select_company_manager_face_widgets
 );
@@ -1589,7 +1589,7 @@ static void DoSelectCompanyManagerFace(Window *parent)
 {
 	if (!Company::IsValidID((CompanyID)parent->window_number)) return;
 
-	if (BringWindowToFrontById(WC_COMPANY_MANAGER_FACE, parent->window_number)) return;
+	if (BringWindowToFrontById(WindowClass::CompanyManagerFace, parent->window_number)) return;
 	new SelectCompanyManagerFaceWindow(_select_company_manager_face_desc, parent);
 }
 
@@ -1979,7 +1979,7 @@ struct CompanyInfrastructureWindow : Window
 
 static WindowDesc _company_infrastructure_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "company_infrastructure", 0, 0,
-	WC_COMPANY_INFRASTRUCTURE, WC_NONE,
+	WindowClass::CompanyInfrastructure, WindowClass::None,
 	{},
 	_nested_company_infrastructure_widgets
 );
@@ -2583,7 +2583,7 @@ struct CompanyWindow : Window
 
 static WindowDesc _company_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "company", 0, 0,
-	WC_COMPANY, WC_NONE,
+	WindowClass::Company, WindowClass::None,
 	{},
 	_nested_company_widgets
 );
@@ -2605,8 +2605,8 @@ void ShowCompany(CompanyID company)
  */
 void DirtyCompanyInfrastructureWindows(CompanyID company)
 {
-	SetWindowDirty(WC_COMPANY, company);
-	SetWindowDirty(WC_COMPANY_INFRASTRUCTURE, company);
+	SetWindowDirty(WindowClass::Company, company);
+	SetWindowDirty(WindowClass::CompanyInfrastructure, company);
 }
 
 /**
@@ -2614,8 +2614,8 @@ void DirtyCompanyInfrastructureWindows(CompanyID company)
  */
 void DirtyAllCompanyInfrastructureWindows()
 {
-	SetWindowClassesDirty(WC_COMPANY);
-	SetWindowClassesDirty(WC_COMPANY_INFRASTRUCTURE);
+	SetWindowClassesDirty(WindowClass::Company);
+	SetWindowClassesDirty(WindowClass::CompanyInfrastructure);
 }
 
 struct BuyCompanyWindow : Window {
@@ -2731,9 +2731,10 @@ static constexpr std::initializer_list<NWidgetPart> _nested_buy_company_widgets 
 	EndContainer(),
 };
 
+/** Window definition for the window to buy a company. */
 static WindowDesc _buy_company_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, nullptr, 0, 0,
-	WC_BUY_COMPANY, WC_NONE,
+	WindowClass::BuyCompany, WindowClass::None,
 	WindowDefaultFlag::Construction,
 	_nested_buy_company_widgets
 );
@@ -2745,7 +2746,7 @@ static WindowDesc _buy_company_desc(__FILE__, __LINE__,
  */
 void ShowBuyCompanyDialog(CompanyID company, bool hostile_takeover)
 {
-	auto window = BringWindowToFrontById(WC_BUY_COMPANY, company);
+	auto window = BringWindowToFrontById(WindowClass::BuyCompany, company);
 	if (window == nullptr) {
 		new BuyCompanyWindow(_buy_company_desc, company, hostile_takeover);
 	}

@@ -129,7 +129,7 @@ bool HasClients()
 NetworkClientInfo::~NetworkClientInfo()
 {
 	/* Delete the chat window, if you were chatting with this client. */
-	InvalidateWindowData(WC_SEND_NETWORK_MSG, NetworkChatDestinationType::Client, this->client_id);
+	InvalidateWindowData(WindowClass::NetworkChat, NetworkChatDestinationType::Client, this->client_id);
 }
 
 /**
@@ -699,7 +699,7 @@ NetworkAddress ParseConnectionString(std::string_view connection_string, uint16_
 	ServerNetworkGameSocketHandler *cs = ServerNetworkGameSocketHandler::Create(s);
 	cs->client_address = address; // Save the IP of the client
 
-	InvalidateWindowData(WC_CLIENT_LIST, 0);
+	InvalidateWindowData(WindowClass::NetworkClientList, 0);
 }
 
 /**
@@ -1169,7 +1169,7 @@ void NetworkDisconnect(bool close_admins)
 		}
 	}
 
-	CloseWindowById(WC_NETWORK_STATUS_WINDOW, NetworkStatusWindowNumber::Join);
+	CloseWindowById(WindowClass::NetworkStatus, NetworkStatusWindowNumber::Join);
 
 	NetworkClose(close_admins);
 

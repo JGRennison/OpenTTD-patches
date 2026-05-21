@@ -3890,7 +3890,7 @@ static void SaveFileStart()
 {
 	SetMouseCursorBusy(true);
 
-	InvalidateWindowData(WC_STATUS_BAR, 0, SBI_SAVELOAD_START);
+	InvalidateWindowData(WindowClass::Statusbar, 0, SBI_SAVELOAD_START);
 	_sl.saveinprogress = true;
 }
 
@@ -3899,7 +3899,7 @@ static void SaveFileDone()
 {
 	SetMouseCursorBusy(false);
 
-	InvalidateWindowData(WC_STATUS_BAR, 0, SBI_SAVELOAD_FINISH);
+	InvalidateWindowData(WindowClass::Statusbar, 0, SBI_SAVELOAD_FINISH);
 	_sl.saveinprogress = false;
 
 #ifdef __EMSCRIPTEN__

@@ -541,7 +541,7 @@ public:
 
 static WindowDesc _town_authority_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "view_town_authority", 317, 222,
-	WC_TOWN_AUTHORITY, WC_NONE,
+	WindowClass::TownAuthority, WindowClass::None,
 	{},
 	_nested_town_authority_widgets
 );
@@ -867,7 +867,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_town_game_view_widge
 
 static WindowDesc _town_game_view_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "view_town", 260, TownViewWindow::WID_TV_HEIGHT_NORMAL,
-	WC_TOWN_VIEW, WC_NONE,
+	WindowClass::TownView, WindowClass::None,
 	{},
 	_nested_town_game_view_widgets
 );
@@ -903,7 +903,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_town_editor_view_wid
 
 static WindowDesc _town_editor_view_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "view_town_scen", 260, TownViewWindow::WID_TV_HEIGHT_NORMAL,
-	WC_TOWN_VIEW, WC_NONE,
+	WindowClass::TownView, WindowClass::None,
 	{},
 	_nested_town_editor_view_widgets
 );
@@ -1346,7 +1346,7 @@ const std::initializer_list<GUITownList::SortFunction * const> TownDirectoryWind
 
 static WindowDesc _town_directory_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "list_towns", 208, 202,
-	WC_TOWN_DIRECTORY, WC_NONE,
+	WindowClass::TownDirectory, WindowClass::None,
 	{},
 	_nested_town_directory_widgets,
 	&TownDirectoryWindow::hotkeys
@@ -1354,7 +1354,7 @@ static WindowDesc _town_directory_desc(__FILE__, __LINE__,
 
 void ShowTownDirectory()
 {
-	if (BringWindowToFrontById(WC_TOWN_DIRECTORY, 0)) return;
+	if (BringWindowToFrontById(WindowClass::TownDirectory, 0)) return;
 	new TownDirectoryWindow(_town_directory_desc);
 }
 
@@ -1648,7 +1648,7 @@ public:
 
 static WindowDesc _found_town_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "build_town", 160, 162,
-	WC_FOUND_TOWN, WC_NONE,
+	WindowClass::FoundTown, WindowClass::None,
 	WindowDefaultFlag::Construction,
 	_nested_found_town_widgets
 );
@@ -1768,14 +1768,14 @@ static const NWidgetPart _nested_select_town_widgets[] = {
 
 static WindowDesc _select_town_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "select_town", 100, 0,
-	WC_SELECT_TOWN, WC_NONE,
+	WindowClass::SelectTown, WindowClass::None,
 	WindowDefaultFlag::Construction,
 	_nested_select_town_widgets
 );
 
 static void ShowSelectTownWindow(const CommandContainer<Commands::PlaceHouse> &cmd)
 {
-	CloseWindowByClass(WC_SELECT_TOWN);
+	CloseWindowByClass(WindowClass::SelectTown);
 	new SelectTownWindow(_select_town_desc, cmd);
 }
 
@@ -2389,7 +2389,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_build_house_widgets 
 
 static WindowDesc _build_house_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "build_house", 0, 0,
-	WC_BUILD_HOUSE, WC_BUILD_TOOLBAR,
+	WindowClass::BuildHouse, WindowClass::BuildToolbar,
 	WindowDefaultFlag::Construction,
 	_nested_build_house_widgets,
 	&BuildHouseWindow::hotkeys
@@ -2397,7 +2397,7 @@ static WindowDesc _build_house_desc(__FILE__, __LINE__,
 
 void ShowBuildHousePicker(Window *parent)
 {
-	if (BringWindowToFrontById(WC_BUILD_HOUSE, 0)) return;
+	if (BringWindowToFrontById(WindowClass::BuildHouse, 0)) return;
 	new BuildHouseWindow(_build_house_desc, 0, parent);
 }
 

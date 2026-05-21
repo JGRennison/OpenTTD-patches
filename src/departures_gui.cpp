@@ -74,7 +74,7 @@ static constexpr NWidgetPart _nested_departures_list[] = {
 
 static WindowDesc _departures_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "depatures", 260, 246,
-	WC_DEPARTURES_BOARD, WC_NONE,
+	WindowClass::DepartureBoard, WindowClass::None,
 	{},
 	_nested_departures_list
 );
@@ -89,7 +89,7 @@ static bool cached_date_display_method;    ///< Whether the above cached values 
 void FlushDeparturesWindowTextCaches()
 {
 	cached_date_width = cached_status_width = cached_date_arrow_width = cached_veh_type_width = 0;
-	InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 1);
+	InvalidateWindowClassesData(WindowClass::DepartureBoard, 1);
 }
 
 enum DeparturesCargoMode : uint8_t {
@@ -941,9 +941,9 @@ void ShowDepotDeparturesWindow(TileIndex tile, VehicleType vt)
 
 void CloseStationDeparturesWindow(StationID station)
 {
-	if (HaveWindowByClass(WC_DEPARTURES_BOARD)) {
+	if (HaveWindowByClass(WindowClass::DepartureBoard)) {
 		for (Window *w : Window::Iterate()) {
-			if (w->window_class == WC_DEPARTURES_BOARD) {
+			if (w->window_class == WindowClass::DepartureBoard) {
 				if (w->window_number == station) {
 					w->Close();
 				} else {
@@ -956,14 +956,14 @@ void CloseStationDeparturesWindow(StationID station)
 
 void CloseDepotDeparturesWindow(TileIndex tile)
 {
-	CloseAllWindowsById(WC_DEPARTURES_BOARD, DeparturesWindow::GetDepotWindowNumber(tile));
+	CloseAllWindowsById(WindowClass::DepartureBoard, DeparturesWindow::GetDepotWindowNumber(tile));
 }
 
 void UpdateDeparturesWindowVehicleFilter(const OrderList *order_list, bool remove)
 {
-	if (HaveWindowByClass(WC_DEPARTURES_BOARD)) {
+	if (HaveWindowByClass(WindowClass::DepartureBoard)) {
 		for (Window *w : Window::Iterate()) {
-			if (w->window_class == WC_DEPARTURES_BOARD) {
+			if (w->window_class == WindowClass::DepartureBoard) {
 				static_cast<DeparturesWindow *>(w)->UpdateVehicleFilter(order_list, remove);
 			}
 		}

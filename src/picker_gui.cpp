@@ -503,7 +503,7 @@ void PickerWindow::OnClick(Point pt, WidgetID widget, int)
 				this->InvalidateData({PickerInvalidation::Type, PickerInvalidation::Position, PickerInvalidation::Validate});
 			}
 			SndClickBeep();
-			CloseWindowById(WC_SELECT_STATION, 0);
+			CloseWindowById(WindowClass::JoinStation, 0);
 			break;
 		}
 
@@ -568,7 +568,7 @@ void PickerWindow::OnClick(Point pt, WidgetID widget, int)
 				this->RaiseWidgetWhenLowered(WID_PW_TYPE_RANDOM);
 			}
 			SndClickBeep();
-			CloseWindowById(WC_SELECT_STATION, 0);
+			CloseWindowById(WindowClass::JoinStation, 0);
 			break;
 		}
 
@@ -587,7 +587,7 @@ void PickerWindow::OnClick(Point pt, WidgetID widget, int)
 
 		case WID_PW_COLEC_LIST: {
 			ShowDropDownList(this, this->BuildCollectionDropDownList(), -1, widget, 0, DropDownOption::Filterable);
-			CloseWindowById(WC_SELECT_STATION, 0);
+			CloseWindowById(WindowClass::JoinStation, 0);
 			break;
 		}
 
@@ -598,7 +598,7 @@ void PickerWindow::OnClick(Point pt, WidgetID widget, int)
 
 		case WID_PW_COLEC_RENAME:
 			if (this->callbacks.saved.contains(this->callbacks.sel_collection)) {
-				CloseChildWindows(WC_CONFIRM_POPUP_QUERY);
+				CloseChildWindows(WindowClass::ConfirmPopupQuery);
 				this->callbacks.edit_collection = this->callbacks.sel_collection;
 				this->callbacks.rename_collection = true;
 				ShowQueryString(this->callbacks.sel_collection, STR_PICKER_COLLECTION_RENAME_QUERY, MAX_LENGTH_TOWN_NAME_CHARS, this, CS_ALPHANUMERAL, QueryStringFlag::LengthIsInChars);
@@ -607,7 +607,7 @@ void PickerWindow::OnClick(Point pt, WidgetID widget, int)
 
 		case WID_PW_COLEC_DELETE:
 			if (this->callbacks.saved.contains(this->callbacks.sel_collection)) {
-				CloseChildWindows(WC_QUERY_STRING);
+				CloseChildWindows(WindowClass::QueryString);
 				this->callbacks.edit_collection = this->callbacks.sel_collection;
 
 				this->inactive.contains(this->callbacks.sel_collection) ?
@@ -689,7 +689,7 @@ void PickerWindow::OnDropdownSelect(WidgetID widget, int index, int click_result
 			if (reopen) {
 				ReplaceDropDownList(this, BuildBadgeClassConfigurationList(this->badge_classes, 1, {}, Colours::DarkGreen), -1);
 			} else {
-				this->CloseChildWindows(WC_DROPDOWN_MENU);
+				this->CloseChildWindows(WindowClass::DropdownMenu);
 			}
 
 			/* We need to refresh if a filter is removed. */
@@ -830,7 +830,7 @@ void PickerWindow::PickItem(int cls_id, int id)
 	}
 	this->callbacks.SetSelectedType(id);
 	this->InvalidateData(invalidation_flags);
-	CloseWindowById(WC_SELECT_STATION, 0);
+	CloseWindowById(WindowClass::JoinStation, 0);
 }
 
 /** Builds the filter list of classes. */
@@ -1121,10 +1121,10 @@ std::unique_ptr<NWidgetBase> MakePickerTypeWidgets()
 
 void InvalidateAllPickerWindows()
 {
-	InvalidateWindowClassesData(WC_BUS_STATION, PickerWindow::PICKER_INVALIDATION_ALL.base());
-	InvalidateWindowClassesData(WC_TRUCK_STATION, PickerWindow::PICKER_INVALIDATION_ALL.base());
-	InvalidateWindowClassesData(WC_SELECT_STATION, PickerWindow::PICKER_INVALIDATION_ALL.base());
-	InvalidateWindowClassesData(WC_BUILD_WAYPOINT, PickerWindow::PICKER_INVALIDATION_ALL.base());
-	InvalidateWindowClassesData(WC_BUILD_OBJECT, PickerWindow::PICKER_INVALIDATION_ALL.base());
-	InvalidateWindowClassesData(WC_BUILD_HOUSE, PickerWindow::PICKER_INVALIDATION_ALL.base());
+	InvalidateWindowClassesData(WindowClass::BuildBusStation, PickerWindow::PICKER_INVALIDATION_ALL.base());
+	InvalidateWindowClassesData(WindowClass::BuildTruckStation, PickerWindow::PICKER_INVALIDATION_ALL.base());
+	InvalidateWindowClassesData(WindowClass::JoinStation, PickerWindow::PICKER_INVALIDATION_ALL.base());
+	InvalidateWindowClassesData(WindowClass::BuildWaypoint, PickerWindow::PICKER_INVALIDATION_ALL.base());
+	InvalidateWindowClassesData(WindowClass::BuildObject, PickerWindow::PICKER_INVALIDATION_ALL.base());
+	InvalidateWindowClassesData(WindowClass::BuildHouse, PickerWindow::PICKER_INVALIDATION_ALL.base());
 }

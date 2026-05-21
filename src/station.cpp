@@ -64,11 +64,11 @@ BaseStation::~BaseStation()
 {
 	if (CleaningPool()) return;
 
-	CloseWindowById(WC_TRAINS_LIST,   VehicleListIdentifier(VL_STATION_LIST, VehicleType::Train,    this->owner, this->index).ToWindowNumber());
-	CloseWindowById(WC_ROADVEH_LIST,  VehicleListIdentifier(VL_STATION_LIST, VehicleType::Road,     this->owner, this->index).ToWindowNumber());
-	CloseWindowById(WC_SHIPS_LIST,    VehicleListIdentifier(VL_STATION_LIST, VehicleType::Ship,     this->owner, this->index).ToWindowNumber());
-	CloseWindowById(WC_AIRCRAFT_LIST, VehicleListIdentifier(VL_STATION_LIST, VehicleType::Aircraft, this->owner, this->index).ToWindowNumber());
-	CloseWindowById(WC_STATION_CARGO, this->index);
+	CloseWindowById(WindowClass::TrainList,       VehicleListIdentifier(VL_STATION_LIST, VehicleType::Train,    this->owner, this->index).ToWindowNumber());
+	CloseWindowById(WindowClass::RoadVehicleList, VehicleListIdentifier(VL_STATION_LIST, VehicleType::Road,     this->owner, this->index).ToWindowNumber());
+	CloseWindowById(WindowClass::ShipList,        VehicleListIdentifier(VL_STATION_LIST, VehicleType::Ship,     this->owner, this->index).ToWindowNumber());
+	CloseWindowById(WindowClass::AircraftList,    VehicleListIdentifier(VL_STATION_LIST, VehicleType::Aircraft, this->owner, this->index).ToWindowNumber());
+	CloseWindowById(WindowClass::StationCargoGraph, this->index);
 
 	extern void CloseStationDeparturesWindow(StationID station);
 	CloseStationDeparturesWindow(this->index);
@@ -150,12 +150,12 @@ Station::~Station()
 
 	if (this->owner == OWNER_NONE) {
 		/* Invalidate all in case of oil rigs. */
-		InvalidateWindowClassesData(WC_STATION_LIST, 0);
+		InvalidateWindowClassesData(WindowClass::StationList, 0);
 	} else {
-		InvalidateWindowData(WC_STATION_LIST, this->owner, 0);
+		InvalidateWindowData(WindowClass::StationList, this->owner, 0);
 	}
 
-	CloseWindowById(WC_STATION_VIEW, index);
+	CloseWindowById(WindowClass::StationView, index);
 	DeleteNewGRFInspectWindow(GrfSpecFeature::FakeStationStruct, this->index.base());
 
 	/* Now delete all orders that go to the station */
@@ -186,7 +186,7 @@ Station::~Station()
  */
 void BaseStation::PostDestructor([[maybe_unused]] size_t index)
 {
-	InvalidateWindowData(WC_SELECT_STATION, 0, 0);
+	InvalidateWindowData(WindowClass::JoinStation, 0, 0);
 }
 
 bool BaseStation::SetRoadStopTileData(TileIndex tile, uint8_t data, bool animation)
@@ -255,7 +255,7 @@ void Station::AddFacility(StationFacility new_facility_bit, TileIndex facil_xy)
 	this->facilities.Set(new_facility_bit);
 	this->owner = _current_company;
 	this->build_date = CalTime::CurDate();
-	SetWindowClassesDirty(WC_VEHICLE_ORDERS);
+	SetWindowClassesDirty(WindowClass::VehicleOrders);
 }
 
 /**

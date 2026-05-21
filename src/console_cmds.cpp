@@ -763,7 +763,7 @@ static bool ConClearBuffer(std::span<std::string_view> argv)
 	}
 
 	IConsoleClearBuffer();
-	SetWindowDirty(WC_CONSOLE, 0);
+	SetWindowDirty(WindowClass::Console, 0);
 	return true;
 }
 
@@ -3865,7 +3865,7 @@ static bool ConViewportMarkDirty(std::span<std::string_view> argv)
 		return true;
 	}
 
-	Viewport *vp = FindWindowByClass(WC_MAIN_WINDOW)->viewport;
+	Viewport *vp = FindWindowByClass(WindowClass::MainWindow)->viewport;
 	uint l = ParseInteger(argv[1], 0).value_or(0);
 	uint t = ParseInteger(argv[2], 0).value_or(0);
 	uint r = std::min<uint>(l + ((argv.size() > 3) ? ParseInteger(argv[3], 0).value_or(0) : 1), vp->dirty_blocks_per_row);

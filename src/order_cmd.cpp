@@ -113,7 +113,7 @@ void Order::InvalidateGuiOnRemove()
 	 * the list of stations. So, we need to invalidate that window if needed. */
 	if (this->IsType(OT_GOTO_STATION) || this->IsType(OT_GOTO_WAYPOINT)) {
 		BaseStation *bs = BaseStation::GetIfValid(this->GetDestination().ToStationID());
-		if (bs != nullptr && bs->owner == OWNER_NONE) InvalidateWindowClassesData(WC_STATION_LIST);
+		if (bs != nullptr && bs->owner == OWNER_NONE) InvalidateWindowClassesData(WindowClass::StationList);
 	}
 }
 
@@ -375,18 +375,18 @@ uint16_t Order::MapOldOrder() const
  */
 void InvalidateVehicleOrder(const Vehicle *v, int data)
 {
-	InvalidateWindowData(WC_VEHICLE_VIEW, v->index);
-	SetWindowDirty(WC_SCHDISPATCH_SLOTS, v->index);
+	InvalidateWindowData(WindowClass::VehicleView, v->index);
+	SetWindowDirty(WindowClass::ScheduledDispatchSlots, v->index);
 
 	if (data != 0) {
 		/* Calls SetDirty() too */
-		InvalidateWindowData(WC_VEHICLE_ORDERS,    v->index, data);
-		InvalidateWindowData(WC_VEHICLE_TIMETABLE, v->index, data);
+		InvalidateWindowData(WindowClass::VehicleOrders, v->index, data);
+		InvalidateWindowData(WindowClass::VehicleTimetable, v->index, data);
 		return;
 	}
 
-	SetWindowDirty(WC_VEHICLE_ORDERS,    v->index);
-	SetWindowDirty(WC_VEHICLE_TIMETABLE, v->index);
+	SetWindowDirty(WindowClass::VehicleOrders, v->index);
+	SetWindowDirty(WindowClass::VehicleTimetable, v->index);
 }
 
 /**
@@ -396,8 +396,8 @@ void InvalidateVehicleOrder(const Vehicle *v, int data)
  */
 void InvalidateVehicleOrderOnMove(const Vehicle *v, VehicleOrderID from, VehicleOrderID to, uint16_t count)
 {
-	SetWindowDirty(WC_VEHICLE_VIEW, v->index);
-	SetWindowDirty(WC_SCHDISPATCH_SLOTS, v->index);
+	SetWindowDirty(WindowClass::VehicleView, v->index);
+	SetWindowDirty(WindowClass::ScheduledDispatchSlots, v->index);
 
 	extern void InvalidateOrderListWindowOnOrderMove(VehicleID veh, VehicleOrderID from, VehicleOrderID to, uint16_t count);
 	extern void InvalidateTimetableListWindowOnOrderMove(VehicleID veh, VehicleOrderID from, VehicleOrderID to, uint16_t count);
@@ -735,7 +735,7 @@ void OrderList::InsertOrderAt(Order &&ins_order, VehicleOrderID index)
 	 * the list of stations. So, we need to invalidate that window if needed. */
 	if (new_order->IsType(OT_GOTO_STATION) || new_order->IsType(OT_GOTO_WAYPOINT)) {
 		BaseStation *bs = BaseStation::Get(new_order->GetDestination().ToStationID());
-		if (bs->owner == OWNER_NONE) InvalidateWindowClassesData(WC_STATION_LIST);
+		if (bs->owner == OWNER_NONE) InvalidateWindowClassesData(WindowClass::StationList);
 	}
 
 }
@@ -1496,7 +1496,7 @@ void InsertOrder(Vehicle *v, Order &&new_o, VehicleOrderID sel_ord)
 
 	/* Make sure to rebuild the whole list */
 	InvalidateWindowClassesData(GetWindowClassForVehicleType(v->type));
-	InvalidateWindowClassesData(WC_DEPARTURES_BOARD);
+	InvalidateWindowClassesData(WindowClass::DepartureBoard);
 }
 
 /**
@@ -1516,7 +1516,7 @@ static CommandCost DecloneOrder(Vehicle *dst, DoCommandFlags flags)
 		DeleteVehicleOrders(dst);
 		InvalidateVehicleOrder(dst, VIWD_REMOVE_ALL_ORDERS);
 		InvalidateWindowClassesData(GetWindowClassForVehicleType(dst->type));
-		InvalidateWindowClassesData(WC_DEPARTURES_BOARD);
+		InvalidateWindowClassesData(WindowClass::DepartureBoard);
 	}
 	return CommandCost();
 }
@@ -1648,7 +1648,7 @@ void DeleteOrder(Vehicle *v, VehicleOrderID sel_ord)
 	}
 
 	InvalidateWindowClassesData(GetWindowClassForVehicleType(v->type));
-	InvalidateWindowClassesData(WC_DEPARTURES_BOARD);
+	InvalidateWindowClassesData(WindowClass::DepartureBoard);
 }
 
 /**
@@ -1782,7 +1782,7 @@ CommandCost CmdMoveOrder(DoCommandFlags flags, VehicleID veh, VehicleOrderID mov
 
 		/* Make sure to rebuild the whole list */
 		InvalidateWindowClassesData(GetWindowClassForVehicleType(v->type));
-		InvalidateWindowClassesData(WC_DEPARTURES_BOARD);
+		InvalidateWindowClassesData(WindowClass::DepartureBoard);
 	}
 
 	return CommandCost();
@@ -2892,7 +2892,7 @@ CommandCost CmdCloneOrder(DoCommandFlags flags, CloneOptions action, VehicleID v
 				InvalidateVehicleOrder(src, VIWD_MODIFY_ORDERS);
 
 				InvalidateWindowClassesData(GetWindowClassForVehicleType(dst->type));
-				InvalidateWindowClassesData(WC_DEPARTURES_BOARD);
+				InvalidateWindowClassesData(WindowClass::DepartureBoard);
 
 				CheckAdvanceVehicleOrdersAfterClone(dst, flags);
 			}
@@ -2991,7 +2991,7 @@ CommandCost CmdCloneOrder(DoCommandFlags flags, CloneOptions action, VehicleID v
 				InvalidateVehicleOrder(dst, VIWD_REMOVE_ALL_ORDERS);
 
 				InvalidateWindowClassesData(GetWindowClassForVehicleType(dst->type));
-				InvalidateWindowClassesData(WC_DEPARTURES_BOARD);
+				InvalidateWindowClassesData(WindowClass::DepartureBoard);
 
 				CheckAdvanceVehicleOrdersAfterClone(dst, flags);
 			}
@@ -3103,7 +3103,7 @@ CommandCost CmdInsertOrdersFromVehicle(DoCommandFlags flags, VehicleID veh_dst, 
 			InvalidateVehicleOrder(u, VIWD_MODIFY_ORDERS);
 		}
 		InvalidateWindowClassesData(GetWindowClassForVehicleType(dst->type));
-		InvalidateWindowClassesData(WC_DEPARTURES_BOARD);
+		InvalidateWindowClassesData(WindowClass::DepartureBoard);
 	}
 
 	return CommandCost();
@@ -3272,7 +3272,7 @@ void StopRemoveOrderFromAllVehiclesBatch()
 		Order *order = &v->current_order;
 		if (order->IsType(OT_GOTO_DEPOT) && IsBatchRemoveOrderDepotRemoved(order->GetDestination())) {
 			order->MakeDummy();
-			SetWindowDirty(WC_VEHICLE_VIEW, v->index);
+			SetWindowDirty(WindowClass::VehicleView, v->index);
 		}
 
 		/* order list */
@@ -3321,7 +3321,7 @@ void RemoveOrderFromAllVehicles(OrderType type, DestinationID destination, bool 
 		if ((v->type == VehicleType::Aircraft && order->IsType(OT_GOTO_DEPOT) && !hangar ? OT_GOTO_STATION : order->GetType()) == type &&
 				(!hangar || v->type == VehicleType::Aircraft) && order->GetDestination() == destination) {
 			order->MakeDummy();
-			InvalidateWindowData(WC_VEHICLE_VIEW, v->index);
+			InvalidateWindowData(WindowClass::VehicleView, v->index);
 		}
 
 		/* order list */
@@ -3372,7 +3372,7 @@ bool Vehicle::HasDepotOrder() const
 void DeleteVehicleOrders(Vehicle *v, bool keep_orderlist, bool reset_order_indices)
 {
 	DeleteOrderWarnings(v);
-	InvalidateWindowClassesData(WC_DEPARTURES_BOARD);
+	InvalidateWindowClassesData(WindowClass::DepartureBoard);
 
 	extern void UpdateDeparturesWindowVehicleFilter(const OrderList *order_list, bool remove);
 
@@ -3416,7 +3416,7 @@ static void ClearVehicleOrders(Vehicle *v, bool reset_order_indices = true)
 	if (v->orders == nullptr) return;
 
 	DeleteOrderWarnings(v->FirstShared());
-	InvalidateWindowClassesData(WC_DEPARTURES_BOARD);
+	InvalidateWindowClassesData(WindowClass::DepartureBoard);
 	v->orders->FreeChain(true);
 
 	for (Vehicle *u = v->FirstShared(); u != nullptr; u = u->NextShared()) {
@@ -4408,10 +4408,10 @@ CommandCost CmdMassChangeOrder(DoCommandFlags flags, DestinationID from_dest, Ve
 
 void UpdateOrderUIOnDateChange()
 {
-	SetWindowClassesDirty(WC_VEHICLE_ORDERS);
-	SetWindowClassesDirty(WC_VEHICLE_TIMETABLE);
-	SetWindowClassesDirty(WC_SCHDISPATCH_SLOTS);
-	InvalidateWindowClassesData(WC_DEPARTURES_BOARD);
+	SetWindowClassesDirty(WindowClass::VehicleOrders);
+	SetWindowClassesDirty(WindowClass::VehicleTimetable);
+	SetWindowClassesDirty(WindowClass::ScheduledDispatchSlots);
+	InvalidateWindowClassesData(WindowClass::DepartureBoard);
 }
 
 const char *GetOrderTypeName(OrderType order_type)
@@ -4498,7 +4498,7 @@ CommandCost CmdBulkOrder(DoCommandFlags flags, const BulkOrderCmdData &cmd_data)
 	if (ret.Failed()) return ret;
 
 	if (flags.Test(DoCommandFlag::Execute)) {
-		InvalidateWindowData(WC_VEHICLE_ORDER_IMPORT_ERRORS, v->index);
+		InvalidateWindowData(WindowClass::VehicleOrderImportErrors, v->index);
 
 		if (v->orders == nullptr) {
 			if (!OrderList::CanAllocateItem()) return CommandCost(STR_ERROR_NO_MORE_SPACE_FOR_ORDERS);

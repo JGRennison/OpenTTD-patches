@@ -227,7 +227,7 @@ void VehicleServiceInDepot(Vehicle *v)
 	}
 	v->vehstatus.Reset(VehState::AircraftBroken);
 	v->vehicle_flags.Reset(VehicleFlag::ReplacementPending);
-	SetWindowDirty(WC_VEHICLE_DETAILS, v->index); // ensure that last service date and reliability are updated
+	SetWindowDirty(WindowClass::VehicleDetails, v->index); // ensure that last service date and reliability are updated
 
 	do {
 		v->date_of_last_service = EconTime::CurDate();
@@ -404,9 +404,9 @@ uint Vehicle::Crash(bool)
 
 	/* Dirty some windows */
 	InvalidateVehicleListWindows(this->type);
-	SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
-	SetWindowDirty(WC_VEHICLE_DETAILS, this->index);
-	SetWindowDirty(WC_VEHICLE_DEPOT, this->GetMovingFront()->tile.base());
+	SetWindowWidgetDirty(WindowClass::VehicleView, this->index, WID_VV_START_STOP);
+	SetWindowDirty(WindowClass::VehicleDetails, this->index);
+	SetWindowDirty(WindowClass::VehicleDepot, this->GetMovingFront()->tile.base());
 
 	delete this->cargo_payment;
 	assert(this->cargo_payment == nullptr); // cleared by ~CargoPayment
@@ -1112,7 +1112,7 @@ void Vehicle::HandlePathfindingResult(bool path_found)
 			Ship::From(this)->lost_count = 0;
 		}
 
-		SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
+		SetWindowWidgetDirty(WindowClass::VehicleView, this->index, WID_VV_START_STOP);
 		DirtyVehicleListWindowForVehicle(this);
 
 		/* Delete the news item. */
@@ -1121,7 +1121,7 @@ void Vehicle::HandlePathfindingResult(bool path_found)
 	}
 
 	if (!this->vehicle_flags.Test(VehicleFlag::PathfinderLost)) {
-		SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
+		SetWindowWidgetDirty(WindowClass::VehicleView, this->index, WID_VV_START_STOP);
 		DirtyVehicleListWindowForVehicle(this);
 	}
 
@@ -1209,20 +1209,20 @@ void Vehicle::PreDestructor()
 	}
 
 	if (this->Previous() == nullptr) {
-		InvalidateWindowData(WC_VEHICLE_DEPOT, this->tile.base());
+		InvalidateWindowData(WindowClass::VehicleDepot, this->tile.base());
 	}
 
 	if (this->IsPrimaryVehicle()) {
-		CloseWindowById(WC_VEHICLE_VIEW, this->index);
-		CloseWindowById(WC_VEHICLE_ORDERS, this->index);
-		CloseWindowById(WC_VEHICLE_REFIT, this->index);
-		CloseWindowById(WC_VEHICLE_DETAILS, this->index);
-		CloseWindowById(WC_VEHICLE_TIMETABLE, this->index);
-		CloseWindowById(WC_SCHDISPATCH_SLOTS, this->index);
-		CloseWindowById(WC_VEHICLE_CARGO_TYPE_LOAD_ORDERS, this->index);
-		CloseWindowById(WC_VEHICLE_CARGO_TYPE_UNLOAD_ORDERS, this->index);
-		CloseWindowById(WC_VEHICLE_ORDER_IMPORT_ERRORS, this->index);
-		SetWindowDirty(WC_COMPANY, this->owner);
+		CloseWindowById(WindowClass::VehicleView, this->index);
+		CloseWindowById(WindowClass::VehicleOrders, this->index);
+		CloseWindowById(WindowClass::VehicleRefit, this->index);
+		CloseWindowById(WindowClass::VehicleDetails, this->index);
+		CloseWindowById(WindowClass::VehicleTimetable, this->index);
+		CloseWindowById(WindowClass::ScheduledDispatchSlots, this->index);
+		CloseWindowById(WindowClass::VehicleCargoTypeLoadOrders, this->index);
+		CloseWindowById(WindowClass::VehicleCargoTypeUnloadOrders, this->index);
+		CloseWindowById(WindowClass::VehicleOrderImportErrors, this->index);
+		SetWindowDirty(WindowClass::Company, this->owner);
 		OrderBackup::ClearVehicle(this);
 	}
 	InvalidateVehicleListWindows(this->type);
@@ -2171,7 +2171,7 @@ Vehicle *CheckClickOnVehicle(const Viewport *vp, int x, int y)
 void DecreaseVehicleValue(Vehicle *v)
 {
 	v->value -= v->value >> 8;
-	SetWindowDirty(WC_VEHICLE_DETAILS, v->index);
+	SetWindowDirty(WindowClass::VehicleDetails, v->index);
 }
 
 using BreakdownChances = std::array<const uint8_t, 4>;
@@ -2302,7 +2302,7 @@ void CheckVehicleBreakdown(Vehicle *v)
 	const int reliability_dec = (v->reliability_spd_dec << 5) >> (5 - _settings_game.difficulty.reliability_decay_speed);
 	const int rel = std::max(rel_old - reliability_dec, 0);
 	v->reliability = rel;
-	if ((rel_old >> 8) != (rel >> 8)) SetWindowDirty(WC_VEHICLE_DETAILS, v->First()->index);
+	if ((rel_old >> 8) != (rel >> 8)) SetWindowDirty(WindowClass::VehicleDetails, v->First()->index);
 
 	/* Some vehicles lose reliability but won't break down. */
 	/* Breakdowns are disabled. */
@@ -2438,8 +2438,8 @@ bool Vehicle::HandleBreakdown()
 						default: NOT_REACHED();
 					}
 					this->First()->MarkDirty();
-					SetWindowDirty(WC_VEHICLE_VIEW, this->index);
-					SetWindowDirty(WC_VEHICLE_DETAILS, this->index);
+					SetWindowDirty(WindowClass::VehicleView, this->index);
+					SetWindowDirty(WindowClass::VehicleDetails, this->index);
 				} else {
 					this->breakdown_ctr = 2; // wait until slowdown
 					this->breakdowns_since_last_service--;
@@ -2493,8 +2493,8 @@ bool Vehicle::HandleBreakdown()
 					if (u != nullptr) u->animation_state = 25;
 				}
 				this->First()->MarkDirty();
-				SetWindowDirty(WC_VEHICLE_VIEW, this->index);
-				SetWindowDirty(WC_VEHICLE_DETAILS, this->index);
+				SetWindowDirty(WindowClass::VehicleView, this->index);
+				SetWindowDirty(WindowClass::VehicleDetails, this->index);
 				return (this->breakdown_type == BREAKDOWN_CRITICAL || this->breakdown_type == BREAKDOWN_EM_STOP);
 			}
 
@@ -2510,10 +2510,10 @@ bool Vehicle::HandleBreakdown()
 					if (this->type == VehicleType::Train) {
 						CheckBreakdownFlags(Train::From(this->First()));
 						this->First()->MarkDirty();
-						SetWindowDirty(WC_VEHICLE_VIEW, this->First()->index);
+						SetWindowDirty(WindowClass::VehicleView, this->First()->index);
 					} else {
 						this->MarkDirty();
-						SetWindowDirty(WC_VEHICLE_VIEW, this->index);
+						SetWindowDirty(WindowClass::VehicleView, this->index);
 					}
 				}
 			}
@@ -2562,7 +2562,7 @@ void AgeVehicle(Vehicle *v)
 		}
 	}
 
-	SetWindowDirty(WC_VEHICLE_DETAILS, v->index);
+	SetWindowDirty(WindowClass::VehicleDetails, v->index);
 
 	/* Don't warn if warnings are disabled */
 	if (!_settings_client.gui.old_vehicle_warn) return;
@@ -2716,7 +2716,7 @@ void VehicleEnterDepot(Vehicle *v)
 			ship->state = TRACK_BIT_DEPOT;
 			ship->UpdateCache();
 			ship->UpdateViewport(true, true);
-			SetWindowDirty(WC_VEHICLE_DEPOT, v->tile.base());
+			SetWindowDirty(WindowClass::VehicleDepot, v->tile.base());
 			break;
 		}
 
@@ -2730,9 +2730,9 @@ void VehicleEnterDepot(Vehicle *v)
 	if (v->type != VehicleType::Train) {
 		/* Trains update the vehicle list when the first unit enters the depot and calls VehicleEnterDepot() when the last unit enters.
 		 * We only increase the number of vehicles when the first one enters, so we will not need to search for more vehicles in the depot */
-		InvalidateWindowData(WC_VEHICLE_DEPOT, v->tile.base());
+		InvalidateWindowData(WindowClass::VehicleDepot, v->tile.base());
 	}
-	SetWindowDirty(WC_VEHICLE_DEPOT, v->tile.base());
+	SetWindowDirty(WindowClass::VehicleDepot, v->tile.base());
 
 	v->vehstatus.Set(VehState::Hidden);
 	v->UpdateIsDrawn();
@@ -2747,7 +2747,7 @@ void VehicleEnterDepot(Vehicle *v)
 	TriggerVehicleRandomisation(v, VehicleRandomTrigger::Depot);
 	v->MarkDirty();
 
-	InvalidateWindowData(WC_VEHICLE_VIEW, v->index);
+	InvalidateWindowData(WindowClass::VehicleView, v->index);
 
 	if (v->current_order.IsType(OT_GOTO_DEPOT)) {
 		const Order *real_order = v->GetOrder(v->cur_real_order_index);
@@ -3520,9 +3520,9 @@ void Vehicle::BeginLoading()
 	}
 
 	DirtyVehicleListWindowForVehicle(this);
-	SetWindowWidgetDirty(WC_VEHICLE_VIEW, this->index, WID_VV_START_STOP);
-	SetWindowDirty(WC_VEHICLE_DETAILS, this->index);
-	SetWindowDirty(WC_STATION_VIEW, this->last_station_visited);
+	SetWindowWidgetDirty(WindowClass::VehicleView, this->index, WID_VV_START_STOP);
+	SetWindowDirty(WindowClass::VehicleDetails, this->index);
+	SetWindowDirty(WindowClass::StationView, this->last_station_visited);
 
 	Station::Get(this->last_station_visited)->MarkTilesDirty(true);
 	this->cur_speed = 0;
@@ -3693,7 +3693,7 @@ void Vehicle::LeaveStation()
 				this->order_occupancy_average = 0;
 				real_current_order->SetOccupancy(static_cast<uint8_t>(new_occupancy + 1));
 				for (const Vehicle *v = this->FirstShared(); v != nullptr; v = v->NextShared()) {
-					SetWindowDirty(WC_VEHICLE_ORDERS, v->index);
+					SetWindowDirty(WindowClass::VehicleOrders, v->index);
 				}
 			}
 		}
@@ -3934,7 +3934,7 @@ void Vehicle::LeaveUnbunchingDepot()
 
 	/* Tell the timetable we are now "on time." */
 	this->lateness_counter = 0;
-	SetWindowDirty(WC_VEHICLE_TIMETABLE, this->index);
+	SetWindowDirty(WindowClass::VehicleTimetable, this->index);
 
 	/* Find the average travel time of vehicles that we share orders with. */
 	int num_vehicles = 0;
@@ -3964,7 +3964,7 @@ void Vehicle::LeaveUnbunchingDepot()
 
 		if (u->unbunch_state == nullptr) u->unbunch_state.reset(new VehicleUnbunchState());
 		u->unbunch_state->depot_unbunching_next_departure = next_departure;
-		SetWindowDirty(WC_VEHICLE_VIEW, u->index);
+		SetWindowDirty(WindowClass::VehicleView, u->index);
 	}
 }
 
@@ -4047,7 +4047,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlags flags, DepotCommandFlags command
 				if (this->vehicle_flags.Test(VehicleFlag::TimetableSeparation)) this->vehicle_flags.Reset(VehicleFlag::TimetableStarted);
 
 				this->current_order.MakeDummy();
-				InvalidateWindowData(WC_VEHICLE_VIEW, this->index);
+				InvalidateWindowData(WindowClass::VehicleView, this->index);
 			}
 
 			/* prevent any attempt to update timetable for current order, as actual travel time will be incorrect due to depot command */
@@ -4076,7 +4076,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlags flags, DepotCommandFlags command
 				this->current_order.SetDepotActionType(command.Test(DepotCommandFlag::Sell) ? ODATFB_HALT | ODATFB_SELL : (command.Test(DepotCommandFlag::Service) ? ODATF_SERVICE_ONLY : ODATFB_HALT));
 				this->ClearSeparation();
 				if (this->vehicle_flags.Test(VehicleFlag::TimetableSeparation)) this->vehicle_flags.Reset(VehicleFlag::TimetableStarted);
-				InvalidateWindowData(WC_VEHICLE_VIEW, this->index);
+				InvalidateWindowData(WindowClass::VehicleView, this->index);
 			}
 			return CommandCost();
 		}
@@ -4130,7 +4130,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlags flags, DepotCommandFlags command
 		if (command.Test(DepotCommandFlag::Specific)) {
 			this->current_order.SetDepotExtraFlags({OrderDepotExtraFlag::Specific});
 		}
-		InvalidateWindowData(WC_VEHICLE_VIEW, this->index);
+		InvalidateWindowData(WindowClass::VehicleView, this->index);
 
 		/* Prevent any attempt to update timetable for current order, as actual travel time will be incorrect due to depot command. */
 		this->cur_timetable_order_index = INVALID_VEH_ORDER_ID;
@@ -4740,15 +4740,15 @@ void VehiclesYearlyLoop()
 			v->profit_last_year = v->profit_this_year;
 			v->profit_lifetime += v->profit_this_year;
 			v->profit_this_year = 0;
-			SetWindowDirty(WC_VEHICLE_DETAILS, v->index);
+			SetWindowDirty(WindowClass::VehicleDetails, v->index);
 		}
 	}
 	GroupStatistics::UpdateProfits();
-	SetWindowClassesDirty(WC_TRAINS_LIST);
-	SetWindowClassesDirty(WC_TRACE_RESTRICT_SLOTS);
-	SetWindowClassesDirty(WC_SHIPS_LIST);
-	SetWindowClassesDirty(WC_ROADVEH_LIST);
-	SetWindowClassesDirty(WC_AIRCRAFT_LIST);
+	SetWindowClassesDirty(WindowClass::TrainList);
+	SetWindowClassesDirty(WindowClass::TraceRestrictSlots);
+	SetWindowClassesDirty(WindowClass::ShipList);
+	SetWindowClassesDirty(WindowClass::RoadVehicleList);
+	SetWindowClassesDirty(WindowClass::AircraftList);
 }
 
 

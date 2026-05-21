@@ -1444,7 +1444,7 @@ struct BuildVehicleWindowBase : Window {
 			*(this->virtual_train_out) = toadd;
 		}
 
-		InvalidateWindowClassesData(WC_CREATE_TEMPLATE);
+		InvalidateWindowClassesData(WindowClass::TemplateReplacementCreateTemplate);
 	}
 
 	VehicleID GetNewVirtualEngineMoveTarget() const
@@ -1543,7 +1543,7 @@ struct BuildVehicleWindowBase : Window {
 	void ChangeDualPaneMode(bool new_value)
 	{
 		_settings_client.gui.dual_pane_train_purchase_window = new_value;
-		SetWindowDirty(WC_GAME_OPTIONS, GameOptionsWindowNumber::GameSettings);
+		SetWindowDirty(WindowClass::GameOptions, GameOptionsWindowNumber::GameSettings);
 
 		if (this->virtual_train_out != nullptr) {
 			ShowTemplateTrainBuildVehicleWindow(this->virtual_train_out);
@@ -2049,9 +2049,9 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 			parent = e->info.variant_id;
 		}
 		if (refresh) {
-			InvalidateWindowData(WC_REPLACE_VEHICLE, this->vehicle_type, 0); // Update the autoreplace window
-			InvalidateWindowClassesData(WC_BUILD_VEHICLE); // The build windows needs updating as well
-			InvalidateWindowClassesData(WC_BUILD_VIRTUAL_TRAIN);
+			InvalidateWindowData(WindowClass::ReplaceVehicle, this->vehicle_type, 0); // Update the autoreplace window
+			InvalidateWindowClassesData(WindowClass::BuildVehicle); // The build windows needs updating as well
+			InvalidateWindowClassesData(WindowClass::BuildVirtualTrain);
 		}
 	}
 
@@ -2085,9 +2085,9 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 						Engine *engine = Engine::Get(item.variant_id);
 						engine->display_flags.Flip(EngineDisplayFlag::IsFolded);
 
-						InvalidateWindowData(WC_REPLACE_VEHICLE, this->vehicle_type, 0); // Update the autoreplace window
-						InvalidateWindowClassesData(WC_BUILD_VEHICLE); // The build windows needs updating as well
-						InvalidateWindowClassesData(WC_BUILD_VIRTUAL_TRAIN);
+						InvalidateWindowData(WindowClass::ReplaceVehicle, this->vehicle_type, 0); // Update the autoreplace window
+						InvalidateWindowClassesData(WindowClass::BuildVehicle); // The build windows needs updating as well
+						InvalidateWindowClassesData(WindowClass::BuildVirtualTrain);
 						return;
 					}
 					if (!item.flags.Test(EngineDisplayFlag::Shaded)) e = item.engine_id;
@@ -2347,7 +2347,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 				if (reopen) {
 					ReplaceDropDownList(this, this->BuildBadgeConfigurationList(), -1);
 				} else {
-					this->CloseChildWindows(WC_DROPDOWN_MENU);
+					this->CloseChildWindows(WindowClass::DropdownMenu);
 				}
 
 				/* We need to refresh if a filter is removed. */
@@ -2879,9 +2879,9 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 				parent = e->info.variant_id;
 			}
 			if (refresh) {
-				InvalidateWindowData(WC_REPLACE_VEHICLE, this->vehicle_type, 0); // Update the autoreplace window
-				InvalidateWindowClassesData(WC_BUILD_VEHICLE); // The build windows needs updating as well
-				InvalidateWindowClassesData(WC_BUILD_VIRTUAL_TRAIN);
+				InvalidateWindowData(WindowClass::ReplaceVehicle, this->vehicle_type, 0); // Update the autoreplace window
+				InvalidateWindowClassesData(WindowClass::BuildVehicle); // The build windows needs updating as well
+				InvalidateWindowClassesData(WindowClass::BuildVirtualTrain);
 				return;
 			}
 		}
@@ -2901,9 +2901,9 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 				Engine *engine = Engine::Get(item.variant_id);
 				engine->display_flags.Flip(EngineDisplayFlag::IsFolded);
 
-				InvalidateWindowData(WC_REPLACE_VEHICLE, this->vehicle_type, 0); // Update the autoreplace window
-				InvalidateWindowClassesData(WC_BUILD_VEHICLE); // The build windows needs updating as well
-				InvalidateWindowClassesData(WC_BUILD_VIRTUAL_TRAIN);
+				InvalidateWindowData(WindowClass::ReplaceVehicle, this->vehicle_type, 0); // Update the autoreplace window
+				InvalidateWindowClassesData(WindowClass::BuildVehicle); // The build windows needs updating as well
+				InvalidateWindowClassesData(WindowClass::BuildVirtualTrain);
 				return true;
 			}
 			if (!item.flags.Test(EngineDisplayFlag::Shaded)) e = item.engine_id;
@@ -3424,7 +3424,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 				if (reopen) {
 					ReplaceDropDownList(this, this->BuildBadgeConfigurationList(), -1);
 				} else {
-					this->CloseChildWindows(WC_DROPDOWN_MENU);
+					this->CloseChildWindows(WindowClass::DropdownMenu);
 				}
 
 				/* We need to refresh if a filter is removed. */
@@ -3503,7 +3503,7 @@ void CcAddVirtualEngine(const CommandCost &result)
 	auto result_id = result.GetResultData<VehicleID>();
 	if (!result_id.has_value()) return;
 
-	BuildVehicleWindowBase *window = dynamic_cast<BuildVehicleWindowBase *>(FindWindowById(WC_BUILD_VIRTUAL_TRAIN, 0));
+	BuildVehicleWindowBase *window = dynamic_cast<BuildVehicleWindowBase *>(FindWindowById(WindowClass::BuildVirtualTrain, 0));
 
 	if (window != nullptr) {
 		Train *train = Train::Get(*result_id);
@@ -3517,12 +3517,12 @@ void CcMoveNewVirtualEngine(const CommandCost &result)
 {
 	if (result.Failed()) return;
 
-	InvalidateWindowClassesData(WC_CREATE_TEMPLATE);
+	InvalidateWindowClassesData(WindowClass::TemplateReplacementCreateTemplate);
 }
 
 static WindowDesc _build_vehicle_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "build_vehicle", 240, 268,
-	WC_BUILD_VEHICLE, WC_NONE,
+	WindowClass::BuildVehicle, WindowClass::None,
 	WindowDefaultFlag::Construction,
 	_nested_build_vehicle_widgets,
 	&BuildVehicleWindow::hotkeys
@@ -3530,7 +3530,7 @@ static WindowDesc _build_vehicle_desc(__FILE__, __LINE__,
 
 static WindowDesc _build_template_vehicle_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "build_template_vehicle", 240, 268,
-	WC_BUILD_VIRTUAL_TRAIN, WC_CREATE_TEMPLATE,
+	WindowClass::BuildVirtualTrain, WindowClass::TemplateReplacementCreateTemplate,
 	WindowDefaultFlag::Construction,
 	_nested_build_vehicle_widgets,
 	&BuildVehicleWindow::hotkeys, &_build_vehicle_desc
@@ -3538,7 +3538,7 @@ static WindowDesc _build_template_vehicle_desc(__FILE__, __LINE__,
 
 static WindowDesc _build_vehicle_desc_train_advanced(__FILE__, __LINE__,
 	WindowPosition::Automatic, "build_vehicle_dual", 480, 268,
-	WC_BUILD_VEHICLE, WC_NONE,
+	WindowClass::BuildVehicle, WindowClass::None,
 	WindowDefaultFlag::Construction,
 	_nested_build_vehicle_widgets_train_advanced,
 	&BuildVehicleWindow::hotkeys
@@ -3546,7 +3546,7 @@ static WindowDesc _build_vehicle_desc_train_advanced(__FILE__, __LINE__,
 
 static WindowDesc _build_template_vehicle_desc_advanced(__FILE__, __LINE__,
 	WindowPosition::Automatic, "build_template_vehicle_dual", 480, 268,
-	WC_BUILD_VIRTUAL_TRAIN, WC_CREATE_TEMPLATE,
+	WindowClass::BuildVirtualTrain, WindowClass::TemplateReplacementCreateTemplate,
 	WindowDefaultFlag::Construction,
 	_nested_build_vehicle_widgets_train_advanced,
 	&BuildVehicleWindow::hotkeys, &_build_vehicle_desc_train_advanced
@@ -3563,7 +3563,7 @@ void ShowBuildVehicleWindow(const TileIndex tile, const VehicleType type)
 
 	assert(IsCompanyBuildableVehicleType(type));
 
-	CloseWindowById(WC_BUILD_VEHICLE, num);
+	CloseWindowById(WindowClass::BuildVehicle, num);
 
 	if (type == VehicleType::Train && _settings_client.gui.dual_pane_train_purchase_window) {
 		new BuildVehicleWindowTrainAdvanced(_build_vehicle_desc_train_advanced, tile, nullptr);
@@ -3576,7 +3576,7 @@ void ShowTemplateTrainBuildVehicleWindow(Train **virtual_train)
 {
 	assert(IsCompanyBuildableVehicleType(VehicleType::Train));
 
-	CloseWindowById(WC_BUILD_VIRTUAL_TRAIN, 0);
+	CloseWindowById(WindowClass::BuildVirtualTrain, 0);
 
 	if (_settings_client.gui.dual_pane_train_purchase_window) {
 		new BuildVehicleWindowTrainAdvanced(_build_template_vehicle_desc_advanced, INVALID_TILE, virtual_train);

@@ -56,7 +56,7 @@ static constexpr NWidgetPart _nested_order_import_error_widgets[] = {
 
 static WindowDesc _order_list_import_errors_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "view_vehicle_order_import_errors", 384, 100,
-	WC_VEHICLE_ORDER_IMPORT_ERRORS, WC_VEHICLE_VIEW,
+	WindowClass::VehicleOrderImportErrors, WindowClass::VehicleView,
 	WindowDefaultFlag::Construction,
 	_nested_order_import_error_widgets
 );
@@ -284,6 +284,6 @@ struct OrderListImportErrorsWindow : GeneralVehicleWindow
 
 void ShowOrderListImportErrorsWindow(const Vehicle *v, OrderImportErrors &&errors)
 {
-	CloseWindowById(WC_VEHICLE_ORDER_IMPORT_ERRORS, v->index);
+	CloseWindowById(WindowClass::VehicleOrderImportErrors, v->index);
 	new OrderListImportErrorsWindow(v, std::move(errors));
 }

@@ -409,14 +409,14 @@ CommandCost CmdSetVehicleOnTime(DoCommandFlags flags, VehicleID veh, bool apply_
 					if (!v->vehicle_flags.Test(VehicleFlag::TimetableStarted)) continue;
 
 					u->lateness_counter -= most_late;
-					SetWindowDirty(WC_VEHICLE_TIMETABLE, u->index);
+					SetWindowDirty(WindowClass::VehicleTimetable, u->index);
 				}
 			}
 		} else {
 			v->lateness_counter = 0;
 			/* Unbunching data is no longer valid. */
 			v->ResetDepotUnbunching();
-			SetWindowDirty(WC_VEHICLE_TIMETABLE, v->index);
+			SetWindowDirty(WindowClass::VehicleTimetable, v->index);
 		}
 	}
 
@@ -494,7 +494,7 @@ CommandCost CmdSetTimetableStart(DoCommandFlags flags, VehicleID veh, bool timet
 			SetTimetableWindowsDirty(v);
 		} else {
 			vehs.push_back(v);
-			SetWindowDirty(WC_VEHICLE_TIMETABLE, v->index);
+			SetWindowDirty(WindowClass::VehicleTimetable, v->index);
 		}
 
 		int total_duration = v->orders->GetTimetableTotalDuration();
@@ -901,7 +901,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 				set_scheduled_dispatch = true;
 				v->dispatch_records[static_cast<uint16_t>(real_implicit_order->GetDispatchScheduleIndex())] = MakeLastDispatchRecord(ds, slot, slot_index);
 				if (_settings_client.gui.show_vehicle_route_id_vehicle_view) {
-					SetWindowWidgetDirty(WC_VEHICLE_VIEW, v->index, WID_VV_CAPTION);
+					SetWindowWidgetDirty(WindowClass::VehicleView, v->index, WID_VV_CAPTION);
 				}
 			}
 		}
@@ -932,7 +932,7 @@ void UpdateVehicleTimetable(Vehicle *v, bool travelling)
 		}
 
 		v->vehicle_flags.Set(VehicleFlag::TimetableStarted);
-		SetWindowDirty(WC_VEHICLE_TIMETABLE, v->index);
+		SetWindowDirty(WindowClass::VehicleTimetable, v->index);
 	}
 
 	if (!v->vehicle_flags.Test(VehicleFlag::TimetableStarted)) return;

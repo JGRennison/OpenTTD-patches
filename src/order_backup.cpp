@@ -81,7 +81,7 @@ void OrderBackup::DoRestore(Vehicle *v)
 		v->orders->GetScheduledDispatchScheduleSet() = std::move(this->dispatch_schedules);
 
 		/* Make sure buoys/oil rigs are updated in the station list. */
-		InvalidateWindowClassesData(WC_STATION_LIST, 0);
+		InvalidateWindowClassesData(WindowClass::StationList, 0);
 	}
 
 	/* Remove backed up name if it's no longer unique. */

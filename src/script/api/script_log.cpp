@@ -57,7 +57,7 @@
 
 	/* Also still print to debug window */
 	Debug(script, level, "[{}] [{}] {}", ScriptObject::GetRootCompany(), logc, line.text);
-	InvalidateWindowClassesData(WC_SCRIPT_DEBUG, ScriptObject::GetRootCompany());
+	InvalidateWindowClassesData(WindowClass::ScriptDebug, ScriptObject::GetRootCompany());
 }
 
 /* static */ void ScriptLog::LogOnce(ScriptLogTypes::ScriptLogType level, std::string &&message)

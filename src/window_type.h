@@ -64,27 +64,27 @@ enum class NetworkStatusWindowNumber : uint8_t {
 DECLARE_CONVERTIBLE_TO_WINDOW_NUMBER(NetworkStatusWindowNumber)
 
 /** %Window classes. */
-enum WindowClass : uint16_t {
-	WC_NONE, ///< No window, redirects to WC_MAIN_WINDOW.
+enum class WindowClass : uint16_t {
+	None, ///< No window, redirects to WindowClass::MainWindow.
 
 	/**
 	 * Main window; %Window numbers:
 	 *   - 0 = #MainWidgets
 	 */
-	WC_MAIN_WINDOW = WC_NONE,
+	MainWindow = WindowClass::None,
 
 	/**
 	 * Main toolbar (the long bar at the top); %Window numbers:
 	 *   - 0 = #ToolbarNormalWidgets
 	 *   - 0 = #ToolbarEditorWidgets
 	 */
-	WC_MAIN_TOOLBAR,
+	MainToolbar,
 
 	/**
 	 * Statusbar (at the bottom of your screen); %Window numbers:
 	 *   - 0 = #StatusbarWidgets
 	 */
-	WC_STATUS_BAR,
+	Statusbar,
 
 	/**
 	 * Build toolbar; %Window numbers:
@@ -93,359 +93,359 @@ enum WindowClass : uint16_t {
 	 *   - #TRANSPORT_WATER = #DockToolbarWidgets
 	 *   - #TRANSPORT_ROAD = #RoadToolbarWidgets
 	 */
-	WC_BUILD_TOOLBAR,
+	BuildToolbar,
 
 	/**
 	 * Scenario build toolbar; %Window numbers:
 	 *   - #TRANSPORT_WATER = #DockToolbarWidgets
 	 *   - #TRANSPORT_ROAD = #RoadToolbarWidgets
 	 */
-	WC_SCEN_BUILD_TOOLBAR,
+	ScenarioBuildToolbar,
 
 	/**
 	 * Build trees toolbar; %Window numbers:
 	 *   - 0 = #BuildTreesWidgets
 	 */
-	WC_BUILD_TREES,
+	BuildTrees,
 
 	/**
 	 * Transparency toolbar; %Window numbers:
 	 *   - 0 = #TransparencyToolbarWidgets
 	 */
-	WC_TRANSPARENCY_TOOLBAR,
+	TransparencyToolbar,
 
 	/**
 	 * Build signal toolbar; %Window numbers:
 	 *   - #TRANSPORT_RAIL = #BuildSignalWidgets
 	 */
-	WC_BUILD_SIGNAL,
+	BuildSignal,
 
 	/**
 	 * Small map; %Window numbers:
 	 *   - 0 = #SmallMapWidgets
 	 */
-	WC_SMALLMAP,
+	SmallMap,
 
 	/**
 	 * Error message; %Window numbers:
 	 *   - 0 = #ErrorMessageWidgets
 	 */
-	WC_ERRMSG,
+	ErrorMessage,
 
 	/**
 	 * Tooltip window; %Window numbers:
 	 *   - 0 = #ToolTipsWidgets
 	 */
-	WC_TOOLTIPS,
+	ToolTips,
 
 	/**
 	* Station rating tooltip window; %Window numbers:
 	*   - 0 = #ToolTipsWidgets
 	*/
-	WC_STATION_RATING_TOOLTIP,
+	StationRatingTooltip,
 
 	/**
 	 * Query string window; %Window numbers:
 	 *   - #QueryStringWindowNumber::Default = #QueryStringWidgets
 	 *   - #QueryStringWindowNumber::Sign = #QueryEditSignWidgets
 	 */
-	WC_QUERY_STRING,
+	QueryString,
 
 	/**
 	 * Popup with confirm question; %Window numbers:
 	 *   - #ConfirmPopupQueryWindowNumber::Default = #QueryWidgets
 	 *   - #ConfirmPopupQueryWindowNumber::Bootstrap = #BootstrapAskForDownloadWidgets
 	 */
-	WC_CONFIRM_POPUP_QUERY,
+	ConfirmPopupQuery,
 
 	/**
 	 * Popup with a set of buttons, designed to ask the user a question
 	 *  from a GameScript. %Window numbers:
 	 *   - uniqueid = #GoalQuestionWidgets
 	 */
-	WC_GOAL_QUESTION,
+	GoalQuestion,
 
 
 	/**
 	 * Saveload window; %Window numbers:
 	 *   - 0 = #SaveLoadWidgets
 	 */
-	WC_SAVELOAD,
+	SaveLoad,
 
 	/**
 	 * Land info window; %Window numbers:
 	 *   - 0 = #LandInfoWidgets
 	 */
-	WC_LAND_INFO,
+	LandInfo,
 
 	/**
 	 * Drop down menu; %Window numbers:
 	 *   - 0 = #DropdownMenuWidgets
 	 */
-	WC_DROPDOWN_MENU,
+	DropdownMenu,
 
 	/**
 	 * On Screen Keyboard; %Window numbers:
 	 *   - 0 = #OnScreenKeyboardWidgets
 	 */
-	WC_OSK,
+	OnScreenKeyboard,
 
 	/**
 	 * Set date; %Window numbers:
 	 *   - #VehicleID = #SetDateWidgets
 	 */
-	WC_SET_DATE,
+	SetDate,
 
 
 	/**
 	 * Script settings; %Window numbers:
 	 *   - 0 = #ScriptSettingsWidgets
 	 */
-	WC_SCRIPT_SETTINGS,
+	ScriptSettings,
 
 	/**
 	 * NewGRF parameters; %Window numbers:
 	 *   - 0 = #NewGRFParametersWidgets
 	 */
-	WC_GRF_PARAMETERS,
+	NewGRFParameters,
 
 	/**
 	 * textfile; %Window numbers:
 	 *   - 0 = #TextfileWidgets
 	 */
-	WC_TEXTFILE,
+	Textfile,
 
 
 	/**
 	 * Town authority; %Window numbers:
 	 *   - #TownID = #TownAuthorityWidgets
 	 */
-	WC_TOWN_AUTHORITY,
+	TownAuthority,
 
 	/**
 	 * Vehicle details; %Window numbers:
 	 *   - #VehicleID = #VehicleDetailsWidgets
 	 */
-	WC_VEHICLE_DETAILS,
+	VehicleDetails,
 
 	/**
 	 * Vehicle refit; %Window numbers:
 	 *   - #VehicleID = #VehicleRefitWidgets
 	 */
-	WC_VEHICLE_REFIT,
+	VehicleRefit,
 
 	/**
 	 * Vehicle orders; %Window numbers:
 	 *   - #VehicleID = #OrderWidgets
 	 */
-	WC_VEHICLE_ORDERS,
+	VehicleOrders,
 
 	/**
 	 * Vehicle cargo type load orders; %Window numbers:
 	 *   - #VehicleID = #CargoTypeOrdersWidgets
 	 */
-	WC_VEHICLE_CARGO_TYPE_LOAD_ORDERS,
+	VehicleCargoTypeLoadOrders,
 
 	/**
 	 * Vehicle cargo type unload orders; %Window numbers:
 	 *   - #VehicleID = #CargoTypeOrdersWidgets
 	 */
-	WC_VEHICLE_CARGO_TYPE_UNLOAD_ORDERS,
+	VehicleCargoTypeUnloadOrders,
 
 	/**
 	 * Vehicle order import errors; %Window numbers:
 	 *   - #VehicleID = #OrderWidgets
 	 */
-	WC_VEHICLE_ORDER_IMPORT_ERRORS,
+	VehicleOrderImportErrors,
 
 	/**
 	 * Replace vehicle window; %Window numbers:
 	 *   - #VehicleType = #ReplaceVehicleWidgets
 	 */
-	WC_REPLACE_VEHICLE,
+	ReplaceVehicle,
 
 	/**
 	 * Vehicle timetable; %Window numbers:
 	 *   - #VehicleID = #VehicleTimetableWidgets
 	 */
-	WC_VEHICLE_TIMETABLE,
+	VehicleTimetable,
 
 	/**
 	 * Company colour selection; %Window numbers:
 	 *   - #CompanyID = #SelectCompanyLiveryWidgets
 	 */
-	WC_COMPANY_COLOUR,
+	CompanyLivery,
 
 	/**
 	 * Alter company face window; %Window numbers:
 	 *   - #CompanyID = #SelectCompanyManagerFaceWidgets
 	 */
-	WC_COMPANY_MANAGER_FACE,
+	CompanyManagerFace,
 
 	/**
 	 * Select station (when joining stations); %Window numbers:
 	 *   - 0 = #JoinStationWidgets
 	 */
-	WC_SELECT_STATION,
+	JoinStation,
 
 	/**
 	 * Select town (when placing a house); %Window numbers:
 	 *   - 0 = #SelectTownWidgets
 	 */
-	WC_SELECT_TOWN,
+	SelectTown,
 
 	/**
 	 * News window; %Window numbers:
 	 *   - 0 = #NewsWidgets
 	 */
-	WC_NEWS_WINDOW,
+	News,
 
 	/**
 	 * Town directory; %Window numbers:
 	 *   - 0 = #TownDirectoryWidgets
 	 */
-	WC_TOWN_DIRECTORY,
+	TownDirectory,
 
 	/**
 	 * Subsidies list; %Window numbers:
 	 *   - 0 = #SubsidyListWidgets
 	 */
-	WC_SUBSIDIES_LIST,
+	SubsidyList,
 
 	/**
 	 * Industry directory; %Window numbers:
 	 *   - 0 = #IndustryDirectoryWidgets
 	 */
-	WC_INDUSTRY_DIRECTORY,
+	IndustryDirectory,
 
 	/**
 	 * News history list; %Window numbers:
 	 *   - 0 = #MessageHistoryWidgets
 	 */
-	WC_MESSAGE_HISTORY,
+	MessageHistory,
 
 	/**
 	 * Sign list; %Window numbers:
 	 *   - 0 = #SignListWidgets
 	 */
-	WC_SIGN_LIST,
+	SignList,
 
 	/**
 	 * Scripts list; %Window numbers:
 	 *   - 0 = #ScriptListWidgets
 	 */
-	WC_SCRIPT_LIST,
+	ScriptList,
 
 	/**
 	 * Goals list; %Window numbers:
 	 *   - 0 ; #GoalListWidgets
 	 */
-	WC_GOALS_LIST,
+	GoalList,
 
 	/**
 	 * Story book; %Window numbers:
 	 *   - CompanyID = #StoryBookWidgets
 	 */
-	WC_STORY_BOOK,
+	StoryBook,
 
 	/**
 	 * Station list; %Window numbers:
 	 *   - #CompanyID = #StationListWidgets
 	 */
-	WC_STATION_LIST,
+	StationList,
 
 	/**
 	 * Trains list; %Window numbers:
 	 *   - Packed value = #GroupListWidgets / #VehicleListWidgets
 	 */
-	WC_TRAINS_LIST,
+	TrainList,
 
 	/**
 	 * Road vehicle list; %Window numbers:
 	 *   - Packed value = #GroupListWidgets / #VehicleListWidgets
 	 */
-	WC_ROADVEH_LIST,
+	RoadVehicleList,
 
 	/**
 	 * Ships list; %Window numbers:
 	 *   - Packed value = #GroupListWidgets / #VehicleListWidgets
 	 */
-	WC_SHIPS_LIST,
+	ShipList,
 
 	/**
 	 * Aircraft list; %Window numbers:
 	 *   - Packed value = #GroupListWidgets / #VehicleListWidgets
 	 */
-	WC_AIRCRAFT_LIST,
+	AircraftList,
 
 
 	/**
 	 * Town view; %Window numbers:
 	 *   - #TownID = #TownViewWidgets
 	 */
-	WC_TOWN_VIEW,
+	TownView,
 
 	/**
 	 * Vehicle view; %Window numbers:
 	 *   - #VehicleID = #VehicleViewWidgets
 	 */
-	WC_VEHICLE_VIEW,
+	VehicleView,
 
 	/**
 	 * Station view; %Window numbers:
 	 *   - #StationID = #StationViewWidgets
 	 */
-	WC_STATION_VIEW,
+	StationView,
 
 	/**
 	 * Depot view; %Window numbers:
 	 *   - #TileIndex = #DepotWidgets
 	 */
-	WC_VEHICLE_DEPOT,
+	VehicleDepot,
 
 	/**
 	 * Waypoint view; %Window numbers:
 	 *   - #WaypointID = #WaypointWidgets
 	 */
-	WC_WAYPOINT_VIEW,
+	WaypointView,
 
 	/**
 	 * Industry view; %Window numbers:
 	 *   - #IndustryID = #IndustryViewWidgets
 	 */
-	WC_INDUSTRY_VIEW,
+	IndustryView,
 
 	/**
 	 * Company view; %Window numbers:
 	 *   - #CompanyID = #CompanyWidgets
 	 */
-	WC_COMPANY,
+	Company,
 
 
 	/**
 	 * Build object; %Window numbers:
 	 *   - 0 = #BuildObjectWidgets
 	 */
-	WC_BUILD_OBJECT,
+	BuildObject,
 
 	/**
 	 * Build house; %Window numbers:
 	 *   - 0 = #BuildHouseWidgets
 	 */
-	WC_BUILD_HOUSE,
+	BuildHouse,
 
 	/**
 	 * Build vehicle; %Window numbers:
 	 *   - #VehicleType = #BuildVehicleWidgets
 	 *   - #TileIndex = #BuildVehicleWidgets
 	 */
-	WC_BUILD_VEHICLE,
+	BuildVehicle,
 
 	/**
 	 * Build bridge; %Window numbers:
 	 *   - #TransportType = #BuildBridgeSelectionWidgets
 	 */
-	WC_BUILD_BRIDGE,
+	BuildBridge,
 
 	/**
 	 * Build station; %Window numbers:
@@ -453,19 +453,19 @@ enum WindowClass : uint16_t {
 	 *   - #TRANSPORT_WATER = #DockToolbarWidgets
 	 *   - #TRANSPORT_RAIL = #BuildRailStationWidgets
 	 */
-	WC_BUILD_STATION,
+	BuildStation,
 
 	/**
 	 * Build bus station; %Window numbers:
 	 *   - #TRANSPORT_ROAD = #BuildRoadStationWidgets
 	 */
-	WC_BUS_STATION,
+	BuildBusStation,
 
 	/**
 	 * Build truck station; %Window numbers:
 	 *   - #TRANSPORT_ROAD = #BuildRoadStationWidgets
 	 */
-	WC_TRUCK_STATION,
+	BuildTruckStation,
 
 	/**
 	 * Build depot; %Window numbers:
@@ -473,59 +473,59 @@ enum WindowClass : uint16_t {
 	 *   - #TRANSPORT_RAIL = #BuildRailDepotWidgets
 	 *   - #TRANSPORT_ROAD = #BuildRoadDepotWidgets
 	 */
-	WC_BUILD_DEPOT,
+	BuildDepot,
 
 	/**
 	 * Build waypoint; %Window numbers:
 	 *   - #TRANSPORT_RAIL = #BuildRailWaypointWidgets
 	 */
-	WC_BUILD_WAYPOINT,
+	BuildWaypoint,
 
 	/**
 	 * Found a town; %Window numbers:
 	 *   - 0 = #TownFoundingWidgets
 	 */
-	WC_FOUND_TOWN,
+	FoundTown,
 
 	/**
 	 * Build industry; %Window numbers:
 	 *   - 0 = #DynamicPlaceIndustriesWidgets
 	 */
-	WC_BUILD_INDUSTRY,
+	BuildIndustry,
 
 
 	/**
 	 * Select game window; %Window numbers:
 	 *   - 0 = #SelectGameIntroWidgets
 	 */
-	WC_SELECT_GAME,
+	SelectGame,
 
 	/**
 	 * Landscape generation (in Scenario Editor); %Window numbers:
 	 *   - 0 = #TerraformToolbarWidgets
 	 *   - 0 = #EditorTerraformToolbarWidgets
 	 */
-	WC_SCEN_LAND_GEN,
+	ScenarioGenerateLandscape,
 
 	/**
 	 * Public roads generation (in Scenario Editor); %Window numbers:
 	 *   - 0 = #PublicRoadsWidgets
 	 */
-	WC_SCEN_PUBLIC_ROADS,
+	ScenarioPublicRoads,
 
 	/**
 	 * Generate landscape (newgame); %Window numbers:
 	 *   - GLWM_SCENARIO = #CreateScenarioWidgets
 	 *   - #GenerateLandscapeWindowMode = #GenerateLandscapeWidgets
 	 */
-	WC_GENERATE_LANDSCAPE,
+	GenerateLandscape,
 
 	/**
 	 * Progress report of landscape generation; %Window numbers:
 	 *   - 0 = #GenerationProgressWidgets
 	 *   - 1 = #ScanProgressWidgets
 	 */
-	WC_MODAL_PROGRESS,
+	ModalProgress,
 
 
 	/**
@@ -534,161 +534,161 @@ enum WindowClass : uint16_t {
 	 *   - #NetworkWindowNumber::ContentList = #NetworkContentListWidgets
 	 *   - #NetworkWindowNumber::StartServer = #NetworkStartServerWidgets
 	 */
-	WC_NETWORK_WINDOW,
+	Network,
 
 	/**
 	 * Client list; %Window numbers:
 	 *   - 0 = #ClientListWidgets
 	 */
-	WC_CLIENT_LIST,
+	NetworkClientList,
 
 	/**
 	 * Network status window; %Window numbers:
 	 *   - #NetworkStatusWindowNumber::Join = #NetworkJoinStatusWidgets
 	 *   - #NetworkStatusWindowNumber::ContentDownload = #NetworkContentDownloadStatusWidgets
 	 */
-	WC_NETWORK_STATUS_WINDOW,
+	NetworkStatus,
 
 	/**
 	 * Network ask relay window; %Window numbers:
 	 *   - 0 - #NetworkAskRelayWidgets
 	 */
-	WC_NETWORK_ASK_RELAY,
+	NetworkAskRelay,
 
 	/**
 	 * Network ask survey window; %Window numbers:
 	 *  - 0 - #NetworkAskSurveyWidgets
 	 */
-	WC_NETWORK_ASK_SURVEY,
+	NetworkAskSurvey,
 
 	/**
 	 * Chatbox; %Window numbers:
 	 *   - #NetworkChatDestinationType = #NetWorkChatWidgets
 	 */
-	WC_SEND_NETWORK_MSG,
+	NetworkChat,
 
 	/**
 	 * Company password query; %Window numbers:
 	 *   - 0 = #NetworkCompanyPasswordWidgets
 	 */
-	WC_COMPANY_PASSWORD_WINDOW,
+	CompanyPassword,
 
 
 	/**
 	 * Industry cargoes chain; %Window numbers:
 	 *   - 0 = #IndustryCargoesWidgets
 	 */
-	WC_INDUSTRY_CARGOES,
+	IndustryCargoes,
 
 	/**
 	 * Legend for graphs; %Window numbers:
 	 *   - 0 = #GraphLegendWidgets
 	 */
-	WC_GRAPH_LEGEND,
+	GraphLegend,
 
 	/**
 	 * Finances of a company; %Window numbers:
 	 *   - #CompanyID = #CompanyWidgets
 	 */
-	WC_FINANCES,
+	Finances,
 
 	/**
 	 * Income graph; %Window numbers:
 	 *   - 0 = #CompanyValueWidgets
 	 */
-	WC_INCOME_GRAPH,
+	IncomeGraph,
 
 	/**
 	 * Operating profit graph; %Window numbers:
 	 *   - 0 = #CompanyValueWidgets
 	 */
-	WC_OPERATING_PROFIT,
+	OperatingProfitGraph,
 
 	/**
 	 * Delivered cargo graph; %Window numbers:
 	 *   - 0 = #CompanyValueWidgets
 	 */
-	WC_DELIVERED_CARGO,
+	DeliveredCargoGraph,
 
 	/**
 	 * Performance history graph; %Window numbers:
 	 *   - 0 = #PerformanceHistoryGraphWidgets
 	 */
-	WC_PERFORMANCE_HISTORY,
+	PerformanceGraph,
 
 	/**
 	 * Company value graph; %Window numbers:
 	 *   - 0 = #CompanyValueWidgets
 	 */
-	WC_COMPANY_VALUE,
+	CompanyValueGraph,
 
 	/**
 	 * Company league window; %Window numbers:
 	 *   - 0 = #CompanyLeagueWidgets
 	 */
-	WC_COMPANY_LEAGUE,
+	CompanyLeague,
 
 	/**
 	 * Payment rates graph; %Window numbers:
 	 *   - 0 = #CargoPaymentRatesWidgets
 	 */
-	WC_PAYMENT_RATES,
+	CargoPaymentRatesGraph,
 
 	/**
 	* Station cargo graph; %Window numbers:
 	*   - #StationID = #StationCargoWidgets
 	*/
-	WC_STATION_CARGO,
+	StationCargoGraph,
 
 	/**
 	 * Performance detail window; %Window numbers:
 	 *   - 0 = #PerformanceRatingDetailsWidgets
 	 */
-	WC_PERFORMANCE_DETAIL,
+	PerformanceDetail,
 
 	/**
 	 * Industry production history graph; %Window numbers:
 	 *   - #IndustryID = #IndustryProductionGraphWidgets
 	 */
-	WC_INDUSTRY_PRODUCTION,
+	IndustryProductionGraph,
 
 	/**
 	 * Town cargo history graph; %Window numbers:
 	 *   - #TownID = #GraphWidgets
 	 */
-	WC_TOWN_CARGO_GRAPH,
+	TownCargoGraph,
 
 	/**
 	 * Company infrastructure overview; %Window numbers:
 	 *   - #CompanyID = #CompanyInfrastructureWidgets
 	 */
-	WC_COMPANY_INFRASTRUCTURE,
+	CompanyInfrastructure,
 
 
 	/**
 	 * Buyout company (merger); %Window numbers:
 	 *   - #CompanyID = #BuyCompanyWidgets
 	 */
-	WC_BUY_COMPANY,
+	BuyCompany,
 
 	/**
 	 * Engine preview window; %Window numbers:
 	 *   - 0 = #EnginePreviewWidgets
 	 */
-	WC_ENGINE_PREVIEW,
+	EnginePreview,
 
 
 	/**
 	 * Music window; %Window numbers:
 	 *   - 0 = #MusicWidgets
 	 */
-	WC_MUSIC_WINDOW,
+	Music,
 
 	/**
 	 * Music track selection; %Window numbers:
 	 *   - 0 = MusicTrackSelectionWidgets
 	 */
-	WC_MUSIC_TRACK_SELECTION,
+	MusicTrackSelection,
 
 	/**
 	 * Game options window; %Window numbers:
@@ -699,159 +699,163 @@ enum WindowClass : uint16_t {
 	 *   - #GameOptionsWindowNumber::GameOptions = #GameOptionsWidgets
 	 *   - #GameOptionsWindowNumber::GameSettings = #GameSettingsWidgets
 	 */
-	WC_GAME_OPTIONS,
+	GameOptions,
 
 	/**
 	 * Custom currency; %Window numbers:
 	 *   - 0 = #CustomCurrencyWidgets
 	 */
-	WC_CUSTOM_CURRENCY,
+	CustomCurrenty,
 
 	/**
 	 * Cheat window; %Window numbers:
 	 *   - 0 = #CheatWidgets
 	 */
-	WC_CHEATS,
+	Cheat,
 
 	/**
 	 * Extra viewport; %Window numbers:
 	 *   - Ascending value = #ExtraViewportWidgets
 	 */
-	WC_EXTRA_VIEWPORT,
+	ExtraViewport,
 
 
 	/**
 	 * Console; %Window numbers:
 	 *   - 0 = #ConsoleWidgets
 	 */
-	WC_CONSOLE,
+	Console,
 
 	/**
 	 * Bootstrap; %Window numbers:
 	 *   - 0 = #BootstrapBackgroundWidgets
 	 */
-	WC_BOOTSTRAP,
+	Bootstrap,
 
 	/**
 	 * Highscore; %Window numbers:
 	 *   - 0 = #HighscoreWidgets
 	 */
-	WC_HIGHSCORE,
+	Highscore,
 
 	/**
 	 * Endscreen; %Window numbers:
 	 *   - 0 = #HighscoreWidgets
 	 */
-	WC_ENDSCREEN,
+	Endscreen,
 
 
 	/**
 	 * Script debug window; %Window numbers:
 	 *   - Ascending value = #ScriptDebugWidgets
 	 */
-	WC_SCRIPT_DEBUG,
+	ScriptDebug,
 
 	/**
 	 * NewGRF inspect (debug); %Window numbers:
 	 *   - Packed value = #NewGRFInspectWidgets
 	 */
-	WC_NEWGRF_INSPECT,
+	NewGRFInspect,
 
 	/**
 	 * Sprite aligner (debug); %Window numbers:
 	 *   - 0 = #SpriteAlignerWidgets
 	 */
-	WC_SPRITE_ALIGNER,
-	WC_ZONING_TOOLBAR,
+	SpriteAligner,
+
+	/**
+	 * Zoning toolbar
+	 */
+	ZoningToolbar,
 
 	/**
 	 * Linkgraph legend; %Window numbers:
 	 *   - 0 = #LinkGraphWidgets
 	 */
-	WC_LINKGRAPH_LEGEND,
+	LinkGraphLegend,
 
 	/**
 	 * Save preset; %Window numbers:
 	 *   - 0 = #SavePresetWidgets
 	 */
-	WC_SAVE_PRESET,
+	SavePreset,
 
 	/**
 	 * Framerate display; %Window numbers:
 	 *   - 0 = #FramerateDisplayWidgets
 	 */
-	WC_FRAMERATE_DISPLAY,
+	FramerateDisplay,
 
 	/**
 	 * Frame time graph; %Window numbers:
 	 *   - 0 = #FrametimeGraphWindowWidgets
 	 */
-	WC_FRAMETIME_GRAPH,
+	FrametimeGraph,
+
 	/**
 	 * Screenshot window; %Window numbers:
 	 *   - 0 = #ScreenshotWidgets
 	 */
-	WC_SCREENSHOT,
+	Screenshot,
 
 	/**
 	 * Help and manuals window; %Window numbers:
 	 *   - 0 = #HelpWindowWidgets
 	 */
-	WC_HELPWIN,
+	Help,
 
 	/**
 	 * Trace restrict programme window; %Window numbers:
 	 *   - #TileIndex << 3 | #Track = #TraceRestrictWindow
 	 */
-	WC_TRACE_RESTRICT,
+	TraceRestrict,
 
 	/**
 	 * Trace restrict slot window; %Window numbers:
 	 *   - Packed value = #SlotListWidgets / #VehicleListWidgets
 	 */
-	WC_TRACE_RESTRICT_SLOTS,
+	TraceRestrictSlots,
 
 	/**
 	 * Trace restrict counter window; %Window numbers:
 	 *   - Packed value = #SlotListWidgets / #VehicleListWidgets
 	 */
-	WC_TRACE_RESTRICT_COUNTERS,
+	TraceRestrictCounters,
 
 	/**
 	 * Programmable pre-signals window
 	 */
-	WC_SIGNAL_PROGRAM,
+	ProgrammablePresigProgram,
 
 	/**
 	 * Departure boards
 	 */
-	WC_DEPARTURES_BOARD,
+	DepartureBoard,
 
 	/**
 	 * Vehicle scheduled dispatch - departure slots
 	 */
-	WC_SCHDISPATCH_SLOTS,
+	ScheduledDispatchSlots,
 
 	/**
 	 * Plans window.
 	 */
-	WC_PLANS,
+	Plans,
 
-	WC_TEMPLATEGUI_MAIN,
-	WC_TEMPLATEGUI_RPLALL,
-	WC_BUILD_VIRTUAL_TRAIN,
-	WC_CREATE_TEMPLATE,
+	TemplateReplacementGuiMain,
+	BuildVirtualTrain,
+	TemplateReplacementCreateTemplate,
 
 	/**
 	 * Modifier key toggle window.
 	 */
-	WC_MODIFIER_KEY_TOGGLE,
+	ModifierKeyToggle,
 
-	WC_END,              ///< End sentinel.
-	WC_INVALID = 0xFFFF, ///< Invalid window.
+	End,              ///< End sentinel.
+	Invalid = 0xFFFF, ///< Invalid window.
 };
 
-/** Data value for #Window::OnInvalidateData() of windows with class #WC_GAME_OPTIONS. */
+/** Data value for #Window::OnInvalidateData() of windows with class ::WindowClass::GameOptions. */
 enum GameOptionsInvalidationData : uint8_t {
 	GOID_DEFAULT = 0,
 	GOID_NEWGRF_RESCANNED,       ///< NewGRFs were just rescanned.

@@ -622,9 +622,9 @@ public:
 	void DrawSortButtonState(WidgetID widget, SortButtonState state) const;
 	static int SortButtonWidth();
 
-	Window *FindChildWindow(WindowClass wc = WC_INVALID) const;
+	Window *FindChildWindow(WindowClass wc = WindowClass::Invalid) const;
 	Window *FindChildWindowById(WindowClass wc, WindowNumber number) const;
-	void CloseChildWindows(WindowClass wc = WC_INVALID) const;
+	void CloseChildWindows(WindowClass wc = WindowClass::Invalid) const;
 	void CloseChildWindowById(WindowClass wc, WindowNumber number) const;
 
 	/**
@@ -1015,7 +1015,7 @@ public:
 
 	private:
 		window_type<T> *w;
-		void Validate() { while (this->w != nullptr && this->w->window_class == WC_INVALID) this->Next(); }
+		void Validate() { while (this->w != nullptr && this->w->window_class == WindowClass::Invalid) this->Next(); }
 
 		void Next()
 		{
@@ -1208,9 +1208,9 @@ inline bool MayBeShown(const Window *w)
 	if (likely(!_in_modal_progress)) return true;
 
 	switch (w->window_class) {
-		case WC_MAIN_WINDOW:    ///< The background, i.e. the game.
-		case WC_MODAL_PROGRESS: ///< The actual progress window.
-		case WC_CONFIRM_POPUP_QUERY: ///< The abort window.
+		case WindowClass::MainWindow:    ///< The background, i.e. the game.
+		case WindowClass::ModalProgress: ///< The actual progress window.
+		case WindowClass::ConfirmPopupQuery: ///< The abort window.
 			return true;
 
 		default:

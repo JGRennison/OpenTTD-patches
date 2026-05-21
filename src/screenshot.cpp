@@ -253,7 +253,7 @@ static Viewport SetupScreenshotViewport(ScreenshotType t, uint32_t width = 0, ui
 
 			/* Determine world coordinates of screenshot */
 			if (t == SC_WORLD_ZOOM) {
-				Window *w = FindWindowById(WC_MAIN_WINDOW, 0);
+				Window *w = FindWindowById(WindowClass::MainWindow, 0);
 				vp.zoom =  w->viewport->zoom;
 				vp.map_type = w->viewport->map_type;
 			} else {

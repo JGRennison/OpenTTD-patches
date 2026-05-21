@@ -348,7 +348,7 @@ struct NewGRFParametersWindow : public Window {
 				if (this->editable && !this->action14present && !this->grf_config.param.empty()) {
 					this->grf_config.param.pop_back();
 					this->InvalidateData();
-					SetWindowDirty(WC_GAME_OPTIONS, GameOptionsWindowNumber::NewGRFState);
+					SetWindowDirty(WindowClass::GameOptions, GameOptionsWindowNumber::NewGRFState);
 				}
 				break;
 
@@ -356,7 +356,7 @@ struct NewGRFParametersWindow : public Window {
 				if (this->editable && !this->action14present && this->grf_config.param.size() < this->grf_config.num_valid_params) {
 					this->grf_config.param.emplace_back(0);
 					this->InvalidateData();
-					SetWindowDirty(WC_GAME_OPTIONS, GameOptionsWindowNumber::NewGRFState);
+					SetWindowDirty(WindowClass::GameOptions, GameOptionsWindowNumber::NewGRFState);
 				}
 				break;
 
@@ -366,7 +366,7 @@ struct NewGRFParametersWindow : public Window {
 				if (num >= this->vscroll->GetCount()) break;
 
 				if (this->clicked_row != num) {
-					CloseChildWindows(WC_QUERY_STRING);
+					CloseChildWindows(WindowClass::QueryString);
 					HideDropDownMenu(this);
 					this->clicked_row = num;
 					this->clicked_dropdown = false;
@@ -443,7 +443,7 @@ struct NewGRFParametersWindow : public Window {
 				if (!this->editable) break;
 				this->grf_config.SetParameterDefaults();
 				this->InvalidateData();
-				SetWindowDirty(WC_GAME_OPTIONS, GameOptionsWindowNumber::NewGRFState);
+				SetWindowDirty(WindowClass::GameOptions, GameOptionsWindowNumber::NewGRFState);
 				break;
 		}
 	}
@@ -500,7 +500,7 @@ struct NewGRFParametersWindow : public Window {
 		this->vscroll->SetCount(this->action14present ? this->grf_config.num_valid_params : this->grf_config.param.size());
 		if (this->clicked_row != INT32_MAX && this->clicked_row >= this->vscroll->GetCount()) {
 			this->clicked_row = INT32_MAX;
-			CloseChildWindows(WC_QUERY_STRING);
+			this->CloseChildWindows(WindowClass::QueryString);
 		}
 	}
 
@@ -549,14 +549,14 @@ static constexpr std::initializer_list<NWidgetPart> _nested_newgrf_parameter_wid
 /** Window definition for the change grf parameters window */
 static WindowDesc _newgrf_parameters_desc(__FILE__, __LINE__,
 	WindowPosition::Center, "settings_newgrf_config", 500, 208,
-	WC_GRF_PARAMETERS, WC_NONE,
+	WindowClass::NewGRFParameters, WindowClass::None,
 	{},
 	_nested_newgrf_parameter_widgets
 );
 
 void OpenGRFParameterWindow(bool is_baseset, GRFConfig &c, bool editable)
 {
-	CloseWindowByClass(WC_GRF_PARAMETERS);
+	CloseWindowByClass(WindowClass::NewGRFParameters);
 	new NewGRFParametersWindow(_newgrf_parameters_desc, is_baseset, c, editable);
 }
 
@@ -586,7 +586,7 @@ struct NewGRFTextfileWindow : public TextfileWindow {
 
 void ShowNewGRFTextfileWindow(Window *parent, TextfileType file_type, const GRFConfig *c)
 {
-	parent->CloseChildWindowById(WC_TEXTFILE, file_type);
+	parent->CloseChildWindowById(WindowClass::Textfile, file_type);
 	new NewGRFTextfileWindow(parent, file_type, c);
 }
 
@@ -680,8 +680,8 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 
 	void Close([[maybe_unused]] int data = 0) override
 	{
-		CloseWindowByClass(WC_GRF_PARAMETERS);
-		CloseWindowByClass(WC_SAVE_PRESET);
+		CloseWindowByClass(WindowClass::NewGRFParameters);
+		CloseWindowByClass(WindowClass::SavePreset);
 
 		if (this->editable && this->modified && !this->execute && !_exit_game) {
 			CopyGRFConfigList(this->orig_list, this->actives, true);
@@ -750,8 +750,8 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 				d->SetParameterDefaults();
 			}
 			if (this->active_sel == c->get()) {
-				CloseWindowByClass(WC_GRF_PARAMETERS);
-				this->CloseChildWindows(WC_TEXTFILE);
+				CloseWindowByClass(WindowClass::NewGRFParameters);
+				this->CloseChildWindows(WindowClass::Textfile);
 				this->active_sel = nullptr;
 			}
 			*c = std::move(d);
@@ -975,7 +975,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 					list.push_back(MakeDropDownListStringItem(std::string{this->grf_presets[i]}, i));
 				}
 
-				this->CloseChildWindows(WC_QUERY_STRING); // Remove the parameter query window
+				this->CloseChildWindows(WindowClass::QueryString); // Remove the parameter query window
 				ShowDropDownList(this, std::move(list), this->preset, WID_NS_PRESET_LIST, 0, DropDownOption::Filterable);
 				break;
 			}
@@ -998,7 +998,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 				this->grf_presets = GetGRFPresetList();
 				this->preset = -1;
 				this->InvalidateData();
-				this->CloseChildWindows(WC_QUERY_STRING); // Remove the parameter query window
+				this->CloseChildWindows(WindowClass::QueryString); // Remove the parameter query window
 				break;
 
 			case WID_NS_MOVE_UP: { // Move GRF up
@@ -1050,8 +1050,8 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 					this->active_sel = nullptr;
 				}
 				if (this->active_sel != old_sel) {
-					CloseWindowByClass(WC_GRF_PARAMETERS);
-					this->CloseChildWindows(WC_TEXTFILE);
+					CloseWindowByClass(WindowClass::NewGRFParameters);
+					this->CloseChildWindows(WindowClass::Textfile);
 				}
 				this->avail_sel = nullptr;
 				this->avail_pos = -1;
@@ -1067,8 +1067,8 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 
 			case WID_NS_REMOVE: { // Remove GRF
 				if (this->active_sel == nullptr || !this->editable) break;
-				CloseWindowByClass(WC_GRF_PARAMETERS);
-				this->CloseChildWindows(WC_TEXTFILE);
+				CloseWindowByClass(WindowClass::NewGRFParameters);
+				this->CloseChildWindows(WindowClass::Textfile);
 
 				/* Choose the next GRF file to be the selected file. */
 				int pos = this->GetCurrentActivePosition();
@@ -1103,9 +1103,9 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 
 				auto it = this->vscroll2->GetScrolledItemFromWidget(this->avails, pt.y, this, WID_NS_AVAIL_LIST, WidgetDimensions::scaled.framerect.top);
 				this->active_sel = nullptr;
-				CloseWindowByClass(WC_GRF_PARAMETERS);
+				CloseWindowByClass(WindowClass::NewGRFParameters);
 				if (it != std::end(this->avails)) {
-					if (this->avail_sel != *it) this->CloseChildWindows(WC_TEXTFILE);
+					if (this->avail_sel != *it) this->CloseChildWindows(WindowClass::Textfile);
 					this->avail_sel = *it;
 					this->avail_pos = static_cast<int>(std::distance(std::begin(this->avails), it));
 				}
@@ -1134,7 +1134,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 					NewGRFConfirmationCallback
 				);
 
-				this->CloseChildWindows(WC_QUERY_STRING); // Remove the parameter query window
+				this->CloseChildWindows(WindowClass::QueryString); // Remove the parameter query window
 				break;
 
 			case WID_NS_VIEW_PARAMETERS:
@@ -1159,7 +1159,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 				if (!_network_available) {
 					ShowErrorMessage(GetEncodedString(STR_NETWORK_ERROR_NOTAVAILABLE), {}, WL_ERROR);
 				} else {
-					this->CloseChildWindows(WC_QUERY_STRING); // Remove the parameter query window
+					this->CloseChildWindows(WindowClass::QueryString); // Remove the parameter query window
 
 					ShowMissingContentWindow(this->actives);
 				}
@@ -1174,11 +1174,11 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 
 	void OnNewGRFsScanned() override
 	{
-		if (this->active_sel == nullptr) this->CloseChildWindows(WC_TEXTFILE);
+		if (this->active_sel == nullptr) this->CloseChildWindows(WindowClass::Textfile);
 		this->avail_sel = nullptr;
 		this->avail_pos = -1;
 		this->avails.ForceRebuild();
-		this->CloseChildWindows(WC_QUERY_STRING); // Remove the parameter query window
+		this->CloseChildWindows(WindowClass::QueryString); // Remove the parameter query window
 	}
 
 	void OnDropdownSelect(WidgetID widget, int index, int) override
@@ -1195,8 +1195,8 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 		this->avails.ForceRebuild();
 
 		ResetObjectToPlace();
-		CloseWindowByClass(WC_GRF_PARAMETERS);
-		this->CloseChildWindows(WC_TEXTFILE);
+		CloseWindowByClass(WindowClass::NewGRFParameters);
+		this->CloseChildWindows(WindowClass::Textfile);
 		this->active_sel = nullptr;
 		this->InvalidateData(GOID_NEWGRF_CHANGES_MADE);
 	}
@@ -1379,8 +1379,8 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 
 		if (this->avail_pos >= 0) {
 			this->active_sel = nullptr;
-			CloseWindowByClass(WC_GRF_PARAMETERS);
-			if (this->avail_sel != this->avails[this->avail_pos]) this->CloseChildWindows(WC_TEXTFILE);
+			CloseWindowByClass(WindowClass::NewGRFParameters);
+			if (this->avail_sel != this->avails[this->avail_pos]) this->CloseChildWindows(WindowClass::Textfile);
 			this->avail_sel = this->avails[this->avail_pos];
 			this->vscroll2->ScrollTowards(this->avail_pos);
 			this->InvalidateData(0);
@@ -1543,7 +1543,7 @@ private:
 	{
 		if (this->avail_sel == nullptr || !this->editable || this->avail_sel->flags.Test(GRFConfigFlag::Invalid)) return false;
 
-		this->CloseChildWindows(WC_TEXTFILE);
+		this->CloseChildWindows(WindowClass::Textfile);
 
 		/* Get number of non-static NewGRFs. */
 		size_t count = std::ranges::count_if(this->actives, [](const auto &gc) { return !gc->flags.Test(GRFConfigFlag::Static); });
@@ -1998,7 +1998,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_newgrf_widgets = {
 /* Window definition of the manage newgrfs window */
 static WindowDesc _newgrf_desc(__FILE__, __LINE__,
 	WindowPosition::Center, "settings_newgrf", 300, 263,
-	WC_GAME_OPTIONS, WC_NONE,
+	WindowClass::GameOptions, WindowClass::None,
 	{},
 	_nested_newgrf_widgets
 );
@@ -2011,8 +2011,8 @@ static WindowDesc _newgrf_desc(__FILE__, __LINE__,
 static void NewGRFConfirmationCallback(Window *w, bool confirmed)
 {
 	if (confirmed) {
-		CloseWindowByClass(WC_GRF_PARAMETERS);
-		w->CloseChildWindows(WC_TEXTFILE);
+		CloseWindowByClass(WindowClass::NewGRFParameters);
+		w->CloseChildWindows(WindowClass::Textfile);
 		NewGRFWindow *nw = dynamic_cast<NewGRFWindow*>(w);
 		assert(nw != nullptr);
 
@@ -2043,7 +2043,7 @@ static void NewGRFConfirmationCallback(Window *w, bool confirmed)
 		w->InvalidateData();
 
 		ReInitAllWindows(false);
-		CloseWindowByClass(WC_BUILD_OBJECT);
+		CloseWindowByClass(WindowClass::BuildObject);
 	}
 }
 
@@ -2065,7 +2065,7 @@ void PostCheckNewGRFLoadWarnings()
  */
 void ShowNewGRFSettings(bool editable, bool show_params, bool exec_changes, GRFConfigList &config)
 {
-	CloseWindowByClass(WC_GAME_OPTIONS);
+	CloseWindowByClass(WindowClass::GameOptions);
 	new NewGRFWindow(_newgrf_desc, editable, show_params, exec_changes, config);
 }
 
@@ -2096,7 +2096,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_save_preset_widgets 
 /** Window description of the preset save window. */
 static WindowDesc _save_preset_desc(__FILE__, __LINE__,
 	WindowPosition::Center, "save_preset", 140, 110,
-	WC_SAVE_PRESET, WC_GAME_OPTIONS,
+	WindowClass::SavePreset, WindowClass::GameOptions,
 	WindowDefaultFlag::Modal,
 	_nested_save_preset_widgets
 );
@@ -2191,7 +2191,7 @@ struct SavePresetWindow : public Window {
 			}
 
 			case WID_SVP_SAVE: {
-				Window *w = FindWindowById(WC_GAME_OPTIONS, GameOptionsWindowNumber::NewGRFState);
+				Window *w = FindWindowById(WindowClass::GameOptions, GameOptionsWindowNumber::NewGRFState);
 				if (w != nullptr) {
 					std::string_view text = this->presetname_editbox.text.GetText();
 					if (!text.empty()) w->OnQueryTextFinished(std::string{text});
@@ -2214,7 +2214,7 @@ struct SavePresetWindow : public Window {
  */
 static void ShowSavePresetWindow(std::string_view initial_text)
 {
-	CloseWindowByClass(WC_SAVE_PRESET);
+	CloseWindowByClass(WindowClass::SavePreset);
 	new SavePresetWindow(initial_text);
 }
 
@@ -2233,7 +2233,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_scan_progress_widget
 /** Description of the widgets and other settings of the window. */
 static WindowDesc _scan_progress_desc(__FILE__, __LINE__,
 	WindowPosition::Center, nullptr, 0, 0,
-	WC_MODAL_PROGRESS, WC_NONE,
+	WindowClass::ModalProgress, WindowClass::None,
 	{},
 	_nested_scan_progress_widgets
 );
@@ -2313,7 +2313,7 @@ struct ScanProgressWindow : public Window {
  */
 void UpdateNewGRFScanStatus(uint num, std::string &&name)
 {
-	ScanProgressWindow *w  = dynamic_cast<ScanProgressWindow *>(FindWindowByClass(WC_MODAL_PROGRESS));
+	ScanProgressWindow *w = dynamic_cast<ScanProgressWindow *>(FindWindowByClass(WindowClass::ModalProgress));
 	if (w == nullptr) w = new ScanProgressWindow();
 	w->UpdateNewGRFScanStatus(num, std::move(name));
 }

@@ -717,7 +717,7 @@ struct FramerateWindow : Window {
 
 static WindowDesc _framerate_display_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "framerate_display", 0, 0,
-	WC_FRAMERATE_DISPLAY, WC_NONE,
+	WindowClass::FramerateDisplay, WindowClass::None,
 	{},
 	_framerate_window_widgets
 );
@@ -1013,7 +1013,7 @@ struct FrametimeGraphWindow : Window {
 
 static WindowDesc _frametime_graph_window_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "frametime_graph", 140, 90,
-	WC_FRAMETIME_GRAPH, WC_NONE,
+	WindowClass::FrametimeGraph, WindowClass::None,
 	{},
 	_frametime_graph_window_widgets
 );

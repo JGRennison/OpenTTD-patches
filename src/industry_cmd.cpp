@@ -194,8 +194,8 @@ Industry::~Industry()
 	this->RemoveFromLocationCache();
 
 	DeleteIndustryNews(this->index);
-	CloseWindowById(WC_INDUSTRY_VIEW, this->index);
-	CloseWindowById(WC_INDUSTRY_PRODUCTION, this->index);
+	CloseWindowById(WindowClass::IndustryView, this->index);
+	CloseWindowById(WindowClass::IndustryProductionGraph, this->index);
 	DeleteNewGRFInspectWindow(GrfSpecFeature::Industries, this->index.base());
 
 	Source src = Source::Make<SourceType::Industry>(this->index);
@@ -215,8 +215,8 @@ Industry::~Industry()
  */
 void Industry::PostDestructor(size_t)
 {
-	InvalidateWindowData(WC_INDUSTRY_DIRECTORY, 0, IDIWD_FORCE_REBUILD);
-	SetWindowDirty(WC_BUILD_INDUSTRY, 0);
+	InvalidateWindowData(WindowClass::IndustryDirectory, 0, IDIWD_FORCE_REBUILD);
+	SetWindowDirty(WindowClass::BuildIndustry, 0);
 }
 
 
@@ -2059,8 +2059,8 @@ static void DoCreateNewIndustry(Industry *i, TileIndex tile, IndustryType type, 
 	if (GetIndustrySpec(i->type)->behaviour.Test(IndustryBehaviour::PlantOnBuild)) {
 		for (uint j = 0; j != 50; j++) PlantRandomFarmField(i);
 	}
-	InvalidateWindowData(WC_INDUSTRY_DIRECTORY, 0, IDIWD_FORCE_REBUILD);
-	SetWindowDirty(WC_BUILD_INDUSTRY, 0);
+	InvalidateWindowData(WindowClass::IndustryDirectory, 0, IDIWD_FORCE_REBUILD);
+	SetWindowDirty(WindowClass::BuildIndustry, 0);
 
 	if (!_generating_world) PopulateStationsNearby(i);
 	if (_game_mode == GM_NORMAL) RegisterGameEvents(GEF_INDUSTRY_CREATE);
@@ -2366,7 +2366,7 @@ CommandCost CmdIndustrySetText(DoCommandFlags flags, IndustryID ind_id, const En
 	if (flags.Test(DoCommandFlag::Execute)) {
 		ind->text.clear();
 		if (!text.empty()) ind->text = text;
-		InvalidateWindowData(WC_INDUSTRY_VIEW, ind->index);
+		InvalidateWindowData(WindowClass::IndustryView, ind->index);
 	}
 
 	return CommandCost();
@@ -3163,7 +3163,7 @@ static void ChangeIndustryProduction(Industry *i, bool monthly)
 	/* Close if needed and allowed */
 	if (closeit && !CheckIndustryCloseDownProtection(i->type) && !i->ctlflags.Test(IndustryControlFlag::NoClosure)) {
 		i->prod_level = PRODLEVEL_CLOSURE;
-		SetWindowDirty(WC_INDUSTRY_VIEW, i->index);
+		SetWindowDirty(WindowClass::IndustryView, i->index);
 		str = indspec->closure_text;
 	}
 
@@ -3238,13 +3238,13 @@ void IndustryDailyLoop()
 			Industry *i = Industry::GetRandom();
 			if (i != nullptr) {
 				ChangeIndustryProduction(i, false);
-				SetWindowDirty(WC_INDUSTRY_VIEW, i->index);
+				SetWindowDirty(WindowClass::IndustryView, i->index);
 			}
 		}
 	}
 
 	/* production-change */
-	InvalidateWindowData(WC_INDUSTRY_DIRECTORY, 0, IDIWD_PRODUCTION_CHANGE);
+	InvalidateWindowData(WindowClass::IndustryDirectory, 0, IDIWD_PRODUCTION_CHANGE);
 }
 
 void IndustryMonthlyLoop()
@@ -3259,12 +3259,12 @@ void IndustryMonthlyLoop()
 			delete i;
 		} else {
 			ChangeIndustryProduction(i, true);
-			SetWindowDirty(WC_INDUSTRY_VIEW, i->index);
+			SetWindowDirty(WindowClass::IndustryView, i->index);
 		}
 	}
 
 	/* production-change */
-	InvalidateWindowData(WC_INDUSTRY_DIRECTORY, 0, IDIWD_PRODUCTION_CHANGE);
+	InvalidateWindowData(WindowClass::IndustryDirectory, 0, IDIWD_PRODUCTION_CHANGE);
 }
 
 

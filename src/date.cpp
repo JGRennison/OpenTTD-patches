@@ -359,9 +359,9 @@ extern void ShowEndGameChart();
  */
 static void OnNewCalendarYear()
 {
-	InvalidateWindowClassesData(WC_BUILD_STATION);
-	InvalidateWindowClassesData(WC_BUS_STATION);
-	InvalidateWindowClassesData(WC_TRUCK_STATION);
+	InvalidateWindowClassesData(WindowClass::BuildStation);
+	InvalidateWindowClassesData(WindowClass::BuildBusStation);
+	InvalidateWindowClassesData(WindowClass::BuildTruckStation);
 	if (_network_server) NetworkServerCalendarYearlyLoop();
 
 	if (CalTime::CurYear() == _settings_client.gui.semaphore_build_before) ResetSignalVariant();
@@ -413,7 +413,7 @@ static void OnNewEconomyYear()
  */
 static void OnNewCalendarMonth()
 {
-	SetWindowClassesDirty(WC_CHEATS);
+	SetWindowClassesDirty(WindowClass::Cheat);
 	CompaniesCalendarMonthlyLoop();
 	EnginesMonthlyLoop();
 	IConsoleCmdExec("exec scripts/on_newmonth.scr 0");
@@ -440,10 +440,10 @@ static void OnNewCalendarDay()
 	EnginesDailyLoop();
 
 	if (!_settings_time.time_in_minutes || _settings_client.gui.date_with_time > 0) {
-		SetWindowWidgetDirty(WC_STATUS_BAR, 0, WID_S_LEFT);
+		SetWindowWidgetDirty(WindowClass::Statusbar, 0, WID_S_LEFT);
 	}
 	/* Refresh after possible snowline change */
-	SetWindowClassesDirty(WC_TOWN_VIEW);
+	SetWindowClassesDirty(WindowClass::TownView);
 	IConsoleCmdExec("exec scripts/on_newday.scr 0");
 }
 

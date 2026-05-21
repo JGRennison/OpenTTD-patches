@@ -187,7 +187,7 @@ public:
 
 static WindowDesc _extra_viewport_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "extra_viewport", 300, 268,
-	WC_EXTRA_VIEWPORT, WC_NONE,
+	WindowClass::ExtraViewport, WindowClass::None,
 	{},
 	_nested_extra_viewport_widgets
 );
@@ -201,7 +201,7 @@ void ShowExtraViewportWindow(TileIndex tile)
 	int i = 0;
 
 	/* find next free window number for extra viewport */
-	while (FindWindowById(WC_EXTRA_VIEWPORT, i) != nullptr) i++;
+	while (FindWindowById(WindowClass::ExtraViewport, i) != nullptr) i++;
 
 	new ExtraViewportWindow(_extra_viewport_desc, i, tile);
 }

@@ -967,14 +967,14 @@ static constexpr std::initializer_list<NWidgetPart> _nested_story_book_widgets =
 
 static WindowDesc _story_book_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "view_story", 400, 300,
-	WC_STORY_BOOK, WC_NONE,
+	WindowClass::StoryBook, WindowClass::None,
 	{},
 	_nested_story_book_widgets
 );
 
 static WindowDesc _story_book_gs_desc(__FILE__, __LINE__,
 	WindowPosition::Center, "view_story_gs", 400, 300,
-	WC_STORY_BOOK, WC_NONE,
+	WindowClass::StoryBook, WindowClass::None,
 	{},
 	_nested_story_book_widgets
 );

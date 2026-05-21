@@ -194,7 +194,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_performance_league_w
 
 static WindowDesc _performance_league_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "performance_league", 0, 0,
-	WC_COMPANY_LEAGUE, WC_NONE,
+	WindowClass::CompanyLeague, WindowClass::None,
 	{},
 	_nested_performance_league_widgets
 );
@@ -431,7 +431,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_script_league_widget
 
 static WindowDesc _script_league_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "script_league", 0, 0,
-	WC_COMPANY_LEAGUE, WC_NONE,
+	WindowClass::CompanyLeague, WindowClass::None,
 	{},
 	_nested_script_league_widgets
 );

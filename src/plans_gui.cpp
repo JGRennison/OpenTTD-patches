@@ -84,7 +84,7 @@ static constexpr NWidgetPart _nested_plans_widgets[] = {
 
 static WindowDesc _plans_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic, "plans", 350, 100,
-	WC_PLANS, WC_NONE,
+	WindowClass::Plans, WindowClass::None,
 	WindowDefaultFlag::Construction,
 	_nested_plans_widgets
 );
@@ -712,7 +712,7 @@ const std::initializer_list<GUIPlanList::SortFunction * const> PlansWindow::sort
 /** Show the window to manage plans. */
 void ShowPlansWindow()
 {
-	if (BringWindowToFrontById(WC_PLANS, 0) != nullptr) return;
+	if (BringWindowToFrontById(WindowClass::Plans, 0) != nullptr) return;
 	new PlansWindow(_plans_desc);
 }
 
@@ -731,7 +731,7 @@ void CcAddPlan(const CommandCost &result)
 	_current_plan = Plan::Get(*plan_id);
 	_current_plan->SetVisibility(true);
 
-	Window *w = FindWindowById(WC_PLANS, 0);
+	Window *w = FindWindowById(WindowClass::Plans, 0);
 	if (w != nullptr) {
 		w->ClearEditBox(WID_PLN_FILTER);
 		w->InvalidateData(INVALID_PLAN, false);

@@ -325,7 +325,7 @@ void HandleSharingCompanyDeletion(Owner owner)
 			} else {
 				v->current_order.MakeDummy();
 			}
-			SetWindowDirty(WC_VEHICLE_VIEW, v->index);
+			SetWindowDirty(WindowClass::VehicleView, v->index);
 		}
 
 		/* order list */

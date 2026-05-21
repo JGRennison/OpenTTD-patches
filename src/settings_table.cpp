@@ -223,7 +223,7 @@ static void RedrawSmallmap(int32_t new_value)
 {
 	BuildLandLegend();
 	BuildOwnerLegend();
-	SetWindowClassesDirty(WC_SMALLMAP);
+	SetWindowClassesDirty(WindowClass::SmallMap);
 
 	extern void MarkAllViewportMapLandscapesDirty();
 	MarkAllViewportMapLandscapesDirty();
@@ -231,10 +231,10 @@ static void RedrawSmallmap(int32_t new_value)
 
 static void StationSpreadChanged(int32_t new_value)
 {
-	InvalidateWindowData(WC_SELECT_STATION, 0);
-	InvalidateWindowData(WC_BUILD_STATION, 0);
-	InvalidateWindowData(WC_BUS_STATION, 0);
-	InvalidateWindowData(WC_TRUCK_STATION, 0);
+	InvalidateWindowData(WindowClass::JoinStation, 0);
+	InvalidateWindowData(WindowClass::BuildStation, 0);
+	InvalidateWindowData(WindowClass::BuildBusStation, 0);
+	InvalidateWindowData(WindowClass::BuildTruckStation, 0);
 }
 
 static void UpdateConsists(int32_t new_value)
@@ -250,10 +250,10 @@ static void UpdateConsists(int32_t new_value)
 	extern void AfterLoadTemplateVehiclesUpdateProperties();
 	AfterLoadTemplateVehiclesUpdateProperties();
 
-	InvalidateWindowClassesData(WC_BUILD_VEHICLE, 0);
-	InvalidateWindowClassesData(WC_BUILD_VIRTUAL_TRAIN, 0);
-	SetWindowClassesDirty(WC_TEMPLATEGUI_MAIN);
-	SetWindowClassesDirty(WC_CREATE_TEMPLATE);
+	InvalidateWindowClassesData(WindowClass::BuildVehicle, 0);
+	InvalidateWindowClassesData(WindowClass::BuildVirtualTrain, 0);
+	SetWindowClassesDirty(WindowClass::TemplateReplacementGuiMain);
+	SetWindowClassesDirty(WindowClass::TemplateReplacementCreateTemplate);
 }
 
 /**
@@ -302,7 +302,7 @@ static void UpdateAllServiceInterval(int32_t new_value)
 		}
 	}
 
-	SetWindowClassesDirty(WC_VEHICLE_DETAILS);
+	SetWindowClassesDirty(WindowClass::VehicleDetails);
 }
 
 static bool CanUpdateServiceInterval(VehicleType type, int32_t &new_value)
@@ -329,7 +329,7 @@ static void UpdateServiceInterval(VehicleType type, int32_t new_value)
 		}
 	}
 
-	SetWindowClassesDirty(WC_VEHICLE_DETAILS);
+	SetWindowClassesDirty(WindowClass::VehicleDetails);
 }
 
 /**
@@ -378,7 +378,7 @@ static void ChangeTimekeepingUnits(int32_t)
 		_settings_newgame.economy.minutes_per_calendar_year = CalTime::DEF_MINUTES_PER_YEAR;
 	}
 
-	InvalidateWindowClassesData(WC_GAME_OPTIONS, 0);
+	InvalidateWindowClassesData(WindowClass::GameOptions, 0);
 
 	/* It is possible to change these units in-game. We must set the economy date appropriately. */
 	if (_game_mode != GM_MENU) {
@@ -410,14 +410,14 @@ static void ChangeTimekeepingUnits(int32_t)
 	}
 
 	UpdateTimeSettings(0);
-	CloseWindowByClass(WC_PAYMENT_RATES);
-	CloseWindowByClass(WC_COMPANY_VALUE);
-	CloseWindowByClass(WC_PERFORMANCE_HISTORY);
-	CloseWindowByClass(WC_DELIVERED_CARGO);
-	CloseWindowByClass(WC_OPERATING_PROFIT);
-	CloseWindowByClass(WC_INCOME_GRAPH);
-	CloseWindowByClass(WC_STATION_CARGO);
-	CloseWindowByClass(WC_INDUSTRY_PRODUCTION);
+	CloseWindowByClass(WindowClass::CargoPaymentRatesGraph);
+	CloseWindowByClass(WindowClass::CompanyValueGraph);
+	CloseWindowByClass(WindowClass::PerformanceGraph);
+	CloseWindowByClass(WindowClass::DeliveredCargoGraph);
+	CloseWindowByClass(WindowClass::OperatingProfitGraph);
+	CloseWindowByClass(WindowClass::IncomeGraph);
+	CloseWindowByClass(WindowClass::StationCargoGraph);
+	CloseWindowByClass(WindowClass::IndustryProductionGraph);
 }
 
 /**
@@ -446,7 +446,7 @@ static void ChangeMinutesPerYear(int32_t new_value)
 	}
 
 	UpdateEffectiveDayLengthFactor();
-	InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 1);
+	InvalidateWindowClassesData(WindowClass::DepartureBoard, 1);
 
 	/* If the setting value is not the default, force the game to use wallclock timekeeping units.
 	 * This can only happen in the menu, since the pre_cb ensures this setting can only be changed there, or if we're already using wallclock units.
@@ -491,12 +491,12 @@ static void TrainAccelerationModelChanged(int32_t new_value)
 	AfterLoadTemplateVehiclesUpdateProperties();
 
 	/* These windows show acceleration values only when realistic acceleration is on. They must be redrawn after a setting change. */
-	SetWindowClassesDirty(WC_ENGINE_PREVIEW);
-	InvalidateWindowClassesData(WC_BUILD_VEHICLE, 0);
-	InvalidateWindowClassesData(WC_BUILD_VIRTUAL_TRAIN, 0);
-	SetWindowClassesDirty(WC_VEHICLE_DETAILS);
-	SetWindowClassesDirty(WC_TEMPLATEGUI_MAIN);
-	SetWindowClassesDirty(WC_CREATE_TEMPLATE);
+	SetWindowClassesDirty(WindowClass::EnginePreview);
+	InvalidateWindowClassesData(WindowClass::BuildVehicle, 0);
+	InvalidateWindowClassesData(WindowClass::BuildVirtualTrain, 0);
+	SetWindowClassesDirty(WindowClass::VehicleDetails);
+	SetWindowClassesDirty(WindowClass::TemplateReplacementGuiMain);
+	SetWindowClassesDirty(WindowClass::TemplateReplacementCreateTemplate);
 }
 
 static bool CheckTrainBrakingModelChange(int32_t &new_value)
@@ -593,8 +593,8 @@ static void TrainBrakingModelChanged(int32_t new_value)
 	UpdateExtraAspectsVariable();
 	UpdateAllBlockSignals();
 
-	InvalidateWindowData(WC_BUILD_SIGNAL, 0);
-	InvalidateWindowClassesData(WC_GAME_OPTIONS);
+	InvalidateWindowData(WindowClass::BuildSignal, 0);
+	InvalidateWindowClassesData(WindowClass::GameOptions);
 	MarkWholeScreenDirty();
 }
 
@@ -630,10 +630,10 @@ static void RoadVehAccelerationModelChanged(int32_t new_value)
 	}
 
 	/* These windows show acceleration values only when realistic acceleration is on. They must be redrawn after a setting change. */
-	SetWindowClassesDirty(WC_ENGINE_PREVIEW);
-	InvalidateWindowClassesData(WC_BUILD_VEHICLE, 0);
-	InvalidateWindowClassesData(WC_BUILD_VIRTUAL_TRAIN, 0);
-	SetWindowClassesDirty(WC_VEHICLE_DETAILS);
+	SetWindowClassesDirty(WindowClass::EnginePreview);
+	InvalidateWindowClassesData(WindowClass::BuildVehicle, 0);
+	InvalidateWindowClassesData(WindowClass::BuildVirtualTrain, 0);
+	SetWindowClassesDirty(WindowClass::VehicleDetails);
 }
 
 /**
@@ -649,7 +649,7 @@ static void RoadVehSlopeSteepnessChanged(int32_t new_value)
 
 static void ProgrammableSignalsShownChanged(int32_t new_value)
 {
-	InvalidateWindowData(WC_BUILD_SIGNAL, 0);
+	InvalidateWindowData(WindowClass::BuildSignal, 0);
 }
 
 
@@ -665,7 +665,7 @@ static void AircraftRangeChanged(int32_t)
 		/* Reset destination is too far state */
 		if (v->flags.Test(VehicleAirFlag::DestinationTooFar)) {
 			v->flags.Reset(VehicleAirFlag::DestinationTooFar);
-			SetWindowWidgetDirty(WC_VEHICLE_VIEW, v->index, WID_VV_START_STOP);
+			SetWindowWidgetDirty(WindowClass::VehicleView, v->index, WID_VV_START_STOP);
 			DeleteVehicleNews(v->index, AdviceType::AircraftDestinationTooFar);
 		}
 	}
@@ -674,21 +674,21 @@ static void AircraftRangeChanged(int32_t)
 static void TownFoundingChanged(int32_t new_value)
 {
 	if (_game_mode != GM_EDITOR && _settings_game.economy.found_town == TF_FORBIDDEN) {
-		CloseWindowById(WC_FOUND_TOWN, 0);
+		CloseWindowById(WindowClass::FoundTown, 0);
 	} else {
-		InvalidateWindowData(WC_FOUND_TOWN, 0);
+		InvalidateWindowData(WindowClass::FoundTown, 0);
 	}
 }
 
 static void InvalidateVehTimetableWindow(int32_t new_value)
 {
-	InvalidateWindowClassesData(WC_VEHICLE_TIMETABLE, VIWD_MODIFY_ORDERS);
-	InvalidateWindowClassesData(WC_SCHDISPATCH_SLOTS, VIWD_MODIFY_ORDERS);
+	InvalidateWindowClassesData(WindowClass::VehicleTimetable, VIWD_MODIFY_ORDERS);
+	InvalidateWindowClassesData(WindowClass::ScheduledDispatchSlots, VIWD_MODIFY_ORDERS);
 }
 
 static void ChangeTimetableInTicksMode(int32_t new_value)
 {
-	SetWindowClassesDirty(WC_VEHICLE_ORDERS);
+	SetWindowClassesDirty(WindowClass::VehicleOrders);
 	InvalidateVehTimetableWindow(new_value);
 }
 
@@ -696,16 +696,16 @@ static void UpdateTimeSettings(int32_t new_value)
 {
 	SetupTimeSettings();
 	InvalidateVehTimetableWindow(new_value);
-	InvalidateWindowData(WC_STATUS_BAR, 0, SBI_REINIT);
-	InvalidateWindowClassesData(WC_GAME_OPTIONS);
-	InvalidateWindowClassesData(WC_DEPARTURES_BOARD, 1);
-	InvalidateWindowClassesData(WC_PAYMENT_RATES);
+	InvalidateWindowData(WindowClass::Statusbar, 0, SBI_REINIT);
+	InvalidateWindowClassesData(WindowClass::GameOptions);
+	InvalidateWindowClassesData(WindowClass::DepartureBoard, 1);
+	InvalidateWindowClassesData(WindowClass::CargoPaymentRatesGraph);
 	MarkWholeScreenDirty();
 }
 
 static void ChangeTimeOverrideMode(int32_t new_value)
 {
-	InvalidateWindowClassesData(WC_GAME_OPTIONS);
+	InvalidateWindowClassesData(WindowClass::GameOptions);
 	UpdateTimeSettings(new_value);
 }
 
@@ -715,7 +715,7 @@ static void ZoomMinMaxChanged(int32_t new_value)
 	extern void UpdateFontHeightCache();
 	ConstrainAllViewportsZoom();
 	GfxClearSpriteCache();
-	InvalidateWindowClassesData(WC_SPRITE_ALIGNER);
+	InvalidateWindowClassesData(WindowClass::SpriteAligner);
 	if (AdjustGUIZoom(AGZM_MANUAL)) {
 		ReInitAllWindows(false);
 	}
@@ -747,14 +747,14 @@ static void PlanDisplayModeChanged(int32_t new_value)
  */
 static void InvalidateNewGRFChangeWindows(int32_t new_value)
 {
-	InvalidateWindowClassesData(WC_SAVELOAD);
-	CloseWindowByClass(WC_GAME_OPTIONS);
+	InvalidateWindowClassesData(WindowClass::SaveLoad);
+	CloseWindowByClass(WindowClass::GameOptions);
 	ReInitAllWindows(false);
 }
 
 static void InvalidateCompanyLiveryWindow(int32_t new_value)
 {
-	InvalidateWindowClassesData(WC_COMPANY_COLOUR, -1);
+	InvalidateWindowClassesData(WindowClass::CompanyLivery, -1);
 	ResetVehicleColourMap();
 	MarkWholeScreenDirty();
 }
@@ -820,8 +820,8 @@ static void ScriptMaxMemoryChange(int32_t new_value)
  */
 static void InvalidateCompanyWindow(int32_t new_value)
 {
-	InvalidateWindowClassesData(WC_COMPANY);
-	InvalidateWindowClassesData(WC_GAME_OPTIONS);
+	InvalidateWindowClassesData(WindowClass::Company);
+	InvalidateWindowClassesData(WindowClass::GameOptions);
 }
 
 static void EnableSingleVehSharedOrderGuiChanged(int32_t new_value)
@@ -829,8 +829,8 @@ static void EnableSingleVehSharedOrderGuiChanged(int32_t new_value)
 	for (VehicleType type = VehicleType::Begin; type < VehicleType::CompanyEnd; type++) {
 		InvalidateWindowClassesData(GetWindowClassForVehicleType(type));
 	}
-	SetWindowClassesDirty(WC_VEHICLE_TIMETABLE);
-	InvalidateWindowClassesData(WC_VEHICLE_ORDERS);
+	SetWindowClassesDirty(WindowClass::VehicleTimetable);
+	InvalidateWindowClassesData(WindowClass::VehicleOrders);
 }
 
 static void CheckYapfRailSignalPenalties(int32_t new_value)
@@ -850,8 +850,8 @@ static void ViewportMapShowTunnelModeChanged(int32_t new_value)
 
 static void ShowVehicleRouteModeChanged(int32_t new_value)
 {
-	InvalidateWindowClassesData(WC_GAME_OPTIONS);
-	InvalidateWindowClassesData(WC_VEHICLE_VIEW, VIWD_ROUTE_OVERLAY);
+	InvalidateWindowClassesData(WindowClass::GameOptions);
+	InvalidateWindowClassesData(WindowClass::VehicleView, VIWD_ROUTE_OVERLAY);
 	MarkWholeScreenDirty();
 }
 
@@ -878,14 +878,14 @@ static void UpdateLinkgraphColours(int32_t new_value)
 
 static void ClimateThresholdModeChanged(int32_t new_value)
 {
-	InvalidateWindowClassesData(WC_GENERATE_LANDSCAPE);
-	InvalidateWindowClassesData(WC_GAME_OPTIONS);
+	InvalidateWindowClassesData(WindowClass::GenerateLandscape);
+	InvalidateWindowClassesData(WindowClass::GameOptions);
 }
 
 static void VelocityUnitsChanged(int32_t new_value)
 {
-	InvalidateWindowClassesData(WC_PAYMENT_RATES);
-	InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+	InvalidateWindowClassesData(WindowClass::CargoPaymentRatesGraph);
+	InvalidateWindowClassesData(WindowClass::TraceRestrict);
 	MarkWholeScreenDirty();
 }
 
@@ -910,7 +910,7 @@ static void TrainSpeedAdaptationChanged(int32_t new_value)
 	for (Train *t : Train::Iterate()) {
 		t->signal_speed_restriction = 0;
 	}
-	SetWindowClassesDirty(WC_VEHICLE_DETAILS);
+	SetWindowClassesDirty(WindowClass::VehicleDetails);
 }
 
 static void EngineLifetimeSettingsChanged(int32_t new_value)
@@ -922,7 +922,7 @@ static void AutosaveModeChanged(int32_t new_value)
 {
 	extern void ChangeAutosaveFrequency(bool reset);
 	ChangeAutosaveFrequency(false);
-	InvalidateWindowClassesData(WC_GAME_OPTIONS);
+	InvalidateWindowClassesData(WindowClass::GameOptions);
 }
 
 static bool TownCouncilToleranceAdjust(int32_t &new_value)
@@ -936,24 +936,24 @@ static void DifficultyNoiseChange(int32_t new_value)
 	if (_game_mode == GM_NORMAL) {
 		UpdateAirportsNoise();
 		if (_settings_game.economy.station_noise_level) {
-			InvalidateWindowClassesData(WC_TOWN_VIEW, 0);
+			InvalidateWindowClassesData(WindowClass::TownView, 0);
 		}
 	}
 }
 
 static void DifficultyMoneyCheatMultiplayerChange(int32_t new_value)
 {
-	CloseWindowById(WC_CHEATS, 0);
+	CloseWindowById(WindowClass::Cheat, 0);
 }
 
 static void DifficultyRenameTownsMultiplayerChange(int32_t new_value)
 {
-	SetWindowClassesDirty(WC_TOWN_VIEW);
+	SetWindowClassesDirty(WindowClass::TownView);
 }
 
 static void DifficultyOverrideTownSettingsMultiplayerChange(int32_t new_value)
 {
-	SetWindowClassesDirty(WC_TOWN_AUTHORITY);
+	SetWindowClassesDirty(WindowClass::TownAuthority);
 }
 
 static void MaxNoAIsChange(int32_t new_value)
@@ -964,7 +964,7 @@ static void MaxNoAIsChange(int32_t new_value)
 		ShowErrorMessage(GetEncodedString(STR_WARNING_NO_SUITABLE_AI), {}, WL_CRITICAL);
 	}
 
-	InvalidateWindowClassesData(WC_GAME_OPTIONS, 0);
+	InvalidateWindowClassesData(WindowClass::GameOptions, 0);
 }
 
 /**
@@ -1111,7 +1111,7 @@ static bool CheckMapEdgeMode(int32_t &new_value)
 static void MapEdgeModeChanged(int32_t new_value)
 {
 	MarkAllViewportsDirty(new_value);
-	SetWindowClassesDirty(WC_SMALLMAP);
+	SetWindowClassesDirty(WindowClass::SmallMap);
 
 	if (_game_mode == GM_MENU || !_settings_game.construction.freeform_edges || new_value == 0) return;
 
@@ -1194,7 +1194,7 @@ static bool CheckSharingAir(int32_t &new_value)
 
 static void MaxVehiclesChanged(int32_t new_value)
 {
-	InvalidateWindowClassesData(WC_BUILD_TOOLBAR);
+	InvalidateWindowClassesData(WindowClass::BuildToolbar);
 	MarkWholeScreenDirty();
 }
 
@@ -1246,7 +1246,7 @@ static void DefaultAllowTownGrowthChanged(int32_t new_value)
 
 static void TownZoneModeChanged(int32_t new_value)
 {
-	InvalidateWindowClassesData(WC_GAME_OPTIONS);
+	InvalidateWindowClassesData(WindowClass::GameOptions);
 	UpdateTownRadii();
 }
 
@@ -1314,7 +1314,7 @@ static void UpdateClientConfigValues()
 {
 	NetworkServerUpdateGameInfo();
 
-	InvalidateWindowData(WC_CLIENT_LIST, 0);
+	InvalidateWindowData(WindowClass::NetworkClientList, 0);
 
 	if (_network_server) {
 		NetworkServerSendConfigUpdate();

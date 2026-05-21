@@ -1231,7 +1231,7 @@ void TraceRestrictProgram::DecrementRefCount(TraceRestrictRefId ref_id) {
 		extern const TraceRestrictProgram *_viewport_highlight_tracerestrict_program;
 		if (_viewport_highlight_tracerestrict_program == this) {
 			_viewport_highlight_tracerestrict_program = nullptr;
-			InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+			InvalidateWindowClassesData(WindowClass::TraceRestrict);
 		}
 		if (TraceRestrictTryRegisterBackup(this, GetTileOwner(GetTraceRestrictRefIdTileIndex(ref_id)))) {
 			/* Backup has taken responsibility for this program, do not delete. */
@@ -2274,8 +2274,8 @@ void TraceRestrictNotifySignalRemoval(TileIndex tile, Track track)
 {
 	TraceRestrictRefId ref = MakeTraceRestrictRefId(tile, track);
 	bool removed = TraceRestrictRemoveProgramMapping(ref);
-	CloseWindowById(WC_TRACE_RESTRICT, ref);
-	if (removed) InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+	CloseWindowById(WindowClass::TraceRestrict, ref);
+	if (removed) InvalidateWindowClassesData(WindowClass::TraceRestrict);
 }
 
 BaseCommandContainer<Commands::ProgramTracerestrictSignal> GetTraceRestrictCommandContainer(TileIndex tile, Track track, TraceRestrictDoCommandType type, uint32_t offset, uint32_t value)
@@ -2732,7 +2732,7 @@ CommandCost CmdProgramSignalTraceRestrict(DoCommandFlags flags, TileIndex tile, 
 		}
 
 		/* Update windows */
-		InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+		InvalidateWindowClassesData(WindowClass::TraceRestrict);
 	}
 
 	return CommandCost();
@@ -2905,7 +2905,7 @@ CommandCost CmdProgramSignalTraceRestrictMgmt(DoCommandFlags flags, TileIndex ti
 	}
 
 	/* Update windows */
-	InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+	InvalidateWindowClassesData(WindowClass::TraceRestrict);
 
 	return CommandCost();
 }
@@ -2964,7 +2964,7 @@ CommandCost CmdRestoreSignalTraceRestrict(DoCommandFlags flags, TileIndex tile, 
 	TraceRestrictCheckRefreshSignals(prog, old_size, old_actions_used_flags);
 
 	/* Update windows */
-	InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+	InvalidateWindowClassesData(WindowClass::TraceRestrict);
 
 	return CommandCost();
 }
@@ -3044,7 +3044,7 @@ void TraceRestrictRemoveDestinationID(TraceRestrictOrderCondAuxField type, Desti
 	}
 
 	/* Update windows */
-	InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+	InvalidateWindowClassesData(WindowClass::TraceRestrict);
 }
 
 /**
@@ -3063,7 +3063,7 @@ void TraceRestrictRemoveGroupID(GroupID index)
 	}
 
 	/* Update windows */
-	InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+	InvalidateWindowClassesData(WindowClass::TraceRestrict);
 }
 
 /**
@@ -3125,9 +3125,9 @@ void TraceRestrictUpdateCompanyID(CompanyID old_company, CompanyID new_company)
 	}
 
 	/* Update windows */
-	InvalidateWindowClassesData(WC_TRACE_RESTRICT);
-	InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
-	InvalidateWindowClassesData(WC_TRACE_RESTRICT_COUNTERS);
+	InvalidateWindowClassesData(WindowClass::TraceRestrict);
+	InvalidateWindowClassesData(WindowClass::TraceRestrictSlots);
+	InvalidateWindowClassesData(WindowClass::TraceRestrictCounters);
 }
 
 /**
@@ -3254,8 +3254,8 @@ void TraceRestrictSlot::AddIndex(const Vehicle *v)
 {
 	_slot_vehicle_index.insert({ v->index, this->index });
 	const_cast<Vehicle *>(v)->vehicle_flags.Set(VehicleFlag::HaveSlot);
-	SetWindowDirty(WC_VEHICLE_DETAILS, v->index);
-	InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
+	SetWindowDirty(WindowClass::VehicleDetails, v->index);
+	InvalidateWindowClassesData(WindowClass::TraceRestrictSlots);
 }
 
 /**
@@ -3280,8 +3280,8 @@ void TraceRestrictSlot::DeIndex(VehicleID id, const Vehicle *v)
 			break;
 		}
 	}
-	SetWindowDirty(WC_VEHICLE_DETAILS, id);
-	InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
+	SetWindowDirty(WindowClass::VehicleDetails, id);
+	InvalidateWindowClassesData(WindowClass::TraceRestrictSlots);
 }
 
 /** Rebuild slot vehicle index after loading */
@@ -3568,7 +3568,7 @@ void TraceRestrictRemoveVehicleFromAllSlots(VehicleID vehicle_id)
 
 	_slot_vehicle_index.erase(start, it);
 
-	if (anything_to_erase) InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
+	if (anything_to_erase) InvalidateWindowClassesData(WindowClass::TraceRestrictSlots);
 }
 
 /** Replace all instance of a vehicle ID with another, in all slot occupants */
@@ -3590,7 +3590,7 @@ void TraceRestrictTransferVehicleOccupantInAllSlots(VehicleID from, VehicleID to
 			}
 		}
 	}
-	if (!slots.empty()) InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
+	if (!slots.empty()) InvalidateWindowClassesData(WindowClass::TraceRestrictSlots);
 }
 
 /** Get list of slots occupied by a vehicle ID */
@@ -3654,10 +3654,10 @@ void TraceRestrictRemoveSlotID(TraceRestrictSlotID index)
 	});
 
 	/* Update windows */
-	InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+	InvalidateWindowClassesData(WindowClass::TraceRestrict);
 	if (changed_order) {
-		InvalidateWindowClassesData(WC_VEHICLE_ORDERS);
-		InvalidateWindowClassesData(WC_VEHICLE_TIMETABLE);
+		InvalidateWindowClassesData(WindowClass::VehicleOrders);
+		InvalidateWindowClassesData(WindowClass::VehicleTimetable);
 	}
 
 	for (SignalReference sr : TraceRestrictSlot::Get(index)->progsig_dependants) {
@@ -3724,8 +3724,8 @@ CommandCost CmdCreateTraceRestrictSlot(DoCommandFlags flags, const TraceRestrict
 		}
 
 		/* Update windows */
-		InvalidateWindowClassesData(WC_TRACE_RESTRICT);
-		InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
+		InvalidateWindowClassesData(WindowClass::TraceRestrict);
+		InvalidateWindowClassesData(WindowClass::TraceRestrictSlots);
 	} else if (data.follow_up_cmd.has_value()) {
 		TraceRestrictSlot *slot = TraceRestrictSlot::Create(_current_company, data.vehtype);
 		CommandCost follow_up_res = data.follow_up_cmd->ExecuteWithValue(slot->index.base(), flags);
@@ -3751,9 +3751,9 @@ CommandCost CmdDeleteTraceRestrictSlot(DoCommandFlags flags, TraceRestrictSlotID
 
 		delete slot;
 
-		InvalidateWindowClassesData(WC_TRACE_RESTRICT);
-		InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
-		InvalidateWindowClassesData(WC_VEHICLE_ORDERS);
+		InvalidateWindowClassesData(WindowClass::TraceRestrict);
+		InvalidateWindowClassesData(WindowClass::TraceRestrictSlots);
+		InvalidateWindowClassesData(WindowClass::VehicleOrders);
 	}
 
 	return CommandCost();
@@ -3815,10 +3815,10 @@ CommandCost CmdAlterTraceRestrictSlot(DoCommandFlags flags, TraceRestrictSlotID 
 
 	if (flags.Test(DoCommandFlag::Execute)) {
 		/* Update windows */
-		InvalidateWindowClassesData(WC_TRACE_RESTRICT);
-		InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
-		InvalidateWindowClassesData(WC_VEHICLE_ORDERS);
-		InvalidateWindowClassesData(WC_SIGNAL_PROGRAM);
+		InvalidateWindowClassesData(WindowClass::TraceRestrict);
+		InvalidateWindowClassesData(WindowClass::TraceRestrictSlots);
+		InvalidateWindowClassesData(WindowClass::VehicleOrders);
+		InvalidateWindowClassesData(WindowClass::ProgrammablePresigProgram);
 	}
 
 	return CommandCost();
@@ -3909,10 +3909,10 @@ void TraceRestrictRemoveSlotGroupID(TraceRestrictSlotGroupID index)
 	});
 
 	/* Update windows */
-	InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+	InvalidateWindowClassesData(WindowClass::TraceRestrict);
 	if (changed_order) {
-		InvalidateWindowClassesData(WC_VEHICLE_ORDERS);
-		InvalidateWindowClassesData(WC_VEHICLE_TIMETABLE);
+		InvalidateWindowClassesData(WindowClass::VehicleOrders);
+		InvalidateWindowClassesData(WindowClass::VehicleTimetable);
 	}
 
 	extern void TraceRestrictEraseRecentSlotGroup(TraceRestrictSlotGroupID index);
@@ -3949,7 +3949,7 @@ CommandCost CmdCreateTraceRestrictSlotGroup(DoCommandFlags flags, VehicleType ve
 		result.SetResultData(slot_group->index);
 
 		/* Update windows */
-		InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
+		InvalidateWindowClassesData(WindowClass::TraceRestrictSlots);
 	}
 
 	return result;
@@ -4004,9 +4004,9 @@ CommandCost CmdAlterTraceRestrictSlotGroup(DoCommandFlags flags, TraceRestrictSl
 	}
 
 	if (flags.Test(DoCommandFlag::Execute)) {
-		InvalidateWindowClassesData(WC_TRACE_RESTRICT);
-		InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
-		InvalidateWindowClassesData(WC_VEHICLE_ORDERS);
+		InvalidateWindowClassesData(WindowClass::TraceRestrict);
+		InvalidateWindowClassesData(WindowClass::TraceRestrictSlots);
+		InvalidateWindowClassesData(WindowClass::VehicleOrders);
 	}
 
 	return CommandCost();
@@ -4041,9 +4041,9 @@ CommandCost CmdDeleteTraceRestrictSlotGroup(DoCommandFlags flags, TraceRestrictS
 
 		delete slot_group;
 
-		InvalidateWindowClassesData(WC_TRACE_RESTRICT);
-		InvalidateWindowClassesData(WC_TRACE_RESTRICT_SLOTS);
-		InvalidateWindowClassesData(WC_VEHICLE_ORDERS);
+		InvalidateWindowClassesData(WindowClass::TraceRestrict);
+		InvalidateWindowClassesData(WindowClass::TraceRestrictSlots);
+		InvalidateWindowClassesData(WindowClass::VehicleOrders);
 	}
 
 	return CommandCost();
@@ -4054,7 +4054,7 @@ void TraceRestrictCounter::UpdateValue(int32_t new_value)
 	new_value = std::max<int32_t>(0, new_value);
 	if (new_value != this->value) {
 		this->value = new_value;
-		InvalidateWindowClassesData(WC_TRACE_RESTRICT_COUNTERS);
+		InvalidateWindowClassesData(WindowClass::TraceRestrictCounters);
 		for (SignalReference sr : this->progsig_dependants) {
 			AddTrackToSignalBuffer(sr.tile, sr.track, GetTileOwner(sr.tile));
 			UpdateSignalsInBuffer();
@@ -4137,10 +4137,10 @@ void TraceRestrictRemoveCounterID(TraceRestrictCounterID index)
 	});
 
 	/* Update windows */
-	InvalidateWindowClassesData(WC_TRACE_RESTRICT);
+	InvalidateWindowClassesData(WindowClass::TraceRestrict);
 	if (changed_order) {
-		InvalidateWindowClassesData(WC_VEHICLE_ORDERS);
-		InvalidateWindowClassesData(WC_VEHICLE_TIMETABLE);
+		InvalidateWindowClassesData(WindowClass::VehicleOrders);
+		InvalidateWindowClassesData(WindowClass::VehicleTimetable);
 	}
 
 	for (SignalReference sr : TraceRestrictCounter::Get(index)->progsig_dependants) {
@@ -4186,8 +4186,8 @@ CommandCost CmdCreateTraceRestrictCounter(DoCommandFlags flags, const TraceRestr
 		}
 
 		/* Update windows */
-		InvalidateWindowClassesData(WC_TRACE_RESTRICT);
-		InvalidateWindowClassesData(WC_TRACE_RESTRICT_COUNTERS);
+		InvalidateWindowClassesData(WindowClass::TraceRestrict);
+		InvalidateWindowClassesData(WindowClass::TraceRestrictCounters);
 	} else if (data.follow_up_cmd.has_value()) {
 		TraceRestrictCounter *ctr = TraceRestrictCounter::Create(_current_company);
 		CommandCost follow_up_res = data.follow_up_cmd->ExecuteWithValue(ctr->index.base(), flags);
@@ -4213,9 +4213,9 @@ CommandCost CmdDeleteTraceRestrictCounter(DoCommandFlags flags, TraceRestrictCou
 
 		delete ctr;
 
-		InvalidateWindowClassesData(WC_TRACE_RESTRICT);
-		InvalidateWindowClassesData(WC_TRACE_RESTRICT_COUNTERS);
-		InvalidateWindowClassesData(WC_VEHICLE_ORDERS);
+		InvalidateWindowClassesData(WindowClass::TraceRestrict);
+		InvalidateWindowClassesData(WindowClass::TraceRestrictCounters);
+		InvalidateWindowClassesData(WindowClass::VehicleOrders);
 	}
 
 	return CommandCost();
@@ -4261,10 +4261,10 @@ CommandCost CmdAlterTraceRestrictCounter(DoCommandFlags flags, TraceRestrictCoun
 
 	if (flags.Test(DoCommandFlag::Execute)) {
 		/* Update windows */
-		InvalidateWindowClassesData(WC_TRACE_RESTRICT);
-		InvalidateWindowClassesData(WC_TRACE_RESTRICT_COUNTERS);
-		InvalidateWindowClassesData(WC_VEHICLE_ORDERS);
-		InvalidateWindowClassesData(WC_SIGNAL_PROGRAM);
+		InvalidateWindowClassesData(WindowClass::TraceRestrict);
+		InvalidateWindowClassesData(WindowClass::TraceRestrictCounters);
+		InvalidateWindowClassesData(WindowClass::VehicleOrders);
+		InvalidateWindowClassesData(WindowClass::ProgrammablePresigProgram);
 	}
 
 	return CommandCost();

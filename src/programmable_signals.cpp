@@ -540,7 +540,7 @@ SignalProgram *GetSignalProgram(SignalReference ref)
 
 void FreeSignalProgram(SignalReference ref)
 {
-	CloseWindowById(WC_SIGNAL_PROGRAM, (ref.tile.base() << 3) | ref.track);
+	CloseWindowById(WindowClass::ProgrammablePresigProgram, (ref.tile.base() << 3) | ref.track);
 	ProgramList::iterator i = _signal_programs.find(ref);
 	if (i != _signal_programs.end()) {
 		delete i->second;
@@ -592,7 +592,7 @@ void RemoveProgramDependencies(SignalReference dependency_target, SignalReferenc
 		}
 	}
 
-	InvalidateWindowData(WC_SIGNAL_PROGRAM, (signal_to_update.tile.base() << 3) | signal_to_update.track);
+	InvalidateWindowData(WindowClass::ProgrammablePresigProgram, (signal_to_update.tile.base() << 3) | signal_to_update.track);
 	AddTrackToSignalBuffer(signal_to_update.tile, signal_to_update.track, GetTileOwner(signal_to_update.tile));
 	UpdateSignalsInBuffer();
 }
@@ -613,7 +613,7 @@ void RemoveProgramSlotDependencies(TraceRestrictSlotID slot_being_removed, Signa
 		}
 	}
 
-	InvalidateWindowData(WC_SIGNAL_PROGRAM, (signal_to_update.tile.base() << 3) | signal_to_update.track);
+	InvalidateWindowData(WindowClass::ProgrammablePresigProgram, (signal_to_update.tile.base() << 3) | signal_to_update.track);
 	AddTrackToSignalBuffer(signal_to_update.tile, signal_to_update.track, GetTileOwner(signal_to_update.tile));
 	UpdateSignalsInBuffer();
 }
@@ -634,7 +634,7 @@ void RemoveProgramCounterDependencies(TraceRestrictCounterID ctr_being_removed, 
 		}
 	}
 
-	InvalidateWindowData(WC_SIGNAL_PROGRAM, (signal_to_update.tile.base() << 3) | signal_to_update.track);
+	InvalidateWindowData(WindowClass::ProgrammablePresigProgram, (signal_to_update.tile.base() << 3) | signal_to_update.track);
 	AddTrackToSignalBuffer(signal_to_update.tile, signal_to_update.track, GetTileOwner(signal_to_update.tile));
 	UpdateSignalsInBuffer();
 }
@@ -715,7 +715,7 @@ CommandCost CmdProgPresigInsertInstruction(DoCommandFlags flags, TileIndex tile,
 	if (!exec) return CommandCost();
 	AddTrackToSignalBuffer(tile, track, GetTileOwner(tile));
 	UpdateSignalsInBuffer();
-	InvalidateWindowData(WC_SIGNAL_PROGRAM, (tile.base() << 3) | track);
+	InvalidateWindowData(WindowClass::ProgrammablePresigProgram, (tile.base() << 3) | track);
 	return CommandCost();
 }
 
@@ -895,7 +895,7 @@ CommandCost CmdProgPresigModifyInstruction(DoCommandFlags flags, TileIndex tile,
 
 	AddTrackToSignalBuffer(tile, track, GetTileOwner(tile));
 	UpdateSignalsInBuffer();
-	InvalidateWindowData(WC_SIGNAL_PROGRAM, (tile.base() << 3) | track);
+	InvalidateWindowData(WindowClass::ProgrammablePresigProgram, (tile.base() << 3) | track);
 	return CommandCost();
 }
 
@@ -941,7 +941,7 @@ CommandCost CmdProgPresigRemoveInstruction(DoCommandFlags flags, TileIndex tile,
 	if (!exec) return CommandCost();
 	AddTrackToSignalBuffer(tile, track, GetTileOwner(tile));
 	UpdateSignalsInBuffer();
-	InvalidateWindowData(WC_SIGNAL_PROGRAM, (tile.base() << 3) | track);
+	InvalidateWindowData(WindowClass::ProgrammablePresigProgram, (tile.base() << 3) | track);
 	return CommandCost();
 }
 
@@ -1075,7 +1075,7 @@ CommandCost CmdProgPresigProgramMgmt(DoCommandFlags flags, TileIndex tile, Track
 	if (exec) {
 		AddTrackToSignalBuffer(tile, track, GetTileOwner(tile));
 		UpdateSignalsInBuffer();
-		InvalidateWindowData(WC_SIGNAL_PROGRAM, (tile.base() << 3) | track);
+		InvalidateWindowData(WindowClass::ProgrammablePresigProgram, (tile.base() << 3) | track);
 	}
 	return CommandCost();
 }

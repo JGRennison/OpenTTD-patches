@@ -100,8 +100,8 @@ static WindowDesc _template_create_window_desc(__FILE__, __LINE__,
 	WindowPosition::Automatic,                       // window position
 	"template_create",              // const char* ini_key
 	456, 100,                       // window size
-	WC_CREATE_TEMPLATE,             // window class
-	WC_TEMPLATEGUI_MAIN,            // parent window class
+	WindowClass::TemplateReplacementCreateTemplate,             // window class
+	WindowClass::TemplateReplacementGuiMain,            // parent window class
 	WindowDefaultFlag::Construction,// window flags
 	_template_create_window_widgets
 );
@@ -176,8 +176,8 @@ public:
 
 		/* more cleanup */
 		*this->create_window_open = false;
-		CloseWindowById(WC_BUILD_VIRTUAL_TRAIN, this->window_number);
-		InvalidateWindowClassesData(WC_TEMPLATEGUI_MAIN);
+		CloseWindowById(WindowClass::BuildVirtualTrain, this->window_number);
+		InvalidateWindowClassesData(WindowClass::TemplateReplacementGuiMain);
 		this->Window::Close();
 	}
 
@@ -697,7 +697,7 @@ public:
 
 void ShowTemplateCreateWindow(TemplateVehicle *to_edit, bool *create_window_open)
 {
-	if (BringWindowToFrontById(WC_CREATE_TEMPLATE, VehicleType::Train) != nullptr) return;
+	if (BringWindowToFrontById(WindowClass::TemplateReplacementCreateTemplate, VehicleType::Train) != nullptr) return;
 	new TemplateCreateWindow(_template_create_window_desc, to_edit, create_window_open);
 }
 
@@ -708,7 +708,7 @@ void CcSetVirtualTrain(const CommandCost &result)
 	auto veh_id = result.GetResultData<VehicleID>();
 	if (!veh_id.has_value()) return;
 
-	Window *window = FindWindowById(WC_CREATE_TEMPLATE, 0);
+	Window *window = FindWindowById(WindowClass::TemplateReplacementCreateTemplate, 0);
 	if (window != nullptr) {
 		Train *train = Train::From(Vehicle::Get(*veh_id));
 		((TemplateCreateWindow *)window)->SetVirtualTrain(train);
@@ -720,7 +720,7 @@ void CcVirtualTrainWagonsMoved(const CommandCost &result)
 {
 	if (result.Failed()) return;
 
-	Window *window = FindWindowById(WC_CREATE_TEMPLATE, 0);
+	Window *window = FindWindowById(WindowClass::TemplateReplacementCreateTemplate, 0);
 	if (window != nullptr) {
 		((TemplateCreateWindow *)window)->RearrangeVirtualTrain();
 		window->InvalidateData();
@@ -731,7 +731,7 @@ void CcDeleteVirtualTrain(const CommandCost &result, VehicleID veh_id, SellVehic
 {
 	if (result.Failed()) return;
 
-	Window *window = FindWindowById(WC_CREATE_TEMPLATE, 0);
+	Window *window = FindWindowById(WindowClass::TemplateReplacementCreateTemplate, 0);
 	if (window != nullptr) {
 		((TemplateCreateWindow *)window)->VirtualVehicleDeleted(veh_id);
 		window->InvalidateData();

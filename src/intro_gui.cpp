@@ -422,9 +422,10 @@ static constexpr std::initializer_list<NWidgetPart> _nested_select_game_widgets 
 	EndContainer(),
 };
 
+/** Window definition for the select game window. */
 static WindowDesc _select_game_desc(__FILE__, __LINE__,
 	WindowPosition::Center, nullptr, 0, 0,
-	WC_SELECT_GAME, WC_NONE,
+	WindowClass::SelectGame, WindowClass::None,
 	WindowDefaultFlag::NoClose,
 	_nested_select_game_widgets
 );
@@ -645,7 +646,7 @@ static constexpr NWidgetPart _nested_traditional_select_game_widgets[] = {
 
 static WindowDesc _traditional_select_game_desc(__FILE__, __LINE__,
 	WindowPosition::Center, nullptr, 0, 0,
-	WC_SELECT_GAME, WC_NONE,
+	WindowClass::SelectGame, WindowClass::None,
 	WindowDefaultFlag::NoClose,
 	_nested_traditional_select_game_widgets
 );
