@@ -4735,6 +4735,11 @@ void ReloadNewGRFData()
 		rail_type_label_map[rt] = GetRailTypeInfo(rt)->label;
 	}
 
+	std::vector<std::pair<EngineID, CompanyMask>> hidden_vehicles;
+	for (const Engine *e : Engine::Iterate()) {
+		if (e->company_hidden.Any()) hidden_vehicles.emplace_back(e->index, e->company_hidden);
+	}
+
 	/* reload grf data */
 	GfxLoadSprites();
 	RecomputePrices();
@@ -4772,6 +4777,11 @@ void ReloadNewGRFData()
 			RailType secondary = GetTileSecondaryRailTypeIfValid(t);
 			if (secondary != INVALID_RAILTYPE) SetSecondaryRailType(t, rail_type_translate_map[secondary]);
 		}
+	}
+
+	for (auto [eid, hidden] : hidden_vehicles) {
+		Engine *e = Engine::GetIfValid(eid);
+		if (e != nullptr) e->company_hidden = hidden;
 	}
 
 	UpdateExtraAspectsVariable();
