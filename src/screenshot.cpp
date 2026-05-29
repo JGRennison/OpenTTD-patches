@@ -423,12 +423,12 @@ static void ShowScreenshotResultMessage(ScreenshotType t, bool ret)
 {
 	if (ret) {
 		if (t == SC_HEIGHTMAP) {
-			ShowErrorMessage(GetEncodedString(STR_MESSAGE_HEIGHTMAP_SUCCESSFULLY, _screenshot_name, _heightmap_highest_peak), {}, WL_WARNING);
+			ShowErrorMessage(GetEncodedString(STR_MESSAGE_HEIGHTMAP_SUCCESSFULLY, _screenshot_name, _heightmap_highest_peak), {}, WarningLevel::Warning);
 		} else {
-			ShowErrorMessage(GetEncodedString(STR_MESSAGE_SCREENSHOT_SUCCESSFULLY, _screenshot_name), {}, WL_WARNING);
+			ShowErrorMessage(GetEncodedString(STR_MESSAGE_SCREENSHOT_SUCCESSFULLY, _screenshot_name), {}, WarningLevel::Warning);
 		}
 	} else {
-		ShowErrorMessage(GetEncodedString(STR_ERROR_SCREENSHOT_FAILED), {}, WL_ERROR);
+		ShowErrorMessage(GetEncodedString(STR_ERROR_SCREENSHOT_FAILED), {}, WarningLevel::Error);
 	}
 }
 

@@ -397,7 +397,7 @@ static void DrawRailCatenaryRailway(const TileInfo *ti)
 		if (IsTunnelTile(neighbour) && i != GetTunnelBridgeDirection(neighbour)) wire_config[TileSource::Neighbour] = track_config[TileSource::Neighbour] = TRACK_BIT_NONE;
 
 		/* Ignore station tiles that allow neither wires nor pylons. */
-		if (IsRailStationTile(neighbour) && !CanStationTileHavePylons(neighbour) && !CanStationTileHaveWires(neighbour)) wire_config[TileSource::Neighbour] = track_config[TileSource::Neighbour] = TRACK_BIT_NONE;
+		if (HasStationTileRail(neighbour) && !CanStationTileHavePylons(neighbour) && !CanStationTileHaveWires(neighbour)) wire_config[TileSource::Neighbour] = track_config[TileSource::Neighbour] = TRACK_BIT_NONE;
 
 		/* If the neighboured tile does not smoothly connect to the current tile (because of a foundation),
 		 * we have to draw all pillars on the current tile. */
@@ -477,7 +477,7 @@ static void DrawRailCatenaryRailway(const TileInfo *ti)
 		ViewportSortableSpriteSpecialFlags special_flags = VSSF_NONE;
 
 		if (IsBridgeAbove(ti->tile)) {
-			Track bridgetrack = GetBridgeAxis(ti->tile) == AXIS_X ? TRACK_X : TRACK_Y;
+			Track bridgetrack = AxisToTrack(GetBridgeAxis(ti->tile));
 			int height = GetBridgeHeight(GetNorthernBridgeEnd(ti->tile));
 
 			int max_z = GetTileMaxZ(ti->tile);
@@ -490,7 +490,7 @@ static void DrawRailCatenaryRailway(const TileInfo *ti)
 		}
 
 		if (ppp_allowed[i].Any() && pcp_status.Test(i) && !override_pcp.Test(i) &&
-				(!IsRailStationTile(ti->tile) || CanStationTileHavePylons(ti->tile))) {
+				(!HasStationTileRail(ti->tile) || CanStationTileHavePylons(ti->tile))) {
 
 			const auto &ppp_orders = _ppp_order[i][GetTileLocationGroup(ti->tile)];
 			for (Direction k = DIR_BEGIN; k < DIR_END; k++) {
@@ -527,7 +527,7 @@ static void DrawRailCatenaryRailway(const TileInfo *ti)
 	}
 
 	/* Don't draw a wire if the station tile does not want any */
-	if (IsRailStationTile(ti->tile) && !CanStationTileHaveWires(ti->tile)) return;
+	if (HasStationTileRail(ti->tile) && !CanStationTileHaveWires(ti->tile)) return;
 
 	Track halftile_track;
 	switch (halftile_corner) {

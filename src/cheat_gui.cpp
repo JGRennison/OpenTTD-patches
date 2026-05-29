@@ -165,7 +165,7 @@ static int32_t ClickChangeMaxHlCheat(int32_t new_value, int32_t change_direction
 	 * If yes, disallow the change. */
 	for (TileIndex t(0); t < Map::Size(); t++) {
 		if ((int32_t)TileHeight(t) > new_value) {
-			ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN), {}, WL_ERROR);
+			ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN), {}, WarningLevel::Error);
 			/* Return old, unchanged value */
 			return _settings_game.construction.map_height_limit;
 		}

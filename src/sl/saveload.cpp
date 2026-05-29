@@ -3829,7 +3829,7 @@ static const SaveLoadFormat *GetSavegameFormat(std::string_view full_name, uint8
 						ShowErrorMessage(
 							GetEncodedString(STR_CONFIG_ERROR),
 							GetEncodedString(STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_LEVEL, complevel),
-							WL_CRITICAL);
+							WarningLevel::Critical);
 					} else {
 						*compression_level = *level;
 					}
@@ -3841,7 +3841,7 @@ static const SaveLoadFormat *GetSavegameFormat(std::string_view full_name, uint8
 		ShowErrorMessage(
 			GetEncodedString(STR_CONFIG_ERROR),
 			GetEncodedString(STR_CONFIG_ERROR_INVALID_SAVEGAME_COMPRESSION_ALGORITHM, name, def->name),
-			WL_CRITICAL);
+			WarningLevel::Critical);
 	}
 	*compression_level = def->default_compression;
 	return def;
@@ -3928,7 +3928,7 @@ EncodedString GetSaveLoadErrorMessage()
 /** Show a gui message when saving has failed */
 static void SaveFileError()
 {
-	ShowErrorMessage(GetSaveLoadErrorType(), GetSaveLoadErrorMessage(), WL_ERROR);
+	ShowErrorMessage(GetSaveLoadErrorType(), GetSaveLoadErrorMessage(), WarningLevel::Error);
 	SaveFileDone();
 }
 
@@ -4424,7 +4424,7 @@ SaveLoadResult SaveOrLoad(const std::string &filename, SaveLoadOperation fop, De
 	/* An instance of saving is already active, so don't go saving again */
 	if (_sl.saveinprogress && fop == SaveLoadOperation::Save && dft == DetailedFileType::GameFile && threaded) {
 		/* if not an autosave, but a user action, show error message */
-		if (!_do_autosave) ShowErrorMessage(GetEncodedString(STR_ERROR_SAVE_STILL_IN_PROGRESS), {}, WL_ERROR);
+		if (!_do_autosave) ShowErrorMessage(GetEncodedString(STR_ERROR_SAVE_STILL_IN_PROGRESS), {}, WarningLevel::Error);
 		return SaveLoadResult::Ok;
 	}
 	WaitTillSaved();
@@ -4543,7 +4543,7 @@ void DoAutoOrNetsave(FiosNumberedSaveName &counter, bool threaded, FiosNumberedS
 
 	Debug(sl, 2, "Autosaving to '{}'", filename);
 	if (SaveOrLoad(filename, SaveLoadOperation::Save, DetailedFileType::GameFile, Subdirectory::Autosave, threaded, SMF_ZSTD_OK) != SaveLoadResult::Ok) {
-		ShowErrorMessage(GetEncodedString(STR_ERROR_AUTOSAVE_FAILED), {}, WL_ERROR);
+		ShowErrorMessage(GetEncodedString(STR_ERROR_AUTOSAVE_FAILED), {}, WarningLevel::Error);
 	}
 }
 

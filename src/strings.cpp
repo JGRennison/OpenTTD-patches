@@ -2999,7 +2999,7 @@ void CheckForMissingGlyphs(MissingGlyphSearcher *searcher)
 			format_buffer err_str;
 			err_str.push_back_utf8(SCC_YELLOW);
 			err_str.append("The current font is missing some of the characters used in the texts for this language. Using system fallback font instead.");
-			ShowErrorMessage(GetEncodedRawString(err_str), {}, WL_WARNING);
+			ShowErrorMessage(GetEncodedRawString(err_str), {}, WarningLevel::Warning);
 		}
 	}
 #endif
@@ -3016,7 +3016,7 @@ void CheckForMissingGlyphs(MissingGlyphSearcher *searcher)
 		format_buffer err_str;
 		err_str.push_back_utf8(SCC_YELLOW);
 		err_str.append("The current font is missing some of the characters used in the texts for this language. Go to Help & Manuals > Fonts, or read the file docs/fonts.md in your OpenTTD directory, to see how to solve this.");
-		ShowErrorMessage(GetEncodedRawString(err_str), {}, WL_WARNING);
+		ShowErrorMessage(GetEncodedRawString(err_str), {}, WarningLevel::Warning);
 		return;
 	}
 
@@ -3034,7 +3034,7 @@ void CheckForMissingGlyphs(MissingGlyphSearcher *searcher)
 		format_buffer err_str;
 		err_str.push_back_utf8(SCC_YELLOW);
 		err_str.append("This version of OpenTTD does not support right-to-left languages. Recompile with ICU + Harfbuzz enabled.");
-		ShowErrorMessage(GetEncodedRawString(err_str), {}, WL_ERROR);
+		ShowErrorMessage(GetEncodedRawString(err_str), {}, WarningLevel::Error);
 	}
 #endif /* !(WITH_ICU_I18N && WITH_HARFBUZZ) && !WITH_UNISCRIBE && !WITH_COCOA */
 }

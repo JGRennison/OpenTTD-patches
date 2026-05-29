@@ -388,7 +388,7 @@ static bool CheckMapSize(bool print_warning = true)
 
 	if (_settings_newgame.game_creation.map_x + _settings_newgame.game_creation.map_y > MAX_MAP_TILES_BITS) {
 		if (print_warning) {
-			ShowErrorMessage(GetEncodedString(STR_MAPGEN_TOO_MANY_TILES_MESSAGE, MAX_MAP_TILES, tiles), {}, WL_ERROR, 0, 0);
+			ShowErrorMessage(GetEncodedString(STR_MAPGEN_TOO_MANY_TILES_MESSAGE, MAX_MAP_TILES, tiles), {}, WarningLevel::Error, 0, 0);
 		}
 		return false;
 	}

@@ -1476,7 +1476,7 @@ bool AfterLoadGame()
 							MakeRailNormal(
 								t,
 								GetTileOwner(t),
-								axis == AXIS_X ? TRACK_BIT_Y : TRACK_BIT_X,
+								AxisToTrackBits(OtherAxis(axis)),
 								GetRailType(t)
 							);
 						} else {
@@ -1486,7 +1486,7 @@ bool AfterLoadGame()
 							SetTileType(t, TileType::Road);
 							_m[t].m2 = town.base();
 							_m[t].m3 = 0;
-							_m[t].m5 = (axis == AXIS_X ? ROAD_Y : ROAD_X).base() | to_underlying(RoadTileType::Normal) << 6;
+							_m[t].m5 = AxisToRoadBits(OtherAxis(axis)).base() | to_underlying(RoadTileType::Normal) << 6;
 							SB(_me[t].m6, 2, 4, 0);
 							_me[t].m7 = 1 << 6;
 							SetRoadOwner(t, RoadTramType::Tram, OWNER_NONE);
@@ -2427,7 +2427,7 @@ bool AfterLoadGame()
 		 * There would be trams without tram track under causing crashes sooner or later. */
 		for (RoadVehicle *v : RoadVehicle::IterateFrontOnly()) {
 			if (EngInfo(v->engine_type)->misc_flags.Test(EngineMiscFlag::RoadIsTram)) {
-				ShowErrorMessage(GetEncodedString(STR_WARNING_LOADGAME_REMOVED_TRAMS), {}, WL_CRITICAL);
+				ShowErrorMessage(GetEncodedString(STR_WARNING_LOADGAME_REMOVED_TRAMS), {}, WarningLevel::Critical);
 				delete v;
 			}
 		}
@@ -4677,8 +4677,8 @@ bool AfterLoadGame()
 
 	/* Show this message last to avoid covering up an error message if we bail out part way */
 	switch (gcf_res) {
-		case GRFListCompatibility::Compatible: ShowErrorMessage(GetEncodedString(STR_NEWGRF_COMPATIBLE_LOAD_WARNING), {}, WL_CRITICAL); break;
-		case GRFListCompatibility::NotFound:   ShowErrorMessage(GetEncodedString(STR_NEWGRF_DISABLED_WARNING), {}, WL_CRITICAL); _pause_mode = PauseMode::Error; break;
+		case GRFListCompatibility::Compatible: ShowErrorMessage(GetEncodedString(STR_NEWGRF_COMPATIBLE_LOAD_WARNING), {}, WarningLevel::Critical); break;
+		case GRFListCompatibility::NotFound:   ShowErrorMessage(GetEncodedString(STR_NEWGRF_DISABLED_WARNING), {}, WarningLevel::Critical); _pause_mode = PauseMode::Error; break;
 		default: break;
 	}
 

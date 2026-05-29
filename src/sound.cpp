@@ -120,9 +120,8 @@ static void StartSound(SoundID sound_id, float pan, uint volume)
 	MxActivateChannel(mc);
 }
 
-
-static const uint8_t _vol_factor_by_zoom[] = {255, 255, 255, 190, 134, 87, 10, 1, 1, 1};
-static_assert(lengthof(_vol_factor_by_zoom) == to_underlying(ZoomLevel::End));
+/** Volume scaling for each zoom level. */
+static constexpr EnumIndexArray<uint8_t, ZoomLevel, ZoomLevel::End> _vol_factor_by_zoom{255, 255, 255, 190, 134, 87, 10, 1, 1, 1};
 
 static const uint8_t _sound_base_vol[] = {
 	128,  90, 128, 128, 128, 128, 128, 128,
@@ -216,7 +215,7 @@ static void SndPlayScreenCoordFx(SoundID sound, int left, int right, int top, in
 			StartSound(
 				sound,
 				panning,
-				_vol_factor_by_zoom[to_underlying(vp->zoom)]
+				_vol_factor_by_zoom[vp->zoom]
 			);
 			return;
 		}

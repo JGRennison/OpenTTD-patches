@@ -639,7 +639,7 @@ void AfterLoadVehiclesRemoveAnyFoundInvalid()
 {
 	if (!_load_invalid_vehicles_to_delete.empty()) {
 		Debug(sl, 0, "Removing {} vehicles found to be uncorrectably invalid during load", _load_invalid_vehicles_to_delete.size());
-		ShowErrorMessage(GetEncodedString(STR_WARNING_LOADGAME_REMOVED_UNCORRECTABLE_VEHICLES, _load_invalid_vehicles_to_delete.size()), {}, WL_CRITICAL);
+		ShowErrorMessage(GetEncodedString(STR_WARNING_LOADGAME_REMOVED_UNCORRECTABLE_VEHICLES, _load_invalid_vehicles_to_delete.size()), {}, WarningLevel::Critical);
 		GroupStatistics::UpdateAfterLoad();
 
 		RegisterGameEvents(GEF_RM_INVALID_RV);

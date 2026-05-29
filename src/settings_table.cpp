@@ -507,7 +507,7 @@ static bool CheckTrainBrakingModelChange(int32_t &new_value)
 				uint signals = GetPresentSignals(t);
 				if ((signals & 0x3) & ((signals & 0x3) - 1) || (signals & 0xC) & ((signals & 0xC) - 1)) {
 					/* Signals in both directions */
-					ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_REALISTIC_BRAKING_SIGNALS_NOT_ALLOWED), {}, WL_ERROR);
+					ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_REALISTIC_BRAKING_SIGNALS_NOT_ALLOWED), {}, WarningLevel::Error);
 					ShowExtraViewportWindow(t);
 					SetRedErrorSquare(t);
 					return false;
@@ -515,7 +515,7 @@ static bool CheckTrainBrakingModelChange(int32_t &new_value)
 				if (((signals & 0x3) && IsSignalTypeUnsuitableForRealisticBraking(GetSignalType(t, TRACK_LOWER))) ||
 						((signals & 0xC) && IsSignalTypeUnsuitableForRealisticBraking(GetSignalType(t, TRACK_UPPER)))) {
 					/* Banned signal types present */
-					ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_REALISTIC_BRAKING_SIGNALS_NOT_ALLOWED), {}, WL_ERROR);
+					ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_REALISTIC_BRAKING_SIGNALS_NOT_ALLOWED), {}, WarningLevel::Error);
 					ShowExtraViewportWindow(t);
 					SetRedErrorSquare(t);
 					return false;
@@ -961,7 +961,7 @@ static void MaxNoAIsChange(int32_t new_value)
 	if (GetGameSettings().difficulty.max_no_competitors != 0 &&
 			AI::GetInfoList()->size() == 0 &&
 			!IsNonAdminNetworkClient()) {
-		ShowErrorMessage(GetEncodedString(STR_WARNING_NO_SUITABLE_AI), {}, WL_CRITICAL);
+		ShowErrorMessage(GetEncodedString(STR_WARNING_NO_SUITABLE_AI), {}, WarningLevel::Critical);
 	}
 
 	InvalidateWindowClassesData(WindowClass::GameOptions, 0);
@@ -1005,39 +1005,39 @@ static bool CheckFreeformEdges(int32_t &new_value)
 		for (Ship *s : Ship::Iterate()) {
 			/* Check if there is a ship on the northern border. */
 			if (TileX(s->tile) == 0 || TileY(s->tile) == 0) {
-				ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_EDGES_NOT_EMPTY), {}, WL_ERROR);
+				ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_EDGES_NOT_EMPTY), {}, WarningLevel::Error);
 				return false;
 			}
 		}
 		for (const BaseStation *st : BaseStation::Iterate()) {
 			/* Check if there is a non-deleted buoy on the northern border. */
 			if (st->IsInUse() && (TileX(st->xy) == 0 || TileY(st->xy) == 0)) {
-				ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_EDGES_NOT_EMPTY), {}, WL_ERROR);
+				ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_EDGES_NOT_EMPTY), {}, WarningLevel::Error);
 				return false;
 			}
 		}
 	} else {
 		for (uint i = 0; i < Map::MaxX(); i++) {
 			if (TileHeight(TileXY(i, 1)) != 0) {
-				ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_EDGES_NOT_WATER), {}, WL_ERROR);
+				ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_EDGES_NOT_WATER), {}, WarningLevel::Error);
 				return false;
 			}
 		}
 		for (uint i = 1; i < Map::MaxX(); i++) {
 			if (!IsTileType(TileXY(i, Map::MaxY() - 1), TileType::Water) || TileHeight(TileXY(1, Map::MaxY())) != 0) {
-				ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_EDGES_NOT_WATER), {}, WL_ERROR);
+				ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_EDGES_NOT_WATER), {}, WarningLevel::Error);
 				return false;
 			}
 		}
 		for (uint i = 0; i < Map::MaxY(); i++) {
 			if (TileHeight(TileXY(1, i)) != 0) {
-				ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_EDGES_NOT_WATER), {}, WL_ERROR);
+				ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_EDGES_NOT_WATER), {}, WarningLevel::Error);
 				return false;
 			}
 		}
 		for (uint i = 1; i < Map::MaxY(); i++) {
 			if (!IsTileType(TileXY(Map::MaxX() - 1, i), TileType::Water) || TileHeight(TileXY(Map::MaxX(), i)) != 0) {
-				ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_EDGES_NOT_WATER), {}, WL_ERROR);
+				ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_EDGES_NOT_WATER), {}, WarningLevel::Error);
 				return false;
 			}
 		}
@@ -1101,7 +1101,7 @@ static bool CheckMapEdgeMode(int32_t &new_value)
 	if (_game_mode == GM_MENU || !_settings_game.construction.freeform_edges || new_value == 0) return true;
 
 	if (!CheckMapEdgesAreWater(true)) {
-		ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_EDGES_NOT_WATER), {}, WL_ERROR);
+		ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_EDGES_NOT_WATER), {}, WarningLevel::Error);
 		return false;
 	}
 
@@ -1135,7 +1135,7 @@ static bool CheckDynamicEngines(int32_t &new_value)
 	if (_game_mode == GM_MENU) return true;
 
 	if (!EngineOverrideManager::ResetToCurrentNewGRFConfig()) {
-		ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_DYNAMIC_ENGINES_EXISTING_VEHICLES), {}, WL_ERROR);
+		ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_DYNAMIC_ENGINES_EXISTING_VEHICLES), {}, WarningLevel::Error);
 		return false;
 	}
 
@@ -1151,7 +1151,7 @@ static bool CheckMaxHeightLevel(int32_t &new_value)
 	 * If yes, disallow the change. */
 	for (TileIndex t(0); t < Map::Size(); t++) {
 		if ((int32_t)TileHeight(t) > new_value) {
-			ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN), {}, WL_ERROR);
+			ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_TOO_HIGH_MOUNTAIN), {}, WarningLevel::Error);
 			/* Return old, unchanged value */
 			return false;
 		}
@@ -1259,7 +1259,7 @@ static bool CheckTTDPatchSettingFlag(uint flag)
 {
 	extern bool HasTTDPatchFlagBeenObserved(uint flag);
 	if (_networking && HasTTDPatchFlagBeenObserved(flag)) {
-		ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_NETWORK_CHANGE_NOT_ALLOWED), GetEncodedString(STR_CONFIG_SETTING_NETWORK_CHANGE_NOT_ALLOWED_NEWGRF), WL_ERROR);
+		ShowErrorMessage(GetEncodedString(STR_CONFIG_SETTING_NETWORK_CHANGE_NOT_ALLOWED), GetEncodedString(STR_CONFIG_SETTING_NETWORK_CHANGE_NOT_ALLOWED_NEWGRF), WarningLevel::Error);
 		return false;
 	}
 

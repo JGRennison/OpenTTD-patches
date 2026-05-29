@@ -891,7 +891,7 @@ static const DrawTileSpriteSpan _station_display_datas_waypoint[] = {
  * As these are drawn/build like stations, they may use the same number of layouts. */
 static_assert(lengthof(_station_display_datas_rail) == lengthof(_station_display_datas_waypoint));
 
-static const std::array<std::span<const DrawTileSpriteSpan>, to_underlying(StationType::End)> _station_display_datas = {{
+static constexpr EnumIndexArray<std::span<const DrawTileSpriteSpan>, StationType, StationType::End> _station_display_datas{
 	_station_display_datas_rail,
 	_station_display_datas_airport,
 	_station_display_datas_truck,
@@ -901,4 +901,4 @@ static const std::array<std::span<const DrawTileSpriteSpan>, to_underlying(Stati
 	_station_display_datas_buoy,
 	_station_display_datas_waypoint,
 	_station_display_datas_road_waypoint,
-}};
+};

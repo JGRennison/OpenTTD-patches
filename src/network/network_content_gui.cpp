@@ -362,7 +362,7 @@ class NetworkContentListWindow : public Window, ContentCallback {
 	uint filesize_sum = 0; ///< The sum of all selected file sizes
 	Scrollbar *vscroll = nullptr; ///< Cache of the vertical scrollbar
 
-	static std::array<std::string, to_underlying(ContentType::End)> content_type_strs; ///< Cached strings for all content types.
+	static EnumIndexArray<std::string, ContentType, ContentType::End> content_type_strs; ///< Cached strings for all content types.
 
 	/** Search external websites for content */
 	void OpenExternalSearch()
@@ -457,7 +457,7 @@ class NetworkContentListWindow : public Window, ContentCallback {
 	{
 		int r = 0;
 		if (a->type != b->type) {
-			r = StrNaturalCompare(content_type_strs[to_underlying(a->type)], content_type_strs[to_underlying(b->type)]);
+			r = StrNaturalCompare(content_type_strs[a->type], content_type_strs[b->type]);
 		}
 		if (r == 0) return NameSorter(a, b);
 		return r < 0;
@@ -968,7 +968,7 @@ public:
 	void OnConnect(bool success) override
 	{
 		if (!success) {
-			ShowErrorMessage(GetEncodedString(STR_CONTENT_ERROR_COULD_NOT_CONNECT), {}, WL_ERROR);
+			ShowErrorMessage(GetEncodedString(STR_CONTENT_ERROR_COULD_NOT_CONNECT), {}, WarningLevel::Error);
 			this->Close();
 			return;
 		}
@@ -1033,7 +1033,7 @@ const std::initializer_list<NetworkContentListWindow::GUIContentList::FilterFunc
 	&TypeOrSelectedFilter,
 };
 
-std::array<std::string, to_underlying(ContentType::End)> NetworkContentListWindow::content_type_strs;
+EnumIndexArray<std::string, ContentType, ContentType::End> NetworkContentListWindow::content_type_strs;
 
 /**
  * Build array of all strings corresponding to the content types.
@@ -1041,7 +1041,7 @@ std::array<std::string, to_underlying(ContentType::End)> NetworkContentListWindo
 void BuildContentTypeStringList()
 {
 	for (ContentType ct = ContentType::Begin; ct != ContentType::End; ++ct) {
-		NetworkContentListWindow::content_type_strs[to_underlying(ct)] = GetString(GetContentTypeString(ct));
+		NetworkContentListWindow::content_type_strs[ct] = GetString(GetContentTypeString(ct));
 	}
 }
 
@@ -1158,6 +1158,6 @@ void ShowNetworkContentListWindow(ContentVector *cv, ContentType type1, ContentT
 	ShowErrorMessage(
 		GetEncodedString(STR_CONTENT_NO_ZLIB),
 		GetEncodedString(STR_CONTENT_NO_ZLIB_SUB),
-		WL_ERROR);
+		WarningLevel::Error);
 #endif /* WITH_ZLIB */
 }

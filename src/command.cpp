@@ -430,7 +430,7 @@ bool DoCommandPImplementation(Commands cmd, TileIndex tile, const CommandPayload
 	int y = TileY(tile) * TILE_SIZE;
 
 	if (_pause_mode.Any() && !IsCommandAllowedWhilePaused(cmd) && !estimate_only) {
-		ShowErrorMessage(GetEncodedString(error_msg), GetEncodedString(STR_ERROR_NOT_ALLOWED_WHILE_PAUSED), WL_INFO, x, y);
+		ShowErrorMessage(GetEncodedString(error_msg), GetEncodedString(STR_ERROR_NOT_ALLOWED_WHILE_PAUSED), WarningLevel::Info, x, y);
 		return false;
 	}
 

@@ -485,7 +485,7 @@ private:
 
 		if (confirmed) {
 			if (!FioRemove(save_load_window->selected->name)) {
-				ShowErrorMessage(GetEncodedString(STR_ERROR_UNABLE_TO_DELETE_FILE), {}, WL_ERROR);
+				ShowErrorMessage(GetEncodedString(STR_ERROR_UNABLE_TO_DELETE_FILE), {}, WarningLevel::Error);
 			} else {
 				save_load_window->InvalidateData(SLIWD_RESCAN_FILES);
 				/* Reset file name to current date on successful delete */
@@ -875,7 +875,7 @@ public:
 							if (buffer.has_value()) {
 								OrderImportErrors errs = ImportJsonOrderList(info.veh, std::string_view((const char *)buffer->get(), buffer->size()), info.order_insert_index, info.reverse);
 								if (errs.HasErrors()) {
-									ShowErrorMessage(GetEncodedString(STR_ERROR_JSON), GetEncodedString(STR_ERROR_ORDERLIST_JSON_IMPORTED_WITH_ERRORS), WL_ERROR);
+									ShowErrorMessage(GetEncodedString(STR_ERROR_JSON), GetEncodedString(STR_ERROR_ORDERLIST_JSON_IMPORTED_WITH_ERRORS), WarningLevel::Error);
 									ShowOrderListImportErrorsWindow(info.veh, std::move(errs));
 								}
 							}
@@ -909,7 +909,7 @@ public:
 
 			case WID_SL_MISSING_NEWGRFS:
 				if (!_network_available) {
-					ShowErrorMessage(GetEncodedString(STR_NETWORK_ERROR_NOTAVAILABLE), {}, WL_ERROR);
+					ShowErrorMessage(GetEncodedString(STR_NETWORK_ERROR_NOTAVAILABLE), {}, WarningLevel::Error);
 				} else if (_load_check_data.HasNewGrfs()) {
 					ShowMissingContentWindow(_load_check_data.grfconfig);
 				}
@@ -965,7 +965,7 @@ public:
 
 			case WID_SL_CONTENT_DOWNLOAD:
 				if (!_network_available) {
-					ShowErrorMessage(GetEncodedString(STR_NETWORK_ERROR_NOTAVAILABLE), {}, WL_ERROR);
+					ShowErrorMessage(GetEncodedString(STR_NETWORK_ERROR_NOTAVAILABLE), {}, WarningLevel::Error);
 				} else {
 					assert(this->fop == SaveLoadOperation::Load);
 					switch (this->abstract_filetype) {

@@ -4752,7 +4752,7 @@ static VehicleEnterTileStates VehicleEnterTile_Rail(Vehicle *u, TileIndex tile, 
 			/* Leave the depot. */
 			if ((v = v->GetMovingNext()) != nullptr) {
 				v->vehstatus.Reset(VehState::Hidden);
-				v->track = (DiagDirToAxis(dir) == AXIS_X ? TRACK_BIT_X : TRACK_BIT_Y);
+				v->track = AxisToTrackBits(DiagDirToAxis(dir));
 				v->UpdateIsDrawn();
 			}
 		}

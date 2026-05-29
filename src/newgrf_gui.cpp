@@ -69,9 +69,9 @@ void ShowNewGRFError()
 		for (const uint32_t &value : error.param_value) params.emplace_back(value);
 
 		if (error.severity == STR_NEWGRF_ERROR_MSG_FATAL) {
-			ShowErrorMessage(GetEncodedStringWithArgs(STR_NEWGRF_ERROR_FATAL_POPUP, params), {}, WL_CRITICAL);
+			ShowErrorMessage(GetEncodedStringWithArgs(STR_NEWGRF_ERROR_FATAL_POPUP, params), {}, WarningLevel::Critical);
 		} else {
-			ShowErrorMessage(GetEncodedStringWithArgs(STR_NEWGRF_ERROR_POPUP, params), {}, WL_ERROR);
+			ShowErrorMessage(GetEncodedStringWithArgs(STR_NEWGRF_ERROR_POPUP, params), {}, WarningLevel::Error);
 		}
 		break;
 	}
@@ -1157,7 +1157,7 @@ struct NewGRFWindow : public Window, NewGRFScanCallback {
 			case WID_NS_CONTENT_DOWNLOAD:
 			case WID_NS_CONTENT_DOWNLOAD2:
 				if (!_network_available) {
-					ShowErrorMessage(GetEncodedString(STR_NETWORK_ERROR_NOTAVAILABLE), {}, WL_ERROR);
+					ShowErrorMessage(GetEncodedString(STR_NETWORK_ERROR_NOTAVAILABLE), {}, WarningLevel::Error);
 				} else {
 					this->CloseChildWindows(WindowClass::QueryString); // Remove the parameter query window
 
@@ -1548,13 +1548,13 @@ private:
 		/* Get number of non-static NewGRFs. */
 		size_t count = std::ranges::count_if(this->actives, [](const auto &gc) { return !gc->flags.Test(GRFConfigFlag::Static); });
 		if (count >= NETWORK_MAX_GRF_COUNT) {
-			ShowErrorMessage(GetEncodedString(STR_NEWGRF_TOO_MANY_NEWGRFS), {}, WL_INFO);
+			ShowErrorMessage(GetEncodedString(STR_NEWGRF_TOO_MANY_NEWGRFS), {}, WarningLevel::Info);
 			return false;
 		}
 
 		/* Check for duplicate GRF ID. */
 		if (std::ranges::any_of(this->actives, [&grfid = this->avail_sel->ident.grfid](const auto &gc)  { return gc->ident.grfid == grfid; })) {
-			ShowErrorMessage(GetEncodedString(STR_NEWGRF_DUPLICATE_GRFID), {}, WL_INFO);
+			ShowErrorMessage(GetEncodedString(STR_NEWGRF_DUPLICATE_GRFID), {}, WarningLevel::Info);
 			return false;
 		}
 
@@ -2050,7 +2050,7 @@ static void NewGRFConfirmationCallback(Window *w, bool confirmed)
 void PostCheckNewGRFLoadWarnings()
 {
 	if (_grf_bug_too_many_strings) {
-		ShowErrorMessage(GetEncodedString(STR_NEWGRF_TOO_MANY_STRINGS), GetEncodedString(STR_NEWGRF_TOO_MANY_STRINGS_DETAIL), WL_WARNING);
+		ShowErrorMessage(GetEncodedString(STR_NEWGRF_TOO_MANY_STRINGS), GetEncodedString(STR_NEWGRF_TOO_MANY_STRINGS_DETAIL), WarningLevel::Warning);
 	}
 }
 

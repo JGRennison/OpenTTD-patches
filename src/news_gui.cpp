@@ -323,7 +323,7 @@ static WindowDesc &GetNewsWindowLayout(NewsStyle style)
 /**
  * Per-NewsType data
  */
-static const NewsTypeData _news_type_data[] = {
+static constexpr EnumIndexArray<NewsTypeData, NewsType, NewsType::End> _news_type_data{
 	/*            name,                           age, sound,          */
 	NewsTypeData("news_display.arrival_player",    60, SND_1D_APPLAUSE ),  ///< NewsType::ArrivalCompany
 	NewsTypeData("news_display.arrival_other",     60, SND_1D_APPLAUSE ),  ///< NewsType::ArrivalOther
@@ -343,8 +343,6 @@ static const NewsTypeData _news_type_data[] = {
 	NewsTypeData("news_display.subsidies",        180, SND_BEGIN       ),  ///< NewsType::Subsidies
 	NewsTypeData("news_display.general",           60, SND_BEGIN       ),  ///< NewsType::General
 };
-
-static_assert(std::size(_news_type_data) == to_underlying(NewsType::End));
 
 /**
  * Return the news display option.
@@ -711,7 +709,7 @@ private:
  */
 static void ShowNewspaper(const NewsItem *ni)
 {
-	SoundFx sound = _news_type_data[to_underlying(ni->type)].sound;
+	SoundFx sound = _news_type_data[ni->type].sound;
 	if (sound != 0 && _settings_client.sound.news_full) SndPlayFx(sound);
 
 	new NewsWindow(GetNewsWindowLayout(ni->style), ni);
@@ -784,9 +782,9 @@ static void MoveToNextTickerItem()
 		const NewsType type = _statusbar_news->type;
 
 		/* check the date, don't show too old items */
-		if (_scaled_tick_counter - _statusbar_news->creation_tick > _news_type_data[to_underlying(type)].age * DAY_TICKS) continue;
+		if (_scaled_tick_counter - _statusbar_news->creation_tick > _news_type_data[type].age * DAY_TICKS) continue;
 
-		switch (_news_type_data[to_underlying(type)].GetDisplay()) {
+		switch (_news_type_data[type].GetDisplay()) {
 			default: NOT_REACHED();
 			case NewsDisplay::Off: // Show nothing only a small reminder in the status bar.
 				InvalidateWindowData(WindowClass::Statusbar, 0, SBI_SHOW_REMINDER);
@@ -822,9 +820,9 @@ static void MoveToNextNewsItem()
 		const NewsType type = _current_news->type;
 
 		/* check the date, don't show too old items */
-		if (_scaled_tick_counter - _current_news->creation_tick > _news_type_data[to_underlying(type)].age * DAY_TICKS) continue;
+		if (_scaled_tick_counter - _current_news->creation_tick > _news_type_data[type].age * DAY_TICKS) continue;
 
-		switch (_news_type_data[to_underlying(type)].GetDisplay()) {
+		switch (_news_type_data[type].GetDisplay()) {
 			default: NOT_REACHED();
 			case NewsDisplay::Off: // Show nothing only a small reminder in the status bar, skipped here.
 				break;
@@ -1090,7 +1088,7 @@ void DeleteInvalidEngineNews()
 static void RemoveOldNewsItems()
 {
 	DeleteNews<MIN_NEWS_AMOUNT>([](const auto &ni) {
-		return _scaled_tick_counter - ni.creation_tick > (uint)(_news_type_data[to_underlying(ni.type)].age * _settings_client.gui.news_message_timeout * DAY_TICKS);
+		return _scaled_tick_counter - ni.creation_tick > (uint)(_news_type_data[ni.type].age * _settings_client.gui.news_message_timeout * DAY_TICKS);
 	});
 }
 
@@ -1190,7 +1188,7 @@ void ShowLastNewsMessage()
 	}
 	bool wrap = false;
 	for (;;) {
-		if (_news_type_data[to_underlying(ni->type)].GetDisplay() != NewsDisplay::Off) {
+		if (_news_type_data[ni->type].GetDisplay() != NewsDisplay::Off) {
 			ShowNewsMessage(ni);
 			break;
 		}

@@ -2148,7 +2148,7 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 	{
 		bool ok = this->HandleTimeTextParse(mins, editbox);
 		if (!ok) {
-			ShowErrorMessage(GetEncodedString(STR_CONFIG_ERROR_INVALID_VALUE, editbox.text.GetText(), strip_leading_colours(GetString(label))), {}, WL_INFO);
+			ShowErrorMessage(GetEncodedString(STR_CONFIG_ERROR_INVALID_VALUE, editbox.text.GetText(), strip_leading_colours(GetString(label))), {}, WarningLevel::Info);
 		}
 		return ok;
 	}

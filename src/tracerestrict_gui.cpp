@@ -2879,7 +2879,7 @@ public:
 
 			value = ConvertIntegerValue(type, *try_value, false);
 			if (value >= (1 << TRIFA_VALUE_COUNT)) {
-				ShowErrorMessage(GetEncodedString(STR_TRACE_RESTRICT_ERROR_VALUE_TOO_LARGE, ConvertIntegerValue(type, (1 << TRIFA_VALUE_COUNT) - 1, true), 0), {}, WL_INFO);
+				ShowErrorMessage(GetEncodedString(STR_TRACE_RESTRICT_ERROR_VALUE_TOO_LARGE, ConvertIntegerValue(type, (1 << TRIFA_VALUE_COUNT) - 1, true), 0), {}, WarningLevel::Info);
 				return;
 			}
 
@@ -2892,7 +2892,7 @@ public:
 			value = ConvertDecimalToValue(type, atof(tmp_buffer.c_str()));
 			if (value >= (1 << TRIFA_VALUE_COUNT)) {
 				DecimalValue dv = ConvertValueToDecimal(type, (1 << TRIFA_VALUE_COUNT) - 1);
-				ShowErrorMessage(GetEncodedString(STR_TRACE_RESTRICT_ERROR_VALUE_TOO_LARGE, dv.value, dv.decimals), {}, WL_INFO);
+				ShowErrorMessage(GetEncodedString(STR_TRACE_RESTRICT_ERROR_VALUE_TOO_LARGE, dv.value, dv.decimals), {}, WarningLevel::Info);
 				return;
 			}
 		} else if (type == TRVT_SLOT_INDEX_INT || type == TRVT_COUNTER_INDEX_INT || type == TRVT_TIME_DATE_INT) {
@@ -3085,7 +3085,7 @@ public:
 	void OnPlaceObjectSignal(Point pt, TileIndex source_tile, WidgetID widget, StringID error_message)
 	{
 		if (!IsPlainRailTile(source_tile) && !IsRailTunnelBridgeTile(source_tile)) {
-			ShowErrorMessage(GetEncodedString(error_message), GetEncodedString(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK), WL_INFO);
+			ShowErrorMessage(GetEncodedString(error_message), GetEncodedString(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK), WarningLevel::Info);
 			return;
 		}
 
@@ -3099,28 +3099,28 @@ public:
 		}
 		Track source_track = FindFirstTrack(trackbits);
 		if (source_track == INVALID_TRACK) {
-			ShowErrorMessage(GetEncodedString(error_message), GetEncodedString(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK), WL_INFO);
+			ShowErrorMessage(GetEncodedString(error_message), GetEncodedString(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK), WarningLevel::Info);
 			return;
 		}
 
 		if (IsTileType(source_tile, TileType::Railway)) {
 			if (!HasTrack(source_tile, source_track)) {
-				ShowErrorMessage(GetEncodedString(error_message), GetEncodedString(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK), WL_INFO);
+				ShowErrorMessage(GetEncodedString(error_message), GetEncodedString(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK), WarningLevel::Info);
 				return;
 			}
 
 			if (!HasSignalOnTrack(source_tile, source_track)) {
-				ShowErrorMessage(GetEncodedString(error_message), GetEncodedString(STR_ERROR_THERE_ARE_NO_SIGNALS), WL_INFO);
+				ShowErrorMessage(GetEncodedString(error_message), GetEncodedString(STR_ERROR_THERE_ARE_NO_SIGNALS), WarningLevel::Info);
 				return;
 			}
 		} else {
 			if (!HasTrack(GetTunnelBridgeTrackBits(source_tile), source_track)) {
-				ShowErrorMessage(GetEncodedString(error_message), GetEncodedString(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK), WL_INFO);
+				ShowErrorMessage(GetEncodedString(error_message), GetEncodedString(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK), WarningLevel::Info);
 				return;
 			}
 
 			if (!IsTunnelBridgeWithSignalSimulation(source_tile) || !HasTrack(GetAcrossTunnelBridgeTrackBits(source_tile), source_track)) {
-				ShowErrorMessage(GetEncodedString(error_message), GetEncodedString(STR_ERROR_THERE_ARE_NO_SIGNALS), WL_INFO);
+				ShowErrorMessage(GetEncodedString(error_message), GetEncodedString(STR_ERROR_THERE_ARE_NO_SIGNALS), WarningLevel::Info);
 				return;
 			}
 		}
@@ -3180,7 +3180,7 @@ public:
 		}
 
 		if (!IsInfraTileUsageAllowed(VehicleType::Train, _local_company, tile)) {
-			ShowErrorMessage(GetEncodedString(error_message), GetEncodedString(STR_ERROR_AREA_IS_OWNED_BY_ANOTHER), WL_INFO);
+			ShowErrorMessage(GetEncodedString(error_message), GetEncodedString(STR_ERROR_AREA_IS_OWNED_BY_ANOTHER), WarningLevel::Info);
 			return;
 		}
 
@@ -3197,7 +3197,7 @@ public:
 		if (val_type != TRVT_TILE_INDEX && val_type != TRVT_TILE_INDEX_THROUGH) return;
 
 		if (!IsInfraTileUsageAllowed(VehicleType::Train, _local_company, tile)) {
-			ShowErrorMessage(GetEncodedString(error_message), GetEncodedString(STR_ERROR_AREA_IS_OWNED_BY_ANOTHER), WL_INFO);
+			ShowErrorMessage(GetEncodedString(error_message), GetEncodedString(STR_ERROR_AREA_IS_OWNED_BY_ANOTHER), WarningLevel::Info);
 			return;
 		}
 
@@ -3207,12 +3207,12 @@ public:
 			/* OK */
 		} else {
 			if (!IsPlainRailTile(tile)) {
-				ShowErrorMessage(GetEncodedString(error_message), GetEncodedString(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK), WL_INFO);
+				ShowErrorMessage(GetEncodedString(error_message), GetEncodedString(STR_ERROR_THERE_IS_NO_RAILROAD_TRACK), WarningLevel::Info);
 				return;
 			}
 
 			if (GetPresentSignals(tile) == 0) {
-				ShowErrorMessage(GetEncodedString(error_message), GetEncodedString(STR_ERROR_THERE_ARE_NO_SIGNALS), WL_INFO);
+				ShowErrorMessage(GetEncodedString(error_message), GetEncodedString(STR_ERROR_THERE_ARE_NO_SIGNALS), WarningLevel::Info);
 				return;
 			}
 		}

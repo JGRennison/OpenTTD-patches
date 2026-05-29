@@ -996,7 +996,7 @@ CommandCost CheckBuildableTile(TileIndex tile, DiagDirections invalid_dirs, int 
  */
 static StringID GetBridgeTooLowMessageForStationType(StationType type)
 {
-	static constexpr std::array<StringID, to_underlying(StationType::End)> too_low_msgs = {
+	static constexpr EnumIndexArray<StringID, StationType, StationType::End> too_low_msgs{
 		STR_ERROR_BRIDGE_TOO_LOW_FOR_STATION, // Rail
 		INVALID_STRING_ID, // Airport
 		STR_ERROR_BRIDGE_TOO_LOW_FOR_ROADSTOP, // Truck
@@ -1007,7 +1007,7 @@ static StringID GetBridgeTooLowMessageForStationType(StationType type)
 		STR_ERROR_BRIDGE_TOO_LOW_FOR_RAIL_WAYPOINT, // RailWaypoint
 		STR_ERROR_BRIDGE_TOO_LOW_FOR_ROAD_WAYPOINT, // RoadWaypoint
 	};
-	return too_low_msgs[to_underlying(type)];
+	return too_low_msgs[type];
 };
 
 int GetBridgeTooLowHeightDifference(TileIndex tile, int height_clearance, int bridge_height)
@@ -3379,7 +3379,7 @@ static CommandCost RemoveDock(TileIndex tile, DoCommandFlags flags)
  */
 const DrawTileSprites *GetStationTileLayout(StationType st, uint8_t gfx)
 {
-	const auto &layouts = _station_display_datas[to_underlying(st)];
+	const auto &layouts = _station_display_datas[st];
 	if (gfx >= layouts.size()) gfx &= 1;
 	return layouts.data() + gfx;
 }

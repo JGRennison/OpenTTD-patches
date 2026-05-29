@@ -2249,7 +2249,7 @@ void ViewportSign::MarkDirty(ZoomLevel maxzoom) const
 {
 	if (maxzoom == ZoomLevel::End) return;
 
-	Rect zoomlevels[to_underlying(ZoomLevel::End)];
+	EnumIndexArray<Rect, ZoomLevel, ZoomLevel::End> zoomlevels;
 
 	const uint small_height = WidgetDimensions::scaled.fullbevel.top + GetCharacterHeight(FontSize::Small) + WidgetDimensions::scaled.fullbevel.bottom + 1;
 	const uint normal_height = WidgetDimensions::scaled.fullbevel.top + GetCharacterHeight(FontSize::Normal) + WidgetDimensions::scaled.fullbevel.bottom + 1;
@@ -2257,7 +2257,7 @@ void ViewportSign::MarkDirty(ZoomLevel maxzoom) const
 	for (ZoomLevel zoom = ZoomLevel::Begin; zoom != ZoomLevel::End; zoom++) {
 		const ZoomLevel small_from = (maxzoom == ZoomLevel::Out2x) ? ZoomLevel::Out2x : ZoomLevel::Out4x;
 		const int width = (zoom >= small_from) ? this->width_small : this->width_normal;
-		auto &zl = zoomlevels[to_underlying(zoom)];
+		auto &zl = zoomlevels[zoom];
 		zl.left   = this->center - ScaleByZoom(width / 2 + 1, zoom);
 		zl.top    = this->top    - ScaleByZoom(1, zoom);
 		zl.right  = this->center + ScaleByZoom(width / 2 + 1, zoom);
@@ -2266,7 +2266,7 @@ void ViewportSign::MarkDirty(ZoomLevel maxzoom) const
 
 	for (Viewport *vp : _viewport_window_cache) {
 		if (vp->zoom <= maxzoom) {
-			Rect &zl = zoomlevels[to_underlying(vp->zoom)];
+			Rect &zl = zoomlevels[vp->zoom];
 			MarkViewportDirty(vp, zl.left, zl.top, zl.right, zl.bottom, VMDF_NONE);
 		}
 	}

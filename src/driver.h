@@ -86,8 +86,8 @@ private:
 	 */
 	static std::unique_ptr<Driver> &GetActiveDriver(Driver::Type type)
 	{
-		static std::array<std::unique_ptr<Driver>, to_underlying(Driver::Type::End)> s_driver{};
-		return s_driver[to_underlying(type)];
+		static EnumIndexArray<std::unique_ptr<Driver>, Driver::Type, Driver::Type::End> s_driver{};
+		return s_driver[type];
 	}
 
 	/**
@@ -97,8 +97,10 @@ private:
 	 */
 	static const char *GetDriverTypeName(Driver::Type type)
 	{
-		static const char * const driver_type_name[] = { "music", "sound", "video" };
-		return driver_type_name[to_underlying(type)];
+		static constexpr EnumIndexArray<const char *, Driver::Type, Driver::Type::End> driver_type_name{
+			"music", "sound", "video"
+		};
+		return driver_type_name[type];
 	}
 
 	static bool SelectDriverImpl(const std::string &name, Driver::Type type);

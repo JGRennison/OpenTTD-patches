@@ -433,7 +433,7 @@ inline Axis GetCrossingRoadAxis(TileIndex t)
 inline Axis GetCrossingRailAxis(TileIndex t)
 {
 	dbg_assert_tile(IsLevelCrossing(t), t);
-	return OtherAxis((Axis)GetCrossingRoadAxis(t));
+	return OtherAxis(GetCrossingRoadAxis(t));
 }
 
 /**
@@ -443,7 +443,7 @@ inline Axis GetCrossingRailAxis(TileIndex t)
  */
 inline RoadBits GetCrossingRoadBits(TileIndex tile)
 {
-	return GetCrossingRoadAxis(tile) == AXIS_X ? ROAD_X : ROAD_Y;
+	return AxisToRoadBits(GetCrossingRoadAxis(tile));
 }
 
 /**

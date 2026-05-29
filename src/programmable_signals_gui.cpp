@@ -348,7 +348,7 @@ public:
 				if (sc->IsSignalValid()) {
 					ScrollMainWindowToTile(sc->sig_tile);
 				} else {
-					ShowErrorMessage(GetEncodedString(STR_PROGSIG_ERROR_CAN_T_GOTO_UNDEFINED_SIGNAL), {}, WL_INFO);
+					ShowErrorMessage(GetEncodedString(STR_PROGSIG_ERROR_CAN_T_GOTO_UNDEFINED_SIGNAL), {}, WarningLevel::Info);
 				}
 				break;
 			}
@@ -434,17 +434,17 @@ public:
 				return;
 
 			if (GetSignalType(tile1, track1) != SIGTYPE_PROG) {
-				ShowErrorMessage(GetEncodedString(STR_PROGSIG_ERROR_INVALID_SIGNAL), GetEncodedString(STR_PROGSIG_ERROR_NOT_AN_PROG_SIGNAL), WL_INFO);
+				ShowErrorMessage(GetEncodedString(STR_PROGSIG_ERROR_INVALID_SIGNAL), GetEncodedString(STR_PROGSIG_ERROR_NOT_AN_PROG_SIGNAL), WarningLevel::Info);
 				return;
 			}
 			if (this->tile == tile1 && this->track == track1) {
-				ShowErrorMessage(GetEncodedString(STR_PROGSIG_ERROR_INVALID_SIGNAL), GetEncodedString(STR_PROGSIG_ERROR_CANNOT_USE_SELF), WL_INFO);
+				ShowErrorMessage(GetEncodedString(STR_PROGSIG_ERROR_INVALID_SIGNAL), GetEncodedString(STR_PROGSIG_ERROR_CANNOT_USE_SELF), WarningLevel::Info);
 				return;
 			}
 
 			SignalProgram *sp = GetExistingSignalProgram(SignalReference(tile1, track1));
 			if (sp == nullptr) {
-				ShowErrorMessage(GetEncodedString(STR_PROGSIG_ERROR_INVALID_SIGNAL), GetEncodedString(STR_PROGSIG_ERROR_NOT_AN_EXIT_SIGNAL), WL_INFO);
+				ShowErrorMessage(GetEncodedString(STR_PROGSIG_ERROR_INVALID_SIGNAL), GetEncodedString(STR_PROGSIG_ERROR_NOT_AN_EXIT_SIGNAL), WarningLevel::Info);
 				return;
 			}
 			ResetObjectToPlace();
@@ -480,7 +480,7 @@ public:
 		Trackdir tdr = ReverseTrackdir(td);
 
 		if (HasSignalOnTrackdir(tile1, td) && HasSignalOnTrackdir(tile1, tdr)) {
-			ShowErrorMessage(GetEncodedString(STR_PROGSIG_ERROR_INVALID_SIGNAL), GetEncodedString(STR_PROGSIG_ERROR_CAN_T_DEPEND_UPON_BIDIRECTIONAL_SIGNALS), WL_INFO);
+			ShowErrorMessage(GetEncodedString(STR_PROGSIG_ERROR_INVALID_SIGNAL), GetEncodedString(STR_PROGSIG_ERROR_CAN_T_DEPEND_UPON_BIDIRECTIONAL_SIGNALS), WarningLevel::Info);
 			return;
 		} else if (HasSignalOnTrackdir(tile1, tdr) && !HasSignalOnTrackdir(tile1, td)) {
 			td = tdr;
@@ -491,7 +491,7 @@ public:
 		}
 
 		if (!(GetSignalType(tile1, track1) == SIGTYPE_EXIT || GetSignalType(tile1, track1) == SIGTYPE_PROG)) {
-			ShowErrorMessage(GetEncodedString(STR_PROGSIG_ERROR_INVALID_SIGNAL), GetEncodedString(STR_PROGSIG_ERROR_NOT_AN_EXIT_SIGNAL), WL_INFO);
+			ShowErrorMessage(GetEncodedString(STR_PROGSIG_ERROR_INVALID_SIGNAL), GetEncodedString(STR_PROGSIG_ERROR_NOT_AN_EXIT_SIGNAL), WarningLevel::Info);
 			return;
 		}
 

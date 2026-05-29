@@ -289,7 +289,7 @@ bool CheckSharingChangePossible(VehicleType type, bool new_value)
 	}
 
 	if (error_message != STR_NULL) {
-		ShowErrorMessage(GetEncodedString(error_message), {}, WL_ERROR);
+		ShowErrorMessage(GetEncodedString(error_message), {}, WarningLevel::Error);
 		return false;
 	}
 

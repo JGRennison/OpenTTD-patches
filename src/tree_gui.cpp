@@ -276,7 +276,7 @@ public:
 		TileIndex tile = TileVirtXY(pt.x, pt.y);
 
 		if (_pause_mode.Any() && !IsCommandAllowedWhilePaused(Commands::BulkTree) && !_shift_pressed) {
-			ShowErrorMessage(GetEncodedString(STR_ERROR_CAN_T_PLANT_TREE_HERE), GetEncodedString(STR_ERROR_NOT_ALLOWED_WHILE_PAUSED), WL_INFO, ::TileX(tile), ::TileY(tile));
+			ShowErrorMessage(GetEncodedString(STR_ERROR_CAN_T_PLANT_TREE_HERE), GetEncodedString(STR_ERROR_NOT_ALLOWED_WHILE_PAUSED), WarningLevel::Info, ::TileX(tile), ::TileY(tile));
 			ResetObjectToPlace();
 			return;
 		}
