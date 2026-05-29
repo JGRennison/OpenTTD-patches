@@ -94,7 +94,7 @@ void InitialiseRandomSeeds()
 #ifdef RANDOM_DEBUG
 uint32_t DoRandom(int line, const char *file)
 {
-	if (_networking && (!_network_server || (NetworkClientSocket::IsValidID(0) && NetworkClientSocket::Get(0)->status != NetworkClientSocket::STATUS_INACTIVE))) {
+	if (_networking && (!_network_server || (NetworkClientSocket::IsValidID(0) && NetworkClientSocket::Get(0)->status != NetworkClientSocket::ClientStatus::Inactive))) {
 		Debug(random, 0, "{}; {:04x}; {:02x}; {}:{}", debug_date_dumper().HexDate(), _frame_counter, _current_company, file, line);
 	}
 

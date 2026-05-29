@@ -65,32 +65,32 @@ protected:
 
 public:
 	/** Status of a client */
-	enum ClientStatus : uint8_t {
-		STATUS_INACTIVE,      ///< The client is not connected nor active.
-		STATUS_AUTH_GAME,     ///< The client is authorizing with game (server) password.
-		STATUS_IDENTIFY,      ///< The client is identifying itself.
-		STATUS_NEWGRFS_CHECK, ///< The client is checking NewGRFs.
-		STATUS_AUTH_COMPANY,  ///< The client is authorizing with company password.
-		STATUS_AUTHORIZED,    ///< The client is authorized.
-		STATUS_MAP_WAIT,      ///< The client is waiting as someone else is downloading the map.
-		STATUS_MAP,           ///< The client is downloading the map.
-		STATUS_DONE_MAP,      ///< The client has downloaded the map.
-		STATUS_PRE_ACTIVE,    ///< The client is catching up the delayed frames.
-		STATUS_ACTIVE,        ///< The client is active within in the game.
-		STATUS_CLOSE_PENDING, ///< The client connection is pending closure.
-		STATUS_END,           ///< Must ALWAYS be on the end of this list!! (period).
+	enum class ClientStatus : uint8_t {
+		Inactive,     ///< The client is not connected nor active.
+		AuthGame,     ///< The client is authorizing with game (server) password.
+		Identify,     ///< The client is identifying itself.
+		NewGRFsCheck, ///< The client is checking NewGRFs.
+		AuthCompany,  ///< The client is authorizing with company password.
+		Authorized,   ///< The client is authorized.
+		MapWait,      ///< The client is waiting as someone else is downloading the map.
+		Map,          ///< The client is downloading the map.
+		DoneMap,      ///< The client has downloaded the map.
+		PreActive,    ///< The client is catching up the delayed frames.
+		Active,       ///< The client is active within in the game.
+		ClosePending, ///< The client connection is pending closure.
+		End,          ///< Must ALWAYS be on the end of this list!! (period).
 	};
 
 	static const char *GetClientStatusName(ClientStatus status);
 
-	uint8_t lag_test = 0;                  ///< Byte used for lag-testing the client
-	uint8_t last_token = 0;                ///< The last random token we did send to verify the client is listening
-	uint32_t last_token_frame = 0;         ///< The last frame we received the right token
-	ClientStatus status = STATUS_INACTIVE; ///< Status of this client
-	OutgoingCommandQueue outgoing_queue{}; ///< The command-queue awaiting delivery; conceptually more a bucket to gather commands in, after which the whole bucket is sent to the client.
-	size_t receive_limit = 0;              ///< Amount of bytes that we can receive at this moment
-	bool settings_authed = false;          ///< Authorised to control all game settings
-	bool supports_zstd = false;            ///< Client supports zstd compression
+	uint8_t lag_test = 0;                         ///< Byte used for lag-testing the client
+	uint8_t last_token = 0;                       ///< The last random token we did send to verify the client is listening
+	uint32_t last_token_frame = 0;                ///< The last frame we received the right token
+	ClientStatus status = ClientStatus::Inactive; ///< Status of this client
+	OutgoingCommandQueue outgoing_queue{};        ///< The command-queue awaiting delivery; conceptually more a bucket to gather commands in, after which the whole bucket is sent to the client.
+	size_t receive_limit = 0;                     ///< Amount of bytes that we can receive at this moment
+	bool settings_authed = false;                 ///< Authorised to control all game settings
+	bool supports_zstd = false;                   ///< Client supports zstd compression
 
 	std::shared_ptr<struct PacketWriter> savegame = nullptr; ///< Writer used to write the savegame.
 	NetworkAddress client_address{}; ///< IP-address of the client (so they can be banned)

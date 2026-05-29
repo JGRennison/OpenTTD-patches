@@ -362,17 +362,17 @@ void IConsoleCmdExecTokens(std::span<std::string_view> tokens, const uint recurs
 	 */
 	IConsoleCmd *cmd = IConsole::CmdGet(tokens[0]);
 	if (cmd != nullptr) {
-		ConsoleHookResult chr = (cmd->hook == nullptr ? CHR_ALLOW : cmd->hook(true));
+		ConsoleHookResult chr = (cmd->hook == nullptr ? ConsoleHookResult::Allow : cmd->hook(true));
 		switch (chr) {
-			case CHR_ALLOW: {
+			case ConsoleHookResult::Allow: {
 				if (!cmd->proc(tokens)) { // index started with 0
 					cmd->proc({}); // if command failed, give help
 				}
 				return;
 			}
 
-			case CHR_DISALLOW: return;
-			case CHR_HIDE: break;
+			case ConsoleHookResult::Disallow: return;
+			case ConsoleHookResult::Hide: break;
 		}
 	}
 

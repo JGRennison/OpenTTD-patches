@@ -515,7 +515,7 @@ static void IConsoleTabCompletion()
 	};
 	for (auto &it : IConsole::Commands()) {
 		const IConsoleCmd *cmd = &it.second;
-		if ((_settings_client.gui.console_show_unlisted || !cmd->unlisted) && (cmd->hook == nullptr || cmd->hook(false) != CHR_HIDE)) {
+		if ((_settings_client.gui.console_show_unlisted || !cmd->unlisted) && (cmd->hook == nullptr || cmd->hook(false) != ConsoleHookResult::Hide)) {
 			check_candidate(it.first, match_input_no_underscores);
 			check_candidate(cmd->name, match_input);
 		}
