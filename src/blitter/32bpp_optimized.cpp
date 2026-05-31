@@ -488,7 +488,7 @@ Sprite *Blitter_32bppOptimized::EncodeInternal(SpriteType sprite_type, const Spr
 	dest_sprite->missing_zoom_levels = missing_zoom_levels;
 
 	SpriteData *dst = (SpriteData *)dest_sprite->data;
-	*dst = {};
+	memset(static_cast<void *>(dst), 0, sizeof(*dst));
 	/* Store sprite flags. */
 	dst->flags = flags;
 
