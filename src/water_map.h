@@ -233,7 +233,7 @@ inline bool IsShipDepotTile(TileIndex t)
 inline Axis GetShipDepotAxis(TileIndex t)
 {
 	dbg_assert_tile(IsShipDepotTile(t), t);
-	return (Axis)GB(_m[t].m5, WBL_DEPOT_AXIS, 1);
+	return static_cast<Axis>(GB(_m[t].m5, WBL_DEPOT_AXIS, 1));
 }
 
 /**
@@ -458,7 +458,7 @@ inline void MakeShipDepot(TileIndex t, Owner o, DepotID did, DepotPart part, Axi
 	_m[t].m2 = did.base();
 	_m[t].m3 = 0;
 	_m[t].m4 = 0;
-	_m[t].m5 = to_underlying(part) << WBL_DEPOT_PART | a << WBL_DEPOT_AXIS;
+	_m[t].m5 = to_underlying(part) << WBL_DEPOT_PART | to_underlying(a) << WBL_DEPOT_AXIS;
 	SetWaterTileType(t, WaterTileType::Depot);
 	_me[t].m6 = 0;
 	_me[t].m7 = 0;

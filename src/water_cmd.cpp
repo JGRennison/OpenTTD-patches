@@ -325,7 +325,7 @@ CommandCost IsLockBridgeAboveOK(TileIndex tile, LockPart lock_part, DiagDirectio
 	const int too_low = GetBridgeTooLowHeightDifference(tile, lock_part == LockPart::Lower ? 3 : 2, bridge_height);
 	if (too_low > 0) return CommandCostWithParam(STR_ERROR_BRIDGE_TOO_LOW_FOR_LOCK, too_low);
 
-	BridgePiecePillarFlags disallowed_pillar_flags = (BridgePiecePillarFlags) (DiagDirToAxis(dir) == AXIS_X ? 0x50 : 0xA0);
+	BridgePiecePillarFlags disallowed_pillar_flags = (BridgePiecePillarFlags) (DiagDirToAxis(dir) == Axis::X ? 0x50 : 0xA0);
 	if ((GetBridgeTilePillarFlags(tile, northern_bridge_end, southern_bridge_end, bridge_type, bridge_transport_type) & disallowed_pillar_flags) == 0) {
 		return CommandCost();
 	} else {
@@ -963,7 +963,7 @@ static void DrawWaterLock(const TileInfo *ti)
 static void DrawWaterDepot(const TileInfo *ti)
 {
 	DrawWaterClassGround(ti);
-	DrawWaterTileStruct(ti, _shipdepot_display_data[GetShipDepotAxis(ti->tile)][to_underlying(GetShipDepotPart(ti->tile))].seq, 0, 0, GetCompanyPalette(GetTileOwner(ti->tile)), CF_END);
+	DrawWaterTileStruct(ti, _shipdepot_display_data[GetShipDepotAxis(ti->tile)][GetShipDepotPart(ti->tile)].seq, 0, 0, GetCompanyPalette(GetTileOwner(ti->tile)), CF_END);
 }
 
 static void DrawRiverWater(const TileInfo *ti)
@@ -1059,7 +1059,7 @@ static void DrawTile_Water(TileInfo *ti, DrawTileProcParams params)
 
 void DrawShipDepotSprite(int x, int y, Axis axis, DepotPart part)
 {
-	const DrawTileSprites &dts = _shipdepot_display_data[axis][to_underlying(part)];
+	const DrawTileSprites &dts = _shipdepot_display_data[axis][part];
 
 	DrawSprite(dts.ground.sprite, dts.ground.pal, x, y);
 	DrawOrigTileSeqInGUI(x, y, &dts, GetCompanyPalette(_local_company));

@@ -1469,7 +1469,7 @@ bool AfterLoadGame()
 			if (MayHaveBridgeAbove(t)) ClearBridgeMiddle(t);
 			if (IsBridgeTile(t)) {
 				if (HasBit(_m[t].m5, 6)) { // middle part
-					Axis axis = (Axis)GB(_m[t].m5, 0, 1);
+					Axis axis = static_cast<Axis>(GB(_m[t].m5, 0, 1));
 
 					if (HasBit(_m[t].m5, 5)) { // transport route under bridge?
 						if (GB(_m[t].m5, 3, 2) == TRANSPORT_RAIL) {
@@ -1508,7 +1508,7 @@ bool AfterLoadGame()
 					}
 					SetBridgeMiddle(t, axis);
 				} else { // ramp
-					Axis axis = (Axis)GB(_m[t].m5, 0, 1);
+					Axis axis = static_cast<Axis>(GB(_m[t].m5, 0, 1));
 					uint north_south = GB(_m[t].m5, 5, 1);
 					DiagDirection dir = ReverseDiagDir(XYNSToDiagDir(axis, north_south));
 					TransportType type = (TransportType)GB(_m[t].m5, 1, 2);
@@ -3097,7 +3097,7 @@ bool AfterLoadGame()
 			const DiagDirection vdir = DirToDiagDir(v->direction);
 
 			/* Have we passed the visibility "switch" state already? */
-			uint8_t pos = (DiagDirToAxis(vdir) == AXIS_X ? v->x_pos : v->y_pos) & TILE_UNIT_MASK;
+			uint8_t pos = (DiagDirToAxis(vdir) == Axis::X ? v->x_pos : v->y_pos) & TILE_UNIT_MASK;
 			uint8_t frame = (vdir == DIAGDIR_NE || vdir == DIAGDIR_NW) ? TILE_SIZE - 1 - pos : pos;
 			extern const uint8_t _tunnel_visibility_frame[DIAGDIR_END];
 
@@ -3232,7 +3232,7 @@ bool AfterLoadGame()
 					Direction dir = rv->direction;
 
 					/* Test if we are reversing. */
-					Axis a = trackbits == TRACK_BIT_X ? AXIS_X : AXIS_Y;
+					Axis a = trackbits == TRACK_BIT_X ? Axis::X : Axis::Y;
 					if (AxisToDirection(a) != dir &&
 							AxisToDirection(a) != ReverseDir(dir)) {
 						/* When reversing, the road vehicle is on the edge of the tile,

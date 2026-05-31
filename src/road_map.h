@@ -421,7 +421,7 @@ inline void SetRoadCachedOneWayState(TileIndex t, RoadCachedOneWayState rcows)
 inline Axis GetCrossingRoadAxis(TileIndex t)
 {
 	dbg_assert_tile(IsLevelCrossing(t), t);
-	return (Axis)GB(_m[t].m5, 0, 1);
+	return static_cast<Axis>(GB(_m[t].m5, 0, 1));
 }
 
 /**
@@ -768,7 +768,7 @@ inline void MakeRoadCrossing(TileIndex t, Owner road, Owner tram, Owner rail, Ax
 	_m[t].m2 = town.base();
 	_m[t].m3 = 0;
 	_m[t].m4 = INVALID_ROADTYPE;
-	_m[t].m5 = to_underlying(RoadTileType::Crossing) << 6 | roaddir;
+	_m[t].m5 = to_underlying(RoadTileType::Crossing) << 6 | to_underlying(roaddir);
 	_me[t].m6 = 0;
 	_me[t].m7 = road.base();
 	_me[t].m8 = INVALID_ROADTYPE << 6 | rat;

@@ -920,7 +920,7 @@ static void ShipController(Ship *v)
 	if (v->direction != v->rotation) {
 		if ((v->tick_counter & 7) == 0) {
 			DirDiff diff = DirDifference(v->direction, v->rotation);
-			v->rotation = ChangeDir(v->rotation, diff > DIRDIFF_REVERSE ? DIRDIFF_45LEFT : DIRDIFF_45RIGHT);
+			v->rotation = ChangeDir(v->rotation, LimitDirDiff(diff));
 			v->UpdateViewport(true, true);
 		}
 		return;
@@ -1046,9 +1046,9 @@ static void ShipController(Ship *v)
 				const Direction new_direction = b.dir;
 				const DirDiff diff = DirDifference(new_direction, v->direction);
 				switch (diff) {
-					case DIRDIFF_SAME:
-					case DIRDIFF_45RIGHT:
-					case DIRDIFF_45LEFT:
+					case DirDiff::Same:
+					case DirDiff::Right45:
+					case DirDiff::Left45:
 						/* Continue at speed */
 						v->rotation = v->direction = new_direction;
 						break;

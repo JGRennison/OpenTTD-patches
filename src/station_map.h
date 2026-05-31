@@ -526,7 +526,7 @@ inline void SetStationTileHavePylons(TileIndex t, bool b)
 inline Axis GetRailStationAxis(TileIndex t)
 {
 	dbg_assert_tile(HasStationRail(t), t);
-	return HasBit(GetStationGfx(t), 0) ? AXIS_Y : AXIS_X;
+	return HasBit(GetStationGfx(t), 0) ? Axis::Y : Axis::X;
 }
 
 /**
@@ -767,7 +767,7 @@ inline void MakeStation(TileIndex t, Owner o, StationID sid, StationType st, uin
  */
 inline void MakeRailStation(TileIndex t, Owner o, StationID sid, Axis a, uint8_t section, RailType rt)
 {
-	MakeStation(t, o, sid, StationType::Rail, section + a);
+	MakeStation(t, o, sid, StationType::Rail, section + to_underlying(a));
 	SetRailType(t, rt);
 	SetRailStationReservation(t, false);
 }
@@ -783,7 +783,7 @@ inline void MakeRailStation(TileIndex t, Owner o, StationID sid, Axis a, uint8_t
  */
 inline void MakeRailWaypoint(TileIndex t, Owner o, StationID sid, Axis a, uint8_t section, RailType rt)
 {
-	MakeStation(t, o, sid, StationType::RailWaypoint, section + a);
+	MakeStation(t, o, sid, StationType::RailWaypoint, section + to_underlying(a));
 	SetRailType(t, rt);
 	SetRailStationReservation(t, false);
 }
@@ -820,7 +820,7 @@ inline void MakeRoadStop(TileIndex t, Owner o, StationID sid, RoadStopType rst, 
  */
 inline void MakeDriveThroughRoadStop(TileIndex t, Owner station, Owner road, Owner tram, StationID sid, StationType rst, RoadType road_rt, RoadType tram_rt, Axis a)
 {
-	MakeStation(t, station, sid, rst, GFX_TRUCK_BUS_DRIVETHROUGH_OFFSET + a);
+	MakeStation(t, station, sid, rst, GFX_TRUCK_BUS_DRIVETHROUGH_OFFSET + to_underlying(a));
 	SetRoadTypes(t, road_rt, tram_rt);
 	SetRoadOwner(t, RoadTramType::Road, road);
 	SetRoadOwner(t, RoadTramType::Tram, tram);
@@ -864,7 +864,7 @@ inline void MakeBuoy(TileIndex t, StationID sid, WaterClass wc)
 inline void MakeDock(TileIndex t, Owner o, StationID sid, DiagDirection d, WaterClass wc)
 {
 	MakeStation(t, o, sid, StationType::Dock, d);
-	MakeStation(t + TileOffsByDiagDir(d), o, sid, StationType::Dock, GFX_DOCK_BASE_WATER_PART + DiagDirToAxis(d), wc);
+	MakeStation(t + TileOffsByDiagDir(d), o, sid, StationType::Dock, GFX_DOCK_BASE_WATER_PART + to_underlying(DiagDirToAxis(d)), wc);
 }
 
 /**

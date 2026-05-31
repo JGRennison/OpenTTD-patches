@@ -100,7 +100,7 @@ void SetObjectFoundationType(TileIndex tile, Slope tileh, ObjectType type, const
 
 		if (IsSteepSlope(tileh)) {
 			if ((flags & OBJECT_EF_FLAG_INCLINE_FOUNDATION) && (incline & tileh)) {
-				SetObjectEffectiveFoundationType(tile, DiagDirToAxis(edge) == AXIS_X ? OEFT_INCLINE_X : OEFT_INCLINE_Y);
+				SetObjectEffectiveFoundationType(tile, DiagDirToAxis(edge) == Axis::X ? OEFT_INCLINE_X : OEFT_INCLINE_Y);
 				return;
 			}
 
@@ -115,7 +115,7 @@ void SetObjectFoundationType(TileIndex tile, Slope tileh, ObjectType type, const
 
 		if (IsOddParity(incline & tileh)) {
 			if ((flags & OBJECT_EF_FLAG_INCLINE_FOUNDATION) && IsSlopeWithOneCornerRaised(tileh)) {
-				SetObjectEffectiveFoundationType(tile, DiagDirToAxis(edge) == AXIS_X ? OEFT_INCLINE_X : OEFT_INCLINE_Y);
+				SetObjectEffectiveFoundationType(tile, DiagDirToAxis(edge) == Axis::X ? OEFT_INCLINE_X : OEFT_INCLINE_Y);
 			} else {
 				SetObjectEffectiveFoundationType(tile, OEFT_FLAT);
 			}
@@ -1126,7 +1126,7 @@ static bool TryBuildCoastLighthouse()
 	int perimeter = (GB(r, 16, 16) % (2 * (maxx + maxy))) - maxy;
 	DiagDirection dir;
 	for (dir = DIAGDIR_NE; perimeter > 0; dir++) {
-		perimeter -= (DiagDirToAxis(dir) == AXIS_X) ? maxx : maxy;
+		perimeter -= (DiagDirToAxis(dir) == Axis::X) ? maxx : maxy;
 	}
 
 	TileIndex tile;

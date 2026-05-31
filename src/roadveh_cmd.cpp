@@ -528,7 +528,7 @@ inline int RoadVehicle::GetCurrentMaxSpeed() const
 		if (_settings_game.vehicle.roadveh_acceleration_model == AM_REALISTIC) {
 			if (this->state <= RVSB_TRACKDIR_MASK && IsReversingRoadTrackdir((Trackdir)this->state)) {
 				max_speed = std::min(max_speed, this->gcache.cached_max_track_speed / 2);
-			} else if ((u->direction & 1) == 0) {
+			} else if (!IsDiagonalDirection(u->direction)) {
 				// Are we in a curve and should slow down?
 				if (_settings_game.vehicle.slow_road_vehicles_in_curves) {
 					max_speed = std::min(max_speed, this->gcache.cached_max_track_speed * 3 / 4);
@@ -563,7 +563,7 @@ static void DeleteLastRoadVeh(RoadVehicle *v)
 static void RoadVehSetRandomDirection(RoadVehicle *v)
 {
 	static const DirDiff delta[] = {
-		DIRDIFF_45LEFT, DIRDIFF_SAME, DIRDIFF_SAME, DIRDIFF_45RIGHT
+		DirDiff::Left45, DirDiff::Same, DirDiff::Same, DirDiff::Right45
 	};
 
 	do {
@@ -861,11 +861,10 @@ static Direction RoadVehGetSlidingDirection(const RoadVehicle *v, int x, int y)
 {
 	Direction new_dir = RoadVehGetNewDirection(v, x, y);
 	Direction old_dir = v->direction;
-	DirDiff delta;
 
 	if (new_dir == old_dir) return old_dir;
-	delta = (DirDifference(new_dir, old_dir) > DIRDIFF_REVERSE ? DIRDIFF_45LEFT : DIRDIFF_45RIGHT);
-	return ChangeDir(old_dir, delta);
+	DirDiff dirdiff = DirDifference(new_dir, old_dir);
+	return ChangeDir(old_dir, LimitDirDiff(dirdiff));
 }
 
 struct OvertakeData {
@@ -907,10 +906,10 @@ static bool EnumFindVehBlockingOvertake(const RoadVehicle *v, const OvertakeData
 static bool EnumFindVehBlockingOvertakeTunnelBridge(const RoadVehicle *v, const OvertakeData *od)
 {
 	switch (DiagDirToAxis(DirToDiagDir(v->direction))) {
-		case AXIS_X:
+		case Axis::X:
 			if (v->x_pos < od->tunnelbridge_min || v->x_pos > od->tunnelbridge_max) return false;
 			break;
-		case AXIS_Y:
+		case Axis::Y:
 			if (v->y_pos < od->tunnelbridge_min || v->y_pos > od->tunnelbridge_max) return false;
 			break;
 		default:
@@ -1086,7 +1085,7 @@ static void RoadVehCheckOvertake(RoadVehicle *v, RoadVehicle *u)
 	TileIndexDiff check_tile_diff = TileOffsByDiagDir(DirToDiagDir(v->direction));
 	TileIndex behind_check_tile = v->tile - check_tile_diff;
 
-	int tile_offset = ((DiagDirToAxis(DirToDiagDir(v->direction)) == AXIS_X) ? v->x_pos : v->y_pos) & 0xF;
+	int tile_offset = ((DiagDirToAxis(DirToDiagDir(v->direction)) == Axis::X) ? v->x_pos : v->y_pos) & 0xF;
 	int tile_ahead_margin = ((dir == DIAGDIR_SE || dir == DIAGDIR_SW) ? TILE_SIZE - 1 - tile_offset : tile_offset);;
 	int behind_tile_count = (v->gcache.cached_total_length + tile_ahead_margin) / TILE_SIZE;
 

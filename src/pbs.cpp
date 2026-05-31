@@ -303,9 +303,9 @@ static void CheckCurveLookAhead(const Train *v, TrainReservationLookAhead *looka
 		}
 		if (u == nullptr) break;
 
-		if (curve.dir_diff == DIRDIFF_45LEFT) curvecount[0]++;
-		if (curve.dir_diff == DIRDIFF_45RIGHT) curvecount[1]++;
-		if (curve.dir_diff == DIRDIFF_45LEFT || curve.dir_diff == DIRDIFF_45RIGHT) {
+		if (curve.dir_diff == DirDiff::Left45) curvecount[0]++;
+		if (curve.dir_diff == DirDiff::Right45) curvecount[1]++;
+		if (curve.dir_diff == DirDiff::Left45 || curve.dir_diff == DirDiff::Right45) {
 			if (lastpos != -1) {
 				numcurve++;
 				sum += pos - lastpos;
@@ -317,7 +317,7 @@ static void CheckCurveLookAhead(const Train *v, TrainReservationLookAhead *looka
 		}
 
 		/* if we have a 90 degree turn, fix the speed limit to 60 */
-		if (curve.dir_diff == DIRDIFF_90LEFT || curve.dir_diff == DIRDIFF_90RIGHT) {
+		if (curve.dir_diff == DirDiff::Left90 || curve.dir_diff == DirDiff::Right90) {
 			max_speed = 61;
 		}
 	}
@@ -1652,8 +1652,8 @@ bool IsWaitingPositionFree(const Train *v, TileIndex tile, Trackdir trackdir, bo
 			const Direction dir = DiagDirToDir(GetTunnelBridgeDirection(other_end));
 			for (const Train *u : VehiclesOnTile<VehicleType::Train>(other_end)) {
 				DirDiff diff = DirDifference(u->direction, dir);
-				if (diff == DIRDIFF_SAME) return false;
-				if (diff == DIRDIFF_45RIGHT || diff == DIRDIFF_45LEFT) {
+				if (diff == DirDiff::Same) return false;
+				if (diff == DirDiff::Right45 || diff == DirDiff::Left45) {
 					if (GetAcrossTunnelBridgeTrackBits(other_end) & u->track) return false;
 				}
 			}

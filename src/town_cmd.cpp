@@ -1082,8 +1082,8 @@ static bool IsNeighbourRoadTile(TileIndex tile, const DiagDirection dir, uint di
 
 	/* Lookup table for the used diff values */
 	const TileIndexDiff tid_lt[3] = {
-		TileOffsByDiagDir(ChangeDiagDir(dir, DIAGDIRDIFF_90RIGHT)),
-		TileOffsByDiagDir(ChangeDiagDir(dir, DIAGDIRDIFF_90LEFT)),
+		TileOffsByDiagDir(ChangeDiagDir(dir, DiagDirDiff::Right90)),
+		TileOffsByDiagDir(ChangeDiagDir(dir, DiagDirDiff::Left90)),
 		TileOffsByDiagDir(ReverseDiagDir(dir)),
 	};
 
@@ -1648,8 +1648,8 @@ static TownGrowthResult GrowTownInTile(TileIndex *tile_ptr, RoadBits cur_rb, Dia
 					if (target_dir != ReverseDiagDir(source_dir)) return TownGrowthResult::SearchStopped;
 
 					/* Return if neither side of the new road is a house */
-					if (!IsTileType(TileAddByDiagDir(tile, ChangeDiagDir(target_dir, DIAGDIRDIFF_90RIGHT)), TileType::House) &&
-							!IsTileType(TileAddByDiagDir(tile, ChangeDiagDir(target_dir, DIAGDIRDIFF_90LEFT)), TileType::House)) {
+					if (!IsTileType(TileAddByDiagDir(tile, ChangeDiagDir(target_dir, DiagDirDiff::Right90)), TileType::House) &&
+							!IsTileType(TileAddByDiagDir(tile, ChangeDiagDir(target_dir, DiagDirDiff::Left90)), TileType::House)) {
 						return TownGrowthResult::SearchStopped;
 					}
 
@@ -3045,7 +3045,7 @@ static TileIndex FindPlaceForTownHouseAroundTile(TileIndex tile, Town *t, HouseI
 		if (!TownLayoutAllowsHouseHere(t, ta, modes)) continue;
 		if (CanBuildHouseHere(ta, t->index, maxz, build_flags).Succeeded()) return ta.tile;
 		ta.tile += TileOffsByDiagDir(dir);
-		dir = ChangeDiagDir(dir, DIAGDIRDIFF_90RIGHT);
+		dir = ChangeDiagDir(dir, DiagDirDiff::Right90);
 	}
 
 	return INVALID_TILE;

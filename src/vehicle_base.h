@@ -496,7 +496,7 @@ public:
 	 */
 	inline uint GetOldAdvanceSpeed(uint speed)
 	{
-		return (this->direction & 1) ? speed : speed * 3 / 4;
+		return (to_underlying(this->direction) & 1) ? speed : speed * 3 / 4;
 	}
 
 	/**
@@ -525,7 +525,7 @@ public:
 	 */
 	inline uint GetAdvanceDistance()
 	{
-		return (this->direction & 1) ? 192 : 256;
+		return (to_underlying(this->direction) & 1) ? 192 : 256;
 	}
 
 	/**

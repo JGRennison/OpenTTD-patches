@@ -2494,17 +2494,17 @@ void ViewportMapStoreTunnel(const TileIndex tile, const TileIndex tile_south, co
 	const Owner o = GetTileOwner(tile);
 	if (o < MAX_COMPANIES && !_legend_land_owners[_company_to_list_pos[o]].show_on_map) return;
 
-	const Axis axis = (TileX(tile) == TileX(tile_south)) ? AXIS_Y : AXIS_X;
+	const Axis axis = (TileX(tile) == TileX(tile_south)) ? Axis::Y : Axis::X;
 	const Point viewport_pt = RemapCoords(TileX(tile) * TILE_SIZE, TileY(tile) * TILE_SIZE, tunnel_z);
 	int y_intercept;
-	if (axis == AXIS_X) {
+	if (axis == Axis::X) {
 		/* NE to SW */
 		y_intercept = viewport_pt.y + (viewport_pt.x / 2);
 	} else {
 		/* NW to SE */
 		y_intercept = viewport_pt.y - (viewport_pt.x / 2);
 	}
-	TunnelToMapStorage &storage = (axis == AXIS_X) ? _vd.tunnel_to_map_x : _vd.tunnel_to_map_y;
+	TunnelToMapStorage &storage = (axis == Axis::X) ? _vd.tunnel_to_map_x : _vd.tunnel_to_map_y;
 	TunnelToMap *tbtm;
 	if (insert_sorted) {
 		auto iter = std::upper_bound(storage.tunnels.begin(), storage.tunnels.end(), y_intercept, [](int a, const TunnelToMap &b) -> bool {
@@ -2532,7 +2532,7 @@ void ViewportMapClearTunnelCache()
 void ViewportMapInvalidateTunnelCacheByTile(const TileIndex tile, const Axis axis)
 {
 	if (!_settings_client.gui.show_tunnels_on_map) return;
-	std::vector<TunnelToMap> &tbtmv = (axis == AXIS_X) ? _vd.tunnel_to_map_x.tunnels : _vd.tunnel_to_map_y.tunnels;
+	std::vector<TunnelToMap> &tbtmv = (axis == Axis::X) ? _vd.tunnel_to_map_x.tunnels : _vd.tunnel_to_map_y.tunnels;
 	for (auto tbtm = tbtmv.begin(); tbtm != tbtmv.end(); tbtm++) {
 		if (tbtm->tb.from_tile == tile) {
 			tbtmv.erase(tbtm);
@@ -3599,7 +3599,7 @@ static inline void ViewportMapStoreBridgeAboveTile(const Viewport * const vp, co
 	/* No need to bother for hidden things */
 	if (!_settings_client.gui.show_bridges_on_map) return;
 
-	if (GetBridgeAxis(tile) == AXIS_X) {
+	if (GetBridgeAxis(tile) == Axis::X) {
 		auto iter = _vdd->bridge_to_map_x.lower_bound(tile);
 		if (iter != _vdd->bridge_to_map_x.end() && iter->first < tile && iter->second > tile) return; /* already covered */
 		_vdd->bridge_to_map_x.insert(iter, std::make_pair(GetNorthernBridgeEnd(tile), GetSouthernBridgeEnd(tile)));
@@ -7026,9 +7026,9 @@ static LineSnapPoint LineSnapPointAtRailTrackEndpoint(TileIndex tile, DiagDirect
 
 	ret.dirs = 0;
 	SetBit(ret.dirs, DiagDirToDir(exit_dir));
-	SetBit(ret.dirs, ChangeDir(DiagDirToDir(exit_dir), DIRDIFF_45LEFT));
-	SetBit(ret.dirs, ChangeDir(DiagDirToDir(exit_dir), DIRDIFF_45RIGHT));
-	if (bidirectional) ret.dirs |= std::rotr<uint8_t>(ret.dirs, DIRDIFF_REVERSE);
+	SetBit(ret.dirs, ChangeDir(DiagDirToDir(exit_dir), DirDiff::Left45));
+	SetBit(ret.dirs, ChangeDir(DiagDirToDir(exit_dir), DirDiff::Right45));
+	if (bidirectional) ret.dirs |= std::rotr<uint8_t>(ret.dirs, to_underlying(DirDiff::Reverse));
 
 	return ret;
 }
@@ -7159,7 +7159,7 @@ static void SetRailSnapTile(TileIndex tile)
 	for (DiagDirection dir = DIAGDIR_BEGIN; dir < DIAGDIR_END; dir++) {
 		_tile_snap_points.push_back(LineSnapPointAtRailTrackEndpoint(tile, dir, false));
 		LineSnapPoint &point = _tile_snap_points.back();
-		point.dirs = std::rotr<uint8_t>(point.dirs, DIRDIFF_REVERSE);
+		point.dirs = std::rotr<uint8_t>(point.dirs, to_underlying(DirDiff::Reverse));
 	}
 }
 

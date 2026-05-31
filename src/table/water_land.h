@@ -44,16 +44,17 @@ static const DrawTileSeqStruct _shipdepot_display_se_seq[] = {
 	TILE_SEQ_LINE( 15, 0, 0, 1, 16, 0x14, 0xFE7 | (1 << PALETTE_MODIFIER_COLOUR))
 };
 
-static const DrawTileSpriteSpan _shipdepot_display_data[][to_underlying(DepotPart::End)] = {
-	{ // AXIS_X
+/** Data for drawing ship depots by Axis and DepotPart. */
+static const AxisIndexArray<EnumIndexArray<DrawTileSpriteSpan, DepotPart, DepotPart::End>> _shipdepot_display_data{{{
+	{{{ // Axis::X
 		TILE_SPRITE_LINE(0xFDD, _shipdepot_display_ne_seq) // DepotPart::North
 		TILE_SPRITE_LINE(0xFDD, _shipdepot_display_sw_seq) // DepotPart::South
-	},
-	{ // AXIS_Y
+	}}},
+	{{{ // Axis::Y
 		TILE_SPRITE_LINE(0xFDD, _shipdepot_display_nw_seq) // DepotPart::North
 		TILE_SPRITE_LINE(0xFDD, _shipdepot_display_se_seq) // DepotPart::South
-	},
-};
+	}}},
+}}};
 
 static const DrawTileSeqStruct _lock_display_middle_ne_seq[] = {
 	TILE_SEQ_LINE( 0,   0, 0, 0x10, 1, 0x14, 0 + 1)

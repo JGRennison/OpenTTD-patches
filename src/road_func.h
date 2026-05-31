@@ -55,24 +55,6 @@ inline RoadBits MirrorRoadBits(RoadBits r)
 }
 
 /**
- * Calculate rotated RoadBits
- *
- * Move the Roadbits clockwise until they are in their final position.
- *
- * @param r The given RoadBits value
- * @param rot The given Rotation angle
- * @return the rotated
- */
-inline RoadBits RotateRoadBits(RoadBits r, DiagDirDiff rot)
-{
-	dbg_assert(IsValidRoadBits(r));
-	for (; rot > (DiagDirDiff)0; rot--) {
-		r = static_cast<RoadBits>(GB(r.base(), 0, 1) << 3 | GB(r.base(), 1, 3));
-	}
-	return r;
-}
-
-/**
  * Check if we've got a straight road
  *
  * @param r The given RoadBits
@@ -111,7 +93,7 @@ inline RoadBits DiagDirToRoadBits(DiagDirection d)
 inline RoadBits AxisToRoadBits(Axis a)
 {
 	dbg_assert(IsValidAxis(a));
-	return a == AXIS_X ? ROAD_X : ROAD_Y;
+	return a == Axis::X ? ROAD_X : ROAD_Y;
 }
 
 /**

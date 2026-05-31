@@ -56,8 +56,8 @@ inline bool IsValidTrackdir(Trackdir trackdir)
 
 /**
  * Convert an Axis to the corresponding Track
- * AXIS_X -> TRACK_X
- * AXIS_Y -> TRACK_Y
+ * Axis::X -> TRACK_X
+ * Axis::Y -> TRACK_Y
  * Uses the fact that they share the same internal encoding
  *
  * @param a the axis to convert
@@ -66,7 +66,7 @@ inline bool IsValidTrackdir(Trackdir trackdir)
 inline Track AxisToTrack(Axis a)
 {
 	dbg_assert(IsValidAxis(a));
-	return (Track)a;
+	return static_cast<Track>(to_underlying(a));
 }
 
 /**
@@ -111,7 +111,7 @@ inline TrackBits CornerToTrackBits(Corner corner)
 inline TrackdirBits TrackdirToTrackdirBits(Trackdir trackdir)
 {
 	dbg_assert(IsValidTrackdir(trackdir));
-	return (TrackdirBits)(1 << trackdir);
+	return static_cast<TrackdirBits>(1 << trackdir);
 }
 
 /**
@@ -294,7 +294,7 @@ inline Trackdir TrackToTrackdir(Track track)
 inline TrackdirBits TrackToTrackdirBits(Track track)
 {
 	Trackdir td = TrackToTrackdir(track);
-	return (TrackdirBits)(TrackdirToTrackdirBits(td) | TrackdirToTrackdirBits(ReverseTrackdir(td)));
+	return static_cast<TrackdirBits>(TrackdirToTrackdirBits(td) | TrackdirToTrackdirBits(ReverseTrackdir(td)));
 }
 
 /**
@@ -318,7 +318,7 @@ inline TrackBits TrackdirBitsToTrackBits(TrackdirBits bits)
  */
 inline TrackdirBits TrackBitsToTrackdirBits(TrackBits bits)
 {
-	return (TrackdirBits)(bits * 0x101);
+	return static_cast<TrackdirBits>(bits * 0x101);
 }
 
 /**
@@ -353,7 +353,7 @@ inline bool HasTrackdir(TrackdirBits trackdirs, Trackdir trackdir)
  */
 inline TrackdirBits TrackStatusToTrackdirBits(TrackStatus ts)
 {
-	return (TrackdirBits)(ts & TRACKDIR_BIT_MASK);
+	return static_cast<TrackdirBits>(ts & TRACKDIR_BIT_MASK);
 }
 
 /**
@@ -377,7 +377,7 @@ inline TrackBits TrackStatusToTrackBits(TrackStatus ts)
  */
 inline TrackdirBits TrackStatusToRedSignals(TrackStatus ts)
 {
-	return (TrackdirBits)((ts >> 16) & TRACKDIR_BIT_MASK);
+	return static_cast<TrackdirBits>((ts >> 16) & TRACKDIR_BIT_MASK);
 }
 
 /**
@@ -728,8 +728,8 @@ inline DiagDirection VehicleExitDir(Direction direction, TrackBits track)
 	DiagDirection diagdir = DirToDiagDir(direction);
 
 	/* Determine the diagonal direction in which we will exit this tile */
-	if (!HasBit(direction, 0) && track != state_dir_table[diagdir]) {
-		diagdir = ChangeDiagDir(diagdir, DIAGDIRDIFF_90LEFT);
+	if (!IsDiagonalDirection(direction) && track != state_dir_table[diagdir]) {
+		diagdir = ChangeDiagDir(diagdir, DiagDirDiff::Left90);
 	}
 
 	return diagdir;

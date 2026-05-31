@@ -42,7 +42,7 @@ inline bool IsValidDirection(Direction d)
  */
 inline bool IsValidAxis(Axis d)
 {
-	return d < AXIS_END;
+	return d < Axis::End;
 }
 
 /**
@@ -71,15 +71,15 @@ inline DirDiff DirDifference(Direction d0, Direction d1)
 	dbg_assert(IsValidDirection(d1));
 	/* Cast to uint so compiler can use bitmask. If the difference is negative
 	 * and we used int instead of uint, further "+ 8" would have to be added. */
-	return static_cast<DirDiff>((static_cast<uint>(d0) - static_cast<uint>(d1)) % 8);
+	return static_cast<DirDiff>((to_underlying(d0) - to_underlying(d1)) % 8);
 }
 
 /**
  * Applies two differences together
  *
  * This function adds two differences together and returns the resulting
- * difference. So adding two DIRDIFF_REVERSE together results in the
- * DIRDIFF_SAME difference.
+ * difference. So adding two DirDiff::Reverse together results in the
+ * DirDiff::Same difference.
  *
  * @param d The first difference
  * @param delta The second difference to add on
@@ -88,7 +88,17 @@ inline DirDiff DirDifference(Direction d0, Direction d1)
 inline DirDiff ChangeDirDiff(DirDiff d, DirDiff delta)
 {
 	/* Cast to uint so compiler can use bitmask. Result can never be negative. */
-	return static_cast<DirDiff>((static_cast<uint>(d) + static_cast<uint>(delta)) % 8);
+	return static_cast<DirDiff>((to_underlying(d) + to_underlying(delta)) % 8);
+}
+
+/**
+ * Limit a direction difference to up to 45 degrees.
+ * @param d direction difference to limit.
+ * @return limited difference.
+ */
+inline DirDiff LimitDirDiff(DirDiff d)
+{
+	return d > DirDiff::Reverse ? DirDiff::Left45 : DirDiff::Right45;
 }
 
 /**
@@ -105,7 +115,7 @@ inline Direction ChangeDir(Direction d, DirDiff delta)
 {
 	dbg_assert(IsValidDirection(d));
 	/* Cast to uint so compiler can use bitmask. Result can never be negative. */
-	return static_cast<Direction>((static_cast<uint>(d) + static_cast<uint>(delta)) % 8);
+	return static_cast<Direction>((to_underlying(d) + to_underlying(delta)) % 8);
 }
 
 
@@ -133,7 +143,7 @@ inline DiagDirDiff DiagDirDifference(DiagDirection d0, DiagDirection d1)
 	dbg_assert(IsValidDiagDirection(d0));
 	dbg_assert(IsValidDiagDirection(d1));
 	/* Cast to uint so compiler can use bitmask. Result can never be negative. */
-	return (DiagDirDiff)((uint)(d0 - d1) % 4);
+	return static_cast<DiagDirDiff>((to_underlying(d0) - to_underlying(d1)) % 4);
 }
 
 /**
@@ -150,7 +160,7 @@ inline DiagDirection ChangeDiagDir(DiagDirection d, DiagDirDiff delta)
 {
 	dbg_assert(IsValidDiagDirection(d));
 	/* Cast to uint so compiler can use bitmask. Result can never be negative. */
-	return static_cast<DiagDirection>((static_cast<uint>(d) + static_cast<uint>(delta)) % 4);
+	return static_cast<DiagDirection>((to_underlying(d) + to_underlying(delta)) % 4);
 }
 
 /**
@@ -197,7 +207,7 @@ inline Direction DiagDirToDir(DiagDirection dir)
 inline Axis OtherAxis(Axis a)
 {
 	dbg_assert(IsValidAxis(a));
-	return (Axis)(a ^ 1);
+	return static_cast<Axis>(to_underlying(a) ^ 1);
 }
 
 
@@ -214,7 +224,7 @@ inline Axis OtherAxis(Axis a)
 inline Axis DiagDirToAxis(DiagDirection d)
 {
 	dbg_assert(IsValidDiagDirection(d));
-	return (Axis)(d & 1);
+	return static_cast<Axis>(d & 1);
 }
 
 
@@ -232,7 +242,7 @@ inline Axis DiagDirToAxis(DiagDirection d)
 inline DiagDirection AxisToDiagDir(Axis a)
 {
 	dbg_assert(IsValidAxis(a));
-	return (DiagDirection)(2 - a);
+	return static_cast<DiagDirection>(2 - to_underlying(a));
 }
 
 /**
@@ -247,8 +257,8 @@ inline DiagDirection AxisToDiagDir(Axis a)
 inline DiagDirections AxisToDiagDirs(Axis a)
 {
 	dbg_assert(IsValidAxis(a));
-	return static_cast<DiagDirections>(5 << a);
-//	return a == AXIS_X
+	return static_cast<DiagDirections>(5 << to_underlying(a));
+//	return a == Axis::X
 //		? DiagDirections{DIAGDIR_NE, DIAGDIR_SW}
 //		: DiagDirections{DIAGDIR_SE, DIAGDIR_NW};
 }
@@ -267,7 +277,7 @@ inline DiagDirections AxisToDiagDirs(Axis a)
 inline Direction AxisToDirection(Axis a)
 {
 	dbg_assert(IsValidAxis(a));
-	return (Direction)(5 - 2 * a);
+	return static_cast<Direction>(5 - 2 * to_underlying(a));
 }
 
 /**
@@ -279,7 +289,7 @@ inline Direction AxisToDirection(Axis a)
 inline DiagDirection XYNSToDiagDir(Axis xy, uint ns)
 {
 	dbg_assert(IsValidAxis(xy));
-	return (DiagDirection)(xy * 3 ^ ns * 2);
+	return static_cast<DiagDirection>(to_underlying(xy) * 3 ^ ns * 2);
 }
 
 /**
@@ -309,12 +319,12 @@ inline DiagDirection DirToDiagDirAlongAxis(Direction dir, Axis axis)
 {
 	dbg_assert(IsValidDirection(dir));
 	dbg_assert(IsValidAxis(axis));
-	if ((dir & 3) == (3 ^ (axis << 1))) return INVALID_DIAGDIR;
+	if ((dir & 3) == (3 ^ (to_underlying(axis) << 1))) return INVALID_DIAGDIR;
 	/* Mapping:
 	 * X 4, 5, 6 -> 2    0, 1, 2 -> 0
 	 * Y 2, 3, 4 -> 1    0, 6, 7 -> 3
 	 */
-	return (DiagDirection)((((static_cast<uint>(dir) - static_cast<uint>(axis)) & 4) >> 1) | axis);
+	return (DiagDirection)((((static_cast<uint>(dir) - static_cast<uint>(axis)) & 4) >> 1) | to_underlying(axis));
 }
 
 #endif /* DIRECTION_FUNC_H */

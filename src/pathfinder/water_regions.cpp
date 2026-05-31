@@ -241,7 +241,7 @@ public:
 						} else if (!ft.is_bridge) {
 							assert(DistanceManhattan(ft.new_tile, tile) == 1);
 							const auto side = DiagdirBetweenTiles(tile, ft.new_tile);
-							const int local_x_or_y = DiagDirToAxis(side) == AXIS_X ? TileY(tile) - this->tile_y : TileX(tile) - this->tile_x;
+							const int local_x_or_y = DiagDirToAxis(side) == Axis::X ? TileY(tile) - this->tile_y : TileX(tile) - this->tile_x;
 							SetBit(this->wr.edge_traversability_bits[side], local_x_or_y);
 						} else {
 							this->wr.has_cross_region_aqueducts = true;

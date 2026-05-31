@@ -3516,7 +3516,7 @@ static uint16_t GetFreeStationPlatforms(StationID st_id)
 	for (TileIndex t1 : st->train_station) {
 		if (st->TileBelongsToRailStation(t1)) {
 			/* We only proceed if this tile is a track tile and the north(-east/-west) end of the platform */
-			if (IsCompatibleTrainStationTile(t1 + TileOffsByDiagDir(GetRailStationAxis(t1) == AXIS_X ? DIAGDIR_NE : DIAGDIR_NW), t1) || IsStationTileBlocked(t1)) continue;
+			if (IsCompatibleTrainStationTile(t1 + TileOffsByDiagDir(GetRailStationAxis(t1) == Axis::X ? DIAGDIR_NE : DIAGDIR_NW), t1) || IsStationTileBlocked(t1)) continue;
 			is_free = true;
 			t2 = t1;
 			do {
@@ -3524,7 +3524,7 @@ static uint16_t GetFreeStationPlatforms(StationID st_id)
 					is_free = false;
 					break;
 				}
-				t2 += TileOffsByDiagDir(GetRailStationAxis(t1) == AXIS_X ? DIAGDIR_SW : DIAGDIR_SE);
+				t2 += TileOffsByDiagDir(GetRailStationAxis(t1) == Axis::X ? DIAGDIR_SW : DIAGDIR_SE);
 			} while (IsCompatibleTrainStationTile(t2, t1));
 			if (is_free) counter++;
 		}

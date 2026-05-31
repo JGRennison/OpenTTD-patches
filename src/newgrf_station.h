@@ -66,7 +66,7 @@ struct StationScopeResolver : public ScopeResolver {
 	 * @param rt %RailType of the station (unbuilt stations only).
 	 */
 	StationScopeResolver(ResolverObject &ro, const StationSpec *statspec, BaseStation *st, TileIndex tile, RailType rt)
-		: ScopeResolver(ro), tile(tile), st(st), statspec(statspec), cargo_type(INVALID_CARGO), axis(INVALID_AXIS), rt(rt)
+		: ScopeResolver(ro), tile(tile), st(st), statspec(statspec), cargo_type(INVALID_CARGO), axis(Axis::Invalid), rt(rt)
 	{
 	}
 

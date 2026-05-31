@@ -506,7 +506,7 @@ int GetTileMarginInFrontOfTrain(const Train *v, int x_pos, int y_pos)
 	uint8_t rounding = v->IsDrivingBackwards() ? 0 : 1;
 	if (IsDiagonalDirection(vdir)) {
 		DiagDirection dir = DirToDiagDir(vdir);
-		int offset = ((DiagDirToAxis(dir) == AXIS_X) ? x_pos : y_pos) & 0xF;
+		int offset = ((DiagDirToAxis(dir) == Axis::X) ? x_pos : y_pos) & 0xF;
 		return ((dir == DIAGDIR_SE || dir == DIAGDIR_SW) ? TILE_SIZE - 1 - offset : offset) - ((v->gcache.cached_veh_length + rounding) / 2);
 	} else {
 		/* Calc position within the current tile */
@@ -703,11 +703,11 @@ uint16_t Train::GetCurveSpeedLimit() const
 		Direction next_dir = u->Next()->direction;
 
 		DirDiff dirdiff = DirDifference(this_dir, next_dir);
-		if (dirdiff == DIRDIFF_SAME) continue;
+		if (dirdiff == DirDiff::Same) continue;
 
-		if (dirdiff == DIRDIFF_45LEFT) curvecount[0]++;
-		if (dirdiff == DIRDIFF_45RIGHT) curvecount[1]++;
-		if (dirdiff == DIRDIFF_45LEFT || dirdiff == DIRDIFF_45RIGHT) {
+		if (dirdiff == DirDiff::Left45) curvecount[0]++;
+		if (dirdiff == DirDiff::Right45) curvecount[1]++;
+		if (dirdiff == DirDiff::Left45 || dirdiff == DirDiff::Right45) {
 			if (lastpos != -1) {
 				numcurve++;
 				sum += pos - lastpos;
@@ -719,7 +719,7 @@ uint16_t Train::GetCurveSpeedLimit() const
 		}
 
 		/* if we have a 90 degree turn, fix the speed limit to 60 */
-		if (dirdiff == DIRDIFF_90LEFT || dirdiff == DIRDIFF_90RIGHT) {
+		if (dirdiff == DirDiff::Left90 || dirdiff == DirDiff::Right90) {
 			max_speed = 61;
 		}
 	}
@@ -3646,8 +3646,7 @@ static bool CheckTrainStayInDepot(Train *v)
 	v->PlayLeaveStationSound();
 
 	Train *moving_front = v->GetMovingFront();
-	moving_front->track = TRACK_BIT_X;
-	if (v->direction & 2) moving_front->track = TRACK_BIT_Y;
+	moving_front->track = AxisToTrackBits(DiagDirToAxis(DirToDiagDir(moving_front->direction)));
 
 	moving_front->vehstatus.Reset(VehState::Hidden);
 	moving_front->UpdateIsDrawn();
@@ -5753,7 +5752,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 		if (prev == nullptr && _settings_game.vehicle.train_acceleration_model == AM_ORIGINAL) {
 			const AccelerationSlowdownParams *asp = &_accel_slowdown[static_cast<uint>(first->GetAccelerationType())];
 			DirDiff diff = DirDifference(old_direction, new_direction);
-			first->cur_speed -= (diff == DIRDIFF_45RIGHT || diff == DIRDIFF_45LEFT ? asp->small_turn : asp->large_turn) * first->cur_speed >> 8;
+			first->cur_speed -= (diff == DirDiff::Right45 || diff == DirDiff::Left45 ? asp->small_turn : asp->large_turn) * first->cur_speed >> 8;
 		}
 		direction_changed = true;
 	};
@@ -6565,7 +6564,7 @@ static void DeleteLastWagon(Train *v)
 static void ChangeTrainDirRandomly(Train *v)
 {
 	static const DirDiff delta[] = {
-		DIRDIFF_45LEFT, DIRDIFF_SAME, DIRDIFF_SAME, DIRDIFF_45RIGHT
+		DirDiff::Left45, DirDiff::Same, DirDiff::Same, DirDiff::Right45
 	};
 
 	do {

@@ -131,7 +131,7 @@ uint32_t GetPlatformInfo(Axis axis, uint8_t tile, int platforms, int length, int
 {
 	uint32_t retval = 0;
 
-	if (axis == AXIS_X) {
+	if (axis == Axis::X) {
 		std::swap(platforms, length);
 		std::swap(x, y);
 	}
@@ -168,7 +168,7 @@ uint32_t GetPlatformInfo(Axis axis, uint8_t tile, int platforms, int length, int
 static TileIndex FindRailStationEnd(TileIndex tile, TileIndexDiff delta, bool check_type, bool check_axis)
 {
 	uint8_t orig_type = 0;
-	Axis orig_axis = AXIS_X;
+	Axis orig_axis = Axis::X;
 	StationID sid = GetStationIndex(tile);
 
 	if (check_type) orig_type = GetCustomStationSpecIndex(tile);
@@ -217,8 +217,8 @@ static uint32_t GetRailContinuationInfo(TileIndex tile)
 	Axis axis = GetRailStationAxis(tile);
 
 	/* Choose appropriate lookup table to use */
-	const Direction *dir = axis == AXIS_X ? x_dir : y_dir;
-	const DiagDirection *diagdir = axis == AXIS_X ? x_exits : y_exits;
+	const Direction *dir = axis == Axis::X ? x_dir : y_dir;
+	const DiagDirection *diagdir = axis == Axis::X ? x_exits : y_exits;
 
 	uint32_t res = 0;
 	uint i;
@@ -327,14 +327,14 @@ uint32_t StationScopeResolver::GetNearbyStationInfo(uint32_t parameter, StationS
 			case 0x43: return GetCompanyInfo(_current_company); // Station owner
 			case 0x44: return 2;                // PBS status
 			case 0x67: // Land info of nearby tile
-				if (this->axis != INVALID_AXIS && this->tile != INVALID_TILE) {
+				if (this->axis != Axis::Invalid && this->tile != INVALID_TILE) {
 					TileIndex tile = this->tile;
 					if (parameter != 0) tile = GetNearbyTile(parameter, tile, true, this->axis); // only perform if it is required
 
 					uint32_t result = GetNearbyTileInformation(tile, this->ro.grffile->grf_version >= 8, extra.mask);
 					if (extra.mask & SLOPE_EW) {
 						Slope tileh = GetTileSlope(tile);
-						if (this->axis == AXIS_Y && HasBit(tileh, CORNER_W) != HasBit(tileh, CORNER_E)) result ^= SLOPE_EW;
+						if (this->axis == Axis::Y && HasBit(tileh, CORNER_W) != HasBit(tileh, CORNER_E)) result ^= SLOPE_EW;
 					}
 					return result;
 				}
@@ -397,7 +397,7 @@ uint32_t StationScopeResolver::GetNearbyStationInfo(uint32_t parameter, StationS
 			uint32_t result = GetNearbyTileInformation(tile, this->ro.grffile->grf_version >= 8, extra.mask);
 			if (extra.mask & SLOPE_EW) {
 				Slope tileh = GetTileSlope(tile);
-				if (axis == AXIS_Y && HasBit(tileh, CORNER_W) != HasBit(tileh, CORNER_E)) result ^= SLOPE_EW;
+				if (axis == Axis::Y && HasBit(tileh, CORNER_W) != HasBit(tileh, CORNER_E)) result ^= SLOPE_EW;
 			}
 			return result;
 		}
@@ -717,8 +717,8 @@ CommandCost PerformStationTileSlopeCheck(TileIndex north_tile, TileIndex cur_til
 	Slope slope = GetTileSlope(cur_tile);
 
 	StationResolverObject object(statspec, nullptr, cur_tile, rt, CBID_STATION_LAND_SLOPE_CHECK,
-			(slope << 4) | (slope ^ (axis == AXIS_Y && HasBit(slope, CORNER_W) != HasBit(slope, CORNER_E) ? SLOPE_EW : 0)),
-			(numtracks << 24) | (plat_len << 16) | (axis == AXIS_Y ? diff.x << 8 | diff.y : diff.y << 8 | diff.x));
+			(slope << 4) | (slope ^ (axis == Axis::Y && HasBit(slope, CORNER_W) != HasBit(slope, CORNER_E) ? SLOPE_EW : 0)),
+			(numtracks << 24) | (plat_len << 16) | (axis == Axis::Y ? diff.x << 8 | diff.y : diff.y << 8 | diff.x));
 	object.station_scope.axis = axis;
 
 	uint16_t cb_res = object.ResolveCallback();
@@ -851,9 +851,9 @@ bool DrawStationTile(int x, int y, RailType railtype, Axis axis, StationClassID 
 	DrawTileSpriteSpan tmp_rail_layout;
 
 	if (statspec->renderdata.empty()) {
-		sprites = GetStationTileLayout(StationType::Rail, tile + axis);
+		sprites = GetStationTileLayout(StationType::Rail, tile + to_underlying(axis));
 	} else {
-		layout = &statspec->renderdata[(tile < statspec->renderdata.size()) ? tile + axis : (uint)axis];
+		layout = &statspec->renderdata[(tile < statspec->renderdata.size()) ? tile + to_underlying(axis) : to_underlying(axis)];
 		if (!layout->NeedsPreprocessing()) {
 			sprites = layout;
 			layout = nullptr;
