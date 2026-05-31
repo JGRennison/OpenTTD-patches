@@ -2676,9 +2676,7 @@ bool ReadLanguagePack(const LanguageMetadata *lang)
 	_current_language = lang;
 	const TextDirection old_text_dir = _current_text_dir;
 	_current_text_dir = (TextDirection)_current_language->text_dir;
-	std::string_view c_file = StrLastPathSegment(_current_language->file);
-	_config_language_file = c_file;
-	SetCurrentGrfLangID(_current_language->newgrflangid);
+	_config_language_file = StrLastPathSegment(_current_language->file);
 	_langpack.list_separator = GetString(STR_LIST_SEPARATOR);
 	_langpack.ellipsis = GetString(STR_TRUNCATION_ELLIPSIS);
 
