@@ -2664,7 +2664,9 @@ static void UpdateStatusAfterSwap(Train *v, bool reverse = true)
 
 	/* Call the proper EnterTile function unless we are in a wormhole. */
 	if (!(v->track & TRACK_BIT_WORMHOLE)) {
-		VehicleEnterTile(v, v->tile, v->x_pos, v->y_pos);
+		if (!IsRailDepotTile(v->tile)) {
+			VehicleEnterTile(v, v->tile, v->x_pos, v->y_pos);
+		}
 	} else {
 		/* VehicleEnterTile_TunnelBridge() may set TRACK_BIT_WORMHOLE when the vehicle
 		 * is on the last bit of the bridge head (frame == TILE_SIZE - 1).
