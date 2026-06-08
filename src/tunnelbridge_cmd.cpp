@@ -56,6 +56,7 @@
 #include "landscape_cmd.h"
 #include "terraform_cmd.h"
 #include "depot_bridge.h"
+#include "rail_settings.h"
 
 #include "table/strings.h"
 #include "table/bridge_land.h"
@@ -1878,7 +1879,7 @@ static void DrawBridgeRoadBits(TileIndex head_tile, int x, int y, int z, int off
 
 static void DrawTunnelBridgeRampSingleSignal(const TileInfo *ti, bool is_green, uint position, SignalType type, bool show_exit)
 {
-	bool side = (_settings_game.vehicle.road_side != 0) && _settings_game.construction.train_signal_side;
+	bool side = IsTrainSignalSideRight();
 	DiagDirection dir = GetTunnelBridgeDirection(ti->tile);
 
 	uint8_t style = GetTunnelBridgeSignalStyle(ti->tile);
@@ -1994,8 +1995,7 @@ static void DrawTunnelBridgeRampSignal(const TileInfo *ti)
 
 static void GetBridgeSignalXY(TileIndex tile, DiagDirection bridge_direction, bool opposite_side, uint &position, uint &x, uint &y)
 {
-	bool side = (_settings_game.vehicle.road_side != 0) && _settings_game.construction.train_signal_side;
-	side ^= opposite_side;
+	bool side = IsTrainSignalSideRight() ^ opposite_side;
 
 	static const Point SignalPositions[2][4] = {
 		{   /*  X         X         Y         Y     Signals on the left side */
@@ -2151,8 +2151,7 @@ int GetTunnelBridgeSignalZ(TileIndex tile, bool exit)
 		opposite_side = HasBit(_signal_style_masks.signal_opposite_side, GetTunnelBridgeSignalStyle(tile));
 	}
 
-	bool side = (_settings_game.vehicle.road_side != 0) && _settings_game.construction.train_signal_side;
-	side ^= opposite_side;
+	bool side = IsTrainSignalSideRight() ^ opposite_side;
 
 	return GetTunnelBridgeSignalZNonRailCustom(tile, side, exit, GetTunnelBridgeDirection(tile));
 }
@@ -2175,10 +2174,8 @@ void MarkTunnelBridgeSignalDirty(TileIndex tile, bool exit)
 		return;
 	}
 
-	bool side = (_settings_game.vehicle.road_side != 0) && _settings_game.construction.train_signal_side;
+	bool side = IsTrainSignalSideRight() ^ opposite_side;
 	DiagDirection dir = GetTunnelBridgeDirection(tile);
-
-	side ^= opposite_side;
 
 	uint position;
 	switch (dir) {

@@ -429,6 +429,7 @@ add_files(
     rail_gui.h
     rail_gui_type.h
     rail_map.h
+    rail_settings.h
     rail_type.h
     random_access_file.cpp
     random_access_file_type.h

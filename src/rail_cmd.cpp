@@ -43,6 +43,7 @@
 #include "pathfinder/water_regions.h"
 #include "landscape_cmd.h"
 #include "rail_cmd.h"
+#include "rail_settings.h"
 #include "object_base.h"
 
 #include "table/strings.h"
@@ -3249,13 +3250,7 @@ static uint GetSafeSlopeZ(uint x, uint y, Track track)
 
 static void GetSignalXY(TileIndex tile, uint pos, bool opposite, uint &x, uint &y)
 {
-	bool side;
-	switch (_settings_game.construction.train_signal_side) {
-		case 0:  side = false;                                 break; // left
-		case 2:  side = true;                                  break; // right
-		default: side = _settings_game.vehicle.road_side != 0; break; // driving side
-	}
-	side ^= opposite;
+	bool signal_on_right = IsTrainSignalSideRight() ^ opposite;
 	static const Point SignalPositions[2][12] = {
 		{ // Signals on the left side
 		/*  LEFT      LEFT      RIGHT     RIGHT     UPPER     UPPER */
@@ -3270,8 +3265,8 @@ static void GetSignalXY(TileIndex tile, uint pos, bool opposite, uint &x, uint &
 		}
 	};
 
-	x = TileX(tile) * TILE_SIZE + SignalPositions[side][pos].x;
-	y = TileY(tile) * TILE_SIZE + SignalPositions[side][pos].y;
+	x = TileX(tile) * TILE_SIZE + SignalPositions[signal_on_right][pos].x;
+	y = TileY(tile) * TILE_SIZE + SignalPositions[signal_on_right][pos].y;
 }
 
 void DrawRestrictedSignal(SignalType type, SpriteID sprite, int x, int y, int z, uint8_t dz, int8_t bb_offset_z)

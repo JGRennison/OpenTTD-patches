@@ -231,7 +231,7 @@ static DiagDirection OneWaySideJunctionRoadRoadBitsToDiagDir(RoadBits bits)
 	 */
 	uint8_t bit = FindFirstBit((bits ^ ROAD_ALL).base());
 	bit ^= 3;
-	return (DiagDirection)((bit + 3 + (_settings_game.vehicle.road_side * 2)) % 4);
+	return (DiagDirection)((bit + 3 + (to_underlying(_settings_game.vehicle.road_side) * 2)) % 4);
 }
 
 inline bool IsOneWaySideJunctionRoadDRDsPresent(TileIndex tile, DiagDirection dir)
@@ -282,7 +282,7 @@ static void UpdateTileRoadCachedOneWayState(TileIndex tile)
 		if (HasExactlyOneBit(bits ^ ROAD_ALL)) {
 			DiagDirection dir = OneWaySideJunctionRoadRoadBitsToDiagDir(bits);
 			if (IsOneWaySideJunctionRoadDRDsPresent(tile, dir)) {
-				DiagDirection side_dir = (DiagDirection)((to_underlying(dir) + 3 + (_settings_game.vehicle.road_side * 2)) % 4);
+				DiagDirection side_dir = (DiagDirection)((to_underlying(dir) + 3 + (to_underlying(_settings_game.vehicle.road_side) * 2)) % 4);
 				TileIndexDiffC ti = TileIndexDiffCByDiagDir(side_dir);
 				TileIndex side = AddTileIndexDiffCWrap(tile, ti);
 
@@ -2846,7 +2846,7 @@ static TrackStatus GetTileTrackStatus_Road(TileIndex tile, TransportType mode, u
 
 							case RCOWS_SIDE_JUNCTION:
 							case RCOWS_SIDE_JUNCTION_NO_EXIT:
-								trackdirbits = static_cast<TrackdirBits>((_road_trackbits[bits.base()] * 0x101) & ~(_settings_game.vehicle.road_side ? left_turns : right_turns));
+								trackdirbits = static_cast<TrackdirBits>((_road_trackbits[bits.base()] * 0x101) & ~(_settings_game.vehicle.road_side == RoadVehicleDrivingSide::Right ? left_turns : right_turns));
 								if (rcows == RCOWS_SIDE_JUNCTION_NO_EXIT) trackdirbits &= ~no_exit_turns[FindFirstBit((bits ^ ROAD_ALL).base()) & 3];
 								break;
 

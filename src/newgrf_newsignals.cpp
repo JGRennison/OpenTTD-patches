@@ -15,6 +15,7 @@
 #include "tracerestrict.h"
 #include "string_func.h"
 #include "newgrf_dump.h"
+#include "rail_settings.h"
 
 #include <array>
 
@@ -40,13 +41,7 @@ static uint8_t MapSignalStyle(uint8_t style)
 
 uint32_t GetNewSignalsSideVariable()
 {
-	bool side;
-	switch (_settings_game.construction.train_signal_side) {
-		case 0:  side = false;                                 break; // left
-		case 2:  side = true;                                  break; // right
-		default: side = _settings_game.vehicle.road_side != 0; break; // driving side
-	}
-	return side ? 1 : 0;
+	return IsTrainSignalSideRight() ? 1 : 0;
 }
 
 /* virtual */ uint32_t NewSignalsScopeResolver::GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra &extra) const

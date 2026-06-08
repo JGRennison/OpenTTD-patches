@@ -504,7 +504,7 @@ void LinkGraphOverlay::DrawContent(Blitter *blitter, const DrawPixelInfo *dpi, P
 
 	/* Move line a bit 90° against its dominant direction to prevent it from
 	 * being hidden below the grey line. */
-	int side = _settings_game.vehicle.road_side ? 1 : -1;
+	int side = _settings_game.vehicle.road_side == RoadVehicleDrivingSide::Right ? 1 : -1;
 	if (abs(pta.x - ptb.x) < abs(pta.y - ptb.y)) {
 		int offset_x = (pta.y > ptb.y ? 1 : -1) * side * width;
 		GfxDrawLine(blitter, dpi, pta.x + offset_x, pta.y, ptb.x + offset_x, ptb.y, colour, width, dash);
