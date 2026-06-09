@@ -314,7 +314,7 @@ static nlohmann::ordered_json OrderToJSON(const Order &o, VehicleType vt)
 
 				switch ((OrderDispatchConditionModes)GB(value, ODCB_MODE_START, ODCB_MODE_COUNT)) {
 					case ODCM_FIRST_LAST:
-						json[OFName::CONDITION_CHECK_SLOT] = HasBit(value, ODFLCB_LAST_SLOT) ? "first" : "last";
+						json[OFName::CONDITION_CHECK_SLOT] = HasBit(value, ODFLCB_LAST_SLOT) ? "last" : "first";
 						break;
 
 					case OCDM_TAG:
