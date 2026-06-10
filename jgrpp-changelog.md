@@ -2,6 +2,18 @@
 
 * * *
 
+### v0.72.3 (2026-06-10)
+* Fix reversing trains by flipping when partially in a depot causing trains to split apart in some cases.
+* Fix crash when using rail type change hotkeys with the polyrail tool.
+* Fix industry accept/wait history when using equal distribution mode.
+* Fix loading of old TTO/TTD savegames.
+* Fix scenario editor random industry generation.
+* Departure boards: Fix vehicle cycle tracking in some cases with conditional orders.
+* Preserve which engines have been hidden when reloading NewGRFs.
+* JSON order list import/export: Fix dispatch first/last slot conditional order export.
+* Linux: Fix dedicated server signal handling for SIGTERM/SIGINT/SIGQUIT.
+* Bump trunk base from commit 4decdedff468b5149cb5357a5d026f2906cd73f6 to commit d68553bbd6b992235d85646552ddf333999db05e.
+
 ### v0.72.2 (2026-05-08)
 * Fix multiplayer disconnection when a client attempts to set a company password.
 * Fix not being to find a nearest depot when driving backwards, and multiplayer desyncs that could occur when this is attempted.
