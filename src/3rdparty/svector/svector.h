@@ -27,6 +27,9 @@
 #ifndef ANKERL_SVECTOR_H
 #define ANKERL_SVECTOR_H
 
+// Only use on platforms which are definitely little endian
+#if !defined(__BIG_ENDIAN__) && (defined(_WIN32) || (defined(__BYTE_ORDER__) && defined(__ORDER_LITTLE_ENDIAN__) && __BYTE_ORDER__ == __ORDER_LITTLE_ENDIAN__))
+
 // see https://semver.org/spec/v2.0.0.html
 #define ANKERL_SVECTOR_VERSION_MAJOR 1 // incompatible API changes
 #define ANKERL_SVECTOR_VERSION_MINOR 0 // add functionality in a backwards compatible manner
@@ -998,5 +1001,18 @@ constexpr auto erase_if(ankerl::svector<T, N>& sv, Pred pred) -> typename ankerl
 
 } // namespace ANKERL_SVECTOR_NAMESPACE
 } // namespace std
+
+#else // endian detection
+
+#include <vector>
+
+// Fall back to using a typedef of std::vector, until big endian support is implemented
+
+namespace ankerl {
+template <typename T, size_t MinInlineCapacity>
+using svector = std::vector<T>;
+}
+
+#endif // endian detection
 
 #endif
