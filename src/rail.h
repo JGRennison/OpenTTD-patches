@@ -543,7 +543,7 @@ void MarkSingleSignalDirty(TileIndex tile, Trackdir td);
 void MarkSingleSignalDirtyAtZ(TileIndex tile, Trackdir td, bool opposite_side, uint z);
 void GetSignalXYZByTrackdir(TileIndex tile, Trackdir td, bool opposite_side, uint &x, uint &y, uint &z);
 
-void DrawTrainDepotSprite(int x, int y, int image, RailType railtype);
+void DrawTrainDepotSprite(int x, int y, DiagDirection dir, RailType railtype);
 int TicksToLeaveDepot(const Train *v);
 
 Foundation GetRailFoundation(Slope tileh, TrackBits bits);

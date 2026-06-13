@@ -88,7 +88,7 @@ using WaterRegionPatchLabelArray = std::array<WaterRegionPatchLabel, WATER_REGIO
 class WaterRegion {
 	friend class WaterRegionReference;
 
-	std::array<WaterRegionTraversabilityBits, DIAGDIR_END> edge_traversability_bits{};
+	DiagDirectionIndexArray<WaterRegionTraversabilityBits> edge_traversability_bits{};
 	bool has_cross_region_aqueducts = false;
 	WaterRegionPatchLabel number_of_patches = 0; // 0 = no water, 1 = one single patch of water, etc...
 	std::unique_ptr<WaterRegionPatchLabelArray> tile_patch_labels;

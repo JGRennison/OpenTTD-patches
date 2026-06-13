@@ -60,16 +60,16 @@ static const uint SIG_GLOB_UPDATE =  64; ///< how many items need to be in _glob
 
 static_assert(SIG_GLOB_UPDATE <= SIG_GLOB_SIZE);
 
-/** incidating trackbits with given enterdir */
-static const TrackBits _enterdir_to_trackbits[DIAGDIR_END] = {
+/** Accessible TrackBits from a given enter direction. */
+static constexpr DiagDirectionIndexArray<TrackBits> _enterdir_to_trackbits{
 	TRACK_BIT_3WAY_NE,
 	TRACK_BIT_3WAY_SE,
 	TRACK_BIT_3WAY_SW,
 	TRACK_BIT_3WAY_NW
 };
 
-/** incidating trackdirbits with given enterdir */
-static const TrackdirBits _enterdir_to_trackdirbits[DIAGDIR_END] = {
+/** Accessible TrackdirBits from a given enter direction. */
+static constexpr DiagDirectionIndexArray<TrackdirBits> _enterdir_to_trackdirbits{
 	TRACKDIR_BIT_X_SW | TRACKDIR_BIT_UPPER_W | TRACKDIR_BIT_RIGHT_S,
 	TRACKDIR_BIT_Y_NW | TRACKDIR_BIT_LOWER_W | TRACKDIR_BIT_RIGHT_N,
 	TRACKDIR_BIT_X_NE | TRACKDIR_BIT_LOWER_E | TRACKDIR_BIT_LEFT_N,
@@ -386,14 +386,14 @@ static SigInfo ExploreSegment(Owner owner)
 
 				assert(IsValidDiagDirection(enterdir));
 				TrackBits tracks = GetTrackBits(tile); // trackbits of tile
-				TrackBits tracks_masked = (TrackBits)(tracks & _enterdir_to_trackbits[enterdir]); // only incidating trackbits
+				TrackBits tracks_masked = static_cast<TrackBits>(tracks & _enterdir_to_trackbits[enterdir]); // only accessible trackbits
 
-				if (tracks == TRACK_BIT_HORZ || tracks == TRACK_BIT_VERT) { // there is exactly one incidating track, no need to check
+				if (tracks == TRACK_BIT_HORZ || tracks == TRACK_BIT_VERT) { // there is exactly one accessible track, no need to check
 					tracks = tracks_masked;
 					/* If no train detected yet, and there is not no train -> there is a train -> set the flag */
 					if (!(info.flags & SF_TRAIN) && EnsureNoTrainOnTrackBits(tile, tracks).Failed()) info.flags |= SF_TRAIN;
 				} else {
-					if (tracks_masked == TRACK_BIT_NONE) continue; // no incidating track
+					if (tracks_masked == TRACK_BIT_NONE) continue; // no accessible track
 					if (!(info.flags & SF_TRAIN) && HasVehicleOnTile<VehicleType::Train>(tile, IsTrainNotInDepot)) info.flags |= SF_TRAIN;
 				}
 
@@ -466,7 +466,7 @@ static SigInfo ExploreSegment(Owner owner)
 				}
 
 				for (DiagDirection dir = DIAGDIR_BEGIN; dir < DIAGDIR_END; dir++) { // test all possible exit directions
-					if (dir != enterdir && (tracks & _enterdir_to_trackbits[dir])) { // any track incidating?
+					if (dir != enterdir && (tracks & _enterdir_to_trackbits[dir])) { // any accessible track?
 						TileIndex newtile = tile + TileOffsByDiagDir(dir);  // new tile to check
 						DiagDirection newdir = ReverseDiagDir(dir); // direction we are entering from
 						if (!MaybeAddToTodoSet(newtile, newdir, tile, dir)) {

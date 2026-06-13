@@ -37,7 +37,13 @@ struct Coord2D {
 	constexpr Coord2D() = default;
 	constexpr Coord2D(T x, T y) : x(x), y(y) {}
 
-	bool operator==(const Coord2D&) const = default;
+	constexpr bool operator==(const Coord2D<T> &) const = default;
+
+	/**
+	 * Compare with another instance of this class.
+	 * @return The std::strong_ordering of the comparison.
+	 */
+	constexpr auto operator<=>(const Coord2D<T> &) const = default;
 };
 
 /** A coordinate with three dimensions. */
@@ -50,7 +56,13 @@ struct Coord3D {
 	constexpr Coord3D() = default;
 	constexpr Coord3D(T x, T y, T z) : x(x), y(y), z(z) {}
 
-	bool operator==(const Coord3D&) const = default;
+	constexpr bool operator==(const Coord3D<T> &) const = default;
+
+	/**
+	 * Compare with another instance of this class.
+	 * @return The std::strong_ordering of the comparison.
+	 */
+	constexpr auto operator<=>(const Coord3D<T> &) const = default;
 };
 
 /** Coordinates of a point in 2D */

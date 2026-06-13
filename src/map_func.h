@@ -326,7 +326,7 @@ TileIndex TileAddSaturating(TileIndex tile, int addx, int addy);
  */
 inline TileIndexDiffC TileIndexDiffCByDiagDir(DiagDirection dir)
 {
-	extern const TileIndexDiffC _tileoffs_by_diagdir[DIAGDIR_END];
+	extern const DiagDirectionIndexArray<TileIndexDiffC> _tileoffs_by_diagdir;
 
 	assert(IsValidDiagDirection(dir));
 	return _tileoffs_by_diagdir[dir];
@@ -340,7 +340,7 @@ inline TileIndexDiffC TileIndexDiffCByDiagDir(DiagDirection dir)
  */
 inline TileIndexDiffC TileIndexDiffCByDir(Direction dir)
 {
-	extern const TileIndexDiffC _tileoffs_by_dir[DIR_END];
+	extern const DirectionIndexArray<TileIndexDiffC> _tileoffs_by_dir;
 
 	assert(IsValidDirection(dir));
 	return _tileoffs_by_dir[dir];
@@ -428,7 +428,7 @@ inline TileIndexDiff TileOffsByAxis(Axis axis)
  */
 inline TileIndexDiff TileOffsByDiagDir(DiagDirection dir)
 {
-	extern const TileIndexDiffC _tileoffs_by_diagdir[DIAGDIR_END];
+	extern const DiagDirectionIndexArray<TileIndexDiffC> _tileoffs_by_diagdir;
 
 	assert(IsValidDiagDirection(dir));
 	return ToTileIndexDiff(_tileoffs_by_diagdir[dir]);
@@ -442,7 +442,7 @@ inline TileIndexDiff TileOffsByDiagDir(DiagDirection dir)
  */
 inline TileIndexDiff TileOffsByDir(Direction dir)
 {
-	extern const TileIndexDiffC _tileoffs_by_dir[DIR_END];
+	extern const DirectionIndexArray<TileIndexDiffC> _tileoffs_by_dir;
 
 	assert(IsValidDirection(dir));
 	return ToTileIndexDiff(_tileoffs_by_dir[dir]);

@@ -98,7 +98,7 @@ inline TrackBits AxisToTrackBits(Axis a)
  */
 inline TrackBits CornerToTrackBits(Corner corner)
 {
-	extern const TrackBits _corner_to_trackbits[];
+	extern const CornerIndexArray<TrackBits> _corner_to_trackbits;
 	dbg_assert(IsValidCorner(corner));
 	return _corner_to_trackbits[corner];
 }
@@ -405,7 +405,7 @@ inline TrackStatus CombineTrackStatus(TrackdirBits trackdirbits, TrackdirBits re
 inline Trackdir NextTrackdir(Trackdir trackdir)
 {
 	dbg_assert(IsValidTrackdir(trackdir));
-	extern const Trackdir _next_trackdir[TRACKDIR_END];
+	extern const TrackdirIndexArray<Trackdir> _next_trackdir;
 	return _next_trackdir[trackdir];
 }
 
@@ -422,7 +422,7 @@ inline Trackdir NextTrackdir(Trackdir trackdir)
 inline TrackBits TrackCrossesTracks(Track track)
 {
 	dbg_assert(IsValidTrack(track));
-	extern const TrackBits _track_crosses_tracks[TRACK_END];
+	extern const TrackIndexArray<TrackBits> _track_crosses_tracks;
 	return _track_crosses_tracks[track];
 }
 
@@ -441,7 +441,7 @@ inline TrackBits TrackCrossesTracks(Track track)
 inline DiagDirection TrackdirToExitdir(Trackdir trackdir)
 {
 	dbg_assert(IsValidTrackdirForRoadVehicle(trackdir));
-	extern const DiagDirection _trackdir_to_exitdir[TRACKDIR_END];
+	extern const TrackdirIndexArray<DiagDirection> _trackdir_to_exitdir;
 	return _trackdir_to_exitdir[trackdir];
 }
 
@@ -464,7 +464,7 @@ inline Trackdir TrackExitdirToTrackdir(Track track, DiagDirection diagdir)
 {
 	dbg_assert(IsValidTrack(track));
 	dbg_assert(IsValidDiagDirection(diagdir));
-	extern const Trackdir _track_exitdir_to_trackdir[TRACK_END][DIAGDIR_END];
+	extern const TrackIndexArray<DiagDirectionIndexArray<Trackdir>> _track_exitdir_to_trackdir;
 	return _track_exitdir_to_trackdir[track][diagdir];
 }
 
@@ -489,7 +489,7 @@ inline Trackdir TrackEnterdirToTrackdir(Track track, DiagDirection diagdir)
 {
 	dbg_assert(IsValidTrack(track));
 	dbg_assert(IsValidDiagDirection(diagdir));
-	extern const Trackdir _track_enterdir_to_trackdir[TRACK_END][DIAGDIR_END];
+	extern const TrackIndexArray<DiagDirectionIndexArray<Trackdir>> _track_enterdir_to_trackdir;
 	return _track_enterdir_to_trackdir[track][diagdir];
 }
 
@@ -504,12 +504,12 @@ inline Trackdir TrackDirectionToTrackdir(Track track, Direction dir)
 {
 	dbg_assert(IsValidTrack(track));
 	dbg_assert(IsValidDirection(dir));
-	extern const Trackdir _track_direction_to_trackdir[TRACK_END][DIR_END];
+	extern const TrackIndexArray<DirectionIndexArray<Trackdir>> _track_direction_to_trackdir;
 	return _track_direction_to_trackdir[track][dir];
 }
 
 /**
- * Maps a (4-way) direction to the diagonal track incidating with that diagdir
+ * Maps a DiagDirection to the associated diagonal Track.
  *
  * @param diagdir The direction
  * @return The resulting Track
@@ -521,7 +521,7 @@ inline Track DiagDirToDiagTrack(DiagDirection diagdir)
 }
 
 /**
- * Maps a (4-way) direction to the diagonal track bits incidating with that diagdir
+ * Maps a DiagDirection to the associated diagonal TrackBits.
  *
  * @param diagdir The direction
  * @return The resulting TrackBits
@@ -542,7 +542,7 @@ inline TrackBits DiagDirToDiagTrackBits(DiagDirection diagdir)
 inline Trackdir DiagDirToDiagTrackdir(DiagDirection diagdir)
 {
 	dbg_assert(IsValidDiagDirection(diagdir));
-	extern const Trackdir _dir_to_diag_trackdir[DIAGDIR_END];
+	extern const DiagDirectionIndexArray<Trackdir> _dir_to_diag_trackdir;
 	return _dir_to_diag_trackdir[diagdir];
 }
 
@@ -560,7 +560,7 @@ inline Trackdir DiagDirToDiagTrackdir(DiagDirection diagdir)
 inline TrackdirBits DiagdirReachesTrackdirs(DiagDirection diagdir)
 {
 	dbg_assert(IsValidDiagDirection(diagdir));
-	extern const TrackdirBits _exitdir_reaches_trackdirs[DIAGDIR_END];
+	extern const DiagDirectionIndexArray<TrackdirBits> _exitdir_reaches_trackdirs;
 	return _exitdir_reaches_trackdirs[diagdir];
 }
 
@@ -578,7 +578,7 @@ inline TrackdirBits DiagdirReachesTrackdirs(DiagDirection diagdir)
 inline TrackBits DiagdirReachesTracks(DiagDirection diagdir)
 {
 	dbg_assert(IsValidDiagDirection(diagdir));
-	extern const TrackBits _exitdir_reaches_tracks[DIAGDIR_END];
+	extern const DiagDirectionIndexArray<TrackBits> _exitdir_reaches_tracks;
 	return _exitdir_reaches_tracks[diagdir];
 }
 
@@ -594,7 +594,7 @@ inline TrackBits DiagdirReachesTracks(DiagDirection diagdir)
 inline TrackdirBits TrackdirReachesTrackdirs(Trackdir trackdir)
 {
 	dbg_assert(IsValidTrackdir(trackdir));
-	extern const TrackdirBits _exitdir_reaches_trackdirs[DIAGDIR_END];
+	extern const DiagDirectionIndexArray<TrackdirBits> _exitdir_reaches_trackdirs;
 	return _exitdir_reaches_trackdirs[TrackdirToExitdir(trackdir)];
 }
 /* Note that there is no direct table for this function (there used to be),
@@ -616,7 +616,7 @@ inline TrackdirBits TrackdirReachesTrackdirs(Trackdir trackdir)
 inline TrackdirBits TrackdirCrossesTrackdirs(Trackdir trackdir)
 {
 	dbg_assert(IsValidTrackdir(trackdir));
-	extern const TrackdirBits _track_crosses_trackdirs[TRACK_END];
+	extern const TrackIndexArray<TrackdirBits> _track_crosses_trackdirs;
 	return _track_crosses_trackdirs[TrackdirToTrack(trackdir)];
 }
 
@@ -723,7 +723,7 @@ inline bool IsUphillTrackdir(Slope slope, Trackdir dir)
  */
 inline DiagDirection VehicleExitDir(Direction direction, TrackBits track)
 {
-	static const TrackBits state_dir_table[DIAGDIR_END] = { TRACK_BIT_RIGHT, TRACK_BIT_LOWER, TRACK_BIT_LEFT, TRACK_BIT_UPPER };
+	static constexpr DiagDirectionIndexArray<TrackBits> state_dir_table{TRACK_BIT_RIGHT, TRACK_BIT_LOWER, TRACK_BIT_LEFT, TRACK_BIT_UPPER};
 
 	DiagDirection diagdir = DirToDiagDir(direction);
 
