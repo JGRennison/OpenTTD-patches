@@ -632,7 +632,14 @@ static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, 
 			FontCache *fc = f->fc;
 			ExtendedTextColour colour{f->colour};
 			if (colour == TextColour::Invalid || initial_colour.flags.Test(ExtendedTextColourFlag::Forced)) colour = initial_colour;
-			bool colour_has_shadow = !colour.flags.Test(ExtendedTextColourFlag::NoShade) && colour != TextColour::Black;
+			bool colour_has_shadow = true;
+			if (colour.flags.Test(ExtendedTextColourFlag::NoShade)) {
+				colour_has_shadow = false;
+			} else {
+				ExtendedTextColour check_shadow_colour = colour;
+				check_shadow_colour.flags.Reset(ExtendedTextColourFlag::Forced);
+				if (check_shadow_colour == TextColour::Black) colour_has_shadow = false;
+			}
 			/* Update the last colour for the truncation ellipsis. */
 			last_colour = colour;
 			if (do_shadow && (!fc->GetDrawGlyphShadow() || !colour_has_shadow)) continue;
