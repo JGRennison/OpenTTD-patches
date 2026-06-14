@@ -557,6 +557,10 @@ void TraceRestrictProgram::Execute(const Train *v, const TraceRestrictProgramInp
 						result = TestStationCondition(v->last_station_visited, item);
 						break;
 
+					case TRIT_COND_LATENESS_COUNTER:
+						result = TestCondition(v->lateness_counter, condop, condvalue);
+						break;
+
 					case TRIT_COND_CARGO: {
 						bool have_cargo = false;
 						for (const Vehicle *v_iter = v; v_iter != nullptr; v_iter = v_iter->Next()) {
@@ -1361,6 +1365,7 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictPr
 
 				case TRIT_COND_TRAIN_LENGTH:
 				case TRIT_COND_MAX_SPEED:
+				case TRIT_COND_LATENESS_COUNTER:
 				case TRIT_COND_LOAD_PERCENT:
 				case TRIT_COND_COUNTER_VALUE:
 				case TRIT_COND_RESERVED_TILES:
@@ -1536,6 +1541,7 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictPr
 				case TRIT_COND_UNDEFINED:
 				case TRIT_COND_TRAIN_LENGTH:
 				case TRIT_COND_MAX_SPEED:
+				case TRIT_COND_LATENESS_COUNTER:
 				case TRIT_COND_CARGO:
 				case TRIT_COND_ENTRY_DIRECTION:
 				case TRIT_COND_PBS_ENTRY_SIGNAL:
@@ -1972,6 +1978,7 @@ void SetTraceRestrictValueDefault(TraceRestrictInstructionItemRef item, TraceRes
 		case TRVT_SPEED_ADAPTATION_CONTROL:
 		case TRVT_SIGNAL_MODE_CONTROL:
 		case TRVT_ORDER_TARGET_DIAGDIR:
+		case TRVT_TICK_COUNT:
 			item.SetValue(0);
 			if (!IsTraceRestrictTypeAuxSubtype(item.GetType())) {
 				item.SetAuxField(0);
