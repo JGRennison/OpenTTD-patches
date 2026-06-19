@@ -33,6 +33,7 @@
 #include "dropdown_func.h"
 #include "engine_gui.h"
 #include "cargotype.h"
+#include "core/backup_type.hpp"
 #include "core/geometry_func.hpp"
 #include "autoreplace_func.h"
 #include "train.h"
