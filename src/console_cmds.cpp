@@ -14,6 +14,7 @@
 #include "debug.h"
 #include "engine_func.h"
 #include "landscape.h"
+#include "map_extend.h"
 #include "sl/saveload.h"
 #include "network/core/network_game_info.h"
 #include "network/network.h"
@@ -4441,6 +4442,86 @@ static bool ConDumpInfo(std::span<std::string_view> argv)
 }
 
 /** Console command registration. */
+/**
+ * Enlarge the map and place the current map content inside it at a chosen position.
+ * @copydoc IConsoleCmdProc
+ */
+static bool ConExtendMap(std::span<std::string_view> argv)
+{
+	if (argv.size() < 3) {
+		IConsolePrint(CC_HELP, "Enlarge the map and place the current map inside it.");
+		IConsolePrint(CC_HELP, "Usage: 'extend_map <new_width> <new_height> [<anchor>|<dx> <dy>]'.");
+		IConsolePrint(CC_HELP, "Sizes are powers of two and >= the current size. Anchor: center (default), nw, ne, sw, se, n, s, e, w.");
+		return true;
+	}
+
+	auto pnw = ParseInteger<uint>(argv[1], 0);
+	auto pnh = ParseInteger<uint>(argv[2], 0);
+	if (!pnw.has_value() || !pnh.has_value()) return false;
+	const uint nw = *pnw;
+	const uint nh = *pnh;
+	const uint ow = Map::SizeX();
+	const uint oh = Map::SizeY();
+
+	if (nw == ow && nh == oh) {
+		IConsolePrint(CC_ERROR, "New size equals the current size -- nothing to relocate. Use a larger size; to relocate again, save and reload the game first.");
+		return false;
+	}
+
+	uint dx, dy;
+	if (argv.size() >= 5) {
+		auto pdx = ParseInteger<uint>(argv[3], 0);
+		auto pdy = ParseInteger<uint>(argv[4], 0);
+		if (!pdx.has_value() || !pdy.has_value()) return false;
+		dx = *pdx;
+		dy = *pdy;
+	} else {
+		std::string_view anchor = (argv.size() >= 4) ? argv[3] : std::string_view("center");
+		const uint ex = (nw > ow) ? (nw - ow) : 0;
+		const uint ey = (nh > oh) ? (nh - oh) : 0;
+		const uint cx = ex / 2;
+		const uint cy = ey / 2;
+		if      (anchor == "center") { dx = cx; dy = cy; }
+		else if (anchor == "nw")     { dx = 0;  dy = 0;  }
+		else if (anchor == "ne")     { dx = ex; dy = 0;  }
+		else if (anchor == "sw")     { dx = 0;  dy = ey; }
+		else if (anchor == "se")     { dx = ex; dy = ey; }
+		else if (anchor == "n")      { dx = cx; dy = 0;  }
+		else if (anchor == "s")      { dx = cx; dy = ey; }
+		else if (anchor == "w")      { dx = 0;  dy = cy; }
+		else if (anchor == "e")      { dx = ex; dy = cy; }
+		else {
+			IConsolePrint(CC_ERROR, "Unknown anchor. Use center, nw, ne, sw, se, n, s, e, w.");
+			return false;
+		}
+	}
+
+	if (ExtendMap(nw, nh, dx, dy)) {
+		IConsolePrint(CC_DEFAULT, "Map enlarged to {}x{}; old map placed at ({},{}).", nw, nh, dx, dy);
+
+		/* The in-session state is only partly rebuilt; save and reload so the engine's load
+		 * path rebuilds everything cleanly, leaving a pristine relocated game loaded. */
+		const std::string fname = "extend_map.sav";
+		if (SaveOrLoad(fname, SaveLoadOperation::Save, DetailedFileType::GameFile, Subdirectory::Save) != SaveLoadResult::Ok) {
+			IConsolePrint(CC_ERROR, "Map relocated, but auto-save failed -- 'save' and reload manually before playing or relocating again.");
+			return true;
+		}
+		WaitTillSaved(); /* saving is threaded; wait for the file to be written before scanning/reloading */
+		_console_file_list_savegame.ValidateFileList(true);
+		const FiosItem *item = _console_file_list_savegame.FindItem("extend_map");
+		if (item != nullptr) {
+			_switch_mode = SM_LOAD_GAME;
+			_file_to_saveload.Set(*item);
+			IConsolePrint(CC_INFO, "Saved to '{}' and reloading to finalise (rebuilds all caches).", fname);
+		} else {
+			IConsolePrint(CC_WARNING, "Saved to '{}', but couldn't auto-reload -- load it manually.", fname);
+		}
+		return true;
+	}
+	IConsolePrint(CC_ERROR, "extend_map failed: sizes must be powers of two, >= current size, fit the offset, and total tiles <= 2^28.");
+	return false;
+}
+
 void IConsoleStdLibRegister()
 {
 	IConsole::CmdRegister("debug_level",             ConDebugLevel);
@@ -4458,6 +4539,7 @@ void IConsoleStdLibRegister()
 	IConsole::CmdRegister("restart",                 ConRestart);
 	IConsole::CmdRegister("reload",                  ConReload);
 	IConsole::CmdRegister("getseed",                 ConGetSeed);
+	IConsole::CmdRegister("extend_map",              ConExtendMap);
 	IConsole::CmdRegister("getdate",                 ConGetDate);
 	IConsole::CmdRegister("getsysdate",              ConGetSysDate);
 	IConsole::CmdRegister("quit",                    ConExit);
