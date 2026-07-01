@@ -381,12 +381,9 @@ void NetworkTextMessage(NetworkAction action, ExtendedTextColour colour, bool se
 			replacement_name = GetString(STR_NETWORK_MESSAGE_MONEY_GIVE_SRC_DESCRIPTION, name, data.auxdata >> 16);
 			name = replacement_name;
 
-			extern uint8_t GetCurrentGrfLangID();
-			uint8_t lang_id = GetCurrentGrfLangID();
-			bool use_specific_string = lang_id <= 2 || lang_id == 0x15 || lang_id == 0x3A || lang_id == 0x3D; // English, German, Korean, Czech
-			if (use_specific_string && self_send) {
+			if (self_send && !GetStringPtr(STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY).empty()) {
 				AppendStringInPlace(message, STR_NETWORK_MESSAGE_GAVE_MONEY_AWAY, str, data.data);
-			} else if (use_specific_string && (CompanyID) (data.auxdata & 0xFFFF) == _local_company) {
+			} else if ((CompanyID)(data.auxdata & 0xFFFF) == _local_company && !GetStringPtr(STR_NETWORK_MESSAGE_GIVE_MONEY_RECEIVE).empty()) {
 				AppendStringInPlace(message, STR_NETWORK_MESSAGE_GIVE_MONEY_RECEIVE, name, data.data);
 			} else {
 				AppendStringInPlace(message, STR_NETWORK_MESSAGE_GIVE_MONEY, name, data.data, str);
