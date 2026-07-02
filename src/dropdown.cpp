@@ -568,7 +568,9 @@ struct DropdownWindow : Window {
 			this->ReInit();
 			if (this->above) {
 				/* Drop down list needs to be moved to near the parent drop down button. */
-				Rect button_rect = this->wi_rect.Translate(this->parent->left, this->parent->top);
+				Window *parent = FindWindowByToken(this->parent_wnd_token);
+				if (parent == nullptr) return;
+				Rect button_rect = this->wi_rect.Translate(parent->left, parent->top);
 				this->top = button_rect.top - this->items_dim.height - this->GetFilterBoxHeight();
 				this->SetDirty();
 			}
