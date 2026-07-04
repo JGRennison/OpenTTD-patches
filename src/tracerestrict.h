@@ -189,6 +189,7 @@ enum TraceRestrictItemType : uint8_t {
 	TRIT_COND_TARGET_DIRECTION    = 31,   ///< Test direction of order target tile relative to this signal tile
 	TRIT_COND_RESERVATION_THROUGH = 32,   ///< Test if train reservation passes through tile
 	TRIT_COND_TRAIN_IN_SLOT_GROUP = 33,   ///< Test train slot membership
+	TRIT_COND_ORDER_STOP_LOCATION = 34,   ///< Test train stop location (near/middle/far/through load)
 
 	TRIT_COND_END                 = 48,   ///< End (exclusive) of conditional item types, note that this has the same value as TRIT_REVERSE
 	TRIT_REVERSE                  = 48,   ///< Reverse behind/at signal
@@ -1071,6 +1072,7 @@ enum TraceRestrictValueType : uint8_t {
 	TRVT_ORDER_TARGET_DIAGDIR,     ///< takes a DiagDirection, and the order type in the auxiliary field
 	TRVT_TILE_INDEX_THROUGH,       ///< takes a TileIndex in the next item slot (passes through)
 	TRVT_LABEL_INDEX,              ///< takes a label ID
+	TRVT_ORDER_STOP_LOCATION,      ///< takes an OrderStopLocation
 };
 
 /**
@@ -1114,6 +1116,11 @@ inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceRestrict
 			case TRIT_COND_NEXT_ORDER:
 			case TRIT_COND_LAST_STATION:
 				out.value_type = TRVT_ORDER;
+				out.cond_type = TRCOT_BINARY;
+				break;
+
+			case TRIT_COND_ORDER_STOP_LOCATION:
+				out.value_type = TRVT_ORDER_STOP_LOCATION;
 				out.cond_type = TRCOT_BINARY;
 				break;
 

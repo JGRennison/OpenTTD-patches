@@ -359,6 +359,21 @@ static bool TestOrderCondition(const Order *order, TraceRestrictInstructionItem 
 }
 
 /**
+ * Test Stop location condition
+ * @p order may be nullptr
+ */
+static bool TestOrderStopLocationCondition(const Order *order, TraceRestrictInstructionItem item)
+{
+	bool result = false;
+
+	if (order != nullptr) {
+		const OrderStopLocation stop_location = static_cast<OrderStopLocation>(item.GetValue());
+		result = order->GetStopLocation() == stop_location;
+	}
+	return TestBinaryConditionCommon(item, result);
+}
+
+/**
  * Test station condition
  */
 static bool TestStationCondition(StationID station, TraceRestrictInstructionItem item)
@@ -555,6 +570,10 @@ void TraceRestrictProgram::Execute(const Train *v, const TraceRestrictProgramInp
 
 					case TRIT_COND_LAST_STATION:
 						result = TestStationCondition(v->last_station_visited, item);
+						break;
+
+					case TRIT_COND_ORDER_STOP_LOCATION:
+						result = TestOrderStopLocationCondition(&(v->current_order), item);
 						break;
 
 					case TRIT_COND_CARGO: {
@@ -1489,6 +1508,21 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictPr
 					}
 					break;
 
+				case TRIT_COND_ORDER_STOP_LOCATION:
+					if (invalid_binary_condition()) return unknown_instruction();
+					switch (static_cast<OrderStopLocation>(item.GetValue())) {
+						case OrderStopLocation::NearEnd:
+						case OrderStopLocation::Middle:
+						case OrderStopLocation::FarEnd:
+						case OrderStopLocation::Through:
+							break;
+
+						default:
+							return unknown_instruction();
+					}
+
+					break;
+
 				case TRIT_COND_TRAIN_STATUS:
 					if (invalid_binary_condition()) return unknown_instruction();
 					switch (static_cast<TraceRestrictTrainStatusValueField>(item.GetValue())) {
@@ -1556,6 +1590,7 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictPr
 				case TRIT_COND_NEXT_ORDER:
 				case TRIT_COND_LAST_STATION:
 				case TRIT_COND_TARGET_DIRECTION:
+				case TRIT_COND_ORDER_STOP_LOCATION:
 					actions_used_flags |= TRPAUF_ORDER_CONDITIONALS;
 					break;
 
@@ -2044,6 +2079,10 @@ void SetTraceRestrictValueDefault(TraceRestrictInstructionItemRef item, TraceRes
 
 		case TRVT_LABEL_INDEX:
 			item.SetValue(UINT16_MAX);
+			break;
+
+		case TRVT_ORDER_STOP_LOCATION:
+			item.SetValue(gui_context ? static_cast<uint16_t>(_settings_client.gui.stop_location) : 0);
 			break;
 
 		default:

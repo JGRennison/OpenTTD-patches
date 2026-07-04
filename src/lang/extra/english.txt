@@ -874,6 +874,7 @@ STR_TRACE_RESTRICT_VARIABLE_MAX_SPEED                           :max speed
 STR_TRACE_RESTRICT_VARIABLE_CURRENT_ORDER                       :current order
 STR_TRACE_RESTRICT_VARIABLE_NEXT_ORDER                          :next order
 STR_TRACE_RESTRICT_VARIABLE_LAST_VISITED_STATION                :last visited station
+STR_TRACE_RESTRICT_VARIABLE_ORDER_STOP_LOCATION                 :order stop location
 STR_TRACE_RESTRICT_VARIABLE_CARGO                               :cargo
 STR_TRACE_RESTRICT_VARIABLE_LOAD_PERCENT                        :load percentage
 STR_TRACE_RESTRICT_VARIABLE_ENTRY_DIRECTION                     :entry direction
@@ -917,6 +918,7 @@ STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_TIME_HHMM                :{STRING} {STRIN
 STR_TRACE_RESTRICT_CONDITIONAL_ORDER_STATION                    :{STRING} {STRING} {STRING} {STATION} then
 STR_TRACE_RESTRICT_CONDITIONAL_ORDER_WAYPOINT                   :{STRING} {STRING} {STRING} {WAYPOINT} then
 STR_TRACE_RESTRICT_CONDITIONAL_ORDER_DEPOT                      :{STRING} {STRING} {STRING} {DEPOT} then
+STR_TRACE_RESTRICT_CONDITIONAL_ORDER_STOP_LOCATION              :{STRING} current order stop location {STRING} {STRING} then
 STR_TRACE_RESTRICT_CONDITIONAL_CARGO                            :{STRING} train {STRING} cargo: {STRING} then
 STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_DIRECTION                  :{STRING} train {STRING} entering from {STRING} tile edge then
 STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_SIGNAL_FACE                :{STRING} train {STRING} entering from {STRING} of signal then

@@ -551,6 +551,25 @@ static const TraceRestrictDropDownListSet _signal_mode_control_value = {
 	_signal_mode_control_value_str, _signal_mode_control_value_val,
 };
 
+
+static const StringID _stop_location_value_str[] = {
+	STR_CONFIG_SETTING_STOP_LOCATION_NEAR_END,
+	STR_CONFIG_SETTING_STOP_LOCATION_MIDDLE,
+	STR_CONFIG_SETTING_STOP_LOCATION_FAR_END,
+	STR_CONFIG_SETTING_STOP_LOCATION_THROUGH
+};
+static const uint _stop_location_value_val[] = {
+	to_underlying(OrderStopLocation::NearEnd),
+	to_underlying(OrderStopLocation::Middle),
+	to_underlying(OrderStopLocation::FarEnd),
+	to_underlying(OrderStopLocation::Through),
+};
+
+/** value drop down list for OrderStopLocation strings and values */
+static const TraceRestrictDropDownListSet _stop_location_value = {
+	_stop_location_value_str, _stop_location_value_val,
+};
+
 /**
  * Get index of @p value in @p list_set
  * if @p value is not present, assert if @p missing_ok is false, otherwise return -1
@@ -639,6 +658,7 @@ static std::span<const TraceRestrictDropDownListItem> GetConditionDropDownListIt
 		{ TRIT_COND_CURRENT_ORDER,                                    STR_TRACE_RESTRICT_VARIABLE_CURRENT_ORDER,             TRDDLIF_NONE },
 		{ TRIT_COND_NEXT_ORDER,                                       STR_TRACE_RESTRICT_VARIABLE_NEXT_ORDER,                TRDDLIF_NONE },
 		{ TRIT_COND_LAST_STATION,                                     STR_TRACE_RESTRICT_VARIABLE_LAST_VISITED_STATION,      TRDDLIF_NONE },
+		{ TRIT_COND_ORDER_STOP_LOCATION,                              STR_TRACE_RESTRICT_VARIABLE_ORDER_STOP_LOCATION,       TRDDLIF_NONE },
 		{ TRIT_COND_CARGO,                                            STR_TRACE_RESTRICT_VARIABLE_CARGO,                     TRDDLIF_NONE },
 		{ TRIT_COND_LOAD_PERCENT,                                     STR_TRACE_RESTRICT_VARIABLE_LOAD_PERCENT,              TRDDLIF_NONE },
 		{ TRIT_COND_ENTRY_DIRECTION,                                  STR_TRACE_RESTRICT_VARIABLE_ENTRY_DIRECTION,           TRDDLIF_NONE },
@@ -1870,6 +1890,13 @@ static void FillInstructionString(format_buffer &instruction_string, const Trace
 							GetDropDownStringByValue(&_diagdir_value, item.GetValue()));
 					break;
 
+				case TRVT_ORDER_STOP_LOCATION:
+					set_instruction(STR_TRACE_RESTRICT_CONDITIONAL_ORDER_STOP_LOCATION,
+							_program_cond_type[item.GetCondFlags()],
+							GetDropDownStringByValue(GetCondOpDropDownListSet(properties), item.GetCondOp()),
+							GetDropDownStringByValue(&_stop_location_value, item.GetValue()));
+					break;
+
 				default:
 					NOT_REACHED();
 					break;
@@ -2650,6 +2677,13 @@ public:
 					case TRVT_ORDER_TARGET_DIAGDIR:
 						this->ShowDropDownListWithValue(&_diagdir_value, item.GetValue(), false, TR_WIDGET_VALUE_DROPDOWN, 0, 0);
 						break;
+
+					case TRVT_ORDER_STOP_LOCATION: {
+						uint hidden = 0;
+						if (!_settings_client.gui.show_adv_load_mode_features) hidden |= 8;
+						this->ShowDropDownListWithValue(&_stop_location_value, item.GetValue(), false, TR_WIDGET_VALUE_DROPDOWN, 0, hidden);
+						break;
+					}
 
 					default:
 						break;
@@ -4125,6 +4159,12 @@ private:
 
 						case TRVT_LABEL_INDEX:
 							right_sel->SetDisplayedPlane(DPR_LABEL_BUTTON);
+							break;
+
+						case TRVT_ORDER_STOP_LOCATION:
+							right_sel->SetDisplayedPlane(DPR_VALUE_DROPDOWN);
+							this->EnableWidget(TR_WIDGET_VALUE_DROPDOWN);
+							this->GetWidget<NWidgetCore>(TR_WIDGET_VALUE_DROPDOWN)->SetString(GetDropDownStringByValue(&_stop_location_value, item.GetValue()));
 							break;
 
 						default:
