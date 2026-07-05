@@ -1948,7 +1948,7 @@ bool TraceRestrictProgramsEquivalent(const TraceRestrictProgram *a, const TraceR
 /**
  * Set the value and aux field of @p item, as per the value type in @p value_type
  */
-void SetTraceRestrictValueDefault(TraceRestrictInstructionItemRef item, TraceRestrictValueType value_type)
+void SetTraceRestrictValueDefault(TraceRestrictInstructionItemRef item, TraceRestrictValueType value_type, bool gui_context)
 {
 	switch (value_type) {
 		case TRVT_NONE:
@@ -2075,7 +2075,7 @@ void SetTraceRestrictTypeAndNormalise(TraceRestrictInstructionItemRef item, Trac
 	if (old_properties.cond_type != new_properties.cond_type ||
 			old_properties.value_type != new_properties.value_type) {
 		item.SetCondOp(TRCO_IS);
-		SetTraceRestrictValueDefault(item, new_properties.value_type);
+		SetTraceRestrictValueDefault(item, new_properties.value_type, true);
 	}
 	if (new_properties.value_type == TRVT_SLOT_INDEX || new_properties.value_type == TRVT_SLOT_INDEX_INT) {
 		if (!IsTraceRestrictTypeNonMatchingVehicleTypeSlot(item.GetType())) {
@@ -2085,7 +2085,7 @@ void SetTraceRestrictTypeAndNormalise(TraceRestrictInstructionItemRef item, Trac
 	}
 	if (item.GetType() == TRIT_COND_LAST_STATION && item.GetAuxField() != TROCAF_STATION) {
 		/* If changing type from another order type to last visited station, reset value if not currently a station */
-		SetTraceRestrictValueDefault(item, TRVT_ORDER);
+		SetTraceRestrictValueDefault(item, TRVT_ORDER, true);
 	}
 }
 

@@ -1081,7 +1081,7 @@ struct TraceRestrictTypePropertySet {
 	TraceRestrictValueType value_type;
 };
 
-void SetTraceRestrictValueDefault(TraceRestrictInstructionItemRef item, TraceRestrictValueType value_type);
+void SetTraceRestrictValueDefault(TraceRestrictInstructionItemRef item, TraceRestrictValueType value_type, bool gui_context = false);
 void SetTraceRestrictTypeAndNormalise(TraceRestrictInstructionItemRef item, TraceRestrictItemType type, uint8_t aux_data = 0);
 
 /**
