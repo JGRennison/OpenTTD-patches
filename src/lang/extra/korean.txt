@@ -15,6 +15,8 @@ STR_CONFIG_SETTING_ZOOM_LVL_OUT_128X                            :128x
 
 STR_ORDER_STOP_LOCATION_THROUGH                                 :{SPACE}[차례로 나눠 싣기]
 
+STR_CONFIG_SETTING_STOP_LOCATION_THROUGH                        :차례로 나눠 싣기
+
 STR_CONFIG_SETTING_TOWN_GROWTH_EXTREME_SLOW                     :매우 느림
 STR_CONFIG_SETTING_TOWN_GROWTH_VERY_SLOW                        :더 느림
 
