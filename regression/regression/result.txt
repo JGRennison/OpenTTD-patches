@@ -10937,6 +10937,63 @@ ERROR: IsEnd() is invalid as Begin() is never called
   Clear():      (null : 0x00000000)
   IsEmpty():    true
   Count():      0
+
+--Terraforming--
+  DemolishTile():       true
+  DemolishTile():       true
+  GetBankBalance():     1999191835
+  LowerTile():          false
+  RaiseTile():          true
+  GetBankBalance():     1999131274
+  LowerTile():          true
+  GetBankBalance():     1999130713
+  LowerTile():          true
+  RaiseTile():          true
+  GetBankBalance():     1999099755
+  RaiseTile():          false
+  LowerTile():          false
+  LowerTile():          true
+  RaiseTile():          true
+  LowerTile():          true
+  GetBankBalance():     1999097276
+  LowerTile():          false
+  LowerTile():          true
+  RaiseTile():          false
+  LowerTile():          true
+  LowerTile():          false
+  RaiseTile():          true
+  LowerTile():          true
+  GetBankBalance():     1999091725
+  RaiseTile():          true
+  LowerTile():          true
+  GetBankBalance():     1999075670
+  RaiseTile():          false
+  LowerTile():          true
+  GetBankBalance():     1999073594
+  RaiseTile():          true
+  RaiseTile():          true
+  GetBankBalance():     1999063372
+  LevelTiles():         true
+  LevelTiles():         false
+  GetBankBalance():     1999053744
+  LevelTiles():         true
+  LevelTiles():         true
+  GetBankBalance():     1998767665
+  LowerTile():          false
+  RaiseTile():          true
+  RaiseTile():          false
+  LowerTile():          true
+  GetBankBalance():     1998761566
+  RaiseTile():          true
+  LowerTile():          true
+  LowerTile():          false
+  GetBankBalance():     1998760399
+  RaiseTile():          false
+  LowerTile():          true
+  LowerTile():          false
+  RaiseTile():          false
+  RaiseTile():          true
+  GetBankBalance():     1998721373
 --Valuate() with excessive CPU usage--
 constructor failed with: excessive CPU usage in list filter function
 Your script made an error: excessive CPU usage in valuator function
@@ -10945,7 +11002,7 @@ CALLSTACK WITH LOCALS
 *FUNCTION [Valuate()] Valuate line [5]
   [args] ARRAY
   [this] INSTANCE
-*FUNCTION [Start()] regression/main.nut line [2440]
+*FUNCTION [Start()] regression/main.nut line [2502]
   [Infinite] CLOSURE
   [list] INSTANCE
   [this] INSTANCE
