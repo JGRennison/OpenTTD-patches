@@ -4364,7 +4364,7 @@ bool Order::CanLeaveWithCargo(bool has_cargo, CargoType cargo) const
 
 	if (has_cargo) {
 		const OrderUnloadType unload_type = this->GetCargoUnloadType(cargo);
-		return unload_type == OrderUnloadType::Unload || unload_type == OrderUnloadType::Transfer;
+		return !(unload_type == OrderUnloadType::Unload || unload_type == OrderUnloadType::Transfer);
 	} else {
 		return false;
 	}
