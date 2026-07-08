@@ -2573,7 +2573,7 @@ struct SelectStationWindow : Window {
 		select_station_proc(std::move(proc)),
 		area(ta)
 	{
-		this->invalidation_policy = WindowInvalidationPolicy::NoQueue;
+		this->invalidation_policy = WindowInvalidationPolicy::QueueSingle;
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_JS_SCROLLBAR);
 		this->GetWidget<NWidgetCore>(WID_JS_CAPTION)->SetString(T::IsWaypoint() ? STR_JOIN_WAYPOINT_CAPTION : STR_JOIN_STATION_CAPTION);
