@@ -10,6 +10,7 @@
 #include "stdafx.h"
 #include "command_func.h"
 #include "depot_base.h"
+#include "depot_bridge.h"
 #include "depot_cmd.h"
 #include "company_func.h"
 #include "string_func.h"
@@ -75,4 +76,44 @@ CommandCost CmdRenameDepot(DoCommandFlags flags, DepotID depot_id, const std::st
 		SetWindowDirty(GetWindowClassForVehicleType(vt), VehicleListIdentifier(VL_DEPOT_LIST, vt, GetTileOwner(d->xy), d->index).ToWindowNumber());
 	}
 	return CommandCost();
+}
+
+CommandCost IsDepotBridgeAboveOK(TileIndex tile, TransportType depot_transport_type, DiagDirection dir, const BridgeAboveInfo &bridge_above)
+{
+	extern int GetBridgeTooLowHeightDifference(TileIndex tile, int height_clearance, int bridge_height);
+
+	const int too_low = GetBridgeTooLowHeightDifference(tile, MINIMAL_DEPOT_BRIDGE_HEIGHT, bridge_above.height);
+	if (too_low > 0) return CommandCostWithParam(STR_ERROR_BRIDGE_TOO_LOW_FOR_TRAIN_DEPOT + to_underlying(depot_transport_type), too_low);
+
+	if (GetBridgeTilePillarFlags(tile, bridge_above) == 0) {
+		return CommandCost();
+	} else {
+		return CommandCost(STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_TRAIN_DEPOT + to_underlying(depot_transport_type));
+	}
+}
+
+CommandCost IsExistingDepotBridgeAboveOK(TileIndex tile, const BridgeAboveInfo &bridge_above)
+{
+	TransportType depot_transport_type{};
+	DiagDirection dir{};
+	switch (GetTileType(tile)) {
+		case TileType::Railway:
+			depot_transport_type = TRANSPORT_RAIL;
+			dir = GetRailDepotDirection(tile);
+			break;
+
+		case TileType::Road:
+			depot_transport_type = TRANSPORT_ROAD;
+			dir = GetRoadDepotDirection(tile);
+			break;
+
+		case TileType::Water:
+			depot_transport_type = TRANSPORT_ROAD;
+			dir = GetShipDepotDirection(tile);
+			break;
+
+		default:
+			return CommandCost(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
+	}
+	return IsDepotBridgeAboveOK(tile, depot_transport_type, dir, bridge_above);
 }

@@ -55,6 +55,7 @@
 #include "debug.h"
 #include "landscape_cmd.h"
 #include "terraform_cmd.h"
+#include "depot_bridge.h"
 
 #include "table/strings.h"
 #include "table/bridge_land.h"
@@ -626,6 +627,15 @@ CommandCost CmdBuildBridge(DoCommandFlags flags, TileIndex tile_end, TileIndex t
 					if (ret.Failed()) return ret;
 				}
 			}
+
+			if (IsRailDepotTile(tile) || IsRoadDepotTile(tile) || IsShipDepotTile(tile)) {
+				CommandCost ret = IsExistingDepotBridgeAboveOK(tile, bridge_above);
+				if (ret.Failed()) {
+					if (ret.GetErrorMessage() != INVALID_STRING_ID) return ret;
+					ret = Command<Commands::LandscapeClear>::Do(flags, tile);
+					if (ret.Failed()) return ret;
+				}
+			}
 		}
 
 		is_upgrade = true;
@@ -687,17 +697,37 @@ CommandCost CmdBuildBridge(DoCommandFlags flags, TileIndex tile_end, TileIndex t
 							if (ret.GetErrorMessage() != INVALID_STRING_ID) return ret;
 							goto not_valid_below;
 						}
+					} else if (IsShipDepot(tile)) {
+						CommandCost ret = IsExistingDepotBridgeAboveOK(tile, bridge_above);
+						if (ret.Failed()) {
+							if (ret.GetErrorMessage() != INVALID_STRING_ID) return ret;
+							goto not_valid_below;
+						}
 					} else if (!IsWater(tile) && !IsCoast(tile)) {
 						goto not_valid_below;
 					}
 					break;
 
 				case TileType::Railway:
-					if (!IsPlainRail(tile)) goto not_valid_below;
+					if (IsRailDepot(tile)) {
+						CommandCost ret = IsExistingDepotBridgeAboveOK(tile, bridge_above);
+						if (ret.Failed()) {
+							if (ret.GetErrorMessage() != INVALID_STRING_ID) return ret;
+							goto not_valid_below;
+						}
+					} else if (!IsPlainRail(tile)) {
+						goto not_valid_below;
+					}
 					break;
 
 				case TileType::Road:
-					if (IsRoadDepot(tile)) goto not_valid_below;
+					if (IsRoadDepot(tile)) {
+						CommandCost ret = IsExistingDepotBridgeAboveOK(tile, bridge_above);
+						if (ret.Failed()) {
+							if (ret.GetErrorMessage() != INVALID_STRING_ID) return ret;
+							goto not_valid_below;
+						}
+					}
 					break;
 
 				case TileType::TunnelBridge:

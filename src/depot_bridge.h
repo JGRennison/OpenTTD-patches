@@ -5,20 +5,17 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file depot_type.h Header files for depots (not hangars). */
+/** @file depot_bridge.h Functions related to bridging over depots. */
 
-#ifndef DEPOT_TYPE_H
-#define DEPOT_TYPE_H
+#ifndef DEPOT_BRIDGE_H
+#define DEPOT_BRIDGE_H
 
-#include "core/pool_id_type.hpp"
+#include "bridge.h"
+#include "direction_type.h"
+#include "transport_type.h"
 
-struct DepotIDTag : public PoolIDTraits<uint16_t, 64000, 0xFFFF> {};
-using DepotID = PoolID<DepotIDTag>; ///< Type for the unique identifier of depots.
-struct Depot;
+CommandCost IsDepotBridgeAboveOK(TileIndex tile, TransportType depot_transport_type, DiagDirection dir, const BridgeAboveInfo &bridge_above);
 
-static const uint MAX_LENGTH_DEPOT_NAME_CHARS = 128; ///< The maximum length of a depot name in characters including '\0'
+CommandCost IsExistingDepotBridgeAboveOK(TileIndex tile, const BridgeAboveInfo &bridge_above);
 
-/** Minimal height for a bridge above any depot tile. */
-static constexpr uint8_t MINIMAL_DEPOT_BRIDGE_HEIGHT = 3;
-
-#endif /* DEPOT_TYPE_H */
+#endif /* DEPOT_BRIDGE_H */

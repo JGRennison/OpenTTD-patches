@@ -433,6 +433,7 @@ enum SaveLoadVersion : uint16_t {
 	SLV_BUOYS_AT_0_0,                       ///< 364  PR#14983 Allow to build buoys at (0x0).
 
 	SLV_DRIVE_BACKWARDS,                    ///< 365  PR#15379 Trains can drive backwards.
+	SLV_DEPOTS_UNDER_BRIDGES,               ///< 366  PR#15836 Allow depots under bridges.
 
 	SL_MAX_VERSION,                         ///< Highest possible saveload version
 

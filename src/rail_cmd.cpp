@@ -11,6 +11,7 @@
 #include "viewport_func.h"
 #include "command_func.h"
 #include "depot_base.h"
+#include "depot_bridge.h"
 #include "pathfinder/yapf/yapf_cache.h"
 #include "newgrf_debug.h"
 #include "newgrf_railtype.h"
@@ -1428,7 +1429,10 @@ CommandCost CmdBuildTrainDepot(DoCommandFlags flags, TileIndex tile, RailType ra
 	cost.AddCost(Command<Commands::LandscapeClear>::Do(flags, tile));
 	if (cost.Failed()) return cost;
 
-	if (IsBridgeAbove(tile)) return CommandCost(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
+	if (IsBridgeAbove(tile)) {
+		CommandCost ret = IsDepotBridgeAboveOK(tile, TRANSPORT_RAIL, dir, GetBridgeAboveInfo(tile));
+		if (ret.Failed()) return ret;
+	}
 
 	if (!Depot::CanAllocateItem()) return CMD_ERROR;
 

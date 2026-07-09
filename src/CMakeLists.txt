@@ -157,6 +157,7 @@ add_files(
     departures_type.h
     depot.cpp
     depot_base.h
+    depot_bridge.h
     depot_cmd.cpp
     depot_func.h
     depot_gui.cpp

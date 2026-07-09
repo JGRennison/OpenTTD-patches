@@ -15,6 +15,7 @@
 #include "town.h"
 #include "news_func.h"
 #include "depot_base.h"
+#include "depot_bridge.h"
 #include "depot_func.h"
 #include "water.h"
 #include "water_cmd.h"
@@ -120,11 +121,18 @@ CommandCost CmdBuildShipDepot(DoCommandFlags flags, TileIndex tile, Axis axis)
 		return CommandCost(STR_ERROR_MUST_BE_BUILT_ON_WATER);
 	}
 
-	if (IsBridgeAbove(tile) || IsBridgeAbove(tile2)) return CommandCost(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
-
 	if (!IsTileFlat(tile) || !IsTileFlat(tile2)) {
 		/* Prevent depots on rapids */
 		return CommandCost(STR_ERROR_SITE_UNSUITABLE);
+	}
+
+	for (TileIndex t : {tile, tile2}) {
+		if (IsBridgeAbove(t)) {
+			DiagDirection dir = AxisToDiagDir(axis);
+			if (t == tile) dir = ReverseDiagDir(dir);
+			CommandCost ret = IsDepotBridgeAboveOK(t, TRANSPORT_WATER, dir, GetBridgeAboveInfo(t));
+			if (ret.Failed()) return ret;
+		}
 	}
 
 	if (!Depot::CanAllocateItem()) return CMD_ERROR;
@@ -1048,6 +1056,7 @@ static void DrawTile_Water(TileInfo *ti, DrawTileProcParams params)
 
 		case WaterTileType::Depot:
 			DrawWaterDepot(ti);
+			DrawBridgeMiddle(ti);
 			break;
 	}
 }

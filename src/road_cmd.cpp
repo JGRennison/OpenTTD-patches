@@ -15,6 +15,7 @@
 #include "company_func.h"
 #include "pathfinder/yapf/yapf_cache.h"
 #include "depot_base.h"
+#include "depot_bridge.h"
 #include "newgrf.h"
 #include "autoslope.h"
 #include "tunnelbridge_map.h"
@@ -1790,7 +1791,10 @@ CommandCost CmdBuildRoadDepot(DoCommandFlags flags, TileIndex tile, RoadType rt,
 	cost.AddCost(Command<Commands::LandscapeClear>::Do(flags, tile));
 	if (cost.Failed()) return cost;
 
-	if (IsBridgeAbove(tile)) return CommandCost(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
+	if (IsBridgeAbove(tile)) {
+		CommandCost ret = IsDepotBridgeAboveOK(tile, TRANSPORT_ROAD, dir, GetBridgeAboveInfo(tile));
+		if (ret.Failed()) return ret;
+	}
 
 	if (!Depot::CanAllocateItem()) return CMD_ERROR;
 
