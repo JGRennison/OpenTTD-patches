@@ -740,7 +740,9 @@ CommandCost CmdBuildBridge(DoCommandFlags flags, TileIndex tile_end, TileIndex t
 					if (_settings_game.construction.allow_grf_objects_under_bridges && GetObjectType(tile) >= NEW_OBJECT_OFFSET) break;
 					const ObjectSpec *spec = ObjectSpec::GetByTile(tile);
 					if (!spec->flags.Test(ObjectFlag::AllowUnderBridge)) goto not_valid_below;
-					if (GetTileMaxZ(tile) + spec->height > z_start) goto not_valid_below;
+
+					int height_diff = GetTileMaxZ(tile) + spec->height - z_start;
+					if (height_diff > 0) return CommandCostWithParam(STR_ERROR_BRIDGE_TOO_LOW_FOR_OBJECT, height_diff * TILE_HEIGHT_STEP);
 					break;
 				}
 

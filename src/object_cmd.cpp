@@ -370,10 +370,11 @@ CommandCost CmdBuildObject(DoCommandFlags flags, TileIndex tile, ObjectType type
 	/* Finally do a check for bridges. */
 	if (type < NEW_OBJECT_OFFSET || !_settings_game.construction.allow_grf_objects_under_bridges) {
 		for (TileIndex t : ta) {
-			if (IsBridgeAbove(t) && (
-					!spec->flags.Test(ObjectFlag::AllowUnderBridge) ||
-					(GetTileMaxZ(t) + spec->height >= GetBridgeHeight(GetSouthernBridgeEnd(t))))) {
-				return CommandCost(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
+			if (IsBridgeAbove(t)) {
+				if (!spec->flags.Test(ObjectFlag::AllowUnderBridge)) return CommandCost(STR_ERROR_MUST_DEMOLISH_BRIDGE_FIRST);
+
+				int height_diff = GetTileMaxZ(t) + spec->height - GetBridgeHeight(GetSouthernBridgeEnd(t));
+				if (height_diff > 0) return CommandCostWithParam(STR_ERROR_BRIDGE_TOO_LOW_FOR_OBJECT, height_diff * TILE_HEIGHT_STEP);
 			}
 		}
 	}
