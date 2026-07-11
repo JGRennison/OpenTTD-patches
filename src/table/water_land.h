@@ -19,6 +19,14 @@
  */
 #define TILE_SEQ_LINE(dx, dy, dz, sx, sy, sz, img) { dx, dy, dz, sx, sy, sz, {img, PAL_NONE} },
 
+constexpr DrawTileSeqStruct DrawTileSeqStructWithOffset(DrawTileSeqStruct dtss, int8_t ox, int8_t oy, int8_t oz)
+{
+	dtss.offset = { ox, oy, oz };
+	return dtss;
+}
+
+#define TILE_SEQ_LINE_OFFSET(dx, dy, dz, sx, sy, sz, ox, oy, oz, img) DrawTileSeqStructWithOffset(DrawTileSeqStruct{ dx, dy, dz, sx, sy, sz, {img, PAL_NONE} }, ox, oy, oz),
+
 /**
  * Constructor macro of a DrawTileSpriteSpan structure
  * @param img   Ground sprite without palette of the tile
@@ -44,6 +52,16 @@ static const DrawTileSeqStruct _shipdepot_display_se_seq[] = {
 	TILE_SEQ_LINE( 15, 0, 0, 1, 16, 0x14, 0xFE7 | (1 << PALETTE_MODIFIER_COLOUR))
 };
 
+static const DrawTileSeqStruct _shipdepot_display_sw_bridge_above_seq[] = {
+	TILE_SEQ_LINE( 0,  0, 0, 16, 1, 0x14, 0xFEA)
+	TILE_SEQ_LINE_OFFSET( -8, 15, 0, 16 + 8, 1, 0x14, 8, 0, 0, 0xFE6 | (1 << PALETTE_MODIFIER_COLOUR))
+};
+
+static const DrawTileSeqStruct _shipdepot_display_se_bridge_above_seq[] = {
+	TILE_SEQ_LINE(  0, 0, 0, 1, 16, 0x14, 0xFEB)
+	TILE_SEQ_LINE_OFFSET( 15, -8, 0, 1, 16 + 8, 0x14, 0, 8, 0, 0xFE7 | (1 << PALETTE_MODIFIER_COLOUR))
+};
+
 /** Data for drawing ship depots by Axis and DepotPart. */
 static const AxisIndexArray<EnumIndexArray<DrawTileSpriteSpan, DepotPart, DepotPart::End>> _shipdepot_display_data{{{
 	{{{ // Axis::X
@@ -54,6 +72,12 @@ static const AxisIndexArray<EnumIndexArray<DrawTileSpriteSpan, DepotPart, DepotP
 		TILE_SPRITE_LINE(0xFDD, _shipdepot_display_nw_seq) // DepotPart::North
 		TILE_SPRITE_LINE(0xFDD, _shipdepot_display_se_seq) // DepotPart::South
 	}}},
+}}};
+
+/** Data for drawing ship depots by Axis and DepotPart. */
+static const AxisIndexArray<DrawTileSpriteSpan> _shipdepot_display_data_south_bridge_above{{{
+	TILE_SPRITE_LINE(0xFDD, _shipdepot_display_sw_bridge_above_seq) // Axis::X
+	TILE_SPRITE_LINE(0xFDD, _shipdepot_display_se_bridge_above_seq) // Axis::Y
 }}};
 
 static const DrawTileSeqStruct _lock_display_middle_ne_seq[] = {

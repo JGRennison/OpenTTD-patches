@@ -966,7 +966,17 @@ static void DrawWaterLock(const TileInfo *ti)
 static void DrawWaterDepot(const TileInfo *ti)
 {
 	DrawWaterClassGround(ti);
-	DrawWaterTileStruct(ti, _shipdepot_display_data[GetShipDepotAxis(ti->tile)][GetShipDepotPart(ti->tile)].seq, 0, 0, GetCompanyPalette(GetTileOwner(ti->tile)), CF_END);
+
+	DepotPart dp = GetShipDepotPart(ti->tile);
+	Axis axis = GetShipDepotAxis(ti->tile);
+	if (dp == DepotPart::South) {
+		TileIndex other_tile = ti->tile - ((axis == Axis::X) ? 1 : Map::SizeX());
+		if (IsValidTile(other_tile) && IsBridgeAbove(other_tile)) {
+			DrawWaterTileStruct(ti, _shipdepot_display_data_south_bridge_above[axis].seq, 0, 0, GetCompanyPalette(GetTileOwner(ti->tile)), CF_END);
+			return;
+		}
+	}
+	DrawWaterTileStruct(ti, _shipdepot_display_data[axis][dp].seq, 0, 0, GetCompanyPalette(GetTileOwner(ti->tile)), CF_END);
 }
 
 static void DrawRiverWater(const TileInfo *ti)
