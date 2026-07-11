@@ -316,17 +316,15 @@ static CommandCost RemoveShipDepot(TileIndex tile, DoCommandFlags flags)
 	return CommandCost(ExpensesType::Construction, _price[Price::ClearDepotShip]);
 }
 
-CommandCost IsLockBridgeAboveOK(TileIndex tile, LockPart lock_part, DiagDirection dir,
-		TileIndex northern_bridge_end, TileIndex southern_bridge_end, int bridge_height,
-		BridgeType bridge_type, TransportType bridge_transport_type)
+CommandCost IsLockBridgeAboveOK(TileIndex tile, LockPart lock_part, DiagDirection dir, BridgeAboveInfo bridge_above)
 {
 	extern int GetBridgeTooLowHeightDifference(TileIndex tile, int height_clearance, int bridge_height);
 
-	const int too_low = GetBridgeTooLowHeightDifference(tile, lock_part == LockPart::Lower ? 3 : 2, bridge_height);
+	const int too_low = GetBridgeTooLowHeightDifference(tile, lock_part == LockPart::Lower ? 3 : 2, bridge_above.height);
 	if (too_low > 0) return CommandCostWithParam(STR_ERROR_BRIDGE_TOO_LOW_FOR_LOCK, too_low);
 
 	BridgePiecePillarFlags disallowed_pillar_flags = (BridgePiecePillarFlags) (DiagDirToAxis(dir) == Axis::X ? 0x50 : 0xA0);
-	if ((GetBridgeTilePillarFlags(tile, northern_bridge_end, southern_bridge_end, bridge_type, bridge_transport_type) & disallowed_pillar_flags) == 0) {
+	if ((GetBridgeTilePillarFlags(tile, bridge_above) & disallowed_pillar_flags) == 0) {
 		return CommandCost();
 	} else {
 		return CommandCost(STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_LOCKS);
@@ -386,10 +384,7 @@ static CommandCost DoBuildLock(TileIndex tile, DiagDirection dir, DoCommandFlags
 			if (ret.Failed()) return;
 			if (!IsBridgeAbove(t)) return;
 
-			TileIndex southern_bridge_end = GetSouthernBridgeEnd(t);
-			TileIndex northern_bridge_end = GetNorthernBridgeEnd(t);
-			ret = IsLockBridgeAboveOK(t, lock_part, dir, northern_bridge_end, southern_bridge_end, GetBridgeHeight(southern_bridge_end),
-					GetBridgeType(southern_bridge_end), GetTunnelBridgeTransportType(southern_bridge_end));
+			ret = IsLockBridgeAboveOK(t, lock_part, dir, GetBridgeAboveInfo(t));
 		};
 		check_bridge(tile, LockPart::Middle);
 		check_bridge(tile - delta, LockPart::Lower);

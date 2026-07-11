@@ -72,19 +72,10 @@ extern void DrawTrackBits(TileInfo *ti, TrackBits track);
 extern void DrawRoadBitsTunnelBridge(TileInfo *ti);
 extern const RoadBits _invalid_tileh_slopes_road[2][15];
 
-extern CommandCost IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statspec, StationType station_type, uint8_t layout, TileIndex northern_bridge_end, TileIndex southern_bridge_end,
-		int bridge_height, BridgeType bridge_type, TransportType bridge_transport_type);
-
-extern CommandCost IsRoadStopBridgeAboveOK(TileIndex tile, const RoadStopSpec *spec, StationType station_type, bool drive_through, DiagDirection entrance,
-		TileIndex northern_bridge_end, TileIndex southern_bridge_end, int bridge_height,
-		BridgeType bridge_type, TransportType bridge_transport_type);
-
-extern CommandCost IsDockBridgeAboveOK(TileIndex tile, TileIndex northern_bridge_end, TileIndex southern_bridge_end, int bridge_height,
-		BridgeType bridge_type, TransportType bridge_transport_type);
-
-extern CommandCost IsLockBridgeAboveOK(TileIndex tile, LockPart lock_part, DiagDirection dir,
-		TileIndex northern_bridge_end, TileIndex southern_bridge_end, int bridge_height,
-		BridgeType bridge_type, TransportType bridge_transport_type);
+extern CommandCost IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statspec, StationType station_type, uint8_t layout, BridgeAboveInfo bridge_above);
+extern CommandCost IsRoadStopBridgeAboveOK(TileIndex tile, const RoadStopSpec *spec, StationType station_type, bool drive_through, DiagDirection entrance, BridgeAboveInfo bridge_above);
+extern CommandCost IsDockBridgeAboveOK(TileIndex tile, BridgeAboveInfo bridge_above);
+extern CommandCost IsLockBridgeAboveOK(TileIndex tile, LockPart lock_part, DiagDirection dir, BridgeAboveInfo bridge_above);
 
 /**
  * Mark bridge tiles dirty.
@@ -378,6 +369,25 @@ static Money TunnelBridgeClearCost(TileIndex tile, Price base_price)
 }
 
 /**
+ * Return a filled in BridgeAboveInfo for a tile underneath an existing bridge.
+ * @param tile Tile
+ * @pre IsBridgeAbove(tile)
+ * @return filled in BridgeAboveInfo.
+ */
+BridgeAboveInfo GetBridgeAboveInfo(TileIndex tile)
+{
+	TileIndex southern_bridge_end = GetSouthernBridgeEnd(tile);
+	TileIndex northern_bridge_end = GetNorthernBridgeEnd(tile);
+	return {
+		.northern_end = northern_bridge_end,
+		.southern_end = southern_bridge_end,
+		.height = GetBridgeHeight(southern_bridge_end),
+		.bridge_type = GetBridgeType(southern_bridge_end),
+		.transport_type = GetTunnelBridgeTransportType(southern_bridge_end),
+	};
+}
+
+/**
  * Build a Bridge
  * @param flags type of operation
  * @param tile_end end tile
@@ -472,6 +482,14 @@ CommandCost CmdBuildBridge(DoCommandFlags flags, TileIndex tile_end, TileIndex t
 	if (transport_type == TRANSPORT_WATER && (tileh_start == SLOPE_FLAT || tileh_end == SLOPE_FLAT)) return CommandCost(STR_ERROR_LAND_SLOPED_IN_WRONG_DIRECTION);
 	if (z_start != z_end) return CommandCost(STR_ERROR_BRIDGEHEADS_NOT_SAME_HEIGHT);
 
+	const BridgeAboveInfo bridge_above{
+		.northern_end = tile_start,
+		.southern_end = tile_end,
+		.height = z_start + 1,
+		.bridge_type = bridge_type,
+		.transport_type = transport_type
+	};
+
 	CommandCost cost(ExpensesType::Construction);
 	Owner owner;
 	bool is_new_owner;
@@ -556,7 +574,7 @@ CommandCost CmdBuildBridge(DoCommandFlags flags, TileIndex tile_end, TileIndex t
 				switch (station_type) {
 					case StationType::Rail:
 					case StationType::RailWaypoint: {
-						CommandCost ret = IsRailStationBridgeAboveOk(tile, GetStationSpec(tile), station_type, GetStationGfx(tile), tile_start, tile_end, z_start + 1, bridge_type, transport_type);
+						CommandCost ret = IsRailStationBridgeAboveOk(tile, GetStationSpec(tile), station_type, GetStationGfx(tile), bridge_above);
 						if (ret.Failed()) {
 							if (ret.GetErrorMessage() != INVALID_STRING_ID) return ret;
 							ret = Command<Commands::LandscapeClear>::Do(flags, tile);
@@ -568,8 +586,8 @@ CommandCost CmdBuildBridge(DoCommandFlags flags, TileIndex tile_end, TileIndex t
 					case StationType::Bus:
 					case StationType::Truck:
 					case StationType::RoadWaypoint: {
-						CommandCost ret = IsRoadStopBridgeAboveOK(tile, GetRoadStopSpec(tile), station_type, IsDriveThroughStopTile(tile), IsDriveThroughStopTile(tile) ? AxisToDiagDir(GetDriveThroughStopAxis(tile)) : GetBayRoadStopDir(tile),
-								tile_start, tile_end, z_start + 1, bridge_type, transport_type);
+						CommandCost ret = IsRoadStopBridgeAboveOK(tile, GetRoadStopSpec(tile), station_type, IsDriveThroughStopTile(tile),
+								IsDriveThroughStopTile(tile) ? AxisToDiagDir(GetDriveThroughStopAxis(tile)) : GetBayRoadStopDir(tile), bridge_above);
 						if (ret.Failed()) {
 							if (ret.GetErrorMessage() != INVALID_STRING_ID) return ret;
 							ret = Command<Commands::LandscapeClear>::Do(flags, tile);
@@ -583,7 +601,7 @@ CommandCost CmdBuildBridge(DoCommandFlags flags, TileIndex tile_end, TileIndex t
 						break;
 
 					case StationType::Dock: {
-						CommandCost ret = IsDockBridgeAboveOK(tile, tile_start, tile_end, z_start + 1, bridge_type, transport_type);
+						CommandCost ret = IsDockBridgeAboveOK(tile, bridge_above);
 						if (ret.Failed()) {
 							if (ret.GetErrorMessage() != INVALID_STRING_ID) return ret;
 							ret = Command<Commands::LandscapeClear>::Do(flags, tile);
@@ -601,7 +619,7 @@ CommandCost CmdBuildBridge(DoCommandFlags flags, TileIndex tile_end, TileIndex t
 			}
 
 			if (IsTileType(tile, TileType::Water) && IsLock(tile)) {
-				CommandCost ret = IsLockBridgeAboveOK(tile, (LockPart)GetLockPart(tile), GetLockDirection(tile), tile_start, tile_end, z_start + 1, bridge_type, transport_type);
+				CommandCost ret = IsLockBridgeAboveOK(tile, (LockPart)GetLockPart(tile), GetLockDirection(tile), bridge_above);
 				if (ret.Failed()) {
 					if (ret.GetErrorMessage() != INVALID_STRING_ID) return ret;
 					ret = Command<Commands::LandscapeClear>::Do(flags, tile);
@@ -664,7 +682,7 @@ CommandCost CmdBuildBridge(DoCommandFlags flags, TileIndex tile_end, TileIndex t
 			switch (GetTileType(tile)) {
 				case TileType::Water:
 					if (IsLock(tile)) {
-						CommandCost ret = IsLockBridgeAboveOK(tile, (LockPart)GetLockPart(tile), GetLockDirection(tile), tile_start, tile_end, z_start + 1, bridge_type, transport_type);
+						CommandCost ret = IsLockBridgeAboveOK(tile, (LockPart)GetLockPart(tile), GetLockDirection(tile), bridge_above);
 						if (ret.Failed()) {
 							if (ret.GetErrorMessage() != INVALID_STRING_ID) return ret;
 							goto not_valid_below;
@@ -704,7 +722,7 @@ CommandCost CmdBuildBridge(DoCommandFlags flags, TileIndex tile_end, TileIndex t
 
 						case StationType::Rail:
 						case StationType::RailWaypoint: {
-							CommandCost ret = IsRailStationBridgeAboveOk(tile, GetStationSpec(tile), station_type, GetStationGfx(tile), tile_start, tile_end, z_start + 1, bridge_type, transport_type);
+							CommandCost ret = IsRailStationBridgeAboveOk(tile, GetStationSpec(tile), station_type, GetStationGfx(tile), bridge_above);
 							if (ret.Failed()) {
 								if (ret.GetErrorMessage() != INVALID_STRING_ID) return ret;
 								goto not_valid_below;
@@ -715,8 +733,8 @@ CommandCost CmdBuildBridge(DoCommandFlags flags, TileIndex tile_end, TileIndex t
 						case StationType::Bus:
 						case StationType::Truck:
 						case StationType::RoadWaypoint: {
-							CommandCost ret = IsRoadStopBridgeAboveOK(tile, GetRoadStopSpec(tile), station_type, IsDriveThroughStopTile(tile), IsDriveThroughStopTile(tile) ? AxisToDiagDir(GetDriveThroughStopAxis(tile)) : GetBayRoadStopDir(tile),
-									tile_start, tile_end, z_start + 1, bridge_type, transport_type);
+							CommandCost ret = IsRoadStopBridgeAboveOK(tile, GetRoadStopSpec(tile), station_type, IsDriveThroughStopTile(tile),
+									IsDriveThroughStopTile(tile) ? AxisToDiagDir(GetDriveThroughStopAxis(tile)) : GetBayRoadStopDir(tile), bridge_above);
 							if (ret.Failed()) {
 								if (ret.GetErrorMessage() != INVALID_STRING_ID) return ret;
 								goto not_valid_below;
@@ -729,7 +747,7 @@ CommandCost CmdBuildBridge(DoCommandFlags flags, TileIndex tile_end, TileIndex t
 							break;
 
 						case StationType::Dock: {
-							CommandCost ret = IsDockBridgeAboveOK(tile, tile_start, tile_end, z_start + 1, bridge_type, transport_type);
+							CommandCost ret = IsDockBridgeAboveOK(tile, bridge_above);
 							if (ret.Failed()) {
 								if (ret.GetErrorMessage() != INVALID_STRING_ID) return ret;
 								goto not_valid_below;

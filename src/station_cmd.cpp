@@ -1019,17 +1019,16 @@ int GetBridgeTooLowHeightDifference(TileIndex tile, int height_clearance, int br
 	return 0;
 }
 
-CommandCost IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statspec, StationType station_type, uint8_t layout, TileIndex northern_bridge_end, TileIndex southern_bridge_end, int bridge_height,
-		BridgeType bridge_type, TransportType bridge_transport_type)
+CommandCost IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statspec, StationType station_type, uint8_t layout, BridgeAboveInfo bridge_above)
 {
 	if (statspec != nullptr && statspec->internal_flags.Test(StationSpecIntlFlag::BridgeHeightsSet)) {
 		int height_above = statspec->GetBridgeAboveFlags(layout).height;
 		if (height_above == 0) return CommandCost(INVALID_STRING_ID);
-		const int too_low = GetBridgeTooLowHeightDifference(tile, height_above, bridge_height);
+		const int too_low = GetBridgeTooLowHeightDifference(tile, height_above, bridge_above.height);
 		if (too_low > 0) return CommandCostWithParam(GetBridgeTooLowMessageForStationType(station_type), too_low);
 	} else if (!statspec) {
 		/* Default stations/waypoints */
-		const int too_low = GetBridgeTooLowHeightDifference(tile, layout < 4 ? 2 : 5, bridge_height);
+		const int too_low = GetBridgeTooLowHeightDifference(tile, layout < 4 ? 2 : 5, bridge_above.height);
 		if (too_low > 0) return CommandCostWithParam(GetBridgeTooLowMessageForStationType(station_type), too_low);
 	} else {
 		if (!_settings_game.construction.allow_stations_under_bridges) return CommandCost(INVALID_STRING_ID);
@@ -1056,7 +1055,7 @@ CommandCost IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statsp
 		disallowed_pillar_flags = (BridgePiecePillarFlags) (axis == Axis::X ? 0x50 : 0xA0);
 	}
 
-	if ((GetBridgeTilePillarFlags(tile, northern_bridge_end, southern_bridge_end, bridge_type, bridge_transport_type) & disallowed_pillar_flags) == 0) {
+	if ((GetBridgeTilePillarFlags(tile, bridge_above) & disallowed_pillar_flags) == 0) {
 		return CommandCost();
 	} else {
 		return CommandCost(STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_STATION);
@@ -1067,23 +1066,18 @@ CommandCost IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statsp
 {
 	if (!IsBridgeAbove(tile)) return CommandCost();
 
-	TileIndex southern_bridge_end = GetSouthernBridgeEnd(tile);
-	TileIndex northern_bridge_end = GetNorthernBridgeEnd(tile);
-	return IsRailStationBridgeAboveOk(tile, statspec, station_type, layout, northern_bridge_end, southern_bridge_end, GetBridgeHeight(southern_bridge_end),
-			GetBridgeType(southern_bridge_end), GetTunnelBridgeTransportType(southern_bridge_end));
+	return IsRailStationBridgeAboveOk(tile, statspec, station_type, layout, GetBridgeAboveInfo(tile));
 }
 
-CommandCost IsRoadStopBridgeAboveOK(TileIndex tile, const RoadStopSpec *spec, StationType station_type, bool drive_through, DiagDirection entrance,
-		TileIndex northern_bridge_end, TileIndex southern_bridge_end, int bridge_height,
-		BridgeType bridge_type, TransportType bridge_transport_type)
+CommandCost IsRoadStopBridgeAboveOK(TileIndex tile, const RoadStopSpec *spec, StationType station_type, bool drive_through, DiagDirection entrance, BridgeAboveInfo bridge_above)
 {
 	if (spec != nullptr && spec->internal_flags.Test(RoadStopSpecIntlFlag::BridgeHeightsSet)) {
 		int height = spec->bridge_height[drive_through ? (GFX_TRUCK_BUS_DRIVETHROUGH_OFFSET + to_underlying(DiagDirToAxis(entrance))) : to_underlying(entrance)];
 		if (height == 0) return CommandCost(INVALID_STRING_ID);
-		const int too_low = GetBridgeTooLowHeightDifference(tile, height, bridge_height);
+		const int too_low = GetBridgeTooLowHeightDifference(tile, height, bridge_above.height);
 		if (too_low > 0) return CommandCostWithParam(GetBridgeTooLowMessageForStationType(station_type), too_low);
 	} else {
-		const int too_low = GetBridgeTooLowHeightDifference(tile, drive_through ? 1 : 2, bridge_height);
+		const int too_low = GetBridgeTooLowHeightDifference(tile, drive_through ? 1 : 2, bridge_above.height);
 		if (too_low > 0) return CommandCostWithParam(GetBridgeTooLowMessageForStationType(station_type), too_low);
 	}
 
@@ -1095,20 +1089,19 @@ CommandCost IsRoadStopBridgeAboveOK(TileIndex tile, const RoadStopSpec *spec, St
 	} else {
 		SetBit(disallowed_pillar_flags, 4 + to_underlying(entrance));
 	}
-	if ((GetBridgeTilePillarFlags(tile, northern_bridge_end, southern_bridge_end, bridge_type, bridge_transport_type) & disallowed_pillar_flags) == 0) {
+	if ((GetBridgeTilePillarFlags(tile, bridge_above) & disallowed_pillar_flags) == 0) {
 		return CommandCost();
 	} else {
 		return CommandCost(STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_STATION);
 	}
 }
 
-CommandCost IsDockBridgeAboveOK(TileIndex tile, TileIndex northern_bridge_end, TileIndex southern_bridge_end, int bridge_height,
-		BridgeType bridge_type, TransportType bridge_transport_type)
+CommandCost IsDockBridgeAboveOK(TileIndex tile, BridgeAboveInfo bridge_above)
 {
 	const int tile_min_z = GetTileZ(tile); // Height of lower/water level
 	const int height_clearance = 3;
-	if (tile_min_z + height_clearance > bridge_height) {
-		return CommandCostWithParam(GetBridgeTooLowMessageForStationType(StationType::Dock), (tile_min_z + height_clearance - bridge_height) * TILE_HEIGHT_STEP);
+	if (tile_min_z + height_clearance > bridge_above.height) {
+		return CommandCostWithParam(GetBridgeTooLowMessageForStationType(StationType::Dock), (tile_min_z + height_clearance - bridge_above.height) * TILE_HEIGHT_STEP);
 	}
 
 	return CommandCost();
@@ -1228,11 +1221,7 @@ CommandCost CheckFlatLandRoadStop(TileArea tile_area, const RoadStopSpec *spec, 
 		cost.AddCost(ret.GetCost());
 
 		if (IsBridgeAbove(cur_tile)) {
-			TileIndex southern_bridge_end = GetSouthernBridgeEnd(cur_tile);
-			TileIndex northern_bridge_end = GetNorthernBridgeEnd(cur_tile);
-			CommandCost bridge_ret = IsRoadStopBridgeAboveOK(cur_tile, spec, station_type, is_drive_through, invalid_dirs.FindFirstBit(),
-					northern_bridge_end, southern_bridge_end, GetBridgeHeight(southern_bridge_end),
-					GetBridgeType(southern_bridge_end), GetTunnelBridgeTransportType(southern_bridge_end));
+			CommandCost bridge_ret = IsRoadStopBridgeAboveOK(cur_tile, spec, station_type, is_drive_through, invalid_dirs.FindFirstBit(), GetBridgeAboveInfo(cur_tile));
 			if (bridge_ret.Failed()) return bridge_ret;
 		}
 
@@ -3128,14 +3117,6 @@ static constexpr DiagDirectionIndexArray<uint8_t> _dock_w_chk{2, 1, 2, 1};
 /** Y dimension of dock for each direction.  */
 static constexpr DiagDirectionIndexArray<uint8_t> _dock_h_chk{1, 2, 1, 2};
 
-static CommandCost IsDockBridgeAboveOK(TileIndex tile)
-{
-	TileIndex southern_bridge_end = GetSouthernBridgeEnd(tile);
-	TileIndex northern_bridge_end = GetNorthernBridgeEnd(tile);
-	return IsDockBridgeAboveOK(tile, northern_bridge_end, southern_bridge_end, GetBridgeHeight(southern_bridge_end),
-			GetBridgeType(southern_bridge_end), GetTunnelBridgeTransportType(southern_bridge_end));
-}
-
 /**
  * Build a dock/haven.
  * @param flags operation to perform
@@ -3163,7 +3144,7 @@ CommandCost CmdBuildDock(DoCommandFlags flags, TileIndex tile, StationID station
 	if (ret.Failed()) return ret;
 
 	if (IsBridgeAbove(tile)) {
-		ret = IsDockBridgeAboveOK(tile);
+		ret = IsDockBridgeAboveOK(tile, GetBridgeAboveInfo(tile));
 		if (ret.Failed()) return ret;
 	}
 
@@ -3179,7 +3160,7 @@ CommandCost CmdBuildDock(DoCommandFlags flags, TileIndex tile, StationID station
 	}
 
 	if (IsBridgeAbove(flat_tile)) {
-		ret = IsDockBridgeAboveOK(flat_tile);
+		ret = IsDockBridgeAboveOK(flat_tile, GetBridgeAboveInfo(flat_tile));
 		if (ret.Failed()) return ret;
 	}
 

@@ -108,6 +108,20 @@ struct BridgePieceDebugInfo {
 };
 BridgePieceDebugInfo GetBridgePieceDebugInfo(TileIndex tile);
 
+struct BridgeAboveInfo {
+	TileIndex northern_end;
+	TileIndex southern_end;
+	int height;
+	BridgeType bridge_type;
+	TransportType transport_type;
+};
+BridgeAboveInfo GetBridgeAboveInfo(TileIndex tile);
+
+inline BridgePiecePillarFlags GetBridgeTilePillarFlags(TileIndex tile, const BridgeAboveInfo &bridge_above)
+{
+	return GetBridgeTilePillarFlags(tile, bridge_above.northern_end, bridge_above.southern_end, bridge_above.bridge_type, bridge_above.transport_type);
+}
+
 void ResetBridges();
 
 #endif /* BRIDGE_H */
