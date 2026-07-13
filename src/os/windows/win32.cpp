@@ -808,41 +808,11 @@ void GetCurrentThreadName(format_target &buffer)
 	}
 }
 
-#ifdef _MSC_VER
-/* Based on code from MSDN: https://msdn.microsoft.com/en-us/library/xcb2z8hs.aspx */
-const DWORD MS_VC_EXCEPTION = 0x406D1388;
-
-PACK_N(struct THREADNAME_INFO {
-	DWORD dwType;     ///< Must be 0x1000.
-	LPCSTR szName;    ///< Pointer to name (in user addr space).
-	DWORD dwThreadID; ///< Thread ID (-1=caller thread).
-	DWORD dwFlags;    ///< Reserved for future use, must be zero.
-}, 8);
-
-/**
- * Signal thread name to any attached debuggers.
- */
-void SetCurrentThreadName(const std::string &thread_name)
+void SetCurrentThreadName(const std::string &name)
 {
-	Win32SetThreadName(GetCurrentThreadId(), thread_name);
+	Win32SetThreadName(GetCurrentThreadId(), name);
 
-	THREADNAME_INFO info;
-	info.dwType = 0x1000;
-	info.szName = thread_name.c_str();
-	info.dwThreadID = -1;
-	info.dwFlags = 0;
-
-#pragma warning(push)
-#pragma warning(disable: 6320 6322)
-	__try {
-		RaiseException(MS_VC_EXCEPTION, 0, sizeof(info) / sizeof(ULONG_PTR), (ULONG_PTR*)&info);
-	} __except (EXCEPTION_EXECUTE_HANDLER) {
-	}
-#pragma warning(pop)
+	using SetThreadDescriptionProc = HRESULT(WINAPI *)(HANDLE, PCWSTR);
+	static const SetThreadDescriptionProc std_proc = GetKernel32Function("SetThreadDescription");
+	if (std_proc != nullptr) std_proc(GetCurrentThread(), OTTD2FS(name).c_str());
 }
-#else
-void SetCurrentThreadName(const std::string &threadName)
-{
-	Win32SetThreadName(GetCurrentThreadId(), threadName);
-}
-#endif
