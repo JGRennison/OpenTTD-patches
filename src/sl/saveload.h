@@ -478,6 +478,9 @@ inline constexpr bool SlCheckVar(SaveLoadType cmd, VarType type, size_t length)
 			}
 			return false;
 
+		case SL_WRITEBYTE:
+			return sizeof(T) == 1;
+
 		default:
 			return true;
 	}

@@ -420,7 +420,7 @@ inline constexpr bool SlCheckVarSize(SaveLoadType cmd, VarType type, size_t leng
 		case SL_REFLIST: return sizeof(std::list<void *>) == size;
 		case SL_REFVECTOR: return sizeof(std::vector<void *>) == size;
 		case SL_REFRING: return sizeof(jgr::ring_buffer<void *>) == size;
-		case SL_SAVEBYTE: return true;
+		case SL_SAVEBYTE: return size == 1;
 		default: NOT_REACHED();
 	}
 }

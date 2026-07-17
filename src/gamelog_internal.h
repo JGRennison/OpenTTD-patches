@@ -17,7 +17,7 @@
 #include <vector>
 
 /** Type of logged change */
-enum GamelogChangeType {
+enum GamelogChangeType : uint8_t {
 	GLCT_MODE,        ///< Scenario editor x Game, different landscape
 	GLCT_REVISION,    ///< Changed game revision string
 	GLCT_OLDVER,      ///< Loaded from savegame without logged data
