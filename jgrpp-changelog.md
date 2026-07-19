@@ -2,6 +2,18 @@
 
 * * *
 
+### v0.73.0 (2026-07-20)
+* Fix crash which could occur when dropdowns were laid out above the button.
+* Fix crash which could occur when a station listed in a station join window was deleted.
+* Fix incorrect cargo distribution handling of no load orders.
+* From vanilla: Allow overbuilding of depots.
+* From vanilla: Allow bridges over depots.
+* Routing restrictions: Add current order stop location condition.
+* Improve performance of JSON file town placment on large maps.
+* Fix invalid savegames on some very rare machine architectures (big endian).
+* AI/game script: Fix saving of script instances in savegames.
+* Bump trunk base from commit af6868198eae395d8bc1963620d846633ac53eec to commit 7e2bcaf792696f68244d657858df263cfe5cb63e.
+
 ### v0.72.4 (2026-06-19)
 * Fix various dialog windows not being closed.
 * Fix text rendering in scheduled dispatch window dropdown.

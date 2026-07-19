@@ -1,4 +1,4 @@
-## JGR's Patchpack version 0.72.4
+## JGR's Patchpack version 0.73.0
 
 This is a collection of features and other modifications applied to [OpenTTD](http://www.openttd.org/).  
 It's a separate version of the game which can be installed and played alongside the standard game, not a loadable mod (NewGRF, script, or so on).
