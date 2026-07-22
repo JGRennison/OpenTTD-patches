@@ -839,7 +839,6 @@ private:
 	void ResetState()
 	{
 		this->last_value = 0;
-		this->waiting_random_triggers = 0;
 		this->used_random_triggers = 0;
 		this->reseed.fill(0);
 	}
