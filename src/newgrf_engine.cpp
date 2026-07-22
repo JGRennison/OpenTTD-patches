@@ -886,7 +886,7 @@ static uint32_t VehicleGetVariable(Vehicle *v, const VehicleScopeResolver *objec
 
 		case 0x65:
 			if (v->type == VehicleType::Train) {
-				RailType rt = GetRailType(v->tile);
+				RailType rt = GetRailTypeByTrackBit(v->tile, Train::From(v)->track);
 				return GetBadgeVariableResult(*object->ro.grffile, GetRailTypeInfo(rt)->badges, parameter);
 			}
 			if (v->type == VehicleType::Road) {
