@@ -3457,6 +3457,9 @@ static void CheckNextTrainTile(Train *moving_front)
 	/* Don't do any look-ahead if path_backoff_interval is 255. */
 	if (_settings_game.pf.path_backoff_interval == 255) return;
 
+	/* Exit if we are inside a depot. */
+	if (moving_front->track == TRACK_BIT_DEPOT) return;
+
 	Train *consist = moving_front->First();
 
 	/* Exit if we are currently in a waiting order */
