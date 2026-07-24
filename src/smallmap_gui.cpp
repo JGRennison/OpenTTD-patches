@@ -358,8 +358,23 @@ void BuildOwnerLegend()
 	_smallmap_company_count = i;
 }
 
+/**
+ * Test if a water tile is a dry coast tile, i.e. no half water.
+ * @param tile The tile.
+ * @return true iff the tile is a dry coast tile.
+ */
+static bool IsDryCoast(TileIndex tile)
+{
+	if (!IsTileType(tile, TileType::Water)) return false;
+	if (IsNonFloodingWaterTile(tile)) return false; // Quick exit for normal bulk water
+	return IsCoast(tile) && !IsSlopeWithOneCornerRaised(GetTileSlope(tile));
+}
+
 static TileType GetSmallMapTileType(TileIndex tile, TileType t)
 {
+	if (t == TileType::Water && IsDryCoast(tile)) {
+		return TileType::Clear;
+	}
 	if (t == TileType::Object && GetObjectHasViewportMapViewOverride(tile)) {
 		ObjectViewportMapType vmtype = OVMT_DEFAULT;
 		const ObjectSpec *spec = ObjectSpec::GetByTile(tile);
@@ -527,6 +542,10 @@ static inline uint32_t GetSmallMapVegetationPixels(TileIndex tile, TileType t)
 			}
 			return _vegetation_clear_bits[IsSnowTile(tile) ? ClearGround::Snow : GetClearGround(tile)];
 
+		case TileType::Water:
+			if (IsDryCoast(tile)) return (GetTropicZone(tile) == TropicZone::Rainforest) ? MKCOLOUR_XXXX(PC_RAINFOREST) : MKCOLOUR_XXXX(PC_GRASS_LAND);
+			return ApplyMask(MKCOLOUR_XXXX(PC_GRASS_LAND), _smallmap_vehicles_andor[t]);
+
 		case TileType::Industry:
 			return IsTileForestIndustry(tile) ? MKCOLOUR_XXXX(PC_GREEN) : MKCOLOUR_XXXX(PC_DARK_RED);
 
@@ -632,7 +651,7 @@ static inline uint32_t GetSmallMapOwnerPixels(TileIndex tile, TileType t)
 	}
 
 	if ((o < MAX_COMPANIES && !_legend_land_owners[_company_to_list_pos[o]].show_on_map) || o == OWNER_NONE || o == OWNER_WATER) {
-		if (t == TileType::Water) return MKCOLOUR_XXXX(PC_WATER);
+		if (t == TileType::Water && !IsDryCoast(tile)) return MKCOLOUR_XXXX(PC_WATER);
 		const SmallMapColourScheme *cs = &_heightmap_schemes[_settings_client.gui.smallmap_land_colour];
 		return _smallmap_show_heightmap ? cs->height_colours[TileHeight(tile)] : cs->default_colour;
 	} else if (o == OWNER_TOWN) {
