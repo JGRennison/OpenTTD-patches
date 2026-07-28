@@ -1974,16 +1974,6 @@ bool AfterLoadGame()
 		}
 	}
 
-	if (IsSavegameVersionBefore(SLV_PROTECT_PLACED_HOUSES) && SlXvIsFeatureMissing(XSLFI_PROTECT_PLACED_HOUSES)) {
-		for (TileIndex t(0); t < map_size; t++) {
-			if (IsTileType(t, TileType::House)) {
-				/* We now store house protection status in the map. Set this based on the house spec flags. */
-				const HouseSpec *hs = HouseSpec::Get(GetHouseType(t));
-				SetHouseProtected(t, hs->extra_flags.Test(HouseExtraFlag::BuildingIsProtected));
-			}
-		}
-	}
-
 	/* Check and update house and town values */
 	UpdateHousesAndTowns(gcf_res != GRFListCompatibility::AllGood);
 
