@@ -1434,7 +1434,8 @@ static bool FlowRiver(TileIndex spring, TileIndex begin, uint min_river_length)
 
 		int height_end;
 		if (IsTileFlat(end, &height_end) && (height_end < static_cast<int>(height_begin) || (height_end == static_cast<int>(height_begin) && IsWaterTile(end)))) {
-			if (IsWaterTile(end) && GetWaterClass(end) == WaterClass::Sea) {
+			/* We don't want rivers to flow into tiny bits of sea, so we fill them, unless using the original land generator. */
+			if (_settings_game.game_creation.land_generator != LG_ORIGINAL && IsWaterTile(end) && GetWaterClass(end) == WaterClass::Sea) {
 				/* If we've found the sea, make sure it's large enough. Scale by the map size but set a cap to avoid performance issues on large maps. */
 				const uint MAX_SEA_SIZE_THRESHOLD = 1024;
 				const uint SEA_SIZE_THRESHOLD = std::min(static_cast<uint>(2 * std::sqrt(Map::SizeX() * Map::SizeY())), MAX_SEA_SIZE_THRESHOLD);
@@ -1453,7 +1454,7 @@ static bool FlowRiver(TileIndex spring, TileIndex begin, uint min_river_length)
 					}
 				}
 			} else {
-				/* We've found a river. */
+				/* We've found a river, or a sea if using the original land generator. */
 				found = true;
 				break;
 			}
