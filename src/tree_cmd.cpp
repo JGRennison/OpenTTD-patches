@@ -1346,7 +1346,7 @@ static void TileLoop_Trees(TileIndex tile)
 							const TreeType tree_type = GetTreeType(tile);
 							const TileIndex old_tile = tile;
 
-							tile += TileOffsByDir(static_cast<Direction>(RandomRange(to_underlying(Direction::End))));
+							tile += TileOffsByDir(RandomRange(Direction::End));
 
 							if (!CanPlantTreesOnTile(tile, false)) return;
 
