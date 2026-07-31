@@ -8588,6 +8588,9 @@ ERROR: IsEnd() is invalid as Begin() is never called
   Depot
     IsRailTile():                  false
     BuildRailDepot():              false
+    RemoveRailDepot():             false
+    BuildRailDepot():              true
+    RemoveRailDepot():             true
     BuildRailDepot():              false
     BuildRailDepot():              true
     BuildRailDepot():              true
@@ -10565,7 +10568,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
   GetName():            Road Vehicle #1
   SetName():            true
   GetName():            MyVehicleName
-  CloneVehicle():       13
+  CloneVehicle():       14
   --VehicleData--
     GetLocation():       33417
     GetEngineType():     153
@@ -10588,148 +10591,178 @@ ERROR: IsEnd() is invalid as Begin() is never called
     GetWagonAge():       0
     GetLength():         8
   GetOwner():           1
-  BuildVehicle():       14
+  BuildVehicle():       15
   IsValidVehicle(14):   true
   IsInDepot(14):        true
   IsStoppedInDepot(14): true
-  IsValidVehicle(15):   false
-  IsInDepot(15):        false
-  IsStoppedInDepot(15): false
-  BuildVehicle():       16
-  IsValidVehicle(16):   true
-  IsInDepot(16):        true
-  IsStoppedInDepot(16): true
-  BuildRailDepot():     true
+  IsValidVehicle(15):   true
+  IsInDepot(15):        true
+  IsStoppedInDepot(15): true
   BuildVehicle():       17
+  IsValidVehicle(16):   false
+  IsInDepot(16):        false
+  IsStoppedInDepot(16): false
+  BuildRailDepot():     true
   BuildVehicle():       18
   BuildVehicle():       19
+  BuildVehicle():       20
   IsValidVehicle(17):   true
   IsValidVehicle(18):   true
-  IsValidVehicle(19):   false
-  MoveWagonChain():     true
-  GetNumWagons():       3
-  GetLength():          24
-  GetWagonEngineType(): 9
+  IsValidVehicle(19):   true
+  MoveWagonChain():     false
+  GetNumWagons():       1
+  GetLength():          -1
+  GetWagonEngineType(): 204
   GetWagonAge():        0
-  GetWagonEngineType(): 27
-  GetWagonAge():        0
-  GetWagonEngineType(): 27
-  GetWagonAge():        0
+  GetWagonEngineType(): 65535
+  GetWagonAge():        -1
+  GetWagonEngineType(): 65535
+  GetWagonAge():        -1
   GetWagonEngineType(): 65535
   GetWagonAge():        -1
   --Refit--
     GetBuildWithRefitCapacity(): -1
     GetBuildWithRefitCapacity(): 0
     GetBuildWithRefitCapacity(): 160
-    BuildVehicleWithRefit():     20
-    GetCapacity():               160
-    GetCapacity():               0
-    GetRefitCapacity():          160
-    RefitVehicle():              true
-    GetCapacity():               0
-    GetCapacity():               160
-    SellVehicle():               true
+    BuildVehicleWithRefit():     21
+    GetCapacity():               -1
+    GetCapacity():               -1
+    GetRefitCapacity():          -1
+    RefitVehicle():              false
+    GetCapacity():               -1
+    GetCapacity():               -1
+    SellVehicle():               false
   --Errors--
     RefitVehicle():        false
     GetLastErrorString():  ERR_VEHICLE_NOT_IN_DEPOT
     SellVehicle():         false
     GetLastErrorString():  ERR_VEHICLE_NOT_IN_DEPOT
     SendVehicleToDepot():  false
-    GetLastErrorString():  ERR_UNKNOWN
+    GetLastErrorString():  ERR_PRECONDITION_FAILED
 
 --VehicleList--
-  Count():             5
-  InDepot Count():     4
+  Count():             7
+  InDepot Count():     6
   RoadVehicle Count(): 2
   Location ListDump:
-    13 => 33417
+    14 => 33417
     12 => 33417
-    14 => 32119
-    16 => 28479
-    17 => 10008
+    15 => 32119
+    21 => 28479
+    17 => 28479
+    19 => 10008
+    18 => 10008
   EngineType ListDump:
-    14 => 219
-    16 => 204
-    13 => 153
+    15 => 219
+    21 => 211
+    17 => 204
+    14 => 153
     12 => 153
-    17 => 9
+    19 => 27
+    18 => 9
   UnitNumber ListDump:
-    13 => 2
+    21 => 2
+    14 => 2
+    18 => 1
     17 => 1
-    16 => 1
-    14 => 1
+    15 => 1
     12 => 1
+    19 => -1
   Age ListDump:
+    21 => 0
+    19 => 0
+    18 => 0
     17 => 0
-    16 => 0
+    15 => 0
     14 => 0
-    13 => 0
     12 => 0
   MaxAge ListDump:
-    16 => 10980
-    14 => 10980
-    17 => 7320
-    13 => 5490
+    21 => 10980
+    17 => 10980
+    15 => 10980
+    18 => 7320
+    14 => 5490
     12 => 5490
+    19 => -1
   AgeLeft ListDump:
-    16 => 10980
-    14 => 10980
-    17 => 7320
-    13 => 5490
+    21 => 10980
+    17 => 10980
+    15 => 10980
+    18 => 7320
+    14 => 5490
     12 => 5490
+    19 => -1
   CurrentSpeed ListDump:
-    12 => 27
+    12 => 21
+    21 => 0
+    18 => 0
     17 => 0
-    16 => 0
+    15 => 0
     14 => 0
-    13 => 0
+    19 => -1
   RunningCost ListDump:
-    14 => 2756
+    15 => 2756
+    21 => 2460
+    18 => 2296
     17 => 2296
-    16 => 2296
-    13 => 421
+    14 => 421
     12 => 421
+    19 => -1
   ProfitThisYear ListDump:
+    21 => 0
+    18 => 0
     17 => 0
-    16 => 0
+    15 => 0
     14 => 0
-    13 => 0
     12 => 0
+    19 => -1
   ProfitLastYear ListDump:
+    21 => 0
+    18 => 0
     17 => 0
-    16 => 0
+    15 => 0
     14 => 0
-    13 => 0
     12 => 0
+    19 => -1
   CurrentValue ListDump:
-    14 => 30761
-    16 => 30468
-    17 => 22265
-    13 => 5947
+    15 => 30761
+    17 => 30468
+    21 => 24375
+    18 => 22265
+    14 => 5947
     12 => 5947
+    19 => 1447
   VehicleType ListDump:
-    14 => 3
-    16 => 2
-    13 => 1
+    15 => 3
+    21 => 2
+    17 => 2
+    14 => 1
     12 => 1
-    17 => 0
+    19 => 0
+    18 => 0
   RoadType ListDump:
-    13 => 0
+    14 => 0
     12 => 0
+    21 => -1
+    19 => -1
+    18 => -1
     17 => -1
-    16 => -1
-    14 => -1
+    15 => -1
   VehicleType ListDump:
-    13 => 12
+    14 => 12
     12 => 12
+    21 => 0
+    19 => 0
+    18 => 0
     17 => 0
-    16 => 0
-    14 => 0
+    15 => 0
   VehicleType ListDump:
+    21 => 0
+    19 => 0
+    18 => 0
     17 => 0
-    16 => 0
+    15 => 0
     14 => 0
-    13 => 0
     12 => 0
 
 --Order--
@@ -10769,13 +10802,13 @@ ERROR: IsEnd() is invalid as Begin() is never called
   GetOrderFlags():       64
   GetOrderDestination(): 33411
   CopyOrders():          false
-  CopyOrders():          true
+  CopyOrders():          false
   ShareOrders():         false
-  ShareOrders():         true
-  UnshareOrders():       true
+  ShareOrders():         false
+  UnshareOrders():       false
   AppendOrder():         true
   GetStopLocation():     -1
-  BuildVehicle():        20
+  BuildVehicle():        22
   BuildRailStation():    true
   AppendOrder():         true
   GetOrderCount():       1
@@ -10786,17 +10819,17 @@ ERROR: IsEnd() is invalid as Begin() is never called
 --VehicleList_Station--
   Count():             1
   Location ListDump:
-    20 => 23596
+    22 => 23596
   foreach():
-    20 => 23596
+    22 => 23596
   Count():             0
   Location ListDump:
   foreach():
   Count():             1
   Location ListDump:
-    20 => 23596
+    22 => 23596
   foreach():
-    20 => 23596
+    22 => 23596
 
 --Company Gender--
   GetPresidentGender():              1
@@ -10912,7 +10945,7 @@ CALLSTACK WITH LOCALS
 *FUNCTION [Valuate()] Valuate line [5]
   [args] ARRAY
   [this] INSTANCE
-*FUNCTION [Start()] regression/main.nut line [2437]
+*FUNCTION [Start()] regression/main.nut line [2440]
   [Infinite] CLOSURE
   [list] INSTANCE
   [this] INSTANCE

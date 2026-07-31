@@ -1421,6 +1421,9 @@ function Regression::Rail()
 	print("  Depot");
 	print("    IsRailTile():                  " + AIRail.IsRailTile(33411));
 	print("    BuildRailDepot():              " + AIRail.BuildRailDepot(0, 1));
+	print("    RemoveRailDepot():             " + AIRail.RemoveRailDepot(33411));
+	print("    BuildRailDepot():              " + AIRail.BuildRailDepot(33411, 33412));
+	print("    RemoveRailDepot():             " + AIRail.RemoveRailDepot(33411));
 	print("    BuildRailDepot():              " + AIRail.BuildRailDepot(33411, 33411));
 	print("    BuildRailDepot():              " + AIRail.BuildRailDepot(33411, 33410));
 	print("    BuildRailDepot():              " + AIRail.BuildRailDepot(33411, 33414));
@@ -2436,4 +2439,3 @@ function Regression::Start()
 	}
 	list.Valuate(Infinite);
 }
-
