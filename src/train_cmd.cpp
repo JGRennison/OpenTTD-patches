@@ -3210,7 +3210,7 @@ static void ReverseTrainDirection(Train *consist)
 	auto update_check_tunnel_bridge_signal_counters = [](Train *t) {
 		if (!(t->track & TRACK_BIT_WORMHOLE)) {
 			/* Not in wormhole, clear counters */
-			t->wait_counter = 0;
+			t->tunnel_bridge_tile_ctr = 0;
 			t->tunnel_bridge_signal_num = 0;
 			return;
 		}
@@ -3220,14 +3220,14 @@ static void ReverseTrainDirection(Train *consist)
 			/* Now going in correct direction, fix counters */
 			const uint simulated_wormhole_signals = GetTunnelBridgeSignalSimulationSpacing(t->tile);
 			const uint delta = DistanceManhattan(t->tile, TileVirtXY(t->x_pos, t->y_pos));
-			t->wait_counter = TILE_SIZE * ((simulated_wormhole_signals - 1) - (delta % simulated_wormhole_signals));
+			t->tunnel_bridge_tile_ctr = static_cast<uint8_t>((simulated_wormhole_signals - 1) - (delta % simulated_wormhole_signals));
 			t->tunnel_bridge_signal_num = delta / simulated_wormhole_signals;
 		} else {
 			/* Now going in wrong direction, all bets are off.
-			 * Prevent setting the wrong signals by making wait_counter a non-integer multiple of TILE_SIZE.
-			 * Use a huge value so that the train will reverse again if there is another vehicle coming the other way.
+			 * Prevent setting the wrong signals by making tunnel_bridge_tile_ctr TBS_INVALID_DISTANCE.
+			 * This is a large value so that the train will reverse again if there is another vehicle coming the other way.
 			 */
-			t->wait_counter = static_cast<uint16_t>(-((int)TILE_SIZE / 2));
+			t->tunnel_bridge_tile_ctr = Train::TBS_INVALID_DISTANCE;
 			t->tunnel_bridge_signal_num = 0;
 		}
 	};
@@ -6088,7 +6088,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 				if (old_tile == v->tile) {
 					if (v->IsMovingFront() && first->force_proceed == 0 && IsTunnelBridgeSignalSimulationExitOnly(v->tile)) goto invalid_rail;
 					/* Entered wormhole set counters. */
-					v->wait_counter = (TILE_SIZE * simulated_wormhole_signals) - TILE_SIZE;
+					v->tunnel_bridge_tile_ctr = static_cast<uint8_t>(simulated_wormhole_signals - 1);
 					v->tunnel_bridge_signal_num = 0;
 
 					if (v->IsMovingFront() && IsTunnelBridgeSignalSimulationEntrance(old_tile) && (IsTunnelBridgeRestrictedSignal(old_tile) || _settings_game.vehicle.train_speed_adaptation)) {
@@ -6123,9 +6123,9 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 					}
 				}
 
-				uint distance = v->wait_counter;
+				uint distance = v->tunnel_bridge_tile_ctr;
 				bool leaving = false;
-				if (distance == 0) v->wait_counter = (TILE_SIZE * simulated_wormhole_signals);
+				if (distance == 0) v->tunnel_bridge_tile_ctr = simulated_wormhole_signals;
 
 				if (v->IsMovingFront()) {
 					/* Check if track in front is free and see if we can leave wormhole. */
@@ -6143,8 +6143,8 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 							}, [&](const TraceRestrictProgramResult &out) {});
 						}
 					} else {
-						if (IsTooCloseBehindTrain(v, gp.new_tile, v->wait_counter, distance == 0)) {
-							if (distance == 0) v->wait_counter = 0;
+						if (IsTooCloseBehindTrain(v, gp.new_tile, TILE_SIZE * v->tunnel_bridge_tile_ctr, distance == 0)) {
+							if (distance == 0) v->tunnel_bridge_tile_ctr = 0;
 							first->cur_speed = 0;
 							first->vehstatus.Set(VehState::TrainSlowing);
 							return false;
@@ -6160,7 +6160,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 					}
 				}
 				if (v->GetMovingNext() == nullptr) {
-					if (v->tunnel_bridge_signal_num > 0 && distance == (TILE_SIZE * simulated_wormhole_signals) - TILE_SIZE) {
+					if (v->tunnel_bridge_signal_num > 0 && distance == (simulated_wormhole_signals - 1)) {
 						HandleSignalBehindTrain(v, v->tunnel_bridge_signal_num - 2);
 						if (_settings_game.vehicle.train_speed_adaptation) {
 							SetSignalTrainAdaptationSpeed(v, v->tile, 0x100 + v->tunnel_bridge_signal_num - 1);
@@ -6179,11 +6179,11 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 					}
 				}
 				if (distance == 0) v->tunnel_bridge_signal_num++;
-				v->wait_counter -= TILE_SIZE;
+				if (v->tunnel_bridge_tile_ctr != Train::TBS_INVALID_DISTANCE) v->tunnel_bridge_tile_ctr--;
 
 				if (leaving) { // Reset counters.
 					first->force_proceed = TFP_NONE;
-					v->wait_counter = 0;
+					v->tunnel_bridge_tile_ctr = 0;
 					v->tunnel_bridge_signal_num = 0;
 					update_signal_tunbridge_exit = true;
 				}
@@ -6207,7 +6207,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 					if (CheckTrainStayInWormHole(v, next_tile)) {
 						TrainApproachingLineEnd(v, true, false);
 					}
-				} else if (v->wait_counter == 0) {
+				} else if (v->tunnel_bridge_tile_ctr == 0) {
 					if (IsTooCloseBehindTrain(v, next_tile, TILE_SIZE * GetTunnelBridgeSignalSimulationSpacing(v->tile), true)) {
 						TrainApproachingLineEnd(v, true, false);
 					}

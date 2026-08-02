@@ -251,8 +251,8 @@ class NIHVehicle : public NIHelper {
 					(t->UsingRealisticBraking()) ? 1 : 0, t->tcache.cached_deceleration, t->tcache.cached_uncapped_decel, t->tcache.cached_centre_mass, t->tcache.cached_braking_length);
 			output.Print("  T cache: veh weight: {}, user data: {}, curve speed: {}, cached accel type: {}",
 					t->tcache.cached_veh_weight, t->tcache.user_def_data, t->tcache.cached_max_curve_speed, t->tcache.GetCachedAccelType());
-			output.Print("  Wait counter: {}, rev distance: {}, TBSN: {}",
-					t->wait_counter, t->reverse_distance, t->tunnel_bridge_signal_num);
+			output.Print("  Wait counter: {}, rev distance: {}, TBSN: {}, TBTC: {}",
+					t->wait_counter, t->reverse_distance, t->tunnel_bridge_signal_num, t->tunnel_bridge_tile_ctr);
 			output.Print("  Speed restriction: {}, signal speed restriction (ATC): {}",
 					t->speed_restriction, t->signal_speed_restriction);
 

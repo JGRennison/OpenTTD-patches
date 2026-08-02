@@ -1211,6 +1211,7 @@ NamedSaveLoadTable GetVehicleDescription(VehicleType vt)
 
 		NSL("wait_counter",               SLE_CONDVAR(Train, wait_counter,              SLE_UINT16,                  SLV_136, SL_MAX_VERSION)),
 		NSL("tunnel_bridge_signal_num", SLE_CONDVAR_X(Train, tunnel_bridge_signal_num,  SLE_UINT16,                  SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SIG_TUNNEL_BRIDGE, 5))),
+		NSL("tunnel_bridge_tile_ctr",   SLE_CONDVAR_X(Train, tunnel_bridge_tile_ctr,    SLE_UINT8,                   SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_SIG_TUNNEL_BRIDGE, 12))),
 
 		NSL("",                          SLE_CONDNULL(2,                                                             SLV_2, SLV_20)),
 		NSL("gv_flags",                   SLE_CONDVAR(Train, gv_flags,                  SLE_UINT16,                  SLV_139, SL_MAX_VERSION)),

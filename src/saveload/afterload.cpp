@@ -3905,13 +3905,23 @@ bool AfterLoadGame()
 			}
 		}
 	}
-	if (SlXvIsFeaturePresent(XSLFI_SIG_TUNNEL_BRIDGE, 1, 4)) {
-		/* load_unload_ticks --> tunnel_bridge_signal_num */
+	if (SlXvIsFeaturePresent(XSLFI_SIG_TUNNEL_BRIDGE, 1, 11)) {
+		/* Versions 1 - 4: load_unload_ticks --> tunnel_bridge_signal_num */
+		/* Versions 1 - 11: wait_counter --> tunnel_bridge_tile_ctr */
+		const bool move_signal_num = SlXvIsFeaturePresent(XSLFI_SIG_TUNNEL_BRIDGE, 1, 4);
 		for (Train *t : Train::Iterate()) {
 			TileIndex tile = t->tile;
 			if (IsTileType(tile, TileType::TunnelBridge) && GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL && IsTunnelBridgeWithSignalSimulation(tile)) {
-				t->tunnel_bridge_signal_num = t->load_unload_ticks;
-				t->load_unload_ticks = 0;
+				if (move_signal_num) {
+					t->tunnel_bridge_signal_num = t->load_unload_ticks;
+					t->load_unload_ticks = 0;
+				}
+				if ((t->wait_counter & (TILE_SIZE - 1)) == 0) {
+					t->tunnel_bridge_tile_ctr = static_cast<uint8_t>(t->wait_counter / TILE_SIZE);
+				} else {
+					t->tunnel_bridge_tile_ctr = Train::TBS_INVALID_DISTANCE;
+				}
+				t->wait_counter = 0;
 			}
 		}
 	}

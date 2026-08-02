@@ -175,6 +175,9 @@ struct Train final : public GroundVehicle<Train, VehicleType::Train> {
 
 	uint16_t reverse_distance = 0;
 	uint16_t tunnel_bridge_signal_num = 0;
+	static constexpr uint8_t TBS_INVALID_DISTANCE = 0xFF;
+	uint8_t tunnel_bridge_tile_ctr = 0;
+	// 1 byte gap
 	uint16_t speed_restriction = 0;
 	uint16_t signal_speed_restriction = 0;
 	uint16_t crash_anim_pos = 0; ///< Crash animation counter, also used for realistic braking train brake overheating
