@@ -2537,4 +2537,4 @@ STR_CONFIG_SETTING_TRUNCATE_CARGO_HELPTEXT                      :启用后，车
 STR_CONFIG_SETTING_NEWS_CARGO_FLOW                              :车站货物积压：{STRING}
 STR_CONFIG_SETTING_NEWS_CARGO_FLOW_HELPTEXT                     :在车站货物积压时发出警告。{}警告基于过往货物接收发出历史计算发出，不基于某一特定数值
 
-STR_STATION_CARGO_OVERFLOW                                      :{WHITE}{2:STATION}有货物积压：{1:CARGO_LIST}
+STR_STATION_CARGO_OVERFLOW                                      :{WHITE}{1:STATION}有货物积压：{0:CARGO_LIST}
