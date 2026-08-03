@@ -587,15 +587,11 @@ int _skip_all_newgrf_scanning = 0;
 
 /** Helper for scanning for files with GRF as extension */
 class GRFFileScanner : FileScanner {
-	std::chrono::steady_clock::time_point next_update; ///< The next moment we do update the screen.
 	uint num_scanned; ///< The number of GRFs we have scanned.
 	std::vector<std::unique_ptr<GRFConfig>> grfs;
 
 public:
-	GRFFileScanner() : num_scanned(0)
-	{
-		this->next_update = std::chrono::steady_clock::now();
-	}
+	GRFFileScanner() : num_scanned(0) {}
 
 	bool AddFile(const std::string &filename, size_t basepath_length, const std::string &tar_filename) override;
 
