@@ -8,6 +8,7 @@
  /** @file walltime_func.cpp Functionality related to the time of the clock on your wall. */
 
 #include "stdafx.h"
+#include "time_chrono.h"
 #include "walltime_func.h"
 #include "core/format.hpp"
 
@@ -61,6 +62,12 @@ std::tm UTCTimeToStruct::ToTimeStruct(std::time_t time_since_epoch)
 #endif /* _MSC_VER */
 
 template <typename T>
+void Time<T>::FmtTime::fmt_format_value(format_target &output) const
+{
+	Time<T>::FormatTo(output, this->time_since_epoch, this->format);
+}
+
+template <typename T>
 size_t Time<T>::Format(char *buffer, const char *last, std::time_t time_since_epoch, const char *format)
 {
 	std::tm time_struct = T::ToTimeStruct(time_since_epoch);
@@ -87,9 +94,41 @@ void Time<T>::FormatTo(format_target &buffer, const char *format)
 	Time<T>::FormatTo(buffer, time(nullptr), format);
 }
 
+template <typename T>
+Time<T>::FmtTime Time<T>::FormatArg(const char *format)
+{
+	return FmtTime{time(nullptr), format};
+}
+
 template struct Time<LocalTimeToStruct>;
 template struct Time<UTCTimeToStruct>;
 
 #ifndef _MSC_VER
 #pragma GCC diagnostic pop
 #endif /* _MSC_VER */
+
+namespace TimeType {
+
+SteadyTimePoint SteadyTimePoint::Now()
+{
+	using namespace std::chrono;
+	return SteadyTimePoint(static_cast<int64_t>(duration_cast<nanoseconds>(steady_clock::now().time_since_epoch()).count()));
+}
+
+int64_t SteadyTimePoint::SecondsBeforeNow() const {
+	return std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - FromSteadyTimePoint(*this)).count();
+}
+
+};
+
+uint64_t MicrosecondsRealtimeTicks()
+{
+	using namespace std::chrono;
+	return static_cast<uint64_t>(time_point_cast<microseconds>(high_resolution_clock::now()).time_since_epoch().count());
+}
+
+uint64_t NanosecondsRealtimeTicks()
+{
+	using namespace std::chrono;
+	return static_cast<uint64_t>(time_point_cast<nanoseconds>(high_resolution_clock::now()).time_since_epoch().count());
+}

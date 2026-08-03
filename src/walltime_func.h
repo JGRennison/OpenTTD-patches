@@ -38,6 +38,18 @@ struct UTCTimeToStruct {
  */
 template <typename T>
 struct Time {
+	class FmtTime {
+		friend Time<T>;
+
+		std::time_t time_since_epoch;
+		const char *format;
+
+		FmtTime(std::time_t time_since_epoch, const char *format) : time_since_epoch(time_since_epoch), format(format) {}
+
+	public:
+		void fmt_format_value(struct format_target &output) const;
+	};
+
 	/**
 	 * Format the given time stamp with the given strftime format specifiers.
 	 * @param buffer The buffer to write the time string to.
@@ -57,6 +69,16 @@ struct Time {
 	static void FormatTo(struct format_target &buffer, std::time_t time_since_epoch, const char *format) WARN_TIME_FORMAT(3);
 
 	/**
+	 * Create a format argument of the given time stamp with the given strftime format specifiers.
+	 * @param time_since_epoch Time since epoch.
+	 * @param format The format according to strftime format specifiers.
+	 */
+	static FmtTime FormatArg(std::time_t time_since_epoch, const char *format) WARN_TIME_FORMAT(2)
+	{
+		return FmtTime{time_since_epoch, format};
+	}
+
+	/**
 	 * Format the current time with the given strftime format specifiers.
 	 * @param buffer The buffer to write the time string to.
 	 * @param last   The last element in the buffer.
@@ -72,6 +94,12 @@ struct Time {
 	 * @param format The format according to strftime format specifiers.
 	 */
 	static void FormatTo(struct format_target &buffer, const char *format) WARN_TIME_FORMAT(2);
+
+	/**
+	 * Create a format argument of the current time with the given strftime format specifiers.
+	 * @param format The format according to strftime format specifiers.
+	 */
+	static FmtTime FormatArg(const char *format) WARN_TIME_FORMAT(1);
 };
 
 /** Wall clock time functionality using the local time zone. */

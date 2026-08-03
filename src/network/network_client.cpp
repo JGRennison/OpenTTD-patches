@@ -38,6 +38,7 @@
 #include "../core/alloc_type.hpp"
 #include "../fileio_func.h"
 #include "../debug_settings.h"
+#include "../time_chrono.h"
 #include "../3rdparty/monocypher/monocypher.h"
 
 #include <tuple>

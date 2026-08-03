@@ -222,7 +222,7 @@ void SurveyGameSession(nlohmann::json &survey)
 {
 	survey["id"] = _game_session_stats.savegame_id;
 	if (_game_session_stats.start_time.has_value()) {
-		survey["seconds"] = std::chrono::duration_cast<std::chrono::seconds>(std::chrono::steady_clock::now() - _game_session_stats.start_time.value()).count();
+		survey["seconds"] = _game_session_stats.start_time.value().SecondsBeforeNow();
 	} else {
 		survey["seconds"] = 0;
 	}

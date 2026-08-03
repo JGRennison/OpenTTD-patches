@@ -11,8 +11,8 @@
 #define OPENTTD_H
 
 #include <atomic>
-#include <chrono>
 #include <optional>
+#include "time_type.h"
 #include "core/enum_type.hpp"
 
 /** Mode which defines the state of the game. */
@@ -63,7 +63,7 @@ enum ExtraDisplayOptions {
 };
 
 struct GameSessionStats {
-	std::optional<std::chrono::steady_clock::time_point> start_time; ///< Time when the current game was started.
+	std::optional<TimeType::SteadyTimePoint> start_time;             ///< Time when the current game was started.
 	std::string savegame_id;                                         ///< Unique ID of the savegame.
 	std::optional<size_t> savegame_size;                             ///< Size of the last saved savegame in bytes, or std::nullopt if not saved yet.
 };

@@ -20,6 +20,7 @@
 #include "../base_media_sounds.h"
 #include "../settings_type.h"
 #include "../strings_func.h"
+#include "../time_chrono.h"
 #include "../timer/timer.h"
 #include "../timer/timer_window.h"
 #include "../core/string_consumer.hpp"

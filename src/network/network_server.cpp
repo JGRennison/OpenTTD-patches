@@ -30,6 +30,7 @@
 #include "../core/pool_func.hpp"
 #include "../core/random_func.hpp"
 #include "../rev.h"
+#include "../time_chrono.h"
 #include "../timer/timer.h"
 #include "../timer/timer_game_realtime.h"
 #include "../crashlog.h"

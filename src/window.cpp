@@ -40,6 +40,7 @@
 #include "news_func.h"
 #include "sound_func.h"
 #include "core/backup_type.hpp"
+#include "time_chrono.h"
 #include "timer/timer.h"
 #include "timer/timer_window.h"
 

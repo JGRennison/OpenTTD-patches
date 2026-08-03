@@ -580,6 +580,8 @@ add_files(
     textfile_gui.cpp
     textfile_gui.h
     textfile_type.h
+    time_chrono.h
+    time_type.h
     tgp.cpp
     tgp.h
     thread.h

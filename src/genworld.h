@@ -13,7 +13,6 @@
 #include "company_type.h"
 #include "landscape_type.h"
 #include <functional>
-#include <thread>
 
 /** Constants related to world generation */
 enum LandscapeGenerator : uint8_t {

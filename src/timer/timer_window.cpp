@@ -16,7 +16,7 @@
 template <>
 void IntervalTimer<TimerWindow>::Elapsed(TimerWindow::TElapsed delta)
 {
-	if (this->period == std::chrono::milliseconds::zero()) return;
+	if (this->period == 0) return;
 
 	this->storage.elapsed += delta;
 
@@ -35,7 +35,7 @@ template <>
 void TimeoutTimer<TimerWindow>::Elapsed(TimerWindow::TElapsed delta)
 {
 	if (this->fired) return;
-	if (this->period == std::chrono::milliseconds::zero()) return;
+	if (this->period == 0) return;
 
 	this->storage.elapsed += delta;
 

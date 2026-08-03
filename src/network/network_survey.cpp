@@ -14,10 +14,10 @@
 #include "../settings_type.h"
 #include "../debug.h"
 #include "../survey.h"
+#include "../walltime_func.h"
 
 #include "../3rdparty/nlohmann/json.hpp"
 #include "../core/format.hpp"
-#include "../3rdparty/fmt/chrono.h"
 
 #include "../safeguards.h"
 
@@ -46,7 +46,7 @@ std::string NetworkSurveyHandler::CreatePayload(Reason reason, bool for_preview)
 
 	survey["schema"] = NETWORK_SURVEY_VERSION;
 	survey["reason"] = reason;
-	survey["date"] = fmt::format("{:%Y-%m-%d %H:%M:%S} (UTC)", fmt::gmtime(time(nullptr)));
+	survey["date"] = fmt::format("{} (UTC)", UTCTime::FormatArg("%Y-%m-%d %H:%M:%S"));
 
 #ifdef SURVEY_KEY
 	/* We censor the key to avoid people trying to be "clever" and use it to send their own surveys. */

@@ -10,7 +10,6 @@
 #include "stdafx.h"
 
 #include "framerate_type.h"
-#include <chrono>
 #include "gfx_func.h"
 #include "newgrf_sound.h"
 #include "window_gui.h"
@@ -28,6 +27,7 @@
 #include "timer/timer.h"
 #include "timer/timer_window.h"
 #include "zoom_func.h"
+#include "time_type.h"
 
 #include "widgets/framerate_widget.h"
 
@@ -259,8 +259,7 @@ namespace {
  */
 static TimingMeasurement GetPerformanceTimer()
 {
-	using namespace std::chrono;
-	return (TimingMeasurement)time_point_cast<microseconds>(high_resolution_clock::now()).time_since_epoch().count();
+	return static_cast<TimingMeasurement>(MicrosecondsRealtimeTicks());
 }
 
 
@@ -481,7 +480,7 @@ struct FramerateWindow : Window {
 	}
 
 	/** Update the window on a regular interval. */
-	const IntervalTimer<TimerWindow> update_interval = {std::chrono::milliseconds(100), [this](auto) {
+	const IntervalTimer<TimerWindow> update_interval = {TimeType::Milliseconds(100), [this](auto) {
 		this->UpdateData();
 		this->SetDirty();
 	}};

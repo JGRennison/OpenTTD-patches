@@ -11,10 +11,10 @@
 #include "random_func.hpp"
 #include "bitmath_func.hpp"
 #include "hash_func.hpp"
+#include "../time_type.h"
 #include "../debug.h"
 #include <atomic>
 #include <bit>
-#include <chrono>
 
 #ifdef RANDOM_DEBUG
 #include "../network/network.h"
@@ -153,7 +153,7 @@ void RandomBytesWithFallback(std::span<uint8_t> buf)
 	Debug(misc, have_warned ? 1 : 0, "Cryptographically-strong random generator unavailable; using fallback");
 
 	for (uint i = 0; i < buf.size(); i ++) {
-		uint64_t current_time = static_cast<uint64_t>(std::chrono::duration_cast<std::chrono::nanoseconds>(std::chrono::steady_clock::now().time_since_epoch()).count());
+		uint64_t current_time = NanosecondsRealtimeTicks();
 		buf[i] = static_cast<uint8_t>(SimpleHash64(current_time ^ InteractiveRandom()));
 	}
 }

@@ -10,7 +10,7 @@
 #ifndef TIMER_WINDOW_H
 #define TIMER_WINDOW_H
 
-#include <chrono>
+#include "../time_type.h"
 
 /**
  * Timer that represents the real time, usable for the Window system.
@@ -25,14 +25,14 @@
  */
 class TimerWindow {
 public:
-	using TPeriod = std::chrono::milliseconds;
-	using TElapsed = std::chrono::milliseconds;
+	using TPeriod = TimeType::Milliseconds;
+	using TElapsed = TimeType::Milliseconds;
 	struct TStorage {
-		std::chrono::milliseconds elapsed;
+		TimeType::Milliseconds elapsed;
 	};
 };
 
 /** Interval used by blinking interface elements. */
-static constexpr std::chrono::milliseconds TIMER_BLINK_INTERVAL{450};
+static constexpr TimeType::Milliseconds TIMER_BLINK_INTERVAL{450};
 
 #endif /* TIMER_WINDOW_H */

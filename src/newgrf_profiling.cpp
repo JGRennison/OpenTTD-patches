@@ -16,11 +16,10 @@
 #include "console_func.h"
 #include "spritecache.h"
 #include "walltime_func.h"
+#include "time_type.h"
 #include "timer/timer.h"
 #include "timer/timer_game_tick.h"
-#include "3rdparty/fmt/chrono.h"
-
-#include <chrono>
+#include "walltime_func.h"
 
 #include "safeguards.h"
 
@@ -48,10 +47,9 @@ NewGRFProfiler::~NewGRFProfiler()
  */
 void NewGRFProfiler::BeginResolve(const ResolverObject &resolver)
 {
-	using namespace std::chrono;
 	this->cur_call.root_sprite = resolver.root_spritegroup->nfo_line;
 	this->cur_call.subs = 0;
-	this->cur_call.time = (uint32_t)time_point_cast<microseconds>(high_resolution_clock::now()).time_since_epoch().count();
+	this->cur_call.time = (uint32_t)MicrosecondsRealtimeTicks();
 	this->cur_call.tick = _tick_counter;
 	this->cur_call.cb = resolver.callback;
 	this->cur_call.feat = resolver.GetFeature();
@@ -64,8 +62,7 @@ void NewGRFProfiler::BeginResolve(const ResolverObject &resolver)
  */
 void NewGRFProfiler::EndResolve(const SpriteGroup *result)
 {
-	using namespace std::chrono;
-	this->cur_call.time = (uint32_t)time_point_cast<microseconds>(high_resolution_clock::now()).time_since_epoch().count() - this->cur_call.time;
+	this->cur_call.time = (uint32_t)MicrosecondsRealtimeTicks() - this->cur_call.time;
 
 	if (result == nullptr) {
 		this->cur_call.result = 0;
@@ -139,7 +136,7 @@ void NewGRFProfiler::Abort()
  */
 std::string NewGRFProfiler::GetOutputFilename() const
 {
-	return fmt::format("{}grfprofile-{:%Y%m%d-%H%M}-{:08X}.csv", FiosGetScreenshotDir(), fmt::localtime(time(nullptr)), std::byteswap(this->grffile->grfid));
+	return fmt::format("{}grfprofile-{}-{:08X}.csv", FiosGetScreenshotDir(),  LocalTime::FormatArg("%Y%m%d-%H%M"), std::byteswap(this->grffile->grfid));
 }
 
 /* static */ uint32_t NewGRFProfiler::FinishAll()

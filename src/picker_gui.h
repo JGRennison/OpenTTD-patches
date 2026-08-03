@@ -21,6 +21,7 @@
 #include "timer/timer_window.h"
 #include "window_gui.h"
 #include "window_type.h"
+#include "time_type.h"
 #include "3rdparty/cpp-btree/btree_set.h"
 #include <map>
 
@@ -430,7 +431,7 @@ private:
 		this->SetDirty();
 	}};
 
-	const IntervalTimer<TimerWindow> refresh_interval = {std::chrono::seconds(3), [this](auto) {
+	const IntervalTimer<TimerWindow> refresh_interval = {TimeType::Milliseconds(3000), [this](auto) {
 		RefreshUsedTypeList();
 	}};
 };

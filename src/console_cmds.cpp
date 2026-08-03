@@ -70,11 +70,11 @@
 #include "newgrf_newsignals.h"
 #include "roadstop_base.h"
 #include "core/backup_type.hpp"
-#include "3rdparty/fmt/chrono.h"
 #include "company_cmd.h"
 #include "misc_cmd.h"
 #include "order_backup.h"
 #include "cheat_func.h"
+#include "walltime_func.h"
 #include <time.h>
 
 #include "3rdparty/cpp-btree/btree_set.h"
@@ -1929,7 +1929,7 @@ static bool ConGetSysDate(std::span<std::string_view> argv)
 		return true;
 	}
 
-	IConsolePrint(CC_DEFAULT, "System Date: {:%Y-%m-%d %H:%M:%S}", fmt::localtime(time(nullptr)));
+	IConsolePrint(CC_DEFAULT, "System Date: {}", LocalTime::FormatArg("%Y-%m-%d %H:%M:%S"));
 	return true;
 }
 

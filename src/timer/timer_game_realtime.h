@@ -10,7 +10,7 @@
 #ifndef TIMER_GAME_REALTIME_H
 #define TIMER_GAME_REALTIME_H
 
-#include <chrono>
+#include "../time_type.h"
 
 /**
  * Timer that represents real time for game-related purposes.
@@ -35,10 +35,10 @@ public:
 	};
 
 	struct TPeriod {
-		std::chrono::milliseconds period;
+		TimeType::Milliseconds period;
 		Trigger trigger;
 
-		TPeriod(std::chrono::milliseconds period, Trigger trigger) : period(period), trigger(trigger) {}
+		TPeriod(TimeType::Milliseconds period, Trigger trigger) : period(period), trigger(trigger) {}
 
 		bool operator < (const TPeriod &other) const
 		{
@@ -51,9 +51,9 @@ public:
 			return this->trigger == other.trigger && this->period == other.period;
 		}
 	};
-	using TElapsed = std::chrono::milliseconds;
+	using TElapsed = TimeType::Milliseconds;
 	struct TStorage {
-		std::chrono::milliseconds elapsed;
+		TimeType::Milliseconds elapsed;
 	};
 };
 
