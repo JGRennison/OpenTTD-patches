@@ -12,7 +12,7 @@
 
 
 #include "32bpp_optimized.hpp"
-#include "../video/video_driver.hpp"
+#include "../video/video_driver_base.hpp"
 
 /** The optimized 40 bpp blitter (for OpenGL video driver). */
 class Blitter_40bppAnim : public Blitter_32bppOptimized {
@@ -54,7 +54,7 @@ class FBlitter_40bppAnim : public BlitterFactory {
 protected:
 	bool IsUsable() const override
 	{
-		return VideoDriver::GetInstance() == nullptr || VideoDriver::GetInstance()->HasAnimBuffer();
+		return VideoDriverBase::GetInstance() == nullptr || VideoDriverBase::GetInstance()->HasAnimBuffer();
 	}
 
 public:

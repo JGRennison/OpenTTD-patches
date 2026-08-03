@@ -22,7 +22,7 @@
 #include "console_func.h"
 #include "rev.h"
 #include "core/utf8.hpp"
-#include "video/video_driver.hpp"
+#include "video/video_driver_base.hpp"
 #include "3rdparty/cpp-ring-buffer/ring_buffer.hpp"
 #include <string>
 
@@ -139,7 +139,7 @@ struct IConsoleWindow : Window
 	void Close([[maybe_unused]] int data = 0) override
 	{
 		_iconsole_mode = IConsoleMode::Closed;
-		VideoDriver::GetInstance()->EditBoxLostFocus();
+		VideoDriverBase::GetInstance()->EditBoxLostFocus();
 		this->Window::Close();
 	}
 
@@ -333,12 +333,12 @@ struct IConsoleWindow : Window
 
 	void OnFocus(Window *previously_focused_window) override
 	{
-		VideoDriver::GetInstance()->EditBoxGainedFocus();
+		VideoDriverBase::GetInstance()->EditBoxGainedFocus();
 	}
 
 	void OnFocusLost(bool closing, Window *newly_focused_window) override
 	{
-		VideoDriver::GetInstance()->EditBoxLostFocus();
+		VideoDriverBase::GetInstance()->EditBoxLostFocus();
 	}
 };
 

@@ -22,7 +22,6 @@
 #include "date_func.h"
 #include "engine_func.h"
 #include "water.h"
-#include "video/video_driver.hpp"
 #include "tilehighlight_func.h"
 #include "sl/saveload.h"
 #include "void_map.h"

@@ -8,7 +8,7 @@
 /** @file 32bpp_anim.cpp Implementation of the optimized 32 bpp blitter with animation support. */
 
 #include "../stdafx.h"
-#include "../video/video_driver.hpp"
+#include "../video/video_driver_base.hpp"
 #include "../palette_func.h"
 #include "../zoom_func.h"
 #include "32bpp_anim.hpp"
@@ -689,7 +689,7 @@ void Blitter_32bppAnim::PaletteAnimate(const Palette &palette)
 	}
 
 	/* Make sure the backend redraws the whole screen */
-	VideoDriver::GetInstance()->MakeDirty(0, 0, _screen.width, _screen.height);
+	VideoDriverBase::GetInstance()->MakeDirty(0, 0, _screen.width, _screen.height);
 }
 
 Blitter::PaletteAnimation Blitter_32bppAnim::UsePaletteAnimation()

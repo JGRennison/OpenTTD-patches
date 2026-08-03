@@ -14,7 +14,7 @@
 #include "window_func.h"
 #include "gfx_func.h"
 #include "querystring_gui.h"
-#include "video/video_driver.hpp"
+#include "video/video_driver_base.hpp"
 #include "zoom_func.h"
 #include "core/string_consumer.hpp"
 
@@ -204,7 +204,7 @@ struct OskWindow : public Window {
 
 	void OnFocusLost(bool closing, Window *newly_focused_window) override
 	{
-		VideoDriver::GetInstance()->EditBoxLostFocus();
+		VideoDriverBase::GetInstance()->EditBoxLostFocus();
 		if (!closing) this->Close();
 	}
 };

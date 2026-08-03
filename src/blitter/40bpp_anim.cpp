@@ -10,7 +10,7 @@
 #include "../stdafx.h"
 #include "../zoom_func.h"
 #include "../settings_type.h"
-#include "../video/video_driver.hpp"
+#include "../video/video_driver_base.hpp"
 #include "../palette_func.h"
 #include "40bpp_anim.hpp"
 #include "common.hpp"
@@ -32,7 +32,7 @@ void Blitter_40bppAnim::SetPixel(void *video, int x, int y, PixelColour colour)
 		size_t y_offset = static_cast<size_t>(y) * _screen.pitch;
 		*((Colour *)video + x + y_offset) = _black_colour;
 
-		VideoDriver::GetInstance()->GetAnimBuffer()[((uint32_t *)video - (uint32_t *)_screen.dst_ptr) + x + y_offset] = colour.p;
+		VideoDriverBase::GetInstance()->GetAnimBuffer()[((uint32_t *)video - (uint32_t *)_screen.dst_ptr) + x + y_offset] = colour.p;
 	}
 }
 
@@ -44,7 +44,7 @@ void Blitter_40bppAnim::SetPixel32(void *video, int x, int y, PixelColour colour
 		size_t y_offset = static_cast<size_t>(y) * _screen.pitch;
 		*((Colour *)video + x + y_offset) = colour32;
 
-		VideoDriver::GetInstance()->GetAnimBuffer()[((uint32_t *)video - (uint32_t *)_screen.dst_ptr) + x + y_offset] = 0;
+		VideoDriverBase::GetInstance()->GetAnimBuffer()[((uint32_t *)video - (uint32_t *)_screen.dst_ptr) + x + y_offset] = 0;
 	}
 }
 
@@ -54,7 +54,7 @@ void Blitter_40bppAnim::SetRect(void *video, int x, int y, const uint8_t *colour
 		Blitter_32bppOptimized::SetRect(video, x, y, colours, lines, width, pitch);
 	} else {
 		Colour *dst = (Colour *)video + x + y * _screen.pitch;
-		uint8_t *dstanim = ((uint32_t *)dst - (uint32_t *)_screen.dst_ptr) + VideoDriver::GetInstance()->GetAnimBuffer();
+		uint8_t *dstanim = ((uint32_t *)dst - (uint32_t *)_screen.dst_ptr) + VideoDriverBase::GetInstance()->GetAnimBuffer();
 		do {
 			memset_colour(dst, _black_colour, width);
 			memcpy(dstanim, colours, width * sizeof(uint8_t));
@@ -71,7 +71,7 @@ void Blitter_40bppAnim::SetRect32(void *video, int x, int y, const uint32_t *col
 		Blitter_32bppOptimized::SetRect32(video, x, y, colours, lines, width, pitch);
 	} else {
 		Colour *dst = (Colour *)video + x + y * _screen.pitch;
-		uint8_t *dstanim = ((uint32_t *)dst - (uint32_t *)_screen.dst_ptr) + VideoDriver::GetInstance()->GetAnimBuffer();
+		uint8_t *dstanim = ((uint32_t *)dst - (uint32_t *)_screen.dst_ptr) + VideoDriverBase::GetInstance()->GetAnimBuffer();
 		do {
 			memcpy((uint32_t *)dst, colours, width * sizeof(uint32_t));
 			memset(dstanim, 0, width * sizeof(uint8_t));
@@ -88,7 +88,7 @@ void Blitter_40bppAnim::SetRectNoD7(void *video, int x, int y, const uint8_t *co
 		Blitter_32bppOptimized::SetRectNoD7(video, x, y, colours, lines, width, pitch);
 	} else {
 		Colour *dst = (Colour *)video + x + y * _screen.pitch;
-		uint8_t *dstanim = ((uint32_t *)dst - (uint32_t *)_screen.dst_ptr) + VideoDriver::GetInstance()->GetAnimBuffer();
+		uint8_t *dstanim = ((uint32_t *)dst - (uint32_t *)_screen.dst_ptr) + VideoDriverBase::GetInstance()->GetAnimBuffer();
 		do {
 			for (uint i = 0; i < width; i++) {
 				if (colours[i] != 0xD7) {
@@ -111,8 +111,8 @@ void Blitter_40bppAnim::DrawRect(void *video, int width, int height, PixelColour
 		return;
 	}
 
-	assert(VideoDriver::GetInstance()->GetAnimBuffer() != nullptr);
-	uint8_t *anim_line = ((uint32_t *)video - (uint32_t *)_screen.dst_ptr) + VideoDriver::GetInstance()->GetAnimBuffer();
+	assert(VideoDriverBase::GetInstance()->GetAnimBuffer() != nullptr);
+	uint8_t *anim_line = ((uint32_t *)video - (uint32_t *)_screen.dst_ptr) + VideoDriverBase::GetInstance()->GetAnimBuffer();
 
 	do {
 		memset_colour((Colour *)video, _black_colour, width);
@@ -136,8 +136,8 @@ void Blitter_40bppAnim::DrawLine(void *video, int x, int y, int x2, int y2, int 
 		return;
 	}
 
-	assert(VideoDriver::GetInstance()->GetAnimBuffer() != nullptr);
-	uint8_t *anim = ((uint32_t *)video - (uint32_t *)_screen.dst_ptr) + VideoDriver::GetInstance()->GetAnimBuffer();
+	assert(VideoDriverBase::GetInstance()->GetAnimBuffer() != nullptr);
+	uint8_t *anim = ((uint32_t *)video - (uint32_t *)_screen.dst_ptr) + VideoDriverBase::GetInstance()->GetAnimBuffer();
 
 	this->DrawLineGeneric(x, y, x2, y2, screen_width, screen_height, width, dash, [=](int x, int y) {
 		*((Colour *)video + x + y * _screen.pitch) = _black_colour;
@@ -173,8 +173,8 @@ inline void Blitter_40bppAnim::Draw(const Blitter::BlitterParams *bp, ZoomLevel 
 
 	/* skip lines in dst */
 	Colour *dst = (Colour *)bp->dst + bp->top * bp->pitch + bp->left;
-	assert(VideoDriver::GetInstance()->GetAnimBuffer() != nullptr);
-	uint8_t *anim = VideoDriver::GetInstance()->GetAnimBuffer() + ((uint32_t *)bp->dst - (uint32_t *)_screen.dst_ptr) + bp->top * bp->pitch + bp->left;
+	assert(VideoDriverBase::GetInstance()->GetAnimBuffer() != nullptr);
+	uint8_t *anim = VideoDriverBase::GetInstance()->GetAnimBuffer() + ((uint32_t *)bp->dst - (uint32_t *)_screen.dst_ptr) + bp->top * bp->pitch + bp->left;
 
 	/* store so we don't have to access it via bp every time (compiler assumes pointer aliasing) */
 	const uint8_t *remap = bp->remap;
@@ -418,7 +418,7 @@ void Blitter_40bppAnim::Draw(Blitter::BlitterParams *bp, BlitterMode mode, ZoomL
 {
 	assert(_screen.dst_ptr != nullptr);
 
-	if (_screen_disable_anim || VideoDriver::GetInstance()->GetAnimBuffer() == nullptr) {
+	if (_screen_disable_anim || VideoDriverBase::GetInstance()->GetAnimBuffer() == nullptr) {
 		/* This means our output is not to the screen, so we can't be doing any animation stuff, so use our parent Draw() */
 		Blitter_32bppOptimized::Draw<true>(bp, mode, zoom);
 		return;
@@ -446,7 +446,7 @@ void Blitter_40bppAnim::DrawColourMappingRect(void *dst, int width, int height, 
 	}
 
 	Colour *udst = (Colour *)dst;
-	uint8_t *anim = VideoDriver::GetInstance()->GetAnimBuffer() + ((uint32_t *)dst - (uint32_t *)_screen.dst_ptr);
+	uint8_t *anim = VideoDriverBase::GetInstance()->GetAnimBuffer() + ((uint32_t *)dst - (uint32_t *)_screen.dst_ptr);
 
 	if (pal == PALETTE_TO_TRANSPARENT) {
 		/* If the anim buffer contains a colour value, the image composition will
@@ -502,7 +502,7 @@ void Blitter_40bppAnim::CopyFromBuffer(void *video, const void *src, int width, 
 	uint32_t *dst = (uint32_t *)video;
 	const uint32_t *usrc = (const uint32_t *)src;
 
-	uint8_t *anim_buf = VideoDriver::GetInstance()->GetAnimBuffer();
+	uint8_t *anim_buf = VideoDriverBase::GetInstance()->GetAnimBuffer();
 	if (anim_buf == nullptr) return;
 	uint8_t *anim_line = ((uint32_t *)video - (uint32_t *)_screen.dst_ptr) + anim_buf;
 
@@ -524,7 +524,7 @@ void Blitter_40bppAnim::CopyToBuffer(const void *video, void *dst, int width, in
 	uint32_t *udst = (uint32_t *)dst;
 	const uint32_t *src = (const uint32_t *)video;
 
-	uint8_t *anim_buf = VideoDriver::GetInstance()->GetAnimBuffer();
+	uint8_t *anim_buf = VideoDriverBase::GetInstance()->GetAnimBuffer();
 	if (anim_buf == nullptr) return;
 	const uint8_t *anim_line = ((const uint32_t *)video - (uint32_t *)_screen.dst_ptr) + anim_buf;
 
@@ -541,7 +541,7 @@ void Blitter_40bppAnim::CopyToBuffer(const void *video, void *dst, int width, in
 
 void Blitter_40bppAnim::CopyImageToBuffer(const void *video, void *dst, int width, int height, int dst_pitch)
 {
-	uint8_t *anim_buf = VideoDriver::GetInstance()->GetAnimBuffer();
+	uint8_t *anim_buf = VideoDriverBase::GetInstance()->GetAnimBuffer();
 	if (anim_buf == nullptr) {
 		Blitter_32bppOptimized::CopyImageToBuffer(video, dst, width, height, dst_pitch);
 		return;
@@ -565,7 +565,7 @@ void Blitter_40bppAnim::ScrollBuffer(void *video, int left, int top, int width, 
 {
 	assert(!_screen_disable_anim);
 	assert(video >= _screen.dst_ptr && video <= (uint32_t *)_screen.dst_ptr + _screen.width + _screen.height * _screen.pitch);
-	uint8_t *anim_buf = VideoDriver::GetInstance()->GetAnimBuffer();
+	uint8_t *anim_buf = VideoDriverBase::GetInstance()->GetAnimBuffer();
 	uint8_t *dst, *src;
 
 	/* We need to scroll the anim-buffer too */

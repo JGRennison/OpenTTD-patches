@@ -11,7 +11,7 @@
 #include "../debug.h"
 #include "../string_func.h"
 #include "../sound/sound_driver.hpp"
-#include "../video/video_driver.hpp"
+#include "../video/video_driver_base.hpp"
 #include "../gfx_func.h"
 #include "extmidi.h"
 #include "../base_media_base.h"
@@ -39,7 +39,7 @@ static FMusicDriver_ExtMidi iFMusicDriver_ExtMidi;
 
 const char *MusicDriver_ExtMidi::Start(const StringList &parm)
 {
-	if (strcmp(VideoDriver::GetInstance()->GetName(), "allegro") == 0 ||
+	if (strcmp(VideoDriverBase::GetInstance()->GetName(), "allegro") == 0 ||
 			strcmp(SoundDriver::GetInstance()->GetName(), "allegro") == 0) {
 		return "the extmidi driver does not work when Allegro is loaded.";
 	}

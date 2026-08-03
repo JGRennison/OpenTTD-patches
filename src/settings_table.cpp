@@ -66,7 +66,7 @@
 #include "blitter/factory.hpp"
 #include "music/music_driver.hpp"
 #include "sound/sound_driver.hpp"
-#include "video/video_driver.hpp"
+#include "video/video_driver_base.hpp"
 
 #if defined(WITH_FREETYPE) || defined(_WIN32) || defined(WITH_COCOA)
 #define HAS_TRUETYPE_FONT

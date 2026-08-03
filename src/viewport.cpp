@@ -107,7 +107,7 @@
 #include "gui.h"
 #include "core/container_func.hpp"
 #include "tunnelbridge_map.h"
-#include "video/video_driver.hpp"
+#include "video/video_driver_base.hpp"
 #include "scope_info.h"
 #include "scope.h"
 #include "blitter/32bpp_base.hpp"
@@ -882,7 +882,7 @@ static void DoSetViewportPosition(Window *w, const Point move_offset, const int 
 		int width = rect.right - rect.left;
 		int height = rect.bottom - rect.top;
 		_vp_redraw_regions.pop_back();
-		VideoDriver::GetInstance()->MakeDirty(left, top, width, height);
+		VideoDriverBase::GetInstance()->MakeDirty(left, top, width, height);
 		int fill_width = abs(xo);
 		int fill_height = abs(yo);
 		if (fill_width < width && fill_height < height) {

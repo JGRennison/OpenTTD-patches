@@ -19,7 +19,7 @@
 #include "../../strings_func.h"
 #include "../../gamelog.h"
 #include "../../sl/saveload.h"
-#include "../../video/video_driver.hpp"
+#include "../../video/video_driver_base.hpp"
 #include "../../library_loader.h"
 #include "../../screenshot.h"
 #include "../../debug.h"
@@ -801,7 +801,7 @@ static LONG WINAPI ExceptionHandler(EXCEPTION_POINTERS *ep)
 #endif
 	}
 
-	if ((VideoDriver::GetInstance() == nullptr || VideoDriver::GetInstance()->HasGUI()) && crash_win_esp != nullptr) {
+	if ((VideoDriverBase::GetInstance() == nullptr || VideoDriverBase::GetInstance()->HasGUI()) && crash_win_esp != nullptr) {
 #ifdef _M_AMD64
 		ep->ContextRecord->Rip = (DWORD64)ShowCrashlogWindow;
 		ep->ContextRecord->Rsp = (DWORD64)crash_win_esp;

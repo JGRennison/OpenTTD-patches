@@ -11,7 +11,7 @@
 #include "../strings_func.h"
 #include "../blitter/factory.hpp"
 #include "../console_func.h"
-#include "../video/video_driver.hpp"
+#include "../video/video_driver_base.hpp"
 #include "../querystring_gui.h"
 #include "../town.h"
 #include "../window_func.h"
@@ -159,7 +159,7 @@ void NetworkUndrawChatMessage()
 			/* Put our 'shot' back to the screen */
 			blitter->CopyFromBuffer(blitter->MoveTo(_screen.dst_ptr, x, y), _chatmessage_backup.GetBuffer(), width, height);
 			/* And make sure it is updated next time */
-			VideoDriver::GetInstance()->MakeDirty(x, y, width, height);
+			VideoDriverBase::GetInstance()->MakeDirty(x, y, width, height);
 		}
 
 		_chatmessage_dirty_time = std::chrono::steady_clock::now();
@@ -251,7 +251,7 @@ void NetworkDrawChatMessage()
 	}
 
 	/* Make sure the data is updated next flush */
-	VideoDriver::GetInstance()->MakeDirty(x, y, width, height);
+	VideoDriverBase::GetInstance()->MakeDirty(x, y, width, height);
 
 	_chatmessage_visible = true;
 	_chatmessage_dirty = false;

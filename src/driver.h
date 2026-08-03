@@ -61,6 +61,7 @@ private:
 	friend class MusicDriver;
 	friend class SoundDriver;
 	friend class VideoDriver;
+	friend class VideoDriverBase;
 
 	Driver::Type type;       ///< The type of driver.
 	int priority;            ///< The priority of this factory.

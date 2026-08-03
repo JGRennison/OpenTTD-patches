@@ -8,13 +8,12 @@
 /** @file driver.cpp Base for all driver handling. */
 
 #include "stdafx.h"
+#include "driver.h"
 #include "debug.h"
 #include "error.h"
 #include "error_func.h"
-#include "sound/sound_driver.hpp"
-#include "music/music_driver.hpp"
 #include "strings_func.h"
-#include "video/video_driver.hpp"
+#include "video/video_driver_base.hpp"
 #include "string_func.h"
 #include "fileio_func.h"
 #include "core/string_consumer.hpp"

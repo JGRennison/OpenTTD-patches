@@ -10,7 +10,7 @@
 #ifdef WITH_SSE
 
 #include "../stdafx.h"
-#include "../video/video_driver.hpp"
+#include "../video/video_driver_base.hpp"
 #include "32bpp_anim_sse2.hpp"
 #include "32bpp_sse_func.hpp"
 
@@ -92,7 +92,7 @@ void Blitter_32bppSSE2_Anim::PaletteAnimate(const Palette &palette)
 
 	if (screen_dirty) {
 		/* Make sure the backend redraws the whole screen */
-		VideoDriver::GetInstance()->MakeDirty(0, 0, _screen.width, _screen.height);
+		VideoDriverBase::GetInstance()->MakeDirty(0, 0, _screen.width, _screen.height);
 	}
 }
 

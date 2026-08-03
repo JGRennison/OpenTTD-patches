@@ -25,7 +25,7 @@
 #include "cheat_type.h"
 #include "settings_cmd.h"
 #include "misc_cmd.h"
-#include "video/video_driver.hpp"
+#include "video/video_driver_base.hpp"
 
 #include "table/strings.h"
 
@@ -211,7 +211,7 @@ CommandCost CmdPause(DoCommandFlags flags, PauseMode mode, bool pause)
 			NetworkHandlePauseChange(prev_mode, mode);
 
 			/* Screensaver should always be inhibited unless we're paused. */
-			VideoDriver::GetInstance()->SetScreensaverInhibited(_pause_mode.None());
+			VideoDriverBase::GetInstance()->SetScreensaverInhibited(_pause_mode.None());
 		}
 
 		SetWindowDirty(WindowClass::Statusbar, 0);

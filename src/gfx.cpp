@@ -13,7 +13,7 @@
 #include "progress.h"
 #include "zoom_func.h"
 #include "blitter/factory.hpp"
-#include "video/video_driver.hpp"
+#include "video/video_driver_base.hpp"
 #include "strings_func.h"
 #include "settings_type.h"
 #include "network/network.h"
@@ -1460,7 +1460,7 @@ void ScreenSizeChanged()
 	/* screen size changed and the old bitmap is invalid now, so we don't want to undraw it */
 	_cursor.visible = false;
 
-	if (VideoDriver::GetInstance() != nullptr) {
+	if (VideoDriverBase::GetInstance() != nullptr) {
 		if (AdjustGUIZoom(AGZM_AUTOMATIC)) ReInitAllWindows(true);
 	}
 }
@@ -1468,7 +1468,7 @@ void ScreenSizeChanged()
 void UndrawMouseCursor()
 {
 	/* Don't undraw mouse cursor if it is handled by the video driver. */
-	if (VideoDriver::GetInstance()->UseSystemCursor()) return;
+	if (VideoDriverBase::GetInstance()->UseSystemCursor()) return;
 
 	/* Don't undraw the mouse cursor if the screen is not ready */
 	if (_screen.dst_ptr == nullptr) return;
@@ -1483,14 +1483,14 @@ void UndrawMouseCursor()
 		Blitter *blitter = BlitterFactory::GetCurrentBlitter();
 		_cursor.visible = false;
 		blitter->CopyFromBuffer(blitter->MoveTo(_screen.dst_ptr, _cursor.draw_pos.x, _cursor.draw_pos.y), _cursor_backup.GetBuffer(), _cursor.draw_size.x, _cursor.draw_size.y);
-		VideoDriver::GetInstance()->MakeDirty(_cursor.draw_pos.x, _cursor.draw_pos.y, _cursor.draw_size.x, _cursor.draw_size.y);
+		VideoDriverBase::GetInstance()->MakeDirty(_cursor.draw_pos.x, _cursor.draw_pos.y, _cursor.draw_size.x, _cursor.draw_size.y);
 	}
 }
 
 void DrawMouseCursor()
 {
 	/* Don't draw mouse cursor if it is handled by the video driver. */
-	if (VideoDriver::GetInstance()->UseSystemCursor()) return;
+	if (VideoDriverBase::GetInstance()->UseSystemCursor()) return;
 
 	/* Don't draw the mouse cursor if the screen is not ready */
 	if (_screen.dst_ptr == nullptr) return;
@@ -1545,7 +1545,7 @@ void DrawMouseCursor()
 		DrawSprite(cs.image.sprite, cs.image.pal, _cursor.pos.x + cs.pos.x, _cursor.pos.y + cs.pos.y);
 	}
 
-	VideoDriver::GetInstance()->MakeDirty(_cursor.draw_pos.x, _cursor.draw_pos.y, _cursor.draw_size.x, _cursor.draw_size.y);
+	VideoDriverBase::GetInstance()->MakeDirty(_cursor.draw_pos.x, _cursor.draw_pos.y, _cursor.draw_size.x, _cursor.draw_size.y);
 
 	_cursor.visible = true;
 	_cursor.dirty = false;
@@ -1577,7 +1577,7 @@ void RedrawScreenRect(int left, int top, int right, int bottom)
 
 	DrawOverlappedWindowForAll(left, top, right, bottom);
 
-	VideoDriver::GetInstance()->MakeDirty(left, top, right - left, bottom - top);
+	VideoDriverBase::GetInstance()->MakeDirty(left, top, right - left, bottom - top);
 }
 
 static std::vector<Rect> _dirty_viewport_occlusions;
@@ -1628,7 +1628,7 @@ static void DrawDirtyViewport(uint occlusion, int left, int top, int right, int 
 	} else {
 		extern void ViewportDrawChk(Viewport *vp, int left, int top, int right, int bottom, NWidgetDisplayFlags display_flags);
 		ViewportDrawChk(_dirty_viewport, left, top, right, bottom, _dirty_viewport_disp_flags);
-		VideoDriver::GetInstance()->MakeDirty(left, top, right - left, bottom - top);
+		VideoDriverBase::GetInstance()->MakeDirty(left, top, right - left, bottom - top);
 	}
 }
 
@@ -2260,12 +2260,12 @@ bool CursorVars::UpdateCursorPosition(int x, int y)
 
 bool ChangeResInGame(int width, int height)
 {
-	return (_screen.width == width && _screen.height == height) || VideoDriver::GetInstance()->ChangeResolution(width, height);
+	return (_screen.width == width && _screen.height == height) || VideoDriverBase::GetInstance()->ChangeResolution(width, height);
 }
 
 bool ToggleFullScreen(bool fs)
 {
-	bool result = VideoDriver::GetInstance()->ToggleFullscreen(fs);
+	bool result = VideoDriverBase::GetInstance()->ToggleFullscreen(fs);
 	if (_fullscreen != fs && _resolutions.empty()) {
 		Debug(driver, 0, "Could not find a suitable fullscreen resolution");
 	}
@@ -2335,7 +2335,7 @@ bool AdjustGUIZoom(AdjustGUIZoomMode mode)
 
 	/* Update cursors if sprite zoom level has changed. */
 	if (old_gui_zoom != _gui_zoom) {
-		VideoDriver::GetInstance()->ClearSystemSprites();
+		VideoDriverBase::GetInstance()->ClearSystemSprites();
 		UpdateCursorSize();
 		if (mode != AGZM_STARTUP) UpdateRouteStepSpriteSize();
 	}

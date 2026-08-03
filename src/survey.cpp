@@ -29,7 +29,7 @@
 
 #include "music/music_driver.hpp"
 #include "sound/sound_driver.hpp"
-#include "video/video_driver.hpp"
+#include "video/video_driver_base.hpp"
 
 #include "base_media_base.h"
 #include "base_media_graphics.h"
@@ -253,9 +253,9 @@ void SurveyConfiguration(nlohmann::json &survey)
 	if (SoundDriver::GetInstance() != nullptr) {
 		survey["sound_driver"] = SoundDriver::GetInstance()->GetName();
 	}
-	if (VideoDriver::GetInstance() != nullptr) {
-		survey["video_driver"] = VideoDriver::GetInstance()->GetName();
-		survey["video_info"] = VideoDriver::GetInstance()->GetInfoString();
+	if (VideoDriverBase::GetInstance() != nullptr) {
+		survey["video_driver"] = VideoDriverBase::GetInstance()->GetName();
+		survey["video_info"] = VideoDriverBase::GetInstance()->GetInfoString();
 	}
 	if (BaseGraphics::GetUsedSet() != nullptr) {
 		survey["graphics_set"] = fmt::format("{}.{}", BaseGraphics::GetUsedSet()->name, BaseGraphics::GetUsedSet()->FormatVersion());
