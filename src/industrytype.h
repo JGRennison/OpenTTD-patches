@@ -15,6 +15,7 @@
 #include "industry_type.h"
 #include "landscape_type.h"
 #include "cargo_type.h"
+#include "money_type.h"
 #include "newgrf_animation_type.h"
 #include "newgrf_badge_type.h"
 #include "newgrf_callbacks.h"

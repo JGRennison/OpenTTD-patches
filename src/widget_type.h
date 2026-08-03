@@ -11,7 +11,7 @@
 #define WIDGET_TYPE_H
 
 #include "core/math_func.hpp"
-#include "strings_type.h"
+#include "strings_id_type.h"
 #include "gfx_func.h"
 #include "gfx_type.h"
 #include "window_type.h"

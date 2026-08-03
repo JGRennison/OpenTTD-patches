@@ -10,7 +10,6 @@
 #ifndef TREE_FUNC_H
 #define TREE_FUNC_H
 
-#include "economy_type.h"
 #include "tree_type.h"
 #include "3rdparty/robin_hood/robin_hood.h"
 

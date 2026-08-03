@@ -12,7 +12,7 @@
 
 #include "window_type.h"
 #include "string_type.h"
-#include "strings_type.h"
+#include "strings_id_type.h"
 
 /** Flags used in ShowQueryString() call */
 enum class QueryStringFlag : uint8_t {

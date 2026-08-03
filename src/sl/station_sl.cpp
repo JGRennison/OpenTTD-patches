@@ -8,6 +8,7 @@
 /** @file station_sl.cpp Code handling saving and loading of stations. */
 
 #include "../stdafx.h"
+#include "../command_type.h"
 #include "../station_base.h"
 #include "../waypoint_base.h"
 #include "../roadstop_base.h"

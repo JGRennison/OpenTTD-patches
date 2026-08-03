@@ -17,4 +17,6 @@ typedef uint32_t StringID;
 static const StringID STR_NULL          = 0x0;
 static const StringID INVALID_STRING_ID = 0xFFFF; ///< Constant representing an invalid string (16bit in case it is used in savegames)
 
+class EncodedString;
+
 #endif /* STRINGS_ID_TYPE_H */

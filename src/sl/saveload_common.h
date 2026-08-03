@@ -10,7 +10,7 @@
 #ifndef SL_SAVELOAD_COMMON_H
 #define SL_SAVELOAD_COMMON_H
 
-#include "../strings_type.h"
+#include "../strings_id_type.h"
 
 template <typename T>
 concept SlIsPrimitiveType = T::saveload_primitive_type || false;

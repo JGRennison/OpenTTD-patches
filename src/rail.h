@@ -10,13 +10,14 @@
 #ifndef RAIL_H
 #define RAIL_H
 
+#include "engine_type.h"
 #include "rail_type.h"
 #include "track_type.h"
 #include "gfx_type.h"
 #include "core/enum_type.hpp"
 #include "core/flatset_type.hpp"
 #include "slope_type.h"
-#include "strings_type.h"
+#include "strings_id_type.h"
 #include "date_type.h"
 #include "signal_type.h"
 #include "rail_map.h"

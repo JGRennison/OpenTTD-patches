@@ -10,15 +10,17 @@
 #ifndef COMPANY_FUNC_H
 #define COMPANY_FUNC_H
 
-#include "command_type.h"
+#include "command_type_fwd_declare.h"
 #include "company_type.h"
 #include "gfx_type.h"
+#include "money_type.h"
+#include "tile_type.h"
 #include "vehicle_type.h"
 #include "core/typed_container.hpp"
 
 bool CheckTakeoverVehicleLimit(CompanyID cbig, CompanyID small);
 void ChangeOwnershipOfCompanyItems(Owner old_owner, Owner new_owner);
-std::array<StringParameter, 2> GetParamsForOwnedBy(Owner owner, TileIndex tile);
+std::array<struct StringParameter, 2> GetParamsForOwnedBy(Owner owner, TileIndex tile);
 void SetLocalCompany(CompanyID new_company);
 void ShowBuyCompanyDialog(CompanyID company, bool hostile_takeover);
 void CompanyAdminUpdate(const Company *company);

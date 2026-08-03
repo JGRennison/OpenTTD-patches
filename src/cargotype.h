@@ -10,11 +10,11 @@
 #ifndef CARGOTYPE_H
 #define CARGOTYPE_H
 
-#include "economy_type.h"
 #include "cargo_type.h"
 #include "gfx_type.h"
+#include "money_type.h"
 #include "newgrf_callbacks.h"
-#include "strings_type.h"
+#include "strings_id_type.h"
 #include "landscape_type.h"
 #include "core/bitmath_func.hpp"
 #include <array>

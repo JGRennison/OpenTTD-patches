@@ -11,7 +11,6 @@
 #define STATION_GUI_H
 
 #include "core/geometry_type.hpp"
-#include "command_type.h"
 #include "tilearea_type.h"
 #include "window_type.h"
 

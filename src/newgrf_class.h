@@ -10,7 +10,7 @@
 #ifndef NEWGRF_CLASS_H
 #define NEWGRF_CLASS_H
 
-#include "strings_type.h"
+#include "strings_id_type.h"
 #include "3rdparty/robin_hood/robin_hood.h"
 
 #include <vector>

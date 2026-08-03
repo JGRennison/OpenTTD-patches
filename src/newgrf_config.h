@@ -10,7 +10,7 @@
 #ifndef NEWGRF_CONFIG_H
 #define NEWGRF_CONFIG_H
 
-#include "strings_type.h"
+#include "strings_id_type.h"
 #include "fileio_type.h"
 #include "textfile_type.h"
 #include "newgrf_text.h"

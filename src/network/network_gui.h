@@ -12,7 +12,7 @@
 
 #include "../company_type.h"
 #include "../date_type.h"
-#include "../economy_type.h"
+#include "../money_type.h"
 #include "../window_type.h"
 #include "network_type.h"
 #include "network_gamelist.h"

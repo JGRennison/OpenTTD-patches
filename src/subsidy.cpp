@@ -38,11 +38,11 @@ INSTANTIATE_POOL_METHODS(Subsidy)
  * Get the NewsReference for a subsidy Source.
  * @returns NewsReference.
  */
-NewsReference Source::GetNewsReference() const
+static NewsReference GetSourceNewsReference(const Source &source)
 {
-	switch (this->type) {
-		case SourceType::Industry: return static_cast<IndustryID>(this->id);
-		case SourceType::Town: return static_cast<TownID>(this->id);
+	switch (source.type) {
+		case SourceType::Industry: return static_cast<IndustryID>(source.id);
+		case SourceType::Town: return static_cast<TownID>(source.id);
 		default: NOT_REACHED();
 	}
 }
@@ -76,7 +76,7 @@ void Subsidy::AwardTo(CompanyID company)
 	/* Add a news item */
 	const CargoSpec *cs = CargoSpec::Get(this->cargo_type);
 	EncodedString headline = GetEncodedString(STR_NEWS_SERVICE_SUBSIDY_AWARDED_HALF + _settings_game.difficulty.subsidy_multiplier, std::move(company_name), cs->name, this->src.GetFormat(), this->src.id, this->dst.GetFormat(), this->dst.id, _settings_game.difficulty.subsidy_duration);
-	AddNewsItem(std::move(headline), NewsType::Subsidies, NewsStyle::Normal, {}, this->src.GetNewsReference(), this->dst.GetNewsReference());
+	AddNewsItem(std::move(headline), NewsType::Subsidies, NewsStyle::Normal, {}, GetSourceNewsReference(this->src), GetSourceNewsReference(this->dst));
 	AI::BroadcastNewEvent(new ScriptEventSubsidyAwarded(this->index));
 	Game::NewEvent(new ScriptEventSubsidyAwarded(this->index));
 
@@ -174,7 +174,7 @@ void CreateSubsidy(CargoType cargo_type, Source src, Source dst)
 
 	const CargoSpec *cs = CargoSpec::Get(s->cargo_type);
 	EncodedString headline = GetEncodedString(STR_NEWS_SERVICE_SUBSIDY_OFFERED, cs->name, s->src.GetFormat(), s->src.id, s->dst.GetFormat(), s->dst.id, _settings_game.difficulty.subsidy_duration);
-	AddNewsItem(std::move(headline), NewsType::Subsidies, NewsStyle::Normal, {}, s->src.GetNewsReference(), s->dst.GetNewsReference());
+	AddNewsItem(std::move(headline), NewsType::Subsidies, NewsStyle::Normal, {}, GetSourceNewsReference(s->src), GetSourceNewsReference(s->dst));
 	SetPartOfSubsidyFlag(s->src, PartOfSubsidy::Source);
 	SetPartOfSubsidyFlag(s->dst, PartOfSubsidy::Destination);
 	AI::BroadcastNewEvent(new ScriptEventSubsidyOffer(s->index));
@@ -442,14 +442,14 @@ void SubsidyMonthlyLoop()
 			if (!s->IsAwarded()) {
 				const CargoSpec *cs = CargoSpec::Get(s->cargo_type);
 				EncodedString headline = GetEncodedString(STR_NEWS_OFFER_OF_SUBSIDY_EXPIRED, cs->name, s->src.GetFormat(), s->src.id, s->dst.GetFormat(), s->dst.id);
-				AddNewsItem(std::move(headline), NewsType::Subsidies, NewsStyle::Normal, {}, s->src.GetNewsReference(), s->dst.GetNewsReference());
+				AddNewsItem(std::move(headline), NewsType::Subsidies, NewsStyle::Normal, {}, GetSourceNewsReference(s->src), GetSourceNewsReference(s->dst));
 				AI::BroadcastNewEvent(new ScriptEventSubsidyOfferExpired(s->index));
 				Game::NewEvent(new ScriptEventSubsidyOfferExpired(s->index));
 			} else {
 				if (s->awarded == _local_company) {
 					const CargoSpec *cs = CargoSpec::Get(s->cargo_type);
 					EncodedString headline = GetEncodedString(STR_NEWS_SUBSIDY_WITHDRAWN_SERVICE, cs->name, s->src.GetFormat(), s->src.id, s->dst.GetFormat(), s->dst.id);
-					AddNewsItem(std::move(headline), NewsType::Subsidies, NewsStyle::Normal, {}, s->src.GetNewsReference(), s->dst.GetNewsReference());
+					AddNewsItem(std::move(headline), NewsType::Subsidies, NewsStyle::Normal, {}, GetSourceNewsReference(s->src), GetSourceNewsReference(s->dst));
 				}
 				AI::BroadcastNewEvent(new ScriptEventSubsidyExpired(s->index));
 				Game::NewEvent(new ScriptEventSubsidyExpired(s->index));

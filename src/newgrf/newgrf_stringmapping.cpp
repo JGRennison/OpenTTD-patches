@@ -12,7 +12,7 @@
 #include "../newgrf.h"
 #include "../newgrf_text.h"
 #include "../newgrf_text_type.h"
-#include "../strings_type.h"
+#include "../strings_id_type.h"
 #include "newgrf_internal.h"
 #include "newgrf_stringmapping.h"
 

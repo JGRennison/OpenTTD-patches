@@ -13,7 +13,7 @@
 #include "road_type.h"
 #include "gfx_type.h"
 #include "core/flatset_type.hpp"
-#include "strings_type.h"
+#include "strings_id_type.h"
 #include "date_type.h"
 #include "core/enum_type.hpp"
 #include "newgrf.h"

@@ -11,6 +11,7 @@
 #define NEWGRF_H
 
 #include "cargotype.h"
+#include "economy_type.h"
 #include "livery.h"
 #include "rail_type.h"
 #include "road_type.h"
@@ -19,6 +20,7 @@
 #include "newgrf_callbacks.h"
 #include "newgrf_text_type.h"
 #include "newgrf_act5.h"
+#include "strings_type.h"
 #include "vehicle_type.h"
 #include "core/bitmath_func.hpp"
 #include "core/alloc_type.hpp"

@@ -12,7 +12,7 @@
 
 #include "date_type.h"
 #include "settings_type.h"
-#include "strings_type.h"
+#include "strings_id_type.h"
 #include <array>
 
 static constexpr CalTime::Year CF_NOEURO{0}; ///< Currency never switches to the Euro (as far as known).

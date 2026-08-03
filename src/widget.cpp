@@ -11,7 +11,7 @@
 #include "core/backup_type.hpp"
 #include "company_func.h"
 #include "settings_gui.h"
-#include "strings_type.h"
+#include "strings_id_type.h"
 #include "window_gui.h"
 #include "viewport_func.h"
 #include "zoom_func.h"

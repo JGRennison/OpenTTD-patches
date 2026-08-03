@@ -11,6 +11,7 @@
 #define ECONOMY_BASE_H
 
 #include "cargopacket.h"
+#include "economy_type.h"
 
 /** Type of pool to store cargo payments in; little over 1 million. */
 using CargoPaymentPool = Pool<CargoPayment, CargoPaymentID, 512>;

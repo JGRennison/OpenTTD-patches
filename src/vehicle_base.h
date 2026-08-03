@@ -12,7 +12,8 @@
 
 #include "sprite.h"
 #include "track_type.h"
-#include "command_type.h"
+#include "command_type_fwd_declare.h"
+#include "economy_type.h"
 #include "order_base.h"
 #include "cargopacket.h"
 #include "texteff.hpp"

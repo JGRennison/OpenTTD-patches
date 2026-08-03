@@ -10,7 +10,7 @@
 #ifndef NEWGRF_STRINGMAPPING_H
 #define NEWGRF_STRINGMAPPING_H
 
-#include "../strings_type.h"
+#include "../strings_id_type.h"
 #include "../newgrf_text_type.h"
 #include "../core/bit_cast.hpp"
 

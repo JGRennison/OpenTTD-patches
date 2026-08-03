@@ -8,6 +8,7 @@
 /** @file waypoint_sl.cpp Code handling saving and loading of waypoints. */
 
 #include "../stdafx.h"
+#include "../command_type.h"
 #include "../waypoint_base.h"
 #include "../debug.h"
 #include "../newgrf_station.h"

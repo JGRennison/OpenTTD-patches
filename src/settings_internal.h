@@ -208,7 +208,7 @@ struct IntSettingDesc : SettingDesc {
 	 * @param value The value of the setting.
 	 * @return The string parameters.
 	 */
-	using GetValueParamsCallback = std::pair<StringParameter, StringParameter>(const IntSettingDesc &sd, int32_t value);
+	using GetValueParamsCallback = std::pair<struct StringParameter, struct StringParameter>(const IntSettingDesc &sd, int32_t value);
 
 	/**
 	 * Callback to get default value for this setting.
@@ -271,7 +271,7 @@ struct IntSettingDesc : SettingDesc {
 
 	StringID GetTitle() const;
 	StringID GetHelp() const;
-	std::pair<StringParameter, StringParameter> GetValueParams(int32_t value) const;
+	std::pair<struct StringParameter, struct StringParameter> GetValueParams(int32_t value) const;
 	int32_t GetDefaultValue() const;
 	std::pair<int32_t, uint32_t> GetRange() const;
 

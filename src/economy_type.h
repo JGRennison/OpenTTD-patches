@@ -10,12 +10,10 @@
 #ifndef ECONOMY_TYPE_H
 #define ECONOMY_TYPE_H
 
-#include "core/overflowsafe_type.hpp"
+#include "money_type.h"
 #include "core/enum_type.hpp"
 #include "core/pool_id_type.hpp"
 #include <array>
-
-typedef OverflowSafeInt64 Money;
 
 /** Type of the game economy. */
 enum class EconomyType : uint8_t {

@@ -15,7 +15,7 @@
 #include "querystring_gui.h"
 #include "sortlist_type.h"
 #include "stringfilter_type.h"
-#include "strings_type.h"
+#include "strings_id_type.h"
 #include "timer/timer.h"
 #include "timer/timer_game_calendar.h"
 #include "timer/timer_window.h"

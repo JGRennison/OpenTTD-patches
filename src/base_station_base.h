@@ -11,7 +11,7 @@
 #define BASE_STATION_BASE_H
 
 #include "core/pool_type.hpp"
-#include "command_type.h"
+#include "command_type_fwd_declare.h"
 #include "viewport_type.h"
 #include "station_map.h"
 #include "core/geometry_type.hpp"

@@ -8,6 +8,7 @@
 /** @file newgrf_industries.cpp Handling of NewGRF industries. */
 
 #include "stdafx.h"
+#include "command_type.h"
 #include "debug.h"
 #include "industry.h"
 #include "newgrf_analysis.h"

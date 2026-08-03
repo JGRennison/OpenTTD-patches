@@ -9,7 +9,7 @@
 
 #include "../stdafx.h"
 #include "../debug.h"
-#include "../strings_type.h"
+#include "../strings_id_type.h"
 #include "../string_func.h"
 #include "../settings_type.h"
 #include "../fileio_func.h"

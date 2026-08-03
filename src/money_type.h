@@ -5,21 +5,15 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file waypoint_func.h Functions related to waypoints. */
+/** @file money_type.h Money type definition. */
 
-#ifndef WAYPOINT_FUNC_H
-#define WAYPOINT_FUNC_H
+#ifndef MONEY_TYPE_H
+#define MONEY_TYPE_H
 
-#include "rail_type.h"
-#include "command_type_fwd_declare.h"
-#include "station_type.h"
-#include "newgrf_station_id.h"
+#include "core/overflowsafe_type.hpp"
 
-CommandCost RemoveBuoy(TileIndex tile, DoCommandFlags flags);
+typedef OverflowSafeInt64 Money;
 
-Axis GetAxisForNewWaypoint(TileIndex tile);
-Axis GetAxisForNewRoadWaypoint(TileIndex tile);
-void ShowWaypointWindow(const Waypoint *wp);
-void DrawWaypointSprite(int x, int y, StationClassID station_class, uint16_t station_type, RailType railtype);
+enum class Price : uint8_t;
 
-#endif /* WAYPOINT_FUNC_H */
+#endif /* MONEY_TYPE_H */

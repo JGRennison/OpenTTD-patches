@@ -10,9 +10,9 @@
 #ifndef TEXTEFF_HPP
 #define TEXTEFF_HPP
 
-#include "economy_type.h"
+#include "money_type.h"
 #include "gfx_type.h"
-#include "strings_type.h"
+#include "strings_id_type.h"
 
 struct ViewportDrawerDynamic;
 

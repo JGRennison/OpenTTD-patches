@@ -11,7 +11,7 @@
 #define STRINGFILTER_TYPE_H
 
 #include "string_type.h"
-#include "strings_type.h"
+#include "strings_id_type.h"
 #include <vector>
 
 /**

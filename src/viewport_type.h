@@ -11,7 +11,7 @@
 #define VIEWPORT_TYPE_H
 
 #include "core/enum_type.hpp"
-#include "strings_type.h"
+#include "strings_id_type.h"
 #include "zoom_type.h"
 
 #include <limits>
@@ -119,7 +119,7 @@ struct ViewportSign {
 	uint16_t width_normal = 0; ///< The width when not zoomed out (normal font)
 	uint16_t width_small = 0; ///< The width when zoomed out (small font)
 
-	void UpdatePosition(ZoomLevel maxzoom, int center, int top, std::span<StringParameter> params, StringID str, StringID str_small = STR_NULL);
+	void UpdatePosition(ZoomLevel maxzoom, int center, int top, std::span<struct StringParameter> params, StringID str, StringID str_small = STR_NULL);
 	void MarkDirty(ZoomLevel maxzoom) const;
 };
 
@@ -135,7 +135,7 @@ struct TrackedViewportSign : ViewportSign {
 	 * @param str The string to show in the sign.
 	 * @param str_small The string to show when zoomed out. If the string is empty then the \a str is used.
 	 */
-	void UpdatePosition(ZoomLevel maxzoom, int center, int top, std::span<StringParameter> params, StringID str, StringID str_small = STR_NULL)
+	void UpdatePosition(ZoomLevel maxzoom, int center, int top, std::span<struct StringParameter> params, StringID str, StringID str_small = STR_NULL)
 	{
 		this->kdtree_valid = true;
 		this->ViewportSign::UpdatePosition(maxzoom, center, top, params, str, str_small);

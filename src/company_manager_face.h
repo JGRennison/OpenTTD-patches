@@ -12,9 +12,10 @@
 
 #include "core/random_func.hpp"
 #include "core/bitmath_func.hpp"
-#include "strings_type.h"
+#include "strings_id_type.h"
 #include "company_type.h"
 #include "gfx_type.h"
+#include <variant>
 
 #include "table/strings.h"
 

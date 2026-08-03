@@ -15,7 +15,7 @@
 #include "newgrf.h"
 #include "newgrf_badge_type.h"
 #include "newgrf_commons.h"
-#include "strings_type.h"
+#include "strings_id_type.h"
 #include "3rdparty/robin_hood/robin_hood.h"
 
 using BadgeFilterChoices = robin_hood::unordered_map<BadgeClassID, BadgeID>;

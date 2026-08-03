@@ -14,7 +14,7 @@
 #include "date_type.h"
 #include "gamelog_internal.h"
 #include "newgrf_config.h"
-#include "strings_type.h"
+#include "strings_id_type.h"
 #include "3rdparty/cpp-btree/btree_map.h"
 #include <memory>
 #include <string>

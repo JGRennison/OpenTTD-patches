@@ -11,6 +11,7 @@
 #include "../debug.h"
 #include "../newgrf_extension.h"
 #include "../newgrf_text.h"
+#include "../string_func.h"
 #include "../core/container_func.hpp"
 #include "newgrf_bytereader.h"
 #include "newgrf_internal.h"

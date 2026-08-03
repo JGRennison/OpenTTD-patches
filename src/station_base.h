@@ -22,7 +22,7 @@
 #include "bitmap_type.h"
 #include "core/alignment.hpp"
 #include "core/alloc_func.hpp"
-#include "strings_type.h"
+#include "strings_id_type.h"
 #include "vehicle_type.h"
 #include <vector>
 #include <array>

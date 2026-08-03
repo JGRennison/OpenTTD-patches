@@ -12,6 +12,7 @@
 #include "../gfx_type.h"
 #include "../newgrf_act5.h"
 #include "../spritecache.h"
+#include "../string_func.h"
 #include "newgrf_bytereader.h"
 #include "newgrf_internal.h"
 

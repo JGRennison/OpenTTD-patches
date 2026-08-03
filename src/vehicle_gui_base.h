@@ -11,7 +11,7 @@
 #define VEHICLE_GUI_BASE_H
 
 #include "date_type.h"
-#include "economy_type.h"
+#include "money_type.h"
 #include "sortlist_type.h"
 #include "vehicle_base.h"
 #include "vehiclelist.h"

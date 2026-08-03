@@ -13,7 +13,7 @@
 #include "saveload_types.h"
 #include "../fileio_type.h"
 #include "../fios.h"
-#include "../strings_type.h"
+#include "../strings_id_type.h"
 #include "../scope.h"
 #include "../3rdparty/cpp-ring-buffer/ring_buffer.hpp"
 #include "../core/tinystring_type.hpp"

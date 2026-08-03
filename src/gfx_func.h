@@ -41,7 +41,7 @@
 
 #include "gfx_type.h"
 #include "palette_func.h"
-#include "strings_type.h"
+#include "strings_id_type.h"
 #include "string_type.h"
 #include "core/enum_type.hpp"
 #include <vector>

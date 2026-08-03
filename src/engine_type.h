@@ -11,7 +11,7 @@
 #define ENGINE_TYPE_H
 
 #include "core/pool_id_type.hpp"
-#include "economy_type.h"
+#include "money_type.h"
 #include "landscape_type.h"
 #include "newgrf_callbacks.h"
 #include "rail_type.h"
@@ -19,7 +19,7 @@
 #include "cargo_type.h"
 #include "date_type.h"
 #include "sound_type.h"
-#include "strings_type.h"
+#include "strings_id_type.h"
 #include "newgrf_badge_type.h"
 #include <variant>
 

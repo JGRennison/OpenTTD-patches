@@ -11,7 +11,8 @@
 #define CARGOPACKET_H
 
 #include "core/pool_type.hpp"
-#include "economy_type.h"
+#include "core/geometry_type.hpp"
+#include "money_type.h"
 #include "station_type.h"
 #include "order_type.h"
 #include "cargo_type.h"
@@ -23,6 +24,8 @@
 #include "sl/saveload_common.h"
 #include "3rdparty/cpp-ring-buffer/ring_buffer.hpp"
 #include "3rdparty/cpp-btree/btree_map.h"
+
+struct CargoPayment;
 
 /** Unique identifier for a single cargo packet. */
 struct CargoPacketIDTag : public PoolIDTraits<uint32_t, 0xFFF000, 0xFFFFFF> {};

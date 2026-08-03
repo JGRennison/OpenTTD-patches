@@ -8,6 +8,7 @@
 /** @file newgrf_commons.cpp Implementation of the class %OverrideManagerBase and its descendance, present and future. */
 
 #include "stdafx.h"
+#include "command_type.h"
 #include "debug.h"
 #include "landscape.h"
 #include "house.h"

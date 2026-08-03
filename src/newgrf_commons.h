@@ -11,12 +11,15 @@
 #define NEWGRF_COMMONS_H
 
 #include "sprite.h"
-#include "command_type.h"
+#include "command_type_fwd_declare.h"
 #include "direction_type.h"
 #include "company_type.h"
 #include "cargo_type.h"
+#include "tile_type.h"
 #include "core/bitmath_func.hpp"
 #include <vector>
+
+struct GRFFile;
 
 /** Context for tile accesses */
 enum TileContext : uint8_t {

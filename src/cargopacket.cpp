@@ -8,6 +8,7 @@
 /** @file cargopacket.cpp Implementation of the cargo packets. */
 
 #include "stdafx.h"
+#include "command_type.h"
 #include "debug.h"
 #include "station_base.h"
 #include "core/pool_func.hpp"

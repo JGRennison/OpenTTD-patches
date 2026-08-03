@@ -13,6 +13,7 @@
 #include "newgrf_townname.h"
 #include "town_type.h"
 #include "string_type.h"
+#include "strings_type.h"
 #include "3rdparty/robin_hood/robin_hood.h"
 
 #include <string>

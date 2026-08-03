@@ -13,6 +13,7 @@
 #include "cargo_type.h"
 #include "date_type.h"
 #include "house_type.h"
+#include "money_type.h"
 #include "newgrf_animation_type.h"
 #include "newgrf_badge_type.h"
 #include "newgrf_callbacks.h"

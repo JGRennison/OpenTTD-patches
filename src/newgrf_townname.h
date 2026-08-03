@@ -11,7 +11,7 @@
 #define NEWGRF_TOWNNAME_H
 
 #include <vector>
-#include "strings_type.h"
+#include "strings_id_type.h"
 
 struct NamePart {
 	std::string text; ///< If probability bit 7 is clear

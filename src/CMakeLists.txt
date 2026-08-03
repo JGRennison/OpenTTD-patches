@@ -291,6 +291,7 @@ add_files(
     misc_gui.cpp
     mixer.cpp
     mixer.h
+    money_type.h
     music.cpp
     music_gui.cpp
     newgrf.cpp
