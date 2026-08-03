@@ -11,10 +11,11 @@
 #define NEWGRF_HOUSE_H
 
 #include "newgrf_callbacks.h"
-#include "tile_cmd.h"
 #include "house_type.h"
 #include "newgrf_spritegroup.h"
 #include "newgrf_town.h"
+
+struct TileInfo;
 
 /** Scope resolver for houses. */
 struct HouseScopeResolver : public ScopeResolver {

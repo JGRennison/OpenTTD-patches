@@ -12,6 +12,7 @@
 #include "viewport_func.h"
 #include "landscape.h"
 #include "spritecache.h"
+#include "tile_cmd.h"
 #include "zoom_func.h"
 
 #include "safeguards.h"

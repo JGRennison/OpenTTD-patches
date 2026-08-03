@@ -5,20 +5,16 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file road_internal.h Functions used internally by the roads. */
+/** @file strings_id_type.h Types related to string IDs. */
 
-#ifndef ROAD_INTERNAL_H
-#define ROAD_INTERNAL_H
+#ifndef STRINGS_ID_TYPE_H
+#define STRINGS_ID_TYPE_H
 
-#include "command_type_fwd_declare.h"
-#include "road_type.h"
+/**
+ * Numeric value that represents a string, independent of the selected language.
+ */
+typedef uint32_t StringID;
+static const StringID STR_NULL          = 0x0;
+static const StringID INVALID_STRING_ID = 0xFFFF; ///< Constant representing an invalid string (16bit in case it is used in savegames)
 
-struct TileInfo;
-
-RoadBits CleanUpRoadBits(const TileIndex tile, RoadBits org_rb);
-
-CommandCost CheckAllowRemoveRoad(TileIndex tile, RoadBits remove, Owner owner, RoadTramType rtt, DoCommandFlags flags, bool town_check = true);
-
-void DrawRoadCatenary(const TileInfo *ti);
-
-#endif /* ROAD_INTERNAL_H */
+#endif /* STRINGS_ID_TYPE_H */

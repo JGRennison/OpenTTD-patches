@@ -146,6 +146,7 @@
 #include "core/alloc_func.hpp"
 #include "core/random_func.hpp"
 #include "landscape_type.h"
+#include "tile_map_extra.h"
 #include <math.h>
 
 #include "safeguards.h"

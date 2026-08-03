@@ -16,6 +16,7 @@
 #include "core/hash_func.hpp"
 #include "string_func.h"
 #include "newgrf_dump.h"
+#include "tile_cmd.h"
 
 #include "safeguards.h"
 

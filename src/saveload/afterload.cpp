@@ -78,6 +78,7 @@
 #include "../timer/timer_game_tick.h"
 #include "../picker_func.h"
 #include "../pathfinder/water_regions.h"
+#include "../tile_cmd.h"
 
 
 #include "../sl/saveload_internal.h"

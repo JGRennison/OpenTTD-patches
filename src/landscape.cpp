@@ -36,6 +36,7 @@
 #include "pathfinder/aystar.h"
 #include "sl/saveload.h"
 #include "framerate_type.h"
+#include "tile_cmd.h"
 #include "town.h"
 #include "terraform_cmd.h"
 #include "scope_info.h"

@@ -12,13 +12,16 @@
 
 #include "core/enum_type.hpp"
 #include "core/geometry_type.hpp"
-#include "command_type.h"
+#include "command_type_fwd_declare.h"
+#include "date_type.h"
 #include "road_type.h"
-#include "vehicle_type.h"
 #include "cargo_type.h"
-#include "track_type.h"
-#include "track_func.h"
+#include "transport_type.h"
 #include "tile_map.h"
+#include "strings_id_type.h"
+
+struct TrackStatus;
+struct Vehicle;
 
 /** Flags to describe several special states upon entering a tile. */
 enum class VehicleEnterTileState : uint8_t {
@@ -226,31 +229,6 @@ struct TileTypeProcs {
 extern const EnumIndexArray<const TileTypeProcs *, TileType, TileType::MaxSize> _tile_type_procs;
 
 int GetSlopePixelZ_MaxZ(TileIndex tile, uint x, uint y, bool ground_vehicle);
-
-enum TileTrackStatusSubMode {
-	TTSSM_ROAD_RTT_MASK       =    0xFF,
-	TTSSM_ROAD_ROADTYPE_MASK  =  0xFF00,
-	TTSSM_NO_RED_SIGNALS      = 0x10000,
-};
-
-enum class RoadTramType : uint8_t;
-
-TrackStatus GetTileTrackStatus(TileIndex tile, TransportType mode, uint sub_mode, DiagDirection side = DiagDirection::Invalid);
-
-inline TrackStatus GetTileTrackStatus(TileIndex tile, TransportType mode, RoadTramType sub_mode, DiagDirection side = DiagDirection::Invalid)
-{
-	return GetTileTrackStatus(tile, mode, to_underlying(sub_mode), side);
-}
-
-inline TrackdirBits GetTileTrackdirBits(TileIndex tile, TransportType mode, uint sub_mode, DiagDirection side = DiagDirection::Invalid)
-{
-	return GetTileTrackStatus(tile, mode, sub_mode | TTSSM_NO_RED_SIGNALS, side).trackdirs;
-}
-
-inline TrackdirBits GetTileTrackdirBits(TileIndex tile, TransportType mode, RoadTramType sub_mode, DiagDirection side = DiagDirection::Invalid)
-{
-	return GetTileTrackdirBits(tile, mode, to_underlying(sub_mode), side);
-}
 
 VehicleEnterTileStates VehicleEnterTile(Vehicle *v, TileIndex tile, int x, int y);
 void ChangeTileOwner(TileIndex tile, Owner old_owner, Owner new_owner);

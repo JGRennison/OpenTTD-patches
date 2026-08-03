@@ -19,6 +19,7 @@
 #include "../../landscape.h"
 #include "../../landscape_cmd.h"
 #include "../../terraform_cmd.h"
+#include "../../tile_track_func.h"
 #include "../../tree_cmd.h"
 
 #include "../../safeguards.h"

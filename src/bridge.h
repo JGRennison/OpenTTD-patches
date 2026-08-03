@@ -11,7 +11,15 @@
 #define BRIDGE_H
 
 #include "gfx_type.h"
-#include "tile_cmd.h"
+#include "command_type_fwd_declare.h"
+#include "date_type.h"
+#include "direction_type.h"
+#include "slope_type.h"
+#include "strings_id_type.h"
+#include "tile_type.h"
+#include "transport_type.h"
+
+struct TileInfo;
 
 /**
  * This enum is related to the definition of bridge pieces,

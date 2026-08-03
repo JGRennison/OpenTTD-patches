@@ -18,6 +18,7 @@
 #include "water_map.h"
 #include "string_func.h"
 #include "newgrf_dump.h"
+#include "settings_type.h"
 
 #include "safeguards.h"
 

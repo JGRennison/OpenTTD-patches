@@ -18,6 +18,7 @@
 #include "gfx_func.h"
 #include "fios.h"
 #include "fileio_func.h"
+#include "tile_map_extra.h"
 #include "core/random_func.hpp"
 
 #include "table/strings.h"

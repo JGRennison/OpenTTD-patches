@@ -57,6 +57,8 @@
 #include "viewport_func.h"
 #include "train.h"
 #include "rail_gui.h"
+#include "tile_cmd.h"
+#include "tile_track_func.h"
 #include "tunnelbridge_map.h"
 #include "tunnelbridge.h"
 #include "elrail_func.h"

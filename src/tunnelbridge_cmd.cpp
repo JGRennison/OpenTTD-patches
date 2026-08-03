@@ -55,6 +55,7 @@
 #include "debug.h"
 #include "landscape_cmd.h"
 #include "terraform_cmd.h"
+#include "tile_cmd.h"
 #include "depot_bridge.h"
 #include "rail_settings.h"
 

@@ -59,6 +59,7 @@
 #include "clear_map.h"
 #include "tree_map.h"
 #include "map_func.h"
+#include "tile_cmd.h"
 #include "scope.h"
 #include "3rdparty/robin_hood/robin_hood.h"
 

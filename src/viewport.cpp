@@ -117,6 +117,7 @@
 #include "tracerestrict.h"
 #include "worker_thread.h"
 #include "vehiclelist.h"
+#include "tile_cmd.h"
 #include "core/backup_type.hpp"
 #include "3rdparty/robin_hood/robin_hood.h"
 

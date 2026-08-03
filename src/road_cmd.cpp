@@ -47,6 +47,7 @@
 #include "rail_cmd.h"
 #include "economy_func.h"
 #include "maintenance_func.h"
+#include "tile_cmd.h"
 
 #include "table/strings.h"
 #include "table/roadtypes.h"

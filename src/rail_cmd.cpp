@@ -45,6 +45,8 @@
 #include "rail_cmd.h"
 #include "rail_settings.h"
 #include "object_base.h"
+#include "tile_cmd.h"
+#include "tile_track_func.h"
 
 #include "table/strings.h"
 #include "table/railtypes.h"

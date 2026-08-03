@@ -10,7 +10,8 @@
 #ifndef CLEAR_FUNC_H
 #define CLEAR_FUNC_H
 
-#include "tile_cmd.h"
+struct TileInfo;
+enum Slope : uint8_t;
 
 void DrawHillyLandTile(const TileInfo *ti);
 void DrawClearLandTile(const TileInfo *ti, uint8_t set);

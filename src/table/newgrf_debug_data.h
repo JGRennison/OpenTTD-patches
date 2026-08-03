@@ -27,6 +27,7 @@
 #include "../train_speed_adaptation.h"
 #include "../tracerestrict.h"
 #include "../newgrf_dump.h"
+#include "../tile_cmd.h"
 #include "../core/type_util.hpp"
 
 /* Helper for filling property tables */

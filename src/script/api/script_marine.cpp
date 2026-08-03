@@ -13,7 +13,7 @@
 #include "../../landscape_cmd.h"
 #include "../../station_base.h"
 #include "../../station_cmd.h"
-#include "../../tile_cmd.h"
+#include "../../tile_track_func.h"
 #include "../../water_cmd.h"
 #include "../../waypoint_cmd.h"
 

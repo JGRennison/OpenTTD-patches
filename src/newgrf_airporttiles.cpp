@@ -15,6 +15,7 @@
 #include "newgrf_spritegroup.h"
 #include "newgrf_sound.h"
 #include "station_base.h"
+#include "tile_cmd.h"
 #include "water.h"
 #include "landscape.h"
 #include "company_base.h"

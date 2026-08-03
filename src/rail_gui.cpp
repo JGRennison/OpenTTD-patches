@@ -47,6 +47,7 @@
 #include "picker_gui.h"
 #include "toolbar_gui.h"
 #include "scope.h"
+#include "tile_track_func.h"
 
 #include "station_map.h"
 #include "tunnelbridge_map.h"

@@ -16,6 +16,7 @@
 #include "animated_tile_func.h"
 #include "effectvehicle_func.h"
 #include "effectvehicle_base.h"
+#include "settings_type.h"
 #include "core/checksum_func.hpp"
 #include "3rdparty/cpp-btree/btree_set.h"
 #include "3rdparty/robin_hood/robin_hood.h"

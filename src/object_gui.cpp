@@ -26,6 +26,7 @@
 #include "window_gui.h"
 #include "window_func.h"
 #include "zoom_func.h"
+#include "settings_type.h"
 #include "core/backup_type.hpp"
 
 #include "widgets/object_widget.h"

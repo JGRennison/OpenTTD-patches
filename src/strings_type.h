@@ -11,18 +11,13 @@
 #define STRINGS_TYPE_H
 
 #include "string_type.h"
+#include "strings_id_type.h"
 #include "strings_type_trait.h"
 #include "core/enum_type.hpp"
 #include "core/strong_typedef_type.hpp"
 #include <optional>
 #include <variant>
 
-/**
- * Numeric value that represents a string, independent of the selected language.
- */
-typedef uint32_t StringID;
-static const StringID STR_NULL          = 0x0;
-static const StringID INVALID_STRING_ID = 0xFFFF; ///< Constant representing an invalid string (16bit in case it is used in savegames)
 static const int MAX_CHAR_LENGTH        = 4;      ///< Max. length of UTF-8 encoded unicode character
 static const uint MAX_LANG              = 0x7F;   ///< Maximum number of languages supported by the game, and the NewGRF specs
 

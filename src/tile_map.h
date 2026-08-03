@@ -12,8 +12,12 @@
 
 #include "slope_type.h"
 #include "map_func.h"
+#include "company_type.h"
 #include "core/bitmath_func.hpp"
-#include "settings_type.h"
+
+#ifdef WITH_FULL_ASSERTS
+#include "tile_map_extra.h"
+#endif
 
 /**
  * Returns the height of a tile
@@ -103,23 +107,6 @@ inline uint TilePixelHeightOutsideMap(int x, int y)
 	dbg_assert_tile(tile < Map::Size(), tile);
 #endif
 	return TileType(GB(_m[tile].type, 4, TILE_TYPE_BITS));
-}
-
-/**
- * Check if a tile is within the map (not a border)
- *
- * @param tile The tile to check
- * @return Whether the tile is in the interior of the map
- * @pre tile < Map::Size()
- */
-inline bool IsInnerTile(TileIndex tile)
-{
-	dbg_assert_tile(tile < Map::Size(), tile);
-
-	uint x = TileX(tile);
-	uint y = TileY(tile);
-
-	return x < Map::MaxX() && y < Map::MaxY() && ((x > 0 && y > 0) || !_settings_game.construction.freeform_edges);
 }
 
 /**

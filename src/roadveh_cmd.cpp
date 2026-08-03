@@ -40,6 +40,7 @@
 #include "newgrf_roadstop.h"
 #include "road_cmd.h"
 #include "newgrf_roadstop.h"
+#include "tile_cmd.h"
 
 #include "table/strings.h"
 

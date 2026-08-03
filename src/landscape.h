@@ -11,8 +11,13 @@
 #define LANDSCAPE_H
 
 #include "core/geometry_type.hpp"
-#include "tile_cmd.h"
+#include "direction_type.h"
+#include "slope_type.h"
+#include "tile_type.h"
+#include "zoom_type.h"
 #include <vector>
+
+struct TileInfo;
 
 static const uint SNOW_LINE_MONTHS = 12; ///< Number of months in the snow line table.
 static const uint SNOW_LINE_DAYS   = 32; ///< Number of days in each month in the snow line table.

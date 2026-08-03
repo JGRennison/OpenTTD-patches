@@ -17,6 +17,7 @@
 #include "road.h"
 #include "road_map.h"
 #include "newgrf_engine.h"
+#include "tile_track_func.h"
 #include <array>
 
 struct RoadVehicle;

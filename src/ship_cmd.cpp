@@ -37,6 +37,7 @@
 #include "industry_map.h"
 #include "core/checksum_func.hpp"
 #include "articulated_vehicles.h"
+#include "tile_cmd.h"
 #include "3rdparty/cpp-ring-buffer/ring_buffer.hpp"
 #include "3rdparty/robin_hood/robin_hood.h"
 

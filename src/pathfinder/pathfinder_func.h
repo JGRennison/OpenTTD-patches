@@ -10,7 +10,7 @@
 #ifndef PATHFINDER_FUNC_H
 #define PATHFINDER_FUNC_H
 
-#include "../tile_cmd.h"
+#include "../tile_track_func.h"
 #include "../waypoint_base.h"
 
 /**

@@ -30,7 +30,7 @@
 #include "gfx_func.h"
 #include "rail_map.h"
 #include "depot_map.h"
-#include "tile_cmd.h"
+#include "tile_track_func.h"
 #include "station_base.h"
 #include "waypoint_base.h"
 #include "depot_base.h"

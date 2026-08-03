@@ -23,7 +23,7 @@
 #include "gfx_func.h"
 #include "tilehighlight_func.h"
 #include "rail_map.h"
-#include "tile_cmd.h"
+#include "tile_track_func.h"
 #include "error.h"
 #include "scope.h"
 #include "zoom_func.h"

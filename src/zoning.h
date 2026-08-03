@@ -10,8 +10,9 @@
 #ifndef ZONING_H
 #define ZONING_H
 
-#include "tile_cmd.h"
 #include "company_type.h"
+
+struct TileInfo;
 
 /**
  * Zoning evaluation modes

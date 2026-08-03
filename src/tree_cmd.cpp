@@ -27,6 +27,7 @@
 #include "date_func.h"
 #include "tree_cmd.h"
 #include "tree_func.h"
+#include "tile_cmd.h"
 #include "3rdparty/robin_hood/robin_hood.h"
 
 #include "table/strings.h"

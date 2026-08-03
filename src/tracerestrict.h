@@ -16,6 +16,7 @@
 #include "core/pool_type.hpp"
 #include "core/container_func.hpp"
 #include "core/strong_typedef_type.hpp"
+#include "command_type.h"
 #include "rail_map.h"
 #include "tile_type.h"
 #include "group_type.h"

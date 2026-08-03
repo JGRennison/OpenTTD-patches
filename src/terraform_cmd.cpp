@@ -18,6 +18,7 @@
 #include "company_func.h"
 #include "landscape_cmd.h"
 #include "terraform_cmd.h"
+#include "tile_cmd.h"
 #include "core/backup_type.hpp"
 
 #include "table/strings.h"

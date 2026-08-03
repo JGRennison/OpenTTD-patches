@@ -5,20 +5,16 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file road_internal.h Functions used internally by the roads. */
+/** @file command_type_fwd_declare.h Types related to commands. */
 
-#ifndef ROAD_INTERNAL_H
-#define ROAD_INTERNAL_H
+#ifndef COMMAND_TYPE_FWD_DECLARE_H
+#define COMMAND_TYPE_FWD_DECLARE_H
 
-#include "command_type_fwd_declare.h"
-#include "road_type.h"
+#include "core/enum_type.hpp"
 
-struct TileInfo;
+class CommandCost;
 
-RoadBits CleanUpRoadBits(const TileIndex tile, RoadBits org_rb);
+enum class DoCommandFlag : uint8_t;
+using DoCommandFlags = EnumBitSet<DoCommandFlag, uint16_t>;
 
-CommandCost CheckAllowRemoveRoad(TileIndex tile, RoadBits remove, Owner owner, RoadTramType rtt, DoCommandFlags flags, bool town_check = true);
-
-void DrawRoadCatenary(const TileInfo *ti);
-
-#endif /* ROAD_INTERNAL_H */
+#endif /* COMMAND_TYPE_FWD_DECLARE_H */

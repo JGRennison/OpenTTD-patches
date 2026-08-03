@@ -46,6 +46,7 @@
 #include "train_speed_adaptation.h"
 #include "event_logs.h"
 #include "misc_cmd.h"
+#include "tile_cmd.h"
 #include "train_cmd.h"
 #include "vehicle_cmd.h"
 #include "tbtr_template_vehicle_cmd.h"

@@ -19,6 +19,7 @@
 #include "vehicle_base.h"
 #include "base_media_func.h"
 #include "base_media_sounds.h"
+#include "settings_type.h"
 
 #include "safeguards.h"
 

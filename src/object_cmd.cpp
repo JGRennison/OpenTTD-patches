@@ -36,6 +36,7 @@
 #include "newgrf_debug.h"
 #include "vehicle_func.h"
 #include "station_func.h"
+#include "tile_cmd.h"
 #include "pathfinder/water_regions.h"
 
 #include "table/strings.h"

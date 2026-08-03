@@ -27,6 +27,7 @@
 #include "viewport_func.h"
 #include "road_map.h"
 #include "animated_tile.h"
+#include "tile_cmd.h"
 #include "3rdparty/cpp-btree/btree_set.h"
 
 Zoning _zoning;

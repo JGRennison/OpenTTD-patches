@@ -12,6 +12,7 @@
 #include "command_func.h"
 #include "viewport_func.h"
 #include "slope_func.h"
+#include "tile_cmd.h"
 #include "water.h"
 
 #include "table/strings.h"

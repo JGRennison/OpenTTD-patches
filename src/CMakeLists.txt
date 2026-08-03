@@ -116,6 +116,7 @@ add_files(
     command_table.cpp
     command_table.h
     command_type.h
+    command_type_fwd_declare.h
     company_base.h
     company_cmd.cpp
     company_cmd.h
@@ -543,6 +544,7 @@ add_files(
     stringfilter_type.h
     strings.cpp
     strings_func.h
+    strings_id_type.h
     strings_internal.h
     strings_type.h
     strings_type_trait.h
@@ -583,6 +585,8 @@ add_files(
     tile_cmd.h
     tile_map.cpp
     tile_map.h
+    tile_map_extra.h
+    tile_track_func.h
     tile_type.h
     tilearea.cpp
     tilearea_type.h

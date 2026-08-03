@@ -61,6 +61,7 @@
 #include "event_logs.h"
 #include "plans_func.h"
 #include "order_backup.h"
+#include "tile_cmd.h"
 #include "vehicle_cmd.h"
 
 #include "table/strings.h"

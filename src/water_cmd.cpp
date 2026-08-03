@@ -47,6 +47,8 @@
 #include "object_base.h"
 #include "object_map.h"
 #include "newgrf_object.h"
+#include "tile_cmd.h"
+#include "tile_track_func.h"
 
 #include "table/strings.h"
 

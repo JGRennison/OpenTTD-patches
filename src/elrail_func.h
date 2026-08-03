@@ -11,8 +11,9 @@
 #define ELRAIL_FUNC_H
 
 #include "rail.h"
-#include "tile_cmd.h"
 #include "transparency.h"
+
+struct TileInfo;
 
 /**
  * Test if a rail type has catenary.

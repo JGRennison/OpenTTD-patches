@@ -25,6 +25,7 @@
 #include "station_base.h"
 #include "newgrf_analysis.h"
 #include "newgrf_extension.h"
+#include "tile_cmd.h"
 
 #include "safeguards.h"
 
