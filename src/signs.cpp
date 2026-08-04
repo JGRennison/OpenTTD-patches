@@ -41,7 +41,7 @@ void Sign::UpdateVirtCoord()
 	if (IsHeadless()) return;
 	Point pt = RemapCoords(this->x, this->y, this->z);
 
-	if (_viewport_sign_kdtree_valid && this->sign.kdtree_valid) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeSign(this->index));
+	if (_viewport_sign_kdtree_valid && this->sign.kdtree_valid()) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeSign(this->index));
 
 	bool shown = _display_opt.Test(DisplayOption::ShowSigns) && !(this->IsCompetitorOwned() && !_display_opt.Test(DisplayOption::ShowCompetitorSigns));
 	auto params = MakeParameters(this->index);

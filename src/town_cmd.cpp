@@ -460,7 +460,7 @@ void Town::UpdateVirtCoord(bool only_if_label_changed)
 
 	Point pt = RemapCoords2(TileX(this->xy) * TILE_SIZE, TileY(this->xy) * TILE_SIZE);
 
-	if (_viewport_sign_kdtree_valid && this->cache.sign.kdtree_valid) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeTown(this->index));
+	if (_viewport_sign_kdtree_valid && this->cache.sign.kdtree_valid()) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeTown(this->index));
 
 	auto params = MakeParameters(this->index, this->LabelParam2());
 	this->cache.sign.UpdatePosition(_display_opt.Test(DisplayOption::ShowTownNames) ? ZoomLevel::Out32x : ZoomLevel::End, pt.x, pt.y - 24 * ZOOM_BASE, params, STR_VIEWPORT_TOWN_LABEL, STR_TOWN_NAME);
@@ -3797,7 +3797,7 @@ CommandCost CmdDeleteTown(DoCommandFlags flags, TownID town_id)
 	/* The town destructor will delete the other things related to the town. */
 	if (flags.Test(DoCommandFlag::Execute)) {
 		_town_kdtree.Remove(t->index);
-		if (_viewport_sign_kdtree_valid && t->cache.sign.kdtree_valid) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeTown(t->index));
+		if (_viewport_sign_kdtree_valid && t->cache.sign.kdtree_valid()) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeTown(t->index));
 		delete t;
 	}
 

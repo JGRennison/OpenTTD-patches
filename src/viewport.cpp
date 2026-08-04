@@ -5306,7 +5306,7 @@ ViewportSignKdtreeItem ViewportSignKdtreeItem::MakeStation(StationID id)
 	item.SetID(id);
 
 	const Station *st = Station::Get(id);
-	assert(st->sign.kdtree_valid);
+	assert(st->sign.kdtree_valid());
 	item.center = st->sign.center;
 	item.top = st->sign.top;
 
@@ -5323,7 +5323,7 @@ ViewportSignKdtreeItem ViewportSignKdtreeItem::MakeWaypoint(StationID id)
 	item.SetID(id);
 
 	const Waypoint *st = Waypoint::Get(id);
-	assert(st->sign.kdtree_valid);
+	assert(st->sign.kdtree_valid());
 	item.center = st->sign.center;
 	item.top = st->sign.top;
 
@@ -5340,7 +5340,7 @@ ViewportSignKdtreeItem ViewportSignKdtreeItem::MakeTown(TownID id)
 	item.SetID(id);
 
 	const Town *town = Town::Get(id);
-	assert(town->cache.sign.kdtree_valid);
+	assert(town->cache.sign.kdtree_valid());
 	item.center = town->cache.sign.center;
 	item.top = town->cache.sign.top;
 
@@ -5357,7 +5357,7 @@ ViewportSignKdtreeItem ViewportSignKdtreeItem::MakeSign(SignID id)
 	item.SetID(id);
 
 	const Sign *sign = Sign::Get(id);
-	assert(sign->sign.kdtree_valid);
+	assert(sign->sign.kdtree_valid());
 	item.center = sign->sign.center;
 	item.top = sign->sign.top;
 
@@ -5384,19 +5384,19 @@ void RebuildViewportKdtree()
 	items.reserve(BaseStation::GetNumItems() + Town::GetNumItems() + Sign::GetNumItems());
 
 	for (const Station *st : Station::Iterate()) {
-		if (st->sign.kdtree_valid) items.push_back(ViewportSignKdtreeItem::MakeStation(st->index));
+		if (st->sign.kdtree_valid()) items.push_back(ViewportSignKdtreeItem::MakeStation(st->index));
 	}
 
 	for (const Waypoint *wp : Waypoint::Iterate()) {
-		if (wp->sign.kdtree_valid) items.push_back(ViewportSignKdtreeItem::MakeWaypoint(wp->index));
+		if (wp->sign.kdtree_valid()) items.push_back(ViewportSignKdtreeItem::MakeWaypoint(wp->index));
 	}
 
 	for (const Town *town : Town::Iterate()) {
-		if (town->cache.sign.kdtree_valid) items.push_back(ViewportSignKdtreeItem::MakeTown(town->index));
+		if (town->cache.sign.kdtree_valid()) items.push_back(ViewportSignKdtreeItem::MakeTown(town->index));
 	}
 
 	for (const Sign *sign : Sign::Iterate()) {
-		if (sign->sign.kdtree_valid) items.push_back(ViewportSignKdtreeItem::MakeSign(sign->index));
+		if (sign->sign.kdtree_valid()) items.push_back(ViewportSignKdtreeItem::MakeSign(sign->index));
 	}
 
 	_viewport_sign_kdtree.Build(items.begin(), items.end());

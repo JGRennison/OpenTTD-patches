@@ -51,7 +51,7 @@ Waypoint::~Waypoint()
 	CloseWindowById(WindowClass::WaypointView, this->index);
 	DeleteNewGRFInspectWindow(GrfSpecFeature::FakeStationStruct, this->index.base());
 	RemoveOrderFromAllVehicles(OT_GOTO_WAYPOINT, this->index);
-	if (_viewport_sign_kdtree_valid && this->sign.kdtree_valid) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeWaypoint(this->index));
+	if (_viewport_sign_kdtree_valid && this->sign.kdtree_valid()) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeWaypoint(this->index));
 	TraceRestrictRemoveDestinationID(TROCAF_WAYPOINT, this->index);
 
 	/* Remove all news items */

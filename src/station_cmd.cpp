@@ -590,7 +590,7 @@ void Station::UpdateVirtCoord()
 	pt.y -= 32 * ZOOM_BASE;
 	if (this->facilities.Test(StationFacility::Airport) && this->airport.type == AT_OILRIG) pt.y -= 16 * ZOOM_BASE;
 
-	if (_viewport_sign_kdtree_valid && this->sign.kdtree_valid) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeStation(this->index));
+	if (_viewport_sign_kdtree_valid && this->sign.kdtree_valid()) _viewport_sign_kdtree.Remove(ViewportSignKdtreeItem::MakeStation(this->index));
 
 	auto params = MakeParameters(this->index, this->facilities);
 	this->sign.UpdatePosition(ShouldShowBaseStationViewportLabel(this) ? ZoomLevel::SpriteMax : ZoomLevel::End, pt.x, pt.y, params, STR_VIEWPORT_STATION, STR_STATION_NAME);

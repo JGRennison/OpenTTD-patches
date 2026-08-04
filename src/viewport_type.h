@@ -125,21 +125,10 @@ struct ViewportSign {
 
 /** Specialised ViewportSign that tracks whether it is valid for entering into a Kdtree */
 struct TrackedViewportSign : ViewportSign {
-	bool kdtree_valid = false; ///< Are the sign data valid for use with the _viewport_sign_kdtree?
+	TrackedViewportSign() { this->top = INT32_MIN; }
 
-	/**
-	 * Update the position of the viewport sign.
-	 * Note that this function hides the base class function.
-	 * @param center The (preferred) center of the viewport sign.
-	 * @param top The new top of the sign.
-	 * @param str The string to show in the sign.
-	 * @param str_small The string to show when zoomed out. If the string is empty then the \a str is used.
-	 */
-	void UpdatePosition(ZoomLevel maxzoom, int center, int top, std::span<struct StringParameter> params, StringID str, StringID str_small = STR_NULL)
-	{
-		this->kdtree_valid = true;
-		this->ViewportSign::UpdatePosition(maxzoom, center, top, params, str, str_small);
-	}
+	/** Is the sign data valid for use with the _viewport_sign_kdtree? */
+	inline bool kdtree_valid() const { return this->top != INT32_MIN; };
 };
 
 /**
