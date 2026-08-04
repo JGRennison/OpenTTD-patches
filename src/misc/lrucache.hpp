@@ -13,7 +13,6 @@
 #include "../3rdparty/robin_hood/robin_hood.h"
 #include <utility>
 #include <list>
-#include <functional>
 #include <stdexcept>
 
 /**

@@ -16,7 +16,6 @@
 #include "../../string_type.h"
 #include "../../core/serialisation.hpp"
 #include <string>
-#include <functional>
 #include <limits>
 #include <vector>
 

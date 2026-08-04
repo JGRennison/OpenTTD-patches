@@ -63,7 +63,6 @@
 #include "dropdown_common_type.h"
 
 #include <vector>
-#include <functional>
 #include <iterator>
 
 #include "safeguards.h"

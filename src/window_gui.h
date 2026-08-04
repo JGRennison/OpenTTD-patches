@@ -20,7 +20,6 @@
 #include "3rdparty/cpp-btree/btree_map.h"
 
 #include <algorithm>
-#include <functional>
 #include <vector>
 
 /**

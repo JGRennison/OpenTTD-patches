@@ -36,8 +36,6 @@
 #include "3rdparty/robin_hood/robin_hood.h"
 #include "3rdparty/svector/svector.h"
 
-#include <functional>
-
 #include "safeguards.h"
 
 TemplatePool _template_pool("TemplatePool");

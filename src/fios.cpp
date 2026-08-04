@@ -20,7 +20,6 @@
 #include "core/container_func.hpp"
 #include "core/format.hpp"
 #include <sys/stat.h>
-#include <functional>
 #include <optional>
 
 #ifndef _WIN32

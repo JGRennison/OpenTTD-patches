@@ -10,8 +10,6 @@
 #ifndef COMMAND_LOG_H
 #define COMMAND_LOG_H
 
-#include <functional>
-
 void ClearCommandLog();
 void DumpCommandLog(struct format_target &buffer);
 
