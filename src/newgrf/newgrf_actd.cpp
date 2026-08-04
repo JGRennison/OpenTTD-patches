@@ -18,6 +18,7 @@
 #include "../vehicle_base.h"
 #include "../rail.h"
 #include "../road.h"
+#include "../settings_type.h"
 #include "newgrf_bytereader.h"
 #include "newgrf_internal.h"
 

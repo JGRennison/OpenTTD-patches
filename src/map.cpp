@@ -14,6 +14,7 @@
 #include "string_func.h"
 #include "rail_map.h"
 #include "tunnelbridge_map.h"
+#include "settings_type.h"
 #include "pathfinder/water_regions.h"
 #include "core/alloc_func.hpp"
 #include "3rdparty/cpp-ring-buffer/ring_buffer.hpp"

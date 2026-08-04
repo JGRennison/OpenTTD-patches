@@ -24,6 +24,7 @@
 #include "tunnelbridge_map.h"
 #include "road_gui.h"
 #include "tilehighlight_func.h"
+#include "settings_type.h"
 
 #include "widgets/bridge_widget.h"
 

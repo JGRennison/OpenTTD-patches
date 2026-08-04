@@ -36,6 +36,12 @@ uint8_t _extra_aspects = 0;
 uint64_t _aspect_cfg_hash = 0;
 SignalStyleMasks _signal_style_masks = {};
 bool _signal_sprite_oversized = false;
+SignalTypeMask _pbs_signal_types{SignalType::Path, SignalType::PathOneWay, SignalType::NoEntry};
+
+void UpdateRealisticBrakingTypeCache()
+{
+	_pbs_signal_types = (_settings_game.vehicle.train_braking_model == TBM_REALISTIC) ? ~SignalTypeMask{} : SignalTypeMask{SignalType::Path, SignalType::PathOneWay, SignalType::NoEntry};
+}
 
 /// Programmable pre-signal dependencies.
 struct SignalDependencyRecord {

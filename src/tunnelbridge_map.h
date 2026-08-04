@@ -15,7 +15,6 @@
 #include "signal_type.h"
 #include "tunnel_map.h"
 #include "track_func.h"
-#include "settings_type.h"
 #include "vehicle_type.h"
 #include "core/bitmath_func.hpp"
 
@@ -515,7 +514,8 @@ inline bool IsTunnelBridgePBS(TileIndex t)
 
 inline bool IsTunnelBridgeEffectivelyPBS(TileIndex t)
 {
-	return _settings_game.vehicle.train_braking_model == TBM_REALISTIC || IsTunnelBridgePBS(t);
+	extern SignalTypeMask _pbs_signal_types;
+	return _pbs_signal_types.Test(SignalType::Block) || IsTunnelBridgePBS(t);
 }
 
 inline void SetTunnelBridgePBS(TileIndex t, bool is_pbs)

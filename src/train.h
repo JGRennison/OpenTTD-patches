@@ -21,6 +21,7 @@
 #include "pbs.h"
 
 struct Train;
+enum ClientID : uint32_t;
 
 /** Rail vehicle flags. */
 enum class VehicleRailFlag : uint8_t {
@@ -107,11 +108,6 @@ void GetTrainSpriteSize(EngineID engine, uint &width, uint &height, int &xoffs, 
 
 bool TrainOnCrossing(TileIndex tile);
 void NormalizeTrainVehInDepot(const Train *u);
-
-inline int GetTrainRealisticBrakingTargetDecelerationLimit(VehicleAccelerationModel acceleration_type)
-{
-	return _settings_game.vehicle.train_acc_braking_percent * (120 + (static_cast<int>(acceleration_type) * 48)) / 100;
-}
 
 /** Flags for TrainCache::cached_tflags */
 enum TrainCacheFlags : uint8_t {

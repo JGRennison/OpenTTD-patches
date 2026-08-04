@@ -16,6 +16,7 @@
 #include "../../industry.h"
 #include "../../industry_cmd.h"
 #include "../../newgrf_industries.h"
+#include "../../settings_type.h"
 #include "../../core/random_func.hpp"
 
 #include "../../safeguards.h"

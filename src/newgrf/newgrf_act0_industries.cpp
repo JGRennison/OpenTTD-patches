@@ -14,6 +14,7 @@
 #include "../industrytype.h"
 #include "../industry_map.h"
 #include "../newgrf_industries.h"
+#include "../settings_type.h"
 #include "newgrf_bytereader.h"
 #include "newgrf_internal.h"
 #include "newgrf_stringmapping.h"

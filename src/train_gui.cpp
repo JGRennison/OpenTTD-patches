@@ -16,6 +16,7 @@
 #include "vehicle_func.h"
 #include "vehicle_gui_base.h"
 #include "zoom_func.h"
+#include "settings_type.h"
 #include "core/backup_type.hpp"
 
 #include "table/strings.h"

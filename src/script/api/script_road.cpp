@@ -17,6 +17,7 @@
 #include "../../station_cmd.h"
 #include "../../strings_func.h"
 #include "../../newgrf_roadstop.h"
+#include "../../settings_type.h"
 #include "../../script/squirrel_helper_type.hpp"
 
 #include "../../safeguards.h"

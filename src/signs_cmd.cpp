@@ -18,6 +18,7 @@
 #include "viewport_kdtree.h"
 #include "window_func.h"
 #include "string_func.h"
+#include "settings_type.h"
 
 #include "table/strings.h"
 

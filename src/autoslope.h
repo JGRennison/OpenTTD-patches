@@ -13,6 +13,7 @@
 #include "company_func.h"
 #include "depot_func.h"
 #include "tile_map.h"
+#include "settings_type.h"
 
 /**
  * Autoslope check for tiles with an entrance on an edge.

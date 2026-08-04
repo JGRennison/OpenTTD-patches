@@ -21,6 +21,7 @@
 #include "../../strings_func.h"
 #include "../../waypoint_cmd.h"
 #include "../../rail_cmd.h"
+#include "../../settings_type.h"
 
 #include "../../safeguards.h"
 

@@ -529,6 +529,8 @@ static bool CheckTrainBrakingModelChange(int32_t &new_value)
 
 static void TrainBrakingModelChanged(int32_t new_value)
 {
+	UpdateRealisticBrakingTypeCache();
+
 	for (Train *t : Train::Iterate()) {
 		if (!t->vehstatus.Test(VehState::Crashed)) {
 			t->crash_anim_pos = 0;

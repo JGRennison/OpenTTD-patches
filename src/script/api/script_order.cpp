@@ -19,6 +19,7 @@
 #include "../../order_cmd.h"
 #include "../../station_base.h"
 #include "../../waypoint_base.h"
+#include "../../settings_type.h"
 
 #include "../../safeguards.h"
 

@@ -9,6 +9,7 @@
 
 #include "stdafx.h"
 #include "train.h"
+#include "train_settings.h"
 #include "roadveh.h"
 #include "depot_map.h"
 #include "tunnel_base.h"

@@ -699,6 +699,8 @@ bool AfterLoadGame()
 	extern void UpdateTreeTypeRange();
 	UpdateTreeTypeRange();
 
+	UpdateRealisticBrakingTypeCache();
+
 	_viewport_sign_kdtree_valid = false;
 
 	if (IsSavegameVersionBefore(SLV_98)) GamelogGRFAddList(_grfconfig);
@@ -1040,6 +1042,7 @@ bool AfterLoadGame()
 
 	if (SlXvIsFeatureMissing(XSLFI_REALISTIC_TRAIN_BRAKING)) {
 		_settings_game.vehicle.train_braking_model = TBM_ORIGINAL;
+		UpdateRealisticBrakingTypeCache();
 	}
 
 	if (SlXvIsFeatureMissing(XSLFI_TRAIN_SPEED_ADAPTATION)) {

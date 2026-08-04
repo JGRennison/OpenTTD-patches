@@ -43,6 +43,7 @@
 #include "core/checksum_func.hpp"
 #include "debug_dbg_assert.h"
 #include "debug_settings.h"
+#include "train_settings.h"
 #include "train_speed_adaptation.h"
 #include "event_logs.h"
 #include "misc_cmd.h"

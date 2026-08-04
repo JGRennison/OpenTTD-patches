@@ -15,7 +15,6 @@
 #include "tile_type.h"
 #include "direction_type.h"
 #include "company_type.h"
-#include "settings_type.h"
 #include "vehicle_type.h"
 
 extern uint8_t _extra_aspects;
@@ -98,7 +97,8 @@ inline bool IsComboSignal(SignalType type)
 /// Is a given signal type a PBS signal?
 inline bool IsPbsSignal(SignalType type)
 {
-	return _settings_game.vehicle.train_braking_model == TBM_REALISTIC || type == SignalType::Path || type == SignalType::PathOneWay || type == SignalType::NoEntry;
+	extern SignalTypeMask _pbs_signal_types;
+	return _pbs_signal_types.Test(type);
 }
 
 /// Is a given signal type a PBS signal?
@@ -216,5 +216,7 @@ void UpdateRailSignalSpecialPropagationFlag(TileIndex tile, Track track, const s
 void UpdateTunnelBridgeSignalSpecialPropagationFlag(TileIndex tile, bool update_signal);
 void UpdateTunnelBridgeSignalSpecialPropagationFlag(TileIndex tile, Track track, const TraceRestrictProgram *prog, bool update_signal);
 void UpdateAllSignalsSpecialPropagationFlag();
+
+void UpdateRealisticBrakingTypeCache();
 
 #endif /* SIGNAL_FUNC_H */

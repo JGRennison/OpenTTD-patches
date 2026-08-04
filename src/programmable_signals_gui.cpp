@@ -29,6 +29,7 @@
 #include "zoom_func.h"
 #include "tracerestrict.h"
 #include "tracerestrict_cmd.h"
+#include "settings_type.h"
 #include "core/string_consumer.hpp"
 
 #include "table/sprites.h"

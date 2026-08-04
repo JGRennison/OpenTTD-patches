@@ -11,6 +11,7 @@
 #define ELRAIL_FUNC_H
 
 #include "rail.h"
+#include "settings_type.h"
 #include "transparency.h"
 
 struct TileInfo;

@@ -20,6 +20,7 @@
 #include "core/backup_type.hpp"
 #include "string_func.h"
 #include "strings_func.h"
+#include "settings_type.h"
 #include "3rdparty/cpp-btree/btree_map.h"
 
 #include "table/strings.h"
