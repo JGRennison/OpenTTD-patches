@@ -388,7 +388,21 @@ void ShowBuildBridgeWindow(TileIndex start, TileIndex end, TransportType transpo
 	 * returns CMD_ERROR on failure, and price on success */
 	CommandCost ret = Command<Commands::BuildBridge>::Do(CommandFlagsToDCFlags(GetCommandFlags<Commands::BuildBridge>()).Set(DoCommandFlag::QueryCost), end, start, transport_type, 0, road_rail_type, BuildBridgeFlags::None);
 
-	const bool query_per_bridge_type = ret.Failed() && (ret.GetErrorMessage() == STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_STATION || ret.GetErrorMessage() == STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_LOCKS);
+	auto is_per_bridge_type_error_string = [](StringID error_msg) -> bool {
+		switch (error_msg) {
+			case STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_STATION:
+			case STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_LOCKS:
+			case STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_TRAIN_DEPOT:
+			case STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_ROADVEH_DEPOT:
+			case STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_SHIP_DEPOT:
+				return true;
+
+			default:
+				return false;
+		}
+	};
+
+	const bool query_per_bridge_type = ret.Failed() && is_per_bridge_type_error_string(ret.GetErrorMessage());
 
 	GUIBridgeList bl;
 	if (ret.Succeeded() || query_per_bridge_type) {
