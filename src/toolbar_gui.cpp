@@ -74,6 +74,7 @@
 #include "industry_map.h"
 #include "misc_cmd.h"
 #include "core/string_consumer.hpp"
+#include "screensaver.h"
 
 #include "widgets/toolbar_widget.h"
 
@@ -1118,6 +1119,7 @@ enum HelpMenuEntries {
 	HME_PICKER,
 
 	HME_HELP,
+	HME_SCREENSAVER,
 	HME_CONSOLE,
 	HME_SCRIPT_DEBUG,
 	HME_SCREENSHOT,
@@ -1273,6 +1275,7 @@ static CallBackFunction ToolbarHelpClick(Window *w)
 	list.push_back(MakeDropDownListStringItem(STR_ABOUT_MENU_SHOW_PICKER_TOOL,          HME_PICKER,        _local_company == COMPANY_SPECTATOR));
 	list.push_back(MakeDropDownListDividerItem());
 	list.push_back(MakeDropDownListStringItem(STR_ABOUT_MENU_HELP,                      HME_HELP,          false));
+	list.push_back(MakeDropDownListStringItem(STR_ABOUT_MENU_ENTER_SCREENSAVER_MODE,    HME_SCREENSAVER,   false));
 	list.push_back(MakeDropDownListStringItem(STR_ABOUT_MENU_TOGGLE_CONSOLE,            HME_CONSOLE,       false));
 	list.push_back(MakeDropDownListStringItem(STR_ABOUT_MENU_AI_DEBUG,                  HME_SCRIPT_DEBUG,  false));
 	list.push_back(MakeDropDownListStringItem(STR_ABOUT_MENU_SCREENSHOT,                HME_SCREENSHOT,    false));
@@ -1375,6 +1378,7 @@ static CallBackFunction MenuClickHelp(int index)
 		case HME_LANDINFO:       return PlaceLandBlockInfo();
 		case HME_PICKER:         return PlacePickerTool();
 		case HME_HELP:           ShowHelpWindow();                 break;
+		case HME_SCREENSAVER:    ToggleScreensaverMode();          break;
 		case HME_CONSOLE:        IConsoleSwitch();                 break;
 		case HME_SCRIPT_DEBUG:   ShowScriptDebugWindow(CompanyID::Invalid(), _ctrl_pressed); break;
 		case HME_SCREENSHOT:     ShowScreenshotWindow();           break;
