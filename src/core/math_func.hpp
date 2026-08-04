@@ -10,8 +10,6 @@
 #ifndef MATH_FUNC_HPP
 #define MATH_FUNC_HPP
 
-#include "strong_typedef_type.hpp"
-
 #include <limits>
 #include <type_traits>
 
@@ -220,7 +218,7 @@ constexpr To ClampTo(From value)
 /**
  * Specialization of ClampTo for #StrongType::Typedef.
  */
-template <typename To, typename From, std::enable_if_t<std::is_base_of<StrongTypedefBase, From>::value, int> = 0>
+template <typename To, typename From, std::enable_if_t<std::is_base_of<struct StrongTypedefBase, From>::value, int> = 0>
 constexpr To ClampTo(From value)
 {
 	return ClampTo<To>(value.base());
@@ -268,10 +266,10 @@ constexpr bool IsInsideBS(const T x, const size_t base, const size_t size)
  * @return \c true iff the value is in the interval.
  * @see IsInsideBS()
  */
-template <typename T, std::enable_if_t<std::disjunction_v<std::is_convertible<T, size_t>, std::is_base_of<StrongTypedefBase, T>>, int> = 0>
+template <typename T, std::enable_if_t<std::disjunction_v<std::is_convertible<T, size_t>, std::is_base_of<struct StrongTypedefBase, T>>, int> = 0>
 constexpr bool IsInsideMM(const T x, const size_t min, const size_t max) noexcept
 {
-	if constexpr (std::is_base_of_v<StrongTypedefBase, T>) {
+	if constexpr (std::is_base_of_v<struct StrongTypedefBase, T>) {
 		return static_cast<size_t>(x.base() - min) < (max - min);
 	} else {
 		return static_cast<size_t>(x - min) < (max - min);
