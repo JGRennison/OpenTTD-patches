@@ -34,6 +34,7 @@
 #include "water.h"
 #include "company_gui.h"
 #include "waypoint_cmd.h"
+#include "road_layout_func.h"
 
 #include "widgets/misc_widget.h"
 

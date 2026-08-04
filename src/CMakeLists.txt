@@ -444,6 +444,7 @@ add_files(
     road_gui.cpp
     road_gui.h
     road_internal.h
+    road_layout_func.h
     road_map.cpp
     road_map.h
     road_type.h

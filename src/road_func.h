@@ -13,7 +13,6 @@
 #include "core/bitmath_func.hpp"
 #include "road.h"
 #include "transparency.h"
-#include "settings_type.h"
 
 /**
  * Whether the given roadtype is valid.
@@ -134,23 +133,5 @@ Money RoadMaintenanceCost(RoadType roadtype, uint32_t num, uint32_t total_num);
 
 struct TileInfo;
 void DrawRoadOverlays(const TileInfo *ti, PaletteID pal, const RoadTypeInfo *road_rti, const RoadTypeInfo *tram_rit, uint road_offset, uint tram_offset, bool draw_underlay = true);
-
-inline bool RoadLayoutChangeNotificationEnabled(bool added)
-{
-	return _settings_game.pf.reroute_rv_on_layout_change >= (added ? 2 : 1);
-}
-
-inline void NotifyRoadLayoutChanged()
-{
-	_road_layout_change_counter++;
-}
-
-inline void NotifyRoadLayoutChanged(bool added)
-{
-	if (RoadLayoutChangeNotificationEnabled(added)) NotifyRoadLayoutChanged();
-}
-
-void NotifyRoadLayoutChangedIfTileNonLeaf(TileIndex tile, RoadTramType rtt, RoadBits present_bits);
-void NotifyRoadLayoutChangedIfSimpleTunnelBridgeNonLeaf(TileIndex start, TileIndex end, DiagDirection start_dir, RoadTramType rtt);
 
 #endif /* ROAD_FUNC_H */

@@ -48,6 +48,7 @@
 #include "economy_func.h"
 #include "maintenance_func.h"
 #include "tile_cmd.h"
+#include "road_layout_func.h"
 
 #include "table/strings.h"
 #include "table/roadtypes.h"

@@ -19,6 +19,7 @@
 #include "cargotype.h"
 #include "table/strings.h"
 #include "company_func.h"
+#include "settings_type.h"
 #include "core/tinystring_type.hpp"
 #include "core/typed_container.hpp"
 #include <array>

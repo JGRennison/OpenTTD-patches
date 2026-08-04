@@ -66,6 +66,7 @@
 #include "landscape_cmd.h"
 #include "rail_cmd.h"
 #include "tile_cmd.h"
+#include "road_layout_func.h"
 
 #include "widgets/station_widget.h"
 #include "widgets/misc_widget.h"

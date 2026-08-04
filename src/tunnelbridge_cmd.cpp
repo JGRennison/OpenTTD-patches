@@ -58,6 +58,7 @@
 #include "tile_cmd.h"
 #include "depot_bridge.h"
 #include "rail_settings.h"
+#include "road_layout_func.h"
 
 #include "table/strings.h"
 #include "table/bridge_land.h"

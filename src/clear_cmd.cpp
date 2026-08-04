@@ -19,6 +19,7 @@
 #include "newgrf_newlandscape.h"
 #include "tile_cmd.h"
 #include "tree_func.h"
+#include "settings_type.h"
 
 #include "table/strings.h"
 #include "table/sprites.h"

@@ -11,6 +11,7 @@
 #define TUNNEL_MAP_H
 
 #include "road_map.h"
+#include "transport_type.h"
 #include "core/pool_id_type.hpp"
 
 struct TunnelIDTag : public PoolIDTraits<uint32_t, 0x8000000, 0xFFFFFFFF> {};
