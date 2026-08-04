@@ -25,6 +25,14 @@ enum SaveLoadInvalidateWindowData : uint8_t {
 	SLIWD_FILTER_CHANGES,        ///< The filename filter has changed (via the editbox)
 };
 
+/** Outcome of a directory creation attempt. */
+enum class DirectoryCreateResult : uint8_t {
+	Success,            ///< Directory was created.
+	AlreadyExists,      ///< A file or directory with that name already exists.
+	PermissionDenied,   ///< The OS rejected the operation for permission reasons.
+	OtherError,         ///< Any other filesystem error.
+};
+
 /** Deals with finding savegames */
 struct FiosItem {
 	FiosType type;
@@ -67,6 +75,7 @@ std::optional<uint64_t> FiosGetDiskFreeSpace(const std::string &path);
 std::string FiosMakeHeightmapName(const char *name);
 std::string FiosMakeSavegameName(const char *name);
 std::string FiosMakeOrderListName(const char *name);
+DirectoryCreateResult FiosCreateDirectory(std::string_view name);
 
 FiosType FiosGetSavegameListCallback(SaveLoadOperation fop, const std::string &file, const char *ext, char *title, const char *last);
 FiosType FiosGetScenarioListCallback(SaveLoadOperation fop, const std::string &file, const char *ext, char *title, const char *last);
