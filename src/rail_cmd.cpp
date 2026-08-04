@@ -69,6 +69,22 @@ RailTypes _railtypes_non_realistic_braking;
 static CommandCost RemoveTrainDepot(TileIndex tile, DoCommandFlags flags);
 
 /**
+ * Cycle to the next signal side at the given track on a tile.
+ * For path based signals there are two options, for other signals there is a third option with both sides.
+ * @param t The tile to update.
+ * @param track The track to update for.
+ */
+static void CycleSignalSide(TileIndex t, Track track)
+{
+	uint8_t sig;
+	uint8_t pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 4 : 6;
+
+	sig = GB(_m[t].m3, pos, 2);
+	if (--sig == 0) sig = (IsPbsSignal(GetSignalType(t, track)) || _settings_game.vehicle.train_braking_model == TBM_REALISTIC) ? 2 : 3;
+	SB(_m[t].m3, pos, 2, sig);
+}
+
+/**
  * Reset all rail type information to its default values.
  */
 void ResetRailTypes()

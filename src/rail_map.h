@@ -395,22 +395,6 @@ inline bool IsOnewaySignal(TileIndex t, Track track)
 }
 
 /**
- * Cycle to the next signal side at the given track on a tile.
- * For path based signals there are two options, for other signals there is a third option with both sides.
- * @param t The tile to update.
- * @param track The track to update for.
- */
-inline void CycleSignalSide(TileIndex t, Track track)
-{
-	uint8_t sig;
-	uint8_t pos = (track == TRACK_LOWER || track == TRACK_RIGHT) ? 4 : 6;
-
-	sig = GB(_m[t].m3, pos, 2);
-	if (--sig == 0) sig = (IsPbsSignal(GetSignalType(t, track)) || _settings_game.vehicle.train_braking_model == TBM_REALISTIC) ? 2 : 3;
-	SB(_m[t].m3, pos, 2, sig);
-}
-
-/**
  * Get the signal variant for a track on a tile.
  * In horizontal and vertical orientation there may be two tracks on a tile with a signal.
  * @param t The tile to query.
