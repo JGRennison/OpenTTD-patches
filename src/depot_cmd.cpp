@@ -108,7 +108,7 @@ CommandCost IsExistingDepotBridgeAboveOK(TileIndex tile, const BridgeAboveInfo &
 			break;
 
 		case TileType::Water:
-			depot_transport_type = TRANSPORT_ROAD;
+			depot_transport_type = TRANSPORT_WATER;
 			dir = GetShipDepotDirection(tile);
 			break;
 
