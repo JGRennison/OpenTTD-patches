@@ -363,15 +363,6 @@ protected: // These functions should not be called outside acceleration code.
 	}
 
 	/**
-	 * Returns the slope steepness used by this vehicle.
-	 * @return Slope steepness used by the vehicle.
-	 */
-	inline uint32_t GetSlopeSteepness() const
-	{
-		return _settings_game.vehicle.roadveh_slope_steepness;
-	}
-
-	/**
 	 * Gets the maximum speed allowed by the track for this vehicle.
 	 * @return Since roads don't limit road vehicle speed, it returns always zero.
 	 */

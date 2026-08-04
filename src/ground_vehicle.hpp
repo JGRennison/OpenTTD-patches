@@ -135,7 +135,6 @@ uint16_t Vehicle::GetGroundVehicleFlags() const
  * virtual uint16_t      GetCurrentSpeed() const = 0;
  * virtual uint32_t      GetRollingFriction() const = 0;
  * virtual int           GetAccelerationType() const = 0;
- * virtual int32_t       GetSlopeSteepness() const = 0;
  * virtual int           GetDisplayMaxSpeed() const = 0;
  * virtual uint16_t      GetMaxTrackSpeed() const = 0;
  * virtual bool          TileMayHaveSlopedTrack() const = 0;
