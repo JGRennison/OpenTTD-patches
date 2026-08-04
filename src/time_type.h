@@ -38,7 +38,7 @@ namespace TimeType {
 
 		constexpr SteadyTimePoint(int64_t ticks) : ticks(ticks) {}
 
-public:
+	public:
 		constexpr int64_t NanosecondsSinceEpoch() const { return this->ticks; }
 		int64_t SecondsBeforeNow() const;
 
