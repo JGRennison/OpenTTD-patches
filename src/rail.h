@@ -21,7 +21,6 @@
 #include "date_type.h"
 #include "signal_type.h"
 #include "rail_map.h"
-#include "settings_type.h"
 #include "newgrf_badge_type.h"
 #include "debug_dbg_assert.h"
 #include <vector>
@@ -458,7 +457,7 @@ inline bool RailNoLevelCrossings(RailType rt)
  * @param def Default value to use if the rail type doesn't specify anything.
  * @return True if 90 degree turns are disallowed between the two rail types.
  */
-inline bool Rail90DegTurnDisallowed(RailType rt1, RailType rt2, bool def = _settings_game.pf.forbid_90_deg)
+inline bool Rail90DegTurnDisallowed(RailType rt1, RailType rt2, bool def /* = _settings_game.pf.forbid_90_deg */)
 {
 	if (rt1 == INVALID_RAILTYPE || rt2 == INVALID_RAILTYPE) return def;
 
@@ -471,17 +470,17 @@ inline bool Rail90DegTurnDisallowed(RailType rt1, RailType rt2, bool def = _sett
 	return rt1_90deg || rt2_90deg;
 }
 
-inline bool Rail90DegTurnDisallowedTilesFromDiagDir(TileIndex t1, TileIndex t2, DiagDirection t1_towards_t2, bool def = _settings_game.pf.forbid_90_deg)
+inline bool Rail90DegTurnDisallowedTilesFromDiagDir(TileIndex t1, TileIndex t2, DiagDirection t1_towards_t2, bool def /* = _settings_game.pf.forbid_90_deg */)
 {
 	return Rail90DegTurnDisallowed(GetTileRailTypeByEntryDir(t1, ReverseDiagDir(t1_towards_t2)), GetTileRailTypeByEntryDir(t2, t1_towards_t2), def);
 }
 
-inline bool Rail90DegTurnDisallowedAdjacentTiles(TileIndex t1, TileIndex t2, bool def = _settings_game.pf.forbid_90_deg)
+inline bool Rail90DegTurnDisallowedAdjacentTiles(TileIndex t1, TileIndex t2, bool def /* = _settings_game.pf.forbid_90_deg */)
 {
 	return Rail90DegTurnDisallowedTilesFromDiagDir(t1, t2, DiagdirBetweenTiles(t1, t2), def);
 }
 
-inline bool Rail90DegTurnDisallowedTilesFromTrackdir(TileIndex t1, TileIndex t2, Trackdir t1_td, bool def = _settings_game.pf.forbid_90_deg)
+inline bool Rail90DegTurnDisallowedTilesFromTrackdir(TileIndex t1, TileIndex t2, Trackdir t1_td, bool def /* = _settings_game.pf.forbid_90_deg */)
 {
 	return Rail90DegTurnDisallowedTilesFromDiagDir(t1, t2, TrackdirToExitdir(t1_td), def);
 }
