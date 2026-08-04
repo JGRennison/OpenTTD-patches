@@ -11,8 +11,6 @@
 #define OPENTTD_H
 
 #include <atomic>
-#include <optional>
-#include "time_type.h"
 #include "core/enum_type.hpp"
 
 /** Mode which defines the state of the game. */
@@ -62,16 +60,9 @@ enum ExtraDisplayOptions {
 	XDO_SHOW_HIDDEN_SIGNS       = 1, ///< Show hidden signs
 };
 
-struct GameSessionStats {
-	std::optional<TimeType::SteadyTimePoint> start_time;             ///< Time when the current game was started.
-	std::string savegame_id;                                         ///< Unique ID of the savegame.
-	std::optional<size_t> savegame_size;                             ///< Size of the last saved savegame in bytes, or std::nullopt if not saved yet.
-};
-
 extern GameMode _game_mode;
 extern SwitchMode _switch_mode;
 extern bool _check_special_modes;
-extern GameSessionStats _game_session_stats;
 extern std::atomic<bool> _exit_game;
 extern bool _save_config;
 

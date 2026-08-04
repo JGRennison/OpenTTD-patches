@@ -30,6 +30,7 @@
 #include "core/backup_type.hpp"
 #include "core/geometry_func.hpp"
 #include "viewport_func.h"
+#include "session_stats.h"
 
 #include "table/animcursors.h"
 #include "table/string_colours.h"

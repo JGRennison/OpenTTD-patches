@@ -50,6 +50,7 @@
 #include "../newgrf_roadtype.h"
 #include "../3rdparty/cpp-ring-buffer/ring_buffer.hpp"
 #include "../timer/timer_game_tick.h"
+#include "../session_stats.h"
 #include <atomic>
 #include <string>
 #include <sys/stat.h>

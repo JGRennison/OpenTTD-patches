@@ -23,6 +23,7 @@
 #include "../load_check.h"
 #include "../timer/timer.h"
 #include "../timer/timer_game_tick.h"
+#include "../session_stats.h"
 
 #include "../safeguards.h"
 

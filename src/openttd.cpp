@@ -102,6 +102,7 @@
 #include "plans_func.h"
 #include "misc_cmd.h"
 #include "core/string_consumer.hpp"
+#include "session_stats.h"
 
 #include "linkgraph/linkgraphschedule.h"
 

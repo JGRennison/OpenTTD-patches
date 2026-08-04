@@ -42,6 +42,7 @@
 #include "event_logs.h"
 #include "string_func.h"
 #include "plans_func.h"
+#include "session_stats.h"
 #include "core/format.hpp"
 #include "3rdparty/monocypher/monocypher.h"
 

@@ -18,6 +18,7 @@
 #include "timer/timer_game_tick.h"
 #include "sl/saveload.h"
 #include "date_func.h"
+#include "session_stats.h"
 
 #include "currency.h"
 #include "fontcache.h"

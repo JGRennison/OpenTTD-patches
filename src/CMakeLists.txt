@@ -467,6 +467,7 @@ add_files(
     scope_info.h
     screenshot_type.h
     screenshot_pcx.cpp
+    session_stats.h
     settingentry_gui.cpp
     settingentry_gui.h
     settings.cpp
