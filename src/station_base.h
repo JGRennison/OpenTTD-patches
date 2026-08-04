@@ -1024,6 +1024,9 @@ public:
 
 void RebuildStationKdtree();
 
+using ForAllStationsAroundTilesFunc = bool(Station *, TileIndex);
+using ForAllStationsAroundTilesIntlFunc = void(Station *, const TileArea &, uintptr_t);
+
 /**
  * Call a function on all stations that have any part of the requested area within their catchment.
  * @tparam Func The type of function to call
@@ -1037,31 +1040,29 @@ void ForAllStationsAroundTiles(const TileArea &ta, Func func)
 	/* There are no stations, so we will never find anything. */
 	if (Station::GetNumItems() == 0) return;
 
-	/* Not using, or don't have a nearby stations list, so we need to scan. */
-	btree::btree_set<StationID> seen_stations;
+	extern void ForAllStationsAroundTilesIntl(const TileArea &ta, ForAllStationsAroundTilesIntlFunc *func, uintptr_t data);
 
-	/* Scan an area around the building covering the maximum possible station
-	 * to find the possible nearby stations. */
-	uint max_c = _settings_game.station.modified_catchment ? MAX_CATCHMENT : CA_UNMODIFIED;
-	max_c += _settings_game.station.catchment_increase;
-	TileArea ta_ext = TileArea(ta).Expand(max_c);
-	for (TileIndex tile : ta_ext) {
-		if (IsTileType(tile, TileType::Station)) seen_stations.insert(GetStationIndex(tile));
-	}
-
-	for (StationID stationid : seen_stations) {
-		Station *st = Station::GetIfValid(stationid);
-		if (st == nullptr) continue; /* Waypoint */
-
-		/* Check if station is attached to an industry */
-		if (!_settings_game.station.serve_neutral_industries && st->industry != nullptr) continue;
-
-		/* Test if the tile is within the station's catchment */
-		for (TileIndex tile : ta) {
-			if (st->TileIsInCatchment(tile)) {
-				if (func(st, tile)) break;
+	struct Helper {
+		static void Exec(Station *st, const TileArea &ta, Func &f) {
+			/* Test if the tile is within the station's catchment */
+			for (TileIndex tile : ta) {
+				if (st->TileIsInCatchment(tile)) {
+					if (f(st, tile)) break;
+				}
 			}
-		}
+		};
+	};
+
+	if constexpr (std::is_convertible_v<Func, ForAllStationsAroundTilesFunc *>) {
+		ForAllStationsAroundTilesIntl(ta, [](Station *st, const TileArea &ta, uintptr_t data) {
+			Func f;
+			Helper::Exec(st, ta, f);
+		}, 0);
+	} else {
+		Func *ptr = &func;
+		ForAllStationsAroundTilesIntl(ta, [](Station *st, const TileArea &ta, uintptr_t data) {
+			Helper::Exec(st, ta, *reinterpret_cast<Func *>(data));
+		}, reinterpret_cast<uintptr_t>(ptr));
 	}
 }
 
