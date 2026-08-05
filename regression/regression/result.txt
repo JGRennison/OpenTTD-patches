@@ -1675,7 +1675,6 @@ ERROR: IsEnd() is invalid as Begin() is never called
   GetAirportHeight(9):              -1
   GetAirportCoverageRadius(9):      -1
   GetAirportNumHelipads(9):         -1
-  GetBankBalance():     1999999790
   GetPrice():           5400
   BuildAirport():       true
   IsHangarTile():       false
@@ -1685,11 +1684,11 @@ ERROR: IsEnd() is invalid as Begin() is never called
   IsHangarTile():       true
   IsAirportTile():      true
   GetAirportType():     0
-  GetBankBalance():     1999989890
+  GetCosts():           9900
   RemoveAirport():      true
   IsHangarTile():       false
   IsAirportTile():      false
-  GetBankBalance():     1999989626
+  GetCosts():           264
   BuildAirport():       true
 
 --Bridge--
@@ -8445,7 +8444,6 @@ ERROR: IsEnd() is invalid as Begin() is never called
   IsBuoyTile():         false
   IsLockTile():         false
   IsCanalTile():        false
-  GetBankBalance():     1999979304
   BuildWaterDepot():    true
   BuildDock():          true
   BuildBuoy():          true
@@ -8458,7 +8456,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
   IsBuoyTile():         true
   IsLockTile():         true
   IsCanalTile():        true
-  GetBankBalance():     1999964680
+  GetCosts():           14624
 
 --AIWaypointList(BUOY)--
   Count():             1
@@ -8477,7 +8475,7 @@ ERROR: IsEnd() is invalid as Begin() is never called
   IsBuoyTile():         false
   IsLockTile():         false
   IsCanalTile():        false
-  GetBankBalance():     1999959285
+  GetCosts():           5395
   BuildWaterDepot():    true
   BuildDock():          true
   BuildBuoy():          true
@@ -11002,7 +11000,7 @@ CALLSTACK WITH LOCALS
 *FUNCTION [Valuate()] Valuate line [5]
   [args] ARRAY
   [this] INSTANCE
-*FUNCTION [Start()] regression/main.nut line [2516]
+*FUNCTION [Start()] regression/main.nut line [2518]
   [Infinite] CLOSURE
   [list] INSTANCE
   [this] INSTANCE
