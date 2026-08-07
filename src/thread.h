@@ -32,6 +32,11 @@ inline void CSleep(int milliseconds)
 void SetCurrentThreadName(const std::string &name);
 
 /**
+ * Clear any resources associated with a previous call to SetCurrentThreadName, may do nothing.
+ */
+void ClearCurrentThreadName();
+
+/**
  * Get the name of the current thread, if any.
  * @param buffer The output buffer.
  */
@@ -108,6 +113,8 @@ inline bool StartNewThread(std::thread *thr, std::string_view name, TFn&& _Fx, T
 
 				/* Call user function with the given arguments. */
 				F(A...);
+
+				ClearCurrentThreadName();
 			}, std::string{name}, std::forward<TFn>(_Fx), std::forward<TArgs>(_Ax)...);
 
 		if (thr != nullptr) {

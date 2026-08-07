@@ -65,6 +65,8 @@ static DWORD WINAPI SoundThread(LPVOID)
 		WaitForSingleObject(_event, INFINITE);
 	} while (_waveout != nullptr);
 
+	ClearCurrentThreadName();
+
 	return 0;
 }
 

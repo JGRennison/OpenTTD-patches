@@ -816,3 +816,9 @@ void SetCurrentThreadName(const std::string &name)
 	static const SetThreadDescriptionProc std_proc = GetKernel32Function("SetThreadDescription");
 	if (std_proc != nullptr) std_proc(GetCurrentThread(), OTTD2FS(name).c_str());
 }
+
+void ClearCurrentThreadName()
+{
+	std::lock_guard<std::mutex> lock(_thread_name_map_mutex);
+	_thread_name_map.erase(GetCurrentThreadId());
+}

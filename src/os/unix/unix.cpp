@@ -326,6 +326,8 @@ void SetCurrentThreadName([[maybe_unused]] const std::string &thread_name)
 #endif /* defined(__APPLE__) */
 }
 
+void ClearCurrentThreadName() {}
+
 void GetCurrentThreadName(format_target &buf)
 {
 #if !defined(NO_THREADS) && defined(__GLIBC__)

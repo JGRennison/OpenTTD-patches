@@ -67,6 +67,8 @@ static void WINAPI CheckForConsoleInput()
 		/* Signal input waiting that input is read and wait for it being handled. */
 		SignalObjectAndWait(_hInputReady, _hWaitForInputHandling, INFINITE, FALSE);
 	}
+
+	ClearCurrentThreadName();
 }
 
 static void CreateWindowsConsoleThread()
