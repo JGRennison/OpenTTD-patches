@@ -8,7 +8,6 @@
 /** @file newgrf_debug_gui.cpp GUIs for debugging NewGRFs. */
 
 #include "stdafx.h"
-#include <functional>
 #include "core/backup_type.hpp"
 #include "core/container_func.hpp"
 #include "core/geometry_func.hpp"
@@ -58,6 +57,7 @@
 #include "table/strings.h"
 
 #include <array>
+#include <functional>
 #include <mutex>
 
 #include "safeguards.h"

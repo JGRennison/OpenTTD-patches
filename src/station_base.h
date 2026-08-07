@@ -27,7 +27,6 @@
 #include <vector>
 #include <array>
 #include <iterator>
-#include <functional>
 #include <algorithm>
 
 static const uint8_t INITIAL_STATION_RATING = 175;
