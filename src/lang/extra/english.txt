@@ -236,7 +236,7 @@ STR_CONFIG_SETTING_ROADVEH_CANT_QUANTUM_TUNNEL                  :Prevent road ve
 STR_CONFIG_SETTING_ROADVEH_CANT_QUANTUM_TUNNEL_HELPTEXT         :Disable road vehicles from passing through other road vehicles when their path is blocked for an extended period of time.
 
 STR_CONFIG_SETTING_DRIVE_THROUGH_TRAIN_DEPOT                    :Drive-through train depots: {STRING2}
-STR_CONFIG_SETTING_DRIVE_THROUGH_TRAIN_DEPOT_HELPTEXT           :Enable emulation of drive-through train depots. Trains can move between depots placed back to back, optionally with intermediary depots in between.
+STR_CONFIG_SETTING_DRIVE_THROUGH_TRAIN_DEPOT_HELPTEXT           :Enable emulation of drive-through train depots. Trains can move between depots placed back to back, optionally with intermediary depots in between.{}When enabled, trains are not forced to leave depots driving forward.
 
 STR_CONFIG_SETTING_WARN_RESTRICTION_WAIT_VEHICLE                :Warn if train is stuck due to a routing restriction: {STRING2}
 STR_CONFIG_SETTING_WARN_RESTRICTION_WAIT_VEHICLE_HELPTEXT       :Trigger messages about trains which are stuck waiting at a path signal for a long time because of a routing restriction.
