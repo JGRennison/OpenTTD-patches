@@ -2,6 +2,15 @@
 
 * * *
 
+### v0.73.1 (2026-08-08)
+* Fix leftover reserved paths which could occur for trains entering and partially in a depot.
+* Fix driving backwards pathfinder penalty when partially in depot.
+* Fix tunnel/bridge signal handling when driving backwards.
+* Fix building bridges over existing depots.
+* Fix NewGRF randomised triggers.
+* Fix NewGRF rail type badge checks with two rail types per tile.
+* Trains drive forwards out of depots when drive through depots is disabled.
+
 ### v0.73.0 (2026-07-20)
 * Fix crash which could occur when dropdowns were laid out above the button.
 * Fix crash which could occur when a station listed in a station join window was deleted.
