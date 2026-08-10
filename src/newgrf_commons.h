@@ -205,10 +205,9 @@ protected:
 	std::vector<uint16_t> entity_overrides;
 	std::vector<uint32_t> grfid_overrides;
 
-	uint16_t max_offset;   ///< what is the length of the original entity's array of specs
-	uint16_t max_entities; ///< what is the amount of entities, old and new summed
-
-	uint16_t invalid_id;   ///< ID used to detected invalid entities
+	const uint16_t max_offset;   ///< what is the length of the original entity's array of specs
+	const uint16_t max_entities; ///< what is the amount of entities, old and new summed
+	const uint16_t invalid_id;   ///< ID used to detected invalid entities
 
 	/**
 	 * Checks whether the given ID is valid in the context of this override manager.
