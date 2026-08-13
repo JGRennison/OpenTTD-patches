@@ -152,7 +152,7 @@ bool ClientNetworkCoordinatorSocketHandler::ReceiveGameCoordinatorError(Packet &
 
 			/* Mark the server as offline. */
 			NetworkGame *item = NetworkGameListAddItem(detail);
-			item->status = NGLS_OFFLINE;
+			item->status = NetworkGameStatus::Offline;
 
 			UpdateNetworkGameWindow();
 			return true;
@@ -256,7 +256,7 @@ bool ClientNetworkCoordinatorSocketHandler::ReceiveGameCoordinatorListing(Packet
 		/* Check for compatibility with the client. */
 		CheckGameCompatibility(item->info);
 		/* Mark server as online. */
-		item->status = NGLS_ONLINE;
+		item->status = NetworkGameStatus::Online;
 		/* Mark the item as up-to-date. */
 		item->version = _network_game_list_version;
 	}
@@ -447,7 +447,7 @@ NetworkRecvStatus ClientNetworkCoordinatorSocketHandler::CloseConnection(bool er
 
 	SetWindowDirty(WindowClass::NetworkClientList, 0);
 
-	return NETWORK_RECV_STATUS_OKAY;
+	return NetworkRecvStatus::Okay;
 }
 
 /**

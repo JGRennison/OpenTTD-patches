@@ -43,6 +43,8 @@ enum class SettingFlag : uint8_t {
 	Private,                 ///< Setting is in private ini.
 	Secret,                  ///< Setting is in secrets ini.
 };
+
+/** Bitset of \c SettingFlag elements. */
 using SettingFlags = EnumBitSet<SettingFlag, uint32_t>;
 
 /**

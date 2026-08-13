@@ -390,7 +390,7 @@ public:
 			case WID_TA_ACTION_INFO: {
 				assert(size.width > padding.width && size.height > padding.height);
 				Dimension d = {0, 0};
-				for (TownAction i = {}; i != TownAction::End; ++i) {
+				for (TownAction i : EnumRange(TownAction::End)) {
 					auto [text, _] = this->PrepareActionInfoString(to_underlying(i));
 					d = maxdim(d, GetStringMultiLineBoundingBox(text, size));
 				}
@@ -407,7 +407,7 @@ public:
 			case WID_TA_COMMAND_LIST:
 				size.height = (5 + SETTING_OVERRIDE_COUNT) * GetCharacterHeight(FontSize::Normal) + padding.height;
 				size.width = GetStringBoundingBox(STR_LOCAL_AUTHORITY_ACTIONS_TITLE).width;
-				for (TownAction i = {}; i != TownAction::End; ++i) {
+				for (TownAction i : EnumRange(TownAction::End)) {
 					size.width = std::max(size.width, GetStringBoundingBox(STR_LOCAL_AUTHORITY_ACTION_SMALL_ADVERTISING_CAMPAIGN + to_underlying(i)).width + padding.width);
 				}
 				size.width += padding.width;
@@ -627,7 +627,7 @@ public:
 		}
 
 		bool first = true;
-		for (TownAcceptanceEffect i = TownAcceptanceEffect::Begin; i < TownAcceptanceEffect::End; i++) {
+		for (TownAcceptanceEffect i : EnumRange(TownAcceptanceEffect::End)) {
 			if (this->town->goal[i] == 0) continue;
 			if (this->town->goal[i] == TOWN_GROWTH_WINTER && (TileHeight(this->town->xy) < LowestSnowLine() || this->town->cache.population <= 90)) continue;
 			if (this->town->goal[i] == TOWN_GROWTH_DESERT && (GetTropicZone(this->town->xy) != TropicZone::Desert || this->town->cache.population <= 60)) continue;
@@ -756,7 +756,7 @@ public:
 		uint aimed_height = static_cast<uint>(1 + CountBits(CargoSpec::town_production_cargo_mask[TownProductionEffect::Passengers] | CargoSpec::town_production_cargo_mask[TownProductionEffect::Mail])) * GetCharacterHeight(FontSize::Normal);
 
 		bool first = true;
-		for (TownAcceptanceEffect i = TownAcceptanceEffect::Begin; i < TownAcceptanceEffect::End; i++) {
+		for (TownAcceptanceEffect i : EnumRange(TownAcceptanceEffect::End)) {
 			if (this->town->goal[i] == 0) continue;
 			if (this->town->goal[i] == TOWN_GROWTH_WINTER && (TileHeight(this->town->xy) < LowestSnowLine() || this->town->cache.population <= 90)) continue;
 			if (this->town->goal[i] == TOWN_GROWTH_DESERT && (GetTropicZone(this->town->xy) != TropicZone::Desert || this->town->cache.population <= 60)) continue;
@@ -1121,7 +1121,7 @@ public:
 	{
 		switch (widget) {
 			case WID_TD_SORT_ORDER:
-				this->DrawSortButtonState(widget, this->towns.IsDescSortOrder() ? SBS_DOWN : SBS_UP);
+				this->DrawSortButton(widget, this->towns.IsDescSortOrder());
 				break;
 
 			case WID_TD_LIST: {

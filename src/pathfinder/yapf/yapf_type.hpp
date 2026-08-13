@@ -34,6 +34,8 @@ enum class EndSegmentReason : uint8_t {
 	TargetReached, ///< we have just reached the destination
 	Reverse, ///< we should reverse after this point
 };
+
+/** Bitset of \c EndSegmentReason elements. */
 using EndSegmentReasons = EnumBitSet<EndSegmentReason, uint16_t>;
 
 /** What reasons mean that the target can be found and needs to be detected. */

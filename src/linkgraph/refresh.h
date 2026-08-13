@@ -36,6 +36,7 @@ protected:
 		Aircraft,    ///< Vehicle is an aircraft.
 	};
 
+	/** Bitset of \c RefreshFlag elements. */
 	using RefreshFlags = EnumBitSet<RefreshFlag, uint8_t>;
 
 	/**

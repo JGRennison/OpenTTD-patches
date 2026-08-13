@@ -101,7 +101,7 @@ static void FillValidSearchPaths(bool only_local_path)
 	using SeenFlags = EnumBitSet<SeenFlag, uint8_t>;
 	robin_hood::unordered_map<std::string_view, SeenFlags> seen{};
 
-	for (Searchpath sp = Searchpath::Begin; sp < Searchpath::End; sp++) {
+	for (Searchpath sp : EnumRange(Searchpath::End)) {
 		if (only_local_path) {
 			switch (sp) {
 				case Searchpath::WorkingDir: // Can be influenced by "-c" option.

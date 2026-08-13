@@ -226,7 +226,7 @@ static void InitBlocksizeForVehicles(VehicleType type, EngineImageType image_typ
 void InitDepotWindowBlockSizes()
 {
 	if (IsHeadless()) {
-		for (VehicleType vt = VehicleType::Begin; vt < VehicleType::CompanyEnd; vt++) {
+		for (VehicleType vt : EnumRange(VehicleType::CompanyEnd)) {
 			_base_block_sizes_depot[vt] = {};
 			_base_block_sizes_purchase[vt] = {};
 		}
@@ -234,7 +234,7 @@ void InitDepotWindowBlockSizes()
 		return;
 	}
 
-	for (VehicleType vt = VehicleType::Begin; vt < VehicleType::CompanyEnd; vt++) {
+	for (VehicleType vt : EnumRange(VehicleType::CompanyEnd)) {
 		InitBlocksizeForVehicles(vt, EIT_IN_DEPOT);
 		InitBlocksizeForVehicles(vt, EIT_PURCHASE);
 	}

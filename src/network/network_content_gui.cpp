@@ -612,7 +612,7 @@ public:
 				size.width += Window::SortButtonWidth() * 2;
 				/* And also enough for the width of each type of content. */
 				Dimension d = size;
-				for (ContentType ct = ContentType::Begin; ct != ContentType::End; ++ct) {
+				for (ContentType ct : EnumRange(ContentType::Begin, ContentType::End)) {
 					d = maxdim(d, GetStringBoundingBox(GetContentTypeString(ct)));
 				}
 				size.width = std::max(size.width, d.width + padding.width);
@@ -646,19 +646,12 @@ public:
 
 	void OnPaint() override
 	{
-		const SortButtonState arrow = this->content.IsDescSortOrder() ? SBS_DOWN : SBS_UP;
-
 		if (this->content.NeedRebuild()) {
 			this->BuildContentList();
 		}
 
 		this->DrawWidgets();
-
-		switch (this->content.SortType()) {
-			case WID_NCL_CHECKBOX - WID_NCL_CHECKBOX: this->DrawSortButtonState(WID_NCL_CHECKBOX, arrow); break;
-			case WID_NCL_TYPE     - WID_NCL_CHECKBOX: this->DrawSortButtonState(WID_NCL_TYPE,     arrow); break;
-			case WID_NCL_NAME     - WID_NCL_CHECKBOX: this->DrawSortButtonState(WID_NCL_NAME,     arrow); break;
-		}
+		this->DrawSortButton(this->content.SortType() + WID_NCL_CHECKBOX, this->content.IsDescSortOrder());
 	}
 
 	/**
@@ -1013,7 +1006,7 @@ public:
 		this->SetWidgetDisabledState(WID_NCL_SELECT_ALL, !show_select_all);
 		this->SetWidgetDisabledState(WID_NCL_SELECT_UPDATE, !show_select_upgrade || !this->filter_data.string_filter.IsEmpty());
 		this->SetWidgetDisabledState(WID_NCL_OPEN_URL, this->selected == nullptr || this->selected->url.empty());
-		for (TextfileType tft = TFT_CONTENT_BEGIN; tft < TFT_CONTENT_END; tft++) {
+		for (TextfileType tft : EnumRange(TFT_CONTENT_BEGIN, TFT_CONTENT_END)) {
 			this->SetWidgetDisabledState(WID_NCL_TEXTFILE + tft, this->selected == nullptr || this->selected->state != ContentInfo::State::AlreadyHere || !this->selected->GetTextfile(tft).has_value());
 		}
 	}
@@ -1040,7 +1033,7 @@ EnumIndexArray<std::string, ContentType, ContentType::End> NetworkContentListWin
  */
 void BuildContentTypeStringList()
 {
-	for (ContentType ct = ContentType::Begin; ct != ContentType::End; ++ct) {
+	for (ContentType ct : EnumRange(ContentType::Begin, ContentType::End)) {
 		NetworkContentListWindow::content_type_strs[ct] = GetString(GetContentTypeString(ct));
 	}
 }

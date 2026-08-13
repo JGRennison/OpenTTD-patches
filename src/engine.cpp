@@ -577,7 +577,7 @@ bool Engine::IsVariantHidden(CompanyID c) const
 void EngineOverrideManager::ResetToDefaultMapping()
 {
 	this->mappings.clear();
-	for (VehicleType type = VehicleType::Train; type <= VehicleType::Aircraft; type++) {
+	for (VehicleType type : EnumRange(VehicleType::CompanyEnd)) {
 		for (uint8_t internal_id = 0; internal_id < GetOriginalEngineCount(type); internal_id++) {
 			this->mappings.push_back({ INVALID_GRFID, internal_id, type, internal_id });
 		}

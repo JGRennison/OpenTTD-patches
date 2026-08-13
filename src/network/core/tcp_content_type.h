@@ -37,8 +37,6 @@ enum class ContentType : uint8_t {
 };
 using ContentTypes = EnumBitSet<ContentType, uint16_t, ContentType::End>; ///< Bitset of chosen content types.
 
-DECLARE_INCREMENT_DECREMENT_OPERATORS(ContentType)
-
 template <>
 struct BaseBitSetEnableDirectIteration<ContentTypes> {
 	static const bool value = true;

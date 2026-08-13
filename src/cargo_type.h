@@ -113,6 +113,7 @@ namespace CargoFilterCriteria {
  */
 inline bool IsValidCargoType(CargoType cargo) { return cargo != INVALID_CARGO; }
 
+/** Bitset of \c CargoType elements. */
 using CargoTypes = EnumBitSet<CargoType, uint64_t>;
 
 template <>

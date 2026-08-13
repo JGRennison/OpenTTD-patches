@@ -127,9 +127,8 @@ uint8_t GetNewgrfCurrencyIdConverted(uint8_t grfcurr_id)
 uint64_t GetMaskOfAllowedCurrencies()
 {
 	uint64_t mask = 0LL;
-	uint i;
 
-	for (i = 0; i < CURRENCY_END; i++) {
+	for (Currencies i : EnumRange(CURRENCY_END)) {
 		CalTime::Year to_euro = _currency_specs[i].to_euro;
 
 		if (to_euro != CF_NOEURO && to_euro != CF_ISEURO && CalTime::CurYear() >= to_euro) continue;
@@ -161,7 +160,7 @@ void CheckSwitchToEuro()
  */
 void ResetCurrencies(bool preserve_custom)
 {
-	for (uint i = 0; i < CURRENCY_END; i++) {
+	for (Currencies i : EnumRange(CURRENCY_END)) {
 		if (preserve_custom && i == CURRENCY_CUSTOM) continue;
 		_currency_specs[i] = origin_currency_specs[i];
 	}

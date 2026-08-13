@@ -782,7 +782,7 @@ void UpdateStationAcceptance(Station *st, bool show_msg)
 	}
 
 	/* Adjust in case our station only accepts fewer kinds of goods */
-	for (CargoType cargo{}; cargo < NUM_CARGO; ++cargo) {
+	for (CargoType cargo : EnumRange(NUM_CARGO)) {
 		uint amt = acceptance[cargo];
 
 		/* Make sure the station can accept the goods type. */
@@ -972,7 +972,7 @@ CommandCost CheckBuildableTile(TileIndex tile, DiagDirections invalid_dirs, int 
 	int flat_z = z + GetSlopeMaxZ(tileh);
 	if (tileh != SLOPE_FLAT) {
 		/* Forbid building if the tile faces a slope in a invalid direction. */
-		for (DiagDirection dir = DiagDirection::Begin; dir != DiagDirection::End; dir++) {
+		for (DiagDirection dir : EnumRange(DiagDirection::End)) {
 			if (invalid_dirs.Test(dir) && !CanBuildDepotByTileh(dir, tileh)) {
 				return CommandCost(STR_ERROR_FLAT_LAND_REQUIRED);
 			}
@@ -3221,7 +3221,7 @@ CommandCost CmdBuildDock(DoCommandFlags flags, TileIndex tile, StationID station
 
 void RemoveDockingTile(TileIndex t)
 {
-	for (DiagDirection d = DiagDirection::Begin; d != DiagDirection::End; d++) {
+	for (DiagDirection d : EnumRange(DiagDirection::End)) {
 		TileIndex tile = t + TileOffsByDiagDir(d);
 		if (!IsValidTile(tile)) continue;
 
@@ -3245,7 +3245,7 @@ void ClearDockingTilesCheckingNeighbours(TileIndex tile)
 	assert(IsValidTile(tile));
 
 	/* Clear and maybe re-set docking tile */
-	for (DiagDirection d = DiagDirection::Begin; d != DiagDirection::End; d++) {
+	for (DiagDirection d : EnumRange(DiagDirection::End)) {
 		TileIndex docking_tile = tile + TileOffsByDiagDir(d);
 		if (!IsValidTile(docking_tile)) continue;
 
@@ -3268,7 +3268,7 @@ static TileIndex FindDockLandPart(TileIndex t)
 	StationGfx gfx = GetStationGfx(t);
 	if (gfx < GFX_DOCK_BASE_WATER_PART) return t;
 
-	for (DiagDirection d = DiagDirection::Begin; d != DiagDirection::End; d++) {
+	for (DiagDirection d : EnumRange(DiagDirection::End)) {
 		TileIndex tile = t + TileOffsByDiagDir(d);
 		if (!IsValidTile(tile)) continue;
 		if (!IsDockTile(tile)) continue;
@@ -3600,7 +3600,7 @@ static void DrawTile_Station(TileInfo *ti, DrawTileProcParams params)
 
 	if (IsBuoy(ti->tile)) {
 		DrawWaterClassGround(ti);
-		SpriteID sprite = GetCanalSprite(CF_BUOY, ti->tile);
+		SpriteID sprite = GetCanalSprite(CanalFeature::Buoy, ti->tile);
 		if (sprite != 0) total_offset = sprite - SPR_IMG_BUOY;
 	} else if (IsDock(ti->tile) || (IsOilRig(ti->tile) && IsTileOnWater(ti->tile))) {
 		if (ti->tileh == SLOPE_FLAT) {
@@ -4191,7 +4191,7 @@ void TriggerWatchedCargoCallbacks(Station *st)
 {
 	/* Collect cargoes accepted since the last big tick. */
 	CargoTypes cargoes{};
-	for (CargoType cargo_type{}; cargo_type < NUM_CARGO; ++cargo_type) {
+	for (CargoType cargo_type : EnumRange(NUM_CARGO)) {
 		if (st->goods[cargo_type].status.Test(GoodsEntry::State::AcceptedBigtick)) cargoes.Set(cargo_type);
 	}
 
@@ -4579,7 +4579,7 @@ void ClearDeleteStaleLinksVehicleCache()
  */
 void DeleteStaleLinks(Station *from)
 {
-	for (CargoType cargo{}; cargo < NUM_CARGO; ++cargo) {
+	for (CargoType cargo : EnumRange(NUM_CARGO)) {
 		const bool auto_distributed = (_settings_game.linkgraph.GetDistributionType(cargo) != DistributionType::Manual);
 		GoodsEntry &ge = from->goods[cargo];
 		LinkGraph *lg = LinkGraph::GetIfValid(ge.link_graph);

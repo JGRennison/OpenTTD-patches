@@ -56,6 +56,7 @@ enum class EdgeUpdateMode : uint8_t {
 	Aircraft, ///< Capacity is an aircraft link.
 };
 
+/** Bitset of \c EdgeUpdateMode elements. */
 using EdgeUpdateModes = EnumBitSet<EdgeUpdateMode, uint8_t>;
 
 #endif /* LINKGRAPH_TYPE_H */

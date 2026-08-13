@@ -286,7 +286,7 @@ public:
 
 			case TRW_WIDGET_TRAIN_RAILTYPE_DROPDOWN: {
 				Dimension d = GetStringBoundingBox(STR_REPLACE_ALL_RAILTYPE);
-				for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
+				for (RailType rt : EnumRange(RAILTYPE_END)) {
 					const RailTypeInfo *rti = GetRailTypeInfo(rt);
 					// Skip rail type if it has no label
 					if (rti->label == 0) continue;

@@ -142,7 +142,7 @@ void InitRoadTypesCaches()
 	_collision_mode_roadtypes.fill({});
 	_roadtypes_non_train_colliding = {};
 
-	for (RoadType rt = ROADTYPE_BEGIN; rt != ROADTYPE_END; rt++) {
+	for (RoadType rt : EnumRange(ROADTYPE_END)) {
 		const RoadTypeInfo &rti = _roadtypes[rt];
 		_collision_mode_roadtypes[rti.collision_mode].Set(rt);
 		if (rti.extra_flags.Test(RoadTypeExtraFlag::NoTrainCollision)) _roadtypes_non_train_colliding.Set(rt);
@@ -2027,7 +2027,7 @@ void DrawRoadTypeCatenary(const TileInfo *ti, RoadType rt, RoadBits rb)
 		/* On junctions we check whether neighbouring tiles also have catenary, and possibly
 		 * do not draw catenary towards those neighbours, which do not have catenary. */
 		RoadBits rb_new{};
-		for (DiagDirection dir = DiagDirection::Begin; dir < DiagDirection::End; dir++) {
+		for (DiagDirection dir : EnumRange(DiagDirection::End)) {
 			if (rb.Any(DiagDirToRoadBits(dir))) {
 				TileIndex neighbour = TileAddByDiagDir(ti->tile, dir);
 				if (MayHaveRoad(neighbour)) {

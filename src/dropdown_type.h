@@ -125,6 +125,8 @@ enum class DropDownOption : uint8_t {
 	Persist, ///< Set if this dropdown should stay open after an option is selected.
 	Filterable, ///< Set if the dropdown is filterable.
 };
+
+/** Bitset of \c DropDownOption elements. */
 using DropDownOptions = EnumBitSet<DropDownOption, uint8_t>;
 
 void ShowDropDownListAt(Window *w, DropDownList &&list, int selected, WidgetID button, Rect wi_rect, Colours wi_colour, DropDownOptions options = {}, DropDownSyncFocus sync_parent_focus = DDSF_NONE, std::string * const persistent_filter_text = nullptr);

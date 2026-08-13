@@ -30,6 +30,8 @@ enum class IndustryLifeType : uint8_t {
 	Organic = 1, ///< Like forests
 	Processing = 2, ///< Like factories
 };
+
+/** Bitset of \c IndustryLifeType elements. */
 using IndustryLifeTypes = EnumBitSet<IndustryLifeType, uint8_t>;
 
 static constexpr IndustryLifeTypes INDUSTRYLIFE_BLACK_HOLE{}; ///< Like power plants and banks
@@ -86,6 +88,8 @@ enum class IndustryBehaviour : uint8_t {
 	/* Internal use */
 	ExpensiveLocationCallback = 31, ///< Location callback looks expensive
 };
+
+/** Bitset of \c IndustryBehaviour elements. */
 using IndustryBehaviours = EnumBitSet<IndustryBehaviour, uint32_t>;
 
 /** Flags for miscellaneous industry tile specialities */
@@ -93,6 +97,8 @@ enum class IndustryTileSpecialFlag : uint8_t {
 	NextFrameRandomBits = 0, ///< Callback 0x26 needs random bits
 	AcceptsAllCargo = 1, ///< Tile always accepts all cargoes the associated industry accepts
 };
+
+/** Bitset of \c IndustryTileSpecialFlag elements. */
 using IndustryTileSpecialFlags = EnumBitSet<IndustryTileSpecialFlag, uint8_t>;
 
 /** Definition of one tile in an industry tile layout */

@@ -718,7 +718,7 @@ private:
 			default_col = GetColourOffset(*default_livery, primary) + to_underlying(Colours::End);
 			list.push_back(std::make_unique<DropDownListColourItem<>>(default_col, false));
 		}
-		for (Colours colour = Colours::Begin; colour != Colours::End; colour++) {
+		for (Colours colour : EnumRange(Colours::End)) {
 			list.push_back(std::make_unique<DropDownListColourItem<>>(to_underlying(colour), used_colours.Test(colour)));
 		}
 
@@ -849,7 +849,7 @@ public:
 			case WID_SCL_PRI_COL_DROPDOWN: {
 				this->square = GetSpriteSize(SPR_SQUARE);
 				int string_padding = this->square.width + WidgetDimensions::scaled.hsep_normal + padding.width;
-				for (Colours colour = Colours::Begin; colour != Colours::End; colour++) {
+				for (Colours colour : EnumRange(Colours::End)) {
 					size.width = std::max(size.width, GetStringBoundingBox(STR_COLOUR_DARK_BLUE + to_underlying(colour)).width + string_padding);
 				}
 				size.width = std::max(size.width, GetStringBoundingBox(STR_COLOUR_DEFAULT).width + string_padding);
@@ -1676,14 +1676,14 @@ struct CompanyInfrastructureWindow : Window
 		Money total;
 
 		uint32_t rail_total = c->infrastructure.GetRailTotal();
-		for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
+		for (RailType rt : EnumRange(RAILTYPE_END)) {
 			if (this->railtypes.Test(rt)) total += RailMaintenanceCost(rt, c->infrastructure.rail[rt], rail_total);
 		}
 		total += SignalMaintenanceCost(c->infrastructure.signal);
 
 		uint32_t road_total = c->infrastructure.GetRoadTotal();
 		uint32_t tram_total = c->infrastructure.GetTramTotal();
-		for (RoadType rt = ROADTYPE_BEGIN; rt != ROADTYPE_END; rt++) {
+		for (RoadType rt : EnumRange(ROADTYPE_END)) {
 			if (this->roadtypes.Test(rt)) total += RoadMaintenanceCost(rt, c->infrastructure.road[rt], RoadTypeIsRoad(rt) ? road_total : tram_total);
 		}
 
@@ -1770,7 +1770,7 @@ struct CompanyInfrastructureWindow : Window
 				uint32_t max_val = 1000;  // Some random number to reserve enough space.
 				Money max_cost = 10000; // Some random number to reserve enough space.
 				uint32_t rail_total = c->infrastructure.GetRailTotal();
-				for (RailType rt = RAILTYPE_BEGIN; rt < RAILTYPE_END; rt++) {
+				for (RailType rt : EnumRange(RAILTYPE_END)) {
 					max_val = std::max(max_val, c->infrastructure.rail[rt]);
 					max_cost = std::max(max_cost, RailMaintenanceCost(rt, c->infrastructure.rail[rt], rail_total));
 				}
@@ -1778,7 +1778,7 @@ struct CompanyInfrastructureWindow : Window
 				max_cost = std::max(max_cost, SignalMaintenanceCost(c->infrastructure.signal));
 				uint32_t road_total = c->infrastructure.GetRoadTotal();
 				uint32_t tram_total = c->infrastructure.GetTramTotal();
-				for (RoadType rt = ROADTYPE_BEGIN; rt < ROADTYPE_END; rt++) {
+				for (RoadType rt : EnumRange(ROADTYPE_END)) {
 					max_val = std::max(max_val, c->infrastructure.road[rt]);
 					max_cost = std::max(max_cost, RoadMaintenanceCost(rt, c->infrastructure.road[rt], RoadTypeIsRoad(rt) ? road_total : tram_total));
 
@@ -2263,7 +2263,7 @@ struct CompanyWindow : Window
 	void DrawVehicleCountsWidget(const Rect &r, const Company *c) const
 	{
 		int y = r.top;
-		for (VehicleType type = VehicleType::Begin; type < VehicleType::CompanyEnd; type++) {
+		for (VehicleType type : EnumRange(VehicleType::CompanyEnd)) {
 			uint amount = c->group_all[type].num_vehicle;
 			if (amount != 0) {
 				DrawString(r.left, r.right, y, GetString(_company_view_vehicle_count_strings[type], amount));

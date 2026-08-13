@@ -302,7 +302,7 @@ void LinkRefresher::RefreshStats(const Order *cur, const Order *next, uint32_t t
 	Station *st = Station::GetIfValid(cur->GetDestination().ToStationID());
 	if (st != nullptr && next_station != StationID::Invalid() && next_station != st->index) {
 		Station *st_to = Station::Get(next_station);
-		for (CargoType cargo{}; cargo < NUM_CARGO; ++cargo) {
+		for (CargoType cargo : EnumRange(NUM_CARGO)) {
 			/* Refresh the link and give it a minimum capacity. */
 
 			if (!this->cargo_mask.Test(cargo)) continue;
@@ -384,7 +384,7 @@ void LinkRefresher::RefreshLinks(const Order *cur, const Order *next, TimetableT
 			} else if (!flags.Test(RefreshFlag::InAutorefit)) {
 				flags.Set(RefreshFlag::InAutorefit);
 				LinkRefresher backup(*this);
-				for (CargoType cargo{}; cargo != NUM_CARGO; ++cargo) {
+				for (CargoType cargo : EnumRange(NUM_CARGO)) {
 					if (!CargoSpec::Get(cargo)->IsValid()) continue;
 					if (next->GetCargoLoadType(cargo) == OrderLoadType::NoLoad) continue;
 					if (this->HandleRefit(cargo)) {

@@ -598,7 +598,7 @@ restart:;
  */
 void ResetCompanyLivery(Company *c)
 {
-	for (LiveryScheme scheme = LiveryScheme::Begin; scheme < LiveryScheme::End; scheme++) {
+	for (LiveryScheme scheme : EnumRange(LiveryScheme::End)) {
 		c->livery[scheme].in_use.Reset();
 		c->livery[scheme].colour1 = c->colour;
 		c->livery[scheme].colour2 = c->colour;
@@ -939,7 +939,7 @@ void CompanyAdminUpdate(const Company *company)
  */
 void CompanyAdminRemove(CompanyID company_id, CompanyRemoveReason reason)
 {
-	if (_network_server) NetworkAdminCompanyRemove(company_id, (AdminCompanyRemoveReason)reason);
+	if (_network_server) NetworkAdminCompanyRemove(company_id, static_cast<AdminCompanyRemoveReason>(reason));
 }
 
 /**
@@ -1219,7 +1219,7 @@ CommandCost CmdSetCompanyManagerFace(DoCommandFlags flags, uint style, uint32_t 
  */
 void UpdateCompanyLiveries(Company *c)
 {
-	for (LiveryScheme i = LiveryScheme::Steam; i < LiveryScheme::End; i++) {
+	for (LiveryScheme i : EnumRange(LiveryScheme::Steam, LiveryScheme::End)) {
 		if (!c->livery[i].in_use.Test(Livery::Flag::Primary)) c->livery[i].colour1 = c->livery[LiveryScheme::Default].colour1;
 		if (!c->livery[i].in_use.Test(Livery::Flag::Secondary)) c->livery[i].colour2 = c->livery[LiveryScheme::Default].colour2;
 	}
@@ -1281,8 +1281,8 @@ CommandCost CmdSetCompanyColour(DoCommandFlags flags, LiveryScheme scheme, bool 
 			/* Else loop through all schemes to see if any are left enabled.
 			 * If not, disable the default scheme too. */
 			c->livery[LiveryScheme::Default].in_use.Reset({Livery::Flag::Primary, Livery::Flag::Secondary});
-			for (scheme = LiveryScheme::Default; scheme < LiveryScheme::End; scheme++) {
-				if (c->livery[scheme].in_use.Any({Livery::Flag::Primary, Livery::Flag::Secondary})) {
+			for (LiveryScheme other_scheme : EnumRange(LiveryScheme::End)) {
+				if (c->livery[other_scheme].in_use.Any({Livery::Flag::Primary, Livery::Flag::Secondary})) {
 					c->livery[LiveryScheme::Default].in_use.Set(Livery::Flag::Primary);
 					break;
 				}
@@ -1472,13 +1472,13 @@ uint32_t CompanyInfrastructure::GetRoadTramTotal(RoadTramType rtt) const
 void CompanyInfrastructure::Dump(format_target &buffer) const
 {
 	uint rail_total = 0;
-	for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
+	for (RailType rt : EnumRange(RAILTYPE_END)) {
 		if (rail[rt]) buffer.format("Rail: {}: {}\n", GetStringFmtParam(GetRailTypeInfo(rt)->strings.name), rail[rt]);
 		rail_total += rail[rt];
 	}
 	buffer.format("Total Rail: {}\n", rail_total);
 	buffer.format("Signal: {}\n", signal);
-	for (RoadType rt = ROADTYPE_BEGIN; rt != ROADTYPE_END; rt++) {
+	for (RoadType rt : EnumRange(ROADTYPE_END)) {
 		if (road[rt]) buffer.format("{}: {}: {}\n", RoadTypeIsTram(rt) ? "Tram" : "Road", GetStringFmtParam(GetRoadTypeInfo(rt)->strings.name), road[rt]);
 	}
 	buffer.format("Total Road: {}\n", this->GetRoadTotal());

@@ -31,6 +31,8 @@ enum class FrameFlag : uint8_t {
 	Lowered, ///< If set the frame is lowered and the background colour brighter (ie. buttons when pressed)
 	Darkened, ///< If set the background is darker, allows for lowered frames with normal background colour when used with FrameFlag::Lowered (ie. dropdown boxes)
 };
+
+/** Bitset of \c FrameFlag elements. */
 using FrameFlags = EnumBitSet<FrameFlag, uint8_t>;
 
 class WidgetDimensions {
@@ -173,6 +175,8 @@ enum class WindowDefaultFlag : uint8_t {
 	NoClose, ///< This window can't be interactively closed
 	Network, ///< This window is used for network client functionality
 };
+
+/** Bitset of \c WindowDefaultFlag elements. */
 using WindowDefaultFlags = EnumBitSet<WindowDefaultFlag, uint8_t>;
 
 Point GetToolbarAlignedWindowPosition(int window_width);
@@ -238,13 +242,6 @@ struct ResizeInfo {
 	uint step_height; ///< Step-size of height resize changes
 };
 
-/** State of a sort direction button. */
-enum SortButtonState : uint8_t {
-	SBS_OFF,  ///< Do not sort (with this button).
-	SBS_DOWN, ///< Sort ascending.
-	SBS_UP,   ///< Sort descending.
-};
-
 /**
  * Window flags.
  */
@@ -267,6 +264,8 @@ enum class WindowFlag : uint8_t {
 
 	NoTabFastForward, ///< Suppress tab to fast-forward if this window is focused
 };
+
+/** Bitset of \c WindowFlag elements. */
 using WindowFlags = EnumBitSet<WindowFlag, uint16_t>;
 
 enum class WindowInvalidationPolicy : uint8_t {
@@ -618,7 +617,7 @@ public:
 
 	void DrawWidgets() const;
 	void DrawViewport(NWidgetDisplayFlags display_flags) const;
-	void DrawSortButtonState(WidgetID widget, SortButtonState state) const;
+	void DrawSortButton(WidgetID widget, bool descending) const;
 	static int SortButtonWidth();
 
 	Window *FindChildWindow(WindowClass wc = WindowClass::Invalid) const;

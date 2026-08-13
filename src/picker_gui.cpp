@@ -257,9 +257,9 @@ void PickerWindow::ConstructWindow()
 		this->callbacks.FillUsedItems(this->callbacks.used);
 
 		SetWidgetDisabledState(WID_PW_MODE_ALL, !this->callbacks.HasClassChoice());
-		this->random_hidden = !this->callbacks.IsCollectionRandomisationSupported() || !HasBit(this->callbacks.mode, PFM_SAVED);
+		this->random_hidden = !this->callbacks.IsCollectionRandomisationSupported() || !this->callbacks.mode.Test(PickerFilterMode::Saved);
 		this->GetWidget<NWidgetStacked>(WID_PW_TYPE_RAND_SEL)->SetDisplayedPlane(this->random_hidden ? SZSP_HORIZONTAL : 0);
-		this->callbacks.place_collection = HasBit(this->callbacks.mode, PFM_SAVED) && IsWidgetLowered(WID_PW_TYPE_RANDOM);
+		this->callbacks.place_collection = this->callbacks.mode.Test(PickerFilterMode::Saved) && IsWidgetLowered(WID_PW_TYPE_RANDOM);
 
 		this->GetWidget<NWidgetCore>(WID_PW_TYPE_ITEM)->SetToolTip(this->callbacks.GetTypeTooltip());
 		this->GetWidget<NWidgetCore>(WID_PW_TYPE_RANDOM)->SetToolTip(this->callbacks.GetRandomTooltip());
@@ -375,7 +375,7 @@ DropDownList PickerWindow::BuildCollectionDropDownList()
 
 void PickerWindow::SetDisabledRandomItemButton()
 {
-	bool hidden = !this->callbacks.IsCollectionRandomisationSupported() || !HasBit(this->callbacks.mode, PFM_SAVED);
+	bool hidden = !this->callbacks.IsCollectionRandomisationSupported() || !this->callbacks.mode.Test(PickerFilterMode::Saved);
 	if (hidden != this->random_hidden && this->has_type_picker) {
 		this->GetWidget<NWidgetStacked>(WID_PW_TYPE_RAND_SEL)->SetDisplayedPlane(hidden ? SZSP_HORIZONTAL : 0);
 		this->random_hidden = hidden;
@@ -388,7 +388,7 @@ void PickerWindow::SetDisabledRandomItemButton()
 
 	bool disabled = true;
 	btree::btree_set<PickerItem> *saved = nullptr;
-	if (HasBit(this->callbacks.mode, PFM_SAVED)) {
+	if (this->callbacks.mode.Test(PickerFilterMode::Saved)) {
 		saved = this->callbacks.GetSelectedSavedCollection();
 		disabled = (saved == nullptr) || !this->callbacks.IsCollectionValidForRandom(*saved, this);
 	}
@@ -524,8 +524,8 @@ void PickerWindow::OnClick(Point pt, WidgetID widget, int)
 				break;
 			}
 
-			if (this->callbacks.GetSelectedClass() != *it || HasBit(this->callbacks.mode, PFM_ALL)) {
-				ClrBit(this->callbacks.mode, PFM_ALL); // Disable showing all.
+			if (this->callbacks.GetSelectedClass() != *it || this->callbacks.mode.Test(PickerFilterMode::All)) {
+				this->callbacks.mode.Reset(PickerFilterMode::All); // Disable showing all.
 				this->callbacks.SetSelectedClass(*it);
 				this->InvalidateData({PickerInvalidation::Type, PickerInvalidation::Position, PickerInvalidation::Validate});
 			}
@@ -537,13 +537,13 @@ void PickerWindow::OnClick(Point pt, WidgetID widget, int)
 		case WID_PW_MODE_ALL:
 		case WID_PW_MODE_USED:
 		case WID_PW_MODE_SAVED:
-			ToggleBit(this->callbacks.mode, widget - WID_PW_MODE_ALL);
-			if (!this->IsWidgetDisabled(WID_PW_MODE_ALL) && HasBit(this->callbacks.mode, widget - WID_PW_MODE_ALL)) {
+			this->callbacks.mode.Flip(static_cast<PickerFilterMode>(widget - WID_PW_MODE_ALL));
+			if (!this->IsWidgetDisabled(WID_PW_MODE_ALL) && this->callbacks.mode.Test(static_cast<PickerFilterMode>(widget - WID_PW_MODE_ALL))) {
 				/* Enabling used or saved filters automatically enables all. */
-				SetBit(this->callbacks.mode, PFM_ALL);
+				this->callbacks.mode.Set(PickerFilterMode::All);
 			}
 			this->SetDisabledRandomItemButton();
-			this->callbacks.place_collection = HasBit(this->callbacks.mode, PFM_SAVED) && IsWidgetLowered(WID_PW_TYPE_RANDOM);
+			this->callbacks.place_collection = this->callbacks.mode.Test(PickerFilterMode::Saved) && IsWidgetLowered(WID_PW_TYPE_RANDOM);
 			this->InvalidateData({PickerInvalidation::Class, PickerInvalidation::Type, PickerInvalidation::Position});
 			SndClickBeep();
 			break;
@@ -767,9 +767,9 @@ void PickerWindow::OnInvalidateData(int data, bool gui_scope)
 	this->BuildPickerCollectionList();
 
 	if (this->has_type_picker) {
-		SetWidgetLoweredState(WID_PW_MODE_ALL, HasBit(this->callbacks.mode, PFM_ALL));
-		SetWidgetLoweredState(WID_PW_MODE_USED, HasBit(this->callbacks.mode, PFM_USED));
-		SetWidgetLoweredState(WID_PW_MODE_SAVED, HasBit(this->callbacks.mode, PFM_SAVED));
+		SetWidgetLoweredState(WID_PW_MODE_ALL, this->callbacks.mode.Test(PickerFilterMode::All));
+		SetWidgetLoweredState(WID_PW_MODE_USED, this->callbacks.mode.Test(PickerFilterMode::Used));
+		SetWidgetLoweredState(WID_PW_MODE_SAVED, this->callbacks.mode.Test(PickerFilterMode::Saved));
 	}
 
 	SetWidgetDisabledState(WID_PW_SHRINK, this->preview_height == PREVIEW_HEIGHT);
@@ -824,19 +824,19 @@ void PickerWindow::PickItem(int cls_id, int id)
 
 	PickerInvalidations invalidation_flags{PickerInvalidation::Position};
 	const PickerItem pick_item = this->callbacks.GetPickerItem(cls_id, id);
-	if (HasBit(this->callbacks.mode, PFM_USED)) {
+	if (this->callbacks.mode.Test(PickerFilterMode::Used)) {
 		if (std::none_of(std::begin(this->callbacks.used), std::end(this->callbacks.used), [pick_item](const PickerItem &item) { return item == pick_item; })) {
-			ClrBit(this->callbacks.mode, PFM_USED);
+			this->callbacks.mode.Reset(PickerFilterMode::Used);
 			invalidation_flags.Set({PickerInvalidation::Class, PickerInvalidation::Type, PickerInvalidation::Position});
 		}
 	}
-	if (HasBit(this->callbacks.mode, PFM_SAVED)) {
+	if (this->callbacks.mode.Test(PickerFilterMode::Saved)) {
 		btree::btree_set<PickerItem> *saved = this->callbacks.GetSelectedSavedCollection();
 		if (saved == nullptr) {
-			ClrBit(this->callbacks.mode, PFM_SAVED);
+			this->callbacks.mode.Reset(PickerFilterMode::Saved);
 			invalidation_flags.Set({PickerInvalidation::Class, PickerInvalidation::Type, PickerInvalidation::Position});
 		} else if (std::none_of(saved->begin(), saved->end(), [pick_item](const PickerItem &item) { return item == pick_item; })) {
-			ClrBit(this->callbacks.mode, PFM_SAVED);
+			this->callbacks.mode.Reset(PickerFilterMode::Saved);
 			invalidation_flags.Set({PickerInvalidation::Class, PickerInvalidation::Type, PickerInvalidation::Position});
 		}
 	}
@@ -870,8 +870,8 @@ void PickerWindow::BuildPickerClassList()
 	this->classes.clear();
 	this->classes.reserve(count);
 
-	bool filter_used = HasBit(this->callbacks.mode, PFM_USED);
-	bool filter_saved = HasBit(this->callbacks.mode, PFM_SAVED);
+	bool filter_used = this->callbacks.mode.Test(PickerFilterMode::Used);
+	bool filter_saved = this->callbacks.mode.Test(PickerFilterMode::Saved);
 	for (int i = 0; i < count; i++) {
 		if (this->callbacks.GetClassName(i) == INVALID_STRING_ID) continue;
 		if (filter_used && std::none_of(std::begin(this->callbacks.used), std::end(this->callbacks.used), [i](const PickerItem &item) { return item.class_index == i; })) continue;
@@ -940,9 +940,9 @@ void PickerWindow::BuildPickerTypeList()
 
 	this->types.clear();
 
-	bool show_all = HasBit(this->callbacks.mode, PFM_ALL);
-	bool filter_used = HasBit(this->callbacks.mode, PFM_USED);
-	bool filter_saved = HasBit(this->callbacks.mode, PFM_SAVED);
+	bool show_all = this->callbacks.mode.Test(PickerFilterMode::All);
+	bool filter_used = this->callbacks.mode.Test(PickerFilterMode::Used);
+	bool filter_saved = this->callbacks.mode.Test(PickerFilterMode::Saved);
 	int cls_id = this->callbacks.GetSelectedClass();
 
 	btree::btree_set<PickerItem> *saved = nullptr;

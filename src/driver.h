@@ -52,9 +52,6 @@ public:
 	virtual const char *GetName() const = 0;
 };
 
-DECLARE_INCREMENT_DECREMENT_OPERATORS(Driver::Type)
-
-
 /** Base for all driver factories. */
 class DriverFactoryBase {
 private:
@@ -128,7 +125,7 @@ public:
 	 */
 	static void ShutdownDrivers()
 	{
-		for (Driver::Type dt = Driver::Type::Begin; dt != Driver::Type::End; ++dt) {
+		for (Driver::Type dt : EnumRange(Driver::Type::End)) {
 			auto &driver = GetActiveDriver(dt);
 			if (driver != nullptr) driver->Stop();
 		}

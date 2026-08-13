@@ -62,6 +62,8 @@ enum class IndustryControlFlag : uint8_t {
 	ExternalProdLevel = 3,
 	End, ///< End marker.
 };
+
+/** Bitset of \c IndustryControlFlag elements. */
 using IndustryControlFlags = EnumBitSet<IndustryControlFlag, uint8_t, IndustryControlFlag::End>;
 
 /**

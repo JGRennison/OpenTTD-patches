@@ -220,7 +220,7 @@ void DriverFactoryBase::MarkVideoDriverOperational()
  */
 void DriverFactoryBase::GetDriversInfo(format_target &output)
 {
-	for (Driver::Type type = Driver::Type::Begin; type != Driver::Type::End; type++) {
+	for (Driver::Type type : EnumRange(Driver::Type::End)) {
 		output.format("List of {} drivers:\n", GetDriverTypeName(type));
 
 		for (int priority = 10; priority >= 0; priority--) {

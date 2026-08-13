@@ -104,7 +104,7 @@ NetworkGameSocketHandler::NetworkGameSocketHandler(SOCKET s) : NetworkTCPSocketH
  */
 NetworkRecvStatus NetworkGameSocketHandler::CloseConnection([[maybe_unused]] bool error)
 {
-	if (this->ignore_close) return NETWORK_RECV_STATUS_CLIENT_QUIT;
+	if (this->ignore_close) return NetworkRecvStatus::ClientQuit;
 
 	/* Clients drop back to the main menu */
 	if (!_network_server && _networking) {
@@ -114,10 +114,10 @@ NetworkRecvStatus NetworkGameSocketHandler::CloseConnection([[maybe_unused]] boo
 		_networking = false;
 		ShowErrorMessage(GetEncodedString(STR_NETWORK_ERROR_LOSTCONNECTION), {}, WarningLevel::Critical);
 
-		return this->CloseConnection(NETWORK_RECV_STATUS_CLIENT_QUIT);
+		return this->CloseConnection(NetworkRecvStatus::ClientQuit);
 	}
 
-	return this->CloseConnection(NETWORK_RECV_STATUS_CONNECTION_LOST);
+	return this->CloseConnection(NetworkRecvStatus::ConnectionLost);
 }
 
 
@@ -193,7 +193,7 @@ NetworkRecvStatus NetworkGameSocketHandler::HandlePacket(Packet &p)
 		default:
 			Debug(net, 0, "[tcp/game] Received invalid packet type {} from client {}", type, this->client_id);
 			this->CloseConnection();
-			return NETWORK_RECV_STATUS_MALFORMED_PACKET;
+			return NetworkRecvStatus::MalformedPacket;
 	}
 }
 
@@ -209,10 +209,10 @@ NetworkRecvStatus NetworkGameSocketHandler::ReceivePackets()
 	std::unique_ptr<Packet> p;
 	while ((p = this->ReceivePacket()) != nullptr) {
 		NetworkRecvStatus res = HandlePacket(*p);
-		if (res != NETWORK_RECV_STATUS_OKAY) return res;
+		if (res != NetworkRecvStatus::Okay) return res;
 	}
 
-	return NETWORK_RECV_STATUS_OKAY;
+	return NetworkRecvStatus::Okay;
 }
 
 /**
@@ -223,7 +223,7 @@ NetworkRecvStatus NetworkGameSocketHandler::ReceivePackets()
 NetworkRecvStatus NetworkGameSocketHandler::ReceiveInvalidPacket(PacketGameType type)
 {
 	Debug(net, 0, "[tcp/game] Received illegal packet type {} from client {}", type, this->client_id);
-	return NETWORK_RECV_STATUS_MALFORMED_PACKET;
+	return NetworkRecvStatus::MalformedPacket;
 }
 
 NetworkRecvStatus NetworkGameSocketHandler::ReceiveServerFull(Packet &) { return this->ReceiveInvalidPacket(PacketGameType::ServerFull); }

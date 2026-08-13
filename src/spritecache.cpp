@@ -438,7 +438,7 @@ static bool ResizeSprites(SpriteLoader::SpriteCollection &sprite, LowZoomLevels 
 	if (!PadSprites(sprite, sprite_avail, encoder)) return false;
 
 	/* Create other missing zoom levels */
-	for (ZoomLevel zoom = ZoomLevel::In2x; zoom != ZoomLevel::SpriteEnd; zoom++) {
+	for (ZoomLevel zoom : EnumRange(ZoomLevel::In2x, ZoomLevel::SpriteEnd)) {
 		if (sprite_avail.Test(zoom)) {
 			/* Check that size and offsets match the fully zoomed image. */
 			[[maybe_unused]] const auto &root_sprite = sprite[ZoomLevel::Min];

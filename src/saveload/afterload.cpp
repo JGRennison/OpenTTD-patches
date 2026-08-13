@@ -128,7 +128,7 @@ void SetWaterClassDependingOnSurroundings(TileIndex t, bool include_invalid_wate
 	bool has_canal = false;
 	bool has_river = false;
 
-	for (DiagDirection dir = DiagDirection::Begin; dir < DiagDirection::End; dir++) {
+	for (DiagDirection dir : EnumRange(DiagDirection::End)) {
 		TileIndex neighbour = TileAddByDiagDir(t, dir);
 		switch (GetTileType(neighbour)) {
 			case TileType::Water:
@@ -511,7 +511,7 @@ static void FixOwnerOfRailTrack(TileIndex t)
 	}
 
 	/* try to find any connected rail */
-	for (DiagDirection dd = DiagDirection::Begin; dd < DiagDirection::End; dd++) {
+	for (DiagDirection dd : EnumRange(DiagDirection::End)) {
 		TileIndex tt = t + TileOffsByDiagDir(dd);
 		if (GetTileTrackdirBits(t, TRANSPORT_RAIL, 0, dd) != TRACKDIR_BIT_NONE &&
 				GetTileTrackdirBits(tt, TRANSPORT_RAIL, 0, ReverseDiagDir(dd)) != TRACKDIR_BIT_NONE &&
@@ -1585,7 +1585,7 @@ bool AfterLoadGame()
 		MemSetT(tram_types, ROADTYPE_TRAM, 31);
 		road_types[31] = INVALID_ROADTYPE;
 		tram_types[31] = INVALID_ROADTYPE;
-		for (RoadType rt = ROADTYPE_BEGIN; rt < ROADTYPE_END; rt++) {
+		for (RoadType rt : EnumRange(ROADTYPE_END)) {
 			const RoadTypeInfo *rti = GetRoadTypeInfo(rt);
 			if (RoadTypeIsRoad(rt)) {
 				if (rti->label == 'ROAD') {
@@ -4734,7 +4734,7 @@ void ReloadNewGRFData()
 	AppendSpecialEventsLogEntry("NewGRF reload");
 
 	RailTypeLabel rail_type_label_map[RAILTYPE_END];
-	for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
+	for (RailType rt : EnumRange(RAILTYPE_END)) {
 		rail_type_label_map[rt] = GetRailTypeInfo(rt)->label;
 	}
 
@@ -4764,7 +4764,7 @@ void ReloadNewGRFData()
 	UpdateStationTileCacheFlags(false);
 
 	RailType rail_type_translate_map[RAILTYPE_END];
-	for (RailType old_type = RAILTYPE_BEGIN; old_type != RAILTYPE_END; old_type++) {
+	for (RailType old_type : EnumRange(RAILTYPE_END)) {
 		RailType new_type = GetRailTypeByLabel(rail_type_label_map[old_type]);
 		rail_type_translate_map[old_type] = (new_type == INVALID_RAILTYPE) ? RAILTYPE_RAIL : new_type;
 	}

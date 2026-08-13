@@ -61,7 +61,7 @@ struct label_dumper : public NewGRFLabelDumper {
 
 static void DumpRailTypeList(NIExtraInfoOutput &output, const char *prefix, RailTypes rail_types, RailTypes mark = {})
 {
-	for (RailType rt = RAILTYPE_BEGIN; rt < RAILTYPE_END; rt++) {
+	for (RailType rt : EnumRange(RAILTYPE_END)) {
 		if (!rail_types.Test(rt)) continue;
 		const RailTypeInfo *rti = GetRailTypeInfo(rt);
 		if (rti->label == 0) continue;
@@ -76,7 +76,7 @@ static void DumpRailTypeList(NIExtraInfoOutput &output, const char *prefix, Rail
 
 static void DumpRoadTypeList(NIExtraInfoOutput &output, const char *prefix, RoadTypes road_types)
 {
-	for (RoadType rt = ROADTYPE_BEGIN; rt < ROADTYPE_END; rt++) {
+	for (RoadType rt : EnumRange(ROADTYPE_END)) {
 		if (!road_types.Test(rt)) continue;
 		const RoadTypeInfo *rti = GetRoadTypeInfo(rt);
 		if (rti->label == 0) continue;

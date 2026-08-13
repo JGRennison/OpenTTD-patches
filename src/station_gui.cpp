@@ -110,7 +110,7 @@ int DrawStationCoverageAreaText(const Rect &r, StationCoverageType sct, int rad,
 		}
 
 		/* Convert cargo counts to a set of cargo bits, and draw the result. */
-		for (CargoType cargo{}; cargo < NUM_CARGO; ++cargo) {
+		for (CargoType cargo : EnumRange(NUM_CARGO)) {
 			switch (sct) {
 				case SCT_PASSENGERS_ONLY: if (!IsCargoInClass(cargo, CargoClass::Passengers)) continue; break;
 				case SCT_NON_PASSENGERS_ONLY: if (IsCargoInClass(cargo, CargoClass::Passengers)) continue; break;
@@ -349,10 +349,10 @@ protected:
 
 					bool has_rating = false;
 					/* Add to the station/cargo counts. */
-					for (CargoType cargo{}; cargo < NUM_CARGO; ++cargo) {
+					for (CargoType cargo : EnumRange(NUM_CARGO)) {
 						if (st->goods[cargo].HasRating()) this->stations_per_cargo_type[cargo]++;
 					}
-					for (CargoType cargo{}; cargo < NUM_CARGO; ++cargo) {
+					for (CargoType cargo : EnumRange(NUM_CARGO)) {
 						if (st->goods[cargo].HasRating()) {
 							has_rating = true;
 							if (this->filter.cargoes.Test(cargo)) {
@@ -595,7 +595,7 @@ public:
 		switch (widget) {
 			case WID_STL_SORTBY:
 				/* draw arrow pointing up/down for ascending/descending sorting */
-				this->DrawSortButtonState(WID_STL_SORTBY, this->stations.IsDescSortOrder() ? SBS_DOWN : SBS_UP);
+				this->DrawSortButton(WID_STL_SORTBY, this->stations.IsDescSortOrder());
 				break;
 
 			case WID_STL_LIST: {
@@ -1642,7 +1642,7 @@ struct StationViewWindow : public Window {
 			}
 
 			/* Draw arrow pointing up/down for ascending/descending sorting */
-			this->DrawSortButtonState(WID_SV_SORT_ORDER, sort_orders[1] == SO_ASCENDING ? SBS_UP : SBS_DOWN);
+			this->DrawSortButton(WID_SV_SORT_ORDER, sort_orders[1] != SO_ASCENDING);
 
 			int pos = this->vscroll->GetPosition();
 
@@ -1836,7 +1836,7 @@ struct StationViewWindow : public Window {
 	 */
 	void BuildCargoList(CargoDataEntry *entry, const Station *st)
 	{
-		for (CargoType cargo{}; cargo < NUM_CARGO; ++cargo) {
+		for (CargoType cargo : EnumRange(NUM_CARGO)) {
 			if (this->cached_destinations.Retrieve(cargo) == nullptr) {
 				this->RecalcDestinations(cargo);
 			}

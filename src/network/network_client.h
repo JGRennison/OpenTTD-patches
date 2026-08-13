@@ -113,7 +113,7 @@ public:
 
 	static NetworkRecvStatus SendJoin();
 	static NetworkRecvStatus SendCommand(const OutgoingCommandPacket &cp);
-	static NetworkRecvStatus SendError(NetworkErrorCode errorno, NetworkRecvStatus recvstatus = NETWORK_RECV_STATUS_OKAY);
+	static NetworkRecvStatus SendError(NetworkErrorCode errorno, NetworkRecvStatus recvstatus = NetworkRecvStatus::Okay);
 	static NetworkRecvStatus SendDesyncLog(std::string_view log);
 	static NetworkRecvStatus SendDesyncMessage(std::string_view msg);
 	static NetworkRecvStatus SendDesyncSyncData();

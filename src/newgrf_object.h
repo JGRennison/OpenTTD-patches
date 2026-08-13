@@ -40,6 +40,8 @@ enum class ObjectFlag : uint8_t {
 	AnimRandomBits   = 12, ///< Object wants random bits in "next animation frame" callback.
 	ScaleByWater     = 13, ///< Object count is roughly scaled by water amount at edges.
 };
+
+/** Bitset of \c ObjectFlag elements. */
 using ObjectFlags = EnumBitSet<ObjectFlag, uint16_t>;
 
 enum class ObjectCtrlFlag : uint8_t {

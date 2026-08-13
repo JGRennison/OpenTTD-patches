@@ -577,6 +577,8 @@ struct GoodsEntry {
 		 */
 		NoCargoSupply = 7,
 	};
+
+	/** Bitset of \c State elements. */
 	using States = EnumBitSet<State, uint8_t>;
 
 	GoodsEntry() :

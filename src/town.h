@@ -60,6 +60,7 @@ enum class TownFlag : uint8_t {
 	CustomGrowth = 3, ///< Growth rate is controlled by GS.
 };
 
+/** Bitset of \c TownFlag elements. */
 using TownFlags = EnumBitSet<TownFlag, uint8_t>;
 
 /** Data structure with cached data of towns. */
@@ -367,9 +368,9 @@ enum class TownAction : uint8_t {
 	Bribe, ///< Try to bribe the council.
 	End, ///< End marker.
 };
-using TownActions = EnumBitSet<TownAction, uint8_t>;
 
-DECLARE_INCREMENT_DECREMENT_OPERATORS(TownAction);
+/** Bitset of \c TownAction elements. */
+using TownActions = EnumBitSet<TownAction, uint8_t>;
 
 void ClearTownHouse(Town *t, TileIndex tile);
 void UpdateTownMaxPass(Town *t);

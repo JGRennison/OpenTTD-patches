@@ -181,6 +181,8 @@ enum class OrderDepotTypeFlag : uint8_t {
 	PartOfOrders         = 1, ///< This depot order is because of a regular order.
 	Breakdown            = 2, ///< This depot order is because of a breakdown.
 };
+
+/** Bitset of \c OrderDepotTypeFlag elements. */
 using OrderDepotTypeFlags = EnumBitSet<OrderDepotTypeFlag, uint8_t>;
 
 /**

@@ -126,7 +126,7 @@ static void ResolveRailTypeGUISignalSprites(RailTypeInfo *rti, uint8_t style, Ra
 		return spr;
 	};
 
-	for (SignalType type = SignalType::Block; type < SignalType::End; type = static_cast<SignalType>(to_underlying(type) + 1)) {
+	for (SignalType type : EnumRange(SignalType::End)) {
 		for (SignalVariant var : {SignalVariant::Electric, SignalVariant::Semaphore}) {
 			PalSpriteID red   = GetCustomSignalSprite(rti, INVALID_TILE, type, var, 0, { CSSC_GUI }, style).sprite;
 			if (red.sprite != 0) {
@@ -236,7 +236,7 @@ void SortRailTypes()
 
 void UpdateRailGuiSprites()
 {
-	for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
+	for (RailType rt : EnumRange(RAILTYPE_END)) {
 		ResolveRailTypeGUISprites(&_railtypes[rt]);
 	}
 
@@ -255,7 +255,7 @@ void InitRailTypes()
 	_sorted_railtypes.clear();
 	_railtypes_acceleration_type_masks.fill({});
 	_railtypes_non_realistic_braking = {};
-	for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
+	for (RailType rt : EnumRange(RAILTYPE_END)) {
 		bool hidden = _railtypes[rt].flags.Test(RailTypeFlag::Hidden);
 		if (hidden) _railtypes_hidden_mask.Set(rt);
 		if (_railtypes[rt].label != 0) {
@@ -271,7 +271,7 @@ void InitRailTypes()
 void InitRailTypesIndirectCompatibility()
 {
 	std::array<RailTypes, RAILTYPE_END> overall_compatibility;
-	for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
+	for (RailType rt : EnumRange(RAILTYPE_END)) {
 		overall_compatibility[rt] = _railtypes[rt].compatible_railtypes;
 		_railtypes[rt].indirect_compatible_railtypes = _railtypes[rt].compatible_railtypes;
 	}
@@ -284,7 +284,7 @@ void InitRailTypesIndirectCompatibility()
 		overall_compatibility[first_rt].Set(rts);
 	}
 
-	for (RailType rt = RAILTYPE_BEGIN; rt != RAILTYPE_END; rt++) {
+	for (RailType rt : EnumRange(RAILTYPE_END)) {
 		RailTypes::BaseType compatible = overall_compatibility[rt].base();
 		RailTypes::BaseType to_check = compatible;
 		while (to_check != 0) {
@@ -4318,7 +4318,7 @@ RailGroundType RailTrackToFence(TileIndex tile, TrackBits rail)
 	Owner owner = GetTileOwner(tile);
 	DiagDirections fences{};
 
-	for (DiagDirection d = DiagDirection::Begin; d < DiagDirection::End; d++) {
+	for (DiagDirection d : EnumRange(DiagDirection::End)) {
 		static constexpr DiagDirectionIndexArray<TrackBits> dir_to_trackbits{TRACK_BIT_3WAY_NE, TRACK_BIT_3WAY_SE, TRACK_BIT_3WAY_SW, TRACK_BIT_3WAY_NW};
 
 		/* Track bit on this edge => no fence. */

@@ -278,6 +278,15 @@ public:
 	}
 
 	/**
+	 * Count the number of set bits.
+	 * @return The number of bits set to true.
+	 */
+	inline uint Count() const
+	{
+		return CountBits(this->base());
+	}
+
+	/**
 	 * Get the value of the Nth set bit.
 	 * @param n The Nth set bit from which we want to know the value.
 	 * @return The value of the Nth set bit, or std::nullopt if no Nth bit set.

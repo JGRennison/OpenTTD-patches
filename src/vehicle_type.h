@@ -68,6 +68,8 @@ enum class DepotCommandFlag : uint8_t {
 	Specific,    ///< Send vehicle to specific depot
 	Sell,        ///< Go to depot and sell order
 };
+
+/** Bitset of \c DepotCommandFlag elements. */
 using DepotCommandFlags = EnumBitSet<DepotCommandFlag, uint8_t>;
 
 static const uint MAX_LENGTH_VEHICLE_NAME_CHARS = 128; ///< The maximum length of a vehicle name in characters including '\0'
@@ -129,6 +131,8 @@ enum class VehicleRandomTrigger : uint8_t {
 	AnyNewCargo, ///< All vehicles in consist: Any vehicle in the consist received new cargo.
 	Callback32, ///< All vehicles in consist: 32 day callback requested rerandomisation
 };
+
+/** Bitset of \c VehicleRandomTrigger elements. */
 using VehicleRandomTriggers = EnumBitSet<VehicleRandomTrigger, uint8_t>;
 
 /**

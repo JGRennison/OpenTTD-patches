@@ -20,7 +20,7 @@ DEF_CMD_TUPLE_NT(Commands::SetGoalDestination,  CmdSetGoalDestination,          
 DEF_CMD_TUPLE_NT(Commands::SetGoalText,         CmdSetGoalText,             CMD_STR_CTRL | CMD_DEITY | CMD_LOG_AUX, CommandType::OtherManagement, CmdDataT<GoalID, EncodedString>)
 DEF_CMD_TUPLE_NT(Commands::SetGoalProgress,     CmdSetGoalProgress,         CMD_STR_CTRL | CMD_DEITY | CMD_LOG_AUX, CommandType::OtherManagement, CmdDataT<GoalID, EncodedString>)
 DEF_CMD_TUPLE_NT(Commands::SetGoalCompleted,    CmdSetGoalCompleted,        CMD_STR_CTRL | CMD_DEITY | CMD_LOG_AUX, CommandType::OtherManagement, CmdDataT<GoalID, bool>)
-DEF_CMD_TUPLE_NT(Commands::GoalQuestion,        CmdGoalQuestion,            CMD_STR_CTRL | CMD_DEITY | CMD_LOG_AUX, CommandType::OtherManagement, CmdDataT<uint16_t, uint32_t, bool, uint32_t, GoalQuestionType, EncodedString>)
-DEF_CMD_TUPLE_NT(Commands::GoalQuestionAnswer,  CmdGoalQuestionAnswer,                     CMD_DEITY | CMD_LOG_AUX, CommandType::OtherManagement, CmdDataT<uint16_t, uint8_t>)
+DEF_CMD_TUPLE_NT(Commands::GoalQuestion,        CmdGoalQuestion,            CMD_STR_CTRL | CMD_DEITY | CMD_LOG_AUX, CommandType::OtherManagement, CmdDataT<uint16_t, uint32_t, bool, GoalQuestionButtons, GoalQuestionType, EncodedString>)
+DEF_CMD_TUPLE_NT(Commands::GoalQuestionAnswer,  CmdGoalQuestionAnswer,                     CMD_DEITY | CMD_LOG_AUX, CommandType::OtherManagement, CmdDataT<uint16_t, GoalQuestionButton>)
 
 #endif /* GOAL_CMD_H */

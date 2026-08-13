@@ -476,7 +476,7 @@ public:
 	{
 		switch (widget) {
 			case WID_PLN_SORT_ORDER:
-				this->DrawSortButtonState(widget, this->plans.IsDescSortOrder() ? SBS_DOWN : SBS_UP);
+				this->DrawSortButton(widget, this->plans.IsDescSortOrder());
 				break;
 
 			case WID_PLN_LIST: {

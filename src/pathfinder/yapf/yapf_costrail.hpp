@@ -791,10 +791,10 @@ no_entry_cost: // jump here at the beginning if the node has no parent (it is th
 			follower_local.Init(v, Yapf().GetCompatibleRailTypes());
 
 			if (!follower_local.Follow(cur.tile, cur.td)) {
-				dbg_assert(follower_local.err != TrackFollower::EC_NONE);
+				dbg_assert(follower_local.err != TrackFollower::ErrorCode::None);
 				/* Can't move to the next tile (EOL?). */
 				if (!end_segment_reason.Any({EndSegmentReason::RailType, EndSegmentReason::DeadEnd})) end_segment_reason.Set(EndSegmentReason::DeadEndEol);
-				if (follower_local.err == TrackFollower::EC_RAIL_ROAD_TYPE) {
+				if (follower_local.err == TrackFollower::ErrorCode::RailRoadType) {
 					end_segment_reason.Set(EndSegmentReason::RailType);
 				} else {
 					end_segment_reason.Set(EndSegmentReason::DeadEnd);

@@ -179,13 +179,14 @@ static void CanalMapSpriteGroup(ByteReader &buf, uint8_t idcount)
 	for (uint i = 0; i < idcount; i++) {
 		uint16_t cf = cfs[i];
 
-		if (cf >= CF_END) {
+		if (cf >= to_underlying(CanalFeature::End)) {
 			GrfMsg(1, "CanalMapSpriteGroup: Canal subset {} out of range, skipping", cf);
 			continue;
 		}
 
-		_water_feature[cf].grffile = _cur_gps.grffile;
-		_water_feature[cf].group = GetGroupByID(groupid);
+		auto &feature = _water_feature[static_cast<CanalFeature>(cf)];
+		feature.grffile = _cur_gps.grffile;
+		feature.group = GetGroupByID(groupid);
 	}
 }
 

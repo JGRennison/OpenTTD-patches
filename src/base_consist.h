@@ -53,6 +53,8 @@ enum class VehicleFlag : uint8_t {
 	ConditionalOrderWait        = 17, ///< Vehicle is waiting due to conditional order loop.
 	ReplacementPending          = 18, ///< Autoreplace or template replacement is pending, vehicle should visit the depot.
 };
+
+/** Bitset of \c VehicleFlag elements. */
 using VehicleFlags = EnumBitSet<VehicleFlag, uint32_t>;
 
 /** Various front vehicle properties that are preserved when autoreplacing, using order-backup or switching front engines within a consist. */

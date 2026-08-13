@@ -5034,7 +5034,7 @@ public:
 			}
 
 			case WID_TRSL_SORT_BY_ORDER:
-				this->DrawSortButtonState(WID_TRSL_SORT_BY_ORDER, this->vehgroups.IsDescSortOrder() ? SBS_DOWN : SBS_UP);
+				this->DrawSortButton(WID_TRSL_SORT_BY_ORDER, this->vehgroups.IsDescSortOrder());
 				break;
 
 			case WID_TRSL_LIST_VEHICLE:

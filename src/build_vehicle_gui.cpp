@@ -679,7 +679,7 @@ static GUIEngineList::FilterFunction * const _engine_filter_funcs[] = {
 static uint GetCargoWeight(const CargoArray &cap, VehicleType vtype)
 {
 	uint weight = 0;
-	for (CargoType cargo{}; cargo < NUM_CARGO; ++cargo) {
+	for (CargoType cargo : EnumRange(NUM_CARGO)) {
 		if (cap[cargo] != 0) {
 			if (vtype == VehicleType::Train) {
 				weight += CargoSpec::Get(cargo)->WeightOfNUnitsInTrain(cap[cargo]);
@@ -2276,7 +2276,7 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 				break;
 
 			case WID_BV_SORT_ASCENDING_DESCENDING:
-				this->DrawSortButtonState(WID_BV_SORT_ASCENDING_DESCENDING, this->descending_sort_order ? SBS_DOWN : SBS_UP);
+				this->DrawSortButton(WID_BV_SORT_ASCENDING_DESCENDING, this->descending_sort_order);
 				break;
 		}
 	}
@@ -3292,7 +3292,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 			}
 
 			case WID_BV_SORT_ASCENDING_DESCENDING_LOCO: {
-				this->DrawSortButtonState(WID_BV_SORT_ASCENDING_DESCENDING_LOCO, this->loco.descending_sort_order ? SBS_DOWN : SBS_UP);
+				this->DrawSortButton(WID_BV_SORT_ASCENDING_DESCENDING_LOCO, this->loco.descending_sort_order);
 				break;
 			}
 
@@ -3305,7 +3305,7 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 			}
 
 			case WID_BV_SORT_ASCENDING_DESCENDING_WAGON: {
-				this->DrawSortButtonState(WID_BV_SORT_ASCENDING_DESCENDING_WAGON, this->wagon.descending_sort_order ? SBS_DOWN : SBS_UP);
+				this->DrawSortButton(WID_BV_SORT_ASCENDING_DESCENDING_WAGON, this->wagon.descending_sort_order);
 				break;
 			}
 		}

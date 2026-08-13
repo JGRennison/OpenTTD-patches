@@ -892,6 +892,8 @@ enum class DoCommandFlag : uint8_t {
 	AllowRemoveWater,     ///< always allow removing water
 	Town,                 ///< town operation
 };
+
+/** Bitset of \c DoCommandFlag elements. */
 using DoCommandFlags = EnumBitSet<DoCommandFlag, uint16_t>;
 
 enum DoCommandIntlFlag : uint8_t {
@@ -934,6 +936,8 @@ enum class CommandFlag : uint8_t {
 	ServerNS,  ///< the command can only be initiated by the server (this is not executed in spectator mode).
 	LogAux,    ///< the command should be logged in the auxiliary log instead of the main log.
 };
+
+/** Bitset of \c CommandFlag elements. */
 using CommandFlags = EnumBitSet<CommandFlag, uint16_t>;
 
 static constexpr CommandFlags CMD_SERVER{CommandFlag::Server};

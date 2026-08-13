@@ -2779,7 +2779,7 @@ static bool ConFont(std::span<std::string_view> argv)
 		SetFont(argfs, font, size);
 	}
 
-	for (FontSize fs = FontSize::Begin; fs < FontSize::End; fs++) {
+	for (FontSize fs : EnumRange(FontSize::End)) {
 		FontCache *fc = FontCache::Get(fs);
 		FontCacheSubSetting *setting = GetFontCacheSubSetting(fs);
 		/* Make sure all non sprite fonts are loaded. */
@@ -3334,7 +3334,7 @@ static bool ConDumpRoadTypes(std::span<std::string_view> argv)
 	IConsolePrint(CC_DEFAULT, "    c = disallow collisions with trains for vehicles of this type");
 
 	btree::btree_map<uint32_t, const GRFFile *> grfs;
-	for (RoadType rt = ROADTYPE_BEGIN; rt < ROADTYPE_END; rt++) {
+	for (RoadType rt : EnumRange(ROADTYPE_END)) {
 		const RoadTypeInfo *rti = GetRoadTypeInfo(rt);
 		if (rti->label == 0) continue;
 		uint32_t grfid = 0;
@@ -3392,7 +3392,7 @@ static bool ConDumpRailTypes(std::span<std::string_view> argv)
 	IConsolePrint(CC_DEFAULT, "    r = signal graphics callback restricted signal flag enabled");
 
 	btree::btree_map<uint32_t, const GRFFile *> grfs;
-	for (RailType rt = RAILTYPE_BEGIN; rt < RAILTYPE_END; rt++) {
+	for (RailType rt : EnumRange(RAILTYPE_END)) {
 		const RailTypeInfo *rti = GetRailTypeInfo(rt);
 		if (rti->label == 0) continue;
 		uint32_t grfid = 0;

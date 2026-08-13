@@ -1070,7 +1070,7 @@ static bool FindSpring(TileIndex tile)
 	};
 
 	uint num_hills = 0;
-	for (DiagDirection d = DiagDirection::Begin; d < DiagDirection::End; d++) {
+	for (DiagDirection d : EnumRange(DiagDirection::End)) {
 		TileIndex check_tile = tile;
 		for (uint i = 0; i < max_hill_distance; i++) {
 			check_tile = TileAddByDiagDir(check_tile, d);
@@ -1133,7 +1133,7 @@ static void MakeLakeHandler(TileIndex tile, const MakeLakeData *data)
 	/* Check if inside ellipse */
 	if ((a_delta * a_delta) + ((data->secondary_axis_scale * b_delta * b_delta) >> 16) > ((int64_t)(max_distance * max_distance) << 16)) return;
 
-	for (DiagDirection d = DiagDirection::Begin; d < DiagDirection::End; d++) {
+	for (DiagDirection d : EnumRange(DiagDirection::End)) {
 		TileIndex t2 = tile + TileOffsByDiagDir(d);
 		if (IsWaterTile(t2)) {
 			MakeRiverAndModifyDesertZoneAround(tile);
@@ -1279,7 +1279,7 @@ static void River_GetNeighbours(AyStar *aystar, OpenListNode *current)
 	TileIndex tile = current->path.node.tile;
 
 	aystar->num_neighbours = 0;
-	for (DiagDirection d = DiagDirection::Begin; d < DiagDirection::End; d++) {
+	for (DiagDirection d : EnumRange(DiagDirection::End)) {
 		TileIndex t = tile + TileOffsByDiagDir(d);
 		if (IsValidTile(t) && FlowsDown(tile, t)) {
 			aystar->neighbours[aystar->num_neighbours].tile = t;
@@ -1387,7 +1387,7 @@ static bool CountConnectedSeaTiles(TileIndex start_tile, std::vector<TileIndex> 
 		if (sea.size() > limit) break;
 
 		/* Queue adjacent tiles which have not already been queued. */
-		for (DiagDirection d = DiagDirection::Begin; d < DiagDirection::End; d++) {
+		for (DiagDirection d : EnumRange(DiagDirection::End)) {
 			TileIndex t = tile + TileOffsByDiagDir(d);
 			if (IsValidTile(t)) {
 				auto res = seen_tiles.insert(t);
@@ -1460,7 +1460,7 @@ static bool FlowRiver(TileIndex spring, TileIndex begin, uint min_river_length)
 			}
 		}
 
-		for (DiagDirection d = DiagDirection::Begin; d < DiagDirection::End; d++) {
+		for (DiagDirection d : EnumRange(DiagDirection::End)) {
 			TileIndex t = end + TileOffsByDiagDir(d);
 			if (IsValidTile(t) && !marks.contains(t) && FlowsDown(end, t)) {
 				marks.insert(t);
@@ -1594,7 +1594,7 @@ static uint CalculateCoverageLine(uint coverage, uint edge_multiplier)
 
 		if (edge_multiplier != 0) {
 			/* Check if any of our neighbours is below us. */
-			for (DiagDirection dir = DiagDirection::Begin; dir != DiagDirection::End; dir++) {
+			for (DiagDirection dir : EnumRange(DiagDirection::End)) {
 				TileIndex neighbour_tile = AddTileIndexDiffCWrap(tile, TileIndexDiffCByDiagDir(dir));
 				if (IsValidTile(neighbour_tile) && TileHeight(neighbour_tile) < h) {
 					edge_histogram[h]++;
