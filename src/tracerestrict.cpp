@@ -543,7 +543,7 @@ void TraceRestrictProgram::Execute(const Train *v, const TraceRestrictProgramInp
 			} else {
 				uint16_t condvalue = item.GetValue();
 				bool result = false;
-				switch(type) {
+				switch (type) {
 					case TRIT_COND_UNDEFINED:
 						result = false;
 						break;
@@ -576,8 +576,20 @@ void TraceRestrictProgram::Execute(const Train *v, const TraceRestrictProgramInp
 						result = TestOrderStopLocationCondition(&(v->current_order), item);
 						break;
 
-					case TRIT_COND_LATENESS_COUNTER:
-						result = TestCondition(v->lateness_counter, condop, condvalue);
+					case TRIT_COND_TIMETABLE_STATE:
+						switch (static_cast<TraceRestrictTimetableStateCondAuxField>(item.GetAuxField())) {
+							case TRTSCAF_LATENESS:
+								result = TestCondition(v->lateness_counter, condop, condvalue);
+								break;
+
+							case TRTSCAF_EARLINESS:
+								result = TestCondition(-v->lateness_counter, condop, condvalue);
+								break;
+
+							default:
+								NOT_REACHED();
+								break;
+						}
 						break;
 
 					case TRIT_COND_CARGO: {
@@ -1386,7 +1398,6 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictPr
 
 				case TRIT_COND_TRAIN_LENGTH:
 				case TRIT_COND_MAX_SPEED:
-				case TRIT_COND_LATENESS_COUNTER:
 				case TRIT_COND_LOAD_PERCENT:
 				case TRIT_COND_COUNTER_VALUE:
 				case TRIT_COND_RESERVED_TILES:
@@ -1567,6 +1578,18 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictPr
 					}
 					break;
 
+				case TRIT_COND_TIMETABLE_STATE:
+					if (invalid_condition()) return unknown_instruction();
+					switch (static_cast<TraceRestrictTimetableStateCondAuxField>(item.GetAuxField())) {
+						case TRTSCAF_LATENESS:
+						case TRTSCAF_EARLINESS:
+							break;
+
+						default:
+							return unknown_instruction();
+					}
+					break;
+
 				default:
 					return unknown_instruction();
 			}
@@ -1577,7 +1600,6 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictPr
 				case TRIT_COND_UNDEFINED:
 				case TRIT_COND_TRAIN_LENGTH:
 				case TRIT_COND_MAX_SPEED:
-				case TRIT_COND_LATENESS_COUNTER:
 				case TRIT_COND_CARGO:
 				case TRIT_COND_ENTRY_DIRECTION:
 				case TRIT_COND_PBS_ENTRY_SIGNAL:
@@ -1590,6 +1612,7 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictPr
 				case TRIT_COND_RESERVED_TILES:
 				case TRIT_COND_CATEGORY:
 				case TRIT_COND_RESERVATION_THROUGH:
+				case TRIT_COND_TIMETABLE_STATE:
 					break;
 
 				case TRIT_COND_CURRENT_ORDER:

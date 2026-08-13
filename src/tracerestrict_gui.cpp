@@ -677,7 +677,8 @@ static std::span<const TraceRestrictDropDownListItem> GetConditionDropDownListIt
 		{ TRIT_COND_TRAIN_IN_SLOT_GROUP,                              STR_TRACE_RESTRICT_VARIABLE_TRAIN_SLOT_GROUP,          TRDDLIF_NONE },
 		{ TRIT_COND_SLOT_OCCUPANCY | (TRSOCAF_OCCUPANTS << 16),       STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY,            TRDDLIF_NONE },
 		{ TRIT_COND_SLOT_OCCUPANCY | (TRSOCAF_REMAINING << 16),       STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING,  TRDDLIF_NONE },
-		{ TRIT_COND_LATENESS_COUNTER,                                 STR_TRACE_RESTRICT_VARIABLE_LATENESS_COUNTER,          TRDDLIF_NONE },
+		{ TRIT_COND_TIMETABLE_STATE | (TRTSCAF_LATENESS << 16),       STR_TRACE_RESTRICT_TIMETABLE_LATENESS_LONG,            TRDDLIF_NONE },
+		{ TRIT_COND_TIMETABLE_STATE | (TRTSCAF_EARLINESS << 16),      STR_TRACE_RESTRICT_TIMETABLE_EARLINESS_LONG,           TRDDLIF_NONE },
 		{ TRIT_COND_COUNTER_VALUE,                                    STR_TRACE_RESTRICT_VARIABLE_COUNTER_VALUE,             TRDDLIF_ADVANCED },
 		{ TRIT_COND_TIME_DATE_VALUE,                                  STR_TRACE_RESTRICT_VARIABLE_TIME_DATE_VALUE,           TRDDLIF_ADVANCED },
 		{ TRIT_COND_RESERVED_TILES,                                   STR_TRACE_RESTRICT_VARIABLE_RESERVED_TILES_AHEAD,      TRDDLIF_ADVANCED | TRDDLIF_REALISTIC_BRAKING },
@@ -1629,9 +1630,22 @@ static void FillInstructionString(format_buffer &instruction_string, const Trace
 					set_conditional_common(STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_SPEED, item.GetValue());
 					break;
 
-				case TRVT_TICK_COUNT:
-					set_conditional_common(STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_TICK_COUNT, item.GetValue());
+				case TRVT_TICK_COUNT: {
+					auto params = make_conditional_common_params(item.GetValue());
+					if (item.GetType() == TRIT_COND_TIMETABLE_STATE) {
+						switch (static_cast<TraceRestrictTimetableStateCondAuxField>(item.GetAuxField())) {
+							case TRTSCAF_LATENESS:
+								params[1] = STR_TRACE_RESTRICT_TIMETABLE_LATENESS_LONG;
+								break;
+
+							case TRTSCAF_EARLINESS:
+								params[1] = STR_TRACE_RESTRICT_TIMETABLE_EARLINESS_LONG;
+								break;
+						}
+					}
+					AppendStringWithArgsInPlace(instruction_string, STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_TICK_COUNT, params);
 					break;
+				}
 
 				case TRVT_ORDER: {
 					switch (static_cast<TraceRestrictOrderCondAuxField>(item.GetAuxField())) {

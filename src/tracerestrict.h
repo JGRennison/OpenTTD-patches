@@ -191,7 +191,7 @@ enum TraceRestrictItemType : uint8_t {
 	TRIT_COND_RESERVATION_THROUGH = 32,   ///< Test if train reservation passes through tile
 	TRIT_COND_TRAIN_IN_SLOT_GROUP = 33,   ///< Test train slot membership
 	TRIT_COND_ORDER_STOP_LOCATION = 34,   ///< Test train stop location (near/middle/far/through load)
-	TRIT_COND_LATENESS_COUNTER    = 35,   ///< Test train lateness counter
+	TRIT_COND_TIMETABLE_STATE     = 35,   ///< Test train lateness/earliness
 
 	TRIT_COND_END                 = 48,   ///< End (exclusive) of conditional item types, note that this has the same value as TRIT_REVERSE
 	TRIT_REVERSE                  = 48,   ///< Reverse behind/at signal
@@ -304,6 +304,15 @@ enum TraceRestrictPathfinderPenaltyAuxField : uint8_t {
 enum TraceRestrictTargetDirectionCondAuxField : uint8_t {
 	TRTDCAF_CURRENT_ORDER         = 0,       ///< Current order
 	TRTDCAF_NEXT_ORDER            = 1,       ///< Next order
+	/* space up to 3 */
+};
+
+/**
+ * TraceRestrictItem auxiliary type field, for TRIT_COND_TIMETABLE_STATE
+ */
+enum TraceRestrictTimetableStateCondAuxField : uint8_t {
+	TRTSCAF_LATENESS              = 0,       ///< Lateness
+	TRTSCAF_EARLINESS             = 1,       ///< Earliness
 	/* space up to 3 */
 };
 
@@ -1245,7 +1254,7 @@ inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceRestrict
 				out.cond_type = TRCOT_BINARY;
 				break;
 
-			case TRIT_COND_LATENESS_COUNTER:
+			case TRIT_COND_TIMETABLE_STATE:
 				out.value_type = TRVT_TICK_COUNT;
 				break;
 
@@ -1335,6 +1344,7 @@ inline bool IsTraceRestrictTypeAuxSubtype(TraceRestrictItemType type)
 		case TRIT_COND_SLOT_OCCUPANCY:
 		case TRIT_COND_PBS_ENTRY_SIGNAL:
 		case TRIT_COND_CATEGORY:
+		case TRIT_COND_TIMETABLE_STATE:
 			return true;
 
 		default:
