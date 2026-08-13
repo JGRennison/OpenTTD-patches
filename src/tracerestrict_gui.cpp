@@ -50,6 +50,7 @@
 #include "infrastructure_func.h"
 #include "zoom_func.h"
 #include "newgrf_debug.h"
+#include "date_func.h"
 #include "core/y_combinator.hpp"
 #include "3rdparty/cpp-btree/btree_map.h"
 #include "3rdparty/cpp-ring-buffer/ring_buffer.hpp"
@@ -676,6 +677,8 @@ static std::span<const TraceRestrictDropDownListItem> GetConditionDropDownListIt
 		{ TRIT_COND_TRAIN_IN_SLOT_GROUP,                              STR_TRACE_RESTRICT_VARIABLE_TRAIN_SLOT_GROUP,          TRDDLIF_NONE },
 		{ TRIT_COND_SLOT_OCCUPANCY | (TRSOCAF_OCCUPANTS << 16),       STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY,            TRDDLIF_NONE },
 		{ TRIT_COND_SLOT_OCCUPANCY | (TRSOCAF_REMAINING << 16),       STR_TRACE_RESTRICT_VARIABLE_SLOT_OCCUPANCY_REMAINING,  TRDDLIF_NONE },
+		{ TRIT_COND_TIMETABLE_STATE | (TRTSCAF_LATENESS << 16),       STR_TRACE_RESTRICT_TIMETABLE_LATENESS_LONG,            TRDDLIF_NONE },
+		{ TRIT_COND_TIMETABLE_STATE | (TRTSCAF_EARLINESS << 16),      STR_TRACE_RESTRICT_TIMETABLE_EARLINESS_LONG,           TRDDLIF_NONE },
 		{ TRIT_COND_COUNTER_VALUE,                                    STR_TRACE_RESTRICT_VARIABLE_COUNTER_VALUE,             TRDDLIF_ADVANCED },
 		{ TRIT_COND_TIME_DATE_VALUE,                                  STR_TRACE_RESTRICT_VARIABLE_TIME_DATE_VALUE,           TRDDLIF_ADVANCED },
 		{ TRIT_COND_RESERVED_TILES,                                   STR_TRACE_RESTRICT_VARIABLE_RESERVED_TILES_AHEAD,      TRDDLIF_ADVANCED | TRDDLIF_REALISTIC_BRAKING },
@@ -1305,6 +1308,18 @@ static const TraceRestrictDropDownListSet *GetCondOpDropDownListSet(TraceRestric
 		str_short, val_short,
 	};
 
+	static const StringID str_lt_gte[] = {
+		STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_LESS_THAN,
+		STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_MORE_EQUALS,
+	};
+	static const uint val_lt_gte[] = {
+		TRCO_LT,
+		TRCO_GTE,
+	};
+	static const TraceRestrictDropDownListSet set_lt_gte = {
+		str_lt_gte, val_lt_gte,
+	};
+
 	if (properties.value_type == TRVT_CARGO_ID) return &_cargo_cond_ops;
 	if (properties.value_type == TRVT_TRAIN_STATUS) return &_train_status_cond_ops;
 	if (properties.value_type == TRVT_ENGINE_CLASS) return &_train_status_cond_ops;
@@ -1319,6 +1334,9 @@ static const TraceRestrictDropDownListSet *GetCondOpDropDownListSet(TraceRestric
 
 		case TRCOT_ALL:
 			return &set_long;
+
+		case TRCOT_LT_GTE:
+			return &set_lt_gte;
 	}
 	NOT_REACHED();
 }
@@ -1334,6 +1352,7 @@ static bool IsIntegerValueType(TraceRestrictValueType type)
 		case TRVT_POWER:
 		case TRVT_FORCE:
 		case TRVT_PERCENT:
+		case TRVT_TICK_COUNT:
 			return true;
 
 		case TRVT_SPEED:
@@ -1370,6 +1389,12 @@ static uint ConvertIntegerValue(TraceRestrictValueType type, uint in, bool to_di
 	switch (type) {
 		case TRVT_INT:
 			return in;
+
+		case TRVT_TICK_COUNT:
+			if (_settings_client.gui.timetable_in_ticks) return in;
+			return to_display
+				? in / TimetableDisplayUnitSize()
+				: in * TimetableDisplayUnitSize();
 
 		case TRVT_SPEED:
 			return to_display
@@ -1619,6 +1644,23 @@ static void FillInstructionString(format_buffer &instruction_string, const Trace
 				case TRVT_SPEED:
 					set_conditional_common(STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_SPEED, item.GetValue());
 					break;
+
+				case TRVT_TICK_COUNT: {
+					auto params = make_conditional_common_params(item.GetValue());
+					if (item.GetType() == TRIT_COND_TIMETABLE_STATE) {
+						switch (static_cast<TraceRestrictTimetableStateCondAuxField>(item.GetAuxField())) {
+							case TRTSCAF_LATENESS:
+								params[1] = STR_TRACE_RESTRICT_TIMETABLE_LATENESS_LONG;
+								break;
+
+							case TRTSCAF_EARLINESS:
+								params[1] = STR_TRACE_RESTRICT_TIMETABLE_EARLINESS_LONG;
+								break;
+						}
+					}
+					AppendStringWithArgsInPlace(instruction_string, STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_TICK_COUNT, params);
+					break;
+				}
 
 				case TRVT_ORDER: {
 					switch (static_cast<TraceRestrictOrderCondAuxField>(item.GetAuxField())) {
@@ -3920,7 +3962,7 @@ private:
 
 				this->GetWidget<NWidgetCore>(type_widget)->SetString(GetTypeString(item));
 
-				if (properties.cond_type == TRCOT_BINARY || properties.cond_type == TRCOT_ALL) {
+				if (properties.cond_type != TRCOT_NONE) {
 					middle_sel->SetDisplayedPlane(DPM_COMPARATOR);
 					this->EnableWidget(TR_WIDGET_COMPARATOR);
 

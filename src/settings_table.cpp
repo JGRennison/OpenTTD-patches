@@ -686,6 +686,7 @@ static void InvalidateVehTimetableWindow(int32_t new_value)
 {
 	InvalidateWindowClassesData(WindowClass::VehicleTimetable, VIWD_MODIFY_ORDERS);
 	InvalidateWindowClassesData(WindowClass::ScheduledDispatchSlots, VIWD_MODIFY_ORDERS);
+	SetWindowClassesDirty(WindowClass::TraceRestrict);
 }
 
 static void ChangeTimetableInTicksMode(int32_t new_value)

@@ -191,6 +191,7 @@ enum TraceRestrictItemType : uint8_t {
 	TRIT_COND_RESERVATION_THROUGH = 32,   ///< Test if train reservation passes through tile
 	TRIT_COND_TRAIN_IN_SLOT_GROUP = 33,   ///< Test train slot membership
 	TRIT_COND_ORDER_STOP_LOCATION = 34,   ///< Test train stop location (near/middle/far/through load)
+	TRIT_COND_TIMETABLE_STATE     = 35,   ///< Test train lateness/earliness
 
 	TRIT_COND_END                 = 48,   ///< End (exclusive) of conditional item types, note that this has the same value as TRIT_REVERSE
 	TRIT_REVERSE                  = 48,   ///< Reverse behind/at signal
@@ -303,6 +304,15 @@ enum TraceRestrictPathfinderPenaltyAuxField : uint8_t {
 enum TraceRestrictTargetDirectionCondAuxField : uint8_t {
 	TRTDCAF_CURRENT_ORDER         = 0,       ///< Current order
 	TRTDCAF_NEXT_ORDER            = 1,       ///< Next order
+	/* space up to 3 */
+};
+
+/**
+ * TraceRestrictItem auxiliary type field, for TRIT_COND_TIMETABLE_STATE
+ */
+enum TraceRestrictTimetableStateCondAuxField : uint8_t {
+	TRTSCAF_LATENESS              = 0,       ///< Lateness
+	TRTSCAF_EARLINESS             = 1,       ///< Earliness
 	/* space up to 3 */
 };
 
@@ -1030,6 +1040,7 @@ enum TraceRestrictConditionOpType : uint8_t {
 	TRCOT_NONE                    = 0, ///< takes no condition op
 	TRCOT_BINARY                  = 1, ///< takes "is" and "is not" condition ops
 	TRCOT_ALL                     = 2, ///< takes all condition ops (i.e. all relational ops)
+	TRCOT_LT_GTE                  = 3, ///< takes < and >= only
 };
 
 /**
@@ -1042,6 +1053,7 @@ enum TraceRestrictValueType : uint8_t {
 	TRVT_INT,                      ///< takes an unsigned integer value
 	TRVT_DENY,                     ///< takes a value 0 = deny, 1 = allow (cancel previous deny)
 	TRVT_SPEED,                    ///< takes an integer speed value
+	TRVT_TICK_COUNT,               ///< takes an integer tick count
 	TRVT_ORDER,                    ///< takes an order target ID, as per the auxiliary field as type: TraceRestrictOrderCondAuxField
 	TRVT_CARGO_ID,                 ///< takes a CargoType
 	TRVT_DIRECTION,                ///< takes a TraceRestrictDirectionTypeSpecialValue
@@ -1243,6 +1255,11 @@ inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceRestrict
 				out.cond_type = TRCOT_BINARY;
 				break;
 
+			case TRIT_COND_TIMETABLE_STATE:
+				out.value_type = TRVT_TICK_COUNT;
+				out.cond_type = TRCOT_LT_GTE;
+				break;
+
 			default:
 				NOT_REACHED();
 				break;
@@ -1329,6 +1346,7 @@ inline bool IsTraceRestrictTypeAuxSubtype(TraceRestrictItemType type)
 		case TRIT_COND_SLOT_OCCUPANCY:
 		case TRIT_COND_PBS_ENTRY_SIGNAL:
 		case TRIT_COND_CATEGORY:
+		case TRIT_COND_TIMETABLE_STATE:
 			return true;
 
 		default:

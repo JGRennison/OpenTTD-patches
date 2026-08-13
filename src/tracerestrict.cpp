@@ -543,7 +543,7 @@ void TraceRestrictProgram::Execute(const Train *v, const TraceRestrictProgramInp
 			} else {
 				uint16_t condvalue = item.GetValue();
 				bool result = false;
-				switch(type) {
+				switch (type) {
 					case TRIT_COND_UNDEFINED:
 						result = false;
 						break;
@@ -574,6 +574,22 @@ void TraceRestrictProgram::Execute(const Train *v, const TraceRestrictProgramInp
 
 					case TRIT_COND_ORDER_STOP_LOCATION:
 						result = TestOrderStopLocationCondition(&(v->current_order), item);
+						break;
+
+					case TRIT_COND_TIMETABLE_STATE:
+						switch (static_cast<TraceRestrictTimetableStateCondAuxField>(item.GetAuxField())) {
+							case TRTSCAF_LATENESS:
+								result = TestCondition(v->lateness_counter, condop, condvalue);
+								break;
+
+							case TRTSCAF_EARLINESS:
+								result = TestCondition(-v->lateness_counter, condop, condvalue);
+								break;
+
+							default:
+								NOT_REACHED();
+								break;
+						}
 						break;
 
 					case TRIT_COND_CARGO: {
@@ -1373,6 +1389,15 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictPr
 						return true;
 				}
 			};
+			auto invalid_lt_gte_condition = [&]() -> bool {
+				switch (condop) {
+					case TRCO_LT:
+					case TRCO_GTE:
+						return false;
+					default:
+						return true;
+				}
+			};
 
 			/* Validate condition type */
 			switch (type) {
@@ -1562,6 +1587,18 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictPr
 					}
 					break;
 
+				case TRIT_COND_TIMETABLE_STATE:
+					if (invalid_lt_gte_condition()) return unknown_instruction();
+					switch (static_cast<TraceRestrictTimetableStateCondAuxField>(item.GetAuxField())) {
+						case TRTSCAF_LATENESS:
+						case TRTSCAF_EARLINESS:
+							break;
+
+						default:
+							return unknown_instruction();
+					}
+					break;
+
 				default:
 					return unknown_instruction();
 			}
@@ -1584,6 +1621,7 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictPr
 				case TRIT_COND_RESERVED_TILES:
 				case TRIT_COND_CATEGORY:
 				case TRIT_COND_RESERVATION_THROUGH:
+				case TRIT_COND_TIMETABLE_STATE:
 					break;
 
 				case TRIT_COND_CURRENT_ORDER:
@@ -2009,6 +2047,7 @@ void SetTraceRestrictValueDefault(TraceRestrictInstructionItemRef item, TraceRes
 		case TRVT_SPEED_ADAPTATION_CONTROL:
 		case TRVT_SIGNAL_MODE_CONTROL:
 		case TRVT_ORDER_TARGET_DIAGDIR:
+		case TRVT_TICK_COUNT:
 			item.SetValue(0);
 			if (!IsTraceRestrictTypeAuxSubtype(item.GetType())) {
 				item.SetAuxField(0);
@@ -2125,6 +2164,10 @@ void SetTraceRestrictTypeAndNormalise(TraceRestrictInstructionItemRef item, Trac
 	if (item.GetType() == TRIT_COND_LAST_STATION && item.GetAuxField() != TROCAF_STATION) {
 		/* If changing type from another order type to last visited station, reset value if not currently a station */
 		SetTraceRestrictValueDefault(item, TRVT_ORDER, true);
+	}
+
+	if (new_properties.cond_type == TRCOT_LT_GTE && item.GetCondOp() != TRCO_LT && item.GetCondOp() != TRCO_GTE) {
+		item.SetCondOp(TRCO_GTE);
 	}
 }
 
