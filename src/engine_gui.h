@@ -28,7 +28,7 @@ struct GUIEngineListSortCache {
 	mutable btree::btree_map<EngineID, uint> capacities;
 
 	void UpdateCargoFilter(const BuildVehicleWindowBase *parent, CargoType cargo_filter_criteria);
-	uint GetArticulatedCapacity(EngineID eng, bool dual_headed = false) const;
+	uint GetArticulatedCapacity(EngineID eng) const;
 };
 
 template <>
