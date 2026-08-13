@@ -55,6 +55,7 @@
 #include "highscore.h"
 #include "game/game.hpp"
 #include "goal_base.h"
+#include "goal_gui.h"
 #include "story_base.h"
 #include "plans_func.h"
 #include "toolbar_gui.h"

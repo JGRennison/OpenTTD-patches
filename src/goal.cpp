@@ -19,7 +19,7 @@
 #include "company_base.h"
 #include "story_base.h"
 #include "string_func.h"
-#include "gui.h"
+#include "goal_gui.h"
 #include "network/network.h"
 #include "network/network_base.h"
 #include "network/network_func.h"
@@ -34,27 +34,27 @@ INSTANTIATE_POOL_METHODS(Goal)
 /* static */ bool Goal::IsValidGoalDestination(CompanyID company, GoalType type, GoalTypeID dest)
 {
 	switch (type) {
-		case GT_NONE:
+		case GoalType::None:
 			if (dest != 0) return false;
 			break;
 
-		case GT_TILE:
+		case GoalType::Tile:
 			if (!IsValidTile(TileIndex(dest))) return false;
 			break;
 
-		case GT_INDUSTRY:
+		case GoalType::Industry:
 			if (!Industry::IsValidID(dest)) return false;
 			break;
 
-		case GT_TOWN:
+		case GoalType::Town:
 			if (!Town::IsValidID(dest)) return false;
 			break;
 
-		case GT_COMPANY:
+		case GoalType::Company:
 			if (!Company::IsValidID(dest)) return false;
 			break;
 
-		case GT_STORY_PAGE: {
+		case GoalType::StoryPage: {
 			if (!StoryPage::IsValidID(dest)) return false;
 			CompanyID story_company = StoryPage::Get(dest)->company;
 			if (company == CompanyID::Invalid() ? story_company != CompanyID::Invalid() : story_company != CompanyID::Invalid() && story_company != company) return false;
@@ -262,9 +262,9 @@ CommandCost CmdGoalQuestion(DoCommandFlags flags, uint16_t uniqueid, uint32_t ta
 	} else {
 		if (company != CompanyID::Invalid() && !Company::IsValidID(company)) return CMD_ERROR;
 	}
-	uint min_buttons = (type == GQT_QUESTION ? 1 : 0);
+	uint min_buttons = (type == GoalQuestionType::Question ? 1 : 0);
 	if (CountBits(button_mask) < min_buttons || CountBits(button_mask) > 3) return CMD_ERROR;
-	if (type >= GQT_END) return CMD_ERROR;
+	if (type >= GoalQuestionType::End) return CMD_ERROR;
 
 	if (flags.Test(DoCommandFlag::Execute)) {
 		if (is_client) {

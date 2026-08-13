@@ -70,7 +70,7 @@ static_assert(lengthof(_admin_update_type_frequencies) == ADMIN_UPDATE_END);
 ServerNetworkAdminSocketHandler::ServerNetworkAdminSocketHandler(AdminID index, SOCKET s) :
 	PoolItemBase(index), NetworkAdminSocketHandler(s)
 {
-	this->status = ADMIN_STATUS_INACTIVE;
+	this->status = AdminStatus::Inactive;
 	this->connect_time = std::chrono::steady_clock::now();
 }
 
@@ -101,7 +101,7 @@ ServerNetworkAdminSocketHandler::~ServerNetworkAdminSocketHandler()
 /* static */ void ServerNetworkAdminSocketHandler::Send()
 {
 	for (ServerNetworkAdminSocketHandler *as : ServerNetworkAdminSocketHandler::Iterate()) {
-		if (as->status <= ADMIN_STATUS_AUTHENTICATE && std::chrono::steady_clock::now() > as->connect_time + ADMIN_AUTHORISATION_TIMEOUT) {
+		if (as->status <= AdminStatus::Authenticate && std::chrono::steady_clock::now() > as->connect_time + ADMIN_AUTHORISATION_TIMEOUT) {
 			Debug(net, 2, "[admin] Admin did not send its authorisation within {} seconds", std::chrono::duration_cast<std::chrono::seconds>(ADMIN_AUTHORISATION_TIMEOUT).count());
 			as->CloseConnection(true);
 			continue;
@@ -155,7 +155,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::SendError(NetworkErrorCode er
  */
 NetworkRecvStatus ServerNetworkAdminSocketHandler::SendProtocol()
 {
-	this->status = ADMIN_STATUS_ACTIVE;
+	this->status = AdminStatus::Active;
 
 	auto p = std::make_unique<Packet>(this, PacketAdminType::ServerProtocol);
 
@@ -518,7 +518,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::SendRcon(uint16_t colour, std
 
 NetworkRecvStatus ServerNetworkAdminSocketHandler::ReceiveAdminRemoteConsoleCommand(Packet &p)
 {
-	if (this->status <= ADMIN_STATUS_AUTHENTICATE) return this->SendError(NetworkErrorCode::NotExpected);
+	if (this->status <= AdminStatus::Authenticate) return this->SendError(NetworkErrorCode::NotExpected);
 
 	std::string command = p.Recv_string(NETWORK_RCONCOMMAND_LENGTH);
 
@@ -532,7 +532,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::ReceiveAdminRemoteConsoleComm
 
 NetworkRecvStatus ServerNetworkAdminSocketHandler::ReceiveAdminGameScript(Packet &p)
 {
-	if (this->status <= ADMIN_STATUS_AUTHENTICATE) return this->SendError(NetworkErrorCode::NotExpected);
+	if (this->status <= AdminStatus::Authenticate) return this->SendError(NetworkErrorCode::NotExpected);
 
 	std::string json = p.Recv_string(NETWORK_GAMESCRIPT_JSON_LENGTH);
 
@@ -544,7 +544,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::ReceiveAdminGameScript(Packet
 
 NetworkRecvStatus ServerNetworkAdminSocketHandler::ReceiveAdminPing(Packet &p)
 {
-	if (this->status <= ADMIN_STATUS_AUTHENTICATE) return this->SendError(NetworkErrorCode::NotExpected);
+	if (this->status <= AdminStatus::Authenticate) return this->SendError(NetworkErrorCode::NotExpected);
 
 	uint32_t d1 = p.Recv_uint32();
 
@@ -672,7 +672,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::SendCmdLogging(ClientID clien
 
 NetworkRecvStatus ServerNetworkAdminSocketHandler::ReceiveAdminJoin(Packet &p)
 {
-	if (this->status != ADMIN_STATUS_INACTIVE) return this->SendError(NetworkErrorCode::NotExpected);
+	if (this->status != AdminStatus::Inactive) return this->SendError(NetworkErrorCode::NotExpected);
 
 	if (!_settings_client.network.allow_insecure_admin_login) {
 		/* You're not authorized to login using this method. */
@@ -707,7 +707,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::ReceiveAdminQuit(Packet &)
 
 NetworkRecvStatus ServerNetworkAdminSocketHandler::ReceiveAdminUpdateFrequency(Packet &p)
 {
-	if (this->status <= ADMIN_STATUS_AUTHENTICATE) return this->SendError(NetworkErrorCode::NotExpected);
+	if (this->status <= AdminStatus::Authenticate) return this->SendError(NetworkErrorCode::NotExpected);
 
 	AdminUpdateType type = (AdminUpdateType)p.Recv_uint16();
 	AdminUpdateFrequencies freq = static_cast<AdminUpdateFrequencies>(p.Recv_uint16());
@@ -727,7 +727,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::ReceiveAdminUpdateFrequency(P
 
 NetworkRecvStatus ServerNetworkAdminSocketHandler::ReceiveAdminPoll(Packet &p)
 {
-	if (this->status <= ADMIN_STATUS_AUTHENTICATE) return this->SendError(NetworkErrorCode::NotExpected);
+	if (this->status <= AdminStatus::Authenticate) return this->SendError(NetworkErrorCode::NotExpected);
 
 	AdminUpdateType type = (AdminUpdateType)p.Recv_uint8();
 	uint32_t d1 = p.Recv_uint32();
@@ -793,7 +793,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::ReceiveAdminPoll(Packet &p)
 
 NetworkRecvStatus ServerNetworkAdminSocketHandler::ReceiveAdminChat(Packet &p)
 {
-	if (this->status <= ADMIN_STATUS_AUTHENTICATE) return this->SendError(NetworkErrorCode::NotExpected);
+	if (this->status <= AdminStatus::Authenticate) return this->SendError(NetworkErrorCode::NotExpected);
 
 	NetworkAction action = static_cast<NetworkAction>(p.Recv_uint8());
 	NetworkChatDestinationType desttype = static_cast<NetworkChatDestinationType>(p.Recv_uint8());
@@ -819,7 +819,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::ReceiveAdminChat(Packet &p)
 
 NetworkRecvStatus ServerNetworkAdminSocketHandler::ReceiveAdminExternalChat(Packet &p)
 {
-	if (this->status <= ADMIN_STATUS_AUTHENTICATE) return this->SendError(NetworkErrorCode::NotExpected);
+	if (this->status <= AdminStatus::Authenticate) return this->SendError(NetworkErrorCode::NotExpected);
 
 	std::string source = p.Recv_string(NETWORK_CHAT_LENGTH);
 	ExtendedTextColour colour = ExtendedTextColour::FromNetwork(p.Recv_uint16());
@@ -842,7 +842,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::ReceiveAdminExternalChat(Pack
 
 NetworkRecvStatus ServerNetworkAdminSocketHandler::ReceiveAdminJoinSecure(Packet &p)
 {
-	if (this->status != ADMIN_STATUS_INACTIVE) return this->SendError(NetworkErrorCode::NotExpected);
+	if (this->status != AdminStatus::Inactive) return this->SendError(NetworkErrorCode::NotExpected);
 
 	this->admin_name = p.Recv_string(NETWORK_CLIENT_NAME_LENGTH);
 	this->admin_version = p.Recv_string(NETWORK_REVISION_LENGTH);
@@ -871,7 +871,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::ReceiveAdminJoinSecure(Packet
  */
 NetworkRecvStatus ServerNetworkAdminSocketHandler::SendAuthRequest()
 {
-	this->status = ADMIN_STATUS_AUTHENTICATE;
+	this->status = AdminStatus::Authenticate;
 
 	Debug(net, 6, "[admin] '{}' ({}) authenticating using {}", this->admin_name, this->admin_version, this->authentication_handler->GetName());
 
@@ -889,7 +889,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::SendAuthRequest()
  */
 NetworkRecvStatus ServerNetworkAdminSocketHandler::SendEnableEncryption()
 {
-	if (this->status != ADMIN_STATUS_AUTHENTICATE) return this->SendError(NetworkErrorCode::NotExpected);
+	if (this->status != AdminStatus::Authenticate) return this->SendError(NetworkErrorCode::NotExpected);
 
 	auto p = std::make_unique<Packet>(this, PacketAdminType::ServerEnableEncryption);
 	this->authentication_handler->SendEnableEncryption(*p);
@@ -900,7 +900,7 @@ NetworkRecvStatus ServerNetworkAdminSocketHandler::SendEnableEncryption()
 
 NetworkRecvStatus ServerNetworkAdminSocketHandler::ReceiveAdminAuthenticationResponse(Packet &p)
 {
-	if (this->status != ADMIN_STATUS_AUTHENTICATE) return this->SendError(NetworkErrorCode::NotExpected);
+	if (this->status != AdminStatus::Authenticate) return this->SendError(NetworkErrorCode::NotExpected);
 
 	switch (this->authentication_handler->ReceiveResponse(p)) {
 		case NetworkAuthenticationServerHandler::ResponseResult::Authenticated:

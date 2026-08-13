@@ -58,10 +58,6 @@ void ShowBuildIndustryWindowForIndustryType(IndustryType industry_type);
 /* subsidy_gui.cpp */
 void ShowSubsidiesList();
 
-/* goal_gui.cpp */
-void ShowGoalsList(CompanyID company);
-void ShowGoalQuestion(uint16_t id, uint8_t type, uint32_t button_mask, const EncodedString &question);
-
 /* story_gui.cpp */
 void ShowStoryBook(CompanyID company, StoryPageID page_id = StoryPageID::Invalid(), bool centered = false);
 

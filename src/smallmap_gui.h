@@ -190,6 +190,7 @@ protected:
 	uint32_t GetTileColours(const TileArea &ta) const;
 
 	int GetPositionOnLegend(Point pt);
+	void DrawLegend(const Rect &text, const Rect &icon, bool highlight, std::string_view string) const;
 
 public:
 	friend class NWidgetSmallmapDisplay;
