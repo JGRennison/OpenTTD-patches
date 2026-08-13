@@ -50,6 +50,7 @@
 #include "infrastructure_func.h"
 #include "zoom_func.h"
 #include "newgrf_debug.h"
+#include "date_func.h"
 #include "core/y_combinator.hpp"
 #include "3rdparty/cpp-btree/btree_map.h"
 #include "3rdparty/cpp-ring-buffer/ring_buffer.hpp"
@@ -1371,8 +1372,13 @@ static uint ConvertIntegerValue(TraceRestrictValueType type, uint in, bool to_di
 {
 	switch (type) {
 		case TRVT_INT:
-		case TRVT_TICK_COUNT:
 			return in;
+
+		case TRVT_TICK_COUNT:
+			if (_settings_client.gui.timetable_in_ticks) return in;
+			return to_display
+				? in / TimetableDisplayUnitSize()
+				: in * TimetableDisplayUnitSize();
 
 		case TRVT_SPEED:
 			return to_display
@@ -1610,7 +1616,6 @@ static void FillInstructionString(format_buffer &instruction_string, const Trace
 
 			switch (properties.value_type) {
 				case TRVT_INT:
-				case TRVT_TICK_COUNT:
 				case TRVT_PERCENT: {
 					auto params = make_conditional_common_params(item.GetValue());
 					if (item.GetType() == TRIT_COND_RESERVED_TILES && _settings_game.vehicle.train_braking_model != TBM_REALISTIC) {
@@ -1622,6 +1627,10 @@ static void FillInstructionString(format_buffer &instruction_string, const Trace
 
 				case TRVT_SPEED:
 					set_conditional_common(STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_SPEED, item.GetValue());
+					break;
+
+				case TRVT_TICK_COUNT:
+					set_conditional_common(STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_TICK_COUNT, item.GetValue());
 					break;
 
 				case TRVT_ORDER: {
