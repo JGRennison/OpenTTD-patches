@@ -1389,6 +1389,15 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictPr
 						return true;
 				}
 			};
+			auto invalid_lt_gte_condition = [&]() -> bool {
+				switch (condop) {
+					case TRCO_LT:
+					case TRCO_GTE:
+						return false;
+					default:
+						return true;
+				}
+			};
 
 			/* Validate condition type */
 			switch (type) {
@@ -1579,7 +1588,7 @@ CommandCost TraceRestrictProgram::Validate(const std::span<const TraceRestrictPr
 					break;
 
 				case TRIT_COND_TIMETABLE_STATE:
-					if (invalid_condition()) return unknown_instruction();
+					if (invalid_lt_gte_condition()) return unknown_instruction();
 					switch (static_cast<TraceRestrictTimetableStateCondAuxField>(item.GetAuxField())) {
 						case TRTSCAF_LATENESS:
 						case TRTSCAF_EARLINESS:
@@ -2155,6 +2164,10 @@ void SetTraceRestrictTypeAndNormalise(TraceRestrictInstructionItemRef item, Trac
 	if (item.GetType() == TRIT_COND_LAST_STATION && item.GetAuxField() != TROCAF_STATION) {
 		/* If changing type from another order type to last visited station, reset value if not currently a station */
 		SetTraceRestrictValueDefault(item, TRVT_ORDER, true);
+	}
+
+	if (new_properties.cond_type == TRCOT_LT_GTE && item.GetCondOp() != TRCO_LT && item.GetCondOp() != TRCO_GTE) {
+		item.SetCondOp(TRCO_GTE);
 	}
 }
 

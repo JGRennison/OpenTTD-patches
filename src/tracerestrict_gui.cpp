@@ -1308,6 +1308,18 @@ static const TraceRestrictDropDownListSet *GetCondOpDropDownListSet(TraceRestric
 		str_short, val_short,
 	};
 
+	static const StringID str_lt_gte[] = {
+		STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_LESS_THAN,
+		STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_MORE_EQUALS,
+	};
+	static const uint val_lt_gte[] = {
+		TRCO_LT,
+		TRCO_GTE,
+	};
+	static const TraceRestrictDropDownListSet set_lt_gte = {
+		str_lt_gte, val_lt_gte,
+	};
+
 	if (properties.value_type == TRVT_CARGO_ID) return &_cargo_cond_ops;
 	if (properties.value_type == TRVT_TRAIN_STATUS) return &_train_status_cond_ops;
 	if (properties.value_type == TRVT_ENGINE_CLASS) return &_train_status_cond_ops;
@@ -1322,6 +1334,9 @@ static const TraceRestrictDropDownListSet *GetCondOpDropDownListSet(TraceRestric
 
 		case TRCOT_ALL:
 			return &set_long;
+
+		case TRCOT_LT_GTE:
+			return &set_lt_gte;
 	}
 	NOT_REACHED();
 }
@@ -3947,7 +3962,7 @@ private:
 
 				this->GetWidget<NWidgetCore>(type_widget)->SetString(GetTypeString(item));
 
-				if (properties.cond_type == TRCOT_BINARY || properties.cond_type == TRCOT_ALL) {
+				if (properties.cond_type != TRCOT_NONE) {
 					middle_sel->SetDisplayedPlane(DPM_COMPARATOR);
 					this->EnableWidget(TR_WIDGET_COMPARATOR);
 

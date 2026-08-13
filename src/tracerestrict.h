@@ -1040,6 +1040,7 @@ enum TraceRestrictConditionOpType : uint8_t {
 	TRCOT_NONE                    = 0, ///< takes no condition op
 	TRCOT_BINARY                  = 1, ///< takes "is" and "is not" condition ops
 	TRCOT_ALL                     = 2, ///< takes all condition ops (i.e. all relational ops)
+	TRCOT_LT_GTE                  = 3, ///< takes < and >= only
 };
 
 /**
@@ -1256,6 +1257,7 @@ inline TraceRestrictTypePropertySet GetTraceRestrictTypeProperties(TraceRestrict
 
 			case TRIT_COND_TIMETABLE_STATE:
 				out.value_type = TRVT_TICK_COUNT;
+				out.cond_type = TRCOT_LT_GTE;
 				break;
 
 			default:
