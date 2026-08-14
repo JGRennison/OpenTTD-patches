@@ -525,6 +525,10 @@ CommandCost CmdBuildBuoy(DoCommandFlags flags, TileIndex tile)
 	if (wp == nullptr && !Waypoint::CanAllocateItem()) return CommandCost(STR_ERROR_TOO_MANY_STATIONS_LOADING);
 
 	CommandCost cost(ExpensesType::Construction, _price[Price::BuildWaypointBuoy]);
+
+	/* Get the water class of the water tile before it is cleared.*/
+	WaterClass wc = GetWaterClass(tile);
+
 	if (!IsWaterTile(tile)) {
 		CommandCost ret = Command<Commands::LandscapeClear>::Do(flags | DoCommandFlag::Auto, tile);
 		if (ret.Failed()) return ret;
@@ -550,7 +554,7 @@ CommandCost CmdBuildBuoy(DoCommandFlags flags, TileIndex tile)
 
 		if (wp->town == nullptr) MakeDefaultName(wp);
 
-		MakeBuoy(tile, wp->index, GetWaterClass(tile));
+		MakeBuoy(tile, wp->index, wc);
 		InvalidateWaterRegion(tile);
 		CheckForDockingTile(tile);
 		MarkTileDirtyByTile(tile);

@@ -39,6 +39,7 @@
 #define SPRITES_H
 
 #include "../gfx_type.h"
+#include "../slope_constants.h"
 
 static const SpriteID SPR_SELECT_TILE  = 752;
 static const SpriteID SPR_DOT          = 774; // corner marker for lower/raise land
@@ -317,9 +318,16 @@ static const SpriteID SPR_ROAD_WAYPOINT_X_W   = SPR_ROAD_WAYPOINTS_BASE + 2;
 static const SpriteID SPR_ROAD_WAYPOINT_X_E   = SPR_ROAD_WAYPOINTS_BASE + 3;
 static const uint16_t ROAD_WAYPOINTS_SPRITE_COUNT = 4;
 
-/** Overlay rocks sprites. */
-static constexpr SpriteID SPR_OVERLAY_ROCKS_BASE = SPR_ROAD_WAYPOINTS_BASE + ROAD_WAYPOINTS_SPRITE_COUNT;
-static constexpr uint16_t OVERLAY_ROCKS_SPRITE_COUNT = 19 * 5; /* Rock overlays: plain, snow 1, snow 2, snow 3 and full snow. */
+/** @{
+ * Overlay rocks sprites. */
+static constexpr SpriteID SPR_OVERLAY_ROCKS_BASE = SPR_ROAD_WAYPOINTS_BASE + ROAD_WAYPOINTS_SPRITE_COUNT; ///< Rocks overlay with no snow.
+static constexpr SpriteID SPR_OVERLAY_ROCKS_1_QUART_SNOW = SPR_OVERLAY_ROCKS_BASE + NUM_SLOPES * 1; ///< Rocks with 1/4 snow.
+static constexpr SpriteID SPR_OVERLAY_ROCKS_2_QUART_SNOW = SPR_OVERLAY_ROCKS_BASE + NUM_SLOPES * 2; ///< Rocks with half snow density.
+static constexpr SpriteID SPR_OVERLAY_ROCKS_3_QUART_SNOW = SPR_OVERLAY_ROCKS_BASE + NUM_SLOPES * 3; ///< Rocks with 3/4 snow density.
+static constexpr SpriteID SPR_OVERLAY_ROCKS_FULL_SNOW = SPR_OVERLAY_ROCKS_BASE + NUM_SLOPES * 4; ///< Rocks with full snow density.
+static constexpr SpriteID SPR_OVERLAY_ROCKS_WATER_COAST = SPR_OVERLAY_ROCKS_BASE + NUM_SLOPES * 5; ///< Rocks on water and coast.
+static constexpr uint16_t OVERLAY_ROCKS_SPRITE_COUNT = NUM_SLOPES * 6; ///< Total number of rock overlays.
+/** @} */
 
 /** Bridge deck sprites. */
 static constexpr SpriteID SPR_BRIDGE_DECKS_BASE = SPR_OVERLAY_ROCKS_BASE + OVERLAY_ROCKS_SPRITE_COUNT;

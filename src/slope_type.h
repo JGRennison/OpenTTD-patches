@@ -13,6 +13,7 @@
 #ifndef SLOPE_TYPE_H
 #define SLOPE_TYPE_H
 
+#include "slope_constants.h"
 #include "core/enum_type.hpp"
 
 /**

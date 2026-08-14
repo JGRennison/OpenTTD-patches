@@ -498,6 +498,7 @@ add_files(
     signs_type.h
     slider.cpp
     slider_func.h
+    slope_constants.h
     slope_func.h
     slope_type.h
     smallmap_colours.h

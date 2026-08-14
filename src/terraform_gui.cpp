@@ -122,6 +122,26 @@ static void GenerateRockyArea(TileIndex end, TileIndex start, bool remove)
 				}
 				break;
 
+			case TileType::Water:
+				if (remove) {
+					switch (GetWaterTileType(tile)) {
+						case WaterTileType::ClearRocks: SetWaterTileType(tile, WaterTileType::Clear); break;
+						case WaterTileType::CoastRocks: SetWaterTileType(tile, WaterTileType::Coast); break;
+						default: continue;
+					}
+				} else {
+					switch (GetWaterTileType(tile)) {
+						case WaterTileType::Clear:
+							if (GetTileSlope(tile) != SLOPE_FLAT) continue;
+							SetWaterTileType(tile, WaterTileType::ClearRocks);
+							break;
+
+						case WaterTileType::Coast: SetWaterTileType(tile, WaterTileType::CoastRocks); break;
+						default: continue;
+					}
+				}
+				break;
+
 			default:
 				continue;
 		}
