@@ -1805,7 +1805,12 @@ STR_CONFIG_SETTING_TIMETABLE_SHOW_ARRIVAL_DEPARTURE_HELPTEXT    :在時刻表上
 STR_CONFIG_SETTING_QUICKGOTO                                    :快速建立車輛指令：{STRING}
 STR_CONFIG_SETTING_QUICKGOTO_HELPTEXT                           :設定是否在打開指令視窗時自動選取「前往」按鈕。
 
+STR_CONFIG_SETTING_DEFAULT_RAIL_ROAD_TYPE                       :預設的鐵道、道路及電車軌道類型（開啟新遊戲或載入遊戲後）：{STRING}
+STR_CONFIG_SETTING_DEFAULT_RAIL_ROAD_TYPE_HELPTEXT              :開始或載入遊戲後可選鐵道、道路及電車軌道的類型。「最先可用」選擇最早出現而可用的類型，「最新可用」選擇最後出現而可用的類型，「最常用」則選擇目前使用最頻繁的類型
 ###length 3
+STR_CONFIG_SETTING_DEFAULT_RAIL_ROAD_TYPE_FIRST                 :最先可用
+STR_CONFIG_SETTING_DEFAULT_RAIL_ROAD_TYPE_LAST                  :最新可用
+STR_CONFIG_SETTING_DEFAULT_RAIL_ROAD_TYPE_MOST_USED             :最常用
 
 STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION                       :顯示列車預留佔用的路徑：{STRING}
 STR_CONFIG_SETTING_SHOW_TRACK_RESERVATION_HELPTEXT              :設定是否在有列車預留的軌道著色，使玩家更清楚觀察到列車經過路徑號誌時預留的路徑。
@@ -3089,7 +3094,7 @@ STR_TREES_MODE_FOREST_LG_TOOLTIP                                :{BLACK}框選�
 
 # Land generation window (SE)
 STR_TERRAFORM_TOOLBAR_LAND_GENERATION_CAPTION                   :{WHITE}產生地形
-STR_TERRAFORM_TOOLTIP_PLACE_ROCKY_AREAS_ON_LANDSCAPE            :{BLACK}在場景中產生岩石區
+STR_TERRAFORM_TOOLTIP_PLACE_ROCKY_AREAS_ON_LANDSCAPE            :{BLACK}在場景中產生岩石區。{}按住 <Ctrl> 點選以移除岩石區
 STR_TERRAFORM_TOOLTIP_DEFINE_DESERT_AREA                        :{BLACK}定義沙漠區域。{}按住 <Ctrl> 點選可移除沙漠區域
 STR_TERRAFORM_TOOLTIP_INCREASE_SIZE_OF_LAND_AREA                :{BLACK}增加地形升降的範圍
 STR_TERRAFORM_TOOLTIP_DECREASE_SIZE_OF_LAND_AREA                :{BLACK}減少地形升降的範圍

@@ -10,7 +10,7 @@
 #include "../stdafx.h"
 #include "../debug.h"
 #include "../date_func.h"
-#include "../currency.h"
+#include "../currency_func.h"
 #include "../landscape.h"
 #include "../language.h"
 #include "../rev.h"
@@ -189,7 +189,7 @@ static ChangeInfoResult GlobalVarChangeInfo(uint first, uint last, int prop, con
 					StrMakeValidInPlace(_currency_specs[curidx].separator);
 					/* By specifying only one bit, we prevent errors,
 					 * since newgrf specs said that only 0 and 1 can be set for symbol_pos */
-					_currency_specs[curidx].symbol_pos = GB(options, 8, 1);
+					_currency_specs[curidx].symbol_pos = HasBit(options, 8) ? CurrencySymbolPosition::Suffix : CurrencySymbolPosition::Prefix;
 				} else {
 					GrfMsg(1, "GlobalVarChangeInfo: Currency option {} out of range, ignoring", curidx);
 				}

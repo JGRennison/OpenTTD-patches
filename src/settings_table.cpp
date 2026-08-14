@@ -12,7 +12,7 @@
 #include "base_media_base.h"
 #include "base_media_music.h"
 #include "base_media_sounds.h"
-#include "currency.h"
+#include "currency_type.h"
 #include "date_func.h"
 #include "elrail_func.h"
 #include "engine_func.h"

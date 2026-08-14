@@ -2245,7 +2245,7 @@ public:
 	virtual EventState OnCTRLStateChange() override
 	{
 		this->UpdateButtonState();
-		return ES_NOT_HANDLED;
+		return EventState::NotHandled;
 	}
 
 	void UpdateButtonState()
@@ -3994,7 +3994,7 @@ public:
 
 	EventState OnHotkey(int hotkey) override
 	{
-		if (this->vehicle->owner != _local_company) return ES_NOT_HANDLED;
+		if (this->vehicle->owner != _local_company) return EventState::NotHandled;
 
 		switch (hotkey) {
 			case OHK_SKIP:           this->OrderClick_Skip(); break;
@@ -4013,9 +4013,9 @@ public:
 			case OHK_DUPLICATE:      this->OrderClick_DuplicateHotkey(); break;
 			case OHK_RETARGET_JUMP:  this->OrderClick_RetargetJumpHotkey(); break;
 			case OHK_CLOSE:          this->Close(); break;
-			default: return ES_NOT_HANDLED;
+			default: return EventState::NotHandled;
 		}
-		return ES_HANDLED;
+		return EventState::Handled;
 	}
 
 	void OnPlaceObject([[maybe_unused]] Point pt, TileIndex tile) override

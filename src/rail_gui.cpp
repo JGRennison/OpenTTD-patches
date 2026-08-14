@@ -845,7 +845,7 @@ struct BuildRailToolbarWindow : Window {
 		switch (hotkey) {
 			case HOTKEY_POLYRAIL:
 			case HOTKEY_NEW_POLYRAIL:
-				if (!_settings_client.gui.show_rail_polyline_tool) return ES_HANDLED;
+				if (!_settings_client.gui.show_rail_polyline_tool) return EventState::Handled;
 				/* Indicate to the OnClick that the action comes from a hotkey rather
 				 * then from a click and that the CTRL state should be ignored. */
 				this->last_user_action = hotkey;
@@ -857,7 +857,7 @@ struct BuildRailToolbarWindow : Window {
 				this->last_user_action = WID_RAT_CONVERT_RAIL;
 				this->UpdateRemoveWidgetStatus(WID_RAT_CONVERT_RAIL);
 				if (_ctrl_pressed) RailToolbar_CtrlChanged(this);
-				return ES_HANDLED;
+				return EventState::Handled;
 			}
 
 			case WID_RAT_CONVERT_RAIL_TRACK: {
@@ -866,7 +866,7 @@ struct BuildRailToolbarWindow : Window {
 				this->last_user_action = WID_RAT_CONVERT_RAIL;
 				this->UpdateRemoveWidgetStatus(WID_RAT_CONVERT_RAIL);
 				if (_ctrl_pressed) RailToolbar_CtrlChanged(this);
-				return ES_HANDLED;
+				return EventState::Handled;
 			}
 
 			default:
@@ -1045,8 +1045,8 @@ struct BuildRailToolbarWindow : Window {
 	EventState OnCTRLStateChange() override
 	{
 		/* do not toggle Remove button by Ctrl when placing station */
-		if (!this->IsWidgetLowered(WID_RAT_BUILD_STATION) && !this->IsWidgetLowered(WID_RAT_BUILD_WAYPOINT) && RailToolbar_CtrlChanged(this)) return ES_HANDLED;
-		return ES_NOT_HANDLED;
+		if (!this->IsWidgetLowered(WID_RAT_BUILD_STATION) && !this->IsWidgetLowered(WID_RAT_BUILD_WAYPOINT) && RailToolbar_CtrlChanged(this)) return EventState::Handled;
+		return EventState::NotHandled;
 	}
 
 	void OnRealtimeTick([[maybe_unused]] uint delta_ms) override
@@ -1057,7 +1057,7 @@ struct BuildRailToolbarWindow : Window {
 	/**
 	 * Selects new RailType based on SpecialHotkeys and order defined in _sorted_railtypes.
 	 * @param hotkey Defines what action to perform.
-	 * @return ES_HANDLED if hotkey was accepted.
+	 * @return EventState::Handled if hotkey was accepted.
 	 */
 	EventState ChangeRailTypeOnHotkey(int hotkey)
 	{
@@ -1074,20 +1074,20 @@ struct BuildRailToolbarWindow : Window {
 		if (_thd.GetCallbackWnd() == this) SetCursor(this->GetCursorForWidget(this->last_user_action), PAL_NONE);
 		for (WindowClass cls : {WindowClass::BuildStation, WindowClass::BuildSignal, WindowClass::BuildWaypoint, WindowClass::BuildDepot}) SetWindowDirty(cls, TRANSPORT_RAIL);
 
-		return ES_HANDLED;
+		return EventState::Handled;
 	}
 
 	/**
 	 * Handler for global hotkeys of the BuildRailToolbarWindow.
 	 * @param hotkey Hotkey
-	 * @return ES_HANDLED if hotkey was accepted.
+	 * @return EventState::Handled if hotkey was accepted.
 	 */
 	static EventState RailToolbarGlobalHotkeys(int hotkey)
 	{
-		if (_game_mode != GameMode::Normal) return ES_NOT_HANDLED;
+		if (_game_mode != GameMode::Normal) return EventState::NotHandled;
 		extern RailType _last_built_railtype;
 		Window *w = ShowBuildRailToolbar(_last_built_railtype);
-		if (w == nullptr) return ES_NOT_HANDLED;
+		if (w == nullptr) return EventState::NotHandled;
 		return w->OnHotkey(hotkey);
 	}
 
@@ -1352,6 +1352,26 @@ private:
 		}
 	}
 
+	/**
+	 * Set the build station tile highlight to current station size.
+	 */
+	void SetSelectedSize()
+	{
+		if (_settings_client.gui.station_dragdrop) {
+			SetTileSelectSize(1, 1);
+		} else {
+			int x = _settings_client.gui.station_numtracks;
+			int y = _settings_client.gui.station_platlength;
+			if (_station_gui.axis == Axis::X) std::swap(x, y);
+			if (!_remove_button_clicked) {
+				SetTileSelectSize(x, y);
+			}
+		}
+
+		int rad = (_settings_game.station.modified_catchment) ? CA_TRAIN : CA_UNMODIFIED;
+		if (_settings_client.gui.station_show_coverage) SetTileSelectBigSize(-rad, -rad, 2 * rad, 2 * rad);
+	}
+
 public:
 	BuildRailStationWindow(WindowDesc &desc, Window *parent) : PickerWindow(desc, parent, TRANSPORT_RAIL, StationPickerCallbacks::instance)
 	{
@@ -1370,6 +1390,7 @@ public:
 		}
 		this->SetWidgetLoweredState(WID_BRAS_HIGHLIGHT_OFF, !_settings_client.gui.station_show_coverage);
 		this->SetWidgetLoweredState(WID_BRAS_HIGHLIGHT_ON, _settings_client.gui.station_show_coverage);
+		this->SetSelectedSize();
 
 		this->PickerWindow::OnInit();
 	}
@@ -1393,22 +1414,8 @@ public:
 	void OnPaint() override
 	{
 		const StationSpec *statspec = StationClass::Get(_station_gui.sel_class)->GetSpec(_station_gui.sel_type);
-
-		if (_settings_client.gui.station_dragdrop) {
-			SetTileSelectSize(1, 1);
-		} else {
-			int x = _settings_client.gui.station_numtracks;
-			int y = _settings_client.gui.station_platlength;
-			if (_station_gui.axis == Axis::X) std::swap(x, y);
-			if (!_remove_button_clicked) {
-				SetTileSelectSize(x, y);
-			}
-		}
-
 		int rad = (_settings_game.station.modified_catchment) ? CA_TRAIN : CA_UNMODIFIED;
 		rad += _settings_game.station.catchment_increase;
-
-		if (_settings_client.gui.station_show_coverage) SetTileSelectBigSize(-rad, -rad, 2 * rad, 2 * rad);
 
 		for (uint bits = 0; bits < 7; bits++) {
 			bool disable = bits >= _settings_game.station.station_spread;
@@ -1507,6 +1514,8 @@ public:
 				this->RaiseWidget(WID_BRAS_PLATFORM_DIR_X + to_underlying(_station_gui.axis));
 				_station_gui.axis = static_cast<Axis>(widget - WID_BRAS_PLATFORM_DIR_X);
 				this->LowerWidget(WID_BRAS_PLATFORM_DIR_X + to_underlying(_station_gui.axis));
+
+				this->SetSelectedSize();
 				SndClickBeep();
 				this->SetDirty();
 				CloseWindowById(WindowClass::JoinStation, 0);
@@ -1539,6 +1548,7 @@ public:
 
 				this->LowerWidget(_settings_client.gui.station_numtracks + WID_BRAS_PLATFORM_NUM_BEGIN);
 				this->LowerWidget(_settings_client.gui.station_platlength + WID_BRAS_PLATFORM_LEN_BEGIN);
+				this->SetSelectedSize();
 				SndClickBeep();
 				this->SetDirty();
 				CloseWindowById(WindowClass::JoinStation, 0);
@@ -1572,6 +1582,7 @@ public:
 
 				this->LowerWidget(_settings_client.gui.station_numtracks + WID_BRAS_PLATFORM_NUM_BEGIN);
 				this->LowerWidget(_settings_client.gui.station_platlength + WID_BRAS_PLATFORM_LEN_BEGIN);
+				this->SetSelectedSize();
 				SndClickBeep();
 				this->SetDirty();
 				CloseWindowById(WindowClass::JoinStation, 0);
@@ -1606,6 +1617,7 @@ public:
 
 				this->SetWidgetLoweredState(_settings_client.gui.station_numtracks + WID_BRAS_PLATFORM_NUM_BEGIN, !_settings_client.gui.station_dragdrop);
 				this->SetWidgetLoweredState(_settings_client.gui.station_platlength + WID_BRAS_PLATFORM_LEN_BEGIN, !_settings_client.gui.station_dragdrop);
+				this->SetSelectedSize();
 				SndClickBeep();
 				this->SetDirty();
 				CloseWindowById(WindowClass::JoinStation, 0);
@@ -1618,6 +1630,7 @@ public:
 
 				this->SetWidgetLoweredState(WID_BRAS_HIGHLIGHT_OFF, !_settings_client.gui.station_show_coverage);
 				this->SetWidgetLoweredState(WID_BRAS_HIGHLIGHT_ON, _settings_client.gui.station_show_coverage);
+				this->SetSelectedSize();
 				SndClickBeep();
 				this->SetDirty();
 				SetViewportCatchmentStation(nullptr, true);
@@ -1642,13 +1655,13 @@ public:
 	/**
 	 * Handler for global hotkeys of the BuildRailStationWindow.
 	 * @param hotkey Hotkey
-	 * @return ES_HANDLED if hotkey was accepted.
+	 * @return EventState::Handled if hotkey was accepted.
 	 */
 	static EventState BuildRailStationGlobalHotkeys(int hotkey)
 	{
-		if (_game_mode == GameMode::Menu) return ES_NOT_HANDLED;
+		if (_game_mode == GameMode::Menu) return EventState::NotHandled;
 		Window *w = ShowStationBuilder(FindWindowById(WindowClass::BuildToolbar, TRANSPORT_RAIL));
-		if (w == nullptr) return ES_NOT_HANDLED;
+		if (w == nullptr) return EventState::NotHandled;
 		return w->OnHotkey(hotkey);
 	}
 

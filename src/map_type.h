@@ -71,10 +71,10 @@ static const uint MAX_MAP_SIZE       = 1U << MAX_MAP_SIZE_BITS;  ///< Maximal ma
 static const uint MAX_MAP_TILES      = 1U << MAX_MAP_TILES_BITS; ///< Maximal number of tiles in a map = 256M (16k x 16k)
 
 /** Argument for CmdLevelLand describing what to do. */
-enum LevelMode : uint8_t {
-	LM_LEVEL, ///< Level the land.
-	LM_LOWER, ///< Lower the land.
-	LM_RAISE, ///< Raise the land.
+enum class LevelMode : uint8_t {
+	Level, ///< Level the land.
+	Lower, ///< Lower the land.
+	Raise, ///< Raise the land.
 };
 
 #endif /* MAP_TYPE_H */

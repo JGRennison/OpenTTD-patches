@@ -917,9 +917,9 @@ public:
 };
 
 /** State of handling an event. */
-enum EventState : uint8_t {
-	ES_HANDLED,     ///< The passed event is handled.
-	ES_NOT_HANDLED, ///< The passed event is not handled.
+enum class EventState : uint8_t {
+	Handled, ///< The passed event is handled.
+	NotHandled, ///< The passed event is not handled.
 };
 
 struct WindowTokenTag : public StrongType::TypedefTraits<uint64_t, StrongType::Compare> {};

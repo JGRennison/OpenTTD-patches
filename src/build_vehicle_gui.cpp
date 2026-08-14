@@ -2388,13 +2388,13 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 			case BVHK_FOCUS_FILTER_BOX:
 				this->SetFocusedWidget(WID_BV_FILTER);
 				SetFocusedWindow(this); // The user has asked to give focus to the text box, so make sure this window is focused.
-				return ES_HANDLED;
+				return EventState::Handled;
 
 			default:
-				return ES_NOT_HANDLED;
+				return EventState::NotHandled;
 		}
 
-		return ES_HANDLED;
+		return EventState::Handled;
 	}
 
 	static inline HotkeyList hotkeys{"buildvehicle", {
@@ -3481,13 +3481,13 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 			case BVHK_FOCUS_FILTER_BOX:
 				this->SetFocusedWidget(this->wagon_selected ? WID_BV_FILTER_WAGON : WID_BV_FILTER_LOCO);
 				SetFocusedWindow(this); // The user has asked to give focus to the text box, so make sure this window is focused.
-				return ES_HANDLED;
+				return EventState::Handled;
 
 			default:
-				return ES_NOT_HANDLED;
+				return EventState::NotHandled;
 		}
 
-		return ES_HANDLED;
+		return EventState::Handled;
 	}
 
 	DropDownList BuildBadgeConfigurationList() const

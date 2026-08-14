@@ -935,9 +935,9 @@ struct DepotWindow : Window {
 
 		/* Show tooltip window */
 		if (whole_chain) {
-			GuiShowTooltips(this, GetEncodedString(STR_DEPOT_VEHICLE_TOOLTIP_CHAIN, num, details), TCC_RIGHT_CLICK);
+			GuiShowTooltips(this, GetEncodedString(STR_DEPOT_VEHICLE_TOOLTIP_CHAIN, num, details), TooltipCloseCondition::RightClick);
 		} else {
-			GuiShowTooltips(this, GetEncodedString(STR_DEPOT_VEHICLE_TOOLTIP, v->engine_type, details), TCC_RIGHT_CLICK);
+			GuiShowTooltips(this, GetEncodedString(STR_DEPOT_VEHICLE_TOOLTIP, v->engine_type, details), TooltipCloseCondition::RightClick);
 		}
 
 		return true;
@@ -1182,10 +1182,10 @@ struct DepotWindow : Window {
 		if (this->sel != VehicleID::Invalid()) {
 			_cursor.vehchain = _ctrl_pressed;
 			this->SetWidgetDirty(WID_D_MATRIX);
-			return ES_HANDLED;
+			return EventState::Handled;
 		}
 
-		return ES_NOT_HANDLED;
+		return EventState::NotHandled;
 	}
 
 	/**
@@ -1238,7 +1238,7 @@ void DeleteDepotHighlightOfVehicle(const Vehicle *v)
 	/* If we haven't got any vehicles on the mouse pointer, we haven't got any highlighted in any depots either
 	 * If that is the case, we can skip looping though the windows and save time
 	 */
-	if (_special_mouse_mode != WSM_DRAGDROP) return;
+	if (_special_mouse_mode != SpecialMouseMode::DragDrop) return;
 
 	w = dynamic_cast<DepotWindow*>(FindWindowById(WindowClass::VehicleDepot, v->tile.base()));
 	if (w != nullptr) {
@@ -1286,7 +1286,7 @@ void ShowDepotTooltip(Window *w, const TileIndex tile)
 
 	if (totals.total_vehicle_count == 0) {
 		if (totals.free_wagon_count > 0) {
-			GuiShowTooltips(w, GetEncodedString(STR_DEPOT_VIEW_FREE_WAGONS_TOOLTIP, totals.free_wagon_count), TCC_HOVER_VIEWPORT);
+			GuiShowTooltips(w, GetEncodedString(STR_DEPOT_VIEW_FREE_WAGONS_TOOLTIP, totals.free_wagon_count), TooltipCloseCondition::HoverViewport);
 		}
 		return;
 	}
@@ -1314,8 +1314,8 @@ void ShowDepotTooltip(Window *w, const TileIndex tile)
 	}
 
 	if (totals.free_wagon_count > 0) {
-		GuiShowTooltips(w, GetEncodedString(STR_DEPOT_VIEW_MIXED_CONTENTS_TOOLTIP, str, std::move(p1), STR_DEPOT_VIEW_FREE_WAGONS_TOOLTIP, totals.free_wagon_count), TCC_HOVER_VIEWPORT);
+		GuiShowTooltips(w, GetEncodedString(STR_DEPOT_VIEW_MIXED_CONTENTS_TOOLTIP, str, std::move(p1), STR_DEPOT_VIEW_FREE_WAGONS_TOOLTIP, totals.free_wagon_count), TooltipCloseCondition::HoverViewport);
 	} else {
-		GuiShowTooltips(w, GetEncodedString(str, std::move(p1)), TCC_HOVER_VIEWPORT);
+		GuiShowTooltips(w, GetEncodedString(str, std::move(p1)), TooltipCloseCondition::HoverViewport);
 	}
 }

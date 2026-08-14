@@ -52,25 +52,26 @@ struct LegendAndColour {
 };
 
 /** Types of legends in the #WID_SM_LEGEND widget. */
-enum SmallMapType : uint8_t {
-	SMT_CONTOUR,
-	SMT_VEHICLES,
-	SMT_INDUSTRY,
-	SMT_LINKSTATS,
-	SMT_ROUTES,
-	SMT_VEGETATION,
-	SMT_OWNER,
+enum class SmallMapType : uint8_t {
+	Contour, ///< Contour legend.
+	Vehicles, ///< Vehicles legend.
+	Industries, ///< Industries legend.
+	LinkStats, ///< LinkStats legend.
+	Routes, ///< Routes legend.
+	Vegetation, ///< Vegetation legend.
+	Owners, ///< Owners legend.
+	End, ///< End marker.
 };
-DECLARE_ENUM_AS_ADDABLE(SmallMapType)
+//DECLARE_ENUM_AS_ADDABLE(SmallMapType)
 
 /** Class managing the smallmap window. */
 class SmallMapWindow : public Window {
 protected:
 	/** Available kinds of zoomlevel changes. */
-	enum ZoomLevelChange : uint8_t {
-		ZLC_INITIALIZE, ///< Initialize zoom level.
-		ZLC_ZOOM_OUT,   ///< Zoom out.
-		ZLC_ZOOM_IN,    ///< Zoom in.
+	enum class ZoomLevelChange : uint8_t {
+		Init, ///< Initialize zoom level.
+		ZoomOut, ///< Zoom out.
+		ZoomIn, ///< Zoom in.
 	};
 
 	static SmallMapType map_type; ///< Currently displayed legends.

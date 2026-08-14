@@ -5,15 +5,14 @@
  * See the GNU General Public License for more details. You should have received a copy of the GNU General Public License along with OpenTTD. If not, see <https://www.gnu.org/licenses/old-licenses/gpl-2.0>.
  */
 
-/** @file currency.h Functions to handle different currencies. */
+/** @file currency_type.h Types related to currencies. */
 
-#ifndef CURRENCY_H
-#define CURRENCY_H
+#ifndef CURRENCY_TYPE_H
+#define CURRENCY_TYPE_H
 
 #include "date_type.h"
-#include "settings_type.h"
 #include "strings_id_type.h"
-#include <array>
+#include "core/enum_type.hpp"
 
 static constexpr CalTime::Year CF_NOEURO{0}; ///< Currency never switches to the Euro (as far as known).
 static constexpr CalTime::Year CF_ISEURO{1}; ///< Currency _is_ the Euro.
@@ -24,7 +23,7 @@ static constexpr CalTime::Year MIN_EURO_YEAR{2000}; ///< The earliest year custo
  * savegame compatibility and in order to refer to them quickly, especially
  * for referencing the custom one.
  */
-enum Currencies : uint8_t {
+enum Currency : uint8_t {
 	CURRENCY_GBP,       ///< British Pound
 	CURRENCY_USD,       ///< US Dollar
 	CURRENCY_EUR,       ///< Euro
@@ -74,6 +73,18 @@ enum Currencies : uint8_t {
 	CURRENCY_END,       ///< always the last item
 };
 
+/** Bitmask of \c Currency. */
+using Currencies = EnumBitSet<Currency, uint64_t, CURRENCY_END>;
+
+/** The currency symbol positions that we can show. */
+enum class CurrencySymbolPosition : uint8_t {
+	Prefix, ///< Show the prefix value.
+	Suffix, ///< Show the suffix value.
+};
+
+/** Bitmask of \c CurrencySymbolPosition. */
+using CurrencySymbolPositions = EnumBitSet<CurrencySymbolPosition, uint8_t>;
+
 /** Specification of a currency. */
 struct CurrencySpec {
 	uint16_t rate;         ///< The conversion rate compared to the base currency.
@@ -82,49 +93,8 @@ struct CurrencySpec {
 	std::string prefix;    ///< Prefix to apply when formatting money in this currency.
 	std::string suffix;    ///< Suffix to apply when formatting money in this currency.
 	std::string code;      ///< 3 letter untranslated code to identify the currency.
-	/**
-	 * The currency symbol is represented by two possible values, prefix and suffix
-	 * Usage of one or the other is determined by #symbol_pos.
-	 * 0 = prefix
-	 * 1 = suffix
-	 * 2 = both : Special case only for custom currency.
-	 *            It is not a spec from Newgrf,
-	 *            rather a way to let users do what they want with custom currency
-	 */
-	uint8_t symbol_pos;
-	StringID name;
-
-	CurrencySpec() = default;
-
-	CurrencySpec(uint16_t rate, std::string_view separator, CalTime::Year to_euro, std::string_view prefix, std::string_view suffix, std::string_view code, uint8_t symbol_pos, StringID name) :
-		rate(rate), separator(separator), to_euro(to_euro), prefix(prefix), suffix(suffix), code(code), symbol_pos(symbol_pos), name(name)
-	{
-	}
+	CurrencySymbolPositions symbol_pos; ///< Which currency symbols should we show?
+	StringID name; ///< Translated name of this currency.
 };
 
-extern std::array<CurrencySpec, CURRENCY_END> _currency_specs;
-
-/**
- * Get the custom currency.
- * @return Reference to custom currency.
- */
-inline CurrencySpec &GetCustomCurrency()
-{
-	return _currency_specs[CURRENCY_CUSTOM];
-}
-
-/**
- * Get the currently selected currency.
- * @return Read-only reference to the current currency.
- */
-inline const CurrencySpec &GetCurrency()
-{
-	return _currency_specs[GetGameSettings().locale.currency];
-}
-
-uint64_t GetMaskOfAllowedCurrencies();
-void CheckSwitchToEuro();
-void ResetCurrencies(bool preserve_custom = true);
-uint8_t GetNewgrfCurrencyIdConverted(uint8_t grfcurr_id);
-
-#endif /* CURRENCY_H */
+#endif /* CURRENCY_TYPE_H */

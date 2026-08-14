@@ -19,9 +19,9 @@ struct ViewportDrawerDynamic;
 /**
  * Text effect modes.
  */
-enum TextEffectMode : uint8_t {
-	TE_RISING, ///< Make the text effect slowly go upwards
-	TE_STATIC, ///< Keep the text effect static
+enum class TextEffectMode : uint8_t {
+	Rising, ///< Make the text effect slowly go upwards
+	Static, ///< Keep the text effect static
 };
 
 using TextEffectID = uint16_t;

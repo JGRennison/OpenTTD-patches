@@ -8,7 +8,7 @@
 /** @file strings.cpp Handling of translated strings. */
 
 #include "stdafx.h"
-#include "currency.h"
+#include "currency_func.h"
 #include "station_base.h"
 #include "town.h"
 #include "waypoint_base.h"
@@ -733,10 +733,8 @@ static void FormatGenericCurrency(StringBuilder builder, const CurrencySpec *spe
 		number = -number;
 	}
 
-	/* Add prefix part, following symbol_pos specification.
-	 * Here, it can can be either 0 (prefix) or 2 (both prefix and suffix).
-	 * The only remaining value is 1 (suffix), so everything that is not 1 */
-	if (spec->symbol_pos != 1) builder += spec->prefix;
+	/* Add prefix part, following symbol_pos specification. */
+	if (spec->symbol_pos.Test(CurrencySymbolPosition::Prefix)) builder += spec->prefix;
 
 	StringID number_str = STR_NULL;
 
@@ -767,10 +765,8 @@ static void FormatGenericCurrency(StringBuilder builder, const CurrencySpec *spe
 		FormatStringDirect(builder, GetStringPtr(number_str), {});
 	}
 
-	/* Add suffix part, following symbol_pos specification.
-	 * Here, it can can be either 1 (suffix) or 2 (both prefix and suffix).
-	 * The only remaining value is 1 (prefix), so everything that is not 0 */
-	if (spec->symbol_pos != 0) builder += spec->suffix;
+	/* Add suffix part, following symbol_pos specification. */
+	if (spec->symbol_pos.Test(CurrencySymbolPosition::Suffix)) builder += spec->suffix;
 
 	if (negative) {
 		builder.Utf8Encode(SCC_POP_COLOUR);

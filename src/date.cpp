@@ -11,7 +11,6 @@
 #include "network/network.h"
 #include "network/network_func.h"
 #include "network/network_sync.h"
-#include "currency.h"
 #include "window_func.h"
 #include "settings_type.h"
 #include "date_func.h"
@@ -378,6 +377,7 @@ static void OnNewCalendarYear()
 		CalTime::Detail::now.cal_date -= days_this_year;
 	}
 
+	extern void CheckSwitchToEuro();
 	if (_settings_client.gui.auto_euro) CheckSwitchToEuro();
 	IConsoleCmdExec("exec scripts/on_newyear.scr 0");
 }

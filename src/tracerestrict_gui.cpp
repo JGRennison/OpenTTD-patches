@@ -3561,7 +3561,7 @@ public:
 	virtual EventState OnCTRLStateChange() override
 	{
 		this->UpdateButtonState();
-		return ES_NOT_HANDLED;
+		return EventState::NotHandled;
 	}
 
 	bool IsNewGRFInspectable() const override
@@ -5541,7 +5541,7 @@ void DeleteTraceRestrictSlotHighlightOfVehicle(const Vehicle *v)
 	/* If we haven't got any vehicles on the mouse pointer, we haven't got any highlighted in any group windows either
 	 * If that is the case, we can skip looping though the windows and save time
 	 */
-	if (_special_mouse_mode != WSM_DRAGDROP) return;
+	if (_special_mouse_mode != SpecialMouseMode::DragDrop) return;
 
 	TraceRestrictSlotWindow *w = (TraceRestrictSlotWindow *)FindWindowById(WindowClass::TraceRestrictSlots, VehicleListIdentifier(VL_SLOT_LIST, v->type, v->owner).ToWindowNumber());
 	if (w != nullptr) w->UnselectVehicle(v->index);

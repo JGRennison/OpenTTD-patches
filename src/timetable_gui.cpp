@@ -594,7 +594,7 @@ struct TimetableWindow : GeneralVehicleWindow {
 	{
 		this->UpdateSelectionStates();
 		this->SetDirty();
-		return ES_NOT_HANDLED;
+		return EventState::NotHandled;
 	}
 
 	void SetButtonDisabledStates()

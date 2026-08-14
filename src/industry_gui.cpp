@@ -3405,6 +3405,6 @@ void ShowIndustryTooltip(Window *w, const TileIndex tile)
 	}
 
 	if (!msg.empty()) {
-		GuiShowTooltips(w, GetEncodedRawString(msg), TCC_HOVER_VIEWPORT);
+		GuiShowTooltips(w, GetEncodedRawString(msg), TooltipCloseCondition::HoverViewport);
 	}
 }

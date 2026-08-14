@@ -300,14 +300,13 @@ struct ViewportData : Viewport {
 
 struct QueryString;
 
-/* misc_gui.cpp */
-enum TooltipCloseCondition : uint8_t {
-	TCC_RIGHT_CLICK,
-	TCC_HOVER,
-	TCC_NONE,
-	TCC_HOVER_VIEWPORT,
-	TCC_NEXT_LOOP,
-	TCC_EXIT_VIEWPORT,
+/* Automatic closing conditions for tooltips. */
+enum class TooltipCloseCondition : uint8_t {
+	RightClick,     ///< Close the tooltip when releasing the right mouse button.
+	Hover,          ///< Close the tooltip when stopping to hovering, i.e. moving the mouse.
+	None,           ///< Do not automatically close the tooltip.
+	HoverViewport,  ///< Close the tooltip when no longer hovering, or when no longer in the viewport.
+	ExitViewport,   ///< Close the tooltip when leaving the viewport.
 };
 
 typedef std::vector<const Vehicle *> VehicleList;
@@ -728,22 +727,22 @@ public:
 	 * A key has been pressed.
 	 * @param key     the Unicode value of the key.
 	 * @param keycode the untranslated key code including shift state.
-	 * @return #ES_HANDLED if the key press has been handled and no other
+	 * @return #EventState::Handled if the key press has been handled and no other
 	 *         window should receive the event.
 	 */
-	virtual EventState OnKeyPress(char32_t key, uint16_t keycode) { return ES_NOT_HANDLED; }
+	virtual EventState OnKeyPress(char32_t key, uint16_t keycode) { return EventState::NotHandled; }
 
 	virtual EventState OnHotkey(int hotkey);
 
 	/**
 	 * The state of the control key has changed
-	 * @return #ES_HANDLED if the change has been handled and no other
+	 * @return #EventState::Handled if the change has been handled and no other
 	 *         window should receive the event.
 	 */
-	virtual EventState OnCTRLStateChange() { return ES_NOT_HANDLED; }
+	virtual EventState OnCTRLStateChange() { return EventState::NotHandled; }
 
 	/**
-	 * The state of the control key has changed, this is sent even if an OnCTRLStateChange handler has return ES_HANDLED
+	 * The state of the control key has changed, this is sent even if an OnCTRLStateChange handler has return EventState::Handled
 	 */
 	virtual void OnCTRLStateChangeAlways() {}
 
@@ -1180,12 +1179,12 @@ extern Rect _scrolling_viewport_bound;
 extern bool _mouse_hovering;
 
 /** Mouse modes. */
-enum SpecialMouseMode : uint8_t {
-	WSM_NONE,     ///< No special mouse mode.
-	WSM_DRAGDROP, ///< Drag&drop an object.
-	WSM_SIZING,   ///< Sizing mode.
-	WSM_PRESIZE,  ///< Presizing mode (docks, tunnels).
-	WSM_DRAGGING, ///< Dragging mode (trees).
+enum class SpecialMouseMode : uint8_t {
+	None, ///< No special mouse mode.
+	DragDrop, ///< Drag&drop an object.
+	Sizing, ///< Sizing mode.
+	Presize, ///< Presizing mode (docks, tunnels).
+	Dragging, ///< Dragging mode (trees).
 };
 extern SpecialMouseMode _special_mouse_mode;
 

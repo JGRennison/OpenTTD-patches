@@ -210,7 +210,7 @@ struct IConsoleWindow : Window
 
 	EventState OnKeyPress(char32_t key, uint16_t keycode) override
 	{
-		if (_focused_window != this) return ES_NOT_HANDLED;
+		if (_focused_window != this) return EventState::NotHandled;
 
 		const int scroll_height = (this->height / this->line_height) - 1;
 		switch (keycode) {
@@ -276,11 +276,11 @@ struct IConsoleWindow : Window
 					IConsoleResetHistoryPos();
 					this->SetDirty();
 				} else {
-					return ES_NOT_HANDLED;
+					return EventState::NotHandled;
 				}
 				break;
 		}
-		return ES_HANDLED;
+		return EventState::Handled;
 	}
 
 	void InsertTextString(WidgetID, std::string_view str, bool marked, std::optional<size_t> caret, std::optional<size_t> insert_location, std::optional<size_t> replacement_end) override

@@ -22,7 +22,7 @@
 #include "date_func.h"
 #include "gfx_func.h"
 #include "core/geometry_func.hpp"
-#include "currency.h"
+#include "currency_func.h"
 #include "zoom_func.h"
 #include "unit_conversion.h"
 #include "core/math_func.hpp"

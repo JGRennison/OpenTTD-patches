@@ -22,7 +22,7 @@
  */
 
 #include "stdafx.h"
-#include "currency.h"
+#include "currency_func.h"
 #include "network/network.h"
 #include "network/network_func.h"
 #include "network/core/config.h"

@@ -1087,10 +1087,10 @@ public:
 	{
 		if (keycode == WKC_ESC) {
 			this->Close();
-			return ES_HANDLED;
+			return EventState::Handled;
 		}
 
-		return ES_NOT_HANDLED;
+		return EventState::NotHandled;
 	}
 
 	void OnTimeout() override

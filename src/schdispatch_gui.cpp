@@ -1914,11 +1914,11 @@ struct ScheduledDispatchAddSlotsWindow : Window {
 					this->SetFocusedWidget(WID_SCHDISPATCH_ADD_SLOT_START_TEXTEDIT);
 					break;
 				default:
-					return ES_NOT_HANDLED;
+					return EventState::NotHandled;
 			}
-			return ES_HANDLED;
+			return EventState::Handled;
 		} else {
-			return ES_NOT_HANDLED;
+			return EventState::NotHandled;
 		}
 	}
 

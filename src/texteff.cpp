@@ -24,7 +24,7 @@ struct TextEffect : public ViewportSign {
 	uint64_t params_1;   ///< DParam parameter
 	uint64_t params_2;   ///< second DParam parameter
 	StringID string_id;  ///< String to draw for the text effect, if INVALID_STRING_ID then it's not valid
-	uint8_t duration;    ///< How long the text effect should stay, in ticks (applies only when mode == TE_RISING)
+	uint8_t duration;    ///< How long the text effect should stay, in ticks (applies only when mode == TextEffectMode::Rising)
 	TextEffectMode mode; ///< Type of text effect
 
 	void Reset();
@@ -108,7 +108,7 @@ void MoveAllTextEffects(uint delta_ms)
 
 	for (TextEffect &te : _text_effects) {
 		if (te.string_id == INVALID_STRING_ID) continue;
-		if (te.mode != TE_RISING) continue;
+		if (te.mode != TextEffectMode::Rising) continue;
 
 		if (te.duration < count) {
 			te.Reset();
@@ -143,7 +143,7 @@ void DrawTextEffects(ViewportDrawerDynamic *vdd, DrawPixelInfo *dpi, bool load_t
 
 	for (TextEffect &te : _text_effects) {
 		if (te.string_id == INVALID_STRING_ID) continue;
-		if ((te.mode == TE_RISING || show_loading) && te.top > top_threshold && te.top < bottom_threshold) {
+		if ((te.mode == TextEffectMode::Rising || show_loading) && te.top > top_threshold && te.top < bottom_threshold) {
 			ViewportAddString(vdd, dpi, &te, flags, te.string_id, te.params_1, te.params_2);
 		}
 	}

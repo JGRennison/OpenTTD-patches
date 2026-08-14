@@ -20,7 +20,7 @@
 #include "date_func.h"
 #include "session_stats.h"
 
-#include "currency.h"
+#include "currency_func.h"
 #include "fontcache.h"
 #include "language.h"
 

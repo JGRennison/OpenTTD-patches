@@ -2321,10 +2321,10 @@ struct MainToolbarWindow : Window {
 			case MTHK_TEMPLATE_REPLACEMENT: ShowTemplateReplaceWindow(); break;
 			case MTHK_TRAIN_SLOTS: ShowTraceRestrictSlotWindow(_local_company, VehicleType::Train); break;
 			case MTHK_TRAIN_COUNTERS: ShowTraceRestrictCounterWindow(_local_company); break;
-			default: return ES_NOT_HANDLED;
+			default: return EventState::NotHandled;
 		}
 		if (cbf != CallBackFunction::None) _last_started_action = cbf;
-		return ES_HANDLED;
+		return EventState::Handled;
 	}
 
 	void OnPlaceObject([[maybe_unused]] Point pt, TileIndex tile) override
@@ -2719,13 +2719,13 @@ struct ScenarioEditorToolbarWindow : Window {
 				case MainToolbarEditorHotkeys::GenerateTown: ShowFoundTownWindow(); break;
 				case MainToolbarEditorHotkeys::BuildRoad: ToolbarScenBuildRoadClick(this); break;
 				case MainToolbarEditorHotkeys::BuildTram: ToolbarScenBuildTramClick(this); break;
-				default: return ES_NOT_HANDLED;
+				default: return EventState::NotHandled;
 			}
 			if (cbf != CallBackFunction::None) _last_started_action = cbf;
 		} else {
 			this->OnClick({}, hotkey, 0);
 		}
-		return ES_HANDLED;
+		return EventState::Handled;
 	}
 
 	void OnPlaceObject([[maybe_unused]] Point pt, TileIndex tile) override

@@ -276,7 +276,7 @@ void ShowTownNameTooltip(Window *w, const TileIndex tile)
 	} else {
 		tooltip_string = GetEncodedString(tooltip_prefix, params[0], params[1]);
 	}
-	GuiShowTooltips(w, std::move(tooltip_string), TCC_HOVER_VIEWPORT);
+	GuiShowTooltips(w, std::move(tooltip_string), TooltipCloseCondition::HoverViewport);
 }
 
 void ShowWaypointViewportTooltip(Window *w, const TileIndex tile)
@@ -284,7 +284,7 @@ void ShowWaypointViewportTooltip(Window *w, const TileIndex tile)
 	if (_settings_client.gui.waypoint_viewport_tooltip_name == WTNM_OFF ||
 			(_settings_client.gui.waypoint_viewport_tooltip_name == WTNM_ON_IF_HIDDEN && _display_opt.Test(DisplayOption::ShowWaypointNames))) return;
 
-	GuiShowTooltips(w, GetEncodedString(STR_WAYPOINT_NAME, GetStationIndex(tile)), TCC_HOVER_VIEWPORT);
+	GuiShowTooltips(w, GetEncodedString(STR_WAYPOINT_NAME, GetStationIndex(tile)), TooltipCloseCondition::HoverViewport);
 }
 
 void ShowStationViewportTooltip(Window *w, const TileIndex tile)
@@ -313,7 +313,7 @@ void ShowStationViewportTooltip(Window *w, const TileIndex tile)
 	}
 
 	if (!msg.empty()) {
-		GuiShowTooltips(w, GetEncodedRawString(msg), TCC_HOVER_VIEWPORT);
+		GuiShowTooltips(w, GetEncodedRawString(msg), TooltipCloseCondition::HoverViewport);
 	}
 }
 

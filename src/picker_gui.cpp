@@ -787,10 +787,10 @@ EventState PickerWindow::OnHotkey(int hotkey)
 				this->SetFocusedWidget(WID_PW_CLASS_FILTER);
 			}
 			SetFocusedWindow(this);
-			return ES_HANDLED;
+			return EventState::Handled;
 
 		default:
-			return ES_NOT_HANDLED;
+			return EventState::NotHandled;
 	}
 }
 

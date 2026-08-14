@@ -884,7 +884,7 @@ public:
 
 	EventState OnKeyPress(char32_t key, uint16_t keycode) override
 	{
-		if (this->vscroll->UpdateListPositionOnKeyPress(this->list_pos, keycode) == ES_NOT_HANDLED) {
+		if (this->vscroll->UpdateListPositionOnKeyPress(this->list_pos, keycode) == EventState::NotHandled) {
 			switch (keycode) {
 				case WKC_SPACE:
 				case WKC_RETURN:
@@ -898,13 +898,13 @@ public:
 							this->content.ForceRebuild();
 							this->InvalidateData();
 						}
-						return ES_HANDLED;
+						return EventState::Handled;
 					}
 					/* space is pressed and filter is focused. */
 					[[fallthrough]];
 
 				default:
-					return ES_NOT_HANDLED;
+					return EventState::NotHandled;
 			}
 		}
 
@@ -913,7 +913,7 @@ public:
 				this->content.ForceRebuild();
 				this->InvalidateData();
 			}
-			return ES_HANDLED;
+			return EventState::Handled;
 		}
 
 		this->selected = this->content[this->list_pos];
@@ -927,7 +927,7 @@ public:
 
 		/* redraw window */
 		this->InvalidateData();
-		return ES_HANDLED;
+		return EventState::Handled;
 	}
 
 	void OnEditboxChanged(WidgetID wid) override

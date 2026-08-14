@@ -97,9 +97,9 @@ struct InspectTargetId {
  * The type of a property to show. This is used to
  * provide an appropriate representation in the GUI.
  */
-enum NIType : uint8_t {
-	NIT_INT,   ///< The property is a simple integer
-	NIT_CARGO, ///< The property is a cargo
+enum class NIType : uint8_t {
+	Integer, ///< The property is a simple integer
+	Cargo, ///< The property is a cargo
 };
 
 using NIValueReaderProc = uint(*)(const void *, uint8_t);
@@ -137,7 +137,7 @@ struct NIProperty {
 	const char *name;                       ///< A (human readable) name for the property
 	NO_UNIQUE_ADDRESS NIValueReader reader; ///< Class value reader
 	uint8_t prop;                           ///< The number of the property
-	uint8_t type;
+	NIType type;                            ///< Type of property for chosing the appropriate representation.
 };
 
 
@@ -848,11 +848,11 @@ struct NewGRFInspectWindow final : Window {
 
 				format_buffer property_str;
 				switch (nip.type) {
-					case NIT_INT:
+					case NIType::Integer:
 						AppendStringInPlace(property_str, STR_JUST_INT, value);
 						break;
 
-					case NIT_CARGO:
+					case NIType::Cargo:
 						AppendStringInPlace(property_str, (value != to_underlying(INVALID_CARGO)) ? CargoSpec::Get(value)->name : STR_QUANTITY_N_A);
 						break;
 

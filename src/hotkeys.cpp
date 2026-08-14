@@ -358,7 +358,7 @@ void HandleGlobalHotkeys(char32_t key, uint16_t keycode)
 		if (list->global_hotkey_handler == nullptr) continue;
 
 		int hotkey = list->CheckMatch(keycode, true);
-		if (hotkey >= 0 && (list->global_hotkey_handler(hotkey) == ES_HANDLED)) return;
+		if (hotkey >= 0 && (list->global_hotkey_handler(hotkey) == EventState::Handled)) return;
 	}
 }
 

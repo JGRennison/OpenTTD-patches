@@ -8,7 +8,7 @@
 /** @file settings_gui.cpp GUI for settings. */
 
 #include "stdafx.h"
-#include "currency.h"
+#include "currency_func.h"
 #include "error.h"
 #include "settings_gui.h"
 #include "textbuf_gui.h"
@@ -498,23 +498,23 @@ struct GameOptionsWindow : Window {
 		switch (widget) {
 			case WID_GO_CURRENCY_DROPDOWN: { // Setup currencies dropdown
 				*selected_index = this->opt->locale.currency;
-				uint64_t disabled = _game_mode == GameMode::Menu ? 0LL : ~GetMaskOfAllowedCurrencies();
+				Currencies disabled = _game_mode == GameMode::Menu ? Currencies{} : GetMaskOfAllowedCurrencies().Flip();
 
 				/* Add non-custom currencies; sorted naturally */
-				for (const CurrencySpec &currency : _currency_specs) {
-					int i = &currency - _currency_specs.data();
+				for (Currency i : EnumRange(CURRENCY_END)) {
 					if (i == CURRENCY_CUSTOM) continue;
+					const CurrencySpec &currency = _currency_specs[i];
 					if (currency.code.empty()) {
-						list.push_back(MakeDropDownListStringItem(currency.name, i, HasBit(disabled, i)));
+						list.push_back(MakeDropDownListStringItem(currency.name, i, disabled.Test(i)));
 					} else {
-						list.push_back(MakeDropDownListStringItem(GetString(STR_GAME_OPTIONS_CURRENCY_CODE, currency.name, currency.code), i, HasBit(disabled, i)));
+						list.push_back(MakeDropDownListStringItem(GetString(STR_GAME_OPTIONS_CURRENCY_CODE, currency.name, currency.code), i, disabled.Test(i)));
 					}
 				}
 				std::sort(list.begin(), list.end(), DropDownListStringItem::NatSortFunc);
 
 				/* Append custom currency at the end */
 				list.push_back(MakeDropDownListDividerItem()); // separator line
-				list.push_back(MakeDropDownListStringItem(STR_GAME_OPTIONS_CURRENCY_CUSTOM, CURRENCY_CUSTOM, HasBit(disabled, CURRENCY_CUSTOM)));
+				list.push_back(MakeDropDownListStringItem(STR_GAME_OPTIONS_CURRENCY_CUSTOM, CURRENCY_CUSTOM, disabled.Test(CURRENCY_CUSTOM)));
 				break;
 			}
 
