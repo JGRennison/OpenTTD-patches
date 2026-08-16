@@ -84,6 +84,7 @@ private:
 		if (!this->ptr) return;
 
 		if (this->GetType() == SpriteType::Recolour) {
+			this->ptr.reset();
 			return;
 		}
 
