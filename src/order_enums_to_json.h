@@ -153,7 +153,8 @@ NLOHMANN_JSON_SERIALIZE_ENUM(OrderConditionVariable, {
 	{OrderConditionVariable::Timetable, "timetable" },
 	{OrderConditionVariable::DispatchSlot, "dispatch-slot" },
 	{OrderConditionVariable::CargoWaitingAmountPercentage, "cargo-waiting-amount-percentage" },
-	{OrderConditionVariable::VehicleInSlotGroup, "vehicle-in-slot-group" }
+	{OrderConditionVariable::VehicleInSlotGroup, "vehicle-in-slot-group" },
+	{OrderConditionVariable::DrivingBackwards, "driving-backwards" }
 })
 
 NLOHMANN_JSON_SERIALIZE_ENUM(OrderConditionComparator, {
