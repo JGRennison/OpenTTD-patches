@@ -786,12 +786,16 @@ void DupSprite(SpriteID old_spr, SpriteID new_spr)
 	SpriteCache *scnew = AllocateSpriteCache(new_spr); // may reallocate: so put it first
 	SpriteCache *scold = GetSpriteCache(old_spr);
 
+	scnew->Clear();
 	scnew->file = scold->file;
 	scnew->file_pos = scold->file_pos;
 	scnew->id = scold->id;
 	scnew->SetType(scold->GetType());
 	scnew->flags = scold->flags;
 	scnew->SetWarned(false);
+	if (scold->GetType() == SpriteType::Recolour) {
+		scnew->AssignRecolourSpriteData(scold->GetPtr());
+	}
 }
 
 static size_t GetSpriteCacheUsage()

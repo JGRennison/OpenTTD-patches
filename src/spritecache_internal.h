@@ -142,9 +142,7 @@ public:
 
 	void AssignRecolourSpriteData(void *data)
 	{
-		this->Clear();
-
-		assert(this->GetType() == SpriteType::Recolour);
+		assert(this->GetType() == SpriteType::Recolour && !this->ptr);
 
 		this->ptr.reset(data);
 	}
