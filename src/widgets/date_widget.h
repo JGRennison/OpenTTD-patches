@@ -18,4 +18,11 @@ enum SetDateWidgets : WidgetID {
 	WID_SD_SET_DATE, ///< Actually set the date.
 };
 
+/** Widgets of the #SetDateWindow class. */
+enum SetMinutesWidgets : WidgetID {
+	WID_SM_MINUTE,   ///< Dropdown for the minute.
+	WID_SM_HOUR,     ///< Dropdown for the hour.
+	WID_SM_SET_DATE, ///< Actually set the date.
+};
+
 #endif /* WIDGETS_DATE_WIDGET_H */
