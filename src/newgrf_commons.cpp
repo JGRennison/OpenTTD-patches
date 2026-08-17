@@ -117,7 +117,7 @@ uint16_t OverrideManagerBase::AddEntityID(uint16_t grf_local_id, uint32_t grfid,
 	for (id = this->max_offset; id < this->max_entities; id++) {
 		EntityIDMapping *map = &this->mappings[id];
 
-		if (CheckValidNewID(id) && map->entity_id == 0 && map->grfid == 0) {
+		if (map->entity_id == 0 && map->grfid == 0) {
 			map->entity_id     = grf_local_id;
 			map->grfid         = grfid;
 			map->substitute_id = substitute_id;
