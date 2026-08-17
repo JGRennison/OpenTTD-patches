@@ -298,7 +298,7 @@ static bool DoTriggerIndustryTileAnimation(TileIndex tile, IndustryAnimationTrig
 			const uint64_t mask = spec->layout_anim_masks[ind->selected_layout - 1];
 			uint idx = 0;
 			for (IndustryTileLayoutTile it : spec->layouts[ind->selected_layout - 1]) {
-				if (it.gfx == 0xFF) continue;
+				if (it.gfx == GFX_WATERTILE_SPECIALCHECK) continue;
 
 				if (it.ti == tile_delta) {
 					IndustryGfx gfx = GetTranslatedIndustryTileID(it.gfx);
@@ -453,7 +453,7 @@ void AnalyseIndustryTileSpriteGroups()
 			btree::btree_set<IndustryGfx> seen_gfx;
 			layout.clear();
 			for (IndustryTileLayoutTile it : spec.layouts[idx]) {
-				if (it.gfx == 0xFF) continue;
+				if (it.gfx == GFX_WATERTILE_SPECIALCHECK) continue;
 
 				IndustryGfx gfx = GetTranslatedIndustryTileID(it.gfx);
 				layout.push_back({ it.ti, gfx });
@@ -513,7 +513,7 @@ void ApplyIndustryTileAnimMasking()
 
 		uint idx = 0;
 		for (IndustryTileLayoutTile it : spec->layouts[ind->selected_layout - 1]) {
-			if (it.gfx == 0xFF) continue;
+			if (it.gfx == GFX_WATERTILE_SPECIALCHECK) continue;
 
 			TileIndex tile = AddTileIndexDiffCWrap(ind->location.tile, it.ti);
 			if (!IsValidTile(tile) || !ind->TileBelongsToIndustry(tile)) break;
