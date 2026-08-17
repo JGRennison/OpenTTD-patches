@@ -389,6 +389,10 @@ namespace DateDetail {
 struct ClockFaceMinutesTag : public StrongType::TypedefTraits<int, StrongType::Compare, StrongType::Integer, DateDetail::MinuteOperations<false>, DateDetail::ClockFaceMinuteOperations> {};
 using ClockFaceMinutes = StrongType::Typedef<ClockFaceMinutesTag>;
 
+/* The type to store the absolute day number for tick minutes */
+struct TickMinutesDayNumberTag : public StrongType::TypedefTraits<int64_t, StrongType::Compare, StrongType::Integer> {};
+using TickMinutesDayNumber = StrongType::Typedef<TickMinutesDayNumberTag>;
+
 namespace DateDetail {
 	/* Mixin for TickMinutes */
 	struct TickMinuteOperations {
@@ -409,6 +413,21 @@ namespace DateDetail {
 				TBaseType minutes = this->GetBase() % 1440;
 				if (minutes < 0) minutes += 1440;
 				return ClockFaceMinutes{static_cast<int>(minutes)};
+			}
+
+			TickMinutesDayNumber DayNumber() const
+			{
+				return TickMinutesDayNumber{DivTowardsNegativeInf<TBaseType>(this->GetBase(), 1440)};
+			}
+
+			static constexpr TType FromAbsolute(TickMinutesDayNumber day_number, int hour, int minute)
+			{
+				return TType{(day_number.base() * 1440) + (hour * 60) + minute};
+			}
+
+			static constexpr TType FromAbsolute(TickMinutesDayNumber day_number, ClockFaceMinutes clock_face)
+			{
+				return TType{(day_number.base() * 1440) + clock_face.base()};
 			}
 		};
 	};
