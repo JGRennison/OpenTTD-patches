@@ -22,7 +22,11 @@ enum SetDateWidgets : WidgetID {
 enum SetMinutesWidgets : WidgetID {
 	WID_SM_MINUTE,   ///< Dropdown for the minute.
 	WID_SM_HOUR,     ///< Dropdown for the hour.
+	WID_SM_TEXT,     ///< Time text.
+	WID_SM_TIME_SEL, ///< NWID_SELECTION for time input..
 	WID_SM_SET_DATE, ///< Actually set the date.
+	WID_SM_DAY_SEL,  ///< NWID_SELECTION for WID_SM_DAY_NUM.
+	WID_SM_DAY_NUM,  ///< Tick minutes day offset field.
 };
 
 #endif /* WIDGETS_DATE_WIDGET_H */

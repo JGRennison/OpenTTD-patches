@@ -1997,6 +1997,9 @@ STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :D:{SPACE}{SPACE
 
 STR_DATE_MINUTES_MINUTE_TOOLTIP                                 :{BLACK}Select minute
 STR_DATE_MINUTES_HOUR_TOOLTIP                                   :{BLACK}Select hour
+STR_DATE_HHMM_TOOLTIP                                           :{BLACK}Time (hhmm)
+STR_DATE_DAY_OFFSET                                             :{BLACK}Day offset:
+STR_DATE_DAY_OFFSET_TOOLTIP                                     :{BLACK}Set day offset from the current timetable day
 
 STR_TIME_CAPTION                                                :{WHITE}Set time
 

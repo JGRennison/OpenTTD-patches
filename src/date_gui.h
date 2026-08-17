@@ -12,6 +12,7 @@
 
 #include "date_type.h"
 #include "window_type.h"
+#include "core/enum_type.hpp"
 
 /**
  * Callback for when a tick has been chosen
@@ -21,7 +22,15 @@
  */
 typedef void SetTickCallback(const Window *w, StateTicks tick, void *callback_data);
 
+enum class SetDateWindowFlag : uint8_t {
+	TextMode,
+	ShowMinutesModeDayOffset,
+};
+
+/** Bitset of \c RailTypeFlag elements. */
+using SetDateWindowFlags = EnumBitSet<SetDateWindowFlag, uint8_t>;
+
 void ShowSetDateWindow(Window *parent, int window_number, StateTicks initial_tick, EconTime::Year min_year, EconTime::Year max_year, SetTickCallback *callback, void *callback_data = nullptr,
-		StringID button_text = STR_NULL, StringID button_tooltip = STR_NULL);
+		StringID button_text = STR_NULL, StringID button_tooltip = STR_NULL, SetDateWindowFlags flags = {});
 
 #endif /* DATE_GUI_H */
