@@ -746,6 +746,7 @@ enum class Commands : uint8_t {
 	SchDispatchSetDelay,                    ///< scheduled dispatch set maximum allow delay
 	SchDispatchSetReuseSlots,               ///< scheduled dispatch set whether to re-use dispatch slots
 	SchDispatchResetLastDispatch,           ///< scheduled dispatch reset last dispatch date
+	SchDispatchSetLastDispatch,             ///< scheduled dispatch set last dispatch date
 	SchDispatchClear,                       ///< scheduled dispatch clear schedule
 	SchDispatchAddNewSchedule,              ///< scheduled dispatch add new schedule
 	SchDispatchRemoveSchedule,              ///< scheduled dispatch remove schedule

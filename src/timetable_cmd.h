@@ -76,6 +76,7 @@ DEF_CMD_TUPLE_NT(Commands::SchDispatchSetStartDate,          CmdSchDispatchSetSt
 DEF_CMD_TUPLE_NT(Commands::SchDispatchSetDelay,              CmdSchDispatchSetDelay,           {}, CommandType::RouteManagement, CmdDataT<VehicleID, uint32_t, uint32_t>)
 DEF_CMD_TUPLE_NT(Commands::SchDispatchSetReuseSlots,         CmdSchDispatchSetReuseSlots,      {}, CommandType::RouteManagement, CmdDataT<VehicleID, uint32_t, bool>)
 DEF_CMD_TUPLE_NT(Commands::SchDispatchResetLastDispatch,     CmdSchDispatchResetLastDispatch,  {}, CommandType::RouteManagement, CmdDataT<VehicleID, uint32_t>)
+DEF_CMD_TUPLE_NT(Commands::SchDispatchSetLastDispatch,       CmdSchDispatchSetLastDispatch,    {}, CommandType::RouteManagement, CmdDataT<VehicleID, uint32_t, StateTicks>)
 DEF_CMD_TUPLE_NT(Commands::SchDispatchClear,                 CmdSchDispatchClear,              {}, CommandType::RouteManagement, CmdDataT<VehicleID, uint32_t>)
 DEF_CMD_TUPLE_NT(Commands::SchDispatchAddNewSchedule,        CmdSchDispatchAddNewSchedule,     {}, CommandType::RouteManagement, CmdDataT<VehicleID, StateTicks, uint32_t>)
 DEF_CMD_TUPLE_NT(Commands::SchDispatchRemoveSchedule,        CmdSchDispatchRemoveSchedule,     {}, CommandType::RouteManagement, CmdDataT<VehicleID, uint32_t>)
