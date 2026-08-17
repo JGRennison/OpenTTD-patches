@@ -87,6 +87,17 @@ static void SetScheduleStartDateCallback(const Window *w, StateTicks date, void 
 }
 
 /**
+ * Callback for when a time has been chosen to set the last dispatched
+ * @param window the window related to the setting of the date
+ * @param date the actually chosen date
+ * @param callback_data callback data
+ */
+static void SetScheduleLastDispatchedCallback(const Window *w, StateTicks date, void *callback_data)
+{
+	Command<Commands::SchDispatchSetLastDispatch>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, w->window_number, static_cast<uint32_t>(reinterpret_cast<uintptr_t>(callback_data)), date);
+}
+
+/**
  * Callback for when a time has been chosen to add to the schedule
  */
 static void ScheduleAddIntl(VehicleID veh, uint schedule_index, StateTicks date, uint extra_slots, uint offset, uint16_t slot_flags, DispatchSlotRouteID route_id, bool wrap_mode = false)
@@ -220,6 +231,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 
 	enum ManagementDropdown {
 		SCH_MD_RESET_LAST_DISPATCHED,
+		SCH_MD_SET_LAST_DISPATCHED,
 		SCH_MD_CLEAR_SCHEDULE,
 		SCH_MD_REMOVE_SCHEDULE,
 		SCH_MD_DUPLICATE_SCHEDULE,
@@ -1263,6 +1275,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 					add_str_item(GetString(str), result);
 				};
 				add_item(STR_SCHDISPATCH_RESET_LAST_DISPATCH, SCH_MD_RESET_LAST_DISPATCHED);
+				add_item(STR_SCHDISPATCH_SET_LAST_DISPATCH, SCH_MD_SET_LAST_DISPATCHED);
 				list.push_back(MakeDropDownListDividerItem());
 				add_item(STR_SCHDISPATCH_CLEAR, SCH_MD_CLEAR_SCHEDULE);
 				add_item(STR_SCHDISPATCH_REMOVE_SCHEDULE, SCH_MD_REMOVE_SCHEDULE);
@@ -1466,10 +1479,28 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		switch (widget) {
 			case WID_SCHDISPATCH_MANAGEMENT: {
 				if (!this->IsScheduleSelected()) break;
-				switch((ManagementDropdown)index & 0xFFFF) {
+				switch ((ManagementDropdown)index & 0xFFFF) {
 					case SCH_MD_RESET_LAST_DISPATCHED:
 						Command<Commands::SchDispatchResetLastDispatch>::Post(STR_ERROR_CAN_T_TIMETABLE_VEHICLE, this->vehicle->index, this->schedule_index);
 						break;
+
+					case SCH_MD_SET_LAST_DISPATCHED: {
+						const DispatchSchedule &ds = this->GetSelectedSchedule();
+						StateTicks initial;
+						if (ds.GetScheduledDispatchLastDispatch() != INVALID_SCHEDULED_DISPATCH_OFFSET) {
+							initial = ds.GetScheduledDispatchStartTick() + ds.GetScheduledDispatchLastDispatch();
+						} else {
+							initial = _state_ticks;
+						}
+						SetDateWindowFlags flags{SetDateWindowFlag::ShowMinutesModeDayOffset};
+						if (_settings_client.gui.timetable_start_text_entry) {
+							flags.Set(SetDateWindowFlag::TextMode);
+						}
+						ShowSetDateWindow(this, this->vehicle->index.base(), initial, EconTime::CurYear() - 15, EconTime::CurYear() + 15,
+								SetScheduleLastDispatchedCallback, reinterpret_cast<void *>(static_cast<uintptr_t>(this->schedule_index)),
+								STR_SCHDISPATCH_SET_LAST_DISPATCH, STR_SCHDISPATCH_SET_LAST_DISPATCH_TOOLTIP, flags);
+						break;
+					}
 
 					case SCH_MD_CLEAR_SCHEDULE: {
 						if (this->GetSelectedSchedule().GetScheduledDispatch().empty()) return;
