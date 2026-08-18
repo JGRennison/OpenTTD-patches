@@ -66,7 +66,7 @@ void CcGiveMoney(const CommandCost &result, Money money, CompanyID dest_company)
 	if (!_network_server) {
 		NetworkClientSendChat(NetworkAction::GiveMoney, NetworkChatDestinationType::BroadcastSelfSend, dest_company.base(), msg, NetworkTextMessageData(result.GetCost(), auxdata));
 	} else {
-		NetworkServerSendChat(NetworkAction::GiveMoney, NetworkChatDestinationType::BroadcastSelfSend, dest_company.base(), msg, CLIENT_ID_SERVER, NetworkTextMessageData(result.GetCost(), auxdata));
+		NetworkServerSendChat(NetworkAction::GiveMoney, NetworkChatDestinationType::BroadcastSelfSend, dest_company.base(), msg, ClientID::Server, NetworkTextMessageData(result.GetCost(), auxdata));
 	}
 }
 
@@ -442,7 +442,7 @@ struct MainWindow : Window
 
 			case GHK_CHAT_SERVER: // send text to the server
 				if (_networking && !_network_server) {
-					ShowNetworkChatQueryWindow(NetworkChatDestinationType::Client, CLIENT_ID_SERVER);
+					ShowNetworkChatQueryWindow(NetworkChatDestinationType::Client, to_underlying(ClientID::Server));
 				}
 				break;
 

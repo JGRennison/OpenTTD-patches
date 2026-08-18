@@ -110,7 +110,7 @@ struct NetworkSharedSecrets {
 template <typename T>
 struct GeneralCommandPacket {
 	uint32_t frame = 0;                       ///< the frame in which this packet is executed
-	ClientID client_id = INVALID_CLIENT_ID;   ///< originating client ID (or INVALID_CLIENT_ID if not specified)
+	ClientID client_id = ClientID::Invalid;   ///< originating client ID (or ClientID::Invalid if not specified)
 	CompanyID company = CompanyID::Invalid(); ///< company that is executing the command
 	bool my_cmd = false;                      ///< did the command originate from "me"
 

@@ -216,22 +216,22 @@ namespace {
 	 * Elements are initialized with the expected rate in recorded values per second.
 	 * @hideinitializer
 	 */
-	PerformanceData _pf_data[PFE_MAX] = {
-		PerformanceData(GL_RATE),               // PFE_GAMELOOP
-		PerformanceData(1),                     // PFE_ACC_GL_ECONOMY
-		PerformanceData(1),                     // PFE_ACC_GL_TRAINS
-		PerformanceData(1),                     // PFE_ACC_GL_ROADVEHS
-		PerformanceData(1),                     // PFE_ACC_GL_SHIPS
-		PerformanceData(1),                     // PFE_ACC_GL_AIRCRAFT
-		PerformanceData(1),                     // PFE_GL_LANDSCAPE
-		PerformanceData(1),                     // PFE_GL_LINKGRAPH
-		PerformanceData(1000.0 / 30),           // PFE_DRAWING
-		PerformanceData(1),                     // PFE_ACC_DRAWWORLD
-		PerformanceData(60.0),                  // PFE_VIDEO
-		PerformanceData(1000.0 * 8192 / 44100), // PFE_SOUND
-		PerformanceData(1),                     // PFE_ALLSCRIPTS
-		PerformanceData(1),                     // PFE_GAMESCRIPT
-		PerformanceData(1),                     // PFE_AI0 ...
+	static EnumIndexArray<PerformanceData, PerformanceElement, PerformanceElement::End> _pf_data = {
+		PerformanceData(GL_RATE), // PerformanceElement::GameLoop
+		PerformanceData(1), // PerformanceElement::GameLoopEconomy
+		PerformanceData(1), // PerformanceElement::GameLoopTrains
+		PerformanceData(1), // PerformanceElement::GameLoopRoadVehicles
+		PerformanceData(1), // PerformanceElement::GameLoopShips
+		PerformanceData(1), // PerformanceElement::GameLoopAircraft
+		PerformanceData(1), // PerformanceElement::GameLoopLandscape
+		PerformanceData(1), // PerformanceElement::GameLoopLinkGraph
+		PerformanceData(1000.0 / 30), // PerformanceElement::Drawing
+		PerformanceData(1), // PerformanceElement::ViewportDrawing
+		PerformanceData(60.0), // PerformanceElement::Video
+		PerformanceData(1000.0 * 8192 / 44100), // PerformanceElement::Sound
+		PerformanceData(1), // PerformanceElement::AllScripts
+		PerformanceData(1), // PerformanceElement::GameScript
+		PerformanceData(1), // PerformanceElement::AI0 ...
 		PerformanceData(1),
 		PerformanceData(1),
 		PerformanceData(1),
@@ -245,7 +245,7 @@ namespace {
 		PerformanceData(1),
 		PerformanceData(1),
 		PerformanceData(1),
-		PerformanceData(1),                     // PFE_AI14
+		PerformanceData(1), // PerformanceElement::AI14
 	};
 
 }
@@ -269,7 +269,7 @@ static TimingMeasurement GetPerformanceTimer()
  */
 PerformanceMeasurer::PerformanceMeasurer(PerformanceElement elem)
 {
-	assert(elem < PFE_MAX);
+	assert(elem < PerformanceElement::End);
 
 	this->elem = elem;
 	this->start_time = GetPerformanceTimer();
@@ -278,16 +278,16 @@ PerformanceMeasurer::PerformanceMeasurer(PerformanceElement elem)
 /** Finish a cycle of a measured element and store the measurement taken. */
 PerformanceMeasurer::~PerformanceMeasurer()
 {
-	if (this->elem == PFE_ALLSCRIPTS) {
+	if (this->elem == PerformanceElement::AllScripts) {
 		/* Hack to not record scripts total when no scripts are active */
-		bool any_active = _pf_data[PFE_GAMESCRIPT].num_valid > 0;
-		for (PerformanceElement e : EnumRange(PFE_AI0, PFE_MAX)) any_active |= _pf_data[e].num_valid > 0;
+		bool any_active = _pf_data[PerformanceElement::GameScript].num_valid > 0;
+		for (PerformanceElement e : EnumRange(PerformanceElement::AI0, PerformanceElement::End)) any_active |= _pf_data[e].num_valid > 0;
 		if (!any_active) {
-			PerformanceMeasurer::SetInactive(PFE_ALLSCRIPTS);
+			PerformanceMeasurer::SetInactive(PerformanceElement::AllScripts);
 			return;
 		}
 	}
-	if (this->elem == PFE_SOUND) {
+	if (this->elem == PerformanceElement::Sound) {
 		TimingMeasurement end = GetPerformanceTimer();
 		std::lock_guard lk(_sound_perf_lock);
 		if (_sound_perf_measurements.size() >= NUM_FRAMERATE_POINTS * 2) return;
@@ -335,7 +335,7 @@ void PerformanceMeasurer::SetExpectedRate(double rate)
  */
 PerformanceAccumulator::PerformanceAccumulator(PerformanceElement elem)
 {
-	assert(elem < PFE_MAX);
+	assert(elem < PerformanceElement::End);
 
 	this->elem = elem;
 	this->start_time = GetPerformanceTimer();
@@ -361,42 +361,59 @@ void PerformanceAccumulator::Reset(PerformanceElement elem)
 void ShowFrametimeGraphWindow(PerformanceElement elem);
 
 
-static const PerformanceElement DISPLAY_ORDER_PFE[PFE_MAX] = {
-	PFE_GAMELOOP,
-	PFE_GL_ECONOMY,
-	PFE_GL_TRAINS,
-	PFE_GL_ROADVEHS,
-	PFE_GL_SHIPS,
-	PFE_GL_AIRCRAFT,
-	PFE_GL_LANDSCAPE,
-	PFE_ALLSCRIPTS,
-	PFE_GAMESCRIPT,
-	PFE_AI0,
-	PFE_AI1,
-	PFE_AI2,
-	PFE_AI3,
-	PFE_AI4,
-	PFE_AI5,
-	PFE_AI6,
-	PFE_AI7,
-	PFE_AI8,
-	PFE_AI9,
-	PFE_AI10,
-	PFE_AI11,
-	PFE_AI12,
-	PFE_AI13,
-	PFE_AI14,
-	PFE_GL_LINKGRAPH,
-	PFE_DRAWING,
-	PFE_DRAWWORLD,
-	PFE_VIDEO,
-	PFE_SOUND,
+/** Order of the performance elements in the user interface. */
+static constexpr EnumIndexArray<PerformanceElement, PerformanceElement, PerformanceElement::End> DISPLAY_ORDER_PFE = {
+	PerformanceElement::GameLoop,
+	PerformanceElement::GameLoopEconomy,
+	PerformanceElement::GameLoopTrains,
+	PerformanceElement::GameLoopRoadVehicles,
+	PerformanceElement::GameLoopShips,
+	PerformanceElement::GameLoopAircraft,
+	PerformanceElement::GameLoopLandscape,
+	PerformanceElement::AllScripts,
+	PerformanceElement::GameScript,
+	PerformanceElement::AI0,
+	PerformanceElement::AI1,
+	PerformanceElement::AI2,
+	PerformanceElement::AI3,
+	PerformanceElement::AI4,
+	PerformanceElement::AI5,
+	PerformanceElement::AI6,
+	PerformanceElement::AI7,
+	PerformanceElement::AI8,
+	PerformanceElement::AI9,
+	PerformanceElement::AI10,
+	PerformanceElement::AI11,
+	PerformanceElement::AI12,
+	PerformanceElement::AI13,
+	PerformanceElement::AI14,
+	PerformanceElement::GameLoopLinkGraph,
+	PerformanceElement::Drawing,
+	PerformanceElement::ViewportDrawing,
+	PerformanceElement::Video,
+	PerformanceElement::Sound,
 };
 
-static std::string_view GetAIName(int ai_index)
+/**
+ * Get the \c CompanyID associated with the AI of the given \c PerformanceElement.
+ * @param e The element to convert.
+ * @return The \c CompanyID.
+ */
+static constexpr CompanyID GetAIIndex(PerformanceElement e)
 {
-	if (!Company::IsValidAiID(ai_index)) return {};
-	return Company::Get(ai_index)->ai_info->GetName();
+	return CompanyID(e - PerformanceElement::AI0);
+}
+
+/**
+ * Get the name of the AI of the given \c PerformanceElement.
+ * @param e The element to get the name for.
+ * @return The name of an empty string.
+ */
+static std::string_view GetAIName(PerformanceElement e)
+{
+	CompanyID c = GetAIIndex(e);
+	if (!Company::IsValidAiID(c)) return {};
+	return Company::Get(c)->ai_info->GetName();
 }
 
 /** @hideinitializer */
@@ -464,8 +481,9 @@ struct FramerateWindow : Window {
 	CachedDecimal rate_gameloop{}; ///< cached game loop tick rate
 	CachedDecimal rate_drawing{}; ///< cached drawing frame rate
 	CachedDecimal speed_gameloop{}; ///< cached game loop speed factor
-	std::array<CachedDecimal, PFE_MAX> times_shortterm{}; ///< cached short term average times
-	std::array<CachedDecimal, PFE_MAX> times_longterm{}; ///< cached long term average times
+	using CachedDecimalArray = EnumIndexArray<CachedDecimal, PerformanceElement, PerformanceElement::End>; ///< Array of cached decimals
+	CachedDecimalArray times_shortterm{}; ///< cached short term average times
+	CachedDecimalArray times_longterm{}; ///< cached long term average times
 
 	static constexpr int MIN_ELEMENTS = 5; ///< smallest number of elements to display
 
@@ -487,15 +505,15 @@ struct FramerateWindow : Window {
 
 	void UpdateData()
 	{
-		double gl_rate = _pf_data[PFE_GAMELOOP].GetRate();
-		this->rate_gameloop.SetRate(gl_rate, _pf_data[PFE_GAMELOOP].expected_rate);
-		this->speed_gameloop.SetRate(gl_rate / _pf_data[PFE_GAMELOOP].expected_rate, 1.0);
+		double gl_rate = _pf_data[PerformanceElement::GameLoop].GetRate();
+		this->rate_gameloop.SetRate(gl_rate, _pf_data[PerformanceElement::GameLoop].expected_rate);
+		this->speed_gameloop.SetRate(gl_rate / _pf_data[PerformanceElement::GameLoop].expected_rate, 1.0);
 		if (this->IsShaded()) return; // in small mode, this is everything needed
 
-		this->rate_drawing.SetRate(_pf_data[PFE_DRAWING].GetRate(), _settings_client.gui.refresh_rate);
+		this->rate_drawing.SetRate(_pf_data[PerformanceElement::Drawing].GetRate(), _settings_client.gui.refresh_rate);
 
 		int new_active = 0;
-		for (PerformanceElement e : EnumRange(PFE_MAX)) {
+		for (PerformanceElement e : EnumRange(PerformanceElement::End)) {
 			this->times_shortterm[e].SetTime(_pf_data[e].GetAverageDurationMilliseconds(8), MILLISECONDS_PER_TICK);
 			this->times_longterm[e].SetTime(_pf_data[e].GetAverageDurationMilliseconds(NUM_FRAMERATE_POINTS), MILLISECONDS_PER_TICK);
 			if (_pf_data[e].num_valid > 0) {
@@ -558,10 +576,10 @@ struct FramerateWindow : Window {
 				for (PerformanceElement e : DISPLAY_ORDER_PFE) {
 					if (_pf_data[e].num_valid == 0) continue;
 					Dimension line_size;
-					if (e < PFE_AI0) {
-						line_size = GetStringBoundingBox(STR_FRAMERATE_GAMELOOP + e);
+					if (e < PerformanceElement::AI0) {
+						line_size = GetStringBoundingBox(STR_FRAMERATE_GAMELOOP + to_underlying(e));
 					} else {
-						line_size = GetStringBoundingBox(GetString(STR_FRAMERATE_AI, e - PFE_AI0 + 1, GetAIName(e - PFE_AI0)));
+						line_size = GetStringBoundingBox(GetString(STR_FRAMERATE_AI, GetAIIndex(e) + 1, GetAIName(e)));
 					}
 					size.width = std::max(size.width, line_size.width);
 				}
@@ -588,7 +606,7 @@ struct FramerateWindow : Window {
 	 * @param heading_str The header of the column.
 	 * @param values The values to draw.
 	 */
-	void DrawElementTimesColumn(const Rect &r, StringID heading_str, std::span<const CachedDecimal> values) const
+	void DrawElementTimesColumn(const Rect &r, StringID heading_str, const CachedDecimalArray &values) const
 	{
 		const Scrollbar *sb = this->GetScrollbar(WID_FRW_SCROLLBAR);
 		int32_t skip = sb->GetPosition();
@@ -621,13 +639,13 @@ struct FramerateWindow : Window {
 			if (_pf_data[e].num_valid == 0) continue;
 			if (skip > 0) {
 				skip--;
-			} else if (e == PFE_GAMESCRIPT || e >= PFE_AI0) {
-				uint64_t value = e == PFE_GAMESCRIPT ? Game::GetInstance()->GetAllocatedMemory() : Company::Get(e - PFE_AI0)->ai_instance->GetAllocatedMemory();
+			} else if (e == PerformanceElement::GameScript || e >= PerformanceElement::AI0) {
+				uint64_t value = e == PerformanceElement::GameScript ? Game::GetInstance()->GetAllocatedMemory() : Company::Get(GetAIIndex(e))->ai_instance->GetAllocatedMemory();
 				DrawString(r.left, r.right, y, GetString(STR_FRAMERATE_BYTES_GOOD, value), TextColour::FromString, SA_RIGHT | SA_FORCE);
 				y += GetCharacterHeight(FontSize::Normal);
 				drawable--;
 				if (drawable == 0) break;
-			} else if (e == PFE_SOUND) {
+			} else if (e == PerformanceElement::Sound) {
 				DrawString(r.left, r.right, y, GetString(STR_FRAMERATE_BYTES_GOOD, GetSoundPoolAllocatedMemory()), TextColour::FromString, SA_RIGHT | SA_FORCE);
 				y += GetCharacterHeight(FontSize::Normal);
 				drawable--;
@@ -655,10 +673,10 @@ struct FramerateWindow : Window {
 					if (skip > 0) {
 						skip--;
 					} else {
-						if (e < PFE_AI0) {
-							DrawString(r.left, r.right, y, STR_FRAMERATE_GAMELOOP + e, TextColour::FromString, SA_LEFT);
+						if (e < PerformanceElement::AI0) {
+							DrawString(r.left, r.right, y, STR_FRAMERATE_GAMELOOP + to_underlying(e), TextColour::FromString, SA_LEFT);
 						} else {
-							DrawString(r.left, r.right, y, GetString(STR_FRAMERATE_AI, e - PFE_AI0 + 1, GetAIName(e - PFE_AI0)), TextColour::FromString, SA_LEFT);
+							DrawString(r.left, r.right, y, GetString(STR_FRAMERATE_AI, GetAIIndex(e) + 1, GetAIName(e)), TextColour::FromString, SA_LEFT);
 						}
 						y += GetCharacterHeight(FontSize::Normal);
 						drawable--;
@@ -754,10 +772,10 @@ struct FrametimeGraphWindow : Window {
 	{
 		switch (widget) {
 			case WID_FGW_CAPTION:
-				if (this->element < PFE_AI0) {
-					return GetString(STR_FRAMETIME_CAPTION_GAMELOOP + this->element);
+				if (this->element < PerformanceElement::AI0) {
+					return GetString(STR_FRAMETIME_CAPTION_GAMELOOP + to_underlying(this->element));
 				}
-				return GetString(STR_FRAMETIME_CAPTION_AI, this->element - PFE_AI0 + 1, GetAIName(this->element - PFE_AI0));
+				return GetString(STR_FRAMETIME_CAPTION_AI, GetAIIndex(this->element) + 1, GetAIName(this->element));
 
 			default:
 				return this->Window::GetWidgetString(widget, stringid);
@@ -787,7 +805,7 @@ struct FrametimeGraphWindow : Window {
 		 * this lands exactly on the scale = 2 vs scale = 4 boundary.
 		 * To avoid excessive switching of the horizontal scale, bias these performance
 		 * categories away from this scale boundary. */
-		if (this->element == PFE_DRAWING || this->element == PFE_DRAWWORLD) range += (range / 2);
+		if (this->element == PerformanceElement::Drawing || this->element == PerformanceElement::ViewportDrawing) range += (range / 2);
 
 		/* Determine horizontal scale based on period covered by 60 points
 		 * (slightly less than 2 seconds at full game speed) */
@@ -1031,8 +1049,8 @@ void ShowFramerateWindow()
  */
 void ShowFrametimeGraphWindow(PerformanceElement elem)
 {
-	if (elem < PFE_FIRST || elem >= PFE_MAX) return; // maybe warn?
-	AllocateWindowDescFront<FrametimeGraphWindow>(_frametime_graph_window_desc, elem);
+	if (elem >= PerformanceElement::End) return; // maybe warn?
+	AllocateWindowDescFront<FrametimeGraphWindow>(_frametime_graph_window_desc, to_underlying(elem));
 }
 
 /** Print performance statistics to game console */
@@ -1044,7 +1062,7 @@ void ConPrintFramerate()
 
 	IConsolePrint(TextColour::Silver, "Based on num. data points: {} {} {}", count1, count2, count3);
 
-	static const std::array<std::string_view, PFE_MAX> MEASUREMENT_NAMES = {
+	static const EnumIndexArray<std::string_view, PerformanceElement, PerformanceElement::End> MEASUREMENT_NAMES = {
 		"Game loop",
 		"  GL station ticks",
 		"  GL train ticks",
@@ -1064,7 +1082,7 @@ void ConPrintFramerate()
 
 	bool printed_anything = false;
 
-	for (const auto &e : { PFE_GAMELOOP, PFE_DRAWING, PFE_VIDEO }) {
+	for (const auto &e : { PerformanceElement::GameLoop, PerformanceElement::Drawing, PerformanceElement::Video }) {
 		auto &pf = _pf_data[e];
 		if (pf.num_valid == 0) continue;
 		IConsolePrint(TextColour::Green, "{} rate: {:.2f}fps  (expected: {:.2f}fps)",
@@ -1074,14 +1092,14 @@ void ConPrintFramerate()
 		printed_anything = true;
 	}
 
-	for (PerformanceElement e : EnumRange(PFE_MAX)) {
+	for (PerformanceElement e : EnumRange(PerformanceElement::End)) {
 		auto &pf = _pf_data[e];
 		if (pf.num_valid == 0) continue;
 		std::string_view name;
-		if (e < PFE_AI0) {
+		if (e < PerformanceElement::AI0) {
 			name = MEASUREMENT_NAMES[e];
 		} else {
-			ai_name_buf = fmt::format("AI {} {}", e - PFE_AI0 + 1, GetAIName(e - PFE_AI0));
+			ai_name_buf = fmt::format("AI {} {}", GetAIIndex(e) + 1, GetAIName(e));
 			name = ai_name_buf;
 		}
 		IConsolePrint(TextColour::LightBlue, "{} times: {:.2f}ms  {:.2f}ms  {:.2f}ms",
@@ -1098,8 +1116,8 @@ void ConPrintFramerate()
 }
 
 /**
- * This drains the PFE_SOUND measurement data queue into _pf_data.
- * PFE_SOUND measurements are made by the mixer thread and so cannot be stored
+ * This drains the PerformanceElement::Sound measurement data queue into _pf_data.
+ * PerformanceElement::Sound measurements are made by the mixer thread and so cannot be stored
  * into _pf_data directly, because this would not be thread safe and would violate
  * the invariants of the FPS and frame graph windows.
  * @see PerformanceMeasurement::~PerformanceMeasurement()
@@ -1109,7 +1127,7 @@ void ProcessPendingPerformanceMeasurements()
 	if (_sound_perf_pending.load(std::memory_order_acquire)) {
 		std::lock_guard lk(_sound_perf_lock);
 		for (size_t i = 0; i < _sound_perf_measurements.size(); i += 2) {
-			_pf_data[PFE_SOUND].Add(_sound_perf_measurements[i], _sound_perf_measurements[i + 1]);
+			_pf_data[PerformanceElement::Sound].Add(_sound_perf_measurements[i], _sound_perf_measurements[i + 1]);
 		}
 		_sound_perf_measurements.clear();
 		_sound_perf_pending.store(false, std::memory_order_relaxed);

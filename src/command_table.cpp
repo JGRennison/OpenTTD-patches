@@ -210,7 +210,7 @@ const EnumIndexArray<CommandInfo, Commands, Commands::End> _command_proc_table =
  */
 void SetPreCheckedCommandPayloadClientID(Commands cmd, CommandPayloadBase &payload, ClientID client_id)
 {
-	static_assert(INVALID_CLIENT_ID == (ClientID)0);
+	static_assert(ClientID::Invalid == (ClientID)0);
 
 	auto cmd_check = [&]<Commands Tcmd>() -> bool {
 		if constexpr (CommandTraits<Tcmd>::flags.Test(CommandFlag::ClientID)) {

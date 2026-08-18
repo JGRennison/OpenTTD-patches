@@ -1524,7 +1524,7 @@ struct BuildVehicleWindowBase : Window {
 			}
 		} else if (!this->listview_mode) {
 			/* Query for cost and refitted capacity */
-			CommandCost ret = Command<Commands::BuildVehicle>::Do(DoCommandFlag::QueryCost, TileIndex(this->window_number), engine, true, cargo, INVALID_CLIENT_ID);
+			CommandCost ret = Command<Commands::BuildVehicle>::Do(DoCommandFlag::QueryCost, TileIndex(this->window_number), engine, true, cargo, ClientID::Invalid);
 			if (ret.Succeeded()) {
 				te.cost          = ret.GetCost() - e->GetCost();
 				te.capacity      = _returned_refit_capacity;
@@ -2032,11 +2032,11 @@ struct BuildVehicleWindow : BuildVehicleWindowBase {
 		CargoType cargo = this->cargo_filter_criteria;
 		if (cargo == CargoFilterCriteria::CF_ANY || cargo == CargoFilterCriteria::CF_ENGINES || cargo == CargoFilterCriteria::CF_NONE) cargo = INVALID_CARGO;
 		if (this->virtual_train_mode) {
-			Command<Commands::BuildVirtualRailVehicle>::Post(GetCmdBuildVehMsg(VehicleType::Train), CommandCallback::AddVirtualEngine, sel_eng, cargo, INVALID_CLIENT_ID, this->GetNewVirtualEngineMoveTarget());
+			Command<Commands::BuildVirtualRailVehicle>::Post(GetCmdBuildVehMsg(VehicleType::Train), CommandCallback::AddVirtualEngine, sel_eng, cargo, ClientID::Invalid, this->GetNewVirtualEngineMoveTarget());
 		} else {
 			CommandCallback callback = (this->vehicle_type == VehicleType::Train && RailVehInfo(sel_eng)->railveh_type == RailVehicleType::Wagon)
 					? CommandCallback::BuildWagon : CommandCallback::BuildPrimaryVehicle;
-			Command<Commands::BuildVehicle>::Post(GetCmdBuildVehMsg(this->vehicle_type), callback, TileIndex(this->window_number), sel_eng, true, cargo, INVALID_CLIENT_ID);
+			Command<Commands::BuildVehicle>::Post(GetCmdBuildVehMsg(this->vehicle_type), callback, TileIndex(this->window_number), sel_eng, true, cargo, ClientID::Invalid);
 		}
 
 		/* Update last used variant in hierarchy and refresh if necessary. */
@@ -2862,11 +2862,11 @@ struct BuildVehicleWindowTrainAdvanced final : BuildVehicleWindowBase {
 		if (selected != EngineID::Invalid()) {
 			if (cargo == CargoFilterCriteria::CF_ANY || cargo == CargoFilterCriteria::CF_ENGINES || cargo == CargoFilterCriteria::CF_NONE) cargo = INVALID_CARGO;
 			if (this->virtual_train_mode) {
-				Command<Commands::BuildVirtualRailVehicle>::Post(GetCmdBuildVehMsg(VehicleType::Train), CommandCallback::AddVirtualEngine, selected, cargo, INVALID_CLIENT_ID, this->GetNewVirtualEngineMoveTarget());
+				Command<Commands::BuildVirtualRailVehicle>::Post(GetCmdBuildVehMsg(VehicleType::Train), CommandCallback::AddVirtualEngine, selected, cargo, ClientID::Invalid, this->GetNewVirtualEngineMoveTarget());
 			} else {
 				CommandCallback callback = (this->vehicle_type == VehicleType::Train && RailVehInfo(selected)->railveh_type == RailVehicleType::Wagon)
 						? CommandCallback::BuildWagon : CommandCallback::BuildPrimaryVehicle;
-				Command<Commands::BuildVehicle>::Post(GetCmdBuildVehMsg(this->vehicle_type), callback, TileIndex(this->window_number), selected, true, cargo, INVALID_CLIENT_ID);
+				Command<Commands::BuildVehicle>::Post(GetCmdBuildVehMsg(this->vehicle_type), callback, TileIndex(this->window_number), selected, true, cargo, ClientID::Invalid);
 			}
 
 			/* Update last used variant in hierarchy and refresh if necessary. */
@@ -3509,7 +3509,7 @@ void CcAddVirtualEngine(const CommandCost &result)
 		Train *train = Train::Get(*result_id);
 		window->AddVirtualEngine(train);
 	} else {
-		Command<Commands::SellVirtualVehicle>::Post(*result_id, SellVehicleFlags::None, INVALID_CLIENT_ID);
+		Command<Commands::SellVirtualVehicle>::Post(*result_id, SellVehicleFlags::None, ClientID::Invalid);
 	}
 }
 

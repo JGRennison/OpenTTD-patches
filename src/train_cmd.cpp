@@ -7580,7 +7580,7 @@ static CommandCost CmdTemplateReplaceVehicle(DoCommandFlags flags, Train *incomi
 				}
 
 				CargoType refit_cargo = refit_to_template ? cur_tmpl->cargo_type : store_refit_ct;
-				buy.AddCost(Command<Commands::BuildVehicle>::Do(flags, tile, cur_tmpl->engine_type, false, refit_cargo, INVALID_CLIENT_ID));
+				buy.AddCost(Command<Commands::BuildVehicle>::Do(flags, tile, cur_tmpl->engine_type, false, refit_cargo, ClientID::Invalid));
 			};
 			for (const TemplateVehicle *cur_tmpl = tv; cur_tmpl != nullptr; cur_tmpl = cur_tmpl->GetNextUnit()) {
 				process_unit(cur_tmpl);
@@ -7655,7 +7655,7 @@ static CommandCost CmdTemplateReplaceVehicle(DoCommandFlags flags, Train *incomi
 			}
 
 			/* Case 4 */
-			CommandCost buy_cost = Command<Commands::BuildVehicle>::Do(flags | DoCommandFlag::AutoReplace, tile, eid, false, INVALID_CARGO, INVALID_CLIENT_ID);
+			CommandCost buy_cost = Command<Commands::BuildVehicle>::Do(flags | DoCommandFlag::AutoReplace, tile, eid, false, INVALID_CARGO, ClientID::Invalid);
 			/* break up in case buying the vehicle didn't succeed */
 			if (buy_cost.Failed()) return buy_cost;
 			auto buy_veh_id = buy_cost.GetResultData<VehicleID>();
@@ -7718,7 +7718,7 @@ static CommandCost CmdTemplateReplaceVehicle(DoCommandFlags flags, Train *incomi
 				}
 
 				/* Case 3: must buy new engine */
-				CommandCost buy_cost = Command<Commands::BuildVehicle>::Do(flags | DoCommandFlag::AutoReplace, tile, cur_tmpl->engine_type, false, INVALID_CARGO, INVALID_CLIENT_ID);
+				CommandCost buy_cost = Command<Commands::BuildVehicle>::Do(flags | DoCommandFlag::AutoReplace, tile, cur_tmpl->engine_type, false, INVALID_CARGO, ClientID::Invalid);
 				if (buy_cost.Failed()) {
 					new_part = nullptr;
 					return;
@@ -7734,7 +7734,7 @@ static CommandCost CmdTemplateReplaceVehicle(DoCommandFlags flags, Train *incomi
 				if (move_cost.Succeeded()) {
 					buy.AddCost(buy_cost.GetCost());
 				} else {
-					Command<Commands::SellVehicle>::Do(flags, new_part->tile, new_part->index, SellVehicleFlags::None, INVALID_CLIENT_ID);
+					Command<Commands::SellVehicle>::Do(flags, new_part->tile, new_part->index, SellVehicleFlags::None, ClientID::Invalid);
 					new_part = nullptr;
 				}
 			};
@@ -7782,7 +7782,7 @@ static CommandCost CmdTemplateReplaceVehicle(DoCommandFlags flags, Train *incomi
 	if (remainder_chain != nullptr && tv->IsSetKeepRemainingVehicles()) {
 		BreakUpRemainders(remainder_chain);
 	} else if (remainder_chain != nullptr) {
-		buy.AddCost(Command<Commands::SellVehicle>::Do(flags, remainder_chain->tile, remainder_chain->index, SellVehicleFlags::SellChain, INVALID_CLIENT_ID));
+		buy.AddCost(Command<Commands::SellVehicle>::Do(flags, remainder_chain->tile, remainder_chain->index, SellVehicleFlags::SellChain, ClientID::Invalid));
 	}
 
 	/* Redraw main gui for changed statistics */

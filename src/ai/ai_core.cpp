@@ -71,6 +71,16 @@
 	return;
 }
 
+/**
+ * Get the \c PerformanceElement for the AI of the given company.
+ * @param company The company to get the PerformanceElement for.
+ * @return The \c PerformanceElement.
+ */
+static constexpr PerformanceElement GetAIPerformanceElement(CompanyID company)
+{
+	return static_cast<PerformanceElement>(PerformanceElement::AI0 + company);
+}
+
 /* static */ void AI::GameLoop()
 {
 	/* If we are in networking, only servers run this function, and that only if it is allowed */
@@ -84,7 +94,7 @@
 	for (const Company *c : Company::Iterate()) {
 		if (c->is_ai) {
 			SCOPE_INFO_FMT([&], "AI::GameLoop: {}: {} (v{})\n", c->index, c->ai_info->GetName(), c->ai_info->GetVersion());
-			PerformanceMeasurer framerate((PerformanceElement)(PFE_AI0 + c->index));
+			PerformanceMeasurer framerate(GetAIPerformanceElement(c->index));
 			AutoRestoreBackup cur_company(_current_company, c->index);
 			c->ai_instance->GameLoop();
 			/* Occasionally collect garbage; every 255 ticks do one company.
@@ -93,7 +103,7 @@
 				c->ai_instance->CollectGarbage();
 			}
 		} else {
-			PerformanceMeasurer::SetInactive((PerformanceElement)(PFE_AI0 + c->index));
+			PerformanceMeasurer::SetInactive(GetAIPerformanceElement(c->index));
 		}
 	}
 }
@@ -106,7 +116,7 @@
 /* static */ void AI::Stop(CompanyID company)
 {
 	if (_networking && !_network_server) return;
-	PerformanceMeasurer::SetInactive((PerformanceElement)(PFE_AI0 + company));
+	PerformanceMeasurer::SetInactive(GetAIPerformanceElement(company));
 
 	AutoRestoreBackup cur_company(_current_company, company);
 	Company *c = Company::Get(company);

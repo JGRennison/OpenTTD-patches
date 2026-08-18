@@ -1141,7 +1141,7 @@ struct DepotWindow : Window {
 
 				SellVehicleFlags sell_flags = SellVehicleFlags::BackupOrder;
 				if (v->type == VehicleType::Train && (widget == WID_D_SELL_CHAIN || _ctrl_pressed)) sell_flags |= SellVehicleFlags::SellChain;
-				Command<Commands::SellVehicle>::Post(GetCmdSellVehMsg(v->type), v->tile, v->index, sell_flags, INVALID_CLIENT_ID);
+				Command<Commands::SellVehicle>::Post(GetCmdSellVehMsg(v->type), v->tile, v->index, sell_flags, ClientID::Invalid);
 				break;
 			}
 

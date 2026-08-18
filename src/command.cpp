@@ -44,7 +44,7 @@
 
 #include "safeguards.h"
 
-ClientID _cmd_client_id = INVALID_CLIENT_ID;
+ClientID _cmd_client_id = ClientID::Invalid;
 
 /**
  * List of flags for a command log entry
@@ -441,7 +441,7 @@ bool DoCommandPImplementation(Commands cmd, TileIndex tile, const CommandPayload
 	if (!(intl_flags & DCIF_NETWORK_COMMAND) && GetCommandFlags(cmd).Test(CommandFlag::ClientID)) {
 		modified_payload = orig_payload.Clone();
 		assert(IsCorrectCommandPayloadType(cmd, *modified_payload));
-		SetPreCheckedCommandPayloadClientID(cmd, *modified_payload, CLIENT_ID_SERVER);
+		SetPreCheckedCommandPayloadClientID(cmd, *modified_payload, ClientID::Server);
 		use_payload = modified_payload.get();
 	}
 

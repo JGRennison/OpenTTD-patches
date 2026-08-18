@@ -1042,8 +1042,8 @@ struct ScriptDebugWindow : public Window {
 					break;
 				}
 				/* First kill the company of the AI, then start a new one. This should start the current AI again */
-				Command<Commands::CompanyControl>::Post(CompanyCtrlAction::Delete, this->filter.script_debug_company, CompanyRemoveReason::Manual, INVALID_CLIENT_ID, {});
-				Command<Commands::CompanyControl>::Post(CompanyCtrlAction::NewAI, this->filter.script_debug_company, CompanyRemoveReason::None, INVALID_CLIENT_ID, {});
+				Command<Commands::CompanyControl>::Post(CompanyCtrlAction::Delete, this->filter.script_debug_company, CompanyRemoveReason::Manual, ClientID::Invalid, {});
+				Command<Commands::CompanyControl>::Post(CompanyCtrlAction::NewAI, this->filter.script_debug_company, CompanyRemoveReason::None, ClientID::Invalid, {});
 				break;
 
 			case WID_SCRD_SETTINGS:

@@ -354,10 +354,10 @@ void OnTick_LinkGraph()
 		LinkGraphSchedule::instance.SpawnNext();
 	} else if (offset == interval / 2) {
 		if (!_networking || _network_server) {
-			PerformanceMeasurer::SetInactive(PFE_GL_LINKGRAPH);
+			PerformanceMeasurer::SetInactive(PerformanceElement::GameLoopLinkGraph);
 			LinkGraphSchedule::instance.JoinNext();
 		} else {
-			PerformanceMeasurer framerate(PFE_GL_LINKGRAPH);
+			PerformanceMeasurer framerate(PerformanceElement::GameLoopLinkGraph);
 			LinkGraphSchedule::instance.JoinNext();
 		}
 	}

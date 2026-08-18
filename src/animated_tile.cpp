@@ -99,7 +99,7 @@ void AnimateAnimatedTiles()
 	extern void AnimateTile_Industry(TileIndex tile);
 	extern void AnimateTile_Object(TileIndex tile);
 
-	PerformanceAccumulator framerate(PFE_GL_LANDSCAPE);
+	PerformanceAccumulator framerate(PerformanceElement::GameLoopLandscape);
 
 	const uint32_t ticks = (uint) _scaled_tick_counter;
 	const uint8_t max_speed = (ticks == 0) ? 32 : FindFirstBit(ticks);

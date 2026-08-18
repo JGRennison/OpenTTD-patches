@@ -23,7 +23,7 @@
 #include <type_traits>
 
 struct GRFFile;
-enum ClientID : uint32_t;
+enum class ClientID : uint32_t;
 
 enum CommandCostIntlFlags : uint8_t {
 	CCIF_NONE                     = 0,

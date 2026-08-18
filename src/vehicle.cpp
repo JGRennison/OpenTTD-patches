@@ -1632,7 +1632,7 @@ void CallVehicleTicks()
 	RecordSyncEvent(NSRE_VEH_PERIODIC);
 
 	{
-		PerformanceMeasurer framerate(PFE_GL_ECONOMY);
+		PerformanceMeasurer framerate(PerformanceElement::GameLoopEconomy);
 		Station *si_st = nullptr;
 		SCOPE_INFO_FMT([&si_st], "CallVehicleTicks: LoadUnloadStation: {}", StationInfoDumper(si_st));
 		for (Station *st : Station::Iterate()) {
@@ -1667,7 +1667,7 @@ void CallVehicleTicks()
 	}
 	if (!_tick_effect_veh_cache.empty()) RecordSyncEvent(NSRE_VEH_EFFECT);
 	{
-		PerformanceMeasurer framerate(PFE_GL_TRAINS);
+		PerformanceMeasurer framerate(PerformanceElement::GameLoopTrains);
 		for (Train *front : _tick_train_front_cache) {
 			v = front;
 			if (!front->Train::Tick()) continue;
@@ -1680,7 +1680,7 @@ void CallVehicleTicks()
 	}
 	RecordSyncEvent(NSRE_VEH_TRAIN);
 	{
-		PerformanceMeasurer framerate(PFE_GL_ROADVEHS);
+		PerformanceMeasurer framerate(PerformanceElement::GameLoopRoadVehicles);
 		for (RoadVehicle *front : _tick_road_veh_front_cache) {
 			v = front;
 			if (!front->RoadVehicle::Tick()) continue;
@@ -1693,7 +1693,7 @@ void CallVehicleTicks()
 	}
 	if (!_tick_road_veh_front_cache.empty()) RecordSyncEvent(NSRE_VEH_ROAD);
 	{
-		PerformanceMeasurer framerate(PFE_GL_AIRCRAFT);
+		PerformanceMeasurer framerate(PerformanceElement::GameLoopAircraft);
 		for (Aircraft *front : _tick_aircraft_front_cache) {
 			v = front;
 			if (!front->Aircraft::Tick()) continue;
@@ -1705,7 +1705,7 @@ void CallVehicleTicks()
 	}
 	if (!_tick_aircraft_front_cache.empty()) RecordSyncEvent(NSRE_VEH_AIR);
 	{
-		PerformanceMeasurer framerate(PFE_GL_SHIPS);
+		PerformanceMeasurer framerate(PerformanceElement::GameLoopShips);
 		for (Ship *s : _tick_ship_front_cache) {
 			v = s;
 			if (!s->Ship::Tick()) continue;
@@ -1739,7 +1739,7 @@ void CallVehicleTicks()
 		int y = v->y_pos;
 		int z = v->z_pos;
 
-		CommandCost cost = Command<Commands::SellVehicle>::Do(DoCommandFlag::Execute, v->tile, v->index, SellVehicleFlags::SellChain, INVALID_CLIENT_ID);
+		CommandCost cost = Command<Commands::SellVehicle>::Do(DoCommandFlag::Execute, v->tile, v->index, SellVehicleFlags::SellChain, ClientID::Invalid);
 		v = nullptr;
 		if (!cost.Succeeded()) continue;
 
@@ -1886,13 +1886,13 @@ void CallVehicleTicks()
 	_vehicles_to_pay_repair.clear();
 }
 
-void RemoveVirtualTrainsOfUser(uint32_t user)
+void RemoveVirtualTrainsOfUser(ClientID user)
 {
 	if (!_tick_caches_valid || HasChickenBit(DCBF_VEH_TICK_CACHE)) RebuildVehicleTickCaches();
 
 	AutoRestoreBackup cur_company(_current_company, AutoRestoreBackupNoNewValueTag{});
 	for (const Train *front : _tick_train_front_cache) {
-		if (front->IsVirtual() && front->motion_counter == user) {
+		if (front->IsVirtual() && front->motion_counter == to_underlying(user)) {
 			_current_company = front->owner;
 			Command<Commands::DeleteVirtualTrain>::Post(front->index);
 		}
@@ -4014,7 +4014,7 @@ CommandCost Vehicle::SendToDepot(DoCommandFlags flags, DepotCommandFlags command
 				int y = this->y_pos;
 				int z = this->z_pos;
 
-				CommandCost cost = Command<Commands::SellVehicle>::Do(flags, this->tile, this->index, SellVehicleFlags::SellChain, INVALID_CLIENT_ID);
+				CommandCost cost = Command<Commands::SellVehicle>::Do(flags, this->tile, this->index, SellVehicleFlags::SellChain, ClientID::Invalid);
 				if (cost.Succeeded()) {
 					if (IsLocalCompany()) {
 						if (cost.GetCost() != 0) {

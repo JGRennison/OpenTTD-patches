@@ -163,11 +163,11 @@ CommandCost CmdSellRailWagon(DoCommandFlags flags, Vehicle *t, bool sell_chain, 
 Train *DeleteVirtualTrain(Train *chain, Train *to_del)
 {
 	if (chain != to_del) {
-		CmdSellRailWagon(DoCommandFlag::Execute, to_del, false, false, INVALID_CLIENT_ID);
+		CmdSellRailWagon(DoCommandFlag::Execute, to_del, false, false, ClientID::Invalid);
 		return chain;
 	} else {
 		chain = chain->GetNextUnit();
-		CmdSellRailWagon(DoCommandFlag::Execute, to_del, false, false, INVALID_CLIENT_ID);
+		CmdSellRailWagon(DoCommandFlag::Execute, to_del, false, false, ClientID::Invalid);
 		return chain;
 	}
 }
@@ -362,7 +362,7 @@ CommandCost TestBuyAllTemplateVehiclesInChain(const TemplateVehicle *tv, TileInd
 	CommandCost cost(ExpensesType::NewVehicles);
 
 	for (; tv != nullptr; tv = tv->GetNextUnit()) {
-		cost.AddCost(Command<Commands::BuildVehicle>::Do({}, tile, tv->engine_type, false, INVALID_CARGO, INVALID_CLIENT_ID));
+		cost.AddCost(Command<Commands::BuildVehicle>::Do({}, tile, tv->engine_type, false, INVALID_CARGO, ClientID::Invalid));
 	}
 
 	return cost;

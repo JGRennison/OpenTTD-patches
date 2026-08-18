@@ -3393,8 +3393,8 @@ void UpdateWindows()
 
 	last_time = std::chrono::steady_clock::now();
 
-	PerformanceMeasurer framerate(PFE_DRAWING);
-	PerformanceAccumulator::Reset(PFE_DRAWWORLD);
+	PerformanceMeasurer framerate(PerformanceElement::Drawing);
+	PerformanceAccumulator::Reset(PerformanceElement::ViewportDrawing);
 
 	ProcessPendingPerformanceMeasurements();
 

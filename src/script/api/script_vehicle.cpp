@@ -82,7 +82,7 @@
 
 	EnforcePreconditionCustomError(VEHICLE_INVALID, !ScriptGameSettings::IsDisabledVehicleType((ScriptVehicle::VehicleType)type), ScriptVehicle::ERR_VEHICLE_BUILD_DISABLED);
 
-	if (!ScriptObject::Command<Commands::BuildVehicle>::Do(&ScriptInstance::DoCommandReturnVehicleID, depot, engine_id, true, cargo, INVALID_CLIENT_ID)) return VEHICLE_INVALID;
+	if (!ScriptObject::Command<Commands::BuildVehicle>::Do(&ScriptInstance::DoCommandReturnVehicleID, depot, engine_id, true, cargo, ClientID::Invalid)) return VEHICLE_INVALID;
 
 	/* In case of test-mode, we return VehicleID 0 */
 	return VehicleID::Begin();
@@ -104,7 +104,7 @@
 	if (!ScriptEngine::IsBuildable(engine_id)) return -1;
 	if (!ScriptCargo::IsValidCargo(cargo)) return -1;
 
-	CommandCost res = ::Command<Commands::BuildVehicle>::Do(DoCommandFlag::QueryCost, depot, engine_id, true, cargo, INVALID_CLIENT_ID);
+	CommandCost res = ::Command<Commands::BuildVehicle>::Do(DoCommandFlag::QueryCost, depot, engine_id, true, cargo, ClientID::Invalid);
 	return res.Succeeded() ? _returned_refit_capacity : -1;
 }
 
@@ -172,7 +172,7 @@
 	EnforcePrecondition(false, IsValidVehicle(vehicle_id));
 
 	const Vehicle *v = ::Vehicle::Get(vehicle_id);
-	return ScriptObject::Command<Commands::SellVehicle>::Do(v->tile, vehicle_id, (v->type == ::VehicleType::Train) ? SellVehicleFlags::SellChain : SellVehicleFlags::None, INVALID_CLIENT_ID);
+	return ScriptObject::Command<Commands::SellVehicle>::Do(v->tile, vehicle_id, (v->type == ::VehicleType::Train) ? SellVehicleFlags::SellChain : SellVehicleFlags::None, ClientID::Invalid);
 }
 
 /* static */ bool ScriptVehicle::_SellWagonInternal(VehicleID vehicle_id, SQInteger wagon, bool sell_attached_wagons)
@@ -184,7 +184,7 @@
 	const Train *v = ::Train::Get(vehicle_id);
 	while (wagon-- > 0) v = v->GetNextUnit();
 
-	return ScriptObject::Command<Commands::SellVehicle>::Do(v->tile, v->index, sell_attached_wagons ? SellVehicleFlags::SellChain : SellVehicleFlags::None, INVALID_CLIENT_ID);
+	return ScriptObject::Command<Commands::SellVehicle>::Do(v->tile, v->index, sell_attached_wagons ? SellVehicleFlags::SellChain : SellVehicleFlags::None, ClientID::Invalid);
 }
 
 /* static */ bool ScriptVehicle::SellWagon(VehicleID vehicle_id, SQInteger wagon)

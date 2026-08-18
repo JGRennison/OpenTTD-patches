@@ -4306,7 +4306,7 @@ void ViewportDoDrawProcessAllPending()
 {
 	if (_viewport_drawer_jobs == 0) return;
 
-	PerformanceAccumulator framerate(PFE_DRAWWORLD);
+	PerformanceAccumulator framerate(PerformanceElement::ViewportDrawing);
 
 	std::unique_lock<std::mutex> lk(_viewport_drawer_return_lock);
 	while (true) {
@@ -4459,7 +4459,7 @@ static inline void ViewportDraw(Viewport *vp, int left, int top, int right, int 
  */
 void Window::DrawViewport(NWidgetDisplayFlags display_flags) const
 {
-	PerformanceAccumulator framerate(PFE_DRAWWORLD);
+	PerformanceAccumulator framerate(PerformanceElement::ViewportDrawing);
 
 	DrawPixelInfo *dpi = _cur_dpi;
 

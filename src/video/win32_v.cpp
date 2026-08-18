@@ -1288,7 +1288,7 @@ void VideoDriver_Win32GDI::PaletteChanged(HWND hWnd)
 
 void VideoDriver_Win32GDI::Paint()
 {
-	PerformanceMeasurer framerate(PFE_VIDEO);
+	PerformanceMeasurer framerate(PerformanceElement::Video);
 
 	if (IsEmptyRect(this->dirty_rect)) return;
 
@@ -1643,7 +1643,7 @@ void VideoDriver_Win32OpenGL::ReleaseVideoPointer()
 
 void VideoDriver_Win32OpenGL::Paint()
 {
-	PerformanceMeasurer framerate(PFE_VIDEO);
+	PerformanceMeasurer framerate(PerformanceElement::Video);
 
 	if (_local_palette.count_dirty != 0) {
 		Blitter *blitter = BlitterFactory::GetCurrentBlitter();

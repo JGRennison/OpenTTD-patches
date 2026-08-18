@@ -15,7 +15,7 @@
 #include "tbtr_template_vehicle.h"
 #include "3rdparty/cpp-btree/btree_set.h"
 
-enum ClientID : uint32_t;
+enum class ClientID : uint32_t;
 
 Train *VirtualTrainFromTemplateVehicle(const TemplateVehicle *tv, StringID &err, ClientID user);
 

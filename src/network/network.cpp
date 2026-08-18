@@ -981,7 +981,7 @@ static void NetworkInitServerClientInfo()
 {
 	/* There should be always space for the server. */
 	assert(NetworkClientInfo::CanAllocateItem());
-	NetworkClientInfo *ci = NetworkClientInfo::Create(CLIENT_ID_SERVER);
+	NetworkClientInfo *ci = NetworkClientInfo::Create(ClientID::Server);
 	ci->client_playas = _network_dedicated ? COMPANY_SPECTATOR : GetDefaultLocalCompany();
 
 	ci->client_name = _settings_client.network.client_name;
@@ -1068,7 +1068,7 @@ bool NetworkServerStart()
 	_frame_counter_server = 0;
 	_frame_counter_max = 0;
 	_last_sync_frame = 0;
-	_network_own_client_id = CLIENT_ID_SERVER;
+	_network_own_client_id = ClientID::Server;
 
 	_network_sync_records.clear();
 	_network_sync_record_counts.clear();
@@ -1107,7 +1107,7 @@ void NetworkOnGameStart()
 
 	if (!_network_dedicated) {
 		Company *c = Company::GetIfValid(_local_company);
-		NetworkClientInfo *ci = NetworkClientInfo::GetByClientID(CLIENT_ID_SERVER);
+		NetworkClientInfo *ci = NetworkClientInfo::GetByClientID(ClientID::Server);
 		if (c != nullptr && ci != nullptr) {
 			/*
 			 * If the company has not been named yet, the company was just started.

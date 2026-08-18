@@ -159,7 +159,7 @@ public:
 		this->sell_hovered = false;
 
 		if (to_edit != nullptr) {
-			Command<Commands::VirtualTrainFromTemplate>::Post(STR_TMPL_CANT_CREATE, CommandCallback::SetVirtualTrain, to_edit->index, INVALID_CLIENT_ID);
+			Command<Commands::VirtualTrainFromTemplate>::Post(STR_TMPL_CANT_CREATE, CommandCallback::SetVirtualTrain, to_edit->index, ClientID::Invalid);
 		}
 
 		this->resize.step_height = 1;
@@ -270,7 +270,7 @@ public:
 		}
 
 		// create a new one
-		Command<Commands::VirtualTrainFromTrain>::Post(STR_TMPL_CANT_CREATE, CommandCallback::SetVirtualTrain, v->index, INVALID_CLIENT_ID);
+		Command<Commands::VirtualTrainFromTrain>::Post(STR_TMPL_CANT_CREATE, CommandCallback::SetVirtualTrain, v->index, ClientID::Invalid);
 		this->ToggleWidgetLoweredState(TCW_CLONE);
 		ResetObjectToPlace();
 		this->SetDirty();
@@ -492,7 +492,7 @@ public:
 				}
 
 				SellVehicleFlags sell_flags = _ctrl_pressed ? SellVehicleFlags::SellChain : SellVehicleFlags::None;
-				Command<Commands::SellVirtualVehicle>::Post(STR_ERROR_CAN_T_SELL_TRAIN, CommandCallback::DeleteVirtualTrain, this->sel, sell_flags, INVALID_CLIENT_ID);
+				Command<Commands::SellVirtualVehicle>::Post(STR_ERROR_CAN_T_SELL_TRAIN, CommandCallback::DeleteVirtualTrain, this->sel, sell_flags, ClientID::Invalid);
 
 				this->sel = VehicleID::Invalid();
 

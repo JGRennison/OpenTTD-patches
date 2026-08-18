@@ -50,7 +50,7 @@
 
 DECLARE_INCREMENT_DECREMENT_OPERATORS(ClientID)
 /** The identifier counter for new clients (is never decreased) */
-static ClientID _network_client_id = CLIENT_ID_FIRST;
+static ClientID _network_client_id = ClientID::First;
 
 /** Make very sure the preconditions given in network_type.h are actually followed */
 static_assert(NetworkClientSocketPool::MAX_SIZE > MAX_CLIENTS);
@@ -216,10 +216,10 @@ ServerNetworkGameSocketHandler::~ServerNetworkGameSocketHandler()
 {
 	delete this->GetInfo();
 
-	if (_redirect_console_to_client == this->client_id) _redirect_console_to_client = INVALID_CLIENT_ID;
+	if (_redirect_console_to_client == this->client_id) _redirect_console_to_client = ClientID::Invalid;
 	OrderBackup::ResetUser(this->client_id);
 
-	extern void RemoveVirtualTrainsOfUser(uint32_t user);
+	extern void RemoveVirtualTrainsOfUser(ClientID user);
 	RemoveVirtualTrainsOfUser(this->client_id);
 
 	if (this->savegame != nullptr) {
@@ -399,9 +399,9 @@ static void NetworkHandleCommandQueue(NetworkClientSocket *cs);
  */
 NetworkRecvStatus ServerNetworkGameSocketHandler::SendClientInfo(NetworkClientInfo *ci)
 {
-	if (ci->client_id != INVALID_CLIENT_ID) {
+	if (ci->client_id != ClientID::Invalid) {
 		auto p = std::make_unique<Packet>(this, PacketGameType::ServerClientInfo, TCP_MTU);
-		p->Send_uint32(ci->client_id);
+		p->Send_uint32(to_underlying(ci->client_id));
 		p->Send_uint8 (ci->client_playas);
 		p->Send_string(ci->client_name);
 		//p->Send_string(ci->public_key);
@@ -605,7 +605,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendWelcome()
 	const NetworkGameKeys &keys = this->GetKeys();
 
 	auto p = std::make_unique<Packet>(this, PacketGameType::ServerWelcome, TCP_MTU);
-	p->Send_uint32(this->client_id);
+	p->Send_uint32(to_underlying(this->client_id));
 	p->Send_uint32(_settings_game.game_creation.generation_seed);
 	static_assert(std::tuple_size<decltype(keys.x25519_pub_key)>::value == 32);
 	p->Send_binary(keys.x25519_pub_key);
@@ -620,7 +620,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendWelcome()
 		}
 	}
 	/* Also send the info of the server */
-	return this->SendClientInfo(NetworkClientInfo::GetByClientID(CLIENT_ID_SERVER));
+	return this->SendClientInfo(NetworkClientInfo::GetByClientID(ClientID::Server));
 }
 
 /**
@@ -732,7 +732,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendJoin(ClientID client_id)
 {
 	auto p = std::make_unique<Packet>(this, PacketGameType::ServerClientJoined, TCP_MTU);
 
-	p->Send_uint32(client_id);
+	p->Send_uint32(to_underlying(client_id));
 
 	this->SendPacket(std::move(p));
 	return NetworkRecvStatus::Okay;
@@ -810,7 +810,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendChat(NetworkAction action,
 	auto p = std::make_unique<Packet>(this, PacketGameType::ServerChat, TCP_MTU);
 
 	p->Send_uint8(to_underlying(action));
-	p->Send_uint32(client_id);
+	p->Send_uint32(to_underlying(client_id));
 	p->Send_bool  (self_send);
 	p->Send_string(msg);
 	data.send(*p);
@@ -852,7 +852,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendErrorQuit(ClientID client_
 {
 	auto p = std::make_unique<Packet>(this, PacketGameType::ServerErrorQuit, TCP_MTU);
 
-	p->Send_uint32(client_id);
+	p->Send_uint32(to_underlying(client_id));
 	p->Send_uint8(to_underlying(errorno));
 
 	this->SendPacket(std::move(p));
@@ -868,7 +868,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendQuit(ClientID client_id)
 {
 	auto p = std::make_unique<Packet>(this, PacketGameType::ServerQuit, TCP_MTU);
 
-	p->Send_uint32(client_id);
+	p->Send_uint32(to_underlying(client_id));
 
 	this->SendPacket(std::move(p));
 	return NetworkRecvStatus::Okay;
@@ -952,7 +952,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::SendMove(ClientID client_id, C
 {
 	auto p = std::make_unique<Packet>(this, PacketGameType::ServerMove, TCP_MTU);
 
-	p->Send_uint32(client_id);
+	p->Send_uint32(to_underlying(client_id));
 	p->Send_uint8(company_id);
 	this->SendPacket(std::move(p));
 	return NetworkRecvStatus::Okay;
@@ -1306,12 +1306,12 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::ReceiveClientCommand(Packet &p
 
 	Commands cmd = cp.command_container.cmd;
 
-	if (GetCommandFlags(cmd).Any({CommandFlag::Server, CommandFlag::ServerNS}) && ci->client_id != CLIENT_ID_SERVER && !this->settings_authed) {
+	if (GetCommandFlags(cmd).Any({CommandFlag::Server, CommandFlag::ServerNS}) && ci->client_id != ClientID::Server && !this->settings_authed) {
 		IConsolePrint(CC_ERROR, "WARNING: server only command {} from client {} (IP: {}), kicking...", cmd, ci->client_id, this->GetClientIP());
 		return this->SendError(NetworkErrorCode::Kicked);
 	}
 
-	if (!GetCommandFlags(cmd).Test(CommandFlag::Spectator) && !Company::IsValidID(cp.company) && ci->client_id != CLIENT_ID_SERVER && !this->settings_authed) {
+	if (!GetCommandFlags(cmd).Test(CommandFlag::Spectator) && !Company::IsValidID(cp.company) && ci->client_id != ClientID::Server && !this->settings_authed) {
 		IConsolePrint(CC_ERROR, "WARNING: spectator (client: {}, IP: {}) issued non-spectator command {}, kicking...", ci->client_id, this->GetClientIP(), cmd);
 		return this->SendError(NetworkErrorCode::Kicked);
 	}
@@ -1339,7 +1339,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::ReceiveClientCommand(Packet &p
 
 		/* Check if we are full - else it's possible for spectators to send a Commands::CompanyControl and the company is created regardless of max_companies! */
 		if (Company::GetNumItems() >= _settings_client.network.max_companies) {
-			NetworkServerSendChat(NetworkAction::ServerMessage, NetworkChatDestinationType::Client, ci->client_id, "cannot create new company, server full", CLIENT_ID_SERVER);
+			NetworkServerSendChat(NetworkAction::ServerMessage, NetworkChatDestinationType::Client, to_underlying(ci->client_id), "cannot create new company, server full", ClientID::Server);
 			return NetworkRecvStatus::Okay;
 		}
 	}
@@ -1388,7 +1388,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::ReceiveClientError(Packet &p)
 		std::string server_desync_log;
 		DesyncExtraInfo info;
 		info.client_name = client_name.c_str();
-		info.client_id = this->client_id;
+		info.client_id = to_underlying(this->client_id);
 		info.desync_frame_info = std::move(this->desync_frame_info);
 		CrashLog::DesyncCrashLog(&(this->desync_log), &server_desync_log, info);
 		this->SendDesyncLog(server_desync_log);
@@ -1426,7 +1426,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::ReceiveClientDesyncMessage(Pac
 	std::string msg;
 	p.Recv_string(msg);
 	Debug(desync, 0, "Client-id {} desync msg: {}", this->client_id, msg);
-	extern void LogRemoteDesyncMsg(EconTime::Date date, EconTime::DateFract date_fract, uint8_t tick_skip_counter, uint32_t src_id, std::string msg);
+	extern void LogRemoteDesyncMsg(EconTime::Date date, EconTime::DateFract date_fract, uint8_t tick_skip_counter, ClientID src_id, std::string msg);
 	LogRemoteDesyncMsg(date, date_fract, tick_skip_counter, this->client_id, std::move(msg));
 	return NetworkRecvStatus::Okay;
 }
@@ -1575,7 +1575,7 @@ void NetworkServerSendChat(NetworkAction action, NetworkChatDestinationType dest
 	switch (desttype) {
 		case NetworkChatDestinationType::Client:
 			/* Are we sending to the server? */
-			if ((ClientID)dest == CLIENT_ID_SERVER) {
+			if ((ClientID)dest == ClientID::Server) {
 				ci = NetworkClientInfo::GetByClientID(from_id);
 				/* Display the text locally, and that is it */
 				if (ci != nullptr) {
@@ -1597,7 +1597,7 @@ void NetworkServerSendChat(NetworkAction action, NetworkChatDestinationType dest
 
 			/* Display the message locally (so you know you have sent it) */
 			if (from_id != (ClientID)dest) {
-				if (from_id == CLIENT_ID_SERVER) {
+				if (from_id == ClientID::Server) {
 					ci = NetworkClientInfo::GetByClientID(from_id);
 					ci_to = NetworkClientInfo::GetByClientID((ClientID)dest);
 					if (ci != nullptr && ci_to != nullptr) {
@@ -1633,10 +1633,10 @@ void NetworkServerSendChat(NetworkAction action, NetworkChatDestinationType dest
 			}
 
 			ci = NetworkClientInfo::GetByClientID(from_id);
-			ci_own = NetworkClientInfo::GetByClientID(CLIENT_ID_SERVER);
+			ci_own = NetworkClientInfo::GetByClientID(ClientID::Server);
 			if (ci != nullptr && ci_own != nullptr && ci_own->client_playas == dest) {
 				NetworkTextMessage(action, GetDrawStringCompanyColour(ci->client_playas), false, ci->client_name, msg, data);
-				if (from_id == CLIENT_ID_SERVER) show_local = false;
+				if (from_id == ClientID::Server) show_local = false;
 				ci_to = ci_own;
 			}
 
@@ -1645,7 +1645,7 @@ void NetworkServerSendChat(NetworkAction action, NetworkChatDestinationType dest
 
 			/* Display the message locally (so you know you have sent it) */
 			if (ci != nullptr && show_local) {
-				if (from_id == CLIENT_ID_SERVER) {
+				if (from_id == ClientID::Server) {
 					StringID str = Company::IsValidID(ci_to->client_playas) ? STR_COMPANY_NAME : STR_NETWORK_SPECTATORS;
 					std::string name = GetString(str, ci_to->client_playas);
 					NetworkTextMessage(action, GetDrawStringCompanyColour(ci_own->client_playas), true, name, msg, data);
@@ -1674,7 +1674,7 @@ void NetworkServerSendChat(NetworkAction action, NetworkChatDestinationType dest
 			ci = NetworkClientInfo::GetByClientID(from_id);
 			if (ci != nullptr) {
 				NetworkTextMessage(action, GetDrawStringCompanyColour(ci->client_playas),
-						(desttype == NetworkChatDestinationType::BroadcastSelfSend && from_id == CLIENT_ID_SERVER), ci->client_name, msg, data);
+						(desttype == NetworkChatDestinationType::BroadcastSelfSend && from_id == ClientID::Server), ci->client_name, msg, data);
 			}
 			break;
 	}
@@ -1809,7 +1809,7 @@ NetworkRecvStatus ServerNetworkGameSocketHandler::ReceiveClientRemoteConsoleComm
 	_redirect_console_to_client = this->client_id;
 	this->rcon_reply_key = ss.shared_data.data() + 32; /* second key */
 	IConsoleCmdExec(command);
-	_redirect_console_to_client = INVALID_CLIENT_ID;
+	_redirect_console_to_client = ClientID::Invalid;
 	this->rcon_auth_failures = 0;
 	this->rcon_reply_key = nullptr;
 	return NetworkRecvStatus::Okay;
@@ -1955,7 +1955,7 @@ static void NetworkAutoCleanCompanies()
 	}
 
 	if (!_network_dedicated) {
-		const NetworkClientInfo *ci = NetworkClientInfo::GetByClientID(CLIENT_ID_SERVER);
+		const NetworkClientInfo *ci = NetworkClientInfo::GetByClientID(ClientID::Server);
 		assert(ci != nullptr);
 		if (Company::IsValidID(ci->client_playas)) has_clients.Set(ci->client_playas);
 	}
@@ -1978,7 +1978,7 @@ static void NetworkAutoCleanCompanies()
 			/* Is the company empty for autoclean_unprotected-months, and is there no protection? */
 			if (_settings_client.network.autoclean_unprotected != 0 && c->months_empty > _settings_client.network.autoclean_unprotected && _network_company_states[c->index].password.empty()) {
 				/* Shut the company down */
-				Command<Commands::CompanyControl>::Post(CompanyCtrlAction::Delete, c->index, CompanyRemoveReason::Autoclean, INVALID_CLIENT_ID, {});
+				Command<Commands::CompanyControl>::Post(CompanyCtrlAction::Delete, c->index, CompanyRemoveReason::Autoclean, ClientID::Invalid, {});
 				IConsolePrint(CC_DEFAULT, "Auto-cleaned company #{} with no password", c->index + 1);
 			}
 			/* Is the company empty for autoclean_protected-months, and there is a protection? */
@@ -1992,7 +1992,7 @@ static void NetworkAutoCleanCompanies()
 			/* Is the company empty for autoclean_novehicles-months, and has no vehicles? */
 			if (_settings_client.network.autoclean_novehicles != 0 && c->months_empty > _settings_client.network.autoclean_novehicles && !has_vehicles.Test(c->index)) {
 				/* Shut the company down */
-				Command<Commands::CompanyControl>::Post(CompanyCtrlAction::Delete, c->index, CompanyRemoveReason::Autoclean, INVALID_CLIENT_ID, {});
+				Command<Commands::CompanyControl>::Post(CompanyCtrlAction::Delete, c->index, CompanyRemoveReason::Autoclean, ClientID::Invalid, {});
 				IConsolePrint(CC_DEFAULT, "Auto-cleaned company #{} with no vehicles", c->index + 1);
 			}
 		} else {
@@ -2022,7 +2022,7 @@ bool NetworkMakeClientNameUnique(std::string &name)
 			}
 		}
 		/* Check if it is the same as the server-name */
-		const NetworkClientInfo *ci = NetworkClientInfo::GetByClientID(CLIENT_ID_SERVER);
+		const NetworkClientInfo *ci = NetworkClientInfo::GetByClientID(ClientID::Server);
 		if (ci != nullptr) {
 			if (ci->client_name == name) is_name_unique = false; // name already in use
 		}
@@ -2400,7 +2400,7 @@ void NetworkServerUpdateCompanyPassworded(CompanyID company_id, bool passworded)
 void NetworkServerDoMove(ClientID client_id, CompanyID company_id)
 {
 	/* Only allow non-dedicated servers and normal clients to be moved */
-	if (client_id == CLIENT_ID_SERVER && _network_dedicated) return;
+	if (client_id == ClientID::Server && _network_dedicated) return;
 
 	NetworkClientInfo *ci = NetworkClientInfo::GetByClientID(client_id);
 	assert(ci != nullptr);
@@ -2410,7 +2410,7 @@ void NetworkServerDoMove(ClientID client_id, CompanyID company_id)
 
 	ci->client_playas = company_id;
 
-	if (client_id == CLIENT_ID_SERVER) {
+	if (client_id == ClientID::Server) {
 		SetLocalCompany(company_id);
 	} else {
 		NetworkClientSocket *cs = NetworkClientSocket::GetByClientID(client_id);
@@ -2465,7 +2465,7 @@ void NetworkServerSendRconDenied(ClientID client_id)
  */
 void NetworkServerKickClient(ClientID client_id, std::string_view reason)
 {
-	if (client_id == CLIENT_ID_SERVER) return;
+	if (client_id == ClientID::Server) return;
 	NetworkClientSocket::GetByClientID(client_id)->SendError(NetworkErrorCode::Kicked, reason);
 }
 
@@ -2510,7 +2510,7 @@ uint NetworkServerKickOrBanIP(std::string_view ip, bool ban, std::string_view re
 	 * and writing to after returning. So we would read or write data from freed memory up till
 	 * the segfault triggers. */
 	for (NetworkClientSocket *cs : NetworkClientSocket::Iterate()) {
-		if (cs->client_id == CLIENT_ID_SERVER) continue;
+		if (cs->client_id == ClientID::Server) continue;
 		if (cs->client_id == _redirect_console_to_client) continue;
 		if (cs->client_address.IsInNetmask(ip)) {
 			NetworkServerKickClient(cs->client_id, reason);
@@ -2558,7 +2558,7 @@ void NetworkPrintClients()
 					ci->client_id,
 					ci->client_name.c_str(),
 					ci->client_playas + (Company::IsValidID(ci->client_playas) ? 1 : 0),
-					ci->client_id == CLIENT_ID_SERVER ? "server" : NetworkClientSocket::GetByClientID(ci->client_id)->GetClientIP(),
+					ci->client_id == ClientID::Server ? "server" : NetworkClientSocket::GetByClientID(ci->client_id)->GetClientIP(),
 					ci->public_key);
 		} else {
 			IConsolePrint(CC_INFO, "Client #{}  name: '{}'  company: {}",

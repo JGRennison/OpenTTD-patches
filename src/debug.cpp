@@ -391,13 +391,13 @@ void LogDesyncMsg(std::string msg)
 	_desync_msg_log.LogMsg(DesyncMsgLogEntry(std::move(msg)));
 }
 
-void LogRemoteDesyncMsg(EconTime::Date date, EconTime::DateFract date_fract, uint8_t tick_skip_counter, uint32_t src_id, std::string msg)
+void LogRemoteDesyncMsg(EconTime::Date date, EconTime::DateFract date_fract, uint8_t tick_skip_counter, ClientID src_id, std::string msg)
 {
 	DesyncMsgLogEntry entry(std::move(msg));
 	entry.date = date;
 	entry.date_fract = date_fract;
 	entry.tick_skip_counter = tick_skip_counter;
-	entry.src_id = src_id;
+	entry.src_id = to_underlying(src_id);
 	_remote_desync_msg_log.LogMsg(std::move(entry));
 }
 

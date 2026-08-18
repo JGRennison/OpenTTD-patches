@@ -122,7 +122,7 @@ void NetworkExecuteLocalCommandQueue()
 
 	/* Local company may have changed, so we should not restore the old value */
 	_current_company = _local_company;
-	_cmd_client_id = INVALID_CLIENT_ID;
+	_cmd_client_id = ClientID::Invalid;
 
 	if (record_sync_event) RecordSyncEvent(NSRE_CMD);
 }

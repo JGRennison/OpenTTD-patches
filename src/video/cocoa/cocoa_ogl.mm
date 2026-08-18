@@ -311,7 +311,7 @@ void VideoDriver_CocoaOpenGL::ReleaseVideoPointer()
 
 void VideoDriver_CocoaOpenGL::Paint()
 {
-	PerformanceMeasurer framerate(PFE_VIDEO);
+	PerformanceMeasurer framerate(PerformanceElement::Video);
 
 	if (_cur_palette.count_dirty != 0) {
 		Blitter *blitter = BlitterFactory::GetCurrentBlitter();

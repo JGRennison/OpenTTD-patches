@@ -21,7 +21,7 @@
 #include "pbs.h"
 
 struct Train;
-enum ClientID : uint32_t;
+enum class ClientID : uint32_t;
 
 /** Rail vehicle flags. */
 enum class VehicleRailFlag : uint8_t {

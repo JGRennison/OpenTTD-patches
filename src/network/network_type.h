@@ -44,11 +44,12 @@ enum class ServerGameType : uint8_t {
 };
 
 /** 'Unique' identifier to be given to clients */
-enum ClientID : uint32_t {
-	INVALID_CLIENT_ID = 0, ///< Client is not part of anything
-	CLIENT_ID_SERVER  = 1, ///< Servers always have this ID
-	CLIENT_ID_FIRST   = 2, ///< The first client ID
+enum class ClientID : uint32_t {
+	Invalid = 0, ///< Client is not part of anything
+	Server = 1, ///< Servers always have this ID
+	First = 2, ///< The first client ID
 };
+DECLARE_CONVERTIBLE_TO_WINDOW_INVALIDATION_DATA(ClientID)
 
 /** Indices into the client related pools */
 struct ClientPoolIDTag : public PoolIDTraits<uint16_t, MAX_CLIENTS + 1 /* dedicated server. */, 0xFFFF> {};
@@ -151,6 +152,8 @@ struct NetworkTextMessageData {
 
 	NetworkTextMessageData(int64_t data = 0, int64_t auxdata = 0)
 			: data(data), auxdata(auxdata) { }
+
+	NetworkTextMessageData(ClientID data) : data(to_underlying(data)) {}
 
 	template <typename T> void recv(T &p) {
 		this->data = p.Recv_uint64();

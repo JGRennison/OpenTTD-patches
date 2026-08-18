@@ -1111,7 +1111,7 @@ static void OnStartGame(bool dedicated_server)
 	/* Update the local company for a loaded game. It is either always
 	 * a company or in the case of a dedicated server a spectator */
 	if (_network_server && !dedicated_server) {
-		NetworkServerDoMove(CLIENT_ID_SERVER, GetDefaultLocalCompany());
+		NetworkServerDoMove(ClientID::Server, GetDefaultLocalCompany());
 	} else {
 		SetLocalCompany(dedicated_server ? COMPANY_SPECTATOR : GetDefaultLocalCompany());
 	}
@@ -1541,13 +1541,13 @@ void StateGameLoop()
 
 	/* Don't execute the state loop during pause or when modal windows are open. */
 	if (_pause_mode.Any() || HasModalProgress()) {
-		PerformanceMeasurer::Paused(PFE_GAMELOOP);
-		PerformanceMeasurer::Paused(PFE_GL_ECONOMY);
-		PerformanceMeasurer::Paused(PFE_GL_TRAINS);
-		PerformanceMeasurer::Paused(PFE_GL_ROADVEHS);
-		PerformanceMeasurer::Paused(PFE_GL_SHIPS);
-		PerformanceMeasurer::Paused(PFE_GL_AIRCRAFT);
-		PerformanceMeasurer::Paused(PFE_GL_LANDSCAPE);
+		PerformanceMeasurer::Paused(PerformanceElement::GameLoop);
+		PerformanceMeasurer::Paused(PerformanceElement::GameLoopEconomy);
+		PerformanceMeasurer::Paused(PerformanceElement::GameLoopTrains);
+		PerformanceMeasurer::Paused(PerformanceElement::GameLoopRoadVehicles);
+		PerformanceMeasurer::Paused(PerformanceElement::GameLoopShips);
+		PerformanceMeasurer::Paused(PerformanceElement::GameLoopAircraft);
+		PerformanceMeasurer::Paused(PerformanceElement::GameLoopLandscape);
 
 		if (!HasModalProgress()) UpdateLandscapingLimits();
 #ifndef DEBUG_DUMP_COMMANDS
@@ -1556,8 +1556,8 @@ void StateGameLoop()
 		return;
 	}
 
-	PerformanceMeasurer framerate(PFE_GAMELOOP);
-	PerformanceAccumulator::Reset(PFE_GL_LANDSCAPE);
+	PerformanceMeasurer framerate(PerformanceElement::GameLoop);
+	PerformanceAccumulator::Reset(PerformanceElement::GameLoopLandscape);
 
 	if (_game_mode == GameMode::Editor) {
 		BasePersistentStorageArray::SwitchMode(PSM_ENTER_GAMELOOP);
@@ -1630,7 +1630,7 @@ void StateGameLoop()
 
 #ifndef DEBUG_DUMP_COMMANDS
 		{
-			PerformanceMeasurer script_framerate(PFE_ALLSCRIPTS);
+			PerformanceMeasurer script_framerate(PerformanceElement::AllScripts);
 			AI::GameLoop();
 			Game::GameLoop();
 		}
