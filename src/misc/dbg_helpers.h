@@ -156,7 +156,7 @@ struct DumpTarget {
 
 	format_buffer output_buffer;        ///< The output string.
 	int indent = 0;                     ///< Current indent/nesting level.
-	std::stack<std::string> cur_struct; ///< Tracker of the current structure name.
+	std::stack<std::string, std::vector<std::string>> cur_struct; ///< Tracker of the current structure name.
 	KnownNamesMap known_names;          ///< Map of known object instances and their structured names.
 
 	static size_t NewTypeId();
