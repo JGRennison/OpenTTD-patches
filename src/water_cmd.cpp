@@ -132,7 +132,7 @@ CommandCost CmdBuildShipDepot(DoCommandFlags flags, TileIndex tile, Axis axis)
 		if (IsBridgeAbove(t)) {
 			DiagDirection dir = AxisToDiagDir(axis);
 			if (t == tile) dir = ReverseDiagDir(dir);
-			CommandCost ret = IsDepotBridgeAboveOK(t, TRANSPORT_WATER, dir, GetBridgeAboveInfo(t));
+			CommandCost ret = IsDepotBridgeAboveOK(t, TransportType::Water, dir, GetBridgeAboveInfo(t));
 			if (ret.Failed()) return ret;
 		}
 	}
@@ -200,7 +200,7 @@ bool IsPossibleDockingTile(TileIndex t)
 		case TileType::Railway:
 		case TileType::Station:
 		case TileType::TunnelBridge:
-			return TrackdirBitsToTrackBits(GetTileTrackdirBits(t, TRANSPORT_WATER, 0)) != TRACK_BIT_NONE;
+			return TrackdirBitsToTrackBits(GetTileTrackdirBits(t, TransportType::Water, 0)) != TRACK_BIT_NONE;
 
 		default:
 			return false;
@@ -790,7 +790,7 @@ bool IsWateredTile(TileIndex tile, Direction from)
 
 		case TileType::Object: return IsTileOnWater(tile);
 
-		case TileType::TunnelBridge: return GetTunnelBridgeTransportType(tile) == TRANSPORT_WATER && ReverseDiagDir(GetTunnelBridgeDirection(tile)) == DirToDiagDir(from);
+		case TileType::TunnelBridge: return GetTunnelBridgeTransportType(tile) == TransportType::Water && ReverseDiagDir(GetTunnelBridgeDirection(tile)) == DirToDiagDir(from);
 
 		case TileType::Void: return true; // consider map border as water, esp. for rivers
 
@@ -1506,7 +1506,7 @@ static TrackStatus GetTileTrackStatus_Water(TileIndex tile, TransportType mode, 
 
 	TrackBits ts;
 
-	if (mode != TRANSPORT_WATER) return {};
+	if (mode != TransportType::Water) return {};
 
 	switch (GetWaterTileType(tile)) {
 		case WaterTileType::Clear: ts = ((GetWaterClass(tile) < WaterClass::River) || IsTileFlat(tile)) ? TRACK_BIT_ALL : TRACK_BIT_NONE; break;

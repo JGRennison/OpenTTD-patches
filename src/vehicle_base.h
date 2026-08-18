@@ -407,8 +407,8 @@ public:
 	inline GroundVehicleCache *GetGroundVehicleCache();
 	inline const GroundVehicleCache *GetGroundVehicleCache() const;
 
-	inline uint16_t &GetGroundVehicleFlags();
-	inline uint16_t GetGroundVehicleFlags() const;
+	inline GroundVehicleFlags &GetGroundVehicleFlags();
+	inline GroundVehicleFlags GetGroundVehicleFlags() const;
 
 	void DeleteUnreachedImplicitOrders();
 
@@ -1645,7 +1645,7 @@ public:
 		ClrBit(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH);
 		_sprite_group_resolve_check_veh_check = true;
 		if (EXPECTED_TYPE == VehicleType::Train || EXPECTED_TYPE == VehicleType::Road) _sprite_group_resolve_check_veh_curvature_check = true;
-		((T *)this)->T::GetImage(current_direction, EIT_ON_MAP, &seq);
+		((T *)this)->T::GetImage(current_direction, EngineImageType::OnMap, &seq);
 		if (EXPECTED_TYPE == VehicleType::Train || EXPECTED_TYPE == VehicleType::Road) {
 			AssignBit(this->vcache.cached_veh_flags, VCF_IMAGE_REFRESH_NEXT, !_sprite_group_resolve_check_veh_check);
 			if (unlikely(!_sprite_group_resolve_check_veh_curvature_check)) {

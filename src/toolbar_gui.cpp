@@ -1187,15 +1187,15 @@ static void UsePickerTool(TileIndex tile)
 
 		case TileType::TunnelBridge:
 			switch (GetTunnelBridgeTransportType(tile)) {
-				case TRANSPORT_RAIL:
+				case TransportType::Rail:
 					ShowBuildRailToolbarFromTile(tile);
 					break;
 
-				case TRANSPORT_ROAD:
+				case TransportType::Road:
 					ShowBuildRoadToolbarFromTile(tile);
 					break;
 
-				case TRANSPORT_WATER:
+				case TransportType::Water:
 					ShowBuildDocksToolbarFromTile(tile);
 					break;
 

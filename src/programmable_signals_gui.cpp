@@ -418,7 +418,7 @@ public:
 	{
 		if (this->IsWidgetLowered(PROGRAM_WIDGET_COPY_PROGRAM)) {
 			//Copy program from another progsignal
-			TrackBits trackbits = TrackdirBitsToTrackBits(GetTileTrackdirBits(tile1, TRANSPORT_RAIL, 0));
+			TrackBits trackbits = TrackdirBitsToTrackBits(GetTileTrackdirBits(tile1, TransportType::Rail, 0));
 			if (trackbits & TRACK_BIT_VERT) { // N-S direction
 				trackbits = (_tile_fract_coords.x <= _tile_fract_coords.y) ? TRACK_BIT_RIGHT : TRACK_BIT_LEFT;
 			}
@@ -464,7 +464,7 @@ public:
 			return;
 		}
 
-		TrackBits trackbits = TrackdirBitsToTrackBits(GetTileTrackdirBits(tile1, TRANSPORT_RAIL, 0));
+		TrackBits trackbits = TrackdirBitsToTrackBits(GetTileTrackdirBits(tile1, TransportType::Rail, 0));
 		if (trackbits & TRACK_BIT_VERT) { // N-S direction
 			trackbits = (_tile_fract_coords.x <= _tile_fract_coords.y) ? TRACK_BIT_RIGHT : TRACK_BIT_LEFT;
 		}

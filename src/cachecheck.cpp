@@ -404,7 +404,7 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 
 			uint length = 0;
 			for (const Vehicle *u = v; u != nullptr; u = u->Next(), length++) {
-				if (u->IsGroundVehicle() && (HasBit(u->GetGroundVehicleFlags(), GVF_GOINGUP_BIT) || HasBit(u->GetGroundVehicleFlags(), GVF_GOINGDOWN_BIT)) && u->GetGroundVehicleCache()->cached_slope_resistance && HasBit(v->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST)) {
+				if (u->IsGroundVehicle() && (u->GetGroundVehicleFlags().Test(GroundVehicleFlag::GoingUp) || u->GetGroundVehicleFlags().Test(GroundVehicleFlag::GoingDown)) && u->GetGroundVehicleCache()->cached_slope_resistance && HasBit(v->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST)) {
 					CCLOGV("VCF_GV_ZERO_SLOPE_RESIST set incorrectly (1)");
 				}
 				if (u->type == VehicleType::Train && u->breakdown_ctr != 0 && !Train::From(v)->flags.Test(VehicleRailFlag::ConsistBreakdown) && (Train::From(u)->IsEngine() || Train::From(u)->IsMultiheaded())) {
@@ -457,7 +457,7 @@ void CheckCaches(bool force_check, std::function<void(std::string_view)> log, Ch
 							oldv.vcache.cached_vis_effect != u->vcache.cached_vis_effect ? 'v' : '-',
 							HasBit(oldv.vcache.cached_veh_flags ^ u->vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT) ? 'l' : '-');
 				}
-				if (u->IsGroundVehicle() && (HasBit(u->GetGroundVehicleFlags(), GVF_GOINGUP_BIT) || HasBit(u->GetGroundVehicleFlags(), GVF_GOINGDOWN_BIT)) && u->GetGroundVehicleCache()->cached_slope_resistance && HasBit(v->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST)) {
+				if (u->IsGroundVehicle() && (u->GetGroundVehicleFlags().Test(GroundVehicleFlag::GoingUp) || u->GetGroundVehicleFlags().Test(GroundVehicleFlag::GoingDown)) && u->GetGroundVehicleCache()->cached_slope_resistance && HasBit(v->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST)) {
 					CCLOGV("VCF_GV_ZERO_SLOPE_RESIST set incorrectly (2)");
 				}
 				if (oldv.acceleration != u->acceleration) {

@@ -294,7 +294,7 @@ GroundVehicleAcceleration GroundVehicle<T, Type>::GetAcceleration()
 		int accel = ClampTo<int32_t>((force - resistance) / (mass * 4));
 		accel = force < resistance ? std::min(-1, accel) : std::max(1, accel);
 		if (this->type == VehicleType::Train) {
-			if (_settings_game.vehicle.train_acceleration_model == AM_ORIGINAL &&
+			if (_settings_game.vehicle.train_acceleration_model == AccelerationModel::Original &&
 					Train::From(this)->flags.Test(VehicleRailFlag::BreakdownPower)) {
 				/* We need to apply the power reducation for non-realistic acceleration here */
 				uint32_t power;
@@ -337,8 +337,8 @@ bool GroundVehicle<T, Type>::IsChainInDepot() const
 {
 	const T *v = this->First();
 	/* Is the front engine stationary in the depot? */
-	static_assert(to_underlying(TRANSPORT_RAIL) == to_underlying(VehicleType::Train));
-	static_assert(to_underlying(TRANSPORT_ROAD) == to_underlying(VehicleType::Road));
+	static_assert(to_underlying(TransportType::Rail) == to_underlying(VehicleType::Train));
+	static_assert(to_underlying(TransportType::Road) == to_underlying(VehicleType::Road));
 	if (!IsDepotTypeTile(v->tile, (TransportType)Type) || v->cur_speed != 0) return false;
 
 	/* Check whether the rest is also already trying to enter the depot. */
@@ -362,8 +362,8 @@ void GroundVehicle<T, Type>::UpdateZPositionInWormhole()
 
 	TileIndex pos_tile = TileVirtXY(this->x_pos, this->y_pos);
 
-	ClrBit(this->gv_flags, GVF_GOINGUP_BIT);
-	ClrBit(this->gv_flags, GVF_GOINGDOWN_BIT);
+	this->gv_flags.Reset(GroundVehicleFlag::GoingUp);
+	this->gv_flags.Reset(GroundVehicleFlag::GoingDown);
 
 	if (pos_tile == t->tile_n || pos_tile == t->tile_s) {
 		this->z_pos = 0;
@@ -396,14 +396,14 @@ void GroundVehicle<T, Type>::UpdateZPositionInWormhole()
 		this->z_pos = TILE_HEIGHT * (delta == 3 ? -2 : -1);
 		if (delta != 2) {
 			slope = slope_north;
-			SetBit(this->gv_flags, going_north ? GVF_GOINGUP_BIT : GVF_GOINGDOWN_BIT);
+			this->gv_flags.Set(going_north ? GroundVehicleFlag::GoingUp : GroundVehicleFlag::GoingDown);
 			ClrBit(this->First()->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST);
 		}
 	} else if ((delta = south_coord - pos_coord) <= 3) {
 		this->z_pos = TILE_HEIGHT * (delta == 3 ? -2 : -1);
 		if (delta != 2) {
 			slope = SLOPE_ELEVATED ^ slope_north;
-			SetBit(this->gv_flags, going_north ? GVF_GOINGDOWN_BIT : GVF_GOINGUP_BIT);
+			this->gv_flags.Set(going_north ? GroundVehicleFlag::GoingDown : GroundVehicleFlag::GoingUp);
 			ClrBit(this->First()->vcache.cached_veh_flags, VCF_GV_ZERO_SLOPE_RESIST);
 		}
 	}
@@ -443,7 +443,7 @@ uint GroundVehicle<T, Type>::DoUpdateSpeed(GroundVehicleAcceleration accel, int 
 	 * somewhat gradually. But never lower than the maximum speed. */
 	if (this->breakdown_ctr == 1) {
 		if (this->breakdown_type == BREAKDOWN_LOW_POWER) {
-			if ((this->tick_counter & 0x7) == 0 && _settings_game.vehicle.train_acceleration_model == AM_ORIGINAL) {
+			if ((this->tick_counter & 0x7) == 0 && _settings_game.vehicle.train_acceleration_model == AccelerationModel::Original) {
 				if (this->cur_speed > (this->breakdown_severity * max_speed) >> 8) {
 					tempmax = this->cur_speed - (this->cur_speed / 10) - 1;
 				} else {

@@ -88,11 +88,11 @@ static void _DoCommandReturnBuildBridge1(class ScriptInstance &instance)
 		case ScriptVehicle::VT_ROAD:
 			ScriptObject::SetCallbackVariable(0, start.base());
 			ScriptObject::SetCallbackVariable(1, end.base());
-			return ScriptObject::Command<Commands::BuildBridge>::Do(&::_DoCommandReturnBuildBridge1, end, start, TRANSPORT_ROAD, bridge_type, ScriptRoad::GetCurrentRoadType(), BuildBridgeFlags::ScriptCommand);
+			return ScriptObject::Command<Commands::BuildBridge>::Do(&::_DoCommandReturnBuildBridge1, end, start, TransportType::Road, bridge_type, ScriptRoad::GetCurrentRoadType(), BuildBridgeFlags::ScriptCommand);
 		case ScriptVehicle::VT_RAIL:
-			return ScriptObject::Command<Commands::BuildBridge>::Do(end, start, TRANSPORT_RAIL, bridge_type, ScriptRail::GetCurrentRailType(), BuildBridgeFlags::ScriptCommand);
+			return ScriptObject::Command<Commands::BuildBridge>::Do(end, start, TransportType::Rail, bridge_type, ScriptRail::GetCurrentRailType(), BuildBridgeFlags::ScriptCommand);
 		case ScriptVehicle::VT_WATER:
-			return ScriptObject::Command<Commands::BuildBridge>::Do(end, start, TRANSPORT_WATER, bridge_type, 0, BuildBridgeFlags::ScriptCommand);
+			return ScriptObject::Command<Commands::BuildBridge>::Do(end, start, TransportType::Water, bridge_type, 0, BuildBridgeFlags::ScriptCommand);
 		default: NOT_REACHED();
 	}
 }

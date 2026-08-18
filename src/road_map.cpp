@@ -49,7 +49,7 @@ RoadBits GetAnyRoadBits(TileIndex tile, RoadTramType rtt, bool straight_tunnel_b
 			return DiagDirToRoadBits(GetBayRoadStopDir(tile));
 
 		case TileType::TunnelBridge:
-			dbg_assert(GetTunnelBridgeTransportType(tile) == TRANSPORT_ROAD); // ensured by MayHaveRoad
+			dbg_assert(GetTunnelBridgeTransportType(tile) == TransportType::Road); // ensured by MayHaveRoad
 			if (IsRoadCustomBridgeHeadTile(tile)) return GetCustomBridgeHeadRoadBits(tile, rtt);
 			return straight_tunnel_bridge_entrance ?
 					AxisToRoadBits(DiagDirToAxis(GetTunnelBridgeDirection(tile))) :

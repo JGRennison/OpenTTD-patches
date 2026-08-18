@@ -297,7 +297,7 @@ public:
 		} else {
 			this->dest_station   = StationID::Invalid();
 			this->dest_tile      = (v->dest_tile == INVALID_TILE) ? TileIndex{} : v->dest_tile;
-			this->dest_trackdirs = GetTileTrackdirBits(this->dest_tile, TRANSPORT_ROAD, GetRoadTramType(v->roadtype));
+			this->dest_trackdirs = GetTileTrackdirBits(this->dest_tile, TransportType::Road, GetRoadTramType(v->roadtype));
 		}
 	}
 

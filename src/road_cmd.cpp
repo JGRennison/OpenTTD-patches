@@ -663,7 +663,7 @@ static CommandCost RemoveRoad(TileIndex tile, DoCommandFlags flags, RoadBits pie
 		}
 
 		case TileType::TunnelBridge: {
-			if (GetTunnelBridgeTransportType(tile) != TRANSPORT_ROAD) return CMD_ERROR;
+			if (GetTunnelBridgeTransportType(tile) != TransportType::Road) return CMD_ERROR;
 			CommandCost ret = TunnelBridgeIsFree(tile, GetOtherTunnelBridgeEnd(tile));
 			if (ret.Failed()) return ret;
 			break;
@@ -1243,7 +1243,7 @@ CommandCost CmdBuildRoad(DoCommandFlags flags, TileIndex tile, RoadBits pieces, 
 		}
 
 		case TileType::TunnelBridge: {
-			if (GetTunnelBridgeTransportType(tile) != TRANSPORT_ROAD) goto do_clear;
+			if (GetTunnelBridgeTransportType(tile) != TransportType::Road) goto do_clear;
 
 			const TileIndex other_end = GetOtherTunnelBridgeEnd(tile);
 
@@ -1811,7 +1811,7 @@ CommandCost CmdBuildRoadDepot(DoCommandFlags flags, TileIndex tile, RoadType rt,
 	}
 
 	if (IsBridgeAbove(tile)) {
-		CommandCost ret = IsDepotBridgeAboveOK(tile, TRANSPORT_ROAD, dir, GetBridgeAboveInfo(tile));
+		CommandCost ret = IsDepotBridgeAboveOK(tile, TransportType::Road, dir, GetBridgeAboveInfo(tile));
 		if (ret.Failed()) return ret;
 	}
 
@@ -2812,11 +2812,11 @@ static TrackStatus GetTileTrackStatus_Road(TileIndex tile, TransportType mode, u
 	TrackdirBits trackdirbits = TRACKDIR_BIT_NONE;
 	TrackdirBits red_signals = TRACKDIR_BIT_NONE; // crossing barred
 	switch (mode) {
-		case TRANSPORT_RAIL:
+		case TransportType::Rail:
 			if (IsLevelCrossing(tile)) trackdirbits = TrackBitsToTrackdirBits(GetCrossingRailBits(tile));
 			break;
 
-		case TRANSPORT_ROAD: {
+		case TransportType::Road: {
 			RoadTramType rtt = static_cast<RoadTramType>(GB(sub_mode, 0, 8));
 			if (!HasTileRoadType(tile, rtt)) break;
 			switch (GetRoadTileType(tile)) {
@@ -3206,7 +3206,7 @@ CommandCost CmdConvertRoad(DoCommandFlags flags, TileIndex tile, TileIndex area_
 				}
 				break;
 			case TileType::TunnelBridge:
-				if (GetTunnelBridgeTransportType(tile) != TRANSPORT_ROAD) continue;
+				if (GetTunnelBridgeTransportType(tile) != TransportType::Road) continue;
 				if (IsTunnel(tile) && RoadNoTunnels(to_type)) {
 					error.MakeError(STR_ERROR_TUNNEL_DISALLOWED_ROAD);
 					continue;

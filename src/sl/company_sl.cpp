@@ -147,16 +147,16 @@ void AfterLoadCompanyStats()
 					const uint middle_len = GetTunnelBridgeLength(tile, other_end) * TUNNELBRIDGE_TRACKBIT_FACTOR;
 
 					switch (GetTunnelBridgeTransportType(tile)) {
-						case TRANSPORT_RAIL:
+						case TransportType::Rail:
 							AddRailTunnelBridgeInfrastructure(tile, other_end);
 							break;
 
-						case TRANSPORT_ROAD: {
+						case TransportType::Road: {
 							AddRoadTunnelBridgeInfrastructure(tile, other_end);
 							break;
 						}
 
-						case TRANSPORT_WATER:
+						case TransportType::Water:
 							c = Company::GetIfValid(GetTileOwner(tile));
 							if (c != nullptr) c->infrastructure.water += middle_len + (2 * TUNNELBRIDGE_TRACKBIT_FACTOR);
 							break;

@@ -2016,7 +2016,7 @@ static void NewGRFConfirmationCallback(Window *w, bool confirmed)
 		NewGRFWindow *nw = dynamic_cast<NewGRFWindow*>(w);
 		assert(nw != nullptr);
 
-		GamelogStartAction(GLAT_GRF);
+		GamelogStartAction(GamelogActionType::GRF);
 		GamelogGRFUpdate(_grfconfig, nw->actives); // log GRF changes
 		CopyGRFConfigList(nw->orig_list, nw->actives, false);
 		ReloadNewGRFData();

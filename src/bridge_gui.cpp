@@ -62,7 +62,7 @@ void CcBuildBridge(const CommandCost &result, TileIndex end_tile, TileIndex tile
 	if (result.Failed()) return;
 	if (_settings_client.sound.confirm) SndPlayTileFx(SND_27_CONSTRUCTION_BRIDGE, end_tile);
 
-	if (transport_type == TRANSPORT_ROAD) {
+	if (transport_type == TransportType::Road) {
 		DiagDirection end_direction = ReverseDiagDir(GetTunnelBridgeDirection(end_tile));
 		ConnectRoadToStructure(end_tile, end_direction);
 
@@ -70,7 +70,7 @@ void CcBuildBridge(const CommandCost &result, TileIndex end_tile, TileIndex tile
 		ConnectRoadToStructure(tile_start, start_direction);
 	}
 
-	if (transport_type == TRANSPORT_RAIL) {
+	if (transport_type == TransportType::Rail) {
 		StoreRailPlacementEndpoints(tile_start, end_tile, (TileX(tile_start) == TileX(end_tile)) ? TRACK_Y : TRACK_X, false);
 	}
 }
@@ -91,7 +91,7 @@ private:
 
 	TileIndex start_tile = INVALID_TILE;
 	TileIndex end_tile = INVALID_TILE;
-	TransportType transport_type = INVALID_TRANSPORT;
+	TransportType transport_type = TransportType::Invalid;
 	uint8_t road_rail_type = 0;
 	GUIBridgeList bridges{};
 	int icon_width = 0; ///< Scaled width of the the bridge icon sprite.
@@ -118,8 +118,8 @@ private:
 	void BuildBridge(BridgeType type)
 	{
 		switch (this->transport_type) {
-			case TRANSPORT_RAIL: _last_railbridge_type = type; break;
-			case TRANSPORT_ROAD: _last_roadbridge_type = type; break;
+			case TransportType::Rail: _last_railbridge_type = type; break;
+			case TransportType::Road: _last_roadbridge_type = type; break;
 			default: break;
 		}
 		Command<Commands::BuildBridge>::Post(STR_ERROR_CAN_T_BUILD_BRIDGE_HERE, CommandCallback::BuildBridge,
@@ -170,7 +170,7 @@ public:
 		this->CreateNestedTree();
 		this->vscroll = this->GetScrollbar(WID_BBS_SCROLLBAR);
 		/* Change the data, or the caption of the gui. Set it to road or rail, accordingly. */
-		this->GetWidget<NWidgetCore>(WID_BBS_CAPTION)->SetString((transport_type == TRANSPORT_ROAD) ? STR_SELECT_ROAD_BRIDGE_CAPTION : STR_SELECT_RAIL_BRIDGE_CAPTION);
+		this->GetWidget<NWidgetCore>(WID_BBS_CAPTION)->SetString((transport_type == TransportType::Road) ? STR_SELECT_ROAD_BRIDGE_CAPTION : STR_SELECT_RAIL_BRIDGE_CAPTION);
 		this->FinishInitNested(transport_type); // Initializes 'this->icon_width'.
 
 		this->parent = FindWindowById(WindowClass::BuildToolbar, transport_type);
@@ -375,8 +375,8 @@ void ShowBuildBridgeWindow(TileIndex start, TileIndex end, TransportType transpo
 	 */
 	BridgeType last_bridge_type = 0;
 	switch (transport_type) {
-		case TRANSPORT_ROAD: last_bridge_type = _last_roadbridge_type; break;
-		case TRANSPORT_RAIL: last_bridge_type = _last_railbridge_type; break;
+		case TransportType::Road: last_bridge_type = _last_roadbridge_type; break;
+		case TransportType::Rail: last_bridge_type = _last_railbridge_type; break;
 		default: break; // water ways and air routes don't have bridge types
 	}
 	if (_ctrl_pressed && CheckBridgeAvailability(last_bridge_type, bridge_len).Succeeded()) {
@@ -412,7 +412,7 @@ void ShowBuildBridgeWindow(TileIndex start, TileIndex end, TransportType transpo
 
 		Money infra_cost = 0;
 		switch (transport_type) {
-			case TRANSPORT_ROAD: {
+			case TransportType::Road: {
 				/* In case we add a new road type as well, we must be aware of those costs. */
 				RoadType road_rt = INVALID_ROADTYPE;
 				RoadType tram_rt = INVALID_ROADTYPE;
@@ -431,7 +431,7 @@ void ShowBuildBridgeWindow(TileIndex start, TileIndex end, TransportType transpo
 
 				break;
 			}
-			case TRANSPORT_RAIL: infra_cost = (bridge_len + 2) * RailBuildCost((RailType)road_rail_type); break;
+			case TransportType::Rail: infra_cost = (bridge_len + 2) * RailBuildCost((RailType)road_rail_type); break;
 			default: break;
 		}
 

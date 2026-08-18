@@ -291,7 +291,7 @@ public:
 		switch (widget) {
 			case TCW_NEW_TMPL_PANEL: {
 				if (this->virtual_train) {
-					DrawTrainImage(this->virtual_train, r.Shrink(TRAIN_FRONT_SPACE, 2, 25, 0), this->sel, EIT_IN_DEPOT, this->hscroll->GetPosition(), this->vehicle_over);
+					DrawTrainImage(this->virtual_train, r.Shrink(TRAIN_FRONT_SPACE, 2, 25, 0), this->sel, EngineImageType::InDepot, this->hscroll->GetPosition(), this->vehicle_over);
 					DrawString(r.left, r.right, r.top, GetString(STR_JUST_DECIMAL, CeilDiv(this->virtual_train->gcache.cached_total_length * 10, TILE_SIZE), 1), TextColour::Black, SA_RIGHT, false, FontSize::Small);
 				}
 				break;
@@ -335,7 +335,7 @@ public:
 					y += GetCharacterHeight(FontSize::Normal);
 
 					/* Draw vehicle performance info */
-					const bool original_acceleration = (_settings_game.vehicle.train_acceleration_model == AM_ORIGINAL ||
+					const bool original_acceleration = (_settings_game.vehicle.train_acceleration_model == AccelerationModel::Original ||
 							GetAccelerationTypeRailTypes(VehicleAccelerationModel::Maglev).All(this->virtual_train->railtypes));
 					const GroundVehicleCache *gcache = this->virtual_train->GetGroundVehicleCache();
 					DrawString(left, right, y, GetString(original_acceleration ? STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED : STR_VEHICLE_INFO_WEIGHT_POWER_MAX_SPEED_MAX_TE,
@@ -371,7 +371,7 @@ public:
 						y += GetCharacterHeight(FontSize::Normal);
 					}
 
-					if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) {
+					if (_settings_game.vehicle.train_acceleration_model != AccelerationModel::Original) {
 						DrawString(left, right, y, GetString(STR_VEHICLE_INFO_MAX_SPEED_LOADED,
 								GetTrainEstimatedMaxAchievableSpeed(this->virtual_train, gcache->cached_weight + full_cargo_weight, this->virtual_train->GetDisplayMaxSpeed())));
 						y += GetCharacterHeight(FontSize::Normal);
@@ -574,7 +574,7 @@ public:
 			}
 			if (!buildable) height += GetCharacterHeight(FontSize::Normal);
 			if (full_cargo_weight > 0 || _settings_client.gui.show_train_weight_ratios_in_details) height += GetCharacterHeight(FontSize::Normal);
-			if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) height += GetCharacterHeight(FontSize::Normal);
+			if (_settings_game.vehicle.train_acceleration_model != AccelerationModel::Original) height += GetCharacterHeight(FontSize::Normal);
 
 			for (CargoType i{}; i < NUM_CARGO; ++i) {
 				if (cargo_caps[i] > 0) {
@@ -642,7 +642,7 @@ public:
 			TrainDepotMoveVehicle(v, sel, gdvp.head);
 		} else if (v != nullptr) {
 			SetObjectToPlaceWnd(SPR_CURSOR_MOUSE, PAL_NONE, HT_DRAG, this);
-			SetMouseCursorVehicle(v, EIT_IN_DEPOT);
+			SetMouseCursorVehicle(v, EngineImageType::InDepot);
 			_cursor.vehchain = _ctrl_pressed;
 
 			this->sel = v->index;

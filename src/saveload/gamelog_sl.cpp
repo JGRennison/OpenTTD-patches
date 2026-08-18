@@ -31,13 +31,13 @@ public:
 
 	void Save(LoggedChange *lc) const override
 	{
-		if (lc->ct != GLCT_MODE) return;
+		if (lc->ct != GamelogChangeType::Mode) return;
 		SlObject(lc, this->GetDescription());
 	}
 
 	void Load(LoggedChange *lc) const override
 	{
-		if (lc->ct != GLCT_MODE) return;
+		if (lc->ct != GamelogChangeType::Mode) return;
 		SlObject(lc, this->GetLoadDescription());
 	}
 
@@ -60,14 +60,14 @@ public:
 
 	void Save(LoggedChange *lc) const override
 	{
-		if (lc->ct != GLCT_REVISION) return;
+		if (lc->ct != GamelogChangeType::Revision) return;
 		_revision_text = lc->revision.text != nullptr ? lc->revision.text : "";
 		SlObject(lc, this->GetDescription());
 	}
 
 	void Load(LoggedChange *lc) const override
 	{
-		if (lc->ct != GLCT_REVISION) return;
+		if (lc->ct != GamelogChangeType::Revision) return;
 		SlObject(lc, this->GetLoadDescription());
 		if (IsSavegameVersionBefore(SLV_STRING_GAMELOG)) {
 			lc->revision.text = stredup(_old_revision_text, lastof(_old_revision_text));
@@ -90,13 +90,13 @@ public:
 
 	void Save(LoggedChange *lc) const override
 	{
-		if (lc->ct != GLCT_OLDVER) return;
+		if (lc->ct != GamelogChangeType::OldVer) return;
 		SlObject(lc, this->GetDescription());
 	}
 
 	void Load(LoggedChange *lc) const override
 	{
-		if (lc->ct != GLCT_OLDVER) return;
+		if (lc->ct != GamelogChangeType::OldVer) return;
 		SlObject(lc, this->GetLoadDescription());
 	}
 
@@ -114,13 +114,13 @@ public:
 
 	void Save(LoggedChange *lc) const override
 	{
-		if (lc->ct != GLCT_SETTING) return;
+		if (lc->ct != GamelogChangeType::Setting) return;
 		SlObject(lc, this->GetDescription());
 	}
 
 	void Load(LoggedChange *lc) const override
 	{
-		if (lc->ct != GLCT_SETTING) return;
+		if (lc->ct != GamelogChangeType::Setting) return;
 		SlObject(lc, this->GetLoadDescription());
 	}
 
@@ -137,13 +137,13 @@ public:
 
 	void Save(LoggedChange *lc) const override
 	{
-		if (lc->ct != GLCT_GRFADD) return;
+		if (lc->ct != GamelogChangeType::GRFAdd) return;
 		SlObject(lc, this->GetDescription());
 	}
 
 	void Load(LoggedChange *lc) const override
 	{
-		if (lc->ct != GLCT_GRFADD) return;
+		if (lc->ct != GamelogChangeType::GRFAdd) return;
 		SlObject(lc, this->GetLoadDescription());
 	}
 
@@ -159,13 +159,13 @@ public:
 
 	void Save(LoggedChange *lc) const override
 	{
-		if (lc->ct != GLCT_GRFREM) return;
+		if (lc->ct != GamelogChangeType::GRFRem) return;
 		SlObject(lc, this->GetDescription());
 	}
 
 	void Load(LoggedChange *lc) const override
 	{
-		if (lc->ct != GLCT_GRFREM) return;
+		if (lc->ct != GamelogChangeType::GRFRem) return;
 		SlObject(lc, this->GetLoadDescription());
 	}
 
@@ -182,13 +182,13 @@ public:
 
 	void Save(LoggedChange *lc) const override
 	{
-		if (lc->ct != GLCT_GRFCOMPAT) return;
+		if (lc->ct != GamelogChangeType::GRFCompat) return;
 		SlObject(lc, this->GetDescription());
 	}
 
 	void Load(LoggedChange *lc) const override
 	{
-		if (lc->ct != GLCT_GRFCOMPAT) return;
+		if (lc->ct != GamelogChangeType::GRFCompat) return;
 		SlObject(lc, this->GetLoadDescription());
 	}
 
@@ -204,13 +204,13 @@ public:
 
 	void Save(LoggedChange *lc) const override
 	{
-		if (lc->ct != GLCT_GRFPARAM) return;
+		if (lc->ct != GamelogChangeType::GRFParam) return;
 		SlObject(lc, this->GetDescription());
 	}
 
 	void Load(LoggedChange *lc) const override
 	{
-		if (lc->ct != GLCT_GRFPARAM) return;
+		if (lc->ct != GamelogChangeType::GRFParam) return;
 		SlObject(lc, this->GetLoadDescription());
 	}
 
@@ -227,13 +227,13 @@ public:
 
 	void Save(LoggedChange *lc) const override
 	{
-		if (lc->ct != GLCT_GRFMOVE) return;
+		if (lc->ct != GamelogChangeType::GRFMove) return;
 		SlObject(lc, this->GetDescription());
 	}
 
 	void Load(LoggedChange *lc) const override
 	{
-		if (lc->ct != GLCT_GRFMOVE) return;
+		if (lc->ct != GamelogChangeType::GRFMove) return;
 		SlObject(lc, this->GetLoadDescription());
 	}
 
@@ -251,13 +251,13 @@ public:
 
 	void Save(LoggedChange *lc) const override
 	{
-		if (lc->ct != GLCT_GRFBUG) return;
+		if (lc->ct != GamelogChangeType::GRFBug) return;
 		SlObject(lc, this->GetDescription());
 	}
 
 	void Load(LoggedChange *lc) const override
 	{
-		if (lc->ct != GLCT_GRFBUG) return;
+		if (lc->ct != GamelogChangeType::GRFBug) return;
 		SlObject(lc, this->GetLoadDescription());
 	}
 
@@ -276,7 +276,7 @@ public:
 
 	void Save(LoggedChange *lc) const override
 	{
-		if (lc->ct != GLCT_EMERGENCY) return;
+		if (lc->ct != GamelogChangeType::Emergency) return;
 
 		_is_emergency_save = true;
 		SlObject(lc, this->GetDescription());
@@ -284,7 +284,7 @@ public:
 
 	void Load(LoggedChange *lc) const override
 	{
-		if (lc->ct != GLCT_EMERGENCY) return;
+		if (lc->ct != GamelogChangeType::Emergency) return;
 
 		SlObject(lc, this->GetLoadDescription());
 	}
@@ -315,7 +315,7 @@ public:
 		SlSetStructListLength(la->changes.size());
 
 		for (LoggedChange &lc : la->changes) {
-			assert((uint)lc.ct < GLCT_END);
+			assert(lc.ct < GamelogChangeType::End);
 			SlObject(&lc, this->GetDescription());
 		}
 	}
@@ -325,14 +325,13 @@ public:
 		la->changes.clear();
 
 		if (IsSavegameVersionBefore(SLV_RIFF_TO_ARRAY)) {
-			uint8_t type;
-			while ((type = SlReadByte()) != GLCT_NONE) {
-				if (type >= GLCT_END) SlErrorCorrupt("Invalid gamelog change type");
-				GamelogChangeType ct = (GamelogChangeType)type;
+			GamelogChangeType type;
+			while ((type = static_cast<GamelogChangeType>(SlReadByte())) != GamelogChangeType::None) {
+				if (type >= GamelogChangeType::End) SlErrorCorrupt("Invalid gamelog change type");
 
 				la->changes.push_back({});
 				LoggedChange *lc = &la->changes.back();
-				lc->ct = ct;
+				lc->ct = type;
 
 				SlObject(lc, this->GetLoadDescription());
 			}
@@ -371,9 +370,9 @@ struct GLOGChunkHandler : ChunkHandler {
 		const std::vector<SaveLoad> slt = SlCompatTableHeader(_gamelog_desc, _gamelog_sl_compat);
 
 		if (IsSavegameVersionBefore(SLV_RIFF_TO_ARRAY)) {
-			uint8_t type;
-			while ((type = SlReadByte()) != GLAT_NONE) {
-				if (type >= GLAT_END) SlErrorCorrupt("Invalid gamelog action type");
+			GamelogActionType type;
+			while ((type = static_cast<GamelogActionType>(SlReadByte())) != GamelogActionType::None) {
+				if (type >= GamelogActionType::End) SlErrorCorrupt("Invalid gamelog action type");
 
 				LoggedAction &la = gamelog_actions.emplace_back();
 

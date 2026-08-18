@@ -66,11 +66,11 @@
 	DiagDirection to_other_tile = ::DiagdirBetweenTiles(t2, t1);
 
 	/* Determine the reachable tracks from the shared edge */
-	TrackBits gtts1 = ::TrackdirBitsToTrackBits(::GetTileTrackdirBits(t1, TRANSPORT_WATER, 0, ReverseDiagDir(to_other_tile))) & ::DiagdirReachesTracks(to_other_tile);
+	TrackBits gtts1 = ::TrackdirBitsToTrackBits(::GetTileTrackdirBits(t1, TransportType::Water, 0, ReverseDiagDir(to_other_tile))) & ::DiagdirReachesTracks(to_other_tile);
 	if (gtts1 == TRACK_BIT_NONE) return false;
 
 	to_other_tile = ReverseDiagDir(to_other_tile);
-	TrackBits gtts2 = ::TrackdirBitsToTrackBits(::GetTileTrackdirBits(t2, TRANSPORT_WATER, 0, ReverseDiagDir(to_other_tile))) & ::DiagdirReachesTracks(to_other_tile);
+	TrackBits gtts2 = ::TrackdirBitsToTrackBits(::GetTileTrackdirBits(t2, TransportType::Water, 0, ReverseDiagDir(to_other_tile))) & ::DiagdirReachesTracks(to_other_tile);
 
 	return gtts2 != TRACK_BIT_NONE;
 }

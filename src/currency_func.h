@@ -14,7 +14,7 @@
 #include "settings_type.h"
 #include <array>
 
-extern std::array<CurrencySpec, CURRENCY_END> _currency_specs;
+extern EnumIndexArray<CurrencySpec, Currency, Currency::End> _currency_specs;
 
 /**
  * Get the custom currency.
@@ -22,7 +22,7 @@ extern std::array<CurrencySpec, CURRENCY_END> _currency_specs;
  */
 inline CurrencySpec &GetCustomCurrency()
 {
-	return _currency_specs[CURRENCY_CUSTOM];
+	return _currency_specs[Currency::Custom];
 }
 
 /**
@@ -36,6 +36,6 @@ inline const CurrencySpec &GetCurrency()
 
 Currencies GetMaskOfAllowedCurrencies();
 void ResetCurrencies(bool preserve_custom = true);
-uint8_t GetNewgrfCurrencyIdConverted(uint8_t grfcurr_id);
+Currency GetNewgrfCurrencyIdConverted(uint8_t grfcurr_id);
 
 #endif /* CURRENCY_FUNC_H */

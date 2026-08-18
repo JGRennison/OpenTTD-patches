@@ -400,7 +400,7 @@ int GetTrainDetailsWndVScroll(VehicleID veh_id, TrainDetailsWindowTabs det_tab)
 		num += 2; // needs two more because first line is description string and we have the feeder share
 	} else if (det_tab == TDW_TAB_PERF) {
 		num = 1; // empty and full weights
-		if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) {
+		if (_settings_game.vehicle.train_acceleration_model != AccelerationModel::Original) {
 			num += 3; // needs three more: speed, power/weight ratio, TE/weight ratio
 		}
 	} else {
@@ -456,7 +456,7 @@ void DrawTrainDetails(const Train *v, const Rect &r, int vscroll_pos, uint16_t v
 					}
 					PaletteID pal = v->vehstatus.Test(VehState::Crashed) ? PALETTE_CRASH : GetVehiclePalette(u);
 					VehicleSpriteSeq seq;
-					u->GetImage(dir, EIT_IN_DETAILS, &seq);
+					u->GetImage(dir, EngineImageType::InDetails, &seq);
 					seq.Draw(px + (rtl ? -offset.x : offset.x), r.top - line_height * vscroll_pos + sprite_y_offset + pitch, pal, v->vehstatus.Test(VehState::Crashed));
 				}
 				px += rtl ? -width : width;
@@ -527,7 +527,7 @@ void DrawTrainDetails(const Train *v, const Rect &r, int vscroll_pos, uint16_t v
 			y += line_height;
 		}
 
-		if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) {
+		if (_settings_game.vehicle.train_acceleration_model != AccelerationModel::Original) {
 			if (--vscroll_pos < 0 && vscroll_pos >= -vscroll_cap) {
 				const int empty_max_speed = GetTrainEstimatedMaxAchievableSpeed(v, empty_weight, v->GetDisplayMaxSpeed());
 				const int loaded_max_speed = GetTrainEstimatedMaxAchievableSpeed(v, loaded_weight, v->GetDisplayMaxSpeed());

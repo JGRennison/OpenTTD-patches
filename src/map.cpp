@@ -607,12 +607,12 @@ void DumpMapStats(format_target &buffer)
 				if (IsTunnelBridgeSignalSimulationBidirectional(t)) bucket |= TBB_SIGNALLED_BIDI;
 				if (IsTunnelBridgeRestrictedSignal(t)) restricted_signals++;
 			}
-			if (GetTunnelBridgeTransportType(t) == TRANSPORT_ROAD) {
+			if (GetTunnelBridgeTransportType(t) == TransportType::Road) {
 				if (HasTileRoadType(t, RoadTramType::Road)) bucket |= TBB_ROAD;
 				if (HasTileRoadType(t, RoadTramType::Tram)) bucket |= TBB_TRAM;
 			}
-			if (GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL) bucket |= TBB_RAIL;
-			if (GetTunnelBridgeTransportType(t) == TRANSPORT_WATER) bucket |= TBB_WATER;
+			if (GetTunnelBridgeTransportType(t) == TransportType::Rail) bucket |= TBB_RAIL;
+			if (GetTunnelBridgeTransportType(t) == TransportType::Water) bucket |= TBB_WATER;
 			if (IsCustomBridgeHeadTile(t)) bucket |= TBB_CUSTOM_HEAD;
 			if (dual_rt) bucket |= TBB_DUAL_RT;
 			tunnel_bridge_stats[bucket]++;

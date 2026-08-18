@@ -42,7 +42,7 @@ RailType GetTileRailType(TileIndex tile)
 			break;
 
 		case TileType::TunnelBridge:
-			if (GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL) return GetRailType(tile);
+			if (GetTunnelBridgeTransportType(tile) == TransportType::Rail) return GetRailType(tile);
 			break;
 
 		default:

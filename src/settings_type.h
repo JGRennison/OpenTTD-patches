@@ -18,6 +18,7 @@
 #include "network/network_type.h"
 #include "company_type.h"
 #include "cargotype.h"
+#include "currency_type.h"
 #include "linkgraph/linkgraph_type.h"
 #include "zoom_type.h"
 #include "openttd.h"
@@ -306,6 +307,7 @@ enum class ViewportAutoscrolling : uint8_t {
 };
 
 enum class OrderStopLocation : uint8_t;
+enum class AccelerationModel : uint8_t;
 
 /** Settings related to the GUI and other stuff that is not saved in the savegame. */
 struct GUISettings : public TimeSettings {
@@ -524,9 +526,21 @@ struct SoundSettings {
 	bool   ambient;                          ///< Play ambient, industry and town sounds.
 };
 
+/** Playlists */
+enum class PlaylistChoice : uint8_t {
+	All, ///< Play all music (except theme).
+	OldStyle, ///< Play "old style" music.
+	NewStyle, ///< Play "new style" music.
+	EzyStreet, ///< Play "Ezy Street" music.
+	Custom1, ///< Play the first custom playlist.
+	Custom2, ///< Play the second custom playlist.
+	ThemeOnly, ///< Play only the theme music.
+	End, ///< End marker.
+};
+
 /** Settings related to music. */
 struct MusicSettings {
-	uint8_t playlist;     ///< The playlist (number) to play
+	PlaylistChoice playlist; ///< The playlist (number) to play
 	uint8_t music_vol;    ///< The requested music volume
 	uint8_t effect_vol;   ///< The requested effects volume
 	uint8_t custom_1[33]; ///< The order of the first custom playlist
@@ -537,7 +551,7 @@ struct MusicSettings {
 
 /** Settings related to currency/unit systems. */
 struct LocaleSettings {
-	uint8_t     currency;                         ///< currency we currently use
+	Currency    currency;                         ///< currency we currently use
 	uint8_t     units_velocity;                   ///< unit system for velocity of trains and road vehicles
 	uint8_t     units_velocity_nautical;          ///< unit system for velocity of ships and aircraft
 	uint8_t     units_power;                      ///< unit system for power
@@ -825,50 +839,50 @@ enum class RoadVehicleDrivingSide : uint8_t {
 
 /** Settings related to vehicles. */
 struct VehicleSettings {
-	uint8_t  max_train_length;                 ///< maximum length for trains
-	uint8_t  smoke_amount;                     ///< amount of smoke/sparks locomotives produce
-	uint8_t  train_acceleration_model;         ///< realistic acceleration for trains
-	uint8_t  train_braking_model;              ///< braking model for trains
-	uint8_t  realistic_braking_aspect_limited; ///< realistic braking lookahead is aspect limited
-	bool     limit_train_acceleration;         ///< when using realistic braking, also limit train acceleration
-	uint8_t  train_acc_braking_percent;        ///< adjustment factor for acceleration and braking of trains
-	bool     track_edit_ignores_realistic_braking; ///< when using realistic braking, allow track editing operations to ignore realistic braking restrictions
-	uint8_t  roadveh_acceleration_model;       ///< realistic acceleration for road vehicles
-	uint8_t  train_slope_steepness;            ///< Steepness of hills for trains when using realistic acceleration
-	uint8_t  roadveh_slope_steepness;          ///< Steepness of hills for road vehicles when using realistic acceleration
-	bool     wagon_speed_limits;               ///< enable wagon speed limits
-	bool     train_speed_adaptation;           ///< Faster trains slow down when behind slower trains
-	bool     slow_road_vehicles_in_curves;     ///< Road vehicles slow down in curves.
-	bool     disable_elrails;                  ///< when true, the elrails are disabled
-	UnitID   max_trains;                       ///< max trains in game per company
-	UnitID   max_roadveh;                      ///< max trucks in game per company
-	UnitID   max_aircraft;                     ///< max planes in game per company
-	UnitID   max_ships;                        ///< max ships in game per company
-	uint8_t  plane_speed;                      ///< divisor for speed of aircraft
-	uint8_t  freight_trains;                   ///< value to multiply the weight of cargo by
-	bool     dynamic_engines;                  ///< enable dynamic allocation of engine data
-	bool     never_expire_vehicles;            ///< never expire vehicles
-	bool     vehicle_intro_randomisation;      ///< randomise the introduction dates of vehicles
-	CalTime::Year no_expire_vehicles_after;    ///< do not expire vehicles after this year
-	CalTime::Year no_introduce_vehicles_after; ///< do not introduce vehicles after this year
-	uint8_t  extend_vehicle_life;              ///< extend vehicle life by this many years
-	RoadVehicleDrivingSide road_side;          ///< the side of the road vehicles drive on
-	uint8_t  plane_crashes;                    ///< number of plane crashes, 0 = none, 1 = reduced, 2 = normal
-	bool     aircraft_range;                   ///< enable range limits for aircraft
-	bool     adjacent_crossings;               ///< enable closing of adjacent level crossings
-	bool     safer_crossings;                  ///< enable safer level crossings
-	bool     improved_breakdowns;              ///< different types, chances and severities of breakdowns
-	bool     pay_for_repair;                   ///< pay for repairing vehicle
-	uint8_t  repair_cost;                      ///< cost of repairing vehicle
-	bool     ship_collision_avoidance;         ///< ships try to avoid colliding with each other
-	bool     no_train_crash_other_company;     ///< trains cannot crash with trains from other companies
-	bool     train_self_collision;             ///< trains can crash into their own wagons in a circular track
-	bool     roadveh_articulated_overtaking;   ///< enable articulated road vehicles overtaking other vehicles
-	bool     roadveh_cant_quantum_tunnel;      ///< enable or disable vehicles quantum tunnelling through other vehicles when blocked
-	bool     drive_through_train_depot;        ///< enable drive-through train depot emulation
-	uint16_t through_load_speed_limit;         ///< maximum speed for through load
-	uint16_t rail_depot_speed_limit;           ///< maximum speed entering/existing rail depots
-	bool     non_leading_engines_keep_name;    ///< allow engines moved to a non-leading position to retain their custom name
+	uint8_t                max_train_length;                      ///< maximum length for trains
+	uint8_t                smoke_amount;                          ///< amount of smoke/sparks locomotives produce
+	AccelerationModel      train_acceleration_model;              ///< realistic acceleration for trains
+	uint8_t                train_braking_model;                   ///< braking model for trains
+	uint8_t                realistic_braking_aspect_limited;      ///< realistic braking lookahead is aspect limited
+	bool                   limit_train_acceleration;              ///< when using realistic braking, also limit train acceleration
+	uint8_t                train_acc_braking_percent;             ///< adjustment factor for acceleration and braking of trains
+	bool                   track_edit_ignores_realistic_braking;  ///< when using realistic braking, allow track editing operations to ignore realistic braking restrictions
+	AccelerationModel      roadveh_acceleration_model;            ///< realistic acceleration for road vehicles
+	uint8_t                train_slope_steepness;                 ///< Steepness of hills for trains when using realistic acceleration
+	uint8_t                roadveh_slope_steepness;               ///< Steepness of hills for road vehicles when using realistic acceleration
+	bool                   wagon_speed_limits;                    ///< enable wagon speed limits
+	bool                   train_speed_adaptation;                ///< Faster trains slow down when behind slower trains
+	bool                   slow_road_vehicles_in_curves;          ///< Road vehicles slow down in curves.
+	bool                   disable_elrails;                       ///< when true, the elrails are disabled
+	UnitID                 max_trains;                            ///< max trains in game per company
+	UnitID                 max_roadveh;                           ///< max trucks in game per company
+	UnitID                 max_aircraft;                          ///< max planes in game per company
+	UnitID                 max_ships;                             ///< max ships in game per company
+	uint8_t                plane_speed;                           ///< divisor for speed of aircraft
+	uint8_t                freight_trains;                        ///< value to multiply the weight of cargo by
+	bool                   dynamic_engines;                       ///< enable dynamic allocation of engine data
+	bool                   never_expire_vehicles;                 ///< never expire vehicles
+	bool                   vehicle_intro_randomisation;           ///< randomise the introduction dates of vehicles
+	CalTime::Year          no_expire_vehicles_after;              ///< do not expire vehicles after this year
+	CalTime::Year          no_introduce_vehicles_after;           ///< do not introduce vehicles after this year
+	uint8_t                extend_vehicle_life;                   ///< extend vehicle life by this many years
+	RoadVehicleDrivingSide road_side;                             ///< the side of the road vehicles drive on
+	uint8_t                plane_crashes;                         ///< number of plane crashes, 0 = none, 1 = reduced, 2 = normal
+	bool                   aircraft_range;                        ///< enable range limits for aircraft
+	bool                   adjacent_crossings;                    ///< enable closing of adjacent level crossings
+	bool                   safer_crossings;                       ///< enable safer level crossings
+	bool                   improved_breakdowns;                   ///< different types, chances and severities of breakdowns
+	bool                   pay_for_repair;                        ///< pay for repairing vehicle
+	uint8_t                repair_cost;                           ///< cost of repairing vehicle
+	bool                   ship_collision_avoidance;              ///< ships try to avoid colliding with each other
+	bool                   no_train_crash_other_company;          ///< trains cannot crash with trains from other companies
+	bool                   train_self_collision;                  ///< trains can crash into their own wagons in a circular track
+	bool                   roadveh_articulated_overtaking;        ///< enable articulated road vehicles overtaking other vehicles
+	bool                   roadveh_cant_quantum_tunnel;           ///< enable or disable vehicles quantum tunnelling through other vehicles when blocked
+	bool                   drive_through_train_depot;             ///< enable drive-through train depot emulation
+	uint16_t               through_load_speed_limit;              ///< maximum speed for through load
+	uint16_t               rail_depot_speed_limit;                ///< maximum speed entering/existing rail depots
+	bool                   non_leading_engines_keep_name;         ///< allow engines moved to a non-leading position to retain their custom name
 };
 
 /** Settings related to the economy. */

@@ -1797,7 +1797,7 @@ void IntSettingDesc::ChangeValue(const void *object, int32_t newval, SaveToConfi
 	if (this->post_callback != nullptr) this->post_callback(newval);
 
 	if (this->flags.Test(SettingFlag::NoNetwork) || this->flags.Test(SettingFlag::Sandbox)) {
-		GamelogStartAction(GLAT_SETTING);
+		GamelogStartAction(GamelogActionType::Setting);
 		GamelogSetting(this->name, oldval, newval);
 		GamelogStopAction();
 	}

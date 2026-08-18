@@ -132,7 +132,7 @@ inline void MakeBridgeRamp(TileIndex t, Owner o, BridgeType bridgetype, DiagDire
 	_m[t].m2 = 0;
 	_m[t].m3 = 0;
 	_m[t].m4 = 0;
-	_m[t].m5 = 1 << 7 | tt << 2 | to_underlying(d);
+	_m[t].m5 = 1 << 7 | to_underlying(tt) << 2 | to_underlying(d);
 	_me[t].m6 = 0;
 	SB(_me[t].m6, 2, 4, bridgetype);
 	_me[t].m7 = 0;
@@ -152,7 +152,7 @@ inline void MakeBridgeRamp(TileIndex t, Owner o, BridgeType bridgetype, DiagDire
  */
 inline void MakeRoadBridgeRamp(TileIndex t, Owner o, Owner owner_road, Owner owner_tram, BridgeType bridgetype, DiagDirection d, RoadType road_rt, RoadType tram_rt)
 {
-	MakeBridgeRamp(t, o, bridgetype, d, TRANSPORT_ROAD);
+	MakeBridgeRamp(t, o, bridgetype, d, TransportType::Road);
 	SetRoadOwner(t, RoadTramType::Road, owner_road);
 	if (owner_tram != OWNER_TOWN) SetRoadOwner(t, RoadTramType::Tram, owner_tram);
 	SetRoadTypes(t, road_rt, tram_rt);
@@ -177,7 +177,7 @@ inline void MakeRailBridgeRamp(TileIndex t, Owner o, BridgeType bridgetype, Diag
 	auto m6_backup = _me[t].m6;
 	auto m8_backup = _me[t].m8;
 
-	MakeBridgeRamp(t, o, bridgetype, d, TRANSPORT_RAIL);
+	MakeBridgeRamp(t, o, bridgetype, d, TransportType::Rail);
 	_m[t].m4 = 0;
 	_me[t].m8 = rt;
 
@@ -205,7 +205,7 @@ inline void MakeRailBridgeRamp(TileIndex t, Owner o, BridgeType bridgetype, Diag
  */
 inline void MakeAqueductBridgeRamp(TileIndex t, Owner o, DiagDirection d)
 {
-	MakeBridgeRamp(t, o, 0, d, TRANSPORT_WATER);
+	MakeBridgeRamp(t, o, 0, d, TransportType::Water);
 }
 
 /**
@@ -215,7 +215,7 @@ inline void MakeAqueductBridgeRamp(TileIndex t, Owner o, DiagDirection d)
 */
 inline bool IsRoadBridgeTile(TileIndex t)
 {
-	return IsBridgeTile(t) && (TransportType)GB(_m[t].m5, 2, 2) == TRANSPORT_ROAD;
+	return IsBridgeTile(t) && (TransportType)GB(_m[t].m5, 2, 2) == TransportType::Road;
 }
 
 /**
@@ -244,7 +244,7 @@ inline bool IsRoadCustomBridgeHeadTile(TileIndex t)
  * Returns the road bits for a (possibly custom) road bridge head
  * @param t The tile to analyze
  * @param rtt Road/tram type.
- * @pre IsBridgeTile(t) && GetTunnelBridgeTransportType(t) == TRANSPORT_ROAD
+ * @pre IsBridgeTile(t) && GetTunnelBridgeTransportType(t) == TransportType::Road
  * @return road bits for the bridge head
  */
 inline RoadBits GetCustomBridgeHeadRoadBits(TileIndex t, RoadTramType rtt)
@@ -258,7 +258,7 @@ inline RoadBits GetCustomBridgeHeadRoadBits(TileIndex t, RoadTramType rtt)
 /**
  * Returns the road bits for a (possibly custom) road bridge head, for all road types
  * @param t The tile to analyze
- * @pre IsBridgeTile(t) && GetTunnelBridgeTransportType(t) == TRANSPORT_ROAD
+ * @pre IsBridgeTile(t) && GetTunnelBridgeTransportType(t) == TransportType::Road
  * @return road bits for the bridge head
  */
 inline RoadBits GetCustomBridgeHeadAllRoadBits(TileIndex t)
@@ -271,7 +271,7 @@ inline RoadBits GetCustomBridgeHeadAllRoadBits(TileIndex t)
  * @param t The tile to modify
  * @param rtt Road/tram type.
  * @param bits The road bits.
- * @pre IsBridgeTile(t) && GetTunnelBridgeTransportType(t) == TRANSPORT_ROAD
+ * @pre IsBridgeTile(t) && GetTunnelBridgeTransportType(t) == TransportType::Road
  * @pre HasTileRoadType() must be set correctly before calling this
  */
 inline void SetCustomBridgeHeadRoadBits(TileIndex t, RoadTramType rtt, RoadBits bits)
@@ -316,7 +316,7 @@ inline void SetBridgeDisallowedRoadDirections(TileIndex t, DisallowedRoadDirecti
  */
 inline bool IsRailBridgeHeadTile(TileIndex t)
 {
-	return IsBridgeTile(t) && (TransportType)GB(_m[t].m5, 2, 2) == TRANSPORT_RAIL;
+	return IsBridgeTile(t) && (TransportType)GB(_m[t].m5, 2, 2) == TransportType::Rail;
 }
 
 /**
@@ -466,7 +466,7 @@ inline TrackBits GetAcrossBridgePossibleTrackBits(TileIndex t)
 
 /**
  * Get the reserved track bits of the bridge head tile onto/across the bridge
- * @pre IsBridgeTile(t) && GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL
+ * @pre IsBridgeTile(t) && GetTunnelBridgeTransportType(t) == TransportType::Rail
  * @param t the tile
  * @return reservation state
  */
@@ -477,7 +477,7 @@ inline TrackBits GetAcrossBridgeReservationTrackBits(TileIndex t)
 
 /**
  * Get the reservation state of the bridge head tile onto/across the bridge
- * @pre IsBridgeTile(t) && GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL
+ * @pre IsBridgeTile(t) && GetTunnelBridgeTransportType(t) == TransportType::Rail
  * @param t the tile
  * @return reservation state
  */

@@ -367,7 +367,7 @@ class NIHVehicle : public NIHelper {
 							break;
 						case TRLIT_CURVE_SPEED:
 							output.buffer.format("curve speed: {}", item.data_id);
-							if (_settings_game.vehicle.train_acceleration_model != AM_ORIGINAL) print_braking_speed(item.start, item.data_id, item.z_pos);
+							if (_settings_game.vehicle.train_acceleration_model != AccelerationModel::Original) print_braking_speed(item.start, item.data_id, item.z_pos);
 
 							break;
 						case TRLIT_SPEED_ADAPTATION: {

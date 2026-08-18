@@ -10,24 +10,25 @@
 #ifndef TRANSPORT_TYPE_H
 #define TRANSPORT_TYPE_H
 
+#include "window_type_trait.h"
+
 /** Type for the company global vehicle unit number. */
 typedef uint16_t UnitID;
 
 /** Available types of transport */
-enum TransportType : uint8_t {
+enum class TransportType : uint8_t {
 	/* These constants are for now linked to the representation of bridges
 	 * and tunnels, so they can be used by GetTileTrackStatus_TunnelBridge.
 	 * In an ideal world, these constants would be used everywhere when
 	 * accessing tunnels and bridges. For now, you should just not change
 	 * the values for road and rail.
 	 */
-	TRANSPORT_BEGIN = 0, ///< Begin of the iterator.
-	TRANSPORT_RAIL = TRANSPORT_BEGIN, ///< Transport by train
-	TRANSPORT_ROAD,  ///< Transport by road vehicle
-	TRANSPORT_WATER, ///< Transport over water
-	TRANSPORT_AIR,   ///< Transport through air
-	TRANSPORT_END,   ///< End of iterations.
-	INVALID_TRANSPORT = 0xff, ///< Sentinel for invalid transport types.
+	Rail, ///< Transport by train
+	Road, ///< Transport by road vehicle
+	Water, ///< Transport over water
+	Air, ///< Transport through air
+	Invalid = 0xFF, ///< Sentinel for invalid transport types.
 };
+DECLARE_CONVERTIBLE_TO_WINDOW_NUMBER(TransportType)
 
 #endif /* TRANSPORT_TYPE_H */

@@ -72,7 +72,7 @@ inline bool HasTunnelBridgeSnowOrDesert(TileIndex t)
 */
 inline bool IsRailTunnelBridgeTile(TileIndex t)
 {
-	return IsTileType(t, TileType::TunnelBridge) && GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL;
+	return IsTileType(t, TileType::TunnelBridge) && GetTunnelBridgeTransportType(t) == TransportType::Rail;
 }
 
 inline void SetTunnelBridgeGroundBits(TileIndex t, uint8_t bits)
@@ -108,7 +108,7 @@ inline TileIndex GetOtherTunnelBridgeEnd(TileIndex t)
 
 /**
  * Get the track bits for a rail tunnel/bridge
- * @pre IsTileType(t, TileType::TunnelBridge) && GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL
+ * @pre IsTileType(t, TileType::TunnelBridge) && GetTunnelBridgeTransportType(t) == TransportType::Rail
  * @param t the tile
  * @return reserved track bits
  */
@@ -123,7 +123,7 @@ inline TrackBits GetTunnelBridgeTrackBits(TileIndex t)
 
 /**
  * Get the primary railtype track bits for a rail tunnel/bridge
- * @pre IsTileType(t, TileType::TunnelBridge) && GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL
+ * @pre IsTileType(t, TileType::TunnelBridge) && GetTunnelBridgeTransportType(t) == TransportType::Rail
  * @param t the tile
  * @return reserved track bits
  */
@@ -143,7 +143,7 @@ inline TrackBits GetPrimaryTunnelBridgeTrackBits(TileIndex t)
 
 /**
  * Get the secondary railtype track bits for a rail tunnel/bridge
- * @pre IsTileType(t, TileType::TunnelBridge) && GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL
+ * @pre IsTileType(t, TileType::TunnelBridge) && GetTunnelBridgeTransportType(t) == TransportType::Rail
  * @param t the tile
  * @return reserved track bits
  */
@@ -163,7 +163,7 @@ inline TrackBits GetSecondaryTunnelBridgeTrackBits(TileIndex t)
 
 /**
  * Get the track bits for a rail tunnel/bridge onto/across the tunnel/bridge
- * @pre IsTileType(t, TileType::TunnelBridge) && GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL
+ * @pre IsTileType(t, TileType::TunnelBridge) && GetTunnelBridgeTransportType(t) == TransportType::Rail
  * @param t the tile
  * @return reserved track bits
  */
@@ -178,7 +178,7 @@ inline TrackBits GetAcrossTunnelBridgeTrackBits(TileIndex t)
 
 /**
  * Get the reserved track bits for a rail tunnel/bridge
- * @pre IsTileType(t, TileType::TunnelBridge) && GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL
+ * @pre IsTileType(t, TileType::TunnelBridge) && GetTunnelBridgeTransportType(t) == TransportType::Rail
  * @param t the tile
  * @return reserved track bits
  */
@@ -193,7 +193,7 @@ inline TrackBits GetTunnelBridgeReservationTrackBits(TileIndex t)
 
 /**
  * Get the reserved track bits for a rail tunnel/bridge onto/across the tunnel/bridge
- * @pre IsTileType(t, TileType::TunnelBridge) && GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL
+ * @pre IsTileType(t, TileType::TunnelBridge) && GetTunnelBridgeTransportType(t) == TransportType::Rail
  * @param t the tile
  * @return reserved track bits
  */
@@ -208,7 +208,7 @@ inline TrackBits GetAcrossTunnelBridgeReservationTrackBits(TileIndex t)
 
 /**
  * Get whether there are reserved track bits for a rail tunnel/bridge onto/across the tunnel/bridge
- * @pre IsTileType(t, TileType::TunnelBridge) && GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL
+ * @pre IsTileType(t, TileType::TunnelBridge) && GetTunnelBridgeTransportType(t) == TransportType::Rail
  * @param t the tile
  * @return whether there are reserved track bits
  */
@@ -235,7 +235,7 @@ inline uint GetTunnelBridgeHeadOnlyRailInfrastructureCountFromTrackBits(TrackBit
 
 /**
  * Get the primary railtype rail infrastructure count of a rail tunnel/bridge head tile (excluding the tunnel/bridge middle)
- * @pre IsTileType(t, TileType::TunnelBridge) && GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL
+ * @pre IsTileType(t, TileType::TunnelBridge) && GetTunnelBridgeTransportType(t) == TransportType::Rail
  * @param t the tile
  * @return rail infrastructure count
  */
@@ -246,7 +246,7 @@ inline uint GetTunnelBridgeHeadOnlyPrimaryRailInfrastructureCount(TileIndex t)
 
 /**
  * Get the secondary railtype rail infrastructure count of a rail tunnel/bridge head tile (excluding the tunnel/bridge middle)
- * @pre IsTileType(t, TileType::TunnelBridge) && GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL
+ * @pre IsTileType(t, TileType::TunnelBridge) && GetTunnelBridgeTransportType(t) == TransportType::Rail
  * @param t the tile
  * @return rail infrastructure count
  */
@@ -257,7 +257,7 @@ inline uint GetTunnelBridgeHeadOnlySecondaryRailInfrastructureCount(TileIndex t)
 
 /**
  * Check if the given track direction on a rail bridge head tile enters the bridge
- * @pre IsTileType(t, TileType::TunnelBridge) && GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL
+ * @pre IsTileType(t, TileType::TunnelBridge) && GetTunnelBridgeTransportType(t) == TransportType::Rail
  * @param t the tile
  * @param td track direction
  * @return reservation state
@@ -265,13 +265,13 @@ inline uint GetTunnelBridgeHeadOnlySecondaryRailInfrastructureCount(TileIndex t)
 inline bool TrackdirEntersTunnelBridge(TileIndex t, Trackdir td)
 {
 	assert_tile(IsTileType(t, TileType::TunnelBridge), t);
-	assert_tile(GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL, t);
+	assert_tile(GetTunnelBridgeTransportType(t) == TransportType::Rail, t);
 	return TrackdirToExitdir(td) == GetTunnelBridgeDirection(t);
 }
 
 /**
  * Check if the given track direction on a rail bridge head tile exits the bridge
- * @pre IsTileType(t, TileType::TunnelBridge) && GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL
+ * @pre IsTileType(t, TileType::TunnelBridge) && GetTunnelBridgeTransportType(t) == TransportType::Rail
  * @param t the tile
  * @param td track direction
  * @return reservation state
@@ -279,13 +279,13 @@ inline bool TrackdirEntersTunnelBridge(TileIndex t, Trackdir td)
 inline bool TrackdirExitsTunnelBridge(TileIndex t, Trackdir td)
 {
 	assert_tile(IsTileType(t, TileType::TunnelBridge), t);
-	assert_tile(GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL, t);
+	assert_tile(GetTunnelBridgeTransportType(t) == TransportType::Rail, t);
 	return TrackdirToExitdir(ReverseTrackdir(td)) == GetTunnelBridgeDirection(t);
 }
 
 /**
  * Check if the given track on a rail bridge head tile enters/exits the bridge
- * @pre IsTileType(t, TileType::TunnelBridge) && GetTunnelBridgeTransportType(t) == TRANSPORT_RAIL
+ * @pre IsTileType(t, TileType::TunnelBridge) && GetTunnelBridgeTransportType(t) == TransportType::Rail
  * @param tile the tile
  * @param t track
  * @return reservation state
@@ -293,19 +293,19 @@ inline bool TrackdirExitsTunnelBridge(TileIndex t, Trackdir td)
 inline bool IsTrackAcrossTunnelBridge(TileIndex tile, Track t)
 {
 	assert_tile(IsTileType(tile, TileType::TunnelBridge), tile);
-	assert_tile(GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL, tile);
+	assert_tile(GetTunnelBridgeTransportType(tile) == TransportType::Rail, tile);
 	return DiagdirReachesTracks(ReverseDiagDir(GetTunnelBridgeDirection(tile))) & TrackToTrackBits(t);
 }
 
 /**
  * Lift the reservation of a specific track on a tunnel or rail bridge head tile
- * @pre IsTileType(tile, TileType::TunnelBridge) && GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL
+ * @pre IsTileType(tile, TileType::TunnelBridge) && GetTunnelBridgeTransportType(tile) == TransportType::Rail
  * @param tile the tile
  */
 inline void UnreserveAcrossRailTunnelBridge(TileIndex tile)
 {
 	assert_tile(IsTileType(tile, TileType::TunnelBridge), tile);
-	assert_tile(GetTunnelBridgeTransportType(tile) == TRANSPORT_RAIL, tile);
+	assert_tile(GetTunnelBridgeTransportType(tile) == TransportType::Rail, tile);
 	if (IsTunnel(tile)) {
 		SetTunnelReservation(tile, false);
 	} else {

@@ -749,8 +749,8 @@ inline uint32_t SmallMapWindow::GetTileColours(const TileArea &ta) const
 				TransportType tt = GetTunnelBridgeTransportType(ti);
 
 				switch (tt) {
-					case TRANSPORT_RAIL: ttype = TileType::Railway; break;
-					case TRANSPORT_ROAD: ttype = TileType::Road;    break;
+					case TransportType::Rail: ttype = TileType::Railway; break;
+					case TransportType::Road: ttype = TileType::Road;    break;
 					default:             ttype = TileType::Water;   break;
 				}
 				break;

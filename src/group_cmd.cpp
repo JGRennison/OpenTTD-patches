@@ -430,7 +430,7 @@ static void InvalidateCurrentCompanyGroupWindows(VehicleType vt, bool new_group)
 {
 	WindowClass wc = GetWindowClassForVehicleType(vt);
 	if (HaveWindowByClass(wc)) {
-		WindowNumber list_window_num = VehicleListIdentifier(VL_GROUP_LIST, vt, _current_company).ToWindowNumber();
+		WindowNumber list_window_num = VehicleListIdentifier(VehicleListType::Group, vt, _current_company).ToWindowNumber();
 		for (Window *w : Window::Iterate()) {
 			if (w->window_class != wc) continue;
 
@@ -489,7 +489,7 @@ void GroupChangeDeferredUpdates::Flush()
 	}
 	if (this->changed_groups) {
 		BulkUpdateVehicleWindowsOnGroupChange(); // Individual vehicle windows
-		SetWindowWidgetDirty(WindowClass::TraceRestrictSlots, VehicleListIdentifier(VL_SLOT_LIST, vt, _current_company).ToWindowNumber(), 0); // Slots vehicle panel
+		SetWindowWidgetDirty(WindowClass::TraceRestrictSlots, VehicleListIdentifier(VehicleListType::Slot, vt, _current_company).ToWindowNumber(), 0); // Slots vehicle panel
 	} else if (this->veh_id_count > 0) {
 		for (uint i = 0; i < this->veh_id_count; i++) {
 			BulkUpdateVehicleWindowsOnGroupChange(this->veh_ids[i]->index); // Individual vehicle windows
@@ -707,7 +707,7 @@ CommandCost CmdAlterGroup(DoCommandFlags flags, AlterGroupMode mode, GroupID gro
 	if (flags.Test(DoCommandFlag::Execute)) {
 		InvalidateWindowData(WindowClass::ReplaceVehicle, g->vehicle_type, 1);
 		InvalidateCurrentCompanyGroupWindows(g->vehicle_type, false);
-		SetWindowWidgetDirty(WindowClass::TraceRestrictSlots, VehicleListIdentifier(VL_SLOT_LIST, g->vehicle_type, _current_company).ToWindowNumber(), 0); // Vehicle panel
+		SetWindowWidgetDirty(WindowClass::TraceRestrictSlots, VehicleListIdentifier(VehicleListType::Slot, g->vehicle_type, _current_company).ToWindowNumber(), 0); // Vehicle panel
 		InvalidateWindowData(WindowClass::CompanyLivery, g->owner, g->vehicle_type);
 		BulkUpdateVehicleWindowsOnGroupChange();
 	}
@@ -1045,7 +1045,7 @@ CommandCost CmdSetGroupFlag(DoCommandFlags flags, GroupID group_id, GroupFlag fl
 	if (flags.Test(DoCommandFlag::Execute)) {
 		SetGroupFlag(g, flag, value, recursive);
 
-		SetWindowDirty(GetWindowClassForVehicleType(g->vehicle_type), VehicleListIdentifier(VL_GROUP_LIST, g->vehicle_type, _current_company).ToWindowNumber());
+		SetWindowDirty(GetWindowClassForVehicleType(g->vehicle_type), VehicleListIdentifier(VehicleListType::Group, g->vehicle_type, _current_company).ToWindowNumber());
 		InvalidateWindowData(WindowClass::ReplaceVehicle, g->vehicle_type);
 	}
 

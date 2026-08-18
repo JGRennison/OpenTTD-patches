@@ -374,7 +374,7 @@ static TileIndex BuildTunnel(PathNode *current, TileIndex end_tile = INVALID_TIL
 	Backup cur_company(_current_company, OWNER_DEITY, FILE_LINE);
 	DoCommandFlags flags{DoCommandFlag::Auto};
 	if (build_tunnel) flags.Set(DoCommandFlag::Execute);
-	const CommandCost build_tunnel_cmd = CmdBuildTunnel(flags, start_tile, TRANSPORT_ROAD, _public_road_type);
+	const CommandCost build_tunnel_cmd = CmdBuildTunnel(flags, start_tile, TransportType::Road, _public_road_type);
 	cur_company.Restore();
 
 	assert(!build_tunnel || build_tunnel_cmd.Succeeded());
@@ -406,7 +406,7 @@ static TileIndex BuildBridge(const TileIndex start_tile, const TileIndex end_til
 	Backup cur_company(_current_company, OWNER_DEITY, FILE_LINE);
 	DoCommandFlags flags{DoCommandFlag::Auto};
 	if (build_bridge) flags.Set(DoCommandFlag::Execute);
-	const CommandCost  build_bridge_cmd = CmdBuildBridge(flags, end_tile, start_tile, TRANSPORT_ROAD, bridge_type, _public_road_type, BuildBridgeFlags::None);
+	const CommandCost  build_bridge_cmd = CmdBuildBridge(flags, end_tile, start_tile, TransportType::Road, bridge_type, _public_road_type, BuildBridgeFlags::None);
 	cur_company.Restore();
 
 	assert(!build_bridge || build_bridge_cmd.Succeeded());
@@ -503,7 +503,7 @@ static TileIndex BuildRiverBridge(PathNode *current, const DiagDirection road_di
 	Backup cur_company(_current_company, OWNER_DEITY, FILE_LINE);
 	DoCommandFlags flags{DoCommandFlag::Auto};
 	if (build_bridge) flags.Set(DoCommandFlag::Execute);
-	const CommandCost  build_bridge_cmd = CmdBuildBridge(flags, end_tile, start_tile, TRANSPORT_ROAD, bridge_type, _public_road_type, BuildBridgeFlags::None);
+	const CommandCost  build_bridge_cmd = CmdBuildBridge(flags, end_tile, start_tile, TransportType::Road, bridge_type, _public_road_type, BuildBridgeFlags::None);
 	cur_company.Restore();
 
 	assert(!build_bridge || build_bridge_cmd.Succeeded());

@@ -3165,7 +3165,7 @@ public:
 			return;
 		}
 
-		TrackBits trackbits = TrackdirBitsToTrackBits(GetTileTrackdirBits(source_tile, TRANSPORT_RAIL, 0));
+		TrackBits trackbits = TrackdirBitsToTrackBits(GetTileTrackdirBits(source_tile, TransportType::Rail, 0));
 		if (trackbits & TRACK_BIT_VERT) { // N-S direction
 			trackbits = (_tile_fract_coords.x <= _tile_fract_coords.y) ? TRACK_BIT_RIGHT : TRACK_BIT_LEFT;
 		}
@@ -3234,7 +3234,7 @@ public:
 
 		bool stations_only = (item.GetType() == TRIT_COND_LAST_STATION);
 
-		if (IsDepotTypeTile(tile, TRANSPORT_RAIL)) {
+		if (IsDepotTypeTile(tile, TransportType::Rail)) {
 			if (stations_only) return;
 			item.SetValue(GetDepotIndex(tile).base());
 			item.SetAuxField(TROCAF_DEPOT);
@@ -5169,7 +5169,7 @@ public:
 				this->vehicle_sel = v->index;
 
 				SetObjectToPlaceWnd(SPR_CURSOR_MOUSE, PAL_NONE, HT_DRAG, this);
-				SetMouseCursorVehicle(v, EIT_IN_LIST);
+				SetMouseCursorVehicle(v, EngineImageType::InList);
 				_cursor.vehchain = true;
 
 				this->SetDirty();
@@ -5528,7 +5528,7 @@ void ShowTraceRestrictSlotWindow(CompanyID company, VehicleType vehtype)
 {
 	if (!Company::IsValidID(company)) return;
 
-	VehicleListIdentifier vli(VL_SLOT_LIST, vehtype, company);
+	VehicleListIdentifier vli(VehicleListType::Slot, vehtype, company);
 	AllocateWindowDescFront<TraceRestrictSlotWindow>(_slot_window_desc, vli.Pack(), vli);
 }
 
@@ -5543,7 +5543,7 @@ void DeleteTraceRestrictSlotHighlightOfVehicle(const Vehicle *v)
 	 */
 	if (_special_mouse_mode != SpecialMouseMode::DragDrop) return;
 
-	TraceRestrictSlotWindow *w = (TraceRestrictSlotWindow *)FindWindowById(WindowClass::TraceRestrictSlots, VehicleListIdentifier(VL_SLOT_LIST, v->type, v->owner).ToWindowNumber());
+	TraceRestrictSlotWindow *w = (TraceRestrictSlotWindow *)FindWindowById(WindowClass::TraceRestrictSlots, VehicleListIdentifier(VehicleListType::Slot, v->type, v->owner).ToWindowNumber());
 	if (w != nullptr) w->UnselectVehicle(v->index);
 }
 

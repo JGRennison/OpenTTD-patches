@@ -96,9 +96,9 @@ enum BreakdownType {
 };
 
 /** Vehicle acceleration models. */
-enum AccelerationModel : uint8_t {
-	AM_ORIGINAL,
-	AM_REALISTIC,
+enum class AccelerationModel : uint8_t {
+	Original, ///< Original acceleration model.
+	Realistic, ///< "Realistic" acceleration model.
 };
 
 /** Train braking models. */
@@ -114,13 +114,13 @@ enum TrainRealisticBrakingAspectLimitedMode {
 };
 
 /** Visualisation contexts of vehicles and engines. */
-enum EngineImageType : uint8_t {
-	EIT_ON_MAP     = 0x00,  ///< Vehicle drawn in viewport.
-	EIT_IN_DEPOT   = 0x10,  ///< Vehicle drawn in depot.
-	EIT_IN_DETAILS = 0x11,  ///< Vehicle drawn in vehicle details, refit window, ...
-	EIT_IN_LIST    = 0x12,  ///< Vehicle drawn in vehicle list, group list, ...
-	EIT_PURCHASE   = 0x20,  ///< Vehicle drawn in purchase list, autoreplace gui, ...
-	EIT_PREVIEW    = 0x21,  ///< Vehicle drawn in preview window, news, ...
+enum class EngineImageType : uint8_t {
+	OnMap = 0x00, ///< Vehicle drawn in viewport.
+	InDepot = 0x10, ///< Vehicle drawn in depot.
+	InDetails = 0x11, ///< Vehicle drawn in vehicle details, refit window, ...
+	InList = 0x12, ///< Vehicle drawn in vehicle list, group list, ...
+	Purchase = 0x20, ///< Vehicle drawn in purchase list, autoreplace gui, ...
+	Preview = 0x21, ///< Vehicle drawn in preview window, news, ...
 };
 
 /** Randomisation triggers for vehicles */
@@ -144,5 +144,16 @@ template <typename T, VehicleType Tend = VehicleType::CompanyEnd>
 using VehicleTypeIndexArray = EnumClassIndexContainer<std::array<T, to_underlying(Tend)>, VehicleType>;
 
 static const uint32_t VEHICLE_NAME_NO_GROUP = 0x80000000; ///< String constant to not include the vehicle's group name, if using the long name format
+
+/** Ground vehicle flags. */
+enum class GroundVehicleFlag : uint8_t {
+	GoingUp                = 0, ///< Vehicle is currently going uphill. (Cached track information for acceleration)
+	GoingDown              = 1, ///< Vehicle is currently going downhill. (Cached track information for acceleration)
+	SuppressImplicitOrders = 2, ///< Disable insertion and removal of automatic orders until the vehicle completes the real order.
+	Chunnel                = 3, ///< Vehicle may currently be in a chunnel. (Cached track information for inclination changes)
+};
+
+/** Bitset of \c GroundVehicleFlag elements. */
+using GroundVehicleFlags = EnumBitSet<GroundVehicleFlag, uint16_t>;
 
 #endif /* VEHICLE_TYPE_H */

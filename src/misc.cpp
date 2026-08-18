@@ -247,7 +247,7 @@ void InitializeGame(uint size_x, uint size_y, bool reset_date, bool reset_settin
 	ResetRailPlacementSnapping();
 
 	GamelogReset();
-	GamelogStartAction(GLAT_START);
+	GamelogStartAction(GamelogActionType::Start);
 	GamelogRevision();
 	GamelogMode();
 	GamelogGRFAddList(_grfconfig);

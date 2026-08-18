@@ -492,7 +492,7 @@ struct NewGRFInspectWindow final : Window {
 					size.height = GetCharacterHeight(FontSize::Normal) + WidgetDimensions::scaled.framerect.Vertical();
 					break;
 				}
-				size.height = std::max(size.height, GetVehicleImageCellSize(GetVehicleType(f), EIT_IN_DEPOT).height + 2 + WidgetDimensions::scaled.bevel.Vertical());
+				size.height = std::max(size.height, GetVehicleImageCellSize(GetVehicleType(f), EngineImageType::InDepot).height + 2 + WidgetDimensions::scaled.bevel.Vertical());
 				break;
 			}
 
@@ -573,9 +573,9 @@ struct NewGRFInspectWindow final : Window {
 				}
 
 				GrfSpecFeature f = this->target_id.grf_feature;
-				int h = GetVehicleImageCellSize(GetVehicleType(f), EIT_IN_DEPOT).height;
+				int h = GetVehicleImageCellSize(GetVehicleType(f), EngineImageType::InDepot).height;
 				int y = CentreBounds(br.top, br.bottom, h);
-				DrawVehicleImage(v->First(), br, VehicleID::Invalid(), EIT_IN_DETAILS, skip);
+				DrawVehicleImage(v->First(), br, VehicleID::Invalid(), EngineImageType::InDetails, skip);
 
 				/* Highlight the articulated part (this is different to the whole-vehicle highlighting of DrawVehicleImage */
 				if (_current_text_dir == TD_RTL) {

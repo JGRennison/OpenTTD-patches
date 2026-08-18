@@ -3922,13 +3922,13 @@ static TrackStatus GetTileTrackStatus_Station(TileIndex tile, TransportType mode
 	TrackdirBits trackdirbits = TRACKDIR_BIT_NONE;
 
 	switch (mode) {
-		case TRANSPORT_RAIL:
+		case TransportType::Rail:
 			if (HasStationRail(tile) && !IsStationTileBlocked(tile)) {
 				trackdirbits = TrackToTrackdirBits(GetRailStationTrack(tile));
 			}
 			break;
 
-		case TRANSPORT_WATER:
+		case TransportType::Water:
 			/* buoy is coded as a station, it is always on open water */
 			if (IsBuoy(tile)) {
 				TrackBits trackbits = TRACK_BIT_ALL;
@@ -3940,7 +3940,7 @@ static TrackStatus GetTileTrackStatus_Station(TileIndex tile, TransportType mode
 			}
 			break;
 
-		case TRANSPORT_ROAD:
+		case TransportType::Road:
 			if (IsAnyRoadStop(tile)) {
 				RoadTramType rtt = static_cast<RoadTramType>(GB(sub_mode, 0, 8));
 				if (!HasTileRoadType(tile, rtt)) break;

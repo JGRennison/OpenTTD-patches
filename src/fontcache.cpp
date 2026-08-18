@@ -68,7 +68,7 @@ EnumIndexArray<int, FontSize, FontSize::End> font_height_cache;
 
 void UpdateFontHeightCache()
 {
-	for (FontSize fs = FontSize::Begin; fs != FontSize::End; fs++) {
+	for (FontSize fs : EnumRange(FontSize::End)) {
 		font_height_cache[fs] = FontCache::Get(fs)->GetHeight();
 	}
 }
