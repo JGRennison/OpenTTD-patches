@@ -2670,6 +2670,7 @@ static Town *CreateRandomTown(uint attempts, uint32_t townnameparts, TownSize si
 
 		Backup<CompanyID> cur_company(_current_company, OWNER_TOWN, FILE_LINE);
 		[[maybe_unused]] CommandCost rc = Command<Commands::DeleteTown>::Do(DoCommandFlag::Execute, t->index);
+		cur_company.Restore();
 		assert(rc.Succeeded());
 
 		/* We already know that we can allocate a single town when
