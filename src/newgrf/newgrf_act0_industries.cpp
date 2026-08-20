@@ -406,9 +406,9 @@ static ChangeInfoResult IndustriesChangeInfo(uint first, uint last, int prop, co
 			}
 
 			case 0x0A: { // Set industry layout(s)
-				uint8_t new_num_layouts = buf.ReadByte();
-				uint32_t definition_size = buf.ReadDWord();
-				uint32_t bytes_read = 0;
+				const uint8_t new_num_layouts = buf.ReadByte();
+				const uint32_t definition_size = buf.ReadDWord();
+				const uint8_t *definition_end = buf.Data() + definition_size;
 				std::vector<IndustryTileLayout> new_layouts;
 				IndustryTileLayout layout;
 
@@ -416,22 +416,20 @@ static ChangeInfoResult IndustriesChangeInfo(uint first, uint last, int prop, co
 					layout.clear();
 
 					for (uint k = 0;; k++) {
-						if (bytes_read >= definition_size) {
+						if (definition_end != nullptr && definition_end < buf.Data()) {
 							GrfMsg(3, "IndustriesChangeInfo: Incorrect size for industry tile layout definition for industry {}.", id);
 							/* Avoid warning twice */
-							definition_size = UINT32_MAX;
+							definition_end = nullptr;
 						}
 
 						IndustryTileLayoutTile &it = layout.emplace_back();
 
 						it.ti.x = buf.ReadByte(); // Offsets from northernmost tile
-						++bytes_read;
 
 						if (it.ti.x == 0xFE && k == 0) {
 							/* This means we have to borrow the layout from an old industry */
 							IndustryType type = buf.ReadByte();
 							uint8_t laynbr = buf.ReadByte();
-							bytes_read += 2;
 
 							if (type >= lengthof(_origin_industry_specs)) {
 								GrfMsg(1, "IndustriesChangeInfo: Invalid original industry number for layout import, industry {}", id);
@@ -448,7 +446,6 @@ static ChangeInfoResult IndustriesChangeInfo(uint first, uint last, int prop, co
 						}
 
 						it.ti.y = buf.ReadByte(); // Or table definition finalisation
-						++bytes_read;
 
 						if (it.ti.x == 0 && it.ti.y == 0x80) {
 							/* Terminator, remove and finish up */
@@ -457,12 +454,10 @@ static ChangeInfoResult IndustriesChangeInfo(uint first, uint last, int prop, co
 						}
 
 						it.gfx = buf.ReadByte();
-						++bytes_read;
 
 						if (it.gfx == 0xFE) {
 							/* Use a new tile from this GRF */
 							int local_tile_id = buf.ReadWord();
-							bytes_read += 2;
 
 							/* Read the ID from the _industile_mngr. */
 							int tempid = _industile_mngr.GetID(local_tile_id, _cur_gps.grffile->grfid);
