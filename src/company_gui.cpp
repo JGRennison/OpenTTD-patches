@@ -2473,7 +2473,6 @@ struct CompanyWindow : Window
 				break;
 
 			case WID_C_COMPANY_JOIN: {
-				this->query_widget = WID_C_COMPANY_JOIN;
 				CompanyID company = (CompanyID)this->window_number;
 				if (_network_server) {
 					NetworkServerDoMove(ClientID::Server, company);
@@ -2481,6 +2480,7 @@ struct CompanyWindow : Window
 				} else if (NetworkCompanyIsPassworded(company)) {
 					/* ask for the password */
 					ShowQueryString({}, STR_NETWORK_NEED_COMPANY_PASSWORD_CAPTION, NETWORK_PASSWORD_LENGTH, this, CS_ALPHANUMERAL, QueryStringFlag::Password);
+					this->query_widget = WID_C_COMPANY_JOIN;
 				} else {
 					/* just send the join command */
 					NetworkClientRequestMove(company);
