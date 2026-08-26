@@ -2,6 +2,14 @@
 
 * * *
 
+### v0.73.2 (2026-08-26)
+* Fix crash which could occur when NewGRFs perform an incorrect sprite replacement.
+* Fix crash which could occur with overlapping use of the give money and join buttons in the company window.
+* Scheduled dispatch: Allow schedule last dispatched to be set to a specific time/date instead of just being cleared.
+* Routing restrictions: Add condition for train timetable lateness.
+* Remove scrollbar from town local authority window action pane.
+* Bump trunk base from commit 7e2bcaf792696f68244d657858df263cfe5cb63e to commit 061e5c9cd3373301a9557869144ed767309b3d7a.
+
 ### v0.73.1 (2026-08-08)
 * Fix leftover reserved paths which could occur for trains entering and partially in a depot.
 * Fix driving backwards pathfinder penalty when partially in depot.
