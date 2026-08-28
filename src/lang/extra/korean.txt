@@ -826,6 +826,7 @@ STR_TRACE_RESTRICT_VARIABLE_MAX_SPEED                           :최고 속력
 STR_TRACE_RESTRICT_VARIABLE_CURRENT_ORDER                       :현재 경로
 STR_TRACE_RESTRICT_VARIABLE_NEXT_ORDER                          :다음 경로
 STR_TRACE_RESTRICT_VARIABLE_LAST_VISITED_STATION                :마지막으로 경유한 역
+STR_TRACE_RESTRICT_VARIABLE_ORDER_STOP_LOCATION                 :경로 정차 위치
 STR_TRACE_RESTRICT_VARIABLE_CARGO                               :화물
 STR_TRACE_RESTRICT_VARIABLE_LOAD_PERCENT                        :적재율
 STR_TRACE_RESTRICT_VARIABLE_ENTRY_DIRECTION                     :진입 방향
@@ -860,6 +861,7 @@ STR_TRACE_RESTRICT_VARIABLE_UNDEFINED                           :정의되지 �
 STR_TRACE_RESTRICT_VARIABLE_UNDEFINED_RED                       :{PUSH_COLOUR}{RED}정의되지 않음{POP_COLOUR}
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_INTEGER                  :{STRING} {STRING} {STRING} {COMMA} (이)라면
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_SPEED                    :{STRING} {STRING} {STRING} {VELOCITY} (이)라면
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_TICK_COUNT               :{STRING} {STRING} {STRING} {TT_TICKS} (이)라면
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_WEIGHT                   :{STRING} {STRING} {STRING} {WEIGHT_SHORT} (이)라면
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_POWER                    :{STRING} {STRING} {STRING} {POWER} (이)라면
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_FORCE                    :{STRING} {STRING} {STRING} {FORCE} (이)라면
@@ -869,6 +871,7 @@ STR_TRACE_RESTRICT_CONDITIONAL_COMPARE_TIME_HHMM                :{STRING} {STRIN
 STR_TRACE_RESTRICT_CONDITIONAL_ORDER_STATION                    :{STRING} {STRING} {STRING} {STATION} (이)라면
 STR_TRACE_RESTRICT_CONDITIONAL_ORDER_WAYPOINT                   :{STRING} {STRING} {STRING} {WAYPOINT} (이)라면
 STR_TRACE_RESTRICT_CONDITIONAL_ORDER_DEPOT                      :{STRING} {STRING} {STRING} {DEPOT} (이)라면
+STR_TRACE_RESTRICT_CONDITIONAL_ORDER_STOP_LOCATION              :{STRING} 현재 경로 정차 위치가 {STRING} {STRING} (이)라면
 STR_TRACE_RESTRICT_CONDITIONAL_CARGO                            :{STRING} 열차가 {2:STRING}{G 2 "을" "를"} {1:STRING}
 STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_DIRECTION                  :{STRING} 열차가 타일에 진입한 방향 {STRING} {STRING}
 STR_TRACE_RESTRICT_CONDITIONAL_ENTRY_SIGNAL_FACE                :{STRING} 열차의 진입 방향 {STRING} 신호기의 {STRING}
@@ -1020,6 +1023,8 @@ STR_TRACE_RESTRICT_TIME_DAY_ITEM_SHORT                          :일
 STR_TRACE_RESTRICT_TIME_MONTH_ITEM_SHORT                        :월
 STR_TRACE_RESTRICT_TIMETABLE_LATENESS                           :지연
 STR_TRACE_RESTRICT_TIMETABLE_EARLINESS                          :조착
+STR_TRACE_RESTRICT_TIMETABLE_LATENESS_LONG                      :시간표 지연
+STR_TRACE_RESTRICT_TIMETABLE_EARLINESS_LONG                     :시간표 조착
 STR_TRACE_RESTRICT_OTHER_COMPANY_GROUP                          :{GROUP} {COMPANY_NUM}
 STR_TRACE_RESTRICT_GUI_LABEL                                    :이름표
 STR_TRACE_RESTRICT_GUI_LABEL_ITEM                               :{PUSH_COLOUR}{YELLOW}이름표:{POP_COLOUR} {STRING}
@@ -1931,6 +1936,9 @@ STR_TIMETABLE_DEPARTURE_ABBREVIATION                            :출발:{SPACE}{
 
 STR_DATE_MINUTES_MINUTE_TOOLTIP                                 :{BLACK}분(分) 선택
 STR_DATE_MINUTES_HOUR_TOOLTIP                                   :{BLACK}시(時) 선택
+STR_DATE_HHMM_TOOLTIP                                           :{BLACK}시간 (hhmm)
+STR_DATE_DAY_OFFSET                                             :{BLACK}날짜 오프셋:
+STR_DATE_DAY_OFFSET_TOOLTIP                                     :{BLACK}현재 시간표 날짜를 기준으로 날짜 오프셋을 설정합니다
 
 STR_TIME_CAPTION                                                :{WHITE}시간 설정
 
@@ -2015,6 +2023,9 @@ STR_ERROR_RESTRICTED_SIGNAL                                     :{WHITE}... 신�
 
 STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_STATION                       :{WHITE}다리의 기둥이 역과 겹칩니다
 STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_LOCKS                         :{WHITE}다리의 기둥이 수문과 겹칩니다
+STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_TRAIN_DEPOT                   :{WHITE}다리의 기둥이 차량기지와 겹칩니다
+STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_ROADVEH_DEPOT                 :{WHITE}다리의 기둥이 차고와 겹칩니다
+STR_ERROR_BRIDGE_PILLARS_OBSTRUCT_SHIP_DEPOT                    :{WHITE}다리의 기둥이 정박소와 겹칩니다
 STR_ERROR_CHUNNEL_THROUGH_MAP_BORDER                            :{WHITE}해저 터널이 지도 맨끝을 통과합니다
 STR_ERROR_CHUNNEL_RAMP                                          :{WHITE}... 해저 터널을 만들기 위해서는 {NUM}칸에서 {NUM}칸 사이 길이의 여유 공간이 필요합니다
 STR_ERROR_TUNNEL_TOO_MANY                                       :{WHITE}... 터널이 너무 많습니다
@@ -2239,6 +2250,8 @@ STR_SCHDISPATCH_ADJUST_CAPTION_SLOT_PREFIXED                    :{BLACK}{TT_TIME
 STR_SCHDISPATCH_ADJUST_CAPTION_MULTI_SLOT_PREFIXED              :{BLACK}{1:TT_TIME}이후에 {0:NUM}개 슬롯: {2:STRING}
 STR_SCHDISPATCH_RESET_LAST_DISPATCH                             :{BLACK}최근 일정 재설정
 STR_SCHDISPATCH_RESET_LAST_DISPATCH_TOOLTIP                     :{BLACK}최근 배차 일정을 재설정합니다. 먼 미래의 차량에 대해 오작동할 때 사용하세요.
+STR_SCHDISPATCH_SET_LAST_DISPATCH                               :{BLACK}최근 배차 수동 설정
+STR_SCHDISPATCH_SET_LAST_DISPATCH_TOOLTIP                       :{BLACK}차량이 일정에서 마지막으로 배차된 시점을 수동으로 설정합니다.
 STR_SCHDISPATCH_CLEAR                                           :{BLACK}출발 슬롯 초기화
 STR_SCHDISPATCH_CLEAR_TOOLTIP                                   :{BLACK}일정에서 모든 출발 슬롯을 제거합니다
 STR_SCHDISPATCH_MANAGE                                          :{BLACK}일정 관리
@@ -2526,3 +2539,11 @@ STR_CONFIG_SETTING_LINEAR_MAINTENANCE_HELPTEXT                  :이 설정을 �
 
 STR_CONFIG_SETTING_VEHICLE_INTRO_RANDOMISATION                  :차량 도입 날짜 무작위화: {STRING}
 STR_CONFIG_SETTING_VEHICLE_INTRO_RANDOMISATION_HELPTEXT         :이 설정을 켜면, 차량 도입 날짜를 최대 1년 반 이내까지 무작위로 설정합니다.
+
+STR_CONFIG_SETTING_TRUNCATE_CARGO                               :역에서 화물을 버릴 수 있음: {STRING}
+STR_CONFIG_SETTING_TRUNCATE_CARGO_HELPTEXT                      :이 설정을 켜면, 대기 중인 화물의 양이 너무 많거나 역 평점이 낮을 때 역에서 화물을 버릴 수 있습니다. 모든 대기 중인 화물을 유지하려면 이 설정을 끄세요.
+
+STR_CONFIG_SETTING_NEWS_CARGO_FLOW                              :역에서 화물 넘침: {STRING}
+STR_CONFIG_SETTING_NEWS_CARGO_FLOW_HELPTEXT                     :화물이 쌓이고 있는 역에 대해 경고합니다.{}탐지는 특정 양의 임계값이 아닌 화물 기록 그래프의 형태를 기반으로 합니다.
+
+STR_STATION_CARGO_OVERFLOW                                      :{WHITE}{1:STATION}의 {0:CARGO_LIST}{G 0 "이" "가"} 너무 많이 쌓여있습니다
