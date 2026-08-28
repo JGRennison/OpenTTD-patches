@@ -814,8 +814,8 @@ STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_CARGO_EQUALS          :실을 수 있�
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_CARGO_NOT_EQUALS      :실을 수 없다면
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_HAS_STATUS            :(이)라면
 STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_DOESNT_HAVE_STATUS    :(이)가 아니라면
-STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_PASS                  :통과 - 
-STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_DOESNT_PASS           :통과 안 함 - 
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_PASS                  :통과 -{SPACE}
+STR_TRACE_RESTRICT_CONDITIONAL_COMPARATOR_DOESNT_PASS           :통과 안 함 -{SPACE}
 STR_TRACE_RESTRICT_CONDITIONAL_IF                               :조건문:
 STR_TRACE_RESTRICT_CONDITIONAL_ELIF                             :아니라면, 조건문:
 STR_TRACE_RESTRICT_CONDITIONAL_ORIF                             :또는, 조건문:
@@ -2546,4 +2546,4 @@ STR_CONFIG_SETTING_TRUNCATE_CARGO_HELPTEXT                      :이 설정을 �
 STR_CONFIG_SETTING_NEWS_CARGO_FLOW                              :역에서 화물 넘침: {STRING}
 STR_CONFIG_SETTING_NEWS_CARGO_FLOW_HELPTEXT                     :화물이 쌓이고 있는 역에 대해 경고합니다.{}탐지는 특정 양의 임계값이 아닌 화물 기록 그래프의 형태를 기반으로 합니다.
 
-STR_STATION_CARGO_OVERFLOW                                      :{WHITE}{1:STATION}의 {0:CARGO_LIST}{G 0 "이" "가"} 너무 많이 쌓여있습니다
+STR_STATION_CARGO_OVERFLOW                                      :{WHITE}{1:STATION}의 {0:CARGO_LIST} 너무 많이 쌓여있습니다
