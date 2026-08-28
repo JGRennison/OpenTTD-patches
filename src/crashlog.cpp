@@ -412,7 +412,7 @@ void CrashLog::LogLibraries(format_target_ctrl &buffer) const
 #endif
 #if !(defined(_WIN32) || defined(__APPLE__))
 	const char *sdl_im_module = getenv("SDL_IM_MODULE");
-	if (sdl_im_module != nullptr) buffer.append(" (SDL_IM_MODULE={})", sdl_im_module);
+	if (sdl_im_module != nullptr) buffer.format(" (SDL_IM_MODULE={})", sdl_im_module);
 	const char *xmod = getenv("XMODIFIERS");
 	if (xmod != nullptr && strstr(xmod, "@im=fcitx") != nullptr) buffer.append(" (XMODIFIERS has @im=fcitx)");
 #endif
