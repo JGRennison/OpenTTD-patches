@@ -206,12 +206,10 @@ public:
 		this->buffer.push_back(c);
 	}
 
-	void append(const char* begin, const char* end)
+	void append(std::string_view str)
 	{
-		this->buffer.append<char>(begin, end);
+		this->buffer.append<char>(str.data(), str.data() + str.size());
 	}
-
-	void append(std::string_view str) { this->append(str.data(), str.data() + str.size()); }
 
 	template <typename F>
 	void append_ptr_last_func(size_t to_reserve, F func)

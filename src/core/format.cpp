@@ -18,7 +18,7 @@
 void format_target::push_back_utf8_impl(char32_t c)
 {
 	auto [buf, len] = EncodeUtf8(c);
-	this->append(buf, buf + len);
+	this->buffer.append<char>(buf, buf + len);
 }
 
 void format_target_ctrl::restore_size(size_t size)
