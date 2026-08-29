@@ -1072,7 +1072,12 @@ Train *VirtualTrainFromTemplateVehicle(const TemplateVehicle *tv, StringID &err,
 
 		UpdateNewVirtualTrainFromSource(tmp, tv);
 
-		CmdMoveRailVehicle(DoCommandFlag::Execute, tmp->index, tail->index, MoveRailVehicleFlags::Virtual);
+		CommandCost move_result = CmdMoveRailVehicle({DoCommandFlag::Execute, DoCommandFlag::AutoReplace}, tmp->index, tail->index, MoveRailVehicleFlags::Virtual);
+		if (move_result.Failed()) {
+			CmdDeleteVirtualTrain(DoCommandFlag::Execute, tmp->index);
+			CmdDeleteVirtualTrain(DoCommandFlag::Execute, head->index);
+			return nullptr;
+		}
 		tail = tmp;
 
 		tv = tv->GetNextUnit();
