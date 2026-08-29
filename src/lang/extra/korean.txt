@@ -2544,6 +2544,6 @@ STR_CONFIG_SETTING_TRUNCATE_CARGO                               :역에서 화�
 STR_CONFIG_SETTING_TRUNCATE_CARGO_HELPTEXT                      :이 설정을 켜면, 대기 중인 화물의 양이 너무 많거나 역 평점이 낮을 때 역에서 화물을 버릴 수 있습니다. 모든 대기 중인 화물을 유지하려면 이 설정을 끄세요.
 
 STR_CONFIG_SETTING_NEWS_CARGO_FLOW                              :역에서 화물 넘침: {STRING}
-STR_CONFIG_SETTING_NEWS_CARGO_FLOW_HELPTEXT                     :화물이 쌓이고 있는 역에 대해 경고합니다.{}탐지는 특정 양의 임계값이 아닌 화물 기록 그래프의 형태를 기반으로 합니다.
+STR_CONFIG_SETTING_NEWS_CARGO_FLOW_HELPTEXT                     :화물이 쌓이고 있는 역에 대해 경고합니다.{}화물이 쌓여있는지 여부는 특정 수치가 아닌 화물 기록 그래프의 형태를 기반으로 판단합니다.
 
-STR_STATION_CARGO_OVERFLOW                                      :{WHITE}{1:STATION}의 {0:CARGO_LIST} 너무 많이 쌓여있습니다
+STR_STATION_CARGO_OVERFLOW                                      :{WHITE}{1:STATION}에 {0:CARGO_LIST} 화물이 너무 많이 쌓여있습니다
