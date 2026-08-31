@@ -441,7 +441,7 @@ public:
 
 			case WID_TA_COMMAND_LIST: {
 				int y = this->GetRowFromWidget(pt.y, WID_TA_COMMAND_LIST, 1, GetCharacterHeight(FontSize::Normal));
-				if (!IsInsideMM(y, 0, 5 + SETTING_OVERRIDE_COUNT)) return;
+				if (!IsInsideMM(y, 0, this->displayed_action_row_count)) return;
 
 				const uint setting_override_offset = 32 - SETTING_OVERRIDE_COUNT;
 
