@@ -2897,6 +2897,7 @@ void BaseStringMissingGlyphSearcher::DetermineRequiredGlyphs(FontSizes fontsizes
 
 			if (!fontsizes.Test(fs)) continue;
 			if (!IsPrintable(c) || IsTextDirectionChar(c)) continue;
+			if (c != ' ' && IsWhitespace(c)) continue;
 			if (IsInsideMM(c, SCC_SPRITE_START, SCC_SPRITE_END)) continue;
 			if (fc->MapCharToGlyph(c, false) != 0) continue;
 
