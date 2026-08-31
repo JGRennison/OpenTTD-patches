@@ -1110,35 +1110,84 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 
 	/* Find the maximum possible width of the departure time and "Expt <time>" fields. */
 	int time_width = (this->mode == DM_COMBINED) ? cached_date_combined_width : cached_date_width;
-
-	int arrival_time_width = 0;
-	if (this->show_arrival_times && _settings_time.time_in_minutes) {
-		arrival_time_width = cached_date_width;
-	}
-
 	if (this->mode == DM_SEPARATE) {
 		time_width += cached_date_arrow_width;
 	}
 
-	/* Vehicle type icon */
-	int type_width = _settings_client.gui.departure_show_vehicle_type ? cached_veh_type_width : 0;
-
-	/* Find the maximum width of the status field */
-	int status_width = cached_status_width;
-
 	const FontSize calling_font_size = _settings_client.gui.departure_larger_font ? FontSize::Normal : FontSize::Small;
 
 	/* Find the width of the "Calling at:" field. */
-	int calling_at_width = (GetStringBoundingBox(STR_DEPARTURES_CALLING_AT, calling_font_size)).width;
+	const int calling_at_width = (GetStringBoundingBox(STR_DEPARTURES_CALLING_AT, calling_font_size)).width;
 
-	/* Find the maximum company name width. */
-	int toc_width = _settings_client.gui.departure_show_company ? this->toc_width : 0;
+	enum class DepartureColumn : uint8_t {
+		Time,
+		VehTypeIcon,
+		ArrivalTime,
+		Destination, // main column, resizes to fill space
+		Status,
+		VehicleName,
+		Group,
+		Company,
 
-	/* Find the maximum group name width. */
-	int group_width = _settings_client.gui.departure_show_group ? this->group_width : 0;
+		End,
+	};
+	struct ColumnInfo {
+		int left = 0;
+		int right = 0;
 
-	/* Find the maximum vehicle name width. */
-	int veh_width = _settings_client.gui.departure_show_vehicle ? this->veh_width : 0;
+		bool Empty() const { return this->left == this->right; }
+	};
+	EnumIndexArray<ColumnInfo, DepartureColumn, DepartureColumn::End> columns{};
+
+	{
+		int available_left = text_left;
+		int available_right = text_right;
+		auto consume_from_start = [&](int width, bool pad) -> ColumnInfo {
+			if (ltr) {
+				ColumnInfo result{available_left, available_left + width};
+				available_left = result.right;
+				if (pad && width > 0) available_left += WidgetDimensions::scaled.hsep_wide;
+				return result;
+			} else {
+				ColumnInfo result{available_right - width, available_right};
+				available_right = result.left;
+				if (pad && width > 0) available_right -= WidgetDimensions::scaled.hsep_wide;
+				return result;
+			}
+		};
+		auto consume_from_end = [&](int width, bool pad) -> ColumnInfo {
+			if (ltr) {
+				ColumnInfo result{available_right - width, available_right};
+				available_right = result.left;
+				if (pad && width > 0) available_right -= WidgetDimensions::scaled.hsep_wide;
+				return result;
+			} else {
+				ColumnInfo result{available_left, available_left + width};
+				available_left = result.right;
+				if (pad && width > 0) available_left += WidgetDimensions::scaled.hsep_wide;
+				return result;
+			}
+		};
+
+		/* Columns bound to start */
+		columns[DepartureColumn::Time] = consume_from_start(time_width, false);
+		consume_from_start(ScaleGUITrad(3), false); // padding
+		columns[DepartureColumn::VehTypeIcon] = consume_from_start(_settings_client.gui.departure_show_vehicle_type ? cached_veh_type_width : 0, false);
+		consume_from_start(ScaleGUITrad(3), false); // padding
+		columns[DepartureColumn::ArrivalTime] = consume_from_start((this->show_arrival_times && _settings_time.time_in_minutes) ? cached_date_width : 0, true);
+
+		/* Columns bound to end */
+		columns[DepartureColumn::Company] = consume_from_end(_settings_client.gui.departure_show_company ? this->toc_width : 0, true);
+		columns[DepartureColumn::Group] = consume_from_end(_settings_client.gui.departure_show_group ? this->group_width : 0, true);
+		columns[DepartureColumn::VehicleName] = consume_from_end(_settings_client.gui.departure_show_vehicle ? this->veh_width : 0, true);
+		columns[DepartureColumn::Status] = consume_from_end(cached_status_width, true);
+
+		if (ltr) {
+			columns[DepartureColumn::Destination] = { columns[DepartureColumn::ArrivalTime].right, columns[DepartureColumn::Status].left };
+		} else {
+			columns[DepartureColumn::Destination] = { columns[DepartureColumn::Status].right, columns[DepartureColumn::ArrivalTime].left };
+		}
+	}
 
 	/* Draw each departure. */
 	for (size_t i = this->vscroll->GetPosition(); i < max_departures; ++i) {
@@ -1149,7 +1198,6 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 		if (time_width > 0) {
 			format_buffer time_text;
 			TextColour time_colour;
-			int offset = 0;
 			switch (d->show_as) {
 				default:
 					time_colour = TextColour::Orange;
@@ -1163,6 +1211,7 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 					time_colour = TextColour::Yellow;
 					break;
 			}
+			ColumnInfo col = columns[DepartureColumn::Time];
 			if (this->mode == DM_COMBINED && d->EffectiveWaitingTime() != Departure::MISSING_WAIT_TICKS) {
 				AppendStringInPlace(time_text, STR_DEPARTURES_TIME_BOTH,
 						time_colour,
@@ -1175,7 +1224,7 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 				StringID time_str;
 				if (this->mode == DM_COMBINED) {
 					time_str = STR_DEPARTURES_TIME_DEP;
-					offset = time_width - (cached_date_width + cached_date_arrow_width);
+					if (ltr) col.left += time_width - (cached_date_width + cached_date_arrow_width);
 				} else if (this->mode == DM_SEPARATE) {
 					time_str = (d->type == D_DEPARTURE) ? STR_DEPARTURES_TIME_DEP : STR_DEPARTURES_TIME_ARR;
 				} else {
@@ -1186,11 +1235,7 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 						STR_JUST_TT_TIME_ABS,
 						d->scheduled_tick);
 			}
-			if (ltr) {
-				DrawString(     text_left + offset, text_left + time_width, y + 1, time_text);
-			} else {
-				DrawString(text_right - time_width,             text_right, y + 1, time_text);
-			}
+			DrawString(col.left, col.right, y + 1, time_text);
 		}
 
 		if (_settings_client.gui.departure_show_vehicle_type) {
@@ -1216,8 +1261,7 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 
 			type += offset;
 
-			const int icon_left = ltr ? text_left + time_width + ScaleGUITrad(3) : text_right - time_width - ScaleGUITrad(3) - type_width;
-			DrawString(icon_left, icon_left + type_width, y, type);
+			DrawString(columns[DepartureColumn::VehTypeIcon].left, columns[DepartureColumn::VehTypeIcon].right, y, type);
 		}
 
 		/* The icons to show with the destination and via stations. */
@@ -1249,21 +1293,14 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 		if (d->terminus.target.MatchesStationID(via2) || this->source.StationMatches(via2)) via2 = StationID::Invalid();
 
 		/* Arrival time */
-		if (arrival_time_width != 0 && d->terminus.scheduled_tick != 0) {
+		if (!columns[DepartureColumn::ArrivalTime].Empty() && d->terminus.scheduled_tick != 0) {
 			std::string str = GetString(STR_DEPARTURES_TIME, TextColour::Orange, STR_JUST_TT_TIME_ABS, d->terminus.scheduled_tick);
-			if (ltr) {
-				const int left = text_left + time_width + type_width + ScaleGUITrad(6);
-				DrawString(left, left + arrival_time_width, y + 1, str);
-			} else {
-				const int right = text_right - time_width - type_width - ScaleGUITrad(6);
-				DrawString(right - arrival_time_width, right, y + 1, str);
-			}
+			DrawString(columns[DepartureColumn::ArrivalTime].left, columns[DepartureColumn::ArrivalTime].right, y + 1, str);
 		}
 
 		/* Destination */
 		{
-			const int dest_left = ltr ? text_left + time_width + type_width + PadWidth(arrival_time_width) + ScaleGUITrad(6) : text_left + PadWidth(toc_width) + PadWidth(group_width) + PadWidth(veh_width) + PadWidth(status_width);
-			const int dest_right = ltr ? text_right - PadWidth(toc_width) - PadWidth(group_width) - PadWidth(veh_width) - PadWidth(status_width) : text_right - time_width - type_width - PadWidth(arrival_time_width) - ScaleGUITrad(6);
+			const auto &col = columns[DepartureColumn::Destination];
 
 			format_buffer calling_at_str;
 			auto fill_calling_at = [&]<typename... T>(CallAtTargetID target, StringID str, T&&... params) {
@@ -1274,7 +1311,7 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 			if (via == StationID::Invalid()) {
 				/* Only show the terminus. */
 				fill_calling_at(d->terminus.target, STR_DEPARTURES_TERMINUS);
-				DrawString(dest_left, dest_right, y + 1, calling_at_str);
+				DrawString(col.left, col.right, y + 1, calling_at_str);
 			} else {
 				auto prepare_via_string_id = [&]() -> StringID {
 					auto get_single_via_string = [&](uint temp_str, StationID id) {
@@ -1314,16 +1351,16 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 				fill_calling_at(d->terminus.target, STR_DEPARTURES_TERMINUS_VIA_STATION, prepare_via_string_id());
 				int text_width = (GetStringBoundingBox(calling_at_str)).width;
 
-				if (dest_left + text_width < dest_right) {
+				if (col.left + text_width < col.right) {
 					/* They will both fit, so show them both. */
-					DrawString(dest_left, dest_right, y + 1, calling_at_str);
+					DrawString(col.left, col.right, y + 1, calling_at_str);
 				} else {
 					/* They won't both fit, so switch between showing the terminus and the via station approximately every 4 seconds. */
 					if ((this->elapsed_ms >> 12) & 1) {
-						DrawString(dest_left, dest_right, y + 1, GetString(STR_DEPARTURES_VIA, prepare_via_string_id()));
+						DrawString(col.left, col.right, y + 1, GetString(STR_DEPARTURES_VIA, prepare_via_string_id()));
 					} else {
 						fill_calling_at(d->terminus.target, STR_DEPARTURES_TERMINUS_VIA);
-						DrawString(dest_left, dest_right, y + 1, calling_at_str);
+						DrawString(col.left, col.right, y + 1, calling_at_str);
 					}
 					this->scroll_refresh = true;
 				}
@@ -1332,18 +1369,17 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 
 		/* Status */
 		{
-			const int status_left = ltr ? text_right - PadWidth(toc_width) - PadWidth(group_width) - PadWidth(veh_width) - status_width : text_left + PadWidth(toc_width) + PadWidth(group_width) + PadWidth(veh_width);
-			const int status_right = ltr ? text_right - PadWidth(toc_width) - PadWidth(group_width) - PadWidth(veh_width) : text_left + PadWidth(toc_width) + PadWidth(group_width) + PadWidth(veh_width) + status_width;
+			const auto &col = columns[DepartureColumn::Status];
 
 			if (d->status == D_ARRIVED) {
 				/* The vehicle has arrived. */
-				DrawString(status_left, status_right, y + 1, STR_DEPARTURES_ARRIVED);
+				DrawString(col.left, col.right, y + 1, STR_DEPARTURES_ARRIVED);
 			} else if (d->status == D_CANCELLED) {
 				/* The vehicle has been cancelled. */
-				DrawString(status_left, status_right, y + 1, STR_DEPARTURES_CANCELLED);
+				DrawString(col.left, col.right, y + 1, STR_DEPARTURES_CANCELLED);
 			} else if (d->status == D_SCHEDULED) {
 				/* Display as scheduled. */
-				DrawString(status_left, status_right, y + 1, STR_DEPARTURES_SCHEDULED);
+				DrawString(col.left, col.right, y + 1, STR_DEPARTURES_SCHEDULED);
 			} else {
 				Ticks arrival_lateness = d->lateness;
 				if (d->type == D_DEPARTURE) {
@@ -1351,15 +1387,15 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 				}
 				if (arrival_lateness <= TimetableAbsoluteDisplayUnitSize() && d->scheduled_tick > _state_ticks) {
 					/* We have no evidence that the vehicle is late, so assume it is on time. */
-					DrawString(status_left, status_right, y + 1, STR_DEPARTURES_ON_TIME);
+					DrawString(col.left, col.right, y + 1, STR_DEPARTURES_ON_TIME);
 				} else {
 					StateTicks expected_arrival = d->scheduled_tick + arrival_lateness;
 					if (expected_arrival < _state_ticks) {
 						/* The vehicle was expected to have arrived by now, even if we knew it was going to be late. */
-						DrawString(status_left, status_right, y + 1, STR_DEPARTURES_DELAYED);
+						DrawString(col.left, col.right, y + 1, STR_DEPARTURES_DELAYED);
 					} else {
 						/* The vehicle is expected to be late and is not yet due to arrive. */
-						DrawString(status_left, status_right, y + 1, GetString(STR_DEPARTURES_EXPECTED, STR_JUST_TT_TIME_ABS, expected_arrival));
+						DrawString(col.left, col.right, y + 1, GetString(STR_DEPARTURES_EXPECTED, STR_JUST_TT_TIME_ABS, expected_arrival));
 					}
 				}
 			}
@@ -1367,30 +1403,25 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 
 		/* Vehicle name */
 		if (_settings_client.gui.departure_show_vehicle) {
-			const int veh_left = ltr ? text_right - PadWidth(toc_width) - PadWidth(group_width) - veh_width : text_left + PadWidth(toc_width) + PadWidth(group_width);
-			const int veh_right = ltr ? text_right - PadWidth(toc_width) - PadWidth(group_width) : text_left + PadWidth(toc_width) + PadWidth(group_width) + veh_width;
+			const auto &col = columns[DepartureColumn::VehicleName];
 
 			if (this->order_list_filter != nullptr && this->source_mode == DSM_SCHEDULE_24H) {
-				if (d->vehicle_idx > 0) DrawString(veh_left, veh_right, y + 1, GetString(STR_JUST_COMMA, d->vehicle_idx), TextColour::Silver);
+				if (d->vehicle_idx > 0) DrawString(col.left, col.right, y + 1, GetString(STR_JUST_COMMA, d->vehicle_idx), TextColour::Silver);
 			} else {
-				DrawString(veh_left, veh_right, y + 1, GetString(STR_DEPARTURES_VEH, d->vehicle->index.base() | (_settings_client.gui.departure_show_group ? VEHICLE_NAME_NO_GROUP : 0)));
+				DrawString(col.left, col.right, y + 1, GetString(STR_DEPARTURES_VEH, d->vehicle->index.base() | (_settings_client.gui.departure_show_group ? VEHICLE_NAME_NO_GROUP : 0)));
 			}
 		}
 
 		/* Group name */
 		if (_settings_client.gui.departure_show_group && d->vehicle->group_id != GroupID::Invalid() && d->vehicle->group_id != DEFAULT_GROUP) {
-			const int group_left = ltr ? text_right - PadWidth(toc_width) - group_width : text_left + PadWidth(toc_width);
-			const int group_right = ltr ? text_right - PadWidth(toc_width) : text_left + PadWidth(toc_width) + group_width;
-
-			DrawString(group_left, group_right, y + 1, GetString(STR_DEPARTURES_GROUP, d->vehicle->group_id.base() | GROUP_NAME_HIERARCHY));
+			const auto &col = columns[DepartureColumn::Group];
+			DrawString(col.left, col.right, y + 1, GetString(STR_DEPARTURES_GROUP, d->vehicle->group_id.base() | GROUP_NAME_HIERARCHY));
 		}
 
 		/* Operating company */
 		if (_settings_client.gui.departure_show_company) {
-			const int toc_left = ltr ? text_right - toc_width : text_left;
-			const int toc_right = ltr ? text_right : text_left + toc_width;
-
-			DrawString(toc_left, toc_right, y + 1, GetString(STR_DEPARTURES_TOC, d->vehicle->owner), TextColour::FromString, SA_RIGHT);
+			const auto &col = columns[DepartureColumn::Company];
+			DrawString(col.left, col.right, y + 1, GetString(STR_DEPARTURES_TOC, d->vehicle->owner), TextColour::FromString, SA_RIGHT);
 		}
 
 		int bottom_y = y + this->entry_height - small_font_size - (_settings_client.gui.departure_larger_font ? 1 : 3);
@@ -1415,7 +1446,7 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 				}
 			};
 
-			if (c.scheduled_tick != 0 && arrival_time_width > 0) {
+			if (c.scheduled_tick != 0 && !columns[DepartureColumn::ArrivalTime].Empty()) {
 				add_string(STR_DEPARTURES_CALLING_AT_STATION_WITH_TIME);
 			}
 
