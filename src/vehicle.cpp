@@ -713,7 +713,7 @@ static void FindClosestTrainToTunnelBridgeEndEnum(const Train *t, FindTrainClose
 
 	if (t->vehstatus.Test(VehState::Crashed)) return;
 
-	if (!IsDiagonalDirection(t->direction)) {
+	if ((t->track & (TRACK_BIT_HORZ | TRACK_BIT_VERT)) != TRACK_BIT_NONE) {
 		/* Check for vehicles on non-across track pieces of custom bridge head */
 		if ((GetAcrossTunnelBridgeTrackBits(t->tile) & t->track & TRACK_BIT_ALL) == TRACK_BIT_NONE) return;
 	}
@@ -758,7 +758,7 @@ static void GetAvailableFreeTilesInSignalledTunnelBridgeEnum(const Train *v, Get
 	/* Don't look at wagons between front and back of train. */
 	if ((v->Previous() != nullptr && v->Next() != nullptr)) return;
 
-	if (!IsDiagonalDirection(v->direction)) {
+	if ((v->track & (TRACK_BIT_HORZ | TRACK_BIT_VERT)) != TRACK_BIT_NONE) {
 		/* Check for vehicles on non-across track pieces of custom bridge head */
 		if ((GetAcrossTunnelBridgeTrackBits(v->tile) & v->track & TRACK_BIT_ALL) == TRACK_BIT_NONE) return;
 	}
