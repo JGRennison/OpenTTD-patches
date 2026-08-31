@@ -823,6 +823,7 @@ SettingsContainer &GetSettingsTree()
 				departureboards->Add(new SettingEntry("gui.departure_show_vehicle"));
 				departureboards->Add(new SettingEntry("gui.departure_show_group"));
 				departureboards->Add(new SettingEntry("gui.departure_show_company"));
+				departureboards->Add(new SettingEntry("gui.departure_show_schedule_route_id"));
 				departureboards->Add(new SettingEntry("gui.departure_show_vehicle_type"));
 				departureboards->Add(new SettingEntry("gui.departure_show_vehicle_color"));
 				departureboards->Add(new SettingEntry("gui.departure_larger_font"));

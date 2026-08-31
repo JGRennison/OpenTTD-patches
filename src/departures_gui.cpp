@@ -37,6 +37,7 @@
 #include "tilehighlight_func.h"
 #include "viewport_func.h"
 #include "core/backup_type.hpp"
+#include "3rdparty/robin_hood/robin_hood.h"
 
 #include "table/sprites.h"
 #include "table/strings.h"
@@ -158,6 +159,7 @@ protected:
 	int veh_width = 0;                       ///< current width of vehicle field
 	int group_width = 0;                     ///< current width of group field
 	int toc_width = 0;                       ///< current width of company field
+	int route_id_width = 0;                  ///< current width of route ID field
 	std::array<uint32_t, 3> title_params{};  ///< title string parameters
 	CallAtTargetID filter_target{};          ///< Filter target
 	const OrderList *order_list_filter{};    ///< Shared order list filter
@@ -184,8 +186,9 @@ protected:
 		this->veh_width = 0;
 		this->group_width = 0;
 		this->toc_width = 0;
+		this->route_id_width = 0;
 
-		btree::btree_set<GroupID> groups;
+		robin_hood::unordered_flat_set<GroupID> groups;
 		CompanyMask companies = {};
 		VehicleTypeIndexArray<int> unitnumber_max = { -1, -1, -1, -1 };
 
@@ -227,6 +230,14 @@ protected:
 
 						if (_settings_client.gui.departure_show_company) {
 							companies.Set(v->owner);
+						}
+					}
+					if (_settings_client.gui.departure_show_schedule_route_id && veh->orders != nullptr) {
+						for (const DispatchSchedule &ds : veh->orders->GetScheduledDispatchScheduleSet()) {
+							ds.IterateRouteIDNames([&](DispatchSlotRouteID route_id, std::string_view name) {
+								int width = (GetStringBoundingBox(name)).width + 4;
+								if (width > this->route_id_width) this->route_id_width = width;
+							});
 						}
 					}
 					return;
@@ -797,6 +808,7 @@ public:
 			settings.SetSmartTerminusEnabled(_settings_client.gui.departure_smart_terminus && (this->source_type == DST_STATION));
 			settings.SetVehicleCycleTrackingEnabled(this->order_list_filter != nullptr && this->mode != DM_ARRIVALS && this->source_mode == DSM_SCHEDULE_24H);
 			settings.SetDispatchArrivalTicksEnabled(settings.VehicleCycleTrackingEnabled() || (this->mode == DM_COMBINED && this->source_mode == DSM_SCHEDULE_24H));
+			settings.SetDispatchScheduleRouteIDEnabled(_settings_client.gui.departure_show_schedule_route_id);
 
 			DepartureTypes types{};
 			if (this->mode != DM_ARRIVALS) {
@@ -1042,7 +1054,7 @@ uint DeparturesWindow::GetMinWidth() const
 	result += _settings_client.gui.departure_show_vehicle_type ? cached_veh_type_width : 0;
 
 	/* Status */
-	result += PadWidth(cached_status_width) + PadWidth(this->toc_width) + PadWidth(this->veh_width) + PadWidth(this->group_width);
+	result += PadWidth(cached_status_width) + PadWidth(this->toc_width) + PadWidth(this->veh_width) + PadWidth(this->group_width) + PadWidth(this->route_id_width);
 
 	return result + ScaleGUITrad(140);
 }
@@ -1127,6 +1139,7 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 		Status,
 		VehicleName,
 		Group,
+		RouteID,
 		Company,
 
 		End,
@@ -1178,6 +1191,7 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 
 		/* Columns bound to end */
 		columns[DepartureColumn::Company] = consume_from_end(_settings_client.gui.departure_show_company ? this->toc_width : 0, true);
+		columns[DepartureColumn::RouteID] = consume_from_end(_settings_client.gui.departure_show_schedule_route_id ? this->route_id_width : 0, true);
 		columns[DepartureColumn::Group] = consume_from_end(_settings_client.gui.departure_show_group ? this->group_width : 0, true);
 		columns[DepartureColumn::VehicleName] = consume_from_end(_settings_client.gui.departure_show_vehicle ? this->veh_width : 0, true);
 		columns[DepartureColumn::Status] = consume_from_end(cached_status_width, true);
@@ -1416,6 +1430,12 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 		if (_settings_client.gui.departure_show_group && d->vehicle->group_id != GroupID::Invalid() && d->vehicle->group_id != DEFAULT_GROUP) {
 			const auto &col = columns[DepartureColumn::Group];
 			DrawString(col.left, col.right, y + 1, GetString(STR_DEPARTURES_GROUP, d->vehicle->group_id.base() | GROUP_NAME_HIERARCHY));
+		}
+
+		/* Scheduled dispatch route ID */
+		if (_settings_client.gui.departure_show_schedule_route_id && !d->schedule_route_id.empty()) {
+			const auto &col = columns[DepartureColumn::RouteID];
+			DrawString(col.left, col.right, y + 1, d->schedule_route_id, TextColour::Orange);
 		}
 
 		/* Operating company */

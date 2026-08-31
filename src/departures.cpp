@@ -1122,6 +1122,33 @@ static DepartureList MakeDepartureListLiveMode(DepartureOrderDestinationDetector
 		d->order = lod.order;
 		d->scheduled_waiting_time = lod.scheduled_waiting_time;
 
+		if (calling_settings.DispatchScheduleRouteIDEnabled()) {
+			const auto schedule_count = lod.v->orders->GetScheduledDispatchScheduleCount();
+			StateTicks best_tick = StateTicks{INT64_MIN};
+			uint best_schedule = 0;
+			const LastDispatchRecord *best_record = nullptr;
+			auto process_record = [&](uint schedule_index, const LastDispatchRecord &record) {
+				if (schedule_index >= schedule_count) return;
+
+				if (record.dispatched > best_tick) {
+					best_tick = record.dispatched;
+					best_schedule = schedule_index;
+					best_record = &record;
+				}
+			};
+			for (const std::pair<const uint16_t, LastDispatchRecord> &record_pair : lod.v->dispatch_records) {
+				process_record(record_pair.first, record_pair.second);
+			}
+			for (const std::pair<const uint, LastDispatchRecord> &record_pair : lod.dispatch_records) {
+				process_record(record_pair.first, record_pair.second);
+			}
+
+			if (best_record != nullptr && best_record->route_id != 0) {
+				const DispatchSchedule &schedule = lod.v->orders->GetDispatchScheduleByIndex(best_schedule);
+				d->schedule_route_id = schedule.GetSupplementaryName(DispatchSchedule::SupplementaryNameType::RouteID, best_record->route_id);
+			}
+		}
+
 		ScheduledDispatchVehicleRecords &dispatch_records = lod.dispatch_records;
 
 		const uint order_iteration_limit = lod.v->GetNumOrders() * (lod.have_veh_dispatch_conditionals ? 8 : 1);
@@ -1402,8 +1429,9 @@ private:
 	DeparturesConditionalJumpResult EvaluateConditionalOrder(const Order *order, StateTicks eval_tick);
 	std::pair<const Order *, StateTicks> EvaluateDepartureFromSourceOrder(const Order *source_order, StateTicks departure_tick);
 	void EvaluateSlotIndex(uint slot_index, DepartureTypes types);
-	void EvaluateSlotIndexForType(uint slot_index, DepartureType type);
+	void EvaluateSlotIndexForType(DepartureType type);
 	void CheckSourceOrderArrival(const Order *order, StateTicks departure_tick);
+	std::string_view GetRouteID() const;
 };
 
 DeparturesConditionalJumpResult DepartureListScheduleModeSlotEvaluator::EvaluateConditionalOrder(const Order *order, StateTicks eval_tick) {
@@ -1458,6 +1486,7 @@ std::pair<const Order *, StateTicks> DepartureListScheduleModeSlotEvaluator::Eva
 	if (this->calling_settings.VehicleCycleTrackingEnabled() && (source_order == this->start_order || this->source.OrderMatches(source_order))) {
 		d.sequence_id = this->sequence_id_handler.last_sequence_id;
 	}
+	if (this->calling_settings.DispatchScheduleRouteIDEnabled()) d.schedule_route_id = this->GetRouteID();
 
 	/* We'll be going through the order list later, so we need a separate variable for it. */
 	const Order *order = source_order;
@@ -1565,6 +1594,16 @@ void DepartureListScheduleModeSlotEvaluator::CheckSourceOrderArrival(const Order
 	}
 }
 
+std::string_view DepartureListScheduleModeSlotEvaluator::GetRouteID() const
+{
+	const DispatchSlot &slot = this->ds.GetScheduledDispatch()[this->slot_index];
+	if (slot.route_id != 0) {
+		return this->ds.GetSupplementaryName(DispatchSchedule::SupplementaryNameType::RouteID, slot.route_id);
+	} else {
+		return {};
+	}
+}
+
 void DepartureListScheduleModeSlotEvaluator::EvaluateSlotIndex(uint slot_index, DepartureTypes types)
 {
 	this->slot_index = slot_index;
@@ -1579,11 +1618,11 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateSlotIndex(uint slot_index, 
 	});
 
 	for (DepartureType type : types.IterateSetBits()) {
-		this->EvaluateSlotIndexForType(slot_index, type);
+		this->EvaluateSlotIndexForType(type);
 	}
 }
 
-void DepartureListScheduleModeSlotEvaluator::EvaluateSlotIndexForType(uint slot_index, DepartureType type)
+void DepartureListScheduleModeSlotEvaluator::EvaluateSlotIndexForType(DepartureType type)
 {
 	StateTicks departure_tick = this->slot;
 	const Order *order = this->start_order;
@@ -1624,6 +1663,7 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateSlotIndexForType(uint slot_
 			d.order = order;
 			d.scheduled_waiting_time = Departure::INVALID_WAIT_TICKS;
 			if (this->calling_settings.VehicleCycleTrackingEnabled()) d.sequence_id = this->sequence_id_handler.last_sequence_id;
+			if (this->calling_settings.DispatchScheduleRouteIDEnabled()) d.schedule_route_id = this->GetRouteID();
 			if (ProcessArrivalHistory(&d, this->arrival_history, (departure_tick - this->slot).AsTicks(), this->source, this->calling_settings)) {
 				this->result.push_back(std::make_unique<Departure>(std::move(d)));
 			}
@@ -1759,6 +1799,7 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateSlots(DepartureTypes types)
 				std::unique_ptr<Departure> d = std::make_unique<Departure>(*this->result[j]); // Clone departure
 				d->ShiftTimes(StateTicksDelta{adjustment});
 				if (d->sequence_id != 0) d->sequence_id += static_cast<uint32_t>(i);
+				if (this->calling_settings.DispatchScheduleRouteIDEnabled()) d->schedule_route_id = this->GetRouteID();
 				this->result.push_back(std::move(d));
 			}
 		}
@@ -1770,6 +1811,7 @@ void DepartureListScheduleModeSlotEvaluator::EvaluateSlots(DepartureTypes types)
 				std::unique_ptr<Departure> d = std::make_unique<Departure>(*this->result[j]); // Clone departure
 				d->ShiftTimes(StateTicksDelta{adjustment});
 				if (d->sequence_id != 0) d->sequence_id += seq_adjustment;
+				if (this->calling_settings.DispatchScheduleRouteIDEnabled()) d->schedule_route_id = this->GetRouteID();
 				this->result.push_back(std::move(d));
 			}
 		}

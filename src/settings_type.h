@@ -388,6 +388,7 @@ struct GUISettings : public TimeSettings {
 	bool        departure_show_company;                          ///< whether to show company names with departures
 	bool        departure_show_vehicle_type;                     ///< whether to show vehicle type icons with departures
 	bool        departure_show_vehicle_color;                    ///< whether to show vehicle type icons in silver instead of orange
+	bool        departure_show_schedule_route_id;                ///< whether to show scheduled dispatch route IDs
 	bool        departure_larger_font;                           ///< whether to show the calling at list in a larger font
 	bool        departure_destination_type;                      ///< whether to show destination types for ports and airports
 	bool        departure_smart_terminus;                        ///< whether to only show passenger services

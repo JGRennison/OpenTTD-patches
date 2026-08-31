@@ -121,6 +121,7 @@ struct Departure {
 	Ticks dispatch_offset = 0;             ///< Tick offset from original dispatch order, if applicable
 	uint32_t sequence_id = 0;              ///< Nominal sequence ID, used in determining vehicle_idx
 	uint32_t vehicle_idx = 0;              ///< Nominal vehicle index within a shared order group
+	std::string schedule_route_id;         ///< Scheduled dispatch route ID
 
 	inline bool operator==(const Departure& d) const {
 		if (this->calling_at.size() != d.calling_at.size()) return false;
@@ -201,6 +202,7 @@ private:
 			SmartTerminusEnabled,
 			DispatchArrivalTicksEnabled,
 			VehicleCycleTrackingEnabled,
+			DispatchScheduleRouteIDEnabled,
 		};
 	};
 
@@ -214,6 +216,7 @@ public:
 	inline bool SmartTerminusEnabled() const { return HasBit(this->flags, FlagBits::SmartTerminusEnabled); }
 	inline bool DispatchArrivalTicksEnabled() const { return HasBit(this->flags, FlagBits::DispatchArrivalTicksEnabled); }
 	inline bool VehicleCycleTrackingEnabled() const { return HasBit(this->flags, FlagBits::VehicleCycleTrackingEnabled); }
+	inline bool DispatchScheduleRouteIDEnabled() const { return HasBit(this->flags, FlagBits::DispatchScheduleRouteIDEnabled); }
 
 	inline void SetViaMode(bool allow_via, bool check_show_as_via_type)
 	{
@@ -244,6 +247,10 @@ public:
 	inline void SetVehicleCycleTrackingEnabled(bool enabled)
 	{
 		AssignBit(this->flags, FlagBits::VehicleCycleTrackingEnabled, enabled);
+	}
+	inline void SetDispatchScheduleRouteIDEnabled(bool enabled)
+	{
+		AssignBit(this->flags, FlagBits::DispatchScheduleRouteIDEnabled, enabled);
 	}
 
 	bool IsDeparture(const Order *order, const DepartureOrderDestinationDetector &source) const;
