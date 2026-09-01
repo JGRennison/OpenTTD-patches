@@ -179,7 +179,7 @@ void FindRandomTriggerAnalyser::AnalyseDeterministicSpriteGroup(const Determinis
 
 void FindRandomTriggerAnalyser::AnalyseRandomisedSpriteGroup(const RandomizedSpriteGroup *rsg)
 {
-	if (rsg->triggers != 0 || rsg->cmp_mode == RSG_CMP_ALL) {
+	if (rsg->triggers != 0 || rsg->cmp_mode == RandomizedSpriteGroupCompareMode::All) {
 		this->found_trigger = true;
 		return;
 	}
@@ -199,7 +199,7 @@ void IndustryLocationAnalyser::AnalyseDeterministicSpriteGroup(const Determinist
 
 	for (const auto &adjust : dsg->adjusts) {
 		if (adjust.variable == 0x7E) this->AnalyseGroup(adjust.subroutine);
-		if (dsg->var_scope == VSG_SCOPE_SELF) {
+		if (dsg->var_scope == VarSpriteGroupScope::Self) {
 			if (adjust.variable == 0x43 || adjust.variable == 0x8B) {
 				this->expensive_location_cb = true;
 				return; // early exit
@@ -238,12 +238,12 @@ void IndustryTileDataAnalyser::AnalyseDeterministicSpriteGroup(const Determinist
 			this->AnalyseGroup(dsg->default_group);
 			return;
 		}
-		if (IsSingleVariableLoadAdjustOfSpecificVariable(adjust, 0x44, 0xFF) && dsg->var_scope == VSG_SCOPE_PARENT) {
+		if (IsSingleVariableLoadAdjustOfSpecificVariable(adjust, 0x44, 0xFF) && dsg->var_scope == VarSpriteGroupScope::Parent) {
 			/* Layout index switch */
 			this->AnalyseGroup(GetSwitchTargetForValue(dsg, this->cfg.layout_index));
 			return;
 		}
-		if (adjust.variable == 0x43 && dsg->var_scope == VSG_SCOPE_SELF) {
+		if (adjust.variable == 0x43 && dsg->var_scope == VarSpriteGroupScope::Self) {
 			const uint32_t effective_mask = adjust.and_mask << adjust.shift_num;
 			if (effective_mask == 0xFFFF || effective_mask == 0xFF00 || effective_mask == 0x00FF) {
 				/* Relative position switch */
@@ -294,10 +294,10 @@ void IndustryTileDataAnalyser::AnalyseDeterministicSpriteGroup(const Determinist
 
 	for (const auto &adjust : dsg->adjusts) {
 		if (adjust.variable == 0x7E) this->AnalyseGroup(adjust.subroutine);
-		if (dsg->var_scope == VSG_SCOPE_SELF && (adjust.variable == 0x44 || (adjust.variable == 0x61 && adjust.parameter == 0))) {
+		if (dsg->var_scope == VarSpriteGroupScope::Self && (adjust.variable == 0x44 || (adjust.variable == 0x61 && adjust.parameter == 0))) {
 			*(this->cfg.result_mask) &= ~this->check_mask;
 		}
-		if ((dsg->var_scope == VSG_SCOPE_SELF && adjust.variable == 0x61) || (dsg->var_scope == VSG_SCOPE_PARENT && adjust.variable == 0x63)) {
+		if ((dsg->var_scope == VarSpriteGroupScope::Self && adjust.variable == 0x61) || (dsg->var_scope == VarSpriteGroupScope::Parent && adjust.variable == 0x63)) {
 			this->anim_state_at_offset = true;
 			return;
 		}
@@ -310,7 +310,7 @@ void IndustryTileDataAnalyser::AnalyseDeterministicSpriteGroup(const Determinist
 
 void CallbackOperationAnalyser::AnalyseDeterministicSpriteGroup(const DeterministicSpriteGroup *dsg)
 {
-	if ((this->mode == ACOM_CB_VAR || this->mode == ACOM_CB_REFIT_CAPACITY) && dsg->var_scope != VSG_SCOPE_SELF) {
+	if ((this->mode == ACOM_CB_VAR || this->mode == ACOM_CB_REFIT_CAPACITY) && dsg->var_scope != VarSpriteGroupScope::Self) {
 		this->result_flags |= ACORF_CB_REFIT_CAP_NON_WHITELIST_FOUND;
 	}
 
@@ -429,7 +429,7 @@ void CallbackOperationAnalyser::AnalyseRandomisedSpriteGroup(const RandomizedSpr
 {
 	this->result_flags |= ACORF_CB_REFIT_CAP_NON_WHITELIST_FOUND;
 
-	if (this->mode == ACOM_CB_VAR && (rsg->triggers != 0 || rsg->cmp_mode == RSG_CMP_ALL)) {
+	if (this->mode == ACOM_CB_VAR && (rsg->triggers != 0 || rsg->cmp_mode == RandomizedSpriteGroupCompareMode::All)) {
 		this->callbacks_used |= SGCU_RANDOM_TRIGGER;
 	}
 

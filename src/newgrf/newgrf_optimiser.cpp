@@ -2721,7 +2721,7 @@ static bool IsVariableInlinable(uint16_t variable, GrfSpecFeature feature)
 static void OptimiseVarAction2CheckInliningCandidate(DeterministicSpriteGroup *group, std::vector<DeterministicSpriteGroupAdjust> &saved_adjusts)
 {
 	if (HasGrfOptimiserFlag(NGOF_NO_OPT_VARACT2_PROC_INLINE)) return;
-	if (group->adjusts.size() > MAX_PROC_INLINE_ADJUST_COUNT || !group->IsCalculatedResult() || group->var_scope != VSG_SCOPE_SELF) return;
+	if (group->adjusts.size() > MAX_PROC_INLINE_ADJUST_COUNT || !group->IsCalculatedResult() || group->var_scope != VarSpriteGroupScope::Self) return;
 
 	for (const DeterministicSpriteGroupAdjust &adjust : group->adjusts) {
 		uint variable = adjust.variable;

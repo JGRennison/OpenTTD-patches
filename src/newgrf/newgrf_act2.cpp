@@ -535,19 +535,19 @@ static void NewSpriteGroup(ByteReader &buf)
 			act_group = group;
 
 			if (stype == STYPE_DETERMINISTIC_RELATIVE || stype == STYPE_DETERMINISTIC_RELATIVE_2) {
-				group->var_scope = (feature <= GrfSpecFeature::Aircraft) ? VSG_SCOPE_RELATIVE : VSG_SCOPE_SELF;
+				group->var_scope = (feature <= GrfSpecFeature::Aircraft) ? VarSpriteGroupScope::Relative : VarSpriteGroupScope::Self;
 				group->var_scope_count = var_scope_count;
 
-				group->size = DSG_SIZE_DWORD;
+				group->size = DeterministicSpriteGroupSize::DWord;
 				varsize = 4;
 			} else {
-				group->var_scope = HasBit(type, 1) ? VSG_SCOPE_PARENT : VSG_SCOPE_SELF;
+				group->var_scope = HasBit(type, 1) ? VarSpriteGroupScope::Parent : VarSpriteGroupScope::Self;
 
 				switch (GB(type, 2, 2)) {
 					default: NOT_REACHED();
-					case 0: group->size = DSG_SIZE_BYTE;  varsize = 1; break;
-					case 1: group->size = DSG_SIZE_WORD;  varsize = 2; break;
-					case 2: group->size = DSG_SIZE_DWORD; varsize = 4; break;
+					case 0: group->size = DeterministicSpriteGroupSize::Byte;  varsize = 1; break;
+					case 1: group->size = DeterministicSpriteGroupSize::Word;  varsize = 2; break;
+					case 2: group->size = DeterministicSpriteGroupSize::DWord; varsize = 4; break;
 				}
 			}
 
@@ -689,16 +689,16 @@ static void NewSpriteGroup(ByteReader &buf)
 			group->nfo_line = _cur_gps.nfo_line;
 			if (_action6_override_active) group->sg_flags |= SGF_ACTION6;
 			act_group = group;
-			group->var_scope = HasBit(type, 1) ? VSG_SCOPE_PARENT : VSG_SCOPE_SELF;
+			group->var_scope = HasBit(type, 1) ? VarSpriteGroupScope::Parent : VarSpriteGroupScope::Self;
 
 			if (HasBit(type, 2)) {
-				if (feature <= GrfSpecFeature::Aircraft) group->var_scope = VSG_SCOPE_RELATIVE;
+				if (feature <= GrfSpecFeature::Aircraft) group->var_scope = VarSpriteGroupScope::Relative;
 				group->var_scope_count = ParseRelativeScopeByte(buf.ReadByte());
 			}
 
 			uint8_t triggers = buf.ReadByte();
-			group->triggers       = GB(triggers, 0, 7);
-			group->cmp_mode       = HasBit(triggers, 7) ? RSG_CMP_ALL : RSG_CMP_ANY;
+			group->triggers = GB(triggers, 0, 7);
+			group->cmp_mode = HasBit(triggers, 7) ? RandomizedSpriteGroupCompareMode::All : RandomizedSpriteGroupCompareMode::Any;
 			group->lowest_randbit = buf.ReadByte();
 
 			uint8_t num_groups = buf.ReadByte();

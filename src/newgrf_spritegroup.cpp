@@ -168,7 +168,7 @@ static inline uint32_t GetVariable(const ResolverObject &object, ScopeResolver *
 /**
  * Get a resolver for the \a scope.
  * @param scope The scope to resolve.
- * @param relative The relative in case of a #VSG_SCOPE_RELATIVE.
+ * @param relative The relative in case of a #VarSpriteGroupScope::Relative.
  * @return The resolver for the requested scope.
  */
 /* virtual */ ScopeResolver *ResolverObject::GetScope(VarSpriteGroupScope scope, VarSpriteGroupScopeOffset relative)
@@ -248,9 +248,9 @@ static U EvalAdjustT(const DeterministicSpriteGroupAdjust &adjust, ScopeResolver
 uint32_t EvaluateDeterministicSpriteGroupAdjust(DeterministicSpriteGroupSize size, const DeterministicSpriteGroupAdjust &adjust, ScopeResolver *scope, uint32_t last_value, uint32_t value)
 {
 	switch (size) {
-		case DSG_SIZE_BYTE:  return EvalAdjustT<uint8_t,  int8_t> (adjust, scope, last_value, value); break;
-		case DSG_SIZE_WORD:  return EvalAdjustT<uint16_t, int16_t>(adjust, scope, last_value, value); break;
-		case DSG_SIZE_DWORD: return EvalAdjustT<uint32_t, int32_t>(adjust, scope, last_value, value); break;
+		case DeterministicSpriteGroupSize::Byte:  return EvalAdjustT<uint8_t,  int8_t> (adjust, scope, last_value, value); break;
+		case DeterministicSpriteGroupSize::Word:  return EvalAdjustT<uint16_t, int16_t>(adjust, scope, last_value, value); break;
+		case DeterministicSpriteGroupSize::DWord: return EvalAdjustT<uint32_t, int32_t>(adjust, scope, last_value, value); break;
 		default: NOT_REACHED();
 	}
 }
@@ -295,7 +295,7 @@ const SpriteGroup *DeterministicSpriteGroup::Resolve(ResolverObject &object) con
 		if (adjust.variable == 0x7E) {
 			const Vehicle *relative_scope_vehicle = nullptr;
 			VarSpriteGroupScopeOffset relative_scope_cached_count = 0;
-			if (this->var_scope == VSG_SCOPE_RELATIVE) {
+			if (this->var_scope == VarSpriteGroupScope::Relative) {
 				/* Save relative scope vehicle in case it will be changed during the procedure */
 				VehicleResolverObject *veh_object = dynamic_cast<VehicleResolverObject *>(&object);
 				if (veh_object != nullptr) {
@@ -334,9 +334,9 @@ const SpriteGroup *DeterministicSpriteGroup::Resolve(ResolverObject &object) con
 		}
 
 		switch (this->size) {
-			case DSG_SIZE_BYTE:  value = EvalAdjustT<uint8_t,  int8_t> (adjust, scope, last_value, value, &iter); break;
-			case DSG_SIZE_WORD:  value = EvalAdjustT<uint16_t, int16_t>(adjust, scope, last_value, value, &iter); break;
-			case DSG_SIZE_DWORD: value = EvalAdjustT<uint32_t, int32_t>(adjust, scope, last_value, value, &iter); break;
+			case DeterministicSpriteGroupSize::Byte:  value = EvalAdjustT<uint8_t,  int8_t> (adjust, scope, last_value, value, &iter); break;
+			case DeterministicSpriteGroupSize::Word:  value = EvalAdjustT<uint16_t, int16_t>(adjust, scope, last_value, value, &iter); break;
+			case DeterministicSpriteGroupSize::DWord: value = EvalAdjustT<uint32_t, int32_t>(adjust, scope, last_value, value, &iter); break;
 			default: NOT_REACHED();
 		}
 		last_value = value;
@@ -404,7 +404,7 @@ const SpriteGroup *RandomizedSpriteGroup::Resolve(ResolverObject &object) const
 	if (object.callback == CBID_RANDOM_TRIGGER) {
 		/* Handle triggers */
 		uint8_t match = this->triggers & object.GetWaitingRandomTriggers();
-		bool res = (this->cmp_mode == RSG_CMP_ANY) ? (match != 0) : (match == this->triggers);
+		bool res = (this->cmp_mode == RandomizedSpriteGroupCompareMode::Any) ? (match != 0) : (match == this->triggers);
 
 		if (res) {
 			object.AddUsedRandomTriggers(match);
@@ -492,14 +492,13 @@ static const char *_dsg_op_special_names[] {
 };
 static_assert(lengthof(_dsg_op_special_names) == DSGA_OP_SPECIAL_END - DSGA_OP_TERNARY);
 
-static const char *_sg_scope_names[] {
+static EnumIndexArray<const char *, VarSpriteGroupScope, VarSpriteGroupScope::End> _sg_scope_names{
 	"SELF",
 	"PARENT",
 	"RELATIVE",
 };
-static_assert(lengthof(_sg_scope_names) == VSG_END);
 
-static const char *_sg_size_names[] {
+static EnumIndexArray<const char *, DeterministicSpriteGroupSize, static_cast<DeterministicSpriteGroupSize>(3)> _sg_size_names{
 	"BYTE",
 	"WORD",
 	"DWORD",
@@ -684,7 +683,7 @@ void SpriteGroupDumper::DumpSpriteGroup(format_buffer &buffer, const SpriteGroup
 	});
 
 	auto get_scope_name = format_lambda([&](format_target &out, VarSpriteGroupScope var_scope, VarSpriteGroupScopeOffset var_scope_count) {
-		if (var_scope == VSG_SCOPE_RELATIVE) {
+		if (var_scope == VarSpriteGroupScope::Relative) {
 			out.format("{}[{}, ", _sg_scope_names[var_scope], _sg_relative_scope_modes[GB(var_scope_count, 8, 2)]);
 			uint8_t offset = GB(var_scope_count, 0, 8);
 			if (HasBit(var_scope_count, 15)) {
@@ -853,7 +852,7 @@ void SpriteGroupDumper::DumpSpriteGroup(format_buffer &buffer, const SpriteGroup
 			}
 
 			print("Random ({}, {}, triggers: {:X}, lowest_randbit: {:X}, groups: {}){} [{}]",
-					get_scope_name(rsg->var_scope, rsg->var_scope_count), rsg->cmp_mode == RSG_CMP_ANY ? "ANY" : "ALL",
+					get_scope_name(rsg->var_scope, rsg->var_scope_count), rsg->cmp_mode == RandomizedSpriteGroupCompareMode::Any ? "ANY" : "ALL",
 					rsg->triggers, rsg->lowest_randbit, rsg->groups.size(), extra_info(), rsg->nfo_line);
 			emit_start();
 			std::string sub_padding(padding);

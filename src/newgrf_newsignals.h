@@ -95,10 +95,10 @@ struct NewSignalsResolverObject : public ResolverObject {
 	NewSignalsResolverObject(const GRFFile *grffile, TileIndex tile, TileContext context, uint32_t param1, uint32_t param2,
 			CustomSignalSpriteContext signal_context, uint8_t signal_style, const TraceRestrictProgram *prog = nullptr, uint z = 0);
 
-	ScopeResolver *GetScope(VarSpriteGroupScope scope = VSG_SCOPE_SELF, VarSpriteGroupScopeOffset relative = 0) override
+	ScopeResolver *GetScope(VarSpriteGroupScope scope = VarSpriteGroupScope::Self, VarSpriteGroupScopeOffset relative = 0) override
 	{
 		switch (scope) {
-			case VSG_SCOPE_SELF: return &this->newsignals_scope;
+			case VarSpriteGroupScope::Self: return &this->newsignals_scope;
 			default:             return ResolverObject::GetScope(scope, relative);
 		}
 	}

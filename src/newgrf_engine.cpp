@@ -341,12 +341,12 @@ static uint8_t MapAircraftMovementAction(const Aircraft *v)
 /* virtual */ ScopeResolver *VehicleResolverObject::GetScope(VarSpriteGroupScope scope, VarSpriteGroupScopeOffset relative)
 {
 	switch (scope) {
-		case VSG_SCOPE_SELF:   return &this->self_scope;
-		case VSG_SCOPE_PARENT: return &this->parent_scope;
-		case VSG_SCOPE_RELATIVE: {
+		case VarSpriteGroupScope::Self:   return &this->self_scope;
+		case VarSpriteGroupScope::Parent: return &this->parent_scope;
+		case VarSpriteGroupScope::Relative: {
 			int32_t count = GB(relative, 0, 8);
 			if (this->self_scope.v != nullptr && (relative != this->cached_relative_count || HasBit(relative, 15))) {
-				/* Note: This caching only works as long as the VSG_SCOPE_RELATIVE cannot be used in
+				/* Note: This caching only works as long as the VarSpriteGroupScope::Relative cannot be used in
 				 *       VarAct2 with procedure calls. */
 				/* Therefore procedure calls made from within a relative scope must save and restore the cached relative scope */
 				if (HasBit(relative, 15)) count = GetRegister(0x100);
@@ -1654,7 +1654,7 @@ void FillNewGRFVehicleCache(const Vehicle *v)
 		/* Only resolve when the cache isn't valid. */
 		if (HasBit(v->grf_cache.cache_valid, cache_entry[1])) continue;
 		GetVariableExtra extra;
-		ro.GetScope(VSG_SCOPE_SELF)->GetVariable(cache_entry[0], 0, extra);
+		ro.GetScope(VarSpriteGroupScope::Self)->GetVariable(cache_entry[0], 0, extra);
 	}
 
 	/* Make sure really all bits are set. */

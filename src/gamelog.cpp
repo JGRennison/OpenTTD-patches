@@ -186,28 +186,31 @@ void GamelogPrint(format_target &buffer)
 					buffer.format("modified, _openttd_newgrf_version = 0x{:08x}", lc->revision.newgrf);
 					break;
 
-				case GamelogChangeType::OldVer:
+				case GamelogChangeType::OldVer: {
 					/* The game was loaded from before 0.7.0-beta1. */
 					buffer.append("Conversion from ");
-					switch (lc->oldver.type) {
-						default: NOT_REACHED();
-						case SGT_OTTD:
+					const SavegameType stype = (lc->oldver.type > std::numeric_limits<std::underlying_type_t<SavegameType>>::max()) ? SavegameType::Invalid : static_cast<SavegameType>(lc->oldver.type);
+					switch (stype) {
+						default:
+							buffer.append("Unknown savegame type");
+							break;
+
+						case SavegameType::OTTD:
 							buffer.format("OTTD savegame without gamelog: version {}, {}",
 								GB(lc->oldver.version, 8, 16), GB(lc->oldver.version, 0, 8));
 							break;
 
-						case SGT_TTO:
+						case SavegameType::TTO:
 							buffer.append("TTO savegame");
 							break;
 
-						case SGT_TTD:
+						case SavegameType::TTD:
 							buffer.append("TTD savegame");
 							break;
 
-						case SGT_TTDP1:
-						case SGT_TTDP2:
-							buffer.format("TTDP savegame, {} format",
-								lc->oldver.type == SGT_TTDP1 ? "old" : "new");
+						case SavegameType::TTDP1:
+						case SavegameType::TTDP2:
+							buffer.format("TTDP savegame, {} format", stype == SavegameType::TTDP1 ? "old" : "new");
 							if (lc->oldver.version != 0) {
 								buffer.format(", TTDP version {}.{}.{}.{}",
 									GB(lc->oldver.version, 24, 8), GB(lc->oldver.version, 20, 4),
@@ -216,6 +219,7 @@ void GamelogPrint(format_target &buffer)
 							break;
 					}
 					break;
+				}
 
 				case GamelogChangeType::Setting:
 					/* A setting with the SF_NO_NETWORK flag got changed; these settings usually affect NewGRFs, such as road side or wagon speed limits. */
@@ -422,8 +426,8 @@ void GamelogOldver()
 	LoggedChange *lc = GamelogChange(GamelogChangeType::OldVer);
 	if (lc == nullptr) return;
 
-	lc->oldver.type = _savegame_type;
-	lc->oldver.version = (_savegame_type == SGT_OTTD ? ((uint32_t)_sl_version << 8 | _sl_minor_version) : _ttdp_version);
+	lc->oldver.type = to_underlying(_savegame_type);
+	lc->oldver.version = (_savegame_type == SavegameType::OTTD ? ((uint32_t)_sl_version << 8 | _sl_minor_version) : _ttdp_version);
 }
 
 /**
