@@ -11,7 +11,7 @@
 #define ROAD_H
 
 #include "road_type.h"
-#include "gfx_type.h"
+#include "sprite_id_type.h"
 #include "core/flatset_type.hpp"
 #include "strings_id_type.h"
 #include "date_type.h"

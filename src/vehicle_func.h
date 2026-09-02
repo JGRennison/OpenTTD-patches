@@ -10,7 +10,7 @@
 #ifndef VEHICLE_FUNC_H
 #define VEHICLE_FUNC_H
 
-#include "gfx_type.h"
+#include "sprite_id_type.h"
 #include "direction_type.h"
 #include "command_type_fwd_declare.h"
 #include "vehicle_type.h"

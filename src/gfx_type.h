@@ -12,22 +12,11 @@
 
 #include "core/enum_type.hpp"
 #include "core/geometry_type.hpp"
+#include "sprite_id_type.h"
 #include "strings_type_trait.h"
 #include "zoom_type.h"
 #include <bit>
 #include <vector>
-
-typedef uint32_t SpriteID;  ///< The number of a sprite, without mapping bits and colourtables
-typedef uint32_t PaletteID; ///< The number of the palette
-typedef uint32_t CursorID;  ///< The number of the cursor (sprite)
-
-/** Combination of a palette sprite and a 'real' sprite */
-struct PalSpriteID {
-	SpriteID sprite{};  ///< The 'real' sprite
-	PaletteID pal{};    ///< The palette (use \c PAL_NONE) if not needed)
-
-	auto operator<=>(const PalSpriteID&) const = default;
-};
 
 enum WindowKeyCodes : uint16_t {
 	WKC_SHIFT = 0x8000,

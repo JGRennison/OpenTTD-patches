@@ -10,7 +10,7 @@
 #ifndef TILEHIGHLIGHT_FUNC_H
 #define TILEHIGHLIGHT_FUNC_H
 
-#include "gfx_type.h"
+#include "sprite_id_type.h"
 #include "tilehighlight_type.h"
 #include "track_type.h"
 

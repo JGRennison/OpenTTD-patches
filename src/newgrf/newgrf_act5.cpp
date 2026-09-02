@@ -9,9 +9,9 @@
 
 #include "../stdafx.h"
 #include "../debug.h"
-#include "../gfx_type.h"
 #include "../newgrf_act5.h"
 #include "../slope_type.h"
+#include "../sprite_id_type.h"
 #include "../spritecache.h"
 #include "../string_func.h"
 #include "newgrf_bytereader.h"

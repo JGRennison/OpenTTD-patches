@@ -10,8 +10,6 @@
 #ifndef TIMER_GAME_TICK_H
 #define TIMER_GAME_TICK_H
 
-#include "../gfx_type.h"
-
 /**
  * Timer that represents the game-ticks. It will pause when the game is paused.
  *

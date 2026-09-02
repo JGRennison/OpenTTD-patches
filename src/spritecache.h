@@ -10,7 +10,7 @@
 #ifndef SPRITECACHE_H
 #define SPRITECACHE_H
 
-#include "gfx_type.h"
+#include "sprite_id_type.h"
 #include "zoom_type.h"
 #include "spriteloader/spriteloader.hpp"
 #include "3rdparty/robin_hood/robin_hood.h"

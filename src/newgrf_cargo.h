@@ -12,7 +12,7 @@
 
 #include "newgrf_callbacks.h"
 #include "cargo_type.h"
-#include "gfx_type.h"
+#include "sprite_id_type.h"
 
 /* Forward declarations of structs used */
 struct CargoSpec;

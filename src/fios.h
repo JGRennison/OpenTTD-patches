@@ -10,7 +10,6 @@
 #ifndef FIOS_H
 #define FIOS_H
 
-#include "gfx_type.h"
 #include "company_base.h"
 #include "newgrf_config.h"
 #include "network/core/tcp_content_type.h"

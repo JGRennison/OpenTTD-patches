@@ -10,7 +10,7 @@
 #ifndef NEWGRF_ACT5_H
 #define NEWGRF_ACT5_H
 
-#include "gfx_type.h"
+#include "sprite_id_type.h"
 
 /** The type of action 5 type. */
 enum Action5BlockType : uint8_t {

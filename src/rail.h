@@ -13,7 +13,7 @@
 #include "engine_type.h"
 #include "rail_type.h"
 #include "track_type.h"
-#include "gfx_type.h"
+#include "sprite_id_type.h"
 #include "core/enum_type.hpp"
 #include "core/flatset_type.hpp"
 #include "slope_type.h"

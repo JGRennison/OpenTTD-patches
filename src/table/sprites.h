@@ -38,8 +38,8 @@
 #ifndef SPRITES_H
 #define SPRITES_H
 
-#include "../gfx_type.h"
 #include "../slope_constants.h"
+#include "../sprite_id_type.h"
 
 static const SpriteID SPR_SELECT_TILE  = 752;
 static const SpriteID SPR_DOT          = 774; // corner marker for lower/raise land

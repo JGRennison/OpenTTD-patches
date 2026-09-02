@@ -13,8 +13,6 @@
 #include "newgrf_commons.h"
 #include "newgrf_spritegroup.h"
 #include "rail.h"
-#include "tunnel_map.h"
-#include "gfx_type.h"
 
 #include <vector>
 #include <array>

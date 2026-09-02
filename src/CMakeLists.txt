@@ -519,6 +519,7 @@ add_files(
     source_type.h
     sprite.cpp
     sprite.h
+    sprite_id_type.h
     spritecache.cpp
     spritecache.h
     station.cpp
