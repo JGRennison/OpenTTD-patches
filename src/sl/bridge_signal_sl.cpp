@@ -75,8 +75,8 @@ static void Save_XBST()
 }
 
 extern const ChunkHandler bridge_signal_chunk_handlers[] = {
-	{ 'XBSS', Save_XBSS, Load_XBSS, nullptr, nullptr, CH_SPARSE_TABLE },
-	{ 'XBST', Save_XBST, Load_XBST, nullptr, nullptr, CH_TABLE },
+	{ 'XBSS', Save_XBSS, Load_XBSS, nullptr, nullptr, ChunkType::SparseTable },
+	{ 'XBST', Save_XBST, Load_XBST, nullptr, nullptr, ChunkType::Table },
 };
 
 extern const ChunkHandlerTable _bridge_signal_chunk_handlers(bridge_signal_chunk_handlers);

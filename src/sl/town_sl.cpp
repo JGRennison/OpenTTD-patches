@@ -649,9 +649,9 @@ static ChunkSaveLoadSpecialOpResult Special_TNNC(uint32_t chunk_id, ChunkSaveLoa
 
 /** Chunk handler for towns. */
 static const ChunkHandler town_chunk_handlers[] = {
-	{ 'HIDS', Save_HIDS, Load_HIDS, nullptr,   nullptr, CH_TABLE },
-	{ 'CITY', Save_TOWN, Load_TOWN, Ptrs_TOWN, nullptr, CH_TABLE },
-	{ 'TNNC', Save_TNNC, Load_TNNC, nullptr,   nullptr, CH_RIFF,  Special_TNNC },
+	{ 'HIDS', Save_HIDS, Load_HIDS, nullptr,   nullptr, ChunkType::Table },
+	{ 'CITY', Save_TOWN, Load_TOWN, Ptrs_TOWN, nullptr, ChunkType::Table },
+	{ 'TNNC', Save_TNNC, Load_TNNC, nullptr,   nullptr, ChunkType::Riff,  Special_TNNC },
 };
 
 extern const ChunkHandlerTable _town_chunk_handlers(town_chunk_handlers);

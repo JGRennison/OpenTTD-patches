@@ -218,7 +218,7 @@ static const SaveLoad _industry_desc[] = {
 };
 
 struct INDYChunkHandler : ChunkHandler {
-	INDYChunkHandler() : ChunkHandler('INDY', CH_TABLE) {}
+	INDYChunkHandler() : ChunkHandler('INDY', ChunkType::Table) {}
 
 	void Save() const override
 	{
@@ -284,7 +284,7 @@ static const SaveLoad _industry_builder_desc[] = {
 
 /** Industry builder. */
 struct IBLDChunkHandler : ChunkHandler {
-	IBLDChunkHandler() : ChunkHandler('IBLD', CH_TABLE) {}
+	IBLDChunkHandler() : ChunkHandler('IBLD', ChunkType::Table) {}
 
 	void Save() const override
 	{
@@ -315,7 +315,7 @@ static const SaveLoad _industrytype_builder_desc[] = {
 
 /** Industry-type build data. */
 struct ITBLChunkHandler : ChunkHandler {
-	ITBLChunkHandler() : ChunkHandler('ITBL', CH_TABLE) {}
+	ITBLChunkHandler() : ChunkHandler('ITBL', ChunkType::Table) {}
 
 	void Save() const override
 	{

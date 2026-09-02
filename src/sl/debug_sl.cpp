@@ -103,9 +103,9 @@ static void Check_DBGD()
 }
 
 extern const ChunkHandler debug_chunk_handlers[] = {
-	{ 'DBGL',   nullptr, Load_DBGL, nullptr, Check_DBGL, CH_READONLY },
-	{ 'DBGC',   nullptr, Load_DBGC, nullptr, Check_DBGC, CH_READONLY },
-	{ 'DBGD', Save_DBGD, Load_DBGD, nullptr, Check_DBGD, CH_TABLE },
+	{ 'DBGL',   nullptr, Load_DBGL, nullptr, Check_DBGL, ChunkType::ReadOnly },
+	{ 'DBGC',   nullptr, Load_DBGC, nullptr, Check_DBGC, ChunkType::ReadOnly },
+	{ 'DBGD', Save_DBGD, Load_DBGD, nullptr, Check_DBGD, ChunkType::Table },
 };
 
 extern const ChunkHandlerTable _debug_chunk_handlers(debug_chunk_handlers);

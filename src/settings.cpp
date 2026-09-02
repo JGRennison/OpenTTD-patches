@@ -2561,9 +2561,9 @@ static void Check_PATX()
 }
 
 static const ChunkHandler setting_chunk_handlers[] = {
-	{ 'OPTS', nullptr,   Load_OPTS, nullptr, nullptr,    CH_READONLY },
+	{ 'OPTS', nullptr,   Load_OPTS, nullptr, nullptr,    ChunkType::ReadOnly },
 	MakeSaveUpstreamFeatureConditionalLoadUpstreamChunkHandler<'PATS', XSLFI_TABLE_PATS>(Load_PATS, nullptr, Check_PATS),
-	{ 'PATX', nullptr,   Load_PATX, nullptr, Check_PATX, CH_READONLY },
+	{ 'PATX', nullptr,   Load_PATX, nullptr, Check_PATX, ChunkType::ReadOnly },
 };
 
 extern const ChunkHandlerTable _setting_chunk_handlers(setting_chunk_handlers);

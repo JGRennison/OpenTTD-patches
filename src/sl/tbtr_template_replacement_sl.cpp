@@ -42,7 +42,7 @@ static void Load_TMPL_RPLS()
 }
 
 extern const ChunkHandler template_replacement_chunk_handlers[] = {
-	{ 'TRPL', Save_TMPL_RPLS, Load_TMPL_RPLS, nullptr, nullptr, CH_TABLE },
+	{ 'TRPL', Save_TMPL_RPLS, Load_TMPL_RPLS, nullptr, nullptr, ChunkType::Table },
 };
 
 extern const ChunkHandlerTable _template_replacement_chunk_handlers(template_replacement_chunk_handlers);

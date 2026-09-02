@@ -127,7 +127,7 @@ static void Load_NAME()
 
 /** Chunk handlers related to strings. */
 static const ChunkHandler name_chunk_handlers[] = {
-	{ 'NAME', nullptr, Load_NAME, nullptr, nullptr, CH_READONLY },
+	{ 'NAME', nullptr, Load_NAME, nullptr, nullptr, ChunkType::ReadOnly },
 };
 
 extern const ChunkHandlerTable _name_chunk_handlers(name_chunk_handlers);

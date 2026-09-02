@@ -119,7 +119,7 @@ static void Load_ANIT()
  * the animated tile table.
  */
 static const ChunkHandler animated_tile_chunk_handlers[] = {
-	{ 'ANIT', Save_ANIT, Load_ANIT, nullptr, nullptr, CH_TABLE },
+	{ 'ANIT', Save_ANIT, Load_ANIT, nullptr, nullptr, ChunkType::Table },
 };
 
 extern const ChunkHandlerTable _animated_tile_chunk_handlers(animated_tile_chunk_handlers);

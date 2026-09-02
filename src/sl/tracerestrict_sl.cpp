@@ -359,12 +359,12 @@ void AfterLoadTraceRestrict()
 }
 
 extern const ChunkHandler trace_restrict_chunk_handlers[] = {
-	{ 'TRRM', Save_TRRM, Load_TRRM, nullptr, nullptr, CH_SPARSE_TABLE },    // Trace Restrict Mapping chunk
-	{ 'TRRP', Save_TRRP, Load_TRRP, nullptr, nullptr, CH_TABLE },           // Trace Restrict Program Pool chunk
-	{ 'TRRS', Save_TRRS, Load_TRRS, nullptr, nullptr, CH_TABLE },           // Trace Restrict Slot Pool chunk
-	{ 'TRRG', Save_TRRG, Load_TRRG, nullptr, nullptr, CH_TABLE },           // Trace Restrict Slot Group Pool chunk
-	{ 'TRRC', Save_TRRC, Load_TRRC, nullptr, nullptr, CH_TABLE },           // Trace Restrict Counter Pool chunk
-	{ 'TRRB', Save_TRRB, Load_TRRB, nullptr, nullptr, CH_TABLE },           // Trace Restrict Backup chunk
+	{ 'TRRM', Save_TRRM, Load_TRRM, nullptr, nullptr, ChunkType::SparseTable },    // Trace Restrict Mapping chunk
+	{ 'TRRP', Save_TRRP, Load_TRRP, nullptr, nullptr, ChunkType::Table },          // Trace Restrict Program Pool chunk
+	{ 'TRRS', Save_TRRS, Load_TRRS, nullptr, nullptr, ChunkType::Table },          // Trace Restrict Slot Pool chunk
+	{ 'TRRG', Save_TRRG, Load_TRRG, nullptr, nullptr, ChunkType::Table },          // Trace Restrict Slot Group Pool chunk
+	{ 'TRRC', Save_TRRC, Load_TRRC, nullptr, nullptr, ChunkType::Table },          // Trace Restrict Counter Pool chunk
+	{ 'TRRB', Save_TRRB, Load_TRRB, nullptr, nullptr, ChunkType::Table },          // Trace Restrict Backup chunk
 };
 
 extern const ChunkHandlerTable _trace_restrict_chunk_handlers(trace_restrict_chunk_handlers);

@@ -56,7 +56,7 @@ static void SaveReal_GSDT(int)
 }
 
 struct GSDTChunkHandler : ChunkHandler {
-	GSDTChunkHandler() : ChunkHandler('GSDT', CH_TABLE) {}
+	GSDTChunkHandler() : ChunkHandler('GSDT', ChunkType::Table) {}
 
 	void Load() const override
 	{
@@ -155,7 +155,7 @@ static const SaveLoad _game_language_desc[] = {
 };
 
 struct GSTRChunkHandler : ChunkHandler {
-	GSTRChunkHandler() : ChunkHandler('GSTR', CH_TABLE) {}
+	GSTRChunkHandler() : ChunkHandler('GSTR', ChunkType::Table) {}
 
 	void Load() const override
 	{

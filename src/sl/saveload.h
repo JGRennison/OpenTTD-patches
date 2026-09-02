@@ -101,15 +101,15 @@ enum ChunkSaveLoadSpecialOpResult {
 typedef ChunkSaveLoadSpecialOpResult ChunkSaveLoadSpecialProc(uint32_t, ChunkSaveLoadSpecialOp);
 
 /** Type of a chunk. */
-enum ChunkType {
-	CH_RIFF         = 0,
-	CH_ARRAY        = 1,
-	CH_SPARSE_ARRAY = 2,
-	CH_TABLE        = 3,
-	CH_SPARSE_TABLE = 4,
-	CH_EXT_HDR      = 15, ///< Extended chunk header
+enum class ChunkType : uint8_t {
+	Riff           = 0,  ///< 4 bits store the chunk type, 28 bits the number of bytes.
+	Array          = 1,  ///< Contiguous array of elements starting at index 0.
+	SparseArray    = 2,  ///< Array of elements with index for each element.
+	Table          = 3,  ///< An \c Array with a header describing the elements.
+	SparseTable    = 4,  ///< A \c SparseArray with a header describing the elements.
+	ExtendedHeader = 15, ///< Extended chunk header
 
-	CH_READONLY = 0x80,
+	ReadOnly       = 0x80,
 };
 
 /** Handlers and description of chunk. */
@@ -177,7 +177,7 @@ namespace upstream_sl {
 			SlUnreachablePlaceholder,
 			SlUnreachablePlaceholder,
 			SlUnreachablePlaceholder,
-			CH_READONLY
+			ChunkType::ReadOnly
 		};
 		ch.special_proc = [](uint32_t chunk_id, ChunkSaveLoadSpecialOp op) -> ChunkSaveLoadSpecialOpResult {
 			assert(id == chunk_id);
@@ -259,7 +259,7 @@ namespace upstream_sl {
 	template <uint32_t id, SlXvFeatureIndex feature, uint16_t min_version = 1, uint16_t max_version = 0xFFFF>
 	ChunkHandler MakeSaveUpstreamFeatureConditionalLoadUpstreamChunkHandler(ChunkSaveLoadProc *load_proc, ChunkSaveLoadProc *ptrs_proc, ChunkSaveLoadProc *load_check_proc)
 	{
-		return MakeConditionallyUpstreamChunkHandler<id, SaveUpstreamFeatureConditionalLoadUpstreamChunkInfo<feature, min_version, max_version>>(nullptr, load_proc, ptrs_proc, load_check_proc, CH_READONLY);
+		return MakeConditionallyUpstreamChunkHandler<id, SaveUpstreamFeatureConditionalLoadUpstreamChunkInfo<feature, min_version, max_version>>(nullptr, load_proc, ptrs_proc, load_check_proc, ChunkType::ReadOnly);
 	}
 }
 

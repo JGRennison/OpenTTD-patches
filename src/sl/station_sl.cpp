@@ -1181,10 +1181,10 @@ static void Load_DOCK()
 }
 
 static const ChunkHandler station_chunk_handlers[] = {
-	{ 'STNS', nullptr,       Load_STNS,     Ptrs_STNS,     nullptr, CH_READONLY },
-	{ 'STNN', Save_STNN,     Load_STNN,     Ptrs_STNN,     nullptr, CH_TABLE },
+	{ 'STNS', nullptr,       Load_STNS,     Ptrs_STNS,     nullptr, ChunkType::ReadOnly },
+	{ 'STNN', Save_STNN,     Load_STNN,     Ptrs_STNN,     nullptr, ChunkType::Table },
 	MakeUpstreamChunkHandler<'ROAD', GeneralUpstreamChunkLoadInfo>(),
-	{ 'DOCK', nullptr,       Load_DOCK,     nullptr,       nullptr, CH_READONLY },
+	{ 'DOCK', nullptr,       Load_DOCK,     nullptr,       nullptr, ChunkType::ReadOnly },
 };
 
 extern const ChunkHandlerTable _station_chunk_handlers(station_chunk_handlers);

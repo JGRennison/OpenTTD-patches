@@ -27,7 +27,7 @@ static void Load_OBID()
 }
 
 static const ChunkHandler object_chunk_handlers[] = {
-	{ 'OBID', Save_OBID, Load_OBID, nullptr,   nullptr, CH_TABLE },
+	{ 'OBID', Save_OBID, Load_OBID, nullptr,   nullptr, ChunkType::Table },
 	MakeUpstreamChunkHandler<'OBJS', GeneralUpstreamChunkLoadInfo>(),
 };
 

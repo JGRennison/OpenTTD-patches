@@ -450,9 +450,9 @@ static void Ptrs_LGRS()
 }
 
 static const ChunkHandler linkgraph_chunk_handlers[] = {
-	{ 'LGRP', Save_LGRP, Load_LGRP, nullptr,   nullptr, CH_TABLE },
-	{ 'LGRJ', Save_LGRJ, Load_LGRJ, nullptr,   nullptr, CH_TABLE },
-	{ 'LGRS', Save_LGRS, Load_LGRS, Ptrs_LGRS, nullptr, CH_TABLE }
+	{ 'LGRP', Save_LGRP, Load_LGRP, nullptr,   nullptr, ChunkType::Table },
+	{ 'LGRJ', Save_LGRJ, Load_LGRJ, nullptr,   nullptr, ChunkType::Table },
+	{ 'LGRS', Save_LGRS, Load_LGRS, Ptrs_LGRS, nullptr, ChunkType::Table }
 };
 
 extern const ChunkHandlerTable _linkgraph_chunk_handlers(linkgraph_chunk_handlers);

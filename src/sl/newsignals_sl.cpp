@@ -55,7 +55,7 @@ static void Load_NSID()
 }
 
 static const ChunkHandler new_signal_chunk_handlers[] = {
-	{ 'NSID', Save_NSID, Load_NSID, nullptr,   nullptr, CH_TABLE },
+	{ 'NSID', Save_NSID, Load_NSID, nullptr,   nullptr, ChunkType::Table },
 };
 
 extern const ChunkHandlerTable _new_signal_chunk_handlers(new_signal_chunk_handlers);

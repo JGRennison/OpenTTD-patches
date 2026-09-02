@@ -35,7 +35,7 @@ void AfterLoadLabelMaps()
 namespace upstream_sl {
 
 struct RAILChunkHandler : ChunkHandler {
-	RAILChunkHandler() : ChunkHandler('RAIL', CH_TABLE) {}
+	RAILChunkHandler() : ChunkHandler('RAIL', ChunkType::Table) {}
 
 	static inline const SaveLoad description[] = {
 		SLE_VAR(LabelObject<RailTypeLabel>, label, SLE_UINT32),
@@ -70,7 +70,7 @@ struct RAILChunkHandler : ChunkHandler {
 };
 
 struct ROTTChunkHandler : ChunkHandler {
-	ROTTChunkHandler() : ChunkHandler('ROTT', CH_TABLE) {}
+	ROTTChunkHandler() : ChunkHandler('ROTT', ChunkType::Table) {}
 
 	static inline const SaveLoad description[] = {
 		SLE_VAR(LabelObject<RoadTypeLabel>, label, SLE_UINT32),

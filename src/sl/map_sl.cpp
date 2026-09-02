@@ -400,18 +400,18 @@ static ChunkSaveLoadSpecialOpResult Special_MAP_Chunks(uint32_t chunk_id, ChunkS
 }
 
 static const ChunkHandler map_chunk_handlers[] = {
-	{ 'MAPS', Save_MAPS,      Load_MAPS, nullptr, Check_MAPS, CH_TABLE },
-	{ 'MAPT', Save_MAP<MAPT>, Load_MAPT, nullptr, nullptr,    CH_RIFF, Special_MAP_Chunks },
-	{ 'MAPH', Save_MAP<MAPH>, Load_MAPH, nullptr, Check_MAPH, CH_RIFF, Special_MAP_Chunks },
-	{ 'MAPO', Save_MAP<MAP1>, Load_MAP1, nullptr, nullptr,    CH_RIFF, Special_MAP_Chunks },
-	{ 'MAP2', Save_MAP<MAP2>, Load_MAP2, nullptr, nullptr,    CH_RIFF, Special_MAP_Chunks },
-	{ 'M3LO', Save_MAP<MAP3>, Load_MAP3, nullptr, nullptr,    CH_RIFF, Special_MAP_Chunks },
-	{ 'M3HI', Save_MAP<MAP4>, Load_MAP4, nullptr, nullptr,    CH_RIFF, Special_MAP_Chunks },
-	{ 'MAP5', Save_MAP<MAP5>, Load_MAP5, nullptr, nullptr,    CH_RIFF, Special_MAP_Chunks },
-	{ 'MAPE', Save_MAP<MAP6>, Load_MAP6, nullptr, nullptr,    CH_RIFF, Special_MAP_Chunks },
-	{ 'MAP7', Save_MAP<MAP7>, Load_MAP7, nullptr, nullptr,    CH_RIFF, Special_MAP_Chunks },
-	{ 'MAP8', Save_MAP<MAP8>, Load_MAP8, nullptr, nullptr,    CH_RIFF, Special_MAP_Chunks },
-	{ 'WMAP', Save_WMAP,      Load_WMAP, nullptr, nullptr,    CH_RIFF, Special_WMAP },
+	{ 'MAPS', Save_MAPS,      Load_MAPS, nullptr, Check_MAPS, ChunkType::Table },
+	{ 'MAPT', Save_MAP<MAPT>, Load_MAPT, nullptr, nullptr,    ChunkType::Riff, Special_MAP_Chunks },
+	{ 'MAPH', Save_MAP<MAPH>, Load_MAPH, nullptr, Check_MAPH, ChunkType::Riff, Special_MAP_Chunks },
+	{ 'MAPO', Save_MAP<MAP1>, Load_MAP1, nullptr, nullptr,    ChunkType::Riff, Special_MAP_Chunks },
+	{ 'MAP2', Save_MAP<MAP2>, Load_MAP2, nullptr, nullptr,    ChunkType::Riff, Special_MAP_Chunks },
+	{ 'M3LO', Save_MAP<MAP3>, Load_MAP3, nullptr, nullptr,    ChunkType::Riff, Special_MAP_Chunks },
+	{ 'M3HI', Save_MAP<MAP4>, Load_MAP4, nullptr, nullptr,    ChunkType::Riff, Special_MAP_Chunks },
+	{ 'MAP5', Save_MAP<MAP5>, Load_MAP5, nullptr, nullptr,    ChunkType::Riff, Special_MAP_Chunks },
+	{ 'MAPE', Save_MAP<MAP6>, Load_MAP6, nullptr, nullptr,    ChunkType::Riff, Special_MAP_Chunks },
+	{ 'MAP7', Save_MAP<MAP7>, Load_MAP7, nullptr, nullptr,    ChunkType::Riff, Special_MAP_Chunks },
+	{ 'MAP8', Save_MAP<MAP8>, Load_MAP8, nullptr, nullptr,    ChunkType::Riff, Special_MAP_Chunks },
+	{ 'WMAP', Save_WMAP,      Load_WMAP, nullptr, nullptr,    ChunkType::Riff, Special_WMAP },
 };
 
 extern const ChunkHandlerTable _map_chunk_handlers(map_chunk_handlers);

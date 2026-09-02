@@ -18,7 +18,7 @@ namespace upstream_sl {
 struct NewGRFMappingChunkHandler : ChunkHandler {
 	OverrideManagerBase &mapping;
 
-	NewGRFMappingChunkHandler(uint32_t id, OverrideManagerBase &mapping) : ChunkHandler(id, CH_TABLE), mapping(mapping) {}
+	NewGRFMappingChunkHandler(uint32_t id, OverrideManagerBase &mapping) : ChunkHandler(id, ChunkType::Table), mapping(mapping) {}
 	void Save() const override;
 	void Load() const override;
 };

@@ -29,15 +29,15 @@ namespace upstream_sl {
 typedef void AutolengthProc(int);
 
 /** Type of a chunk. */
-enum ChunkType : uint8_t {
-	CH_RIFF = 0,
-	CH_ARRAY = 1,
-	CH_SPARSE_ARRAY = 2,
-	CH_TABLE = 3,
-	CH_SPARSE_TABLE = 4,
+enum class ChunkType : uint8_t {
+	Riff         = 0,   ///< 4 bits store the chunk type, 28 bits the number of bytes.
+	Array        = 1,   ///< Contiguous array of elements starting at index 0.
+	SparseArray  = 2,   ///< Array of elements with index for each element.
+	Table        = 3,   ///< An \c Array with a header describing the elements.
+	SparseTable  = 4,   ///< A \c SparseArray with a header describing the elements.
 
-	CH_TYPE_MASK = 0xf, ///< All ChunkType values have to be within this mask.
-	CH_READONLY, ///< Chunk is never saved.
+	FileTypeMask = 0xF, ///< All ChunkType values that are saved in the file have to be within this mask.
+	ReadOnly,           ///< Chunk is never saved.
 };
 
 /** Handlers and description of chunk. */
@@ -51,7 +51,7 @@ struct ChunkHandler {
 
 	/**
 	 * Save the chunk.
-	 * Must be overridden, unless Chunk type is CH_READONLY.
+	 * Must be overridden, unless Chunk type is ChunkType::ReadOnly.
 	 */
 	virtual void Save() const { NOT_REACHED(); }
 
@@ -112,7 +112,7 @@ public:
 	virtual void LoadCheck([[maybe_unused]] void *object) const {}
 
 	/**
-	 * A post-load callback to fix #SL_REF integers into pointers.
+	 * A post-load callback to fix #SaveLoadType::Reference integers into pointers.
 	 * @param object The object to fix.
 	 */
 	virtual void FixPointers([[maybe_unused]] void *object) const {}
@@ -178,7 +178,7 @@ public:
 	void LoadCheck(void *object) const override { this->LoadCheck(static_cast<TObject *>(object)); }
 
 	/**
-	 * A post-load callback to fix #SL_REF integers into pointers.
+	 * A post-load callback to fix #SaveLoadType::Reference integers into pointers.
 	 * @param object The object to fix.
 	 */
 	virtual void FixPointers([[maybe_unused]] TObject *object) const {}
@@ -283,26 +283,26 @@ enum VarTypes : uint16_t {
 typedef uint16_t VarType;
 
 /** Type of data saved. */
-enum SaveLoadType : uint8_t {
-	SL_VAR         =  0, ///< Save/load a variable.
-	SL_REF         =  1, ///< Save/load a reference.
-	SL_STRUCT      =  2, ///< Save/load a struct.
+enum class SaveLoadType : uint8_t {
+	Variable,        ///< Save/load a variable.
+	Reference,       ///< Save/load a reference.
+	Struct,          ///< Save/load a struct.
 
-	SL_STR         =  3, ///< Save/load a string.
-	SL_STDSTR      =  4, ///< Save/load a \c std::string.
+	StringPtr,       ///< Save/load a string.
+	StdString,       ///< Save/load a \c std::string.
 
-	SL_ARR         =  5, ///< Save/load a fixed-size array of #SL_VAR elements.
-	SL_RING        =  6, ///< Save/load a ring of #SL_VAR elements.
-	SL_VECTOR      =  7, ///< Save/load a vector of #SL_VAR elements.
-	SL_REFLIST     =  8, ///< Save/load a list of #SL_REF elements.
-	SL_STRUCTLIST  =  9, ///< Save/load a list of structs.
+	Array,           ///< Save/load a fixed-size array of #SaveLoadType::Variable elements.
+	Ring,            ///< Save/load a ring of #SaveLoadType::Variable elements.
+	Vector,          ///< Save/load a vector of #SaveLoadType::Variable elements.
+	ReferenceList,   ///< Save/load a list of #SaveLoadType::Reference elements.
+	StructList,      ///< Save/load a list of structs.
 
-	SL_SAVEBYTE    = 10, ///< Save (but not load) a byte.
-	SL_NULL        = 11, ///< Save null-bytes and load to nowhere.
+	SaveByte,        ///< Save (but not load) a byte.
+	Null,            ///< Save null-bytes and load to nowhere.
 
-	SL_REFVECTOR   = 12, ///< Save/load a vector of #SL_REF elements.
+	ReferenceVector, ///< Save/load a vector of #SaveLoadType::Reference elements.
 
-	SL_REFRING,          ///< Save/load a ring of #SL_REF elements.
+	ReferenceRing,   ///< Save/load a ring of #SaveLoadType::Reference elements.
 };
 
 typedef void *SaveLoadAddrProc(void *base, size_t extra);
@@ -410,17 +410,17 @@ inline constexpr size_t SlVarSize(VarType type)
 inline constexpr bool SlCheckVarSize(SaveLoadType cmd, VarType type, size_t length, size_t size)
 {
 	switch (cmd) {
-		case SL_VAR: return SlVarSize(type) == size;
-		case SL_REF: return sizeof(void *) == size;
-		case SL_STR: return sizeof(void *) == size;
-		case SL_STDSTR: return SlVarSize(type) == size;
-		case SL_ARR: return SlVarSize(type) * length <= size; // Partial load of array is permitted.
-		case SL_RING: return sizeof(jgr::ring_buffer<void *>) == size;
-		case SL_VECTOR: return sizeof(std::vector<void *>) == size;
-		case SL_REFLIST: return sizeof(std::list<void *>) == size;
-		case SL_REFVECTOR: return sizeof(std::vector<void *>) == size;
-		case SL_REFRING: return sizeof(jgr::ring_buffer<void *>) == size;
-		case SL_SAVEBYTE: return size == 1;
+		case SaveLoadType::Variable: return SlVarSize(type) == size;
+		case SaveLoadType::Reference: return sizeof(void *) == size;
+		case SaveLoadType::StringPtr: return sizeof(void *) == size;
+		case SaveLoadType::StdString: return SlVarSize(type) == size;
+		case SaveLoadType::Array: return SlVarSize(type) * length <= size; // Partial load of array is permitted.
+		case SaveLoadType::Ring: return sizeof(jgr::ring_buffer<void *>) == size;
+		case SaveLoadType::Vector: return sizeof(std::vector<void *>) == size;
+		case SaveLoadType::ReferenceList: return sizeof(std::list<void *>) == size;
+		case SaveLoadType::ReferenceVector: return sizeof(std::vector<void *>) == size;
+		case SaveLoadType::ReferenceRing: return sizeof(jgr::ring_buffer<void *>) == size;
+		case SaveLoadType::SaveByte: return size == 1;
 		default: NOT_REACHED();
 	}
 }
@@ -477,7 +477,7 @@ inline constexpr size_t SlVarWrapper(size_t offset)
  * @param from     First savegame version that has the field.
  * @param to       Last savegame version that has the field.
  */
-#define SLE_CONDVAR(base, variable, type, from, to) SLE_GENERAL(SL_VAR, base, variable, type, 0, from, to, 0)
+#define SLE_CONDVAR(base, variable, type, from, to) SLE_GENERAL(SaveLoadType::Variable, base, variable, type, 0, from, to, 0)
 
 /**
  * Storage of a variable in some savegame versions.
@@ -488,7 +488,7 @@ inline constexpr size_t SlVarWrapper(size_t offset)
  * @param from     First savegame version that has the field.
  * @param to       Last savegame version that has the field.
  */
-#define SLE_CONDVARNAME(base, variable, name, type, from, to) SLE_GENERAL_NAME(SL_VAR, name, base, variable, type, 0, from, to, 0)
+#define SLE_CONDVARNAME(base, variable, name, type, from, to) SLE_GENERAL_NAME(SaveLoadType::Variable, name, base, variable, type, 0, from, to, 0)
 
 /**
  * Storage of a reference in some savegame versions.
@@ -498,10 +498,10 @@ inline constexpr size_t SlVarWrapper(size_t offset)
  * @param from     First savegame version that has the field.
  * @param to       Last savegame version that has the field.
  */
-#define SLE_CONDREF(base, variable, type, from, to) SLE_GENERAL(SL_REF, base, variable, type, 0, from, to, 0)
+#define SLE_CONDREF(base, variable, type, from, to) SLE_GENERAL(SaveLoadType::Reference, base, variable, type, 0, from, to, 0)
 
 /**
- * Storage of a fixed-size array of #SL_VAR elements in some savegame versions.
+ * Storage of a fixed-size array of #SaveLoadType::Variable elements in some savegame versions.
  * @param base     Name of the class or struct containing the array.
  * @param variable Name of the variable in the class or struct referenced by \a base.
  * @param type     Storage of the data in memory and in the savegame.
@@ -509,7 +509,7 @@ inline constexpr size_t SlVarWrapper(size_t offset)
  * @param from     First savegame version that has the array.
  * @param to       Last savegame version that has the array.
  */
-#define SLE_CONDARR(base, variable, type, length, from, to) SLE_GENERAL(SL_ARR, base, variable, type, length, from, to, 0)
+#define SLE_CONDARR(base, variable, type, length, from, to) SLE_GENERAL(SaveLoadType::Array, base, variable, type, length, from, to, 0)
 
 /**
  * Storage of a string in some savegame versions.
@@ -520,7 +520,7 @@ inline constexpr size_t SlVarWrapper(size_t offset)
  * @param from     First savegame version that has the string.
  * @param to       Last savegame version that has the string.
  */
-#define SLE_CONDSTR(base, variable, type, length, from, to) SLE_GENERAL(SL_STR, base, variable, type, length, from, to, 0)
+#define SLE_CONDSTR(base, variable, type, length, from, to) SLE_GENERAL(SaveLoadType::StringPtr, base, variable, type, length, from, to, 0)
 
 /**
  * Storage of a \c std::string in some savegame versions.
@@ -530,7 +530,7 @@ inline constexpr size_t SlVarWrapper(size_t offset)
  * @param from     First savegame version that has the string.
  * @param to       Last savegame version that has the string.
  */
-#define SLE_CONDSSTR(base, variable, type, from, to) SLE_GENERAL(SL_STDSTR, base, variable, type, 0, from, to, 0)
+#define SLE_CONDSSTR(base, variable, type, from, to) SLE_GENERAL(SaveLoadType::StdString, base, variable, type, 0, from, to, 0)
 
 /**
  * Storage of a \c std::string in some savegame versions.
@@ -541,57 +541,57 @@ inline constexpr size_t SlVarWrapper(size_t offset)
  * @param from     First savegame version that has the string.
  * @param to       Last savegame version that has the string.
  */
-#define SLE_CONDSSTRNAME(base, variable, name, type, from, to) SLE_GENERAL_NAME(SL_STDSTR, name, base, variable, type, 0, from, to, 0)
+#define SLE_CONDSSTRNAME(base, variable, name, type, from, to) SLE_GENERAL_NAME(SaveLoadType::StdString, name, base, variable, type, 0, from, to, 0)
 
 /**
- * Storage of a list of #SL_REF elements in some savegame versions.
+ * Storage of a list of #SaveLoadType::Reference elements in some savegame versions.
  * @param base     Name of the class or struct containing the list.
  * @param variable Name of the variable in the class or struct referenced by \a base.
  * @param type     Storage of the data in memory and in the savegame.
  * @param from     First savegame version that has the list.
  * @param to       Last savegame version that has the list.
  */
-#define SLE_CONDREFLIST(base, variable, type, from, to) SLE_GENERAL(SL_REFLIST, base, variable, type, 0, from, to, 0)
+#define SLE_CONDREFLIST(base, variable, type, from, to) SLE_GENERAL(SaveLoadType::ReferenceList, base, variable, type, 0, from, to, 0)
 
 /**
- * Storage of a vector of #SL_REF elements in some savegame versions.
+ * Storage of a vector of #SaveLoadType::Reference elements in some savegame versions.
  * @param base     Name of the class or struct containing the vector.
  * @param variable Name of the variable in the class or struct referenced by \a base.
  * @param type     Storage of the data in memory and in the savegame.
  * @param from     First savegame version that has the vector.
  * @param to       Last savegame version that has the vector.
  */
-#define SLE_CONDREFVECTOR(base, variable, type, from, to) SLE_GENERAL(SL_REFVECTOR, base, variable, type, 0, from, to, 0)
+#define SLE_CONDREFVECTOR(base, variable, type, from, to) SLE_GENERAL(SaveLoadType::ReferenceVector, base, variable, type, 0, from, to, 0)
 
 /**
- * Storage of a ring of #SL_REF elements in some savegame versions.
+ * Storage of a ring of #SaveLoadType::Reference elements in some savegame versions.
  * @param base     Name of the class or struct containing the list.
  * @param variable Name of the variable in the class or struct referenced by \a base.
  * @param type     Storage of the data in memory and in the savegame.
  * @param from     First savegame version that has the list.
  * @param to       Last savegame version that has the list.
  */
-#define SLE_CONDREFRING(base, variable, type, from, to) SLE_GENERAL(SL_REFRING, base, variable, type, 0, from, to, 0)
+#define SLE_CONDREFRING(base, variable, type, from, to) SLE_GENERAL(SaveLoadType::ReferenceRing, base, variable, type, 0, from, to, 0)
 
 /**
- * Storage of a ring of #SL_VAR elements in some savegame versions.
+ * Storage of a ring of #SaveLoadType::Variable elements in some savegame versions.
  * @param base     Name of the class or struct containing the list.
  * @param variable Name of the variable in the class or struct referenced by \a base.
  * @param type     Storage of the data in memory and in the savegame.
  * @param from     First savegame version that has the list.
  * @param to       Last savegame version that has the list.
  */
-#define SLE_CONDRING(base, variable, type, from, to) SLE_GENERAL(SL_RING, base, variable, type, 0, from, to, 0)
+#define SLE_CONDRING(base, variable, type, from, to) SLE_GENERAL(SaveLoadType::Ring, base, variable, type, 0, from, to, 0)
 
 /**
- * Storage of a vector of #SL_VAR elements in some savegame versions.
+ * Storage of a vector of #SaveLoadType::Variable elements in some savegame versions.
  * @param base     Name of the class or struct containing the list.
  * @param variable Name of the variable in the class or struct referenced by \a base.
  * @param type     Storage of the data in memory and in the savegame.
  * @param from     First savegame version that has the list.
  * @param to       Last savegame version that has the list.
  */
-#define SLE_CONDVECTOR(base, variable, type, from, to) SLE_GENERAL(SL_VECTOR, base, variable, type, 0, from, to, 0)
+#define SLE_CONDVECTOR(base, variable, type, from, to) SLE_GENERAL(SaveLoadType::Vector, base, variable, type, 0, from, to, 0)
 
 /**
  * Storage of a variable in every version of a savegame.
@@ -620,7 +620,7 @@ inline constexpr size_t SlVarWrapper(size_t offset)
 #define SLE_REF(base, variable, type) SLE_CONDREF(base, variable, type, SL_MIN_VERSION, SL_MAX_VERSION)
 
 /**
- * Storage of fixed-size array of #SL_VAR elements in every version of a savegame.
+ * Storage of fixed-size array of #SaveLoadType::Variable elements in every version of a savegame.
  * @param base     Name of the class or struct containing the array.
  * @param variable Name of the variable in the class or struct referenced by \a base.
  * @param type     Storage of the data in memory and in the savegame.
@@ -655,7 +655,7 @@ inline constexpr size_t SlVarWrapper(size_t offset)
 #define SLE_SSTRNAME(base, variable, name, type) SLE_CONDSSTRNAME(base, variable, name, type, SL_MIN_VERSION, SL_MAX_VERSION)
 
 /**
- * Storage of a list of #SL_REF elements in every savegame version.
+ * Storage of a list of #SaveLoadType::Reference elements in every savegame version.
  * @param base     Name of the class or struct containing the list.
  * @param variable Name of the variable in the class or struct referenced by \a base.
  * @param type     Storage of the data in memory and in the savegame.
@@ -663,7 +663,7 @@ inline constexpr size_t SlVarWrapper(size_t offset)
 #define SLE_REFLIST(base, variable, type) SLE_CONDREFLIST(base, variable, type, SL_MIN_VERSION, SL_MAX_VERSION)
 
 /**
- * Storage of a vector of #SL_REF elements in every savegame version.
+ * Storage of a vector of #SaveLoadType::Reference elements in every savegame version.
  * @param base     Name of the class or struct containing the vector.
  * @param variable Name of the variable in the class or struct referenced by \a base.
  * @param type     Storage of the data in memory and in the savegame.
@@ -671,7 +671,7 @@ inline constexpr size_t SlVarWrapper(size_t offset)
 #define SLE_REFVECTOR(base, variable, type) SLE_CONDREFVECTOR(base, variable, type, SL_MIN_VERSION, SL_MAX_VERSION)
 
 /**
- * Storage of a ring of #SL_REF elements in every savegame version.
+ * Storage of a ring of #SaveLoadType::Reference elements in every savegame version.
  * @param base     Name of the class or struct containing the list.
  * @param variable Name of the variable in the class or struct referenced by \a base.
  * @param type     Storage of the data in memory and in the savegame.
@@ -688,7 +688,7 @@ inline constexpr size_t SlVarWrapper(size_t offset)
  * @param base     Name of the class or struct containing the variable.
  * @param variable Name of the variable in the class or struct referenced by \a base.
  */
-#define SLE_SAVEBYTE(base, variable) SLE_GENERAL(SL_SAVEBYTE, base, variable, 0, 0, SL_MIN_VERSION, SL_MAX_VERSION, 0)
+#define SLE_SAVEBYTE(base, variable) SLE_GENERAL(SaveLoadType::SaveByte, base, variable, 0, 0, SL_MIN_VERSION, SL_MAX_VERSION, 0)
 
 /**
  * Storage of global simple variables, references (pointers), and arrays.
@@ -712,7 +712,7 @@ inline constexpr size_t SlVarWrapper(size_t offset)
  * @param from     First savegame version that has the field.
  * @param to       Last savegame version that has the field.
  */
-#define SLEG_CONDVAR(name, variable, type, from, to) SLEG_GENERAL(name, SL_VAR, variable, type, 0, from, to, 0)
+#define SLEG_CONDVAR(name, variable, type, from, to) SLEG_GENERAL(name, SaveLoadType::Variable, variable, type, 0, from, to, 0)
 
 /**
  * Storage of a global reference in some savegame versions.
@@ -722,10 +722,10 @@ inline constexpr size_t SlVarWrapper(size_t offset)
  * @param from     First savegame version that has the field.
  * @param to       Last savegame version that has the field.
  */
-#define SLEG_CONDREF(name, variable, type, from, to) SLEG_GENERAL(name, SL_REF, variable, type, 0, from, to, 0)
+#define SLEG_CONDREF(name, variable, type, from, to) SLEG_GENERAL(name, SaveLoadType::Reference, variable, type, 0, from, to, 0)
 
 /**
- * Storage of a global fixed-size array of #SL_VAR elements in some savegame versions.
+ * Storage of a global fixed-size array of #SaveLoadType::Variable elements in some savegame versions.
  * @param name     The name of the field.
  * @param variable Name of the global variable.
  * @param type     Storage of the data in memory and in the savegame.
@@ -733,7 +733,7 @@ inline constexpr size_t SlVarWrapper(size_t offset)
  * @param from     First savegame version that has the array.
  * @param to       Last savegame version that has the array.
  */
-#define SLEG_CONDARR(name, variable, type, length, from, to) SLEG_GENERAL(name, SL_ARR, variable, type, length, from, to, 0)
+#define SLEG_CONDARR(name, variable, type, length, from, to) SLEG_GENERAL(name, SaveLoadType::Array, variable, type, length, from, to, 0)
 
 /**
  * Storage of a global string in some savegame versions.
@@ -744,7 +744,7 @@ inline constexpr size_t SlVarWrapper(size_t offset)
  * @param from     First savegame version that has the string.
  * @param to       Last savegame version that has the string.
  */
-#define SLEG_CONDSTR(name, variable, type, length, from, to) SLEG_GENERAL(name, SL_STR, variable, type, length, from, to, 0)
+#define SLEG_CONDSTR(name, variable, type, length, from, to) SLEG_GENERAL(name, SaveLoadType::StringPtr, variable, type, length, from, to, 0)
 
 /**
  * Storage of a global \c std::string in some savegame versions.
@@ -754,7 +754,7 @@ inline constexpr size_t SlVarWrapper(size_t offset)
  * @param from     First savegame version that has the string.
  * @param to       Last savegame version that has the string.
  */
-#define SLEG_CONDSSTR(name, variable, type, from, to) SLEG_GENERAL(name, SL_STDSTR, variable, type, 0, from, to, 0)
+#define SLEG_CONDSSTR(name, variable, type, from, to) SLEG_GENERAL(name, SaveLoadType::StdString, variable, type, 0, from, to, 0)
 
 /**
  * Storage of a structs in some savegame versions.
@@ -763,7 +763,7 @@ inline constexpr size_t SlVarWrapper(size_t offset)
  * @param from     First savegame version that has the struct.
  * @param to       Last savegame version that has the struct.
  */
-#define SLEG_CONDSTRUCT(name, handler, from, to) SaveLoad {name, SL_STRUCT, 0, 0, from, to, { .address = nullptr }, std::make_shared<handler>()}
+#define SLEG_CONDSTRUCT(name, handler, from, to) SaveLoad {name, SaveLoadType::Struct, 0, 0, from, to, { .address = nullptr }, std::make_shared<handler>()}
 
 /**
  * Storage of a global reference list in some savegame versions.
@@ -773,7 +773,7 @@ inline constexpr size_t SlVarWrapper(size_t offset)
  * @param from     First savegame version that has the list.
  * @param to       Last savegame version that has the list.
  */
-#define SLEG_CONDREFLIST(name, variable, type, from, to) SLEG_GENERAL(name, SL_REFLIST, variable, type, 0, from, to, 0)
+#define SLEG_CONDREFLIST(name, variable, type, from, to) SLEG_GENERAL(name, SaveLoadType::ReferenceList, variable, type, 0, from, to, 0)
 
 /**
  * Storage of a global reference ring in some savegame versions.
@@ -783,17 +783,17 @@ inline constexpr size_t SlVarWrapper(size_t offset)
  * @param from     First savegame version that has the list.
  * @param to       Last savegame version that has the list.
  */
-#define SLEG_CONDREFRING(name, variable, type, from, to) SLEG_GENERAL(name, SL_REFRING, variable, type, 0, from, to, 0)
+#define SLEG_CONDREFRING(name, variable, type, from, to) SLEG_GENERAL(name, SaveLoadType::ReferenceRing, variable, type, 0, from, to, 0)
 
 /**
- * Storage of a global vector of #SL_VAR elements in some savegame versions.
+ * Storage of a global vector of #SaveLoadType::Variable elements in some savegame versions.
  * @param name     The name of the field.
  * @param variable Name of the global variable.
  * @param type     Storage of the data in memory and in the savegame.
  * @param from     First savegame version that has the list.
  * @param to       Last savegame version that has the list.
  */
-#define SLEG_CONDVECTOR(name, variable, type, from, to) SLEG_GENERAL(name, SL_VECTOR, variable, type, 0, from, to, 0)
+#define SLEG_CONDVECTOR(name, variable, type, from, to) SLEG_GENERAL(name, SaveLoadType::Vector, variable, type, 0, from, to, 0)
 
 /**
  * Storage of a list of structs in some savegame versions.
@@ -802,7 +802,7 @@ inline constexpr size_t SlVarWrapper(size_t offset)
  * @param from     First savegame version that has the list.
  * @param to       Last savegame version that has the list.
  */
-#define SLEG_CONDSTRUCTLIST(name, handler, from, to) SaveLoad {name, SL_STRUCTLIST, 0, 0, from, to, { .address = nullptr }, std::make_shared<handler>()}
+#define SLEG_CONDSTRUCTLIST(name, handler, from, to) SaveLoad {name, SaveLoadType::StructList, 0, 0, from, to, { .address = nullptr }, std::make_shared<handler>()}
 
 /**
  * Storage of a global variable in every savegame version.
@@ -821,7 +821,7 @@ inline constexpr size_t SlVarWrapper(size_t offset)
 #define SLEG_REF(name, variable, type) SLEG_CONDREF(name, variable, type, SL_MIN_VERSION, SL_MAX_VERSION)
 
 /**
- * Storage of a global fixed-size array of #SL_VAR elements in every savegame version.
+ * Storage of a global fixed-size array of #SaveLoadType::Variable elements in every savegame version.
  * @param name     The name of the field.
  * @param variable Name of the global variable.
  * @param type     Storage of the data in memory and in the savegame.
@@ -869,7 +869,7 @@ inline constexpr size_t SlVarWrapper(size_t offset)
 #define SLEG_REFRING(name, variable, type) SLEG_CONDREFRING(name, variable, type, SL_MIN_VERSION, SL_MAX_VERSION)
 
 /**
- * Storage of a global vector of #SL_VAR elements in every savegame version.
+ * Storage of a global vector of #SaveLoadType::Variable elements in every savegame version.
  * @param name     The name of the field.
  * @param variable Name of the global variable.
  * @param type     Storage of the data in memory and in the savegame.

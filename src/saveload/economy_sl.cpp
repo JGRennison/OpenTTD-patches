@@ -34,7 +34,7 @@ static const SaveLoad _economy_desc[] = {
 
 /** Economy variables */
 struct ECMYChunkHandler : ChunkHandler {
-	ECMYChunkHandler() : ChunkHandler('ECMY', CH_TABLE) {}
+	ECMYChunkHandler() : ChunkHandler('ECMY', ChunkType::Table) {}
 
 	void Save() const override
 	{
@@ -65,7 +65,7 @@ static const SaveLoad _cargopayment_desc[] = {
 };
 
 struct CAPYChunkHandler : ChunkHandler {
-	CAPYChunkHandler() : ChunkHandler('CAPY', CH_TABLE) {}
+	CAPYChunkHandler() : ChunkHandler('CAPY', ChunkType::Table) {}
 
 	void Save() const override
 	{

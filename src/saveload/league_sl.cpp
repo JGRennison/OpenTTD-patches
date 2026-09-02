@@ -29,7 +29,7 @@ static const SaveLoad _league_table_elements_desc[] = {
 };
 
 struct LEAEChunkHandler : ChunkHandler {
-	LEAEChunkHandler() : ChunkHandler('LEAE', CH_TABLE) {}
+	LEAEChunkHandler() : ChunkHandler('LEAE', ChunkType::Table) {}
 
 	void Save() const override
 	{
@@ -60,7 +60,7 @@ static const SaveLoad _league_tables_desc[] = {
 };
 
 struct LEATChunkHandler : ChunkHandler {
-	LEATChunkHandler() : ChunkHandler('LEAT', CH_TABLE) {}
+	LEATChunkHandler() : ChunkHandler('LEAT', ChunkType::Table) {}
 
 	void Save() const override
 	{

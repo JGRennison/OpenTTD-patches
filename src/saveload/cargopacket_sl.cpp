@@ -45,7 +45,7 @@ SaveLoadTable GetCargoPacketDesc()
 }
 
 struct CAPAChunkHandler : ChunkHandler {
-	CAPAChunkHandler() : ChunkHandler('CAPA', CH_TABLE) {}
+	CAPAChunkHandler() : ChunkHandler('CAPA', ChunkType::Table) {}
 
 	void Save() const override
 	{

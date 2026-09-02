@@ -322,7 +322,7 @@ static void Load_SPRG()
 }
 
 extern const ChunkHandler signal_chunk_handlers[] = {
-	{ 'SPRG', Save_SPRG, Load_SPRG, nullptr, nullptr, CH_RIFF },
+	{ 'SPRG', Save_SPRG, Load_SPRG, nullptr, nullptr, ChunkType::Riff },
 };
 
 extern const ChunkHandlerTable _signal_chunk_handlers(signal_chunk_handlers);

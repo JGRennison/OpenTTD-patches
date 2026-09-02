@@ -167,8 +167,8 @@ static void Load_CHTX()
 
 /** Chunk handlers related to cheats. */
 static const ChunkHandler cheat_chunk_handlers[] = {
-	{ 'CHTS', Save_CHTS, Load_CHTS, nullptr, nullptr, CH_TABLE },
-	{ 'CHTX', nullptr,   Load_CHTX, nullptr, nullptr, CH_READONLY },
+	{ 'CHTS', Save_CHTS, Load_CHTS, nullptr, nullptr, ChunkType::Table },
+	{ 'CHTX', nullptr,   Load_CHTX, nullptr, nullptr, ChunkType::ReadOnly },
 };
 
 extern const ChunkHandlerTable _cheat_chunk_handlers(cheat_chunk_handlers);

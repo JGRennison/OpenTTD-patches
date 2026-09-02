@@ -207,8 +207,8 @@ static ChunkSaveLoadSpecialOpResult Special_ERNC(uint32_t chunk_id, ChunkSaveLoa
 static const ChunkHandler engine_chunk_handlers[] = {
 	MakeUpstreamChunkHandler<'EIDS', GeneralUpstreamChunkLoadInfo>(),
 	MakeUpstreamChunkHandler<'ENGN', GeneralUpstreamChunkLoadInfo>(),
-	{ 'ENGS', nullptr,   Load_ENGS, nullptr, nullptr, CH_READONLY  },
-	{ 'ERNC', Save_ERNC, Load_ERNC, nullptr, nullptr, CH_RIFF, Special_ERNC },
+	{ 'ENGS', nullptr,   Load_ENGS, nullptr, nullptr, ChunkType::ReadOnly  },
+	{ 'ERNC', Save_ERNC, Load_ERNC, nullptr, nullptr, ChunkType::Riff, Special_ERNC },
 };
 
 extern const ChunkHandlerTable _engine_chunk_handlers(engine_chunk_handlers);

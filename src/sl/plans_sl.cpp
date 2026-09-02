@@ -121,8 +121,8 @@ static void Load_PLANLINE()
 
 /** Chunk handlers related to plans. */
 static const ChunkHandler plan_chunk_handlers[] = {
-	{ 'PLAN', Save_PLAN, Load_PLAN,     nullptr, nullptr, CH_TABLE },
-	{ 'PLLN', nullptr,   Load_PLANLINE, nullptr, nullptr, CH_READONLY },
+	{ 'PLAN', Save_PLAN, Load_PLAN,     nullptr, nullptr, ChunkType::Table },
+	{ 'PLLN', nullptr,   Load_PLANLINE, nullptr, nullptr, ChunkType::ReadOnly },
 };
 
 extern const ChunkHandlerTable _plan_chunk_handlers(plan_chunk_handlers);

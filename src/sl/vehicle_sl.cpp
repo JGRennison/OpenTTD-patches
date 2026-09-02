@@ -1888,12 +1888,12 @@ void Load_VUBS()
 }
 
 static const ChunkHandler veh_chunk_handlers[] = {
-	{ 'VEHS', Save_VEHS, Load_VEHS, Ptrs_VEHS, nullptr, CH_SPARSE_TABLE },
-	{ 'VEOX', nullptr,   Load_VEOX, nullptr,   nullptr, CH_READONLY },
-	{ 'VESR', Save_VESR, Load_VESR, nullptr,   nullptr, CH_SPARSE_TABLE },
-	{ 'VENC', Save_VENC, Load_VENC, nullptr,   nullptr, CH_RIFF,         Special_VENC },
-	{ 'VLKA', nullptr,   Load_VLKA, nullptr,   nullptr, CH_READONLY },
-	{ 'VUBS', nullptr,   Load_VUBS, nullptr,   nullptr, CH_READONLY },
+	{ 'VEHS', Save_VEHS, Load_VEHS, Ptrs_VEHS, nullptr, ChunkType::SparseTable },
+	{ 'VEOX', nullptr,   Load_VEOX, nullptr,   nullptr, ChunkType::ReadOnly },
+	{ 'VESR', Save_VESR, Load_VESR, nullptr,   nullptr, ChunkType::SparseTable },
+	{ 'VENC', Save_VENC, Load_VENC, nullptr,   nullptr, ChunkType::Riff,         Special_VENC },
+	{ 'VLKA', nullptr,   Load_VLKA, nullptr,   nullptr, ChunkType::ReadOnly },
+	{ 'VUBS', nullptr,   Load_VUBS, nullptr,   nullptr, ChunkType::ReadOnly },
 };
 
 extern const ChunkHandlerTable _veh_chunk_handlers(veh_chunk_handlers);

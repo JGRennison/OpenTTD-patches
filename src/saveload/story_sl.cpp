@@ -41,7 +41,7 @@ static const SaveLoad _story_page_elements_desc[] = {
 };
 
 struct STPEChunkHandler : ChunkHandler {
-	STPEChunkHandler() : ChunkHandler('STPE', CH_TABLE) {}
+	STPEChunkHandler() : ChunkHandler('STPE', ChunkType::Table) {}
 
 	void Save() const override
 	{
@@ -83,7 +83,7 @@ static const SaveLoad _story_pages_desc[] = {
 };
 
 struct STPAChunkHandler : ChunkHandler {
-	STPAChunkHandler() : ChunkHandler('STPA', CH_TABLE) {}
+	STPAChunkHandler() : ChunkHandler('STPA', ChunkType::Table) {}
 
 	void Save() const override
 	{

@@ -161,7 +161,7 @@ void AfterLoadTemplateVehiclesUpdateProperties()
 }
 
 extern const ChunkHandler template_vehicle_chunk_handlers[] = {
-	{ 'TMPL', Save_TMPLS, Load_TMPLS, Ptrs_TMPLS, nullptr, CH_TABLE },
+	{ 'TMPL', Save_TMPLS, Load_TMPLS, Ptrs_TMPLS, nullptr, ChunkType::Table },
 };
 
 extern const ChunkHandlerTable _template_vehicle_chunk_handlers(template_vehicle_chunk_handlers);

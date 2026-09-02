@@ -51,7 +51,7 @@ static void Save_TSAS()
 }
 
 extern const ChunkHandler train_speed_adaptation_chunk_handlers[] = {
-	{ 'TSAS', Save_TSAS, Load_TSAS, nullptr, nullptr, CH_TABLE },
+	{ 'TSAS', Save_TSAS, Load_TSAS, nullptr, nullptr, ChunkType::Table },
 };
 
 extern const ChunkHandlerTable _train_speed_adaptation_chunk_handlers(train_speed_adaptation_chunk_handlers);

@@ -122,13 +122,13 @@ static std::vector<SaveLoad> GetSettingsDesc(bool is_loading)
 		SaveLoadType new_cmd;
 		switch (sd->save.cmd) {
 			case ::SL_VAR:
-				new_cmd = SL_VAR;
+				new_cmd = SaveLoadType::Variable;
 				break;
 			case ::SL_STR:
-				new_cmd = SL_STR;
+				new_cmd = SaveLoadType::StringPtr;
 				break;
 			case ::SL_STDSTR:
-				new_cmd = SL_STDSTR;
+				new_cmd = SaveLoadType::StdString;
 				break;
 			default:
 				FatalError("Unexpected save cmd for {}: {}", sd->name, sd->save.cmd);
@@ -193,7 +193,7 @@ static void SaveSettings(void *object)
 }
 
 struct PATSChunkHandler : ChunkHandler {
-	PATSChunkHandler() : ChunkHandler('PATS', CH_TABLE) {}
+	PATSChunkHandler() : ChunkHandler('PATS', ChunkType::Table) {}
 
 	void Load() const override
 	{

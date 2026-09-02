@@ -809,6 +809,6 @@ static uint32_t saveSTC(const SlxiSubChunkInfo &info, bool dry_run)
 }
 
 extern const ChunkHandler version_ext_chunk_handlers[] = {
-	{ 'SLXI', Save_SLXI, Load_SLXI, nullptr, Load_SLXI, CH_RIFF },
+	{ 'SLXI', Save_SLXI, Load_SLXI, nullptr, Load_SLXI, ChunkType::Riff },
 };
 extern const ChunkHandlerTable _version_ext_chunk_handlers(version_ext_chunk_handlers);

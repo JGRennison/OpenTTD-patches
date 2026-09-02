@@ -83,8 +83,8 @@ static void Ptrs_CAPY()
 
 static const ChunkHandler economy_chunk_handlers[] = {
 	MakeSaveUpstreamFeatureConditionalLoadUpstreamChunkHandler<'CAPY', XSLFI_TABLE_MISC_SL, 2>(Load_CAPY, Ptrs_CAPY, nullptr),
-	{ 'PRIC', nullptr,   Load_PRIC, nullptr,   nullptr, CH_READONLY  },
-	{ 'CAPR', nullptr,   Load_CAPR, nullptr,   nullptr, CH_READONLY  },
+	{ 'PRIC', nullptr,   Load_PRIC, nullptr,   nullptr, ChunkType::ReadOnly  },
+	{ 'CAPR', nullptr,   Load_CAPR, nullptr,   nullptr, ChunkType::ReadOnly  },
 	MakeSaveUpstreamFeatureConditionalLoadUpstreamChunkHandler<'ECMY', XSLFI_TABLE_MISC_SL, 2>(Load_ECMY, nullptr, nullptr),
 };
 

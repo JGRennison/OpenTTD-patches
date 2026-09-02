@@ -795,9 +795,9 @@ static void Save_PLYP()
 }
 
 static const ChunkHandler company_chunk_handlers[] = {
-	{ 'PLYR', Save_PLYR, Load_PLYR, Ptrs_PLYR, Check_PLYR, CH_TABLE },
-	{ 'PLYX', nullptr,   Load_PLYX, nullptr,   Check_PLYX, CH_READONLY },
-	{ 'PLYP', Save_PLYP, Load_PLYP, nullptr,      nullptr, CH_RIFF  },
+	{ 'PLYR', Save_PLYR, Load_PLYR, Ptrs_PLYR, Check_PLYR, ChunkType::Table },
+	{ 'PLYX', nullptr,   Load_PLYX, nullptr,   Check_PLYX, ChunkType::ReadOnly },
+	{ 'PLYP', Save_PLYP, Load_PLYP, nullptr,      nullptr, ChunkType::Riff  },
 };
 
 extern const ChunkHandlerTable _company_chunk_handlers(company_chunk_handlers);
