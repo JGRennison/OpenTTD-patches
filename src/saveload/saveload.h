@@ -245,9 +245,6 @@ enum VarTypes : uint16_t {
 	SLE_VAR_NAME  = 14 << 4, ///< old custom name to be converted to a string pointer
 	/* 1 more possible memory-primitives */
 
-	/* Shortcut values */
-	SLE_VAR_CHAR = SLE_VAR_I8,
-
 	/* Default combinations of variables. As savegames change, so can variables
 	 * and thus it is possible that the saved value and internal size do not
 	 * match and you need to specify custom combo. The defaults are listed here */
@@ -260,17 +257,10 @@ enum VarTypes : uint16_t {
 	SLE_UINT32       = SLE_FILE_U32 | SLE_VAR_U32,
 	SLE_INT64        = SLE_FILE_I64 | SLE_VAR_I64,
 	SLE_UINT64       = SLE_FILE_U64 | SLE_VAR_U64,
-	SLE_CHAR         = SLE_FILE_I8  | SLE_VAR_CHAR,
 	SLE_STRINGID     = SLE_FILE_STRINGID | SLE_VAR_U32,
-	SLE_STRING       = SLE_FILE_STRING   | SLE_VAR_STR,
-	SLE_STRINGQUOTE  = SLE_FILE_STRING   | SLE_VAR_STRQ,
+	SLE_STR          = SLE_FILE_STRING   | SLE_VAR_STR,
+	SLE_STRQ         = SLE_FILE_STRING   | SLE_VAR_STRQ,
 	SLE_NAME         = SLE_FILE_STRINGID | SLE_VAR_NAME,
-
-	/* Shortcut values */
-	SLE_UINT  = SLE_UINT32,
-	SLE_INT   = SLE_INT32,
-	SLE_STR   = SLE_STRING,
-	SLE_STRQ  = SLE_STRINGQUOTE,
 
 	/* 8 bits allocated for a maximum of 8 flags
 	 * Flags directing saving/loading of a variable */
@@ -329,14 +319,13 @@ struct SaveLoad {
 /**
  * SaveLoad information for backwards compatibility.
  *
- * At SLV_SETTINGS_NAME a new method of keeping track of fields in a savegame
+ * At SaveLoadVersion::TableChunks a new method of keeping track of fields in a savegame
  * was added, where the order of fields is no longer important. For older
  * savegames we still need to know the correct order. This struct is the glue
  * to make that happen.
  */
 struct SaveLoadCompat {
 	std::string name;             ///< Name of the field.
-	VarTypes null_type;           ///< The type associated with the NULL field; defaults to SLE_FILE_U8 to just count bytes.
 	uint16_t null_length;         ///< Length of the NULL field.
 	SaveLoadVersion version_from; ///< Save/load the variable starting from this savegame version.
 	SaveLoadVersion version_to;   ///< Save/load the variable before this savegame version.
@@ -887,7 +876,7 @@ inline constexpr size_t SlVarWrapper(size_t offset)
  * Field name where the real SaveLoad can be located.
  * @param name The name of the field.
  */
-#define SLC_VAR(name) {name, SLE_FILE_U8, 0, SL_MIN_VERSION, SL_MAX_VERSION}
+#define SLC_VAR(name) {name, 0, SL_MIN_VERSION, SL_MAX_VERSION}
 
 /**
  * Empty space in every savegame version.
@@ -895,7 +884,7 @@ inline constexpr size_t SlVarWrapper(size_t offset)
  * @param from   First savegame version that has the empty space.
  * @param to     Last savegame version that has the empty space.
  */
-#define SLC_NULL(length, from, to) {{}, SLE_FILE_U8, length, from, to}
+#define SLC_NULL(length, from, to) {{}, length, from, to}
 
 /**
  * Checks whether the savegame is below \a major.\a minor.

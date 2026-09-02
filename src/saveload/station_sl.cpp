@@ -224,7 +224,7 @@ public:
 		 SLE_CONDVAR(GoodsEntry, amount_fract,         SLE_UINT8,                 SLV_150, SL_MAX_VERSION),
 		SLEG_CONDREFRING("packets", _packets,          REF_CARGO_PACKET,           SLV_68, SLV_183),
 		SLEG_CONDVAR("old_num_dests", _old_num_dests,  SLE_UINT32,                SLV_183, SLV_SAVELOAD_LIST_LENGTH),
-		SLEG_CONDVAR("cargo.reserved_count", _cargo_reserved_count, SLE_UINT,     SLV_181, SL_MAX_VERSION),
+		SLEG_CONDVAR("cargo.reserved_count", _cargo_reserved_count, SLE_UINT32,   SLV_181, SL_MAX_VERSION),
 		 SLE_CONDVAR(GoodsEntry, link_graph,           SLE_UINT16,                SLV_183, SL_MAX_VERSION),
 		 SLE_CONDVAR(GoodsEntry, node,                 SLE_UINT16,                SLV_183, SL_MAX_VERSION),
 		SLEG_CONDVAR("old_num_flows", _old_num_flows,  SLE_UINT32,                SLV_183, SLV_SAVELOAD_LIST_LENGTH),

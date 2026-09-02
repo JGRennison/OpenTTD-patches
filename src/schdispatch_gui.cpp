@@ -696,7 +696,7 @@ struct SchdispatchWindow : GeneralVehicleWindow {
 		}
 
 		DrawString(text_left, text_right, y + (this->resize.step_height - GetCharacterHeight(FontSize::Normal)) / 2,
-				GetString(flagged ? STR_SCHDISPATCH_DATE_WALLCLOCK_TINY_FLAGGED : STR_JUST_TT_TIME, time), colour, SA_HOR_CENTER);
+				GetString(flagged ? STR_SCHDISPATCH_DATE_WALLCLOCK_TINY_FLAGGED : STR_JUST_TT_TIME, time), colour, AlignmentH::Centre);
 	}
 
 	virtual void OnGameTick() override
@@ -1778,7 +1778,7 @@ static constexpr NWidgetPart _nested_schdispatch_widgets[] = {
 	NWidget(WWT_PANEL, Colours::Grey),
 		NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
 			NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_SCHDISPATCH_ENABLED), SetStringTip(STR_SCHDISPATCH_ENABLED, STR_NULL), SetFill(1, 1), SetResize(1, 0),
-			NWidget(WWT_TEXT, Colours::Invalid, WID_SCHDISPATCH_HEADER), SetAlignment(SA_CENTER), SetFill(1, 1), SetResize(1, 0),
+			NWidget(WWT_TEXT, Colours::Invalid, WID_SCHDISPATCH_HEADER), SetAlignment({AlignmentH::Centre, AlignmentV::Middle}), SetFill(1, 1), SetResize(1, 0),
 			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
 				NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_SCHDISPATCH_PREV), SetStringTip(STR_SCHDISPATCH_PREV_SCHEDULE, STR_SCHDISPATCH_PREV_SCHEDULE_TOOLTIP), SetFill(1, 1), SetResize(1, 0),
 				NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_SCHDISPATCH_NEXT), SetStringTip(STR_SCHDISPATCH_NEXT_SCHEDULE, STR_SCHDISPATCH_NEXT_SCHEDULE_TOOLTIP), SetFill(1, 1), SetResize(1, 0),

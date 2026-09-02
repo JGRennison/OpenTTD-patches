@@ -534,7 +534,7 @@ void GfxBlitterCtx::SetColourRemap(ExtendedTextColour colour)
  * @return In case of left or center alignment the right most pixel we have drawn to.
  *         In case of right alignment the left most pixel we have drawn to.
  */
-static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, int right, StringAlignment align, bool underline, bool truncation, ExtendedTextColour default_colour)
+static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, int right, Alignment align, bool underline, bool truncation, ExtendedTextColour default_colour)
 {
 	if (line.CountRuns() == 0) return 0;
 
@@ -587,26 +587,26 @@ static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, 
 	}
 
 	/* In case we have a RTL language we swap the alignment. */
-	if (!(align & SA_FORCE) && _current_text_dir == TD_RTL && (align & SA_HOR_MASK) != SA_HOR_CENTER) align ^= SA_RIGHT;
+	align.h = align.ResolveRTL();
 
 	/* right is the right most position to draw on. In this case we want to do
 	 * calculations with the width of the string. In comparison right can be
 	 * seen as lastof(todraw) and width as lengthof(todraw). They differ by 1.
 	 * So most +1/-1 additions are to move from lengthof to 'indices'.
 	 */
-	switch (align & SA_HOR_MASK) {
-		case SA_LEFT:
+	switch (align.h) {
+		case AlignmentH::ForceLeft:
 			/* right + 1 = left + w */
 			right = left + w - 1;
 			break;
 
-		case SA_HOR_CENTER:
+		case AlignmentH::Centre:
 			left  = RoundDivSU(right + 1 + left - w, 2);
 			/* right + 1 = left + w */
 			right = left + w - 1;
 			break;
 
-		case SA_RIGHT:
+		case AlignmentH::ForceRight:
 			left = right + 1 - w;
 			break;
 
@@ -686,7 +686,7 @@ static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, 
 		GfxFillRect(left, y + h, right, y + h + WidgetDimensions::scaled.bevel.top - 1, PixelColour{ctx.string_colourremap[1]});
 	}
 
-	return (align & SA_HOR_MASK) == SA_RIGHT ? left : right;
+	return align.h == AlignmentH::ForceRight ? left : right;
 }
 
 /**
@@ -706,7 +706,7 @@ static int DrawLayoutLine(const ParagraphLayouter::Line &line, int y, int left, 
  * @return In case of left or center alignment the right most pixel we have drawn to.
  *         In case of right alignment the left most pixel we have drawn to.
  */
-int DrawString(int left, int right, int top, std::string_view str, ExtendedTextColour colour, StringAlignment align, bool underline, FontSize fontsize)
+int DrawString(int left, int right, int top, std::string_view str, ExtendedTextColour colour, Alignment align, bool underline, FontSize fontsize)
 {
 	/* The string may contain control chars to change the font, just use the biggest font for clipping. */
 	int max_height = std::max({GetCharacterHeight(FontSize::Small), GetCharacterHeight(FontSize::Normal), GetCharacterHeight(FontSize::Large), GetCharacterHeight(FontSize::Monospace)});
@@ -742,7 +742,7 @@ int DrawString(int left, int right, int top, std::string_view str, ExtendedTextC
  * @return In case of left or center alignment the right most pixel we have drawn to.
  *         In case of right alignment the left most pixel we have drawn to.
  */
-int DrawString(int left, int right, int top, StringID str, ExtendedTextColour colour, StringAlignment align, bool underline, FontSize fontsize)
+int DrawString(int left, int right, int top, StringID str, ExtendedTextColour colour, Alignment align, bool underline, FontSize fontsize)
 {
 	format_buffer buf;
 	AppendStringWithArgsInPlace(buf, str, {});
@@ -827,9 +827,9 @@ Dimension GetStringMultiLineBoundingBox(std::string_view str, const Dimension &s
  * @param underline Whether to underline all strings
  * @param fontsize The size of the initial characters.
  *
- * @return If \a align is #SA_BOTTOM, the top to where we have written, else the bottom to where we have written.
+ * @return If \a align is #AlignmentV::Bottom, the top to where we have written, else the bottom to where we have written.
  */
-int DrawStringMultiLine(int left, int right, int top, int bottom, std::string_view str, ExtendedTextColour colour, StringAlignment align, bool underline, FontSize fontsize)
+int DrawStringMultiLine(int left, int right, int top, int bottom, std::string_view str, ExtendedTextColour colour, Alignment align, bool underline, FontSize fontsize)
 {
 	int maxw = right - left + 1;
 	int maxh = bottom - top + 1;
@@ -841,16 +841,16 @@ int DrawStringMultiLine(int left, int right, int top, int bottom, std::string_vi
 	Layouter layout(str, maxw, fontsize);
 	int total_height = layout.GetBounds().height;
 	int y;
-	switch (align & SA_VERT_MASK) {
-		case SA_TOP:
+	switch (align.v) {
+		case AlignmentV::Top:
 			y = top;
 			break;
 
-		case SA_VERT_CENTER:
+		case AlignmentV::Middle:
 			y = RoundDivSU(bottom + top - total_height, 2);
 			break;
 
-		case SA_BOTTOM:
+		case AlignmentV::Bottom:
 			y = bottom - total_height;
 			break;
 
@@ -872,7 +872,7 @@ int DrawStringMultiLine(int left, int right, int top, int bottom, std::string_vi
 		y += line_height;
 	}
 
-	return ((align & SA_VERT_MASK) == SA_BOTTOM) ? first_line : last_line;
+	return align.v == AlignmentV::Bottom ? first_line : last_line;
 }
 
 /**
@@ -889,9 +889,9 @@ int DrawStringMultiLine(int left, int right, int top, int bottom, std::string_vi
  * @param underline Whether to underline all strings
  * @param fontsize The size of the initial characters.
  *
- * @return If \a align is #SA_BOTTOM, the top to where we have written, else the bottom to where we have written.
+ * @return If \a align is #AlignmentV::Bottom, the top to where we have written, else the bottom to where we have written.
  */
-int DrawStringMultiLine(int left, int right, int top, int bottom, StringID str, ExtendedTextColour colour, StringAlignment align, bool underline, FontSize fontsize)
+int DrawStringMultiLine(int left, int right, int top, int bottom, StringID str, ExtendedTextColour colour, Alignment align, bool underline, FontSize fontsize)
 {
 	format_buffer buf;
 	AppendStringWithArgsInPlace(buf, str, {});
@@ -916,7 +916,7 @@ int DrawStringMultiLine(int left, int right, int top, int bottom, StringID str, 
  *
  * @return true iff the string was drawn.
  */
-bool DrawStringMultiLineWithClipping(int left, int right, int top, int bottom, std::string_view str, ExtendedTextColour colour, StringAlignment align, bool underline, FontSize fontsize)
+bool DrawStringMultiLineWithClipping(int left, int right, int top, int bottom, std::string_view str, ExtendedTextColour colour, Alignment align, bool underline, FontSize fontsize)
 {
 	/* The string may contain control chars to change the font, just use the biggest font for clipping. */
 	int max_height = std::max({GetCharacterHeight(FontSize::Small), GetCharacterHeight(FontSize::Normal), GetCharacterHeight(FontSize::Large), GetCharacterHeight(FontSize::Monospace)});

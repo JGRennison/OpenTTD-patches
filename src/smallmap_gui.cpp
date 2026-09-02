@@ -997,7 +997,7 @@ void SmallMapWindow::DrawIndustryNames(const DrawPixelInfo *dpi, const int verti
 				y < dpi->top + dpi->height) {
 
 			/* And draw it. */
-			DrawString(x, x + legend_text_width, y, tbl.legend, TextColour::White, SA_LEFT, false, FontSize::Small);
+			DrawString(x, x + legend_text_width, y, tbl.legend, TextColour::White, AlignmentH::Start, false, FontSize::Small);
 		}
 	}
 }

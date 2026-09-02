@@ -154,12 +154,12 @@ struct OrderListImportErrorsWindow : GeneralVehicleWindow
 			if (!CheckVisibleAndIncrementRow()) return;
 			int middle_height = y + line_height / 2;
 
-			int offset = ir.right - DrawString(ir.left, ir.right, y, str, color, SA_CENTER);
+			int offset = ir.right - DrawString(ir.left, ir.right, y, str, color, {AlignmentH::Centre, AlignmentV::Middle});
 
 			GfxFillRect(ir.left, middle_height - 1, ir.left + offset, middle_height + 1, GetColourGradient(Colours::Blue, Shade::Dark));
 			GfxFillRect(ir.right - offset, middle_height - 1, ir.right, middle_height + 1, GetColourGradient(Colours::Blue, Shade::Dark));
 
-			DrawString(ir.left, ir.right, y, str, color, SA_CENTER);
+			DrawString(ir.left, ir.right, y, str, color, {AlignmentH::Centre, AlignmentV::Middle});
 
 			y += line_height;
 		};

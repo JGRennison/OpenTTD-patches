@@ -61,9 +61,6 @@ enum VarTypes {
 	SLE_VAR_CNAME = 15 << 4, ///< old custom name to be converted to a char pointer
 	/* 0 more possible memory-primitives */
 
-	/* Shortcut values */
-	SLE_VAR_CHAR = SLE_VAR_I8,
-
 	/* Default combinations of variables. As savegames change, so can variables
 	 * and thus it is possible that the saved value and internal size do not
 	 * match and you need to specify custom combo. The defaults are listed here */
@@ -76,19 +73,12 @@ enum VarTypes {
 	SLE_UINT32       = SLE_FILE_U32 | SLE_VAR_U32,
 	SLE_INT64        = SLE_FILE_I64 | SLE_VAR_I64,
 	SLE_UINT64       = SLE_FILE_U64 | SLE_VAR_U64,
-	SLE_CHAR         = SLE_FILE_I8  | SLE_VAR_CHAR,
 	SLE_STRINGID     = SLE_FILE_STRINGID | SLE_VAR_U32,
-	SLE_STRING       = SLE_FILE_STRING   | SLE_VAR_STR,
-	SLE_STRINGQUOTE  = SLE_FILE_STRING   | SLE_VAR_STRQ,
+	SLE_STR          = SLE_FILE_STRING   | SLE_VAR_STR,
+	SLE_STRQ         = SLE_FILE_STRING   | SLE_VAR_STRQ,
 	SLE_NAME         = SLE_FILE_STRINGID | SLE_VAR_NAME,
 	SLE_CNAME        = SLE_FILE_STRINGID | SLE_VAR_CNAME,
 	SLE_VEHORDERID   = SLE_FILE_VEHORDERID  | SLE_VAR_U16,
-
-	/* Shortcut values */
-	SLE_UINT  = SLE_UINT32,
-	SLE_INT   = SLE_INT32,
-	SLE_STR   = SLE_STRING,
-	SLE_STRQ  = SLE_STRINGQUOTE,
 
 	/* 8 bits allocated for a maximum of 8 flags
 	 * Flags directing saving/loading of a variable */

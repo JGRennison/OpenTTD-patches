@@ -4812,10 +4812,10 @@ private:
 
 				Rect sub = info_area.WithWidth(this->column_size[VGC_NUMBER].width, !rtl);
 				std::string str = GetString(STR_TRACE_RESTRICT_SLOT_MAX_OCCUPANCY, slot->occupants.size(), slot->max_occupancy);
-				DrawString(sub.left, sub.right - 1, sub.top + (this->tiny_step_height - this->column_size[VGC_NUMBER].height) / 2, str, colour, SA_RIGHT | SA_FORCE);
+				DrawString(sub.left, sub.right - 1, sub.top + (this->tiny_step_height - this->column_size[VGC_NUMBER].height) / 2, str, colour, AlignmentH::ForceRight);
 
 				if (slot->flags.Test(TraceRestrictSlot::Flag::Public)) {
-					DrawSpriteIgnorePadding(SPR_BLOT, PALETTE_TO_BLUE, r.WithWidth(this->column_size[VGC_PUBLIC].width, !rtl), SA_CENTER);
+					DrawSpriteIgnorePadding(SPR_BLOT, PALETTE_TO_BLUE, r.WithWidth(this->column_size[VGC_PUBLIC].width, !rtl), {AlignmentH::Centre, AlignmentV::Middle});
 				}
 				break;
 			}
@@ -5668,11 +5668,11 @@ private:
 
 		if (ctr->flags.Test(TraceRestrictCounter::Flag::Public)) {
 			r = info_area.Indent(this->value_col_width + WidgetDimensions::scaled.vsep_wide, !rtl).WithWidth(this->public_col_width, !rtl);
-			DrawSpriteIgnorePadding(SPR_BLOT, PALETTE_TO_BLUE, r, SA_CENTER);
+			DrawSpriteIgnorePadding(SPR_BLOT, PALETTE_TO_BLUE, r, {AlignmentH::Centre, AlignmentV::Middle});
 		}
 
 		r = info_area.WithWidth(this->value_col_width, !rtl);
-		DrawString(r.left, r.right, r.top + (this->tiny_step_height - GetCharacterHeight(FontSize::Normal)) / 2, GetString(STR_JUST_COMMA, ctr->value), colour, SA_RIGHT | SA_FORCE);
+		DrawString(r.left, r.right, r.top + (this->tiny_step_height - GetCharacterHeight(FontSize::Normal)) / 2, GetString(STR_JUST_COMMA, ctr->value), colour, AlignmentH::ForceRight);
 	}
 
 public:

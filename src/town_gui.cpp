@@ -1451,7 +1451,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_found_town_widgets =
 /** Found a town window class. */
 struct FoundTownWindow : Window {
 private:
-	TownSize town_size = TSZ_MEDIUM; ///< Selected town size
+	TownSize town_size = TownSize::Medium; ///< Selected town size
 	TownLayout town_layout{}; ///< Selected town layout
 	bool city = false; ///< Are we building a city?
 	QueryString townname_editbox; ///< Townname editbox
@@ -1481,7 +1481,7 @@ public:
 		this->GetWidget<NWidgetStacked>(WID_TF_TOWN_ACTION_SEL)->SetDisplayedPlane(SZSP_HORIZONTAL);
 		this->GetWidget<NWidgetStacked>(WID_TF_TOWN_EXPAND_SEL)->SetDisplayedPlane(SZSP_HORIZONTAL);
 		this->GetWidget<NWidgetStacked>(WID_TF_SIZE_SEL)->SetDisplayedPlane(SZSP_VERTICAL);
-		if (_settings_game.economy.found_town != TF_CUSTOM_LAYOUT) {
+		if (_settings_game.economy.found_town != TownFounding::CustomLayout) {
 			this->GetWidget<NWidgetStacked>(WID_TF_ROAD_LAYOUT_SEL)->SetDisplayedPlane(SZSP_HORIZONTAL);
 		} else {
 			this->GetWidget<NWidgetStacked>(WID_TF_ROAD_LAYOUT_SEL)->SetDisplayedPlane(0);
@@ -1505,18 +1505,18 @@ public:
 	void UpdateButtons(bool check_availability)
 	{
 		if (check_availability && _game_mode != GameMode::Editor) {
-			if (_settings_game.economy.found_town != TF_CUSTOM_LAYOUT) this->town_layout = _settings_game.economy.town_layout;
+			if (_settings_game.economy.found_town != TownFounding::CustomLayout) this->town_layout = _settings_game.economy.town_layout;
 			this->ReInit();
 		}
 
 		for (WidgetID i = WID_TF_SIZE_SMALL; i <= WID_TF_SIZE_RANDOM; i++) {
-			this->SetWidgetLoweredState(i, i == WID_TF_SIZE_SMALL + this->town_size);
+			this->SetWidgetLoweredState(i, i == WID_TF_SIZE_SMALL + to_underlying(this->town_size));
 		}
 
 		this->SetWidgetLoweredState(WID_TF_CITY, this->city);
 
 		for (WidgetID i = WID_TF_LAYOUT_ORIGINAL; i <= WID_TF_LAYOUT_RANDOM; i++) {
-			this->SetWidgetLoweredState(i, i == WID_TF_LAYOUT_ORIGINAL + this->town_layout);
+			this->SetWidgetLoweredState(i, i == WID_TF_LAYOUT_ORIGINAL + to_underlying(this->town_layout));
 		}
 
 		this->SetWidgetLoweredState(WID_TF_EXPAND_BUILDINGS, FoundTownWindow::expand_modes.Test(TownExpandMode::Buildings));
@@ -1576,7 +1576,7 @@ public:
 				break;
 
 			case WID_TF_SIZE_SMALL: case WID_TF_SIZE_MEDIUM: case WID_TF_SIZE_LARGE: case WID_TF_SIZE_RANDOM:
-				this->town_size = (TownSize)(widget - WID_TF_SIZE_SMALL);
+				this->town_size = static_cast<TownSize>(widget - WID_TF_SIZE_SMALL);
 				this->UpdateButtons(false);
 				break;
 
@@ -1598,7 +1598,7 @@ public:
 
 			case WID_TF_LAYOUT_ORIGINAL: case WID_TF_LAYOUT_BETTER: case WID_TF_LAYOUT_GRID2:
 			case WID_TF_LAYOUT_GRID3: case WID_TF_LAYOUT_RANDOM:
-				this->town_layout = (TownLayout)(widget - WID_TF_LAYOUT_ORIGINAL);
+				this->town_layout = static_cast<TownLayout>(widget - WID_TF_LAYOUT_ORIGINAL);
 
 				/* If we are in the editor, sync the settings of the current game to the chosen layout,
 				 * so that importing towns from file uses the selected layout. */

@@ -269,7 +269,7 @@ static void StationsWndShowStationRating(int left, int right, int y, CargoType c
 		}
 	}
 
-	DrawString(left + padding, right, y, cs->abbrev, tc, SA_CENTER, false, FontSize::Small);
+	DrawString(left + padding, right, y, cs->abbrev, tc, {AlignmentH::Centre, AlignmentV::Middle}, false, FontSize::Small);
 
 	/* Draw green/red ratings bar (fits under the waiting bar) */
 	y += height + padding + 1;
@@ -3071,7 +3071,7 @@ public:
 		const int left0 = r.left + WidgetDimensions::scaled.framerect.left + 1;
 		const int right0 = r.right - WidgetDimensions::scaled.framerect.right - 1;
 
-		DrawString(left0, right0, y, this->data[0], TextColour::LightBlue, SA_CENTER);
+		DrawString(left0, right0, y, this->data[0], TextColour::LightBlue, {AlignmentH::Centre, AlignmentV::Middle});
 
 		y += GetCharacterHeight(FontSize::Normal) + WidgetDimensions::scaled.vsep_normal;
 

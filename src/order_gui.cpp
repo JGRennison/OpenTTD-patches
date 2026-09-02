@@ -864,7 +864,7 @@ void DrawOrderString(const Vehicle *v, const Order *order, int order_index, int 
 		}
 	}
 
-	DrawString(left, rtl ? right - 2 * sprite_size.width - 3 : middle, y, GetString(STR_ORDER_INDEX, order_index + 1), colour, SA_RIGHT | SA_FORCE);
+	DrawString(left, rtl ? right - 2 * sprite_size.width - 3 : middle, y, GetString(STR_ORDER_INDEX, order_index + 1), colour, AlignmentH::ForceRight);
 
 	bool timetable_wait_time_valid = false;
 	format_buffer line;
@@ -2730,7 +2730,7 @@ public:
 			}
 		}
 		int offset = std::max(0, ((int)(r.bottom - r.top + 1) - (int)d.height) / 2); // Offset for rendering the text vertically centered
-		DrawString(left, right, r.top + offset + clicked, STR_ORDERS_TIMETABLE_VIEW, TextColour::FromString, SA_HOR_CENTER);
+		DrawString(left, right, r.top + offset + clicked, STR_ORDERS_TIMETABLE_VIEW, TextColour::FromString, AlignmentH::Centre);
 	}
 
 	std::string GetWidgetString(WidgetID widget, StringID stringid) const override
@@ -4365,7 +4365,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_orders_train_widgets
 		NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
 			NWidget(NWID_SELECTION, Colours::Invalid, WID_O_SEL_MGMT),
 				NWidget(NWID_BUTTON_DROPDOWN, Colours::Grey, WID_O_MGMT_BTN), SetMinimalSize(100, 12), SetFill(1, 0),
-														SetStringTip(STR_ORDERS_MANAGE_ORDER, STR_ORDERS_MANAGE_ORDER_TOOLTIP), SetResize(1, 0), SetAlignment(SA_TOP | SA_LEFT),
+														SetStringTip(STR_ORDERS_MANAGE_ORDER, STR_ORDERS_MANAGE_ORDER_TOOLTIP), SetResize(1, 0), SetAlignment({AlignmentH::Start, AlignmentV::Top}),
 				NWidget(WWT_DROPDOWN, Colours::Grey, WID_O_MGMT_LIST_BTN), SetMinimalSize(100, 12), SetFill(1, 0),
 														SetStringTip(STR_ORDERS_MANAGE_LIST, STR_ORDERS_MANAGE_LIST_TOOLTIP), SetResize(1, 0),
 			EndContainer(),
@@ -4527,7 +4527,7 @@ static constexpr std::initializer_list<NWidgetPart> _nested_orders_widgets = {
 	NWidget(NWID_HORIZONTAL),
 		NWidget(NWID_SELECTION, Colours::Invalid, WID_O_SEL_MGMT),
 			NWidget(NWID_BUTTON_DROPDOWN, Colours::Grey, WID_O_MGMT_BTN), SetMinimalSize(100, 12), SetFill(1, 0),
-													SetStringTip(STR_ORDERS_MANAGE_ORDER, STR_ORDERS_MANAGE_ORDER_TOOLTIP), SetResize(1, 0), SetAlignment(SA_TOP | SA_LEFT),
+													SetStringTip(STR_ORDERS_MANAGE_ORDER, STR_ORDERS_MANAGE_ORDER_TOOLTIP), SetResize(1, 0), SetAlignment({AlignmentH::Start, AlignmentV::Top}),
 			NWidget(WWT_DROPDOWN, Colours::Grey, WID_O_MGMT_LIST_BTN), SetMinimalSize(100, 12), SetFill(1, 0),
 													SetStringTip(STR_ORDERS_MANAGE_LIST, STR_ORDERS_MANAGE_LIST_TOOLTIP), SetResize(1, 0),
 		EndContainer(),

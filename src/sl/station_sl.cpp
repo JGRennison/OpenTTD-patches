@@ -441,7 +441,7 @@ NamedSaveLoadTable GetGoodsDesc()
 		NSL("amount_fract",               SLE_CONDVAR(GoodsEntry, amount_fract,          SLE_UINT8,                  SLV_150,        SL_MAX_VERSION)),
 		NSL("",                    SLEG_CONDREFRING_X(            _packets,              REF_CARGO_PACKET,           SLV_68,         SLV_183,        SlXvFeatureTest(XSLFTO_AND, XSLFI_CHILLPP, 0, 0))),
 		NSL("",                        SLEG_CONDVAR_X(            _num_dests,            SLE_UINT32,                 SLV_183,        SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_OR, XSLFI_CHILLPP))),
-		NSL("cargo.reserved_count",      SLEG_CONDVAR(            _cargo_reserved_count, SLE_UINT,                   SLV_181,        SL_MAX_VERSION)),
+		NSL("cargo.reserved_count",      SLEG_CONDVAR(            _cargo_reserved_count, SLE_UINT32,                 SLV_181,        SL_MAX_VERSION)),
 		NSL("link_graph",                 SLE_CONDVAR(GoodsEntry, link_graph,            SLE_UINT16,                 SLV_183,        SL_MAX_VERSION)),
 		NSL("node",                       SLE_CONDVAR(GoodsEntry, node,                  SLE_UINT16,                 SLV_183,        SL_MAX_VERSION)),
 		NSL("",                          SLEG_CONDVAR(            _num_flows,            SLE_UINT32,                 SLV_183,        SL_MAX_VERSION)),

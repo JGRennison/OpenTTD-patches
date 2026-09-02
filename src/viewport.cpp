@@ -2616,10 +2616,10 @@ static void ViewportDrawStrings(ViewportDrawerDynamic *vdd, ZoomLevel zoom, cons
 		if (small && ss.flags.Test(ViewportStringFlag::Shadow)) {
 			/* Shadow needs to be shifted 1 pixel. */
 			shadow_offset = WidgetDimensions::scaled.fullbevel.top;
-			DrawString(left + shadow_offset, right + shadow_offset, top, string, ExtendedTextColour{TextColour::Black, ExtendedTextColourFlag::Forced}, SA_HOR_CENTER, false, FontSize::Small);
+			DrawString(left + shadow_offset, right + shadow_offset, top, string, ExtendedTextColour{TextColour::Black, ExtendedTextColourFlag::Forced}, AlignmentH::Centre, false, FontSize::Small);
 		}
 
-		DrawString(left, right, top - shadow_offset, string, colour, SA_HOR_CENTER, false, small ? FontSize::Small : FontSize::Normal);
+		DrawString(left, right, top - shadow_offset, string, colour, AlignmentH::Centre, false, small ? FontSize::Small : FontSize::Normal);
 	}
 }
 
@@ -2873,7 +2873,7 @@ static void DrawRouteStep(const Viewport * const vp, const TileIndex tile, const
 	if (list.size() > max_rank_order_type_count) {
 		/* Write order overflow item */
 		DrawString(dpi_for_text.left + x_str, dpi_for_text.left + x_str + str_width - 1, dpi_for_text.top + y2,
-				GetString(STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_OVERFLOW, list.size()), TextColour::FromString, SA_CENTER, false, FontSize::Small);
+				GetString(STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP_OVERFLOW, list.size()), TextColour::FromString, {AlignmentH::Centre, AlignmentV::Middle}, false, FontSize::Small);
 	} else {
 		for (RankOrderTypeList::const_iterator cit = list.begin(); cit != list.end(); cit++, y2 += char_height) {
 			StringID str = INVALID_STRING_ID;
@@ -2899,7 +2899,7 @@ static void DrawRouteStep(const Viewport * const vp, const TileIndex tile, const
 			if (str != INVALID_STRING_ID) {
 				/* Write order info */
 				DrawString(dpi_for_text.left + x_str, dpi_for_text.left + x_str + str_width - 1, dpi_for_text.top + y2,
-						GetString(STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP, cit->first, str), TextColour::FromString, SA_CENTER, false, FontSize::Small);
+						GetString(STR_VIEWPORT_SHOW_VEHICLE_ROUTE_STEP, cit->first, str), TextColour::FromString, {AlignmentH::Centre, AlignmentV::Middle}, false, FontSize::Small);
 			}
 		}
 	}

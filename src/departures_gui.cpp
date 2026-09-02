@@ -1441,16 +1441,16 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 		/* Operating company */
 		if (_settings_client.gui.departure_show_company) {
 			const auto &col = columns[DepartureColumn::Company];
-			DrawString(col.left, col.right, y + 1, GetString(STR_DEPARTURES_TOC, d->vehicle->owner), TextColour::FromString, SA_RIGHT);
+			DrawString(col.left, col.right, y + 1, GetString(STR_DEPARTURES_TOC, d->vehicle->owner), TextColour::FromString, AlignmentH::End);
 		}
 
 		int bottom_y = y + this->entry_height - small_font_size - (_settings_client.gui.departure_larger_font ? 1 : 3);
 
 		/* Calling at */
 		if (ltr) {
-			DrawString(                    text_left,  text_left + calling_at_width, bottom_y, STR_DEPARTURES_CALLING_AT, TextColour::FromString, SA_LEFT, false, calling_font_size);
+			DrawString(                    text_left,  text_left + calling_at_width, bottom_y, STR_DEPARTURES_CALLING_AT, TextColour::FromString, AlignmentH::Start, false, calling_font_size);
 		} else {
-			DrawString(text_right - calling_at_width,                    text_right, bottom_y, STR_DEPARTURES_CALLING_AT, TextColour::FromString, SA_LEFT, false, calling_font_size);
+			DrawString(text_right - calling_at_width,                    text_right, bottom_y, STR_DEPARTURES_CALLING_AT, TextColour::FromString, AlignmentH::Start, false, calling_font_size);
 		}
 
 		format_buffer buffer;
@@ -1517,8 +1517,8 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 
 		/* Draw the whole list if it will fit. Otherwise scroll it. */
 		if (list_width < text_right - (text_left + calling_at_width + 2)) {
-			ltr ? DrawString(text_left + calling_at_width + 2,                        text_right, bottom_y, buffer, TextColour::Orange, SA_LEFT, false, calling_font_size)
-				: DrawString(                       text_left, text_right - calling_at_width - 2, bottom_y, buffer, TextColour::Orange, SA_LEFT, false, calling_font_size);
+			ltr ? DrawString(text_left + calling_at_width + 2,                        text_right, bottom_y, buffer, TextColour::Orange, AlignmentH::Start, false, calling_font_size)
+				: DrawString(                       text_left, text_right - calling_at_width - 2, bottom_y, buffer, TextColour::Orange, AlignmentH::Start, false, calling_font_size);
 		} else {
 			this->scroll_refresh = true;
 
@@ -1537,8 +1537,8 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 				? text_right - (elapsed_scroll_px % (list_width + text_right - text_left))
 				:  text_left + (elapsed_scroll_px % (list_width + text_right - text_left));
 
-			ltr ? DrawString(       pos, INT16_MAX, 0, buffer, TextColour::Orange,  SA_LEFT | SA_FORCE, false, calling_font_size)
-				: DrawString(-INT16_MAX,       pos, 0, buffer, TextColour::Orange, SA_RIGHT | SA_FORCE, false, calling_font_size);
+			ltr ? DrawString(       pos, INT16_MAX, 0, buffer, TextColour::Orange, AlignmentH::ForceLeft,  false, calling_font_size)
+				: DrawString(-INT16_MAX,       pos, 0, buffer, TextColour::Orange, AlignmentH::ForceRight, false, calling_font_size);
 		}
 
 		y += this->entry_height;

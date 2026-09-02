@@ -193,16 +193,16 @@ void Town::PostDestructor([[maybe_unused]] size_t index)
 
 /**
  * Assign the town layout.
- * @param layout The desired layout. If TL_RANDOM, we pick one based on TileHash.
+ * @param layout The desired layout. If TownLayout::Random, we pick one based on TileHash.
  */
 void Town::InitializeLayout(TownLayout layout)
 {
-	if (layout != TL_RANDOM) {
+	if (layout != TownLayout::Random) {
 		this->layout = layout;
 		return;
 	}
 
-	this->layout = static_cast<TownLayout>(TileHash(TileX(this->xy), TileY(this->xy)) % (NUM_TLS - 1));
+	this->layout = static_cast<TownLayout>(TileHash(TileX(this->xy), TileY(this->xy)) % (to_underlying(TownLayout::End) - 1));
 }
 
 /**
@@ -686,13 +686,13 @@ static void TileLoop_Town(TileIndex tile)
 		}
 	} else {
 		switch (_settings_game.economy.town_cargogen_mode) {
-			case TCGM_ORIGINAL:
+			case TownCargoGenMode::Original:
 				/* Original (quadratic) cargo generation algorithm */
 				TownGenerateCargoOriginal(t, TownProductionEffect::Passengers, hs->population, stations);
 				TownGenerateCargoOriginal(t, TownProductionEffect::Mail, hs->mail_generation, stations);
 				break;
 
-			case TCGM_BITCOUNT:
+			case TownCargoGenMode::Bitcount:
 				/* Binomial distribution per tick, by a series of coin flips */
 				/* Reduce generation rate to a 1/4, using tile bits to spread out distribution.
 				 * As tick counter is incremented by 256 between each call, we ignore the lower 8 bits. */
@@ -1125,7 +1125,7 @@ static bool IsRoadAllowedHere(Town *t, TileIndex tile, DiagDirection dir)
 	}
 
 	Slope cur_slope = _settings_game.construction.build_on_slopes ? std::get<Slope>(GetFoundationSlope(tile)) : GetTileSlope(tile);
-	bool ret = !IsNeighbourRoadTile(tile, dir, t->layout == TL_ORIGINAL ? 1 : 2);
+	bool ret = !IsNeighbourRoadTile(tile, dir, t->layout == TownLayout::Original ? 1 : 2);
 	if (cur_slope == SLOPE_FLAT) return ret;
 
 	/* If the tile is not a slope in the right direction, then
@@ -1191,12 +1191,12 @@ static RoadBits GetTownRoadGridElement(Town *t, TileIndex tile, DiagDirection di
 	switch (t->layout) {
 		default: NOT_REACHED();
 
-		case TL_2X2_GRID:
+		case TownLayout::Grid2x2:
 			if ((grid_pos.x % 3) == 0) rcmd.Set(ROAD_Y);
 			if ((grid_pos.y % 3) == 0) rcmd.Set(ROAD_X);
 			break;
 
-		case TL_3X3_GRID:
+		case TownLayout::Grid3x3:
 			if ((grid_pos.x % 4) == 0) rcmd.Set(ROAD_Y);
 			if ((grid_pos.y % 4) == 0) rcmd.Set(ROAD_X);
 			break;
@@ -1584,11 +1584,11 @@ enum class TownGrowthResult {
  * There are at the moment 3 possible way's for
  * the town expansion:
  *  @li Generate a random tile and check if there is a road allowed
- *  @li TL_ORIGINAL
- *  @li TL_BETTER_ROADS
+ *  @li TownLayout::Original
+ *  @li TownLayout::BetterRoads
  *  @li Check if the town geometry allows a road and which one
- *  @li TL_2X2_GRID
- *  @li TL_3X3_GRID
+ *  @li TownLayout::Grid2x2
+ *  @li TownLayout::Grid3x3
  *  @li Forbid roads, only build houses
  *
  * @param tile_ptr The current tile
@@ -1620,14 +1620,14 @@ static TownGrowthResult GrowTownInTile(TileIndex *tile_ptr, RoadBits cur_rb, Dia
 		switch (t1->layout) {
 			default: NOT_REACHED();
 
-			case TL_3X3_GRID:
-			case TL_2X2_GRID:
+			case TownLayout::Grid3x3:
+			case TownLayout::Grid2x2:
 				rcmd = GetTownRoadGridElement(t1, tile, target_dir);
 				if (rcmd.None()) return TownGrowthResult::SearchStopped;
 				break;
 
-			case TL_BETTER_ROADS:
-			case TL_ORIGINAL:
+			case TownLayout::BetterRoads:
+			case TownLayout::Original:
 				if (!IsRoadAllowedHere(t1, tile, target_dir)) return TownGrowthResult::SearchStopped;
 
 				DiagDirection source_dir = ReverseDiagDir(target_dir);
@@ -1697,13 +1697,13 @@ static TownGrowthResult GrowTownInTile(TileIndex *tile_ptr, RoadBits cur_rb, Dia
 		switch (t1->layout) {
 			default: NOT_REACHED();
 
-			case TL_3X3_GRID:
-			case TL_2X2_GRID:
+			case TownLayout::Grid3x3:
+			case TownLayout::Grid2x2:
 				rcmd = GetTownRoadGridElement(t1, tile, target_dir);
 				break;
 
-			case TL_BETTER_ROADS:
-			case TL_ORIGINAL:
+			case TownLayout::BetterRoads:
+			case TownLayout::Original:
 				rcmd = DiagDirToRoadBits(ReverseDiagDir(target_dir));
 				break;
 		}
@@ -1791,24 +1791,24 @@ static TownGrowthResult GrowTownInTile(TileIndex *tile_ptr, RoadBits cur_rb, Dia
 			switch (t1->layout) {
 				default: NOT_REACHED();
 
-				case TL_3X3_GRID: // Use 2x2 grid afterwards!
+				case TownLayout::Grid3x3: // Use 2x2 grid afterwards!
 					if (GrowTownWithExtraHouse(t1, TileAddByDiagDir(house_tile, target_dir), modes)) {
 						result = TownGrowthResult::Succeed;
 					}
 					[[fallthrough]];
 
-				case TL_2X2_GRID:
+				case TownLayout::Grid2x2:
 					rcmd = GetTownRoadGridElement(t1, tile, target_dir);
 					allow_house = !rcmd.Any(target_rb);
 					break;
 
-				case TL_BETTER_ROADS: // Use original afterwards!
+				case TownLayout::BetterRoads: // Use original afterwards!
 					if (GrowTownWithExtraHouse(t1, TileAddByDiagDir(house_tile, target_dir), modes)) {
 						result = TownGrowthResult::Succeed;
 					}
 					[[fallthrough]];
 
-				case TL_ORIGINAL:
+				case TownLayout::Original:
 					/* Allow a house at the edge. 60% chance or
 					 * always ok if no road allowed. */
 					rcmd = target_rb;
@@ -1925,12 +1925,12 @@ static bool GrowTownAtRoad(Town *t, TileIndex tile, TownExpandModes modes)
 	 * them a little handicap. */
 	int iterations;
 	switch (t->layout) {
-		case TL_BETTER_ROADS:
+		case TownLayout::BetterRoads:
 			iterations = 10 + t->cache.num_houses * 2 / 9;
 			break;
 
-		case TL_3X3_GRID:
-		case TL_2X2_GRID:
+		case TownLayout::Grid3x3:
+		case TownLayout::Grid2x2:
 			iterations = 10 + t->cache.num_houses * 1 / 9;
 			break;
 
@@ -2251,8 +2251,8 @@ static void DoCreateTown(Town *t, TileIndex tile, uint32_t townnameparts, TownSi
 
 	t->larger_town = city;
 
-	int x = (int)size * 16 + 3;
-	if (size == TSZ_RANDOM) x = (Random() & 0xF) + 8;
+	int x = to_underlying(size) * 16 + 3;
+	if (size == TownSize::Random) x = (Random() & 0xF) + 8;
 	/* Don't create huge cities when founding town in-game */
 	if (city && (!manual || _game_mode == GameMode::Editor)) x *= _settings_game.economy.initial_city_size;
 
@@ -2381,15 +2381,15 @@ CommandCost CmdFoundTown(DoCommandFlags flags, TileIndex tile, TownSize size, bo
 {
 	TownNameParams par(_settings_game.game_creation.town_name);
 
-	if (size >= TSZ_END) return CMD_ERROR;
-	if (layout >= NUM_TLS) return CMD_ERROR;
+	if (size >= TownSize::End) return CMD_ERROR;
+	if (layout >= TownLayout::End) return CMD_ERROR;
 
 	/* Some things are allowed only in the scenario editor and for game scripts. */
 	if (_game_mode != GameMode::Editor && _current_company != OWNER_DEITY) {
-		if (_settings_game.economy.found_town == TF_FORBIDDEN) return CMD_ERROR;
-		if (size == TSZ_LARGE) return CMD_ERROR;
+		if (_settings_game.economy.found_town == TownFounding::Forbidden) return CMD_ERROR;
+		if (size == TownSize::Large) return CMD_ERROR;
 		if (random_location) return CMD_ERROR;
-		if (_settings_game.economy.found_town != TF_CUSTOM_LAYOUT && layout != _settings_game.economy.town_layout) {
+		if (_settings_game.economy.found_town != TownFounding::CustomLayout && layout != _settings_game.economy.town_layout) {
 			return CMD_ERROR;
 		}
 	} else if (_current_company == OWNER_DEITY && random_location) {
@@ -2414,12 +2414,11 @@ CommandCost CmdFoundTown(DoCommandFlags flags, TileIndex tile, TownSize size, bo
 		if (ret.Failed()) return ret;
 	}
 
-	static const uint8_t price_mult[][TSZ_RANDOM + 1] = {{ 15, 25, 40, 25 }, { 20, 35, 55, 35 }};
-	/* multidimensional arrays have to have defined length of non-first dimension */
-	static_assert(lengthof(price_mult[0]) == 4);
+	static const EnumIndexArray<uint8_t, TownSize, TownSize::End> town_price_mult = {15, 25, 40, 25};
+	static const EnumIndexArray<uint8_t, TownSize, TownSize::End> city_price_mult = {20, 35, 55, 35};
 
 	CommandCost cost(ExpensesType::Other, _price[Price::BuildTown]);
-	uint8_t mult = price_mult[city][size];
+	uint8_t mult = city ? city_price_mult[size] : town_price_mult[size];
 
 	cost.MultiplyCost(mult);
 
@@ -2493,9 +2492,9 @@ CommandCost CmdFoundTown(DoCommandFlags flags, TileIndex tile, TownSize size, bo
 static TileIndex AlignTileToGrid(TileIndex tile, TownLayout layout)
 {
 	switch (layout) {
-		case TL_2X2_GRID: return TileXY(TileX(tile) - TileX(tile) % 3, TileY(tile) - TileY(tile) % 3);
-		case TL_3X3_GRID: return TileXY(TileX(tile) & ~3, TileY(tile) & ~3);
-		default:          return tile;
+		case TownLayout::Grid2x2: return TileXY(TileX(tile) - TileX(tile) % 3, TileY(tile) - TileY(tile) % 3);
+		case TownLayout::Grid3x3: return TileXY(TileX(tile) & ~3, TileY(tile) & ~3);
+		default: return tile;
 	}
 }
 
@@ -2511,9 +2510,9 @@ static TileIndex AlignTileToGrid(TileIndex tile, TownLayout layout)
 static bool IsTileAlignedToGrid(TileIndex tile, TownLayout layout)
 {
 	switch (layout) {
-		case TL_2X2_GRID: return TileX(tile) % 3 == 0 && TileY(tile) % 3 == 0;
-		case TL_3X3_GRID: return TileX(tile) % 4 == 0 && TileY(tile) % 4 == 0;
-		default:          return true;
+		case TownLayout::Grid2x2: return TileX(tile) % 3 == 0 && TileY(tile) % 3 == 0;
+		case TownLayout::Grid3x3: return TileX(tile) % 4 == 0 && TileY(tile) % 4 == 0;
+		default: return true;
 	}
 }
 
@@ -2730,7 +2729,7 @@ bool GenerateTowns(TownLayout layout, std::optional<uint> number)
 		/* Get a unique name for the town. */
 		if (!GenerateTownName(_random, &townnameparts, &town_names)) continue;
 		/* try 20 times to create a random-sized town for the first loop. */
-		if (CreateRandomTown(20, townnameparts, TSZ_RANDOM, city, layout) != nullptr) current_number++; // If creation was successful, raise a flag.
+		if (CreateRandomTown(20, townnameparts, TownSize::Random, city, layout) != nullptr) current_number++; // If creation was successful, raise a flag.
 	} while (--total);
 
 	town_names.clear();
@@ -2743,7 +2742,7 @@ bool GenerateTowns(TownLayout layout, std::optional<uint> number)
 	/* If current_number is still zero at this point, it means that not a single town has been created.
 	 * So give it a last try, but now more aggressive */
 	if (GenerateTownName(_random, &townnameparts) &&
-			CreateRandomTown(10000, townnameparts, TSZ_RANDOM, _settings_game.economy.larger_towns != 0, layout) != nullptr) {
+			CreateRandomTown(10000, townnameparts, TownSize::Random, _settings_game.economy.larger_towns != 0, layout) != nullptr) {
 		return true;
 	}
 
@@ -3014,8 +3013,8 @@ static inline bool TownLayoutAllowsHouseHere(Town *t, const TileArea &ta, TownEx
 
 	const uint overflow = 3 * 4 * UINT16_MAX; // perform "floor division"
 	switch (t->layout) {
-		case TL_2X2_GRID: return (uint)(grid_pos.x + overflow) % 3 >= ta.w && (uint)(grid_pos.y + overflow) % 3 >= ta.h;
-		case TL_3X3_GRID: return (uint)(grid_pos.x + overflow) % 4 >= ta.w && (uint)(grid_pos.y + overflow) % 4 >= ta.h;
+		case TownLayout::Grid2x2: return (uint)(grid_pos.x + overflow) % 3 >= ta.w && (uint)(grid_pos.y + overflow) % 3 >= ta.h;
+		case TownLayout::Grid3x3: return (uint)(grid_pos.x + overflow) % 4 >= ta.w && (uint)(grid_pos.y + overflow) % 4 >= ta.h;
 		default: return true;
 	}
 }
