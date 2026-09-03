@@ -209,7 +209,7 @@ static PalSpriteID GetRailTypeCustomSignalSprite(const RailTypeInfo *rti, TileIn
 	uint32_t param1 = (context.ctx_mode == CSSC_GUI) ? 0x10 : 0x00;
 	uint32_t param2 = (to_underlying(type) << 16) | (to_underlying(var) << 8) | RemapAspect(aspect, rti->signal_extra_aspects, 0);
 	if ((prog != nullptr) && rti->ctrl_flags.Test(RailTypeCtrlFlag::SigSpriteRestrictedSig)) SetBit(param2, 24);
-	RailTypeResolverObject object(rti, tile, TCX_NORMAL, RailSpriteType::Signals, param1, param2, context, prog, z);
+	RailTypeResolverObject object(rti, tile, TileContext::Normal, RailSpriteType::Signals, param1, param2, context, prog, z);
 
 	const ResultSpriteGroup *group = object.Resolve<ResultSpriteGroup>();
 	if (group == nullptr || group->num_sprites == 0) return { 0, PAL_NONE };
@@ -248,7 +248,7 @@ CustomSignalSpriteResult GetCustomSignalSprite(const RailTypeInfo *rti, TileInde
 		uint32_t param1 = (context.ctx_mode == CSSC_GUI) ? 0x10 : 0x00;
 		uint32_t param2 = (to_underlying(type) << 16) | (to_underlying(var) << 8) | RemapAspect(aspect, grf->new_signal_extra_aspects, style);
 		if ((prog != nullptr) && HasBit(grf->new_signal_ctrl_flags, NSCF_RESTRICTEDSIG)) SetBit(param2, 24);
-		NewSignalsResolverObject object(grf, tile, TCX_NORMAL, param1, param2, context, style, prog, z);
+		NewSignalsResolverObject object(grf, tile, TileContext::Normal, param1, param2, context, style, prog, z);
 
 		const ResultSpriteGroup *group = object.Resolve<ResultSpriteGroup>();
 		if (group != nullptr && group->num_sprites != 0) {

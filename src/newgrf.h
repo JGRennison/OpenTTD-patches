@@ -273,7 +273,7 @@ struct Action5TypeRemapDefinition {
 	/** Create empty object used to identify the end of a list. */
 	Action5TypeRemapDefinition() :
 		name(nullptr),
-		info({ A5BLOCK_INVALID, 0, 0, 0, nullptr })
+		info({ Action5BlockType::Invalid, 0, 0, 0, nullptr })
 	{}
 
 	Action5TypeRemapDefinition(const char *type_name, Action5BlockType block_type, SpriteID sprite_base, uint16_t min_sprites, uint16_t max_sprites, const char *info_name) :
@@ -384,7 +384,7 @@ struct GRFFile {
 
 	EnumIndexArray<CanalProperties, CanalFeature, CanalFeature::End> canal_local_properties{}; ///< Canal properties as set by this NewGRF
 
-	robin_hood::unordered_node_map<uint8_t, LanguageMap> language_map{}; ///< Mappings related to the languages.
+	robin_hood::unordered_node_map<GRFLanguage, LanguageMap> language_map{}; ///< Mappings related to the languages.
 
 	int traininfo_vehicle_pitch = 0;                    ///< Vertical offset for drawing train images in depot GUI and vehicle details
 	uint traininfo_vehicle_width = 0;                   ///< Width (in pixels) of a 8/8 train vehicle in depot GUI and vehicle details

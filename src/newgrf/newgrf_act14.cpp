@@ -21,21 +21,21 @@
 #include "../safeguards.h"
 
 /** Callback function for 'INFO'->'NAME' to add a translation to the newgrf name. @copydoc TextHandler */
-static bool ChangeGRFName(uint8_t langid, std::string_view str)
+static bool ChangeGRFName(GRFLanguage langid, std::string_view str)
 {
 	AddGRFTextToList(_cur_gps.grfconfig->name, langid, _cur_gps.grfconfig->ident.grfid, false, str);
 	return true;
 }
 
 /** Callback function for 'INFO'->'DESC' to add a translation to the newgrf description. @copydoc TextHandler */
-static bool ChangeGRFDescription(uint8_t langid, std::string_view str)
+static bool ChangeGRFDescription(GRFLanguage langid, std::string_view str)
 {
 	AddGRFTextToList(_cur_gps.grfconfig->info, langid, _cur_gps.grfconfig->ident.grfid, true, str);
 	return true;
 }
 
 /** Callback function for 'INFO'->'URL_' to set the newgrf url. @copydoc TextHandler */
-static bool ChangeGRFURL(uint8_t langid, std::string_view str)
+static bool ChangeGRFURL(GRFLanguage langid, std::string_view str)
 {
 	AddGRFTextToList(_cur_gps.grfconfig->url, langid, _cur_gps.grfconfig->ident.grfid, false, str);
 	return true;
@@ -137,14 +137,14 @@ static bool ChangeGRFMinVersion(size_t len, ByteReader &buf)
 static GRFParameterInfo *_cur_parameter; ///< The parameter which info is currently changed by the newgrf.
 
 /** Callback function for 'INFO'->'PARAM'->param_num->'NAME' to set the name of a parameter. @copydoc TextHandler */
-static bool ChangeGRFParamName(uint8_t langid, std::string_view str)
+static bool ChangeGRFParamName(GRFLanguage langid, std::string_view str)
 {
 	AddGRFTextToList(_cur_parameter->name, langid, _cur_gps.grfconfig->ident.grfid, false, str);
 	return true;
 }
 
 /** Callback function for 'INFO'->'PARAM'->param_num->'DESC' to set the description of a parameter. @copydoc TextHandler */
-static bool ChangeGRFParamDescription(uint8_t langid, std::string_view str)
+static bool ChangeGRFParamDescription(GRFLanguage langid, std::string_view str)
 {
 	AddGRFTextToList(_cur_parameter->desc, langid, _cur_gps.grfconfig->ident.grfid, true, str);
 	return true;
@@ -242,7 +242,7 @@ using DataHandler = bool(*)(size_t len, ByteReader &buf);
  * @param str The actual text.
  * @return \c true iff the data could be processed.
  */
-using TextHandler = bool(*)(uint8_t langid, std::string_view str);
+using TextHandler = bool(*)(GRFLanguage langid, std::string_view str);
 
 /**
  * Callback for parsing branch nodes.
@@ -305,7 +305,7 @@ static bool ChangeGRFParamValueNames(ByteReader &buf)
 			continue;
 		}
 
-		uint8_t langid = buf.ReadByte();
+		GRFLanguage langid = static_cast<GRFLanguage>(buf.ReadByte());
 		std::string_view name_string = buf.ReadString();
 
 		auto it = std::ranges::lower_bound(_cur_parameter->value_names, id, std::less{}, &GRFParameterInfo::ValueName::first);
@@ -422,7 +422,7 @@ struct GRFFeatureTest {
 static GRFFeatureTest _current_grf_feature_test;
 
 /** Callback function for 'FTST'->'NAME' to set the name of the feature being tested. */
-static bool ChangeGRFFeatureTestName(uint8_t langid, std::string_view str)
+static bool ChangeGRFFeatureTestName(GRFLanguage langid, std::string_view str)
 {
 	extern const GRFFeatureInfo _grf_feature_list[];
 	for (const GRFFeatureInfo *info = _grf_feature_list; info->name != nullptr; info++) {
@@ -762,7 +762,7 @@ struct GRFPropertyMapAction {
 static GRFPropertyMapAction _current_grf_property_map_action;
 
 /** Callback function for ->'NAME' to set the name of the item to be mapped. */
-static bool ChangePropertyRemapName(uint8_t langid, std::string_view str)
+static bool ChangePropertyRemapName(GRFLanguage langid, std::string_view str)
 {
 	_current_grf_property_map_action.name = str;
 	return true;
@@ -1138,7 +1138,7 @@ static bool HandleNode(uint8_t type, uint32_t id, ByteReader &buf, std::span<con
 
 		bool operator()(const TextHandler &handler)
 		{
-			uint8_t langid = buf.ReadByte();
+			GRFLanguage langid = static_cast<GRFLanguage>(buf.ReadByte());
 			return handler(langid, buf.ReadString());
 		}
 

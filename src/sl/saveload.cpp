@@ -126,17 +126,17 @@ namespace upstream_sl {
 }
 
 /** What are we currently doing? */
-enum SaveLoadAction {
-	SLA_LOAD,        ///< loading
-	SLA_SAVE,        ///< saving
-	SLA_PTRS,        ///< fixing pointers
-	SLA_NULL,        ///< null all pointers (on loading error)
-	SLA_LOAD_CHECK,  ///< partial loading into #_load_check_data
+enum class SaveLoadAction : uint8_t {
+	Load,       ///< loading
+	Save,       ///< saving
+	Ptrs,       ///< fixing pointers
+	Null,       ///< null all pointers (on loading error)
+	LoadCheck,  ///< partial loading into #_load_check_data
 };
 
-enum NeedLength {
-	NL_NONE = 0,       ///< not working in NeedLength mode
-	NL_WANTLENGTH = 1, ///< writing length and data
+enum class NeedLength : uint8_t {
+	None,       ///< not working in NeedLength mode
+	WantLength, ///< writing length and data
 };
 
 void ReadBuffer::SkipBytesSlowPath(size_t bytes)
@@ -434,7 +434,7 @@ static void SlNullPointers()
 		return;
 	}
 
-	_sl.action = SLA_NULL;
+	_sl.action = SaveLoadAction::Null;
 
 	/* Do upstream chunk tests before clearing version data */
 	jgr::ring_buffer<uint32_t> upstream_null_chunks;
@@ -467,7 +467,7 @@ static void SlNullPointers()
 		}
 	}
 
-	assert(_sl.action == SLA_NULL);
+	assert(_sl.action == SaveLoadAction::Null);
 }
 
 struct ThreadSlErrorException {
@@ -485,12 +485,12 @@ struct ThreadSlErrorException {
  */
 [[noreturn]] void SlError(StringID string, std::string extra_msg)
 {
-	if (IsNonMainThread() && IsNonGameThread() && _sl.action != SLA_SAVE) {
+	if (IsNonMainThread() && IsNonGameThread() && _sl.action != SaveLoadAction::Save) {
 		throw ThreadSlErrorException{ string, std::move(extra_msg) };
 	}
 
 	/* Distinguish between loading into _load_check_data vs. normal save/load. */
-	if (_sl.action == SLA_LOAD_CHECK) {
+	if (_sl.action == SaveLoadAction::LoadCheck) {
 		_load_check_data.error = string;
 		_load_check_data.error_msg = std::move(extra_msg);
 	} else {
@@ -502,7 +502,7 @@ struct ThreadSlErrorException {
 	 * the pointers are actually filled with indices, which means that
 	 * when we access them during cleaning the pool dereferences of
 	 * those indices will be made with segmentation faults as result. */
-	if (_sl.action == SLA_LOAD || _sl.action == SLA_PTRS) SlNullPointers();
+	if (_sl.action == SaveLoadAction::Load || _sl.action == SaveLoadAction::Ptrs) SlNullPointers();
 
 	/* Logging could be active. */
 	GamelogStopAnyAction();
@@ -663,7 +663,7 @@ void SlWriteUint64(uint64_t v)
  */
 size_t SlGetBytesRead()
 {
-	assert(_sl.action == SLA_LOAD || _sl.action == SLA_LOAD_CHECK);
+	assert(_sl.action == SaveLoadAction::Load || _sl.action == SaveLoadAction::LoadCheck);
 	return _sl.reader->GetSize();
 }
 
@@ -673,7 +673,7 @@ size_t SlGetBytesRead()
  */
 size_t SlGetBytesWritten()
 {
-	assert(_sl.action == SLA_SAVE);
+	assert(_sl.action == SaveLoadAction::Save);
 	return _sl.dumper->GetSize();
 }
 
@@ -837,7 +837,7 @@ static inline size_t SlCalcRefLen()
 
 void SlSetArrayIndex(uint index)
 {
-	_sl.need_length = NL_WANTLENGTH;
+	_sl.need_length = NeedLength::WantLength;
 	_sl.array_index = index;
 }
 
@@ -909,11 +909,11 @@ void SlSkipArray()
  */
 void SlSetLength(size_t length)
 {
-	assert(_sl.action == SLA_SAVE);
+	assert(_sl.action == SaveLoadAction::Save);
 
 	switch (_sl.need_length) {
-		case NL_WANTLENGTH:
-			_sl.need_length = NL_NONE;
+		case NeedLength::WantLength:
+			_sl.need_length = NeedLength::None;
 			if ((_sl.chunk_type == ChunkType::Table || _sl.chunk_type == ChunkType::SparseTable) && _sl.expect_table_header) {
 				_sl.expect_table_header = false;
 				SlWriteArrayLength(length + 1);
@@ -981,11 +981,11 @@ void SlCopyBytesWrite(const void *p, size_t length)
 static void SlCopyBytes(void *ptr, size_t length)
 {
 	switch (_sl.action) {
-		case SLA_LOAD_CHECK:
-		case SLA_LOAD:
+		case SaveLoadAction::LoadCheck:
+		case SaveLoadAction::Load:
 			SlCopyBytesRead(ptr, length);
 			break;
-		case SLA_SAVE:
+		case SaveLoadAction::Save:
 			SlCopyBytesWrite(ptr, length);
 			break;
 		default: NOT_REACHED();
@@ -1118,18 +1118,18 @@ template <SaveLoadAction action>
 static void SlSaveLoadConvGeneric(void *ptr, VarType conv)
 {
 	switch (action) {
-		case SLA_SAVE: {
+		case SaveLoadAction::Save: {
 			SlSaveValue(ReadValue(ptr, conv), conv);
 			break;
 		}
-		case SLA_LOAD_CHECK:
-		case SLA_LOAD: {
+		case SaveLoadAction::LoadCheck:
+		case SaveLoadAction::Load: {
 			/* Write The value to the struct. These ARE endian safe. */
 			WriteValue(ptr, conv, SlLoadValue(conv));
 			break;
 		}
-		case SLA_PTRS: break;
-		case SLA_NULL: break;
+		case SaveLoadAction::Ptrs: break;
+		case SaveLoadAction::Null: break;
 		default: NOT_REACHED();
 	}
 }
@@ -1137,15 +1137,15 @@ static void SlSaveLoadConvGeneric(void *ptr, VarType conv)
 void SlSaveLoadConv(void *ptr, VarType conv)
 {
 	switch (_sl.action) {
-		case SLA_SAVE:
-			SlSaveLoadConvGeneric<SLA_SAVE>(ptr, conv);
+		case SaveLoadAction::Save:
+			SlSaveLoadConvGeneric<SaveLoadAction::Save>(ptr, conv);
 			return;
-		case SLA_LOAD_CHECK:
-		case SLA_LOAD:
-			SlSaveLoadConvGeneric<SLA_LOAD>(ptr, conv);
+		case SaveLoadAction::LoadCheck:
+		case SaveLoadAction::Load:
+			SlSaveLoadConvGeneric<SaveLoadAction::Load>(ptr, conv);
 			return;
-		case SLA_PTRS:
-		case SLA_NULL:
+		case SaveLoadAction::Ptrs:
+		case SaveLoadAction::Null:
 			return;
 		default: NOT_REACHED();
 	}
@@ -1215,7 +1215,7 @@ template <SaveLoadAction action>
 void SlString(void *ptr, size_t length, VarType conv)
 {
 	switch (action) {
-		case SLA_SAVE: {
+		case SaveLoadAction::Save: {
 			size_t len;
 			switch (GetVarMemType(conv)) {
 				default: NOT_REACHED();
@@ -1230,8 +1230,8 @@ void SlString(void *ptr, size_t length, VarType conv)
 			SlCopyBytesWrite(ptr, len);
 			break;
 		}
-		case SLA_LOAD_CHECK:
-		case SLA_LOAD: {
+		case SaveLoadAction::LoadCheck:
+		case SaveLoadAction::Load: {
 			if ((conv & SLF_ALLOW_CONTROL) != 0 && IsSavegameVersionBefore(SLV_ENCODED_STRING_FORMAT) && SlXvIsFeatureMissing(XSLFI_ENCODED_STRING_FORMAT) && GetVarMemType(conv) != SLE_VAR_NULL) {
 				/* Use std::string load path */
 				std::string buffer;
@@ -1278,8 +1278,8 @@ void SlString(void *ptr, size_t length, VarType conv)
 			StrMakeValidInPlace(str, str + len, settings);
 			break;
 		}
-		case SLA_PTRS: break;
-		case SLA_NULL: break;
+		case SaveLoadAction::Ptrs: break;
+		case SaveLoadAction::Null: break;
 		default: NOT_REACHED();
 	}
 }
@@ -1293,7 +1293,7 @@ template <SaveLoadAction action>
 void SlStdStringGeneric(std::string *ptr, VarType conv)
 {
 	switch (action) {
-		case SLA_SAVE: {
+		case SaveLoadAction::Save: {
 			dbg_assert(ptr != nullptr);
 			std::string &str = *ptr;
 
@@ -1301,8 +1301,8 @@ void SlStdStringGeneric(std::string *ptr, VarType conv)
 			SlCopyBytesWrite(str.data(), str.size());
 			break;
 		}
-		case SLA_LOAD_CHECK:
-		case SLA_LOAD: {
+		case SaveLoadAction::LoadCheck:
+		case SaveLoadAction::Load: {
 			size_t len = SlReadArrayLength();
 			if (GetVarMemType(conv) == SLE_VAR_NULL) {
 				SlSkipBytes(len);
@@ -1331,8 +1331,8 @@ void SlStdStringGeneric(std::string *ptr, VarType conv)
 			StrMakeValidInPlace(str, settings);
 			break;
 		}
-		case SLA_PTRS: break;
-		case SLA_NULL: break;
+		case SaveLoadAction::Ptrs: break;
+		case SaveLoadAction::Null: break;
 		default: NOT_REACHED();
 	}
 }
@@ -1345,15 +1345,15 @@ void SlStdStringGeneric(std::string *ptr, VarType conv)
 void SlStdString(std::string *ptr, VarType conv)
 {
 	switch (_sl.action) {
-		case SLA_SAVE:
-			SlStdStringGeneric<SLA_SAVE>(ptr, conv);
+		case SaveLoadAction::Save:
+			SlStdStringGeneric<SaveLoadAction::Save>(ptr, conv);
 			return;
-		case SLA_LOAD_CHECK:
-		case SLA_LOAD:
-			SlStdStringGeneric<SLA_LOAD>(ptr, conv);
+		case SaveLoadAction::LoadCheck:
+		case SaveLoadAction::Load:
+			SlStdStringGeneric<SaveLoadAction::Load>(ptr, conv);
 			return;
-		case SLA_PTRS:
-		case SLA_NULL:
+		case SaveLoadAction::Ptrs:
+		case SaveLoadAction::Null:
 			return;
 		default: NOT_REACHED();
 	}
@@ -1377,18 +1377,18 @@ static inline size_t SlCalcArrayLen(size_t length, VarType conv)
  */
 void SlArray(void *array, size_t length, VarType conv)
 {
-	if (_sl.action == SLA_PTRS || _sl.action == SLA_NULL) return;
+	if (_sl.action == SaveLoadAction::Ptrs || _sl.action == SaveLoadAction::Null) return;
 
 	if (SlIsTableChunk()) {
-		assert(_sl.need_length == NL_NONE);
+		assert(_sl.need_length == NeedLength::None);
 
 		switch (_sl.action) {
-			case SLA_SAVE:
+			case SaveLoadAction::Save:
 				SlWriteArrayLength(length);
 				break;
 
-			case SLA_LOAD_CHECK:
-			case SLA_LOAD: {
+			case SaveLoadAction::LoadCheck:
+			case SaveLoadAction::Load: {
 				if (!HasBit(_sl.block_flags, SLBF_TABLE_ARRAY_LENGTH_PREFIX_MISSING)) {
 					size_t sv_length = SlReadArrayLength();
 					if (GetVarMemType(conv) == SLE_VAR_NULL) {
@@ -1410,13 +1410,13 @@ void SlArray(void *array, size_t length, VarType conv)
 	}
 
 	/* Automatically calculate the length? */
-	if (_sl.need_length != NL_NONE) {
+	if (_sl.need_length != NeedLength::None) {
 		SlSetLength(SlCalcArrayLen(length, conv));
 	}
 
 	/* NOTICE - handle some buggy stuff, in really old versions everything was saved
 	 * as a byte-type. So detect this, and adjust array size accordingly */
-	if (_sl.action != SLA_SAVE && _sl_version == 0) {
+	if (_sl.action != SaveLoadAction::Save && _sl_version == 0) {
 		/* all arrays except difficulty settings */
 		if (conv == SLE_INT16 || conv == SLE_UINT16 || conv == SLE_STRINGID ||
 				conv == SLE_INT32 || conv == SLE_UINT32) {
@@ -1460,7 +1460,7 @@ void SlArray(void *array, size_t length, VarType conv)
  */
 static size_t ReferenceToInt(const void *obj, SLRefType rt)
 {
-	assert(_sl.action == SLA_SAVE);
+	assert(_sl.action == SaveLoadAction::Save);
 
 	if (obj == nullptr) return 0;
 
@@ -1496,7 +1496,7 @@ void *IntToReference(size_t index, SLRefType rt)
 {
 	static_assert(sizeof(size_t) <= sizeof(void *));
 
-	assert(_sl.action == SLA_PTRS);
+	assert(_sl.action == SaveLoadAction::Ptrs);
 
 	/* After version 4.3 REF_VEHICLE_OLD is saved as REF_VEHICLE,
 	 * and should be loaded like that */
@@ -1576,17 +1576,17 @@ template <SaveLoadAction action>
 void SlSaveLoadRef(void *ptr, VarType conv)
 {
 	switch (action) {
-		case SLA_SAVE:
+		case SaveLoadAction::Save:
 			SlWriteUint32((uint32_t)ReferenceToInt(*(void **)ptr, (SLRefType)conv));
 			break;
-		case SLA_LOAD_CHECK:
-		case SLA_LOAD:
+		case SaveLoadAction::LoadCheck:
+		case SaveLoadAction::Load:
 			*(size_t *)ptr = IsSavegameVersionBefore(SLV_69) ? (size_t)SlReadUint16() : SlReadUint32();
 			break;
-		case SLA_PTRS:
+		case SaveLoadAction::Ptrs:
 			*(void **)ptr = IntToReference(*(size_t *)ptr, (SLRefType)conv);
 			break;
-		case SLA_NULL:
+		case SaveLoadAction::Null:
 			*(void **)ptr = nullptr;
 			break;
 		default: NOT_REACHED();
@@ -1669,16 +1669,16 @@ public:
 		SlStorageT *list = static_cast<SlStorageT *>(storage);
 
 		switch (action) {
-			case SLA_SAVE:
+			case SaveLoadAction::Save:
 				SlWriteListLength(list->size());
 
 				for (auto &item : *list) {
-					SlSaveLoadMember<SLA_SAVE>(cmd, &item, conv);
+					SlSaveLoadMember<SaveLoadAction::Save>(cmd, &item, conv);
 				}
 				break;
 
-			case SLA_LOAD_CHECK:
-			case SLA_LOAD: {
+			case SaveLoadAction::LoadCheck:
+			case SaveLoadAction::Load: {
 				size_t length;
 				switch (cmd) {
 					case SL_VAR: length = SlReadListLength(); break;
@@ -1689,18 +1689,18 @@ public:
 				/* Load each value and push to the end of the storage. */
 				for (size_t i = 0; i < length; i++) {
 					Tvar &data = list->emplace_back();
-					SlSaveLoadMember<SLA_LOAD>(cmd, &data, conv);
+					SlSaveLoadMember<SaveLoadAction::Load>(cmd, &data, conv);
 				}
 				break;
 			}
 
-			case SLA_PTRS:
+			case SaveLoadAction::Ptrs:
 				for (auto &item : *list) {
-					SlSaveLoadMember<SLA_PTRS>(cmd, &item, conv);
+					SlSaveLoadMember<SaveLoadAction::Ptrs>(cmd, &item, conv);
 				}
 				break;
 
-			case SLA_NULL:
+			case SaveLoadAction::Null:
 				list->clear();
 				break;
 
@@ -1756,9 +1756,9 @@ static void SlRefList(void *list, SLRefType conv)
 	PtrList *l = (PtrList *)list;
 
 	switch (action) {
-		case SLA_SAVE: {
+		case SaveLoadAction::Save: {
 			/* Automatically calculate the length? */
-			if (_sl.need_length != NL_NONE) {
+			if (_sl.need_length != NeedLength::None) {
 				SlSetLength(SlCalcRefListLen<PtrList>(list));
 			}
 
@@ -1770,8 +1770,8 @@ static void SlRefList(void *list, SLRefType conv)
 			}
 			break;
 		}
-		case SLA_LOAD_CHECK:
-		case SLA_LOAD: {
+		case SaveLoadAction::LoadCheck:
+		case SaveLoadAction::Load: {
 			size_t length = SlReadListLength();
 			if constexpr (!std::is_same_v<PtrList, std::list<void *>>) {
 				l->reserve(length);
@@ -1784,13 +1784,13 @@ static void SlRefList(void *list, SLRefType conv)
 			}
 			break;
 		}
-		case SLA_PTRS: {
+		case SaveLoadAction::Ptrs: {
 			for (auto iter = l->begin(); iter != l->end(); ++iter) {
 				*iter = IntToReference((size_t)*iter, conv);
 			}
 			break;
 		}
-		case SLA_NULL:
+		case SaveLoadAction::Null:
 			l->clear();
 			break;
 		default: NOT_REACHED();
@@ -1808,9 +1808,9 @@ static void SlVarList(void *list, VarType conv)
 	PtrList *l = (PtrList *)list;
 
 	switch (action) {
-		case SLA_SAVE: {
+		case SaveLoadAction::Save: {
 			/* Automatically calculate the length? */
-			if (_sl.need_length != NL_NONE) {
+			if (_sl.need_length != NeedLength::None) {
 				SlSetLength(SlCalcVarListLen<PtrList>(list, SlCalcConvFileLen(conv)));
 			}
 
@@ -1818,12 +1818,12 @@ static void SlVarList(void *list, VarType conv)
 
 			typename PtrList::iterator iter;
 			for (iter = l->begin(); iter != l->end(); ++iter) {
-				SlSaveLoadConvGeneric<SLA_SAVE>(&(*iter), conv);
+				SlSaveLoadConvGeneric<SaveLoadAction::Save>(&(*iter), conv);
 			}
 			break;
 		}
-		case SLA_LOAD_CHECK:
-		case SLA_LOAD: {
+		case SaveLoadAction::LoadCheck:
+		case SaveLoadAction::Load: {
 			size_t length = SlReadListLength();
 			l->resize(length);
 
@@ -1831,13 +1831,13 @@ static void SlVarList(void *list, VarType conv)
 			iter = l->begin();
 
 			for (size_t i = 0; i < length; i++) {
-				SlSaveLoadConvGeneric<SLA_LOAD>(&(*iter), conv);
+				SlSaveLoadConvGeneric<SaveLoadAction::Load>(&(*iter), conv);
 				++iter;
 			}
 			break;
 		}
-		case SLA_PTRS: break;
-		case SLA_NULL:
+		case SaveLoadAction::Ptrs: break;
+		case SaveLoadAction::Null:
 			l->clear();
 			break;
 		default: NOT_REACHED();
@@ -1891,11 +1891,11 @@ template <SaveLoadAction action>
 static void SlCustomContainerVarList(void *list, const SaveLoad &sld)
 {
 	switch (action) {
-		case SLA_SAVE: {
+		case SaveLoadAction::Save: {
 			const size_t item_count = static_cast<size_t>(sld.custom.container_functor(list, SaveLoadCustomContainerOp::GetLength, {}, 0));
 
 			/* Automatically calculate the length? */
-			if (_sl.need_length != NL_NONE) {
+			if (_sl.need_length != NeedLength::None) {
 				SlSetLength(SlCalcVarListLenFromItemCount(item_count, SlCalcConvFileLen(sld.conv)));
 			}
 
@@ -1903,13 +1903,13 @@ static void SlCustomContainerVarList(void *list, const SaveLoad &sld)
 			sld.custom.container_functor(list, SaveLoadCustomContainerOp::Save, sld.conv, 0);
 			break;
 		}
-		case SLA_LOAD_CHECK:
-		case SLA_LOAD: {
+		case SaveLoadAction::LoadCheck:
+		case SaveLoadAction::Load: {
 			sld.custom.container_functor(list, SaveLoadCustomContainerOp::Load, sld.conv, SlReadListLength());
 			break;
 		}
-		case SLA_PTRS: break;
-		case SLA_NULL:
+		case SaveLoadAction::Ptrs: break;
+		case SaveLoadAction::Null:
 			sld.custom.container_functor(list, SaveLoadCustomContainerOp::Load, {}, 0);
 			break;
 		default: NOT_REACHED();
@@ -1941,7 +1941,7 @@ size_t SlCalcObjLength(const void *object, const SaveLoadTable &slt)
 
 size_t SlCalcObjMemberLength(const void *object, const SaveLoad &sld)
 {
-	assert(_sl.action == SLA_SAVE);
+	assert(_sl.action == SaveLoadAction::Save);
 
 	switch (sld.cmd) {
 		case SL_VAR:
@@ -2016,12 +2016,12 @@ static void SlFilterObjectMember(const SaveLoad &sld, std::vector<SaveLoad> &sav
 			if (!SlIsObjectValidInSavegame(sld)) return;
 
 			switch (_sl.action) {
-				case SLA_SAVE:
-				case SLA_LOAD_CHECK:
-				case SLA_LOAD:
+				case SaveLoadAction::Save:
+				case SaveLoadAction::LoadCheck:
+				case SaveLoadAction::Load:
 					break;
-				case SLA_PTRS:
-				case SLA_NULL:
+				case SaveLoadAction::Ptrs:
+				case SaveLoadAction::Null:
 					switch (sld.cmd) {
 						case SL_REF:
 						case SL_REFLIST:
@@ -2031,7 +2031,7 @@ static void SlFilterObjectMember(const SaveLoad &sld, std::vector<SaveLoad> &sav
 						case SL_STRUCTLIST:
 							break;
 
-						/* non-ptr types do not require SLA_PTRS or SLA_NULL actions */
+						/* non-ptr types do not require SaveLoadAction::Ptrs or SaveLoadAction::Null actions */
 						default:
 							return;
 					}
@@ -2046,7 +2046,7 @@ static void SlFilterObjectMember(const SaveLoad &sld, std::vector<SaveLoad> &sav
 		 * When loading, the value is read explicitly with SlReadByte() to determine which
 		 * object description to use. */
 		case SL_WRITEBYTE:
-			if (_sl.action == SLA_SAVE) save.push_back(sld);
+			if (_sl.action == SaveLoadAction::Save) save.push_back(sld);
 			break;
 
 		case SL_INCLUDE:
@@ -2113,17 +2113,17 @@ bool SlObjectMemberGeneric(void *object, const SaveLoad &sld)
 				case SL_VAR: SlSaveLoadConvGeneric<action>(ptr, conv); break;
 				case SL_REF: // Reference variable, translate
 					switch (action) {
-						case SLA_SAVE:
+						case SaveLoadAction::Save:
 							SlWriteUint32((uint32_t)ReferenceToInt(*(void **)ptr, (SLRefType)conv));
 							break;
-						case SLA_LOAD_CHECK:
-						case SLA_LOAD:
+						case SaveLoadAction::LoadCheck:
+						case SaveLoadAction::Load:
 							*(size_t *)ptr = IsSavegameVersionBefore(SLV_69) ? SlReadUint16() : SlReadUint32();
 							break;
-						case SLA_PTRS:
+						case SaveLoadAction::Ptrs:
 							*(void **)ptr = IntToReference(*(size_t *)ptr, (SLRefType)conv);
 							break;
-						case SLA_NULL:
+						case SaveLoadAction::Null:
 							*(void **)ptr = nullptr;
 							break;
 						default: NOT_REACHED();
@@ -2155,7 +2155,7 @@ bool SlObjectMemberGeneric(void *object, const SaveLoad &sld)
 		case SL_STRUCT:
 		case SL_STRUCTLIST:
 			switch (action) {
-				case SLA_SAVE: {
+				case SaveLoadAction::Save: {
 					if (sld.cmd == SL_STRUCT) {
 						/* Number of structs written in the savegame: write a value of 1, change to zero later if nothing after this was written */
 						_sl.dumper->WriteByte(1);
@@ -2171,7 +2171,7 @@ bool SlObjectMemberGeneric(void *object, const SaveLoad &sld)
 					break;
 				}
 
-				case SLA_LOAD_CHECK: {
+				case SaveLoadAction::LoadCheck: {
 					if (sld.cmd == SL_STRUCT && SlIsTableChunk()) {
 						if (SlGetStructListLength(1) == 0) break;
 					}
@@ -2179,7 +2179,7 @@ bool SlObjectMemberGeneric(void *object, const SaveLoad &sld)
 					break;
 				}
 
-				case SLA_LOAD: {
+				case SaveLoadAction::Load: {
 					if (sld.cmd == SL_STRUCT && SlIsTableChunk()) {
 						if (SlGetStructListLength(1) == 0) break;
 					}
@@ -2187,11 +2187,11 @@ bool SlObjectMemberGeneric(void *object, const SaveLoad &sld)
 					break;
 				}
 
-				case SLA_PTRS:
+				case SaveLoadAction::Ptrs:
 					sld.struct_handler->FixPointers(object);
 					break;
 
-				case SLA_NULL: break;
+				case SaveLoadAction::Null: break;
 				default: NOT_REACHED();
 			}
 			break;
@@ -2201,11 +2201,11 @@ bool SlObjectMemberGeneric(void *object, const SaveLoad &sld)
 		 * object description to use. */
 		case SL_WRITEBYTE:
 			switch (action) {
-				case SLA_SAVE: SlWriteByte(*(uint8_t *)ptr); break;
-				case SLA_LOAD_CHECK:
-				case SLA_LOAD:
-				case SLA_PTRS:
-				case SLA_NULL: break;
+				case SaveLoadAction::Save: SlWriteByte(*(uint8_t *)ptr); break;
+				case SaveLoadAction::LoadCheck:
+				case SaveLoadAction::Load:
+				case SaveLoadAction::Ptrs:
+				case SaveLoadAction::Null: break;
 				default: NOT_REACHED();
 			}
 			break;
@@ -2218,15 +2218,15 @@ bool SlObjectMemberGeneric(void *object, const SaveLoad &sld)
 bool SlObjectMember(void *object, const SaveLoad &sld)
 {
 	switch (_sl.action) {
-		case SLA_SAVE:
-			return SlObjectMemberGeneric<SLA_SAVE, true>(object, sld);
-		case SLA_LOAD_CHECK:
-		case SLA_LOAD:
-			return SlObjectMemberGeneric<SLA_LOAD, true>(object, sld);
-		case SLA_PTRS:
-			return SlObjectMemberGeneric<SLA_PTRS, true>(object, sld);
-		case SLA_NULL:
-			return SlObjectMemberGeneric<SLA_NULL, true>(object, sld);
+		case SaveLoadAction::Save:
+			return SlObjectMemberGeneric<SaveLoadAction::Save, true>(object, sld);
+		case SaveLoadAction::LoadCheck:
+		case SaveLoadAction::Load:
+			return SlObjectMemberGeneric<SaveLoadAction::Load, true>(object, sld);
+		case SaveLoadAction::Ptrs:
+			return SlObjectMemberGeneric<SaveLoadAction::Ptrs, true>(object, sld);
+		case SaveLoadAction::Null:
+			return SlObjectMemberGeneric<SaveLoadAction::Null, true>(object, sld);
 		default: NOT_REACHED();
 	}
 }
@@ -2239,7 +2239,7 @@ bool SlObjectMember(void *object, const SaveLoad &sld)
 void SlObject(void *object, const SaveLoadTable &slt)
 {
 	/* Automatically calculate the length? */
-	if (_sl.need_length != NL_NONE) {
+	if (_sl.need_length != NeedLength::None) {
 		SlSetLength(SlCalcObjLength(object, slt));
 	}
 
@@ -2258,32 +2258,32 @@ void SlObjectIterateBase(void *object, const SaveLoadTable &slt)
 
 void SlObjectSaveFiltered(void *object, const SaveLoadTable &slt)
 {
-	if (_sl.need_length != NL_NONE) {
-		_sl.need_length = NL_NONE;
+	if (_sl.need_length != NeedLength::None) {
+		_sl.need_length = NeedLength::None;
 		_sl.dumper->StartAutoLength();
-		SlObjectIterateBase<SLA_SAVE, false>(object, slt);
+		SlObjectIterateBase<SaveLoadAction::Save, false>(object, slt);
 		auto result = _sl.dumper->StopAutoLength();
-		_sl.need_length = NL_WANTLENGTH;
+		_sl.need_length = NeedLength::WantLength;
 		SlSetLength(result.size());
 		_sl.dumper->CopyBytes(result);
 	} else {
-		SlObjectIterateBase<SLA_SAVE, false>(object, slt);
+		SlObjectIterateBase<SaveLoadAction::Save, false>(object, slt);
 	}
 }
 
 void SlObjectLoadFiltered(void *object, const SaveLoadTable &slt)
 {
-	SlObjectIterateBase<SLA_LOAD, false>(object, slt);
+	SlObjectIterateBase<SaveLoadAction::Load, false>(object, slt);
 }
 
 void SlObjectPtrOrNullFiltered(void *object, const SaveLoadTable &slt)
 {
 	switch (_sl.action) {
-		case SLA_PTRS:
-			SlObjectIterateBase<SLA_PTRS, false>(object, slt);
+		case SaveLoadAction::Ptrs:
+			SlObjectIterateBase<SaveLoadAction::Ptrs, false>(object, slt);
 			return;
-		case SLA_NULL:
-			SlObjectIterateBase<SLA_NULL, false>(object, slt);
+		case SaveLoadAction::Null:
+			SlObjectIterateBase<SaveLoadAction::Null, false>(object, slt);
 			return;
 		default: NOT_REACHED();
 	}
@@ -2303,7 +2303,7 @@ void SlSkipTableHeader()
 
 		if ((type & SLE_FILE_TYPE_MASK) == SLE_FILE_STRUCT) sub_tables++;
 
-		SlString<SLA_LOAD>(nullptr, 0, SLE_FILE_STRING | SLE_VAR_NULL);
+		SlString<SaveLoadAction::Load>(nullptr, 0, SLE_FILE_STRING | SLE_VAR_NULL);
 	}
 	for (uint i = 0; i < sub_tables; i++) {
 		SlSkipTableHeader();
@@ -2394,8 +2394,8 @@ SaveLoadTableData SlTableHeader(const NamedSaveLoadTable &slt, TableHeaderSpecia
 	SaveLoadTableData saveloads;
 
 	switch (_sl.action) {
-		case SLA_LOAD_CHECK:
-		case SLA_LOAD: {
+		case SaveLoadAction::LoadCheck:
+		case SaveLoadAction::Load: {
 			/* Build a key lookup mapping based on the available fields. */
 			struct key_item {
 				std::string_view name;
@@ -2429,14 +2429,14 @@ SaveLoadTableData SlTableHeader(const NamedSaveLoadTable &slt, TableHeaderSpecia
 				}
 
 				std::string key;
-				SlStdStringGeneric<SLA_LOAD>(&key, SLE_STR);
+				SlStdStringGeneric<SaveLoadAction::Load>(&key, SLE_STR);
 
 				auto sld_it = std::lower_bound(key_lookup.begin(), key_lookup.end(), key);
 				if (sld_it == key_lookup.end() || sld_it->name != key) {
 					if (special_handler != nullptr && special_handler->MissingField(key, type, saveloads)) continue; // Special handler took responsibility for missing field
 
 					/* SLA_LOADCHECK triggers this debug statement a lot and is perfectly normal. */
-					Debug(sl, _sl.action == SLA_LOAD ? 2 : 6, "Field '{}' of type 0x{:02X} not found, skipping", key, type);
+					Debug(sl, _sl.action == SaveLoadAction::Load ? 2 : 6, "Field '{}' of type 0x{:02X} not found, skipping", key, type);
 
 					SaveLoadType saveload_type;
 					SaveLoadStructHandler *struct_handler = nullptr;
@@ -2493,10 +2493,10 @@ SaveLoadTableData SlTableHeader(const NamedSaveLoadTable &slt, TableHeaderSpecia
 			break;
 		}
 
-		case SLA_SAVE: {
+		case SaveLoadAction::Save: {
 			const NeedLength orig_need_length = _sl.need_length;
-			if (orig_need_length != NL_NONE) {
-				_sl.need_length = NL_NONE;
+			if (orig_need_length != NeedLength::None) {
+				_sl.need_length = NeedLength::None;
 				_sl.dumper->StartAutoLength();
 			}
 
@@ -2506,7 +2506,7 @@ SaveLoadTableData SlTableHeader(const NamedSaveLoadTable &slt, TableHeaderSpecia
 				uint8_t type = GetSavegameTableFileType(nsld.save_load);
 				assert(type != SLE_FILE_END);
 				SlWriteByte(type);
-				SlString<SLA_SAVE>(const_cast<char **>(&nsld.name), 0, SLE_STR);
+				SlString<SaveLoadAction::Save>(const_cast<char **>(&nsld.name), 0, SLE_STR);
 
 				saveloads.push_back(nsld.save_load);
 			}
@@ -2524,7 +2524,7 @@ SaveLoadTableData SlTableHeader(const NamedSaveLoadTable &slt, TableHeaderSpecia
 				}
 			}
 
-			if (orig_need_length != NL_NONE) {
+			if (orig_need_length != NeedLength::None) {
 				auto result = _sl.dumper->StopAutoLength();
 				_sl.need_length = orig_need_length;
 				SlSetLength(result.size());
@@ -2551,7 +2551,7 @@ SaveLoadTableData SlTableHeaderOrRiff(const NamedSaveLoadTable &slt)
 
 SaveLoadTableData SlPrepareNamedSaveLoadTableForPtrOrNull(const NamedSaveLoadTable &slt)
 {
-	const bool table_mode = (_sl.action == SLA_NULL) || SlIsTableChunk();
+	const bool table_mode = (_sl.action == SaveLoadAction::Null) || SlIsTableChunk();
 	SaveLoadTableData saveloads;
 	for (auto &nsld : slt) {
 		if (table_mode) {
@@ -2653,10 +2653,10 @@ void SlGlobList(const SaveLoadTable &slt)
 
 void SlAutolengthSetup()
 {
-	assert(_sl.action == SLA_SAVE);
-	assert(_sl.need_length == NL_WANTLENGTH);
+	assert(_sl.action == SaveLoadAction::Save);
+	assert(_sl.need_length == NeedLength::WantLength);
 
-	_sl.need_length = NL_NONE;
+	_sl.need_length = NeedLength::None;
 	_sl.dumper->StartAutoLength();
 }
 
@@ -2664,17 +2664,17 @@ void SlAutolengthCompletion()
 {
 	auto result = _sl.dumper->StopAutoLength();
 	/* Setup length */
-	_sl.need_length = NL_WANTLENGTH;
+	_sl.need_length = NeedLength::WantLength;
 	SlSetLength(result.size());
 	_sl.dumper->CopyBytes(result);
 }
 
 uint8_t SlSaveToTempBufferSetup()
 {
-	assert(_sl.action == SLA_SAVE);
+	assert(_sl.action == SaveLoadAction::Save);
 	NeedLength orig_need_length = _sl.need_length;
 
-	_sl.need_length = NL_NONE;
+	_sl.need_length = NeedLength::None;
 	_sl.dumper->StartAutoLength();
 
 	return (uint8_t) orig_need_length;
@@ -2692,7 +2692,7 @@ std::span<uint8_t> SlSaveToTempBufferRestore(uint8_t state)
 
 SlConditionallySaveState SlConditionallySaveSetup()
 {
-	assert(_sl.action == SLA_SAVE);
+	assert(_sl.action == SaveLoadAction::Save);
 	if (_sl.dumper->IsAutoLengthActive()) {
 		return { (size_t)(_sl.dumper->buf - _sl.dumper->autolen_buf), 0, true };
 	} else {
@@ -2712,7 +2712,7 @@ extern void SlConditionallySaveCompletion(const SlConditionallySaveState &state,
 
 SlLoadFromBufferState SlLoadFromBufferSetup(const uint8_t *buffer, size_t length)
 {
-	assert(_sl.action == SLA_LOAD || _sl.action == SLA_LOAD_CHECK);
+	assert(_sl.action == SaveLoadAction::Load || _sl.action == SaveLoadAction::LoadCheck);
 
 	SlLoadFromBufferState state;
 
@@ -3000,7 +3000,7 @@ static void SlSaveChunk(const ChunkHandler &ch)
 	_sl.chunk_type = ch.type;
 	_sl.block_flags = 0;
 	_sl.expect_table_header = (_sl.chunk_type == ChunkType::Table || _sl.chunk_type == ChunkType::SparseTable);
-	_sl.need_length = (_sl.expect_table_header || _sl.chunk_type == ChunkType::Riff) ? NL_WANTLENGTH : NL_NONE;
+	_sl.need_length = (_sl.expect_table_header || _sl.chunk_type == ChunkType::Riff) ? NeedLength::WantLength : NeedLength::None;
 
 	switch (ch.type) {
 		case ChunkType::Riff:
@@ -3116,12 +3116,12 @@ static void SlFixPointers()
 	if (_sl_upstream_mode) {
 		upstream_sl::SlFixPointers();
 
-		_sl.action = SLA_PTRS;
+		_sl.action = SaveLoadAction::Ptrs;
 		FixupOldOrderPoolItemReferences();
 		return;
 	}
 
-	_sl.action = SLA_PTRS;
+	_sl.action = SaveLoadAction::Ptrs;
 
 	for (auto &ch : ChunkHandlers()) {
 		_sl.current_chunk_id = ch.id;
@@ -3135,7 +3135,7 @@ static void SlFixPointers()
 		}
 	}
 
-	assert(_sl.action == SLA_PTRS);
+	assert(_sl.action == SaveLoadAction::Ptrs);
 	FixupOldOrderPoolItemReferences();
 }
 
@@ -3917,7 +3917,7 @@ void SetSaveLoadError(StringID str)
 /** Return the appropriate initial string for an error depending on whether we are saving or loading. */
 EncodedString GetSaveLoadErrorType()
 {
-	return GetEncodedString(_sl.action == SLA_SAVE ? STR_ERROR_GAME_SAVE_FAILED : STR_ERROR_GAME_LOAD_FAILED);
+	return GetEncodedString(_sl.action == SaveLoadAction::Save ? STR_ERROR_GAME_SAVE_FAILED : STR_ERROR_GAME_LOAD_FAILED);
 }
 
 /** Return the description of the error. **/
@@ -4029,7 +4029,7 @@ static SaveLoadResult DoSave(std::shared_ptr<SaveFilter> writer, bool threaded)
 SaveLoadResult SaveWithFilter(std::shared_ptr<SaveFilter> writer, bool threaded, SaveModeFlags flags)
 {
 	try {
-		_sl.action = SLA_SAVE;
+		_sl.action = SaveLoadAction::Save;
 		_sl.save_flags = flags;
 		return DoSave(std::move(writer), threaded);
 	} catch (...) {
@@ -4399,7 +4399,7 @@ static SaveLoadResult DoLoad(std::shared_ptr<LoadFilter> reader, bool load_check
 SaveLoadResult LoadWithFilter(std::shared_ptr<LoadFilter> reader)
 {
 	try {
-		_sl.action = SLA_LOAD;
+		_sl.action = SaveLoadAction::Load;
 		return DoLoad(std::move(reader), false);
 	} catch (...) {
 		ClearSaveLoadState();
@@ -4462,15 +4462,15 @@ SaveLoadResult SaveOrLoad(const std::string &filename, SaveLoadOperation fop, De
 		assert(dft == DetailedFileType::GameFile);
 		switch (fop) {
 			case SaveLoadOperation::Check:
-				_sl.action = SLA_LOAD_CHECK;
+				_sl.action = SaveLoadAction::LoadCheck;
 				break;
 
 			case SaveLoadOperation::Load:
-				_sl.action = SLA_LOAD;
+				_sl.action = SaveLoadAction::Load;
 				break;
 
 			case SaveLoadOperation::Save:
-				_sl.action = SLA_SAVE;
+				_sl.action = SaveLoadAction::Save;
 				break;
 
 			default: NOT_REACHED();

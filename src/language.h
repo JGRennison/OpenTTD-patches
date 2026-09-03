@@ -13,6 +13,8 @@
 #include "strings_type.h"
 #include <vector>
 
+enum class GRFLanguage : uint8_t;
+
 static const uint8_t CASE_GENDER_LEN = 16; ///< The (maximum) length of a case/gender string.
 static const uint8_t MAX_NUM_GENDERS =  8; ///< Maximum number of supported genders.
 static const uint8_t MAX_NUM_CASES   = 16; ///< Maximum number of supported cases.
@@ -45,11 +47,11 @@ struct LanguagePackHeader {
 	 * what language it is in "Windows". The ID is the 'locale identifier' on:
 	 *   http://msdn.microsoft.com/en-us/library/ms776294.aspx
 	 */
-	uint16_t winlangid = 0;   ///< windows language id
-	uint8_t newgrflangid = 0; ///< newgrf language id
-	uint8_t num_genders = 0;  ///< the number of genders of this language
-	uint8_t num_cases = 0;    ///< the number of cases of this language
-	uint8_t pad[3] = {};      ///< pad header to be a multiple of 4
+	uint16_t winlangid = 0;     ///< windows language id
+	GRFLanguage newgrflangid{}; ///< newgrf language id
+	uint8_t num_genders = 0;    ///< the number of genders of this language
+	uint8_t num_cases = 0;      ///< the number of cases of this language
+	uint8_t pad[3] = {};        ///< pad header to be a multiple of 4
 
 	char genders[MAX_NUM_GENDERS][CASE_GENDER_LEN] = {}; ///< the genders used by this translation
 	char cases[MAX_NUM_CASES][CASE_GENDER_LEN] = {}; ///< the cases used by this translation
@@ -97,6 +99,6 @@ extern LanguageList _languages;
 extern const LanguageMetadata *_current_language;
 
 bool ReadLanguagePack(const LanguageMetadata *lang);
-const LanguageMetadata *GetLanguage(uint8_t newgrflangid);
+const LanguageMetadata *GetLanguage(GRFLanguage newgrflangid);
 
 #endif /* LANGUAGE_H */

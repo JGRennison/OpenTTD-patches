@@ -221,9 +221,9 @@ extern const GRFNameOnlyVariableMapDefinition _grf_action2_internal_variable_nam
 
 /** Action14 Action5 remappable type list */
 extern const Action5TypeRemapDefinition _grf_action5_remappable_types[] = {
-	Action5TypeRemapDefinition("programmable_signals", A5BLOCK_ALLOW_OFFSET, SPR_PROGSIGNAL_BASE, 1, 32, "Programmable pre-signal graphics"),
-	Action5TypeRemapDefinition("no_entry_signals", A5BLOCK_ALLOW_OFFSET, SPR_EXTRASIGNAL_BASE, 1, 16, "No-entry signal graphics"),
-	Action5TypeRemapDefinition("misc_gui", A5BLOCK_ALLOW_OFFSET, SPR_MISC_GUI_BASE, 1, 1, "Miscellaneous GUI graphics"),
-	Action5TypeRemapDefinition("road_waypoints", A5BLOCK_ALLOW_OFFSET, SPR_ROAD_WAYPOINTS_BASE, 1, 4, "Road waypoints"),
+	Action5TypeRemapDefinition("programmable_signals", Action5BlockType::AllowOffset, SPR_PROGSIGNAL_BASE, 1, 32, "Programmable pre-signal graphics"),
+	Action5TypeRemapDefinition("no_entry_signals", Action5BlockType::AllowOffset, SPR_EXTRASIGNAL_BASE, 1, 16, "No-entry signal graphics"),
+	Action5TypeRemapDefinition("misc_gui", Action5BlockType::AllowOffset, SPR_MISC_GUI_BASE, 1, 1, "Miscellaneous GUI graphics"),
+	Action5TypeRemapDefinition("road_waypoints", Action5BlockType::AllowOffset, SPR_ROAD_WAYPOINTS_BASE, 1, 4, "Road waypoints"),
 	Action5TypeRemapDefinition(),
 };

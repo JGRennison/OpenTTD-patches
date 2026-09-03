@@ -66,7 +66,7 @@ struct CustomSignalSpriteResult {
 	bool restricted_valid;
 };
 
-SpriteID GetCustomRailSprite(const RailTypeInfo *rti, TileIndex tile, RailSpriteType rtsg, TileContext context = TCX_NORMAL, uint *num_results = nullptr);
+SpriteID GetCustomRailSprite(const RailTypeInfo *rti, TileIndex tile, RailSpriteType rtsg, TileContext context = TileContext::Normal, uint *num_results = nullptr);
 CustomSignalSpriteResult GetCustomSignalSprite(const RailTypeInfo *rti, TileIndex tile, SignalType type, SignalVariant var, uint8_t aspect,
 		CustomSignalSpriteContext context, uint8_t style, const TraceRestrictProgram *prog = nullptr, uint z = 0);
 

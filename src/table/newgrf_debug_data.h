@@ -1496,7 +1496,7 @@ class NIHSignals : public NIHelper {
 				}
 			} while (bits != TRACK_BIT_NONE);
 		}
-		NewSignalsResolverObject ro(nullptr, tile, TCX_NORMAL, 0, 0, ctx, style, GetFirstTraceRestrictProgramOnTile(tile), z);
+		NewSignalsResolverObject ro(nullptr, tile, TileContext::Normal, 0, 0, ctx, style, GetFirstTraceRestrictProgramOnTile(tile), z);
 		return ro.GetScope(VarSpriteGroupScope::Self)->GetVariable(var, param, extra);
 	}
 
@@ -1736,7 +1736,7 @@ class NIHRailType : public NIHelper {
 	{
 		/* There is no unique GRFFile for the tile. Multiple GRFs can define different parts of the railtype.
 		 * However, currently the NewGRF Debug GUI does not display variables depending on the GRF (like 0x7F) anyway. */
-		RailTypeResolverObject ro(nullptr, TileIndex{index}, TCX_NORMAL, RailSpriteType::End);
+		RailTypeResolverObject ro(nullptr, TileIndex{index}, TileContext::Normal, RailSpriteType::End);
 		return ro.GetScope(VarSpriteGroupScope::Self)->GetVariable(var, param, extra);
 	}
 
@@ -2350,7 +2350,7 @@ private:
 	{
 		/* There is no unique GRFFile for the tile. Multiple GRFs can define different parts of the railtype.
 		 * However, currently the NewGRF Debug GUI does not display variables depending on the GRF (like 0x7F) anyway. */
-		RoadTypeResolverObject ro(nullptr, TileIndex{index}, TCX_NORMAL, RoadSpriteType::End);
+		RoadTypeResolverObject ro(nullptr, TileIndex{index}, TileContext::Normal, RoadSpriteType::End);
 		return ro.GetScope(VarSpriteGroupScope::Self)->GetVariable(var, param, extra);
 	}
 

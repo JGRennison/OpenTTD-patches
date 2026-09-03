@@ -117,7 +117,7 @@ static void Load_NGRF_common(GRFConfigList &grfconfig)
 		auto c = std::make_unique<GRFConfig>();
 		SlObjectLoadFiltered(c.get(), sld);
 		if (SlXvIsFeaturePresent(XSLFI_NEWGRF_INFO_EXTRA)) {
-			AddGRFTextToList(c->name, 0x7F, c->ident.grfid, false, _grf_name.c_str());
+			AddGRFTextToList(c->name, GRFLanguage::Unspecified, c->ident.grfid, false, _grf_name.c_str());
 		}
 		if (SlXvIsFeatureMissing(XSLFI_NEWGRF_INFO_EXTRA, 2)) {
 			auto last = std::begin(_grf_param) + std::min<size_t>(std::size(_grf_param), _grf_num_params);

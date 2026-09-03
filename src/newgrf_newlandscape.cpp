@@ -37,7 +37,7 @@ std::vector<const GRFFile *> _new_landscape_rocks_grfs;
 
 	switch (variable) {
 		case 0x40:
-			return GetTerrainType(this->ti->tile, TCX_NORMAL);
+			return GetTerrainType(this->ti->tile, TileContext::Normal);
 
 		case 0x41:
 			return this->ti->tileh;
