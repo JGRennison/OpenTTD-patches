@@ -24,6 +24,8 @@
 
 extern SaveLoadVersion _sl_version;
 extern uint8_t         _sl_minor_version;
+class TinyString;
+class EncodedString;
 
 namespace upstream_sl {
 
@@ -799,6 +801,29 @@ inline constexpr size_t SlVarSize(VarType type)
 }
 
 namespace detail {
+/**
+ * Check whether the variable size/type of the variable in the saveload configuration
+ * matches with the actual variable size, for primitive types.
+ */
+template <typename TYPE>
+inline constexpr bool SlCheckPrimitiveTypeVar(VarType type)
+{
+	using T = typename std::remove_reference<TYPE>::type;
+
+	if (sizeof(T) != SlVarSize(type)) return false;
+
+	switch (GetVarMemType(type)) {
+		case SLE_VAR_STR:
+		case SLE_VAR_STRQ:
+		case SLE_VAR_NAME:
+			return std::is_same_v<T, std::string> || std::is_same_v<T, EncodedString>;
+
+		default:
+			return std::is_integral_v<T> || std::is_enum_v<T> || SlIsPrimitiveType<T>;
+
+	}
+}
+
 template <class, template <class, class...> class>
 struct SlIsInstance : public std::false_type {};
 
@@ -833,7 +858,7 @@ template <class T, template <class, class...> class U>
 inline constexpr bool SlCheckValueContainerType(VarType type)
 {
 	if constexpr (SlIsContainerType<T, U>()) {
-		return SlVarSize(type) == sizeof(typename T::value_type);
+		return SlCheckPrimitiveTypeVar<typename T::value_type>(type);
 	}
 	return false;
 }
@@ -860,7 +885,7 @@ inline constexpr bool SlCheckArrayTypeVar(VarType type, size_t length, bool top_
 	using T = typename std::remove_reference<TYPE>::type;
 
 	if constexpr (std::is_array_v<T>) {
-		return sizeof(typename std::remove_all_extents_t<T>) == SlVarSize(type);
+		return SlCheckPrimitiveTypeVar<typename std::remove_all_extents_t<T>>(type);
 	}
 	if constexpr (SlIsDerivedFromArray<std::array, T>::value) {
 		return SlCheckArrayTypeVar<typename T::value_type>(type, length, false);
@@ -870,7 +895,7 @@ inline constexpr bool SlCheckArrayTypeVar(VarType type, size_t length, bool top_
 		 * It's impractical to check the actual struct/class fields. */
 		if (top_level && sizeof(T) == length) return true;
 	}
-	return sizeof(T) == SlVarSize(type);
+	return SlCheckPrimitiveTypeVar<T>(type);
 }
 };
 
@@ -887,10 +912,10 @@ inline constexpr bool SlCheckVarSize(SaveLoadType cmd, VarType type, size_t leng
 {
 	size_t size = sizeof(T);
 	switch (cmd) {
-		case SaveLoadType::Variable: return SlVarSize(type) == size;
+		case SaveLoadType::Variable: return detail::SlCheckPrimitiveTypeVar<T>(type);
 		case SaveLoadType::Reference: return std::is_pointer_v<T> || detail::SlIsInstance<T, std::unique_ptr>{};
-		case SaveLoadType::StringPtr: return sizeof(void *) == size;
-		case SaveLoadType::StdString: return SlVarSize(type) == size;
+		case SaveLoadType::StringPtr: return std::is_same_v<T, char *> || std::is_same_v<T, const char *> || std::is_same_v<T, TinyString>;
+		case SaveLoadType::StdString: return detail::SlCheckPrimitiveTypeVar<T>(type);
 		case SaveLoadType::Array: return detail::SlCheckArrayTypeVar<T>(type, SlVarSize(type) * length, true) && SlVarSize(type) * length <= size; // Partial load of array is permitted.
 		case SaveLoadType::Ring: return detail::SlCheckValueContainerType<T, jgr::ring_buffer>(type);
 		case SaveLoadType::Vector: return detail::SlCheckValueContainerType<T, std::vector>(type);
@@ -898,6 +923,7 @@ inline constexpr bool SlCheckVarSize(SaveLoadType cmd, VarType type, size_t leng
 		case SaveLoadType::ReferenceVector: return detail::SlCheckReferenceContainerType<T, std::vector>();
 		case SaveLoadType::ReferenceRing: return detail::SlCheckReferenceContainerType<T, jgr::ring_buffer>();
 		case SaveLoadType::SaveByte: return size == 1;
+
 		default: NOT_REACHED();
 	}
 }
