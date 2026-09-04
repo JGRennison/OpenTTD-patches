@@ -20,6 +20,7 @@
 #include <string>
 #include <vector>
 #include <list>
+#include <type_traits>
 
 extern SaveLoadVersion _sl_version;
 extern uint8_t         _sl_minor_version;
@@ -797,6 +798,82 @@ inline constexpr size_t SlVarSize(VarType type)
 	}
 }
 
+namespace detail {
+template <class, template <class, class...> class>
+struct SlIsInstance : public std::false_type {};
+
+template <class...Ts, template <class, class...> class U>
+struct SlIsInstance<U<Ts...>, U> : public std::true_type {};
+
+template <class T, template <class, class...> class U>
+inline constexpr bool SlIsContainerType()
+{
+	if constexpr (SlIsInstance<T, U>{}) {
+		return true;
+	} else if constexpr (requires { std::declval<typename T::value_type>(); }) {
+		/*
+		 * Handle the case where T trivially inherits from the container type.
+		 * std::is_pointer_interconvertible_base_of_v has poor compiler support, so just use std::is_base_of_v and a size match check.
+		 */
+		return sizeof(T) == sizeof(U<typename T::value_type>) && std::is_base_of_v<U<typename T::value_type>, T>;
+	}
+	return false;
+}
+
+template <class T, template <class, class...> class U>
+inline constexpr bool SlCheckReferenceContainerType()
+{
+	if constexpr (SlIsContainerType<T, U>()) {
+		return std::is_pointer_v<typename T::value_type> || SlIsInstance<typename T::value_type, std::unique_ptr>{};
+	}
+	return false;
+}
+
+template <class T, template <class, class...> class U>
+inline constexpr bool SlCheckValueContainerType(VarType type)
+{
+	if constexpr (SlIsContainerType<T, U>()) {
+		return SlVarSize(type) == sizeof(typename T::value_type);
+	}
+	return false;
+}
+
+template <template <class, std::size_t> class T, class U>
+struct SlIsDerivedFromArray
+{
+private:
+	template <class V, std::size_t N>
+	static decltype(static_cast<T<V, N>>(std::declval<U>()), std::true_type{}) test(const T<V, N>&);
+	static std::false_type test(...);
+
+public:
+	static constexpr bool value = decltype(SlIsDerivedFromArray::test(std::declval<U>()))::value;
+};
+
+/**
+ * Check whether the variable size/type of the variable in the saveload configuration
+ * matches with the actual variable size, for array types.
+ */
+template <typename TYPE>
+inline constexpr bool SlCheckArrayTypeVar(VarType type, size_t length, bool top_level)
+{
+	using T = typename std::remove_reference<TYPE>::type;
+
+	if constexpr (std::is_array_v<T>) {
+		return sizeof(typename std::remove_all_extents_t<T>) == SlVarSize(type);
+	}
+	if constexpr (SlIsDerivedFromArray<std::array, T>::value) {
+		return SlCheckArrayTypeVar<typename T::value_type>(type, length, false);
+	}
+	if constexpr (std::is_class_v<T>) {
+		/* If T is class/struct, assume that the array is writing all its members, so check that the total size matches.
+		 * It's impractical to check the actual struct/class fields. */
+		if (top_level && sizeof(T) == length) return true;
+	}
+	return sizeof(T) == SlVarSize(type);
+}
+};
+
 /**
  * Check if a saveload cmd/type/length entry matches the size of the variable.
  * @param cmd SaveLoadType of entry.
@@ -805,35 +882,37 @@ inline constexpr size_t SlVarSize(VarType type)
  * @param size Actual size of variable.
  * @return true iff the sizes match.
  */
-inline constexpr bool SlCheckVarSize(SaveLoadType cmd, VarType type, size_t length, size_t size)
+template <typename T>
+inline constexpr bool SlCheckVarSize(SaveLoadType cmd, VarType type, size_t length)
 {
+	size_t size = sizeof(T);
 	switch (cmd) {
 		case SaveLoadType::Variable: return SlVarSize(type) == size;
-		case SaveLoadType::Reference: return sizeof(void *) == size;
+		case SaveLoadType::Reference: return std::is_pointer_v<T> || detail::SlIsInstance<T, std::unique_ptr>{};
 		case SaveLoadType::StringPtr: return sizeof(void *) == size;
 		case SaveLoadType::StdString: return SlVarSize(type) == size;
-		case SaveLoadType::Array: return SlVarSize(type) * length <= size; // Partial load of array is permitted.
-		case SaveLoadType::Ring: return sizeof(jgr::ring_buffer<void *>) == size;
-		case SaveLoadType::Vector: return sizeof(std::vector<void *>) == size;
-		case SaveLoadType::ReferenceList: return sizeof(std::list<void *>) == size;
-		case SaveLoadType::ReferenceVector: return sizeof(std::vector<void *>) == size;
-		case SaveLoadType::ReferenceRing: return sizeof(jgr::ring_buffer<void *>) == size;
+		case SaveLoadType::Array: return detail::SlCheckArrayTypeVar<T>(type, SlVarSize(type) * length, true) && SlVarSize(type) * length <= size; // Partial load of array is permitted.
+		case SaveLoadType::Ring: return detail::SlCheckValueContainerType<T, jgr::ring_buffer>(type);
+		case SaveLoadType::Vector: return detail::SlCheckValueContainerType<T, std::vector>(type);
+		case SaveLoadType::ReferenceList: return detail::SlCheckReferenceContainerType<T, std::list>();
+		case SaveLoadType::ReferenceVector: return detail::SlCheckReferenceContainerType<T, std::vector>();
+		case SaveLoadType::ReferenceRing: return detail::SlCheckReferenceContainerType<T, jgr::ring_buffer>();
 		case SaveLoadType::SaveByte: return size == 1;
 		default: NOT_REACHED();
 	}
 }
 
-template <SaveLoadType cmd, VarType type, size_t length, size_t size>
+template <SaveLoadType cmd, VarType type, size_t length, typename T>
 inline constexpr void *SlVarWrapper(void *ptr)
 {
-	static_assert(SlCheckVarSize(cmd, type, length, size));
+	static_assert(SlCheckVarSize<T>(cmd, type, length));
 	return ptr;
 }
 
-template <SaveLoadType cmd, VarType type, size_t length, size_t size>
+template <SaveLoadType cmd, VarType type, size_t length, typename T>
 inline constexpr size_t SlVarWrapper(size_t offset)
 {
-	static_assert(SlCheckVarSize(cmd, type, length, size));
+	static_assert(SlCheckVarSize<T>(cmd, type, length));
 	return offset;
 }
 
@@ -851,7 +930,7 @@ inline constexpr size_t SlVarWrapper(size_t offset)
  * @note In general, it is better to use one of the SLE_* macros below.
  */
 #define SLE_GENERAL_NAME(cmd, name, base, variable, type, length, from, to, extra) \
-	SaveLoad {name, cmd, type, length, from, to, { .offset = SlVarWrapper<cmd, type, length, sizeof(base::variable)>(cpp_offsetof(base, variable)) }, nullptr}
+	SaveLoad {name, cmd, type, length, from, to, { .offset = SlVarWrapper<cmd, type, length, decltype(base::variable)>(cpp_offsetof(base, variable)) }, nullptr}
 
 /**
  * Storage of simple variables, references (pointers), and arrays with a custom name.
@@ -1100,7 +1179,7 @@ inline constexpr size_t SlVarWrapper(size_t offset)
  * @note In general, it is better to use one of the SLEG_* macros below.
  */
 #define SLEG_GENERAL(name, cmd, variable, type, length, from, to, extra) \
-	SaveLoad {name, cmd, static_cast<VarType>(type) | static_cast<VarType>(SLF_GLOBAL), length, from, to, { .address = SlVarWrapper<cmd, type, length, sizeof(variable)>(static_cast<void *>(std::addressof(variable))) }, nullptr}
+	SaveLoad {name, cmd, static_cast<VarType>(type) | static_cast<VarType>(SLF_GLOBAL), length, from, to, { .address = SlVarWrapper<cmd, type, length, decltype(variable)>(static_cast<void *>(std::addressof(variable))) }, nullptr}
 
 /**
  * Storage of a global variable in some savegame versions.
