@@ -31,6 +31,7 @@
 #include "../core/bitmath_func.hpp"
 #include "../core/endian_func.hpp"
 #include "../core/string_consumer.hpp"
+#include "../core/tinystring_type.hpp"
 #include "../vehicle_base.h"
 #include "../company_func.h"
 #include "../date_func.h"
