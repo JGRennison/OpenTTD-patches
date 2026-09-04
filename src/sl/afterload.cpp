@@ -80,13 +80,12 @@
 #include "../pathfinder/water_regions.h"
 #include "../tile_cmd.h"
 
+#include "saveload_internal.h"
 
-#include "../sl/saveload_internal.h"
+#include "../table/strings.h"
 
 #include <signal.h>
 #include <algorithm>
-
-#include "table/strings.h"
 
 #include "../safeguards.h"
 
