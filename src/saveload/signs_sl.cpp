@@ -21,16 +21,16 @@ namespace upstream_sl {
 
 /** Description of a sign within the savegame. */
 static const SaveLoad _sign_desc[] = {
-	SLE_CONDVAR(Sign, name, SLE_NAME, SL_MIN_VERSION, SLV_84),
-	SLE_CONDSSTR(Sign, name, SLE_STR | SLF_ALLOW_CONTROL, SLV_84, SL_MAX_VERSION),
-	SLE_CONDVAR(Sign, x, SLE_FILE_I16 | SLE_VAR_I32, SL_MIN_VERSION, SLV_5),
-	SLE_CONDVAR(Sign, y, SLE_FILE_I16 | SLE_VAR_I32, SL_MIN_VERSION, SLV_5),
-	SLE_CONDVAR(Sign, x, SLE_INT32, SLV_5, SL_MAX_VERSION),
-	SLE_CONDVAR(Sign, y, SLE_INT32, SLV_5, SL_MAX_VERSION),
-	SLE_CONDVAR(Sign, owner, SLE_UINT8, SLV_6, SL_MAX_VERSION),
-	SLE_CONDVAR(Sign, z, SLE_FILE_U8  | SLE_VAR_I32, SL_MIN_VERSION, SLV_164),
-	SLE_CONDVAR(Sign, z, SLE_INT32, SLV_164, SL_MAX_VERSION),
-	SLE_CONDVAR(Sign, text_colour, SLE_UINT8, SLV_SIGN_TEXT_COLOURS, SL_MAX_VERSION),
+	SLE_CONDVAR(Sign, name, SLE_NAME, SaveLoadVersion::MinVersion, SaveLoadVersion::ReplaceCustomNameArray),
+	SLE_CONDSSTR(Sign, name, SLE_STR | SLF_ALLOW_CONTROL, SaveLoadVersion::ReplaceCustomNameArray, SaveLoadVersion::MaxVersion),
+	SLE_CONDVAR(Sign, x, SLE_FILE_I16 | SLE_VAR_I32, SaveLoadVersion::MinVersion, SaveLoadVersion::BigMap),
+	SLE_CONDVAR(Sign, y, SLE_FILE_I16 | SLE_VAR_I32, SaveLoadVersion::MinVersion, SaveLoadVersion::BigMap),
+	SLE_CONDVAR(Sign, x, SLE_INT32, SaveLoadVersion::BigMap, SaveLoadVersion::MaxVersion),
+	SLE_CONDVAR(Sign, y, SLE_INT32, SaveLoadVersion::BigMap, SaveLoadVersion::MaxVersion),
+	SLE_CONDVAR(Sign, owner, SLE_UINT8, SaveLoadVersion::MultipleRoadStops, SaveLoadVersion::MaxVersion),
+	SLE_CONDVAR(Sign, z, SLE_FILE_U8 | SLE_VAR_I32, SaveLoadVersion::MinVersion, SaveLoadVersion::VehicleCentreAndZPos),
+	SLE_CONDVAR(Sign, z, SLE_INT32, SaveLoadVersion::VehicleCentreAndZPos, SaveLoadVersion::MaxVersion),
+	SLE_CONDVAR(Sign, text_colour, SLE_UINT8, SaveLoadVersion::SignTextColours, SaveLoadVersion::MaxVersion),
 };
 
 struct SIGNChunkHandler : ChunkHandler {
@@ -60,12 +60,12 @@ struct SIGNChunkHandler : ChunkHandler {
 			 *  - we can't use IsValidCompany() now, so this is fixed in AfterLoadGame()
 			 * All signs that were saved are valid (including those with just 'Sign' and INVALID_OWNER).
 			 *  - so set owner to OWNER_NONE if needed (signs from pre-version 6.1 would be lost) */
-			if (IsSavegameVersionBefore(SLV_6, 1) || (IsSavegameVersionBefore(SLV_83) && si->owner == INVALID_OWNER)) {
+			if (IsSavegameVersionBefore(SaveLoadVersion::MultipleRoadStops, 1) || (IsSavegameVersionBefore(SaveLoadVersion::DepotWaterOwners) && si->owner == INVALID_OWNER)) {
 				si->owner = OWNER_NONE;
 			}
 
 			/* Signs placed in scenario editor shall now be OWNER_DEITY */
-			if (IsSavegameVersionBefore(SLV_171) && si->owner == OWNER_NONE && SaveLoadFileTypeIsScenario()) {
+			if (IsSavegameVersionBefore(SaveLoadVersion::ScenarioDeitySigns) && si->owner == OWNER_NONE && SaveLoadFileTypeIsScenario()) {
 				si->owner = OWNER_DEITY;
 			}
 		}

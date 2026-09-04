@@ -135,14 +135,14 @@ static std::vector<SaveLoad> GetSettingsDesc(bool is_loading)
 		}
 
 		if (is_loading && sd->flags.Test(SettingFlag::NoNetworkSync) && _networking && !_network_server) {
-			if (IsSavegameVersionBefore(SLV_TABLE_CHUNKS)) {
+			if (IsSavegameVersionBefore(SaveLoadVersion::TableChunks)) {
 				/* We don't want to read this setting, so we do need to skip over it. */
-				saveloads.push_back({sd->name, new_cmd, static_cast<VarType>(GetVarFileType(new_type) | SLE_VAR_NULL), sd->save.length, SL_MIN_VERSION, SL_MAX_VERSION, { .address = nullptr }, nullptr});
+				saveloads.push_back({sd->name, new_cmd, static_cast<VarType>(GetVarFileType(new_type) | SLE_VAR_NULL), sd->save.length, SaveLoadVersion::MinVersion, SaveLoadVersion::MaxVersion, { .address = nullptr }, nullptr});
 			}
 			continue;
 		}
 
-		saveloads.push_back({sd->name, new_cmd, new_type, sd->save.length, SL_MIN_VERSION, SL_MAX_VERSION, { .offset = sd->save.offset }, nullptr});
+		saveloads.push_back({sd->name, new_cmd, new_type, sd->save.length, SaveLoadVersion::MinVersion, SaveLoadVersion::MaxVersion, { .offset = sd->save.offset }, nullptr});
 	}
 
 	return saveloads;
@@ -159,9 +159,9 @@ static void LoadSettings(void *object, const SaveLoadCompatTable &slct)
 {
 	const std::vector<SaveLoad> slt = SlCompatTableHeader(GetSettingsDesc(true), slct);
 
-	if (!IsSavegameVersionBefore(SLV_RIFF_TO_ARRAY) && SlIterateArray() == -1) return;
+	if (!IsSavegameVersionBefore(SaveLoadVersion::RiffToArray) && SlIterateArray() == -1) return;
 	SlObject(object, slt);
-	if (!IsSavegameVersionBefore(SLV_RIFF_TO_ARRAY) && SlIterateArray() != -1) SlErrorCorrupt("Too many settings entries");
+	if (!IsSavegameVersionBefore(SaveLoadVersion::RiffToArray) && SlIterateArray() != -1) SlErrorCorrupt("Too many settings entries");
 
 	/* Ensure all IntSettings are valid (min/max could have changed between versions etc). */
 	for (const SettingDesc *sd : IterateSettingTables(GetSaveLoadSettingsTables())) {

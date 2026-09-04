@@ -324,12 +324,12 @@ static uint8_t GetSavegameFileType(const SaveLoad &sld)
 			return GetVarFileType(sld.conv) | SLE_FILE_HAS_LENGTH_FIELD; break;
 
 		case SaveLoadType::Reference:
-			return IsSavegameVersionBefore(SLV_69) ? SLE_FILE_U16 : SLE_FILE_U32;
+			return IsSavegameVersionBefore(SaveLoadVersion::MoreCargoPackets) ? SLE_FILE_U16 : SLE_FILE_U32;
 
 		case SaveLoadType::ReferenceList:
 		case SaveLoadType::ReferenceVector:
 		case SaveLoadType::ReferenceRing:
-			return (IsSavegameVersionBefore(SLV_69) ? SLE_FILE_U16 : SLE_FILE_U32) | SLE_FILE_HAS_LENGTH_FIELD;
+			return (IsSavegameVersionBefore(SaveLoadVersion::MoreCargoPackets) ? SLE_FILE_U16 : SLE_FILE_U32) | SLE_FILE_HAS_LENGTH_FIELD;
 
 		case SaveLoadType::SaveByte:
 			return SLE_FILE_U8;
@@ -407,7 +407,7 @@ static inline uint8_t SlCalcConvFileLen(VarType conv)
  */
 static inline size_t SlCalcRefLen()
 {
-	return IsSavegameVersionBefore(SLV_69) ? 2 : 4;
+	return IsSavegameVersionBefore(SaveLoadVersion::MoreCargoPackets) ? 2 : 4;
 }
 
 void SlSetArrayIndex(uint index)
@@ -868,8 +868,8 @@ static void SlStdString(void *ptr, VarType conv)
 			StringValidationSettings settings = StringValidationSetting::ReplaceWithQuestionMark;
 			if ((conv & SLF_ALLOW_CONTROL) != 0) {
 				settings.Set(StringValidationSetting::AllowControlCode);
-				if (IsSavegameVersionBefore(SLV_ENCODED_STRING_FORMAT)) FixSCCEncoded(*str, IsSavegameVersionBefore(SLV_169));
-				if (IsSavegameVersionBefore(SLV_FIX_SCC_ENCODED_NEGATIVE)) FixSCCEncodedNegative(*str);
+				if (IsSavegameVersionBefore(SaveLoadVersion::EncodedStringFormat)) FixSCCEncoded(*str, IsSavegameVersionBefore(SaveLoadVersion::MoveSccEncoded));
+				if (IsSavegameVersionBefore(SaveLoadVersion::FixSccEncodedNegative)) FixSCCEncodedNegative(*str);
 			}
 			if ((conv & SLF_ALLOW_NEWLINE) != 0) {
 				settings.Set(StringValidationSetting::AllowNewline);
@@ -912,7 +912,7 @@ static void SlString(void *ptr, size_t length, VarType conv)
 		}
 		case SaveLoadAction::LoadCheck:
 		case SaveLoadAction::Load: {
-			if ((conv & SLF_ALLOW_CONTROL) != 0 && IsSavegameVersionBefore(SLV_ENCODED_STRING_FORMAT) && GetVarMemType(conv) != SLE_VAR_NULL) {
+			if ((conv & SLF_ALLOW_CONTROL) != 0 && IsSavegameVersionBefore(SaveLoadVersion::EncodedStringFormat) && GetVarMemType(conv) != SLE_VAR_NULL) {
 				/* Use std::string load path */
 				std::string buffer;
 				SlStdString(reinterpret_cast<void *>(&buffer), conv);
@@ -985,7 +985,7 @@ static void SlCopyInternal(void *object, size_t length, VarType conv)
 
 	/* NOTICE - handle some buggy stuff, in really old versions everything was saved
 	 * as a byte-type. So detect this, and adjust object size accordingly */
-	if (_sl.action != SaveLoadAction::Save && _sl_version == 0) {
+	if (_sl.action != SaveLoadAction::Save && SaveLoadVersion{_sl_version} == SaveLoadVersion::MinVersion) {
 		/* all objects except difficulty settings */
 		if (conv == SLE_INT16 || conv == SLE_UINT16 || conv == SLE_STRINGID ||
 				conv == SLE_INT32 || conv == SLE_UINT32) {
@@ -1065,7 +1065,7 @@ static void SlArray(void *array, size_t length, VarType conv)
 
 		case SaveLoadAction::LoadCheck:
 		case SaveLoadAction::Load: {
-			if (!IsSavegameVersionBefore(SLV_SAVELOAD_LIST_LENGTH)) {
+			if (!IsSavegameVersionBefore(SaveLoadVersion::SaveloadListLength)) {
 				size_t sv_length = SlReadArrayLength();
 				if (GetVarMemType(conv) == SLE_VAR_NULL) {
 					/* We don't know this field, so we assume the length in the savegame is correct. */
@@ -1142,7 +1142,7 @@ static void *IntToReference(size_t index, SLRefType rt)
 
 	/* After version 4.3 REF_VEHICLE_OLD is saved as REF_VEHICLE,
 	 * and should be loaded like that */
-	if (rt == REF_VEHICLE_OLD && !IsSavegameVersionBefore(SLV_4, 4)) {
+	if (rt == REF_VEHICLE_OLD && !IsSavegameVersionBefore(SaveLoadVersion::TownTolerancePauseMode, 4)) {
 		rt = REF_VEHICLE;
 	}
 
@@ -1161,7 +1161,7 @@ static void *IntToReference(size_t index, SLRefType rt)
 		case REF_ORDER:
 			if (OrderPoolItem::IsValidID(index)) return OrderPoolItem::Get(index);
 			/* in old versions, invalid order was used to mark end of order list */
-			if (IsSavegameVersionBefore(SLV_5, 2)) return nullptr;
+			if (IsSavegameVersionBefore(SaveLoadVersion::BigMap, 2)) return nullptr;
 			SlErrorCorrupt("Referencing invalid Order");
 
 		case REF_VEHICLE_OLD:
@@ -1218,7 +1218,7 @@ void SlSaveLoadRef(void *ptr, VarType conv)
 			break;
 		case SaveLoadAction::LoadCheck:
 		case SaveLoadAction::Load:
-			*static_cast<size_t *>(ptr) = IsSavegameVersionBefore(SLV_69) ? (size_t)SlReadUint16() : SlReadUint32();
+			*static_cast<size_t *>(ptr) = IsSavegameVersionBefore(SaveLoadVersion::MoreCargoPackets) ? (size_t)SlReadUint16() : SlReadUint32();
 			break;
 		case SaveLoadAction::Ptrs:
 			*static_cast<void **>(ptr) = IntToReference(*static_cast<size_t *>(ptr), static_cast<SLRefType>(conv));
@@ -1292,8 +1292,8 @@ public:
 			case SaveLoadAction::Load: {
 				size_t length;
 				switch (cmd) {
-					case SaveLoadType::Variable: length = IsSavegameVersionBefore(SLV_SAVELOAD_LIST_LENGTH) ? SlReadUint32() : SlReadArrayLength(); break;
-					case SaveLoadType::Reference: length = IsSavegameVersionBefore(SLV_69) ? SlReadUint16() : IsSavegameVersionBefore(SLV_SAVELOAD_LIST_LENGTH) ? SlReadUint32() : SlReadArrayLength(); break;
+					case SaveLoadType::Variable: length = IsSavegameVersionBefore(SaveLoadVersion::SaveloadListLength) ? SlReadUint32() : SlReadArrayLength(); break;
+					case SaveLoadType::Reference: length = IsSavegameVersionBefore(SaveLoadVersion::MoreCargoPackets) ? SlReadUint16() : IsSavegameVersionBefore(SaveLoadVersion::SaveloadListLength) ? SlReadUint32() : SlReadArrayLength(); break;
 					case SaveLoadType::StdString: length = SlReadArrayLength(); break;
 					default: NOT_REACHED();
 				}
@@ -1518,7 +1518,7 @@ static void SlVector(void *vector, VarType conv)
 			/* Strings are a length-prefixed field type in the savegame table format,
 			 * these may not be directly stored in another length-prefixed container type.
 			 * This is permitted for load-related actions, because invalid fields of this type are present
-			 * from SLV_COMPANY_ALLOW_LIST up to SLV_COMPANY_ALLOW_LIST_V2. */
+			 * from SaveLoadVersion::CompanyAllowList up to SaveLoadVersion::CompanyAllowListV2. */
 			assert(_sl.action != SaveLoadAction::Save);
 			SlStorageHelper<std::vector, std::string>::SlSaveLoad(vector, conv, SaveLoadType::StdString);
 			break;
@@ -1534,7 +1534,7 @@ static void SlVector(void *vector, VarType conv)
  */
 static inline bool SlIsObjectValidInSavegame(const SaveLoad &sld)
 {
-	return (_sl_version >= sld.version_from && _sl_version < sld.version_to);
+	return (SaveLoadVersion{_sl_version} >= sld.version_from && SaveLoadVersion{_sl_version} < sld.version_to);
 }
 
 /**
@@ -1709,7 +1709,7 @@ static bool SlObjectMember(void *object, const SaveLoad &sld)
 				}
 
 				case SaveLoadAction::LoadCheck: {
-					if (sld.cmd == SaveLoadType::Struct && !IsSavegameVersionBefore(SLV_SAVELOAD_LIST_LENGTH)) {
+					if (sld.cmd == SaveLoadType::Struct && !IsSavegameVersionBefore(SaveLoadVersion::SaveloadListLength)) {
 						SlGetStructListLength(1);
 					}
 					sld.handler->LoadCheck(object);
@@ -1717,7 +1717,7 @@ static bool SlObjectMember(void *object, const SaveLoad &sld)
 				}
 
 				case SaveLoadAction::Load: {
-					if (sld.cmd == SaveLoadType::Struct && !IsSavegameVersionBefore(SLV_SAVELOAD_LIST_LENGTH)) {
+					if (sld.cmd == SaveLoadType::Struct && !IsSavegameVersionBefore(SaveLoadVersion::SaveloadListLength)) {
 						SlGetStructListLength(1);
 					}
 					sld.handler->Load(object);
@@ -1878,7 +1878,7 @@ std::vector<SaveLoad> SlTableHeader(const SaveLoadTable &slt)
 					}
 
 					/* We don't know this field, so read to nothing. */
-					saveloads.push_back({ std::move(key), saveload_type, static_cast<VarType>(((VarType)type & SLE_FILE_TYPE_MASK) | SLE_VAR_NULL), 1, SL_MIN_VERSION, SL_MAX_VERSION, { .address = nullptr }, std::move(handler) });
+					saveloads.push_back({ std::move(key), saveload_type, static_cast<VarType>(((VarType)type & SLE_FILE_TYPE_MASK) | SLE_VAR_NULL), 1, SaveLoadVersion::MinVersion, SaveLoadVersion::MaxVersion, { .address = nullptr }, std::move(handler) });
 					continue;
 				}
 

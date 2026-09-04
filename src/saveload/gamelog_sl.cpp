@@ -50,8 +50,8 @@ static std::string _revision_text;
 class SlGamelogRevision : public DefaultSaveLoadHandler<SlGamelogRevision, LoggedChange> {
 public:
 	static inline const SaveLoad description[] = {
-		SLEG_CONDARR("revision.text", _old_revision_text, SLE_UINT8, GAMELOG_REVISION_LENGTH, SL_MIN_VERSION,     SLV_STRING_GAMELOG),
-		SLEG_CONDSSTR("revision.text",    _revision_text, SLE_STR,                            SLV_STRING_GAMELOG, SL_MAX_VERSION),
+		SLEG_CONDARR("revision.text", _old_revision_text, SLE_UINT8, GAMELOG_REVISION_LENGTH, SaveLoadVersion::MinVersion, SaveLoadVersion::StringGamelog),
+		SLEG_CONDSSTR("revision.text",    _revision_text, SLE_STR,                            SaveLoadVersion::StringGamelog, SaveLoadVersion::MaxVersion),
 		SLE_VAR(LoggedChange, revision.newgrf,   SLE_UINT32),
 		SLE_VAR(LoggedChange, revision.slver,    SLE_UINT16),
 		SLE_VAR(LoggedChange, revision.modified, SLE_UINT8),
@@ -69,7 +69,7 @@ public:
 	{
 		if (lc->ct != GamelogChangeType::Revision) return;
 		SlObject(lc, this->GetLoadDescription());
-		if (IsSavegameVersionBefore(SLV_STRING_GAMELOG)) {
+		if (IsSavegameVersionBefore(SaveLoadVersion::StringGamelog)) {
 			lc->revision.text = stredup(_old_revision_text, lastof(_old_revision_text));
 		} else {
 			lc->revision.text = stredup(_revision_text.c_str());
@@ -270,7 +270,7 @@ class SlGamelogEmergency : public DefaultSaveLoadHandler<SlGamelogEmergency, Log
 public:
 	/** We need to store something, so store a "true" value. */
 	static inline const SaveLoad description[] = {
-		SLEG_CONDVAR("is_emergency_save", _is_emergency_save, SLE_BOOL, SLV_RIFF_TO_ARRAY, SL_MAX_VERSION),
+		SLEG_CONDVAR("is_emergency_save", _is_emergency_save, SLE_BOOL, SaveLoadVersion::RiffToArray, SaveLoadVersion::MaxVersion),
 	};
 	static inline const SaveLoadCompatTable compat_description = _gamelog_emergency_sl_compat;
 
@@ -324,7 +324,7 @@ public:
 	{
 		la->changes.clear();
 
-		if (IsSavegameVersionBefore(SLV_RIFF_TO_ARRAY)) {
+		if (IsSavegameVersionBefore(SaveLoadVersion::RiffToArray)) {
 			GamelogChangeType type;
 			while ((type = static_cast<GamelogChangeType>(SlReadByte())) != GamelogChangeType::None) {
 				if (type >= GamelogChangeType::End) SlErrorCorrupt("Invalid gamelog change type");
@@ -354,9 +354,9 @@ public:
 };
 
 static const SaveLoad _gamelog_desc[] = {
-	SLE_CONDVAR(LoggedAction, at,            SLE_UINT8,   SLV_RIFF_TO_ARRAY, SL_MAX_VERSION),
-	SLE_CONDVAR(LoggedAction, tick, SLE_FILE_U16 | SLE_VAR_U64, SL_MIN_VERSION, SLV_U64_TICK_COUNTER),
-	SLE_CONDVAR(LoggedAction, tick, SLE_UINT64,                 SLV_U64_TICK_COUNTER, SL_MAX_VERSION),
+	SLE_CONDVAR(LoggedAction, at, SLE_UINT8, SaveLoadVersion::RiffToArray, SaveLoadVersion::MaxVersion),
+	SLE_CONDVAR(LoggedAction, tick, SLE_FILE_U16 | SLE_VAR_U64, SaveLoadVersion::MinVersion, SaveLoadVersion::U64TickCounter),
+	SLE_CONDVAR(LoggedAction, tick, SLE_UINT64, SaveLoadVersion::U64TickCounter, SaveLoadVersion::MaxVersion),
 	SLEG_STRUCTLIST("action", SlGamelogAction),
 };
 
@@ -369,7 +369,7 @@ struct GLOGChunkHandler : ChunkHandler {
 
 		const std::vector<SaveLoad> slt = SlCompatTableHeader(_gamelog_desc, _gamelog_sl_compat);
 
-		if (IsSavegameVersionBefore(SLV_RIFF_TO_ARRAY)) {
+		if (IsSavegameVersionBefore(SaveLoadVersion::RiffToArray)) {
 			GamelogActionType type;
 			while ((type = static_cast<GamelogActionType>(SlReadByte())) != GamelogActionType::None) {
 				if (type >= GamelogActionType::End) SlErrorCorrupt("Invalid gamelog action type");

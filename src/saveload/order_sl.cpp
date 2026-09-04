@@ -32,10 +32,10 @@ SaveLoadTable GetOrderDescription()
 		     SLE_VAR(Order, flags,          SLE_FILE_U8 | SLE_VAR_U16),
 		     SLE_VAR(Order, dest,           SLE_UINT16),
 		    SLEG_VAR("next", _order_item_ref, SLE_UINT32),
-		 SLE_CONDVAR(Order, refit_cargo,    SLE_UINT8,   SLV_36, SL_MAX_VERSION),
-		 SLE_CONDVAR(Order, wait_time,      SLE_FILE_U16 | SLE_VAR_U32,  SLV_67, SL_MAX_VERSION),
-		 SLE_CONDVAR(Order, travel_time,    SLE_FILE_U16 | SLE_VAR_U32,  SLV_67, SL_MAX_VERSION),
-		 SLE_CONDVAR(Order, max_speed,      SLE_UINT16, SLV_172, SL_MAX_VERSION),
+		 SLE_CONDVAR(Order, refit_cargo,    SLE_UINT8,   SaveLoadVersion::RefitOrders, SaveLoadVersion::MaxVersion),
+		 SLE_CONDVAR(Order, wait_time,      SLE_FILE_U16 | SLE_VAR_U32,  SaveLoadVersion::Timetables, SaveLoadVersion::MaxVersion),
+		 SLE_CONDVAR(Order, travel_time,    SLE_FILE_U16 | SLE_VAR_U32,  SaveLoadVersion::Timetables, SaveLoadVersion::MaxVersion),
+		 SLE_CONDVAR(Order, max_speed,      SLE_UINT16, SaveLoadVersion::OrderMaxSpeed, SaveLoadVersion::MaxVersion),
 	};
 
 	return _order_desc;
@@ -51,7 +51,7 @@ struct ORDRChunkHandler : ChunkHandler {
 
 	void Load() const override
 	{
-		if (IsSavegameVersionBefore(SLV_5, 2)) {
+		if (IsSavegameVersionBefore(SaveLoadVersion::BigMap, 2)) {
 			NOT_REACHED();
 		} else {
 			const std::vector<SaveLoad> slt = SlCompatTableHeader(GetOrderDescription(), _order_sl_compat);
@@ -93,8 +93,8 @@ template class SlOrders<OrderBackup>;
 SaveLoadTable GetOrderListDescription()
 {
 	static const SaveLoad _orderlist_desc[] = {
-		SLEG_CONDVAR("first",  _order_item_ref,    SLE_UINT32, SL_MIN_VERSION, SLV_ORDERS_OWNED_BY_ORDERLIST),
-		SLEG_CONDSTRUCTLIST("orders", SlOrders<OrderList>, SLV_ORDERS_OWNED_BY_ORDERLIST, SL_MAX_VERSION),
+		SLEG_CONDVAR("first", _order_item_ref, SLE_UINT32, SaveLoadVersion::MinVersion, SaveLoadVersion::OrdersOwnedByOrderlist),
+		SLEG_CONDSTRUCTLIST("orders", SlOrders<OrderList>, SaveLoadVersion::OrdersOwnedByOrderlist, SaveLoadVersion::MaxVersion),
 	};
 
 	return _orderlist_desc;
@@ -111,7 +111,7 @@ struct ORDLChunkHandler : ChunkHandler {
 	void Load() const override
 	{
 		const std::vector<SaveLoad> slt = SlCompatTableHeader(GetOrderListDescription(), _orderlist_sl_compat);
-		const bool old_mode = IsSavegameVersionBefore(SLV_ORDERS_OWNED_BY_ORDERLIST);
+		const bool old_mode = IsSavegameVersionBefore(SaveLoadVersion::OrdersOwnedByOrderlist);
 
 		int index;
 
@@ -132,20 +132,20 @@ SaveLoadTable GetOrderBackupDescription()
 		     SLE_VAR(OrderBackup, user,                     SLE_UINT32),
 		     SLE_VAR(OrderBackup, tile,                     SLE_UINT32),
 		     SLE_VAR(OrderBackup, group,                    SLE_UINT16),
-		 SLE_CONDVAR(OrderBackup, service_interval,         SLE_FILE_U32 | SLE_VAR_U16,  SL_MIN_VERSION, SLV_192),
-		 SLE_CONDVAR(OrderBackup, service_interval,         SLE_UINT16,                SLV_192, SL_MAX_VERSION),
+		 SLE_CONDVAR(OrderBackup, service_interval, SLE_FILE_U32 | SLE_VAR_U16, SaveLoadVersion::MinVersion, SaveLoadVersion::FixOrderBackup),
+		 SLE_CONDVAR(OrderBackup, service_interval, SLE_UINT16, SaveLoadVersion::FixOrderBackup, SaveLoadVersion::MaxVersion),
 		     SLE_STR(OrderBackup, name,                     SLE_STR, 0),
-		 SLE_CONDREF(OrderBackup, clone,                    REF_VEHICLE,               SLV_192, SL_MAX_VERSION),
+		 SLE_CONDREF(OrderBackup, clone, REF_VEHICLE, SaveLoadVersion::FixOrderBackup, SaveLoadVersion::MaxVersion),
 		     SLE_VAR(OrderBackup, cur_real_order_index,     SLE_FILE_U8 | SLE_VAR_U16),
-		 SLE_CONDVAR(OrderBackup, cur_implicit_order_index, SLE_FILE_U8 | SLE_VAR_U16, SLV_176, SL_MAX_VERSION),
-		 SLE_CONDVAR(OrderBackup, current_order_time,       SLE_UINT32,                SLV_176, SL_MAX_VERSION),
-		 SLE_CONDVAR(OrderBackup, lateness_counter,         SLE_INT32,                 SLV_176, SL_MAX_VERSION),
-		 SLE_CONDVAR(OrderBackup, timetable_start,          SLE_FILE_I32 | SLE_VAR_I64, SLV_176, SLV_TIMETABLE_START_TICKS_FIX),
-		 SLE_CONDVAR(OrderBackup, timetable_start,          SLE_FILE_U64 | SLE_VAR_I64, SLV_TIMETABLE_START_TICKS_FIX, SL_MAX_VERSION),
-		 SLE_CONDVAR(OrderBackup, vehicle_flags,            SLE_FILE_U8  | SLE_VAR_U32, SLV_176, SLV_180),
-		 SLE_CONDVAR(OrderBackup, vehicle_flags,            SLE_FILE_U16 | SLE_VAR_U32, SLV_180, SL_MAX_VERSION),
-		SLEG_CONDVAR("orders",    _order_item_ref,          SLE_UINT32,                 SL_MIN_VERSION, SLV_ORDERS_OWNED_BY_ORDERLIST),
-		SLEG_CONDSTRUCTLIST("orders", SlOrders<OrderBackup>, SLV_ORDERS_OWNED_BY_ORDERLIST, SL_MAX_VERSION),
+		 SLE_CONDVAR(OrderBackup, cur_implicit_order_index, SLE_FILE_U8 | SLE_VAR_U16, SaveLoadVersion::BackupOrderState, SaveLoadVersion::MaxVersion),
+		 SLE_CONDVAR(OrderBackup, current_order_time, SLE_UINT32, SaveLoadVersion::BackupOrderState, SaveLoadVersion::MaxVersion),
+		 SLE_CONDVAR(OrderBackup, lateness_counter, SLE_INT32, SaveLoadVersion::BackupOrderState, SaveLoadVersion::MaxVersion),
+		 SLE_CONDVAR(OrderBackup, timetable_start, SLE_FILE_I32 | SLE_VAR_I64, SaveLoadVersion::BackupOrderState, SaveLoadVersion::TimetableStartTicksFix),
+		 SLE_CONDVAR(OrderBackup, timetable_start, SLE_FILE_U64 | SLE_VAR_I64, SaveLoadVersion::TimetableStartTicksFix, SaveLoadVersion::MaxVersion),
+		 SLE_CONDVAR(OrderBackup, vehicle_flags, SLE_FILE_U8 | SLE_VAR_U32, SaveLoadVersion::BackupOrderState, SaveLoadVersion::ServiceIntervalPercent),
+		 SLE_CONDVAR(OrderBackup, vehicle_flags, SLE_FILE_U16 | SLE_VAR_U32, SaveLoadVersion::ServiceIntervalPercent, SaveLoadVersion::MaxVersion),
+		 SLEG_CONDVAR("orders", _order_item_ref,  SLE_UINT32, SaveLoadVersion::MinVersion, SaveLoadVersion::OrdersOwnedByOrderlist),
+		SLEG_CONDSTRUCTLIST("orders", SlOrders<OrderBackup>, SaveLoadVersion::OrdersOwnedByOrderlist, SaveLoadVersion::MaxVersion),
 	};
 
 	return _order_backup_desc;
@@ -162,7 +162,7 @@ struct BKORChunkHandler : ChunkHandler {
 	void Load() const override
 	{
 		const std::vector<SaveLoad> slt = SlCompatTableHeader(GetOrderBackupDescription(), _order_backup_sl_compat);
-		const bool old_mode = IsSavegameVersionBefore(SLV_ORDERS_OWNED_BY_ORDERLIST);
+		const bool old_mode = IsSavegameVersionBefore(SaveLoadVersion::OrdersOwnedByOrderlist);
 
 		int index;
 

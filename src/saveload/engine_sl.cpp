@@ -24,10 +24,10 @@ Engine *GetTempDataEngine(EngineID index, VehicleType type, uint16_t local_id);
 namespace upstream_sl {
 
 static const SaveLoad _engine_desc[] = {
-	 SLE_CONDVAR(Engine, intro_date,          SLE_FILE_U16 | SLE_VAR_I32,  SL_MIN_VERSION,  SLV_31),
-	 SLE_CONDVAR(Engine, intro_date,          SLE_INT32,                  SLV_31, SL_MAX_VERSION),
-	 SLE_CONDVAR(Engine, age,                 SLE_FILE_U16 | SLE_VAR_I32,  SL_MIN_VERSION,  SLV_31),
-	 SLE_CONDVAR(Engine, age,                 SLE_INT32,                  SLV_31, SL_MAX_VERSION),
+	 SLE_CONDVAR(Engine, intro_date, SLE_FILE_U16 | SLE_VAR_I32, SaveLoadVersion::MinVersion, SaveLoadVersion::BigDates),
+	 SLE_CONDVAR(Engine, intro_date, SLE_INT32, SaveLoadVersion::BigDates, SaveLoadVersion::MaxVersion),
+	 SLE_CONDVAR(Engine, age, SLE_FILE_U16 | SLE_VAR_I32, SaveLoadVersion::MinVersion, SaveLoadVersion::BigDates),
+	 SLE_CONDVAR(Engine, age, SLE_INT32, SaveLoadVersion::BigDates, SaveLoadVersion::MaxVersion),
 	     SLE_VAR(Engine, reliability,         SLE_UINT16),
 	     SLE_VAR(Engine, reliability_spd_dec, SLE_UINT16),
 	     SLE_VAR(Engine, reliability_start,   SLE_UINT16),
@@ -37,13 +37,13 @@ static const SaveLoad _engine_desc[] = {
 	     SLE_VAR(Engine, duration_phase_2,    SLE_UINT16),
 	     SLE_VAR(Engine, duration_phase_3,    SLE_UINT16),
 	     SLE_VAR(Engine, flags,               SLE_UINT8),
-	 SLE_CONDVAR(Engine, preview_asked,       SLE_UINT16,                SLV_179, SL_MAX_VERSION),
-	 SLE_CONDVAR(Engine, preview_company,     SLE_UINT8,                 SLV_179, SL_MAX_VERSION),
+	 SLE_CONDVAR(Engine, preview_asked, SLE_UINT16, SaveLoadVersion::RobustEnginePreview, SaveLoadVersion::MaxVersion),
+	 SLE_CONDVAR(Engine, preview_company, SLE_UINT8, SaveLoadVersion::RobustEnginePreview, SaveLoadVersion::MaxVersion),
 	     SLE_VAR(Engine, preview_wait,        SLE_UINT8),
-	 SLE_CONDVAR(Engine, company_avail,       SLE_FILE_U8  | SLE_VAR_U16,  SL_MIN_VERSION, SLV_104),
-	 SLE_CONDVAR(Engine, company_avail,       SLE_UINT16,                SLV_104, SL_MAX_VERSION),
-	 SLE_CONDVAR(Engine, company_hidden,      SLE_UINT16,                SLV_193, SL_MAX_VERSION),
-	 SLE_CONDSTR(Engine, name,                SLE_STR, 0,                SLV_84, SL_MAX_VERSION),
+	 SLE_CONDVAR(Engine, company_avail, SLE_FILE_U8 | SLE_VAR_U16, SaveLoadVersion::MinVersion, SaveLoadVersion::MoreCompanies),
+	 SLE_CONDVAR(Engine, company_avail, SLE_UINT16, SaveLoadVersion::MoreCompanies, SaveLoadVersion::MaxVersion),
+	 SLE_CONDVAR(Engine, company_hidden, SLE_UINT16, SaveLoadVersion::HideEnginesForCompany, SaveLoadVersion::MaxVersion),
+	 SLE_CONDSTR(Engine, name, SLE_STR, 0, SaveLoadVersion::ReplaceCustomNameArray, SaveLoadVersion::MaxVersion),
 };
 
 struct ENGNChunkHandler : ChunkHandler {
@@ -71,7 +71,7 @@ struct ENGNChunkHandler : ChunkHandler {
 			Engine *e = GetTempDataEngine(static_cast<EngineID>(index), VehicleType::Invalid, 0);
 			SlObject(e, slt);
 
-			if (IsSavegameVersionBefore(SLV_179)) {
+			if (IsSavegameVersionBefore(SaveLoadVersion::RobustEnginePreview)) {
 				/* preview_company_rank was replaced with preview_company and preview_asked.
 				 * Just cancel any previews. */
 				e->flags.Reset(EngineFlag{2}); // ENGINE_OFFER_WINDOW_OPEN

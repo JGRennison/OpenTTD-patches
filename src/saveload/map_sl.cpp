@@ -26,8 +26,8 @@ static uint32_t _map_dim_x;
 static uint32_t _map_dim_y;
 
 static const SaveLoad _map_desc[] = {
-	SLEG_CONDVAR("dim_x", _map_dim_x, SLE_UINT32, SLV_6, SL_MAX_VERSION),
-	SLEG_CONDVAR("dim_y", _map_dim_y, SLE_UINT32, SLV_6, SL_MAX_VERSION),
+	SLEG_CONDVAR("dim_x", _map_dim_x, SLE_UINT32, SaveLoadVersion::MultipleRoadStops, SaveLoadVersion::MaxVersion),
+	SLEG_CONDVAR("dim_y", _map_dim_y, SLE_UINT32, SaveLoadVersion::MultipleRoadStops, SaveLoadVersion::MaxVersion),
 };
 
 struct MAPSChunkHandler : ChunkHandler {
@@ -48,9 +48,9 @@ struct MAPSChunkHandler : ChunkHandler {
 	{
 		const std::vector<SaveLoad> slt = SlCompatTableHeader(_map_desc, _map_sl_compat);
 
-		if (!IsSavegameVersionBefore(SLV_RIFF_TO_ARRAY) && SlIterateArray() == -1) return;
+		if (!IsSavegameVersionBefore(SaveLoadVersion::RiffToArray) && SlIterateArray() == -1) return;
 		SlGlobList(slt);
-		if (!IsSavegameVersionBefore(SLV_RIFF_TO_ARRAY) && SlIterateArray() != -1) SlErrorCorrupt("Too many MAPS entries");
+		if (!IsSavegameVersionBefore(SaveLoadVersion::RiffToArray) && SlIterateArray() != -1) SlErrorCorrupt("Too many MAPS entries");
 
 		AllocateMap(_map_dim_x, _map_dim_y);
 	}
@@ -59,9 +59,9 @@ struct MAPSChunkHandler : ChunkHandler {
 	{
 		const std::vector<SaveLoad> slt = SlCompatTableHeader(_map_desc, _map_sl_compat);
 
-		if (!IsSavegameVersionBefore(SLV_RIFF_TO_ARRAY) && SlIterateArray() == -1) return;
+		if (!IsSavegameVersionBefore(SaveLoadVersion::RiffToArray) && SlIterateArray() == -1) return;
 		SlGlobList(slt);
-		if (!IsSavegameVersionBefore(SLV_RIFF_TO_ARRAY) && SlIterateArray() != -1) SlErrorCorrupt("Too many MAPS entries");
+		if (!IsSavegameVersionBefore(SaveLoadVersion::RiffToArray) && SlIterateArray() != -1) SlErrorCorrupt("Too many MAPS entries");
 
 		_load_check_data.map_size_x = _map_dim_x;
 		_load_check_data.map_size_y = _map_dim_y;
@@ -162,7 +162,7 @@ struct MAP2ChunkHandler : ChunkHandler {
 		for (TileIndex i(0); i != size;) {
 			SlCopy(buf.data(), MAP_SL_BUF_SIZE,
 				/* In those versions the m2 was 8 bits */
-				IsSavegameVersionBefore(SLV_5) ? SLE_FILE_U8 | SLE_VAR_U16 : SLE_UINT16
+				IsSavegameVersionBefore(SaveLoadVersion::BigMap) ? SLE_FILE_U8 | SLE_VAR_U16 : SLE_UINT16
 			);
 			for (uint j = 0; j != MAP_SL_BUF_SIZE; j++) _m[i++].m2 = buf[j];
 		}
@@ -270,7 +270,7 @@ struct MAPEChunkHandler : ChunkHandler {
 		std::array<uint8_t, MAP_SL_BUF_SIZE> buf;
 		const uint32_t size = Map::Size();
 
-		if (IsSavegameVersionBefore(SLV_42)) {
+		if (IsSavegameVersionBefore(SaveLoadVersion::BridgeWormhole)) {
 			for (TileIndex i(0); i != size;) {
 				/* 1024, otherwise we overflow on 64x64 maps! */
 				SlCopy(buf.data(), 1024, SLE_UINT8);

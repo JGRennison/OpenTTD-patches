@@ -35,11 +35,11 @@ public:
 	static inline const SaveLoad description[] = {
 		    SLE_VAR(Edge, capacity,                 SLE_UINT32),
 		    SLE_VAR(Edge, usage,                    SLE_UINT32),
-		SLE_CONDVAR(Edge, travel_time_sum,          SLE_UINT64, SLV_LINKGRAPH_TRAVEL_TIME, SL_MAX_VERSION),
+		SLE_CONDVAR(Edge, travel_time_sum, SLE_UINT64, SaveLoadVersion::LinkgraphTravelTime, SaveLoadVersion::MaxVersion),
 		    SLE_VAR(Edge, last_unrestricted_update, SLE_INT32),
-		SLE_CONDVAR(Edge, last_restricted_update,   SLE_INT32, SLV_187, SL_MAX_VERSION),
-		   SLEG_VAR("dest_node", _edge_dest_node,   SLE_UINT16),
-		SLEG_CONDVAR("next_edge", _edge_next_edge,   SLE_UINT16, SL_MIN_VERSION, SLV_LINKGRAPH_EDGES),
+		SLE_CONDVAR(Edge, last_restricted_update, SLE_INT32, SaveLoadVersion::LinkgraphRestrictedFlow, SaveLoadVersion::MaxVersion),
+		   SLEG_VAR("dest_node", _edge_dest_node, SLE_UINT16),
+		SLEG_CONDVAR("next_edge", _edge_next_edge, SLE_UINT16, SaveLoadVersion::MinVersion, SaveLoadVersion::LinkgraphEdges),
 	};
 	static inline const SaveLoadCompatTable compat_description = _linkgraph_edge_sl_compat;
 
@@ -52,12 +52,12 @@ public:
 	{
 		uint16_t max_size = _linkgraph->Size();
 
-		if (IsSavegameVersionBefore(SLV_191)) {
+		if (IsSavegameVersionBefore(SaveLoadVersion::LinkgraphLocationDisasterStore)) {
 			NOT_REACHED();
 		}
 
-		if (IsSavegameVersionBefore(SLV_LINKGRAPH_EDGES)) {
-			size_t used_size = IsSavegameVersionBefore(SLV_SAVELOAD_LIST_LENGTH) ? max_size : SlGetStructListLength(UINT16_MAX);
+		if (IsSavegameVersionBefore(SaveLoadVersion::LinkgraphEdges)) {
+			size_t used_size = IsSavegameVersionBefore(SaveLoadVersion::SaveloadListLength) ? max_size : SlGetStructListLength(UINT16_MAX);
 
 			/* ... but as that wasted a lot of space we save a sparse matrix now. */
 			for (NodeID to = _linkgraph_from; to != INVALID_NODE; to = _edge_next_edge) {
@@ -68,7 +68,7 @@ public:
 				SlObject(&_linkgraph->edges[std::make_pair(_linkgraph_from, to)], this->GetLoadDescription());
 			}
 
-			if (!IsSavegameVersionBefore(SLV_SAVELOAD_LIST_LENGTH) && used_size > 0) SlErrorCorrupt("Corrupted link graph");
+			if (!IsSavegameVersionBefore(SaveLoadVersion::SaveloadListLength) && used_size > 0) SlErrorCorrupt("Corrupted link graph");
 		} else {
 			/* Edge data is now a simple vector and not any kind of matrix. */
 			size_t size = SlGetStructListLength(UINT16_MAX);
@@ -85,7 +85,7 @@ public:
 class SlLinkgraphNode : public DefaultSaveLoadHandler<SlLinkgraphNode, LinkGraph> {
 public:
 	static inline const SaveLoad description[] = {
-		SLE_CONDVAR(Node, xy,          SLE_UINT32, SLV_191, SL_MAX_VERSION),
+		SLE_CONDVAR(Node, xy, SLE_UINT32, SaveLoadVersion::LinkgraphLocationDisasterStore, SaveLoadVersion::MaxVersion),
 		    SLE_VAR(Node, supply,      SLE_UINT32),
 		    SLE_VAR(Node, demand,      SLE_UINT32),
 		    SLE_VAR(Node, station,     SLE_UINT16),
@@ -109,7 +109,7 @@ public:
 	{
 		_linkgraph = lg;
 
-		uint16_t length = IsSavegameVersionBefore(SLV_SAVELOAD_LIST_LENGTH) ? _num_nodes : (uint16_t)SlGetStructListLength(UINT16_MAX);
+		uint16_t length = IsSavegameVersionBefore(SaveLoadVersion::SaveloadListLength) ? _num_nodes : (uint16_t)SlGetStructListLength(UINT16_MAX);
 		lg->Init(length);
 		for (NodeID from = 0; from < length; ++from) {
 			_linkgraph_from = from;
@@ -126,7 +126,7 @@ SaveLoadTable GetLinkGraphDesc()
 {
 	static const SaveLoad link_graph_desc[] = {
 		 SLE_VAR(LinkGraph, last_compression, SLE_VAR_I64 | SLE_FILE_I32),
-		SLEG_CONDVAR("num_nodes", _num_nodes, SLE_UINT16, SL_MIN_VERSION, SLV_SAVELOAD_LIST_LENGTH),
+		SLEG_CONDVAR("num_nodes", _num_nodes, SLE_UINT16, SaveLoadVersion::MinVersion, SaveLoadVersion::SaveloadListLength),
 		 SLE_VAR(LinkGraph, cargo,            SLE_UINT8),
 		SLEG_STRUCTLIST("nodes", SlLinkgraphNode),
 	};
@@ -277,9 +277,9 @@ struct LGRSChunkHandler : ChunkHandler {
 	{
 		const std::vector<SaveLoad> slt = SlCompatTableHeader(GetLinkGraphScheduleDesc(), _linkgraph_schedule_sl_compat);
 
-		if (!IsSavegameVersionBefore(SLV_RIFF_TO_ARRAY) && SlIterateArray() == -1) return;
+		if (!IsSavegameVersionBefore(SaveLoadVersion::RiffToArray) && SlIterateArray() == -1) return;
 		SlObject(&LinkGraphSchedule::instance, slt);
-		if (!IsSavegameVersionBefore(SLV_RIFF_TO_ARRAY) && SlIterateArray() != -1) SlErrorCorrupt("Too many LGRS entries");
+		if (!IsSavegameVersionBefore(SaveLoadVersion::RiffToArray) && SlIterateArray() != -1) SlErrorCorrupt("Too many LGRS entries");
 	}
 
 	void FixPointers() const override
