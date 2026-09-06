@@ -285,6 +285,8 @@ add_files(
     main_gui.cpp
     maintenance_func.h
     map.cpp
+    map_extend.cpp
+    map_extend.h
     map_func.h
     map_type.h
     misc.cpp
