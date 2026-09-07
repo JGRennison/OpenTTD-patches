@@ -706,7 +706,8 @@ struct CmdPlantTreeHelper {
 
 	void PlantTrees(TileIndex tile, TreeType tree_to_plant, uint8_t count)
 	{
-		switch (GetTileType(tile)) {
+		const TileType tile_type = GetTileType(tile);
+		switch (tile_type) {
 			case TileType::Trees: {
 				/* no more space for trees? */
 				if (GetTreeCount(tile) == 4) {
@@ -774,22 +775,29 @@ struct CmdPlantTreeHelper {
 				const uint to_plant = std::min<uint>(static_cast<uint>(this->limit), count);
 				this->limit -= static_cast<int>(to_plant);
 
-				if (IsTileType(tile, TileType::Clear)) {
+				bool tile_needs_to_be_cleared = false;
+				if (tile_type == TileType::Clear) {
 					/* Remove fields or rocks. Note that the ground will get barrened */
 					switch (GetClearGround(tile)) {
 						case ClearGround::Fields:
-						case ClearGround::Rocks: {
-							CommandCost ret = Command<Commands::LandscapeClear>::Do(this->flags, tile);
-							if (ret.Failed()) {
-								this->msg = ret.GetErrorMessage();
-								return;
-							}
-							this->cost.AddCost(ret.GetCost());
+						case ClearGround::Rocks:
+							tile_needs_to_be_cleared = true;
 							break;
-						}
 
-						default: break;
+						default:
+							break;
 					}
+				} else if (tile_type == TileType::Water) {
+					tile_needs_to_be_cleared = GetWaterTileType(tile) != WaterTileType::Coast;
+				}
+
+				if (tile_needs_to_be_cleared) {
+					CommandCost ret = Command<Commands::LandscapeClear>::Do(this->flags, tile);
+					if (ret.Failed()) {
+						this->msg = ret.GetErrorMessage();
+						return;
+					}
+					this->cost.AddCost(ret.GetCost());
 				}
 
 				if (_game_mode != GameMode::Editor && Company::IsValidID(_current_company)) {
