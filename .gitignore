@@ -9,3 +9,4 @@ docs/source/*
 /out
 /vcpkg_installed
 *.tmp
+.clangd
