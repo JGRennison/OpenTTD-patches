@@ -1216,6 +1216,10 @@ public:
 						break;
 					}
 
+					case ADI_EXPORT_ORDERS:
+						//TODO
+						break;
+
 					default: NOT_REACHED();
 				}
 				break;

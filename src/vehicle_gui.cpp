@@ -611,6 +611,8 @@ DropDownList BaseVehicleListWindow::BuildActionDropdownList(bool show_autoreplac
 	if (_settings_client.gui.show_depot_sell_gui) list.push_back(MakeDropDownListStringItem(this->vehicle_depot_sell_name[this->vli.vtype], ADI_DEPOT_SELL, mass_action_disable));
 	list.push_back(MakeDropDownListStringItem(STR_VEHICLE_LIST_CANCEL_DEPOT_SERVICE, ADI_CANCEL_DEPOT, mass_action_disable));
 
+	list.push_back(MakeDropDownListStringItem(STR_ORDER_EXPORT_ORDER_LIST,ADI_EXPORT_ORDERS));
+
 	return list;
 }
 
