@@ -8,6 +8,7 @@
 /** @file order_serialisation.cpp Handling of order serialisation and deserialisation to/from JSON. */
 
 #include "stdafx.h"
+#include "company_base.h"
 #include "command_func.h"
 #include "debug.h"
 #include "error.h"
@@ -24,15 +25,18 @@
 #include "strings_func.h"
 #include "timetable_cmd.h"
 #include "vehicle_base.h"
+#include "vehiclelist.h"
 #include "core/format.hpp"
 #include "core/serialisation.hpp"
 #include "depot_base.h"
 #include "town.h"
+#include "group_type.h"
 #include "3rdparty/nlohmann/json.hpp"
 #include "3rdparty/robin_hood/robin_hood.h"
 
 #include "table/strings.h"
 
+#include <set>
 #include <type_traits>
 
 #include "safeguards.h"
@@ -476,7 +480,7 @@ static nlohmann::ordered_json DispatchScheduleToJSON(const DispatchSchedule &sd)
 	return json;
 }
 
-std::string OrderListToJSONString(const OrderList *ol)
+nlohmann::json OrderListToJSON(const OrderList *ol)
 {
 	using FName = OrderSerialisationFieldNames;
 
@@ -553,6 +557,106 @@ std::string OrderListToJSONString(const OrderList *ol)
 
 	json[FName::Orders::OBJKEY] = std::move(orders);
 
+	return json;
+}
+
+std::string OrderListToJSONString(const OrderList *ol)
+{
+	return OrderListToJSON(ol).dump(4);
+}
+
+struct GroupWithChildren {
+	Group *data;
+	std::map<GroupID, GroupWithChildren *> children;
+
+	GroupWithChildren(Group* group, std::map<GroupID, GroupWithChildren *> children) : data(group), children(children) {}
+};
+
+nlohmann::json GroupOrdersToJSON(GroupWithChildren * const group)
+{
+	nlohmann::json out;
+	auto per_orderlist_vehicles = std::map<OrderList *, std::set<Vehicle *>>();
+
+	for(Vehicle *vehicle : Vehicle::Iterate()) {
+		if (vehicle->group_id == group->data->index && vehicle->orders != nullptr) {
+			per_orderlist_vehicles[vehicle->orders].insert(vehicle);
+		}
+	}
+	out["children"] = nlohmann::json::array();
+	out["orderlists"] = nlohmann::json::array();
+	out["group-name"] = group->data->name;
+
+	//Recursively export children
+	for (auto&[_id, child] : group->children) {
+		out["children"].push_back(GroupOrdersToJSON(child));
+	}
+
+	for (auto &[orderlist, vehicles] : per_orderlist_vehicles) {
+		auto GetVehicleIDs = [&]() {
+			auto vehicles_array = nlohmann::json::array();
+			for (Vehicle *vehicle : vehicles ) {
+				vehicles_array.push_back(vehicle->index.base());
+			}
+			return vehicles_array;
+		};
+		out["orderlists"].push_back({
+			{"vehicles",GetVehicleIDs()},
+			{"order-data",OrderListToJSON(orderlist)}
+		});
+	}
+
+	return out;
+}
+
+/**
+ * Export all orders for a given group and owner
+ */
+nlohmann::json VehicleGroupOrdersToJSON(GroupID group_id)
+{
+	std::map<GroupID,GroupWithChildren> found_groups = std::map<GroupID,GroupWithChildren>();
+	Group * group = Group::GetIfValid(group_id);
+
+	if (group == nullptr) {
+		nlohmann::json json;
+		json["error"] = "Group not found";
+		return json;
+	}
+
+	//I build a Group with a link to it's children to easily iterate through groups top-down
+	for (Group *group : Group::Iterate()) {
+		if (!found_groups.contains(group->index)) {
+			//Add group to found groups
+			found_groups.try_emplace(group->index, GroupWithChildren(group, std::map<GroupID, GroupWithChildren *>()));
+			//Explore parents
+			GroupWithChildren * child = &found_groups.at(group->index);
+			Group * parent = group;
+			while((parent = Group::GetIfValid(parent->parent)) != nullptr) {
+				if(found_groups.contains(parent->index)) {
+					found_groups.at(parent->index).children[child->data->index] = child;
+					break; //No need to continue, no new information to be given to above parents
+				} else {
+					found_groups.insert_or_assign(parent->index,GroupWithChildren(parent, {{child->data->index, child}}));
+					child = &found_groups.at(parent->index);
+				}
+			}
+		}
+	}
+
+	return GroupOrdersToJSON(&found_groups.at(group_id));
+}
+
+std::string VehicleListOrdersToJSONString(VehicleListIdentifier vehicle_list)
+{
+	nlohmann::ordered_json json;
+	switch (vehicle_list.type) {
+		case VehicleListType::Group:
+			json = VehicleGroupOrdersToJSON((GroupID)vehicle_list.index);
+			break;
+		case VehicleListType::Company:
+			NOT_REACHED(); //TODO
+		default:
+			NOT_REACHED()
+	}
 	return json.dump(4);
 }
 
