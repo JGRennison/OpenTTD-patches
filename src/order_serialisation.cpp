@@ -617,7 +617,7 @@ nlohmann::json VehicleGroupOrdersToJSON(GroupID group_id) {
 	if (group == nullptr) {
 		nlohmann::json json;
 		json["error"] = "Group not found";
-		return json.dump(4);
+		return json;
 	}
 
 	//I build a Group with a link to it's children to easily iterate through groups top-down
