@@ -429,6 +429,7 @@ enum SaveLoadVersion : uint16_t {
 
 	/* Upstream load only */
 	SLV_LABEL_ORIENTATION_UNIFICATION,      ///< 367  PR#15888 Unify the orientation in which labels are written.
+	SLV_DOUBLE_ENDED_SHIPS,                 ///< 368  PR#16002 Double-ended (NewGRF-only) ships can reverse without turning.
 
 	SL_MAX_VERSION,                         ///< Highest possible saveload version
 
