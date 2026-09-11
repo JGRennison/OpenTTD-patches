@@ -599,7 +599,7 @@ nlohmann::json GroupOrdersToJSON(GroupWithChildren * const group) {
 		};
 		out["orderlists"].push_back({
 			{"vehicles",GetVehicleIDs()},
-			{"orders",OrderListToJSON(orderlist)}
+			{"order-data",OrderListToJSON(orderlist)}
 		});
 	}
 
