@@ -589,13 +589,17 @@ public:
 					group = Group::GetIfValid(this->extra_info->order_list_info.veh->group_id);
 					break;
 				case FiosExtraInfoType::VEHICLE_LIST_INFO:
-					if (this->extra_info->vehicle_list.type == VehicleListType::Group) {
-						group = Group::GetIfValid(this->extra_info->vehicle_list.index);
-					}
+					group = Group::GetIfValid(this->extra_info->vehicle_list.index);
 					break;
 			}
 		}
-		std::string name = (group == nullptr) ? GetString(STR_COMPANY_NAME, _current_company) : GetString(STR_GROUP_NAME, group->index);
+		std::string name;
+		if (group == nullptr) {
+			assert(this->extra_info->type == FiosExtraInfoType::VEHICLE_LIST_INFO);
+			name = GetString(STR_COMPANY_NAME, this->extra_info->vehicle_list.company);
+		} else {
+			name = GetString(STR_GROUP_NAME, group->index);
+		}
 		SanitizeFilename(name);
 		this->filename_editbox.text.Assign(name);
 	}
