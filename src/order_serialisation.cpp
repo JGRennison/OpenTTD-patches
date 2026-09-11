@@ -576,10 +576,7 @@ nlohmann::json GroupOrdersToJSON(GroupWithChildren * const group) {
 	auto per_orderlist_vehicles = std::map<OrderList *, std::set<Vehicle *>>();
 
 	for(Vehicle *vehicle : Vehicle::Iterate()) {
-		if (vehicle->group_id == group->data->index) {
-			if(!per_orderlist_vehicles.contains(vehicle->orders)) {
-				per_orderlist_vehicles[vehicle->orders] = std::set<Vehicle *>();
-			}
+		if (vehicle->group_id == group->data->index && vehicle->orders != nullptr) {
 			per_orderlist_vehicles[vehicle->orders].insert(vehicle);
 		}
 	}
