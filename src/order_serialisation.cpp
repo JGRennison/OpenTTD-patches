@@ -39,6 +39,7 @@
 #include <type_traits>
 
 #include "safeguards.h"
+#include "vehiclelist.h"
 
 static constexpr uint8_t ORDERLIST_JSON_OUTPUT_VERSION = 1;
 
@@ -570,7 +571,7 @@ struct GroupWithChildren {
 	GroupWithChildren(Group* group, std::map<GroupID, GroupWithChildren *> children) : data(group), children(children) {}
 };
 
-nlohmann::json SerialiseGroupOrders(GroupWithChildren * const group, Owner owner) {
+nlohmann::json GroupOrdersToJSON(GroupWithChildren * const group) {
 	nlohmann::json out;
 	auto per_orderlist_vehicles = std::map<OrderList *, std::set<Vehicle *>>();
 
@@ -588,7 +589,7 @@ nlohmann::json SerialiseGroupOrders(GroupWithChildren * const group, Owner owner
 
 	//Recursively export children
 	for (auto&[_id, child] : group->children) {
-		out["children"].push_back(SerialiseGroupOrders(child, owner));
+		out["children"].push_back(GroupOrdersToJSON(child));
 	}
 
 	for (auto &[orderlist, vehicles] : per_orderlist_vehicles) {
@@ -608,19 +609,23 @@ nlohmann::json SerialiseGroupOrders(GroupWithChildren * const group, Owner owner
 	return out;
 }
 
-std::optional<std::string> VehicleGroupToOrderJSONString(GroupID group_id, Owner owner) {
-	assert(Company::IsValidID(owner));
+/**
+ * Export all orders for a given group and owner
+ */
+nlohmann::json VehicleGroupOrdersToJSON(GroupID group_id) {
 
 	std::map<GroupID,GroupWithChildren> found_groups = std::map<GroupID,GroupWithChildren>();
 	Group * group = Group::GetIfValid(group_id);
 
 	if (group == nullptr) {
-		//TODO make this actually report an error
-		return 	std::nullopt;
+		nlohmann::json json;
+		json["error"] = "Group not found";
+		return json.dump(4);
 	}
 
+	//I build a Group with a link to it's children to easily iterate through groups top-down
 	for (Group *group : Group::Iterate()) {
-		if (group->owner == owner && !found_groups.contains(group->index)) {
+		if (!found_groups.contains(group->index)) {
 			//Add group to found groups
 			found_groups.try_emplace(group->index, GroupWithChildren(group, std::map<GroupID, GroupWithChildren *>()));
 			//Explore parents
@@ -631,14 +636,29 @@ std::optional<std::string> VehicleGroupToOrderJSONString(GroupID group_id, Owner
 					found_groups.at(parent->index).children[child->data->index] = child;
 					break; //No need to continue, no new information to be given to above parents
 				} else {
-					found_groups.at(parent->index) = GroupWithChildren(parent, {{child->data->index, child}});
+					found_groups.insert_or_assign(parent->index,GroupWithChildren(parent, {{child->data->index, child}}));
 					child = &found_groups.at(parent->index);
 				}
 			}
 		}
 	}
 
-	return std::string(SerialiseGroupOrders(&found_groups.at(group_id), owner));
+	return GroupOrdersToJSON(&found_groups.at(group_id));
+}
+
+std::string VehicleListOrdersToJSONString(VehicleListIdentifier vehicle_list) {
+	nlohmann::ordered_json json;
+	switch (vehicle_list.type) {
+		case VehicleListType::Group:
+        	json = VehicleGroupOrdersToJSON((GroupID)vehicle_list.index);
+        	break;
+		case VehicleListType::Company:
+			NOT_REACHED(); //TODO
+        	break;
+        default:
+        	NOT_REACHED()
+    }
+    return json.dump(4);
 }
 
 Colours OrderErrorTypeToColour(JsonOrderImportErrorType error_type)

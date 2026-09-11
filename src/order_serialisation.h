@@ -11,10 +11,12 @@
 #define ORDER_SERIALISATION_H
 
 #include "order_type.h"
+#include "group_type.h"
 #include "vehicle_type.h"
 #include "gfx_type.h"
 
 #include "3rdparty/robin_hood/robin_hood.h"
+#include "vehiclelist.h"
 
 #include <string_view>
 
@@ -40,6 +42,7 @@ struct OrderImportErrors {
 
 OrderImportErrors ImportJsonOrderList(const Vehicle *veh, std::string_view json_str, VehicleOrderID insert_index = INVALID_VEH_ORDER_ID, bool reverse_orders = false);
 std::string OrderListToJSONString(const OrderList *ol);
+std::string VehicleListOrdersToJSONString(VehicleListIdentifier vehicle_list);
 
 Colours OrderErrorTypeToColour(JsonOrderImportErrorType error_type);
 void ShowOrderListImportErrorsWindow(const Vehicle *v, OrderImportErrors &&errors);

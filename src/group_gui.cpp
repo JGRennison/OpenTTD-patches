@@ -32,6 +32,8 @@
 #include "group_gui.h"
 #include "zoom_func.h"
 #include "vehicle_cmd.h"
+#include "fileio_type.h"
+#include "fios.h"
 
 #include "widgets/group_widget.h"
 
@@ -1217,7 +1219,7 @@ public:
 					}
 
 					case ADI_EXPORT_ORDERS:
-						//TODO
+						ShowSaveLoadDialog(AbstractFileType::Orderlist, SaveLoadOperation::Save, this->vli) ;
 						break;
 
 					default: NOT_REACHED();

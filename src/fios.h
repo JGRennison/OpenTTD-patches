@@ -14,6 +14,7 @@
 #include "newgrf_config.h"
 #include "network/core/tcp_content_type.h"
 #include "order_type.h"
+#include "vehiclelist.h"
 #include <vector>
 
 
@@ -59,7 +60,22 @@ struct FiosOrderListInfo {
 			: veh(veh), order_insert_index(order_insert_index), reverse(reverse) {}
 };
 
-void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fop, std::optional<FiosOrderListInfo> order_list_info = std::nullopt);
+enum class FiosExtraInfoType {
+	VEHICLE_LIST,
+	ORDERLIST_INFO,
+};
+
+struct FiosExtraInfo {
+  	FiosExtraInfoType type;
+   	union {
+    	VehicleListIdentifier vehicle_list;
+    	FiosOrderListInfo order_list_info;
+    };
+};
+
+void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fop, FiosOrderListInfo order_list_info);
+void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fop, VehicleListIdentifier vehicle_list);
+void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fop);
 
 void FiosGetSavegameList(SaveLoadOperation fop, bool show_dirs, FileList &file_list);
 void FiosGetScenarioList(SaveLoadOperation fop, bool show_dirs, FileList &file_list);
