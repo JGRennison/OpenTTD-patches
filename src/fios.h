@@ -61,7 +61,7 @@ struct FiosOrderListInfo {
 };
 
 enum class FiosExtraInfoType {
-	VEHICLE_LIST,
+	VEHICLE_LIST_INFO,
 	ORDERLIST_INFO,
 };
 

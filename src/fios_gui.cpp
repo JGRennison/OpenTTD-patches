@@ -36,6 +36,7 @@
 #include "vehicle_base.h"
 #include "order_serialisation.h"
 #include "core/backup_type.hpp"
+#include "company_func.h"
 
 #include "widgets/fios_widget.h"
 
@@ -587,14 +588,14 @@ public:
 				case FiosExtraInfoType::ORDERLIST_INFO:
 					group = Group::GetIfValid(this->extra_info->order_list_info.veh->group_id);
 					break;
-				case FiosExtraInfoType::VEHICLE_LIST:
+				case FiosExtraInfoType::VEHICLE_LIST_INFO:
 					if (this->extra_info->vehicle_list.type == VehicleListType::Group) {
 						group = Group::GetIfValid(this->extra_info->vehicle_list.index);
 					}
 					break;
 			}
 		}
-		std::string name = (group == nullptr) ? GetString(STR_COMPANY_NAME, group->index) : GetString(STR_GROUP_NAME, group->index);
+		std::string name = (group == nullptr) ? GetString(STR_COMPANY_NAME, _current_company) : GetString(STR_GROUP_NAME, group->index);
 		SanitizeFilename(name);
 		this->filename_editbox.text.Assign(name);
 	}
@@ -949,6 +950,7 @@ public:
 					this->Close();
 					ShowHeightmapLoad();
 				} else if (this->abstract_filetype == AbstractFileType::Orderlist) {
+					/*bulk-import for orders is not implemented */
 					assert(this->extra_info->type == FiosExtraInfoType::ORDERLIST_INFO);
 
 					auto callback = [](Window *w, bool confirmed) -> void {
@@ -1157,7 +1159,7 @@ public:
 				if (fh.has_value()) {
 					std::string data;
 					switch (this->extra_info->type) {
-	                    case FiosExtraInfoType::VEHICLE_LIST:
+	                    case FiosExtraInfoType::VEHICLE_LIST_INFO:
 							data = VehicleListOrdersToJSONString(this->extra_info->vehicle_list);
 						break;
 	                    case FiosExtraInfoType::ORDERLIST_INFO:
@@ -1420,7 +1422,7 @@ void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fo
  */
 void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fop, VehicleListIdentifier vehicle_list) {
 	ShowSaveLoadDialog(abstract_filetype, fop, FiosExtraInfo {
-		.type = FiosExtraInfoType::VEHICLE_LIST,
+		.type = FiosExtraInfoType::VEHICLE_LIST_INFO,
 		.vehicle_list = vehicle_list
 	});
 }
