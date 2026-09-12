@@ -595,8 +595,11 @@ public:
 		}
 		std::string name;
 		if (group == nullptr) {
-			assert(this->extra_info->type == FiosExtraInfoType::VEHICLE_LIST_INFO);
-			name = GetString(STR_COMPANY_NAME, this->extra_info->vehicle_list.company);
+			if(this->extra_info->type == FiosExtraInfoType::VEHICLE_LIST_INFO){
+				name = GetString(STR_COMPANY_NAME, this->extra_info->vehicle_list.company);
+			} else {
+				name = "UNNAMED";
+			}
 		} else {
 			name = GetString(STR_GROUP_NAME, group->index);
 		}
