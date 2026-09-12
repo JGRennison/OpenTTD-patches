@@ -38,6 +38,7 @@
 
 #include "table/strings.h"
 
+#include <optional>
 #include <set>
 #include <type_traits>
 
@@ -571,11 +572,15 @@ struct GroupWithChildren {
 	std::map<GroupID, GroupWithChildren *> children;
 
 	GroupWithChildren(Group* group, std::map<GroupID, GroupWithChildren *> children) : data(group), children(children) {}
-	static std::map<GroupID,GroupWithChildren> FromGlobalPool(Owner owner_id) {
+	static std::map<GroupID,GroupWithChildren> FromGlobalPool(Owner owner_id, std::optional<VehicleType> vt) {
 		std::map<GroupID,GroupWithChildren> found_groups = std::map<GroupID,GroupWithChildren>();
 
 		for (Group *group : Group::Iterate()) {
-			if (group->owner == owner_id && !found_groups.contains(group->index)) {
+			if (
+				(!vt.has_value() || group->vehicle_type == vt) &&
+				group->owner == owner_id &&
+				!found_groups.contains(group->index)
+			) {
 				//Add group to found groups
 				found_groups.try_emplace(group->index, GroupWithChildren(group, std::map<GroupID, GroupWithChildren *>()));
 				//Explore parents
@@ -647,7 +652,7 @@ nlohmann::json GroupOrdersToJSON(const GroupWithChildren &group) {
 
 std::string VehicleListOrdersToJSONString(VehicleListIdentifier vehicle_list) {
 	nlohmann::json json;
-	auto groups = GroupWithChildren::FromGlobalPool(vehicle_list.company);
+	auto groups = GroupWithChildren::FromGlobalPool(vehicle_list.company, vehicle_list.vtype);
 
 	if(vehicle_list.ToGroupID() == ALL_GROUP){
 		json["company-name"] = Company::Get(vehicle_list.company)->name;
