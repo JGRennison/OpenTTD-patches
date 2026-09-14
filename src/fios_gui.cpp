@@ -36,7 +36,6 @@
 #include "vehicle_base.h"
 #include "order_serialisation.h"
 #include "core/backup_type.hpp"
-#include "company_func.h"
 
 #include "widgets/fios_widget.h"
 
