@@ -3431,7 +3431,7 @@ bool AfterLoadGame()
 	}
 	if (!SlXvIsFeaturePresent(XSLFI_IMPROVED_BREAKDOWNS, 3)) {
 		for (Vehicle *v : Vehicle::Iterate()) {
-			switch(v->type) {
+			switch (v->type) {
 				case VehicleType::Train:
 				case VehicleType::Road:
 					v->breakdown_chance_factor = 128;
@@ -3452,16 +3452,9 @@ bool AfterLoadGame()
 		}
 	}
 	if (!SlXvIsFeaturePresent(XSLFI_IMPROVED_BREAKDOWNS, 4)) {
-		for (Vehicle *v : Vehicle::Iterate()) {
-			switch(v->type) {
-				case VehicleType::Aircraft:
-					if (v->breakdown_type == BREAKDOWN_AIRCRAFT_SPEED && v->breakdown_severity == 0) {
-						v->breakdown_severity = std::max(1, std::min(v->vcache.cached_max_speed >> 4, 255));
-					}
-					break;
-
-				default:
-					break;
+		for (Aircraft *v : Aircraft::Iterate()) {
+			if (v->breakdown_type == BREAKDOWN_AIRCRAFT_SPEED && v->breakdown_severity == 0) {
+				v->breakdown_severity = std::max(1, std::min(v->vcache.cached_max_speed >> 4, 255));
 			}
 		}
 	}
