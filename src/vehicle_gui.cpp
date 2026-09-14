@@ -613,7 +613,7 @@ DropDownList BaseVehicleListWindow::BuildActionDropdownList(bool show_autoreplac
 
 	list.push_back(MakeDropDownListDividerItem());
 
-	list.push_back(MakeDropDownListStringItem(STR_ORDER_EXPORT_ORDER_LIST, ADI_EXPORT_ORDERS));
+	list.push_back(MakeDropDownListStringItem(STR_ORDER_EXPORT_ORDER_LISTS, ADI_EXPORT_ORDERS));
 
 	return list;
 }
