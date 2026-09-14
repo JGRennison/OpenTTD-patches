@@ -667,7 +667,11 @@ std::string VehicleListOrdersToJSONString(VehicleListIdentifier vehicle_list) {
 		json["company-name"] = Company::Get(vehicle_list.company)->name;
 		json["ungrouped"] = MakePerOrderListVehicleSet(DEFAULT_GROUP, vehicle_list.company, vehicle_list.vtype);
 	} else {
-		json = GroupOrdersToJSON(groups.at(vehicle_list.ToGroupID()));
+		if (groups.contains(vehicle_list.ToGroupID())) {
+			json = GroupOrdersToJSON(groups.at(vehicle_list.ToGroupID()));
+		} else {
+			json["error"] = "Could not find source group";
+		}
 	}
     return json.dump(4);
 }
