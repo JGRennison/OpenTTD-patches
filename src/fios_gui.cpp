@@ -595,7 +595,7 @@ public:
 		}
 		std::string name;
 		if (group == nullptr) {
-			if(this->extra_info->type == FiosExtraInfoType::VEHICLE_LIST_INFO){
+			if(this->extra_info.has_value() && this->extra_info->type == FiosExtraInfoType::VEHICLE_LIST_INFO){
 				name = GetString(STR_COMPANY_NAME, this->extra_info->vehicle_list.company);
 			} else {
 				name = "UNNAMED";
