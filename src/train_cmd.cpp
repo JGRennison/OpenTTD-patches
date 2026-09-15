@@ -1596,6 +1596,7 @@ static CommandCost CmdBuildRailWagon(TileIndex tile, DoCommandFlags flags, const
 		v->refit_cap = 0;
 
 		v->railtypes = rvi->railtypes;
+		v->flags.Set(VehicleRailFlag::AllowedOnNormalRail, _settings_game.vehicle.disable_elrails && rvi->intended_railtypes.Test(RAILTYPE_ELECTRIC));
 
 		v->date_of_last_service = EconTime::CurDate();
 		v->date_of_last_service_newgrf = CalTime::CurDate();
@@ -1688,6 +1689,7 @@ static void AddRearEngineToMultiheadedTrain(Train *v)
 	u->cargo_cap = v->cargo_cap;
 	u->refit_cap = v->refit_cap;
 	u->railtypes = v->railtypes;
+	u->flags.Set(VehicleRailFlag::AllowedOnNormalRail, _settings_game.vehicle.disable_elrails && RailVehInfo(v->engine_type)->intended_railtypes.Test(RAILTYPE_ELECTRIC));
 	u->engine_type = v->engine_type;
 	u->reliability = v->reliability;
 	u->reliability_spd_dec = v->reliability_spd_dec;
@@ -1762,6 +1764,7 @@ CommandCost CmdBuildRailVehicle(TileIndex tile, DoCommandFlags flags, const Engi
 		v->max_age = e->GetLifeLengthInDays();
 
 		v->railtypes = rvi->railtypes;
+		v->flags.Set(VehicleRailFlag::AllowedOnNormalRail, _settings_game.vehicle.disable_elrails && rvi->intended_railtypes.Test(RAILTYPE_ELECTRIC));
 
 		v->SetServiceInterval(Company::Get(_current_company)->settings.vehicle.servint_trains);
 		v->date_of_last_service = EconTime::CurDate();
