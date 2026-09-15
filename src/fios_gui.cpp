@@ -584,19 +584,19 @@ public:
 	{
 		const Group *group = nullptr;
 		if (this->extra_info.has_value()) {
-			switch (this->extra_info->type) {
-				case FiosExtraInfoType::ORDERLIST_INFO:
-					group = Group::GetIfValid(this->extra_info->order_list_info.veh->group_id);
+			switch (this->extra_info->GetType()) {
+				case FiosExtraInfoType::OrderListInfo:
+					group = Group::GetIfValid(this->extra_info->GetOrderListInfo().veh->group_id);
 					break;
-				case FiosExtraInfoType::VEHICLE_LIST_INFO:
-					group = Group::GetIfValid(this->extra_info->vehicle_list.ToGroupID());
+				case FiosExtraInfoType::VehicleList:
+					group = Group::GetIfValid(this->extra_info->GetVehicleListIdentifier().ToGroupID());
 					break;
 			}
 		}
 		std::string name;
 		if (group == nullptr) {
-			if(this->extra_info.has_value() && this->extra_info->type == FiosExtraInfoType::VEHICLE_LIST_INFO){
-				name = GetString(STR_COMPANY_NAME, this->extra_info->vehicle_list.company);
+			if(this->extra_info.has_value() && this->extra_info->GetType() == FiosExtraInfoType::VehicleList){
+				name = GetString(STR_COMPANY_NAME, this->extra_info->GetVehicleListIdentifier().company);
 			} else {
 				name = "UNNAMED";
 			}
@@ -958,13 +958,13 @@ public:
 					ShowHeightmapLoad();
 				} else if (this->abstract_filetype == AbstractFileType::Orderlist) {
 					/*bulk-import for orders is not implemented */
-					assert(this->extra_info->type == FiosExtraInfoType::ORDERLIST_INFO);
+					assert(this->extra_info->GetType() == FiosExtraInfoType::OrderListInfo);
 
 					auto callback = [](Window *w, bool confirmed) -> void {
 						if (!confirmed) return;
 						SaveLoadWindow *slo = (SaveLoadWindow *)w;
 
-						const FiosOrderListInfo &info = slo->extra_info->order_list_info;
+						const FiosOrderListInfo &info = slo->extra_info->GetOrderListInfo();
 
 						auto file = FioFOpenFile(slo->selected->name, "rb", Subdirectory::None);
 						if (file.has_value()) {
@@ -981,7 +981,7 @@ public:
 						slo->Close();
 					};
 
-					const FiosOrderListInfo &info = this->extra_info->order_list_info;
+					const FiosOrderListInfo &info = this->extra_info->GetOrderListInfo();
 					if (info.veh->orders != nullptr && info.order_insert_index == INVALID_VEH_ORDER_ID) {
 						ShowQuery(GetEncodedString(STR_ORDERLIST_JSON_CONFIRM_OVERRIDE_QUERY_CAPTION), GetEncodedString(STR_ORDERLIST_JSON_CONFIRM_OVERRIDE), this, callback);
 					} else {
@@ -1165,12 +1165,12 @@ public:
 				auto fh = FileHandle::Open(FiosMakeOrderListName(this->filename_editbox.text.GetText().c_str()), "w");
 				if (fh.has_value()) {
 					std::string data;
-					switch (this->extra_info->type) {
-						case FiosExtraInfoType::VEHICLE_LIST_INFO:
-							data = VehicleListOrdersToJSONString(this->extra_info->vehicle_list);
+					switch (this->extra_info->GetType()) {
+						case FiosExtraInfoType::VehicleList:
+							data = VehicleListOrdersToJSONString(this->extra_info->GetVehicleListIdentifier());
 							break;
-						case FiosExtraInfoType::ORDERLIST_INFO:
-							data = OrderListToJSONString(this->extra_info->order_list_info.veh->orders);
+						case FiosExtraInfoType::OrderListInfo:
+							data = OrderListToJSONString(this->extra_info->GetOrderListInfo().veh->orders);
 							break;
 					}
 					fwrite(data.data(), 1, data.size(), *fh);
@@ -1415,10 +1415,7 @@ void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fo
  * @param orderlist_info Extra orderlist information.
  */
 void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fop, FiosOrderListInfo orderlist_info) {
-	ShowSaveLoadDialog(abstract_filetype, fop, FiosExtraInfo {
-		.type = FiosExtraInfoType::ORDERLIST_INFO,
-		.order_list_info = orderlist_info
-	});
+	ShowSaveLoadDialog(abstract_filetype, fop, FiosExtraInfo {orderlist_info});
 }
 
 /**
@@ -1428,8 +1425,5 @@ void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fo
  * @param vehicle_list Extra vehicle list information for orderlist serialisation.
  */
 void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fop, VehicleListIdentifier vehicle_list) {
-	ShowSaveLoadDialog(abstract_filetype, fop, FiosExtraInfo {
-		.type = FiosExtraInfoType::VEHICLE_LIST_INFO,
-		.vehicle_list = vehicle_list
-	});
+	ShowSaveLoadDialog(abstract_filetype, fop, FiosExtraInfo {vehicle_list});
 }
