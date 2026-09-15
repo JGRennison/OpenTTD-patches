@@ -717,12 +717,16 @@ class NIHVehicle : public NIHelper {
 					print_bit(ExtraEngineFlag::NoPreview,       "NoPreview");
 					print_bit(ExtraEngineFlag::JoinPreview,     "JoinPreview");
 					print_bit(ExtraEngineFlag::SyncReliability, "SyncReliability");
+					print_bit(ExtraEngineFlag::HasCab,          "HasCab");
+					print_bit(ExtraEngineFlag::IsDoubleEnded,   "IsDoubleEnded");
 				} else {
-					output.Print("    [+] Extra Engine Flags: {}{}{}{}",
+					output.Print("    [+] Extra Engine Flags: {}{}{}{}{}{}",
 							e->info.extra_flags.Test(ExtraEngineFlag::NoNews)          ? 'n' : '-',
 							e->info.extra_flags.Test(ExtraEngineFlag::NoPreview)       ? 'p' : '-',
 							e->info.extra_flags.Test(ExtraEngineFlag::JoinPreview)     ? 'j' : '-',
-							e->info.extra_flags.Test(ExtraEngineFlag::SyncReliability) ? 's' : '-');
+							e->info.extra_flags.Test(ExtraEngineFlag::SyncReliability) ? 's' : '-',
+							e->info.extra_flags.Test(ExtraEngineFlag::HasCab)          ? 'c' : '-',
+							e->info.extra_flags.Test(ExtraEngineFlag::IsDoubleEnded)   ? 'd' : '-');
 				}
 			}
 		}
