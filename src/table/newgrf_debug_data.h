@@ -447,6 +447,19 @@ class NIHVehicle : public NIHelper {
 				output.buffer.append("none");
 				output.FinishPrint();
 			}
+			{
+				output.buffer.append("  Ship flags: ");
+				bool first = true;
+				auto add_cb_flag = [&](VehicleShipFlag flag, const char *name) {
+					if (!s->flags.Test(flag)) return;
+					if (!first) output.buffer.append(", ");
+					output.buffer.append(name);
+					first = false;
+				};
+				add_cb_flag(VehicleShipFlag::SecondEndFacingForward, "SecondEndFacingForward");
+				if (first) output.buffer.append("[NONE]");
+				output.FinishPrint();
+			}
 		}
 		if (v->type == VehicleType::Aircraft) {
 			const Aircraft *a = Aircraft::From(v);
