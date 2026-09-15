@@ -14,6 +14,9 @@
 #include "newgrf_config.h"
 #include "network/core/tcp_content_type.h"
 #include "order_type.h"
+#include "vehiclelist.h"
+#include <cstdint>
+#include <optional>
 #include <vector>
 
 
@@ -59,7 +62,32 @@ struct FiosOrderListInfo {
 			: veh(veh), order_insert_index(order_insert_index), reverse(reverse) {}
 };
 
-void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fop, std::optional<FiosOrderListInfo> order_list_info = std::nullopt);
+enum class FiosExtraInfoType : uint8_t {
+	VehicleList = 0,
+	OrderListInfo = 1,
+};
+
+struct FiosExtraInfo {
+	std::variant<VehicleListIdentifier, FiosOrderListInfo> val;
+	FiosExtraInfoType GetType() {
+		return static_cast<FiosExtraInfoType>(this->val.index());
+	}
+
+	VehicleListIdentifier& GetVehicleListIdentifier() {
+		assert(this->GetType() == FiosExtraInfoType::VehicleList);
+		return std::get<VehicleListIdentifier>(this->val);
+	}
+
+	FiosOrderListInfo& GetOrderListInfo() {
+		assert(this->GetType() == FiosExtraInfoType::OrderListInfo);
+		return std::get<FiosOrderListInfo>(this->val);
+	}
+
+};
+
+void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fop, FiosOrderListInfo order_list_info);
+void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fop, VehicleListIdentifier vehicle_list);
+void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fop);
 
 void FiosGetSavegameList(SaveLoadOperation fop, bool show_dirs, FileList &file_list);
 void FiosGetScenarioList(SaveLoadOperation fop, bool show_dirs, FileList &file_list);

@@ -1,5 +1,6 @@
 /.vs
 /.vscode
+/.zed
 /build*
 CMakeSettings.json
 docs/aidocs/*
@@ -8,3 +9,4 @@ docs/source/*
 /out
 /vcpkg_installed
 *.tmp
+.clangd

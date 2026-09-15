@@ -129,6 +129,7 @@ public:
 		ADI_CREATE_GROUP,
 		ADI_TRACERESTRICT_SLOT_MGMT,
 		ADI_TRACERESTRICT_COUNTER_MGMT,
+		ADI_EXPORT_ORDERS,
 	};
 
 	static const VehicleTypeIndexArray<const StringID> vehicle_depot_name;
