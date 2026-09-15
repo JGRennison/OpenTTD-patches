@@ -38,7 +38,6 @@
 #include "table/strings.h"
 
 #include <optional>
-#include <set>
 #include <type_traits>
 
 #include "safeguards.h"
@@ -604,50 +603,47 @@ struct GroupWithChildren {
 
 nlohmann::json MakePerOrderListVehicleSet(GroupID group_id, Owner owner, std::optional<VehicleType> vt)
 {
-	auto per_orderlist_vehicles = std::map<OrderList *, std::set<Vehicle *>>();
+	nlohmann::json json = nlohmann::json::array();
+	robin_hood::unordered_set<const OrderList *> seen_order_lists;
 
-	for(Vehicle *vehicle : Vehicle::Iterate()) {
-		if (
-			(!vt.has_value() || vehicle->type == vt) &&
-			vehicle->owner == owner &&
-			vehicle->group_id == group_id &&
-			vehicle->orders != nullptr
-		) {
-			per_orderlist_vehicles[vehicle->orders].insert(vehicle);
+	uint8_t vt_mask = 0;
+	if (vt.has_value()) {
+		SetBit(vt_mask, to_underlying(*vt));
+	} else {
+		for (VehicleType vtt = VehicleType::Begin; vtt != VehicleType::CompanyEnd; vtt++) {
+			SetBit(vt_mask, to_underlying(vtt));
+		}
+	}
+	for (const Vehicle *v : Vehicle::IterateTypeMaskFrontOnly(vt_mask)) {
+		if (v->owner == owner && v->group_id == group_id && v->orders != nullptr && v->IsPrimaryVehicle()) {
+			if (seen_order_lists.insert(v->orders).second) continue;
+
+			auto vehicles_array = nlohmann::json::array();
+			for (const Vehicle *u = v->FirstShared(); u != nullptr; u = u->NextShared()) {
+				if (u->group_id == group_id) vehicles_array.push_back(u->index.base());
+			}
+			json.push_back({
+				{"vehicles", std::move(vehicles_array)},
+				{"order-data", OrderListToJSON(v->orders)}
+			});
 		}
 	}
 
-	nlohmann::json json = nlohmann::json::array();
-
-	for (auto &[orderlist, vehicles] : per_orderlist_vehicles) {
-		auto GetVehicleIDs = [&]() {
-			auto vehicles_array = nlohmann::json::array();
-			for (Vehicle *vehicle : vehicles ) {
-				vehicles_array.push_back(vehicle->index.base());
-			}
-			return vehicles_array;
-		};
-		json.push_back({
-			{"vehicles",GetVehicleIDs()},
-			{"order-data",OrderListToJSON(orderlist)}
-		});
-	}
 	return json;
 }
 
 nlohmann::json GroupOrdersToJSON(const GroupWithChildren &group)
 {
 	nlohmann::json json;
-	auto per_orderlist_vehicles = std::map<OrderList *, std::set<Vehicle *>>();
-
-	json["children"] = nlohmann::json::array();
+	json["group-name"] = GetString(STR_GROUP_NAME, group.data->index);
 	json["orderlists"] = MakePerOrderListVehicleSet(group.data->index, group.data->owner, group.data->vehicle_type);
-	json["group-name"] = group.data->name;
 
-	//Recursively export children
-	for (auto&[_id, child] : group.children) {
-		json["children"].push_back(GroupOrdersToJSON(*child));
+	/* Recursively export children */
+	auto children = nlohmann::json::array();
+	for (const auto &[_id, child] : group.children) {
+		children.push_back(GroupOrdersToJSON(*child));
 	}
+	json["children"] = std::move(children);
 
 	return json;
 }
@@ -657,11 +653,11 @@ std::string VehicleListOrdersToJSONString(VehicleListIdentifier vehicle_list)
 	nlohmann::json json;
 	auto groups = GroupWithChildren::FromGlobalPool(vehicle_list.company, vehicle_list.vtype);
 
-	if(vehicle_list.ToGroupID() == ALL_GROUP){
+	if (vehicle_list.ToGroupID() == ALL_GROUP) {
 		json["company-name"] = Company::Get(vehicle_list.company)->name;
 		json["ungrouped"] = MakePerOrderListVehicleSet(DEFAULT_GROUP, vehicle_list.company, vehicle_list.vtype);
-		for (auto[_group_id,group] : groups) {
-			//If it's a root, run the export pipeline.
+		for (const auto &[_group_id, group] : groups) {
+			/* If it's a root, run the export pipeline. */
 			if (Group::GetIfValid(group.data->parent) == nullptr) {
 				json["groups"].push_back(GroupOrdersToJSON(group));
 			}
@@ -670,8 +666,9 @@ std::string VehicleListOrdersToJSONString(VehicleListIdentifier vehicle_list)
 		json["company-name"] = Company::Get(vehicle_list.company)->name;
 		json["ungrouped"] = MakePerOrderListVehicleSet(DEFAULT_GROUP, vehicle_list.company, vehicle_list.vtype);
 	} else {
-		if (groups.contains(vehicle_list.ToGroupID())) {
-			json = GroupOrdersToJSON(groups.at(vehicle_list.ToGroupID()));
+		auto it = groups.find(vehicle_list.ToGroupID());
+		if (it != groups.end()) {
+			json = GroupOrdersToJSON(it->second);
 		} else {
 			json["error"] = "Could not find source group";
 		}
