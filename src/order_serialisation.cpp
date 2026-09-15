@@ -567,32 +567,31 @@ std::string OrderListToJSONString(const OrderList *ol)
 }
 
 struct GroupWithChildren {
-	Group *data;
+	const Group *data;
 	std::map<GroupID, GroupWithChildren *> children;
 
-	GroupWithChildren(Group* group, std::map<GroupID, GroupWithChildren *> children) : data(group), children(children) {}
-	static std::map<GroupID,GroupWithChildren> FromGlobalPool(Owner owner_id, std::optional<VehicleType> vt) {
-		std::map<GroupID,GroupWithChildren> found_groups = std::map<GroupID,GroupWithChildren>();
+	GroupWithChildren(const Group *group) : data(group) {}
 
-		for (Group *group : Group::Iterate()) {
-			if (
-				(!vt.has_value() || group->vehicle_type == vt) &&
-				group->owner == owner_id &&
-				!found_groups.contains(group->index)
-			) {
-				//Add group to found groups
-				found_groups.try_emplace(group->index, GroupWithChildren(group, std::map<GroupID, GroupWithChildren *>()));
-				//Explore parents
-				GroupWithChildren * child = &found_groups.at(group->index);
-				Group * parent = group;
-				while((parent = Group::GetIfValid(parent->parent)) != nullptr) {
-					if(found_groups.contains(parent->index)) {
-						found_groups.at(parent->index).children[child->data->index] = child;
-						break; //No need to continue, no new information to be given to above parents
-					} else {
-						found_groups.insert_or_assign(parent->index,GroupWithChildren(parent, {{child->data->index, child}}));
-						child = &found_groups.at(parent->index);
+	static std::map<GroupID, GroupWithChildren> FromGlobalPool(Owner owner_id, std::optional<VehicleType> vt) {
+		std::map<GroupID, GroupWithChildren> found_groups;
+
+		for (const Group *group : Group::Iterate()) {
+			if ((!vt.has_value() || group->vehicle_type == vt) && group->owner == owner_id) {
+				/* Add group to found groups. */
+				auto res = found_groups.try_emplace(group->index, group);
+				if (!res.second) continue; // Already existed
+
+				/* Explore parents. */
+				GroupWithChildren *child = &res.first->second;
+				const Group *parent = group;
+				while ((parent = Group::GetIfValid(parent->parent)) != nullptr) {
+					auto res = found_groups.try_emplace(parent->index, parent);
+					res.first->second.children[child->data->index] = child;
+					if (!res.second) {
+						break; // No need to continue, no new information to be given to above parents
 					}
+
+					child = &res.first->second;
 				}
 			}
 		}
