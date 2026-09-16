@@ -62,27 +62,7 @@ struct FiosOrderListInfo {
 			: veh(veh), order_insert_index(order_insert_index), reverse(reverse) {}
 };
 
-enum class FiosExtraInfoType : uint8_t {
-	VehicleList = 0,
-	OrderListInfo = 1,
-};
-
-struct FiosExtraInfo {
-	std::variant<VehicleListIdentifier, FiosOrderListInfo> val;
-	FiosExtraInfoType GetType() {
-		return static_cast<FiosExtraInfoType>(this->val.index());
-	}
-
-	VehicleListIdentifier &GetVehicleListIdentifier() {
-		assert(this->GetType() == FiosExtraInfoType::VehicleList);
-		return std::get<VehicleListIdentifier>(this->val);
-	}
-
-	FiosOrderListInfo &GetOrderListInfo() {
-		assert(this->GetType() == FiosExtraInfoType::OrderListInfo);
-		return std::get<FiosOrderListInfo>(this->val);
-	}
-};
+using FiosExtraInfo = std::variant<VehicleListIdentifier, FiosOrderListInfo>;
 
 void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fop, FiosOrderListInfo order_list_info);
 void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fop, VehicleListIdentifier vehicle_list);

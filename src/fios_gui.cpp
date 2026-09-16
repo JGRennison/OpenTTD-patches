@@ -43,6 +43,7 @@
 #include "table/strings.h"
 
 #include <optional>
+#include <variant>
 
 #include "safeguards.h"
 
@@ -582,29 +583,30 @@ public:
 	/** Generate a default order list filename. */
 	void GenerateOrderListName()
 	{
-		const Group *group = nullptr;
+		std::optional<std::string> name = std::nullopt;
+
 		if (this->extra_info.has_value()) {
-			switch (this->extra_info->GetType()) {
-				case FiosExtraInfoType::OrderListInfo:
-					group = Group::GetIfValid(this->extra_info->GetOrderListInfo().veh->group_id);
-					break;
-				case FiosExtraInfoType::VehicleList:
-					group = Group::GetIfValid(this->extra_info->GetVehicleListIdentifier().ToGroupID());
-					break;
+			const FiosExtraInfo &extra_info = *this->extra_info;
+
+			GroupID group_id;
+			if(std::holds_alternative<FiosOrderListInfo>(extra_info)){
+				group_id = std::get<FiosOrderListInfo>(extra_info).veh->group_id;
+			} else if (std::holds_alternative<VehicleListIdentifier>(extra_info)) {
+				group_id = (std::get<VehicleListIdentifier>(extra_info).ToGroupID());
+			}
+
+			const Group *group = Group::GetIfValid(group_id);
+
+			if (group != nullptr) {
+				name = GetString(STR_GROUP_NAME, group->index);
+			} else if(std::holds_alternative<VehicleListIdentifier>(extra_info)) {
+				name = GetString(STR_COMPANY_NAME, std::get<VehicleListIdentifier>(extra_info).company);
 			}
 		}
-		std::string name;
-		if (group == nullptr) {
-			if(this->extra_info.has_value() && this->extra_info->GetType() == FiosExtraInfoType::VehicleList){
-				name = GetString(STR_COMPANY_NAME, this->extra_info->GetVehicleListIdentifier().company);
-			} else {
-				name = "UNNAMED";
-			}
-		} else {
-			name = GetString(STR_GROUP_NAME, group->index);
-		}
-		SanitizeFilename(name);
-		this->filename_editbox.text.Assign(name);
+
+		std::string final_name = name.value_or("UNNAMED");
+		SanitizeFilename(final_name);
+		this->filename_editbox.text.Assign(final_name);
 	}
 
 	SaveLoadWindow(WindowDesc &desc, AbstractFileType abstract_filetype, SaveLoadOperation fop, std::optional<FiosExtraInfo> extra_info = std::nullopt)
@@ -958,13 +960,14 @@ public:
 					ShowHeightmapLoad();
 				} else if (this->abstract_filetype == AbstractFileType::Orderlist) {
 					/*bulk-import for orders is not implemented */
-					assert(this->extra_info->GetType() == FiosExtraInfoType::OrderListInfo);
+					assert(this->extra_info.has_value() && std::holds_alternative<FiosOrderListInfo>(*this->extra_info));
 
+					const FiosOrderListInfo &info = std::get<FiosOrderListInfo>(*this->extra_info);
 					auto callback = [](Window *w, bool confirmed) -> void {
 						if (!confirmed) return;
-						SaveLoadWindow *slo = (SaveLoadWindow *)w;
 
-						const FiosOrderListInfo &info = slo->extra_info->GetOrderListInfo();
+						SaveLoadWindow *slo = (SaveLoadWindow *)w;
+						const FiosOrderListInfo &info = std::get<FiosOrderListInfo>(*slo->extra_info);
 
 						auto file = FioFOpenFile(slo->selected->name, "rb", Subdirectory::None);
 						if (file.has_value()) {
@@ -981,7 +984,6 @@ public:
 						slo->Close();
 					};
 
-					const FiosOrderListInfo &info = this->extra_info->GetOrderListInfo();
 					if (info.veh->orders != nullptr && info.order_insert_index == INVALID_VEH_ORDER_ID) {
 						ShowQuery(GetEncodedString(STR_ORDERLIST_JSON_CONFIRM_OVERRIDE_QUERY_CAPTION), GetEncodedString(STR_ORDERLIST_JSON_CONFIRM_OVERRIDE), this, callback);
 					} else {
@@ -1162,16 +1164,18 @@ public:
 					_switch_mode = SwitchMode::SaveGame;
 				}
 			} else if (this->abstract_filetype == AbstractFileType::Orderlist) {
+				assert(this->extra_info.has_value());
+
+				const FiosExtraInfo &extra_info = *this->extra_info;
 				auto fh = FileHandle::Open(FiosMakeOrderListName(this->filename_editbox.text.GetText().c_str()), "w");
 				if (fh.has_value()) {
 					std::string data;
-					switch (this->extra_info->GetType()) {
-						case FiosExtraInfoType::VehicleList:
-							data = VehicleListOrdersToJSONString(this->extra_info->GetVehicleListIdentifier());
-							break;
-						case FiosExtraInfoType::OrderListInfo:
-							data = OrderListToJSONString(this->extra_info->GetOrderListInfo().veh->orders);
-							break;
+					if(std::holds_alternative<VehicleListIdentifier>(extra_info)) {
+						data = VehicleListOrdersToJSONString(std::get<VehicleListIdentifier>(extra_info));
+					} else if (std::holds_alternative<FiosOrderListInfo>(extra_info)) {
+						data = OrderListToJSONString(std::get<FiosOrderListInfo>(extra_info).veh->orders);
+					} else {
+						NOT_REACHED();
 					}
 					fwrite(data.data(), 1, data.size(), *fh);
 					this->Close();
