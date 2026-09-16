@@ -2,6 +2,18 @@
 
 * * *
 
+### v0.73.3 (2026-09-16)
+* Fix only first 10 items in town action list being clickable.
+* Fix detection of crashed vehicles on signalled tunnels/bridges.
+* Fix width of HH:MM columns in departure board and timetable window with some fonts.
+* Add setting for showing dispatch route ID in departure boards.
+* Add ability to export JSON order lists for all vehicles for each vehicle type.
+* Template-based train replacement: Fix handling of templates longer than the train length limit.
+* Fix save dialog not warning when overwriting order list files.
+* Fix vehicle movement issues after loading some SpringPP savegames.
+* Linux: Fix crash logging version information when SDL IM is present.
+* Bump trunk base from commit 061e5c9cd3373301a9557869144ed767309b3d7a to commit af60d6b7cd60c8855febb0847bd66169780dd1ef.
+
 ### v0.73.2 (2026-08-26)
 * Fix crash which could occur when NewGRFs perform an incorrect sprite replacement.
 * Fix crash which could occur with overlapping use of the give money and join buttons in the company window.
