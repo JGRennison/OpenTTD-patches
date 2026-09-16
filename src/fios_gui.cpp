@@ -361,8 +361,9 @@ static constexpr NWidgetPart _nested_save_orderlist_dialog_widgets[] = {
 						SetStringTip(STR_SAVELOAD_OSKTITLE, STR_SAVELOAD_EDITBOX_TOOLTIP),
 			EndContainer(),
 
-			/* Save button*/
-			NWidget(NWID_HORIZONTAL),
+			/* New directory/delete/save buttons */
+			NWidget(NWID_HORIZONTAL, NWidContainerFlag::EqualSize),
+				NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_SL_NEW_DIRECTORY), SetStringTip(STR_SAVELOAD_NEW_DIRECTORY_BUTTON, STR_SAVELOAD_NEW_DIRECTORY_TOOLTIP), SetFill(1, 0), SetResize(1, 0),
 				NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_SL_DELETE_SELECTION), SetStringTip(STR_SAVELOAD_DELETE_BUTTON, STR_SAVELOAD_DELETE_TOOLTIP), SetFill(1, 0), SetResize(1, 0),
 				NWidget(WWT_PUSHTXTBTN, Colours::Grey, WID_SL_SAVE_GAME),        SetStringTip(STR_SAVELOAD_SAVE_BUTTON, STR_SAVELOAD_SAVE_TOOLTIP),     SetFill(1, 0), SetResize(1, 0),
 			EndContainer(),
