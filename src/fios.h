@@ -62,7 +62,7 @@ struct FiosOrderListInfo {
 			: veh(veh), order_insert_index(order_insert_index), reverse(reverse) {}
 };
 
-using FiosExtraInfo = std::variant<VehicleListIdentifier, FiosOrderListInfo>;
+using FiosExtraInfo = std::variant<std::monostate, VehicleListIdentifier, FiosOrderListInfo>;
 
 void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fop, FiosOrderListInfo order_list_info);
 void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fop, VehicleListIdentifier vehicle_list);

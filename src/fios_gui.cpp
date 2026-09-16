@@ -458,7 +458,7 @@ private:
 	static const uint EDITBOX_MAX_SIZE   =  50;
 	static const uint MAX_DIRECTORY_NAME_CHARS = 64; ///< Maximum length of a new directory name in characters.
 
-	std::optional<FiosExtraInfo> extra_info; ///< Used for order list import/export.
+	FiosExtraInfo extra_info; ///< Used for order list import/export.
 	QueryString filename_editbox; ///< Filename editbox.
 	AbstractFileType abstract_filetype{}; ///< Type of file to select.
 	SaveLoadOperation fop{}; ///< File operation to perform.
@@ -583,34 +583,27 @@ public:
 	/** Generate a default order list filename. */
 	void GenerateOrderListName()
 	{
-		std::optional<std::string> name = std::nullopt;
+		std::string name = "UNNAMED";
 
-		if (this->extra_info.has_value()) {
-			const FiosExtraInfo &extra_info = *this->extra_info;
-
-			GroupID group_id;
-			if(std::holds_alternative<FiosOrderListInfo>(extra_info)){
-				group_id = std::get<FiosOrderListInfo>(extra_info).veh->group_id;
-			} else if (std::holds_alternative<VehicleListIdentifier>(extra_info)) {
-				group_id = (std::get<VehicleListIdentifier>(extra_info).ToGroupID());
-			}
-
-			const Group *group = Group::GetIfValid(group_id);
-
-			if (group != nullptr) {
-				name = GetString(STR_GROUP_NAME, group->index);
-			} else if(std::holds_alternative<VehicleListIdentifier>(extra_info)) {
-				name = GetString(STR_COMPANY_NAME, std::get<VehicleListIdentifier>(extra_info).company);
-			}
+		const Group *group = nullptr;
+		if (std::holds_alternative<FiosOrderListInfo>(this->extra_info)) {
+			group = Group::GetIfValid(std::get<FiosOrderListInfo>(this->extra_info).veh->group_id);
+		} else if (std::holds_alternative<VehicleListIdentifier>(this->extra_info)) {
+			group = Group::GetIfValid(std::get<VehicleListIdentifier>(this->extra_info).ToGroupID());
 		}
 
-		std::string final_name = name.value_or("UNNAMED");
-		SanitizeFilename(final_name);
-		this->filename_editbox.text.Assign(final_name);
+		if (group != nullptr) {
+			name = GetString(STR_GROUP_NAME, group->index);
+		} else if (std::holds_alternative<VehicleListIdentifier>(extra_info)) {
+			name = GetString(STR_COMPANY_NAME, std::get<VehicleListIdentifier>(extra_info).company);
+		}
+
+		SanitizeFilename(name);
+		this->filename_editbox.text.Assign(name);
 	}
 
-	SaveLoadWindow(WindowDesc &desc, AbstractFileType abstract_filetype, SaveLoadOperation fop, std::optional<FiosExtraInfo> extra_info = std::nullopt)
-			: Window(desc), extra_info(extra_info), filename_editbox(64), abstract_filetype(abstract_filetype), fop(fop), filter_editbox(EDITBOX_MAX_SIZE)
+	SaveLoadWindow(WindowDesc &desc, AbstractFileType abstract_filetype, SaveLoadOperation fop, FiosExtraInfo extra_info = std::monostate{})
+			: Window(desc), extra_info(std::move(extra_info)), filename_editbox(64), abstract_filetype(abstract_filetype), fop(fop), filter_editbox(EDITBOX_MAX_SIZE)
 	{
 		assert(this->fop == SaveLoadOperation::Save || this->fop == SaveLoadOperation::Load);
 
@@ -959,15 +952,15 @@ public:
 					this->Close();
 					ShowHeightmapLoad();
 				} else if (this->abstract_filetype == AbstractFileType::Orderlist) {
-					/*bulk-import for orders is not implemented */
-					assert(this->extra_info.has_value() && std::holds_alternative<FiosOrderListInfo>(*this->extra_info));
+					/* bulk-import for orders is not implemented */
+					assert(std::holds_alternative<FiosOrderListInfo>(this->extra_info));
 
-					const FiosOrderListInfo &info = std::get<FiosOrderListInfo>(*this->extra_info);
+					const FiosOrderListInfo &info = std::get<FiosOrderListInfo>(this->extra_info);
 					auto callback = [](Window *w, bool confirmed) -> void {
 						if (!confirmed) return;
 
 						SaveLoadWindow *slo = (SaveLoadWindow *)w;
-						const FiosOrderListInfo &info = std::get<FiosOrderListInfo>(*slo->extra_info);
+						const FiosOrderListInfo &info = std::get<FiosOrderListInfo>(slo->extra_info);
 
 						auto file = FioFOpenFile(slo->selected->name, "rb", Subdirectory::None);
 						if (file.has_value()) {
@@ -1164,16 +1157,15 @@ public:
 					_switch_mode = SwitchMode::SaveGame;
 				}
 			} else if (this->abstract_filetype == AbstractFileType::Orderlist) {
-				assert(this->extra_info.has_value());
+				assert(std::holds_alternative<VehicleListIdentifier>(this->extra_info) || std::holds_alternative<FiosOrderListInfo>(this->extra_info));
 
-				const FiosExtraInfo &extra_info = *this->extra_info;
 				auto fh = FileHandle::Open(FiosMakeOrderListName(this->filename_editbox.text.GetText().c_str()), "w");
 				if (fh.has_value()) {
 					std::string data;
-					if(std::holds_alternative<VehicleListIdentifier>(extra_info)) {
-						data = VehicleListOrdersToJSONString(std::get<VehicleListIdentifier>(extra_info));
-					} else if (std::holds_alternative<FiosOrderListInfo>(extra_info)) {
-						data = OrderListToJSONString(std::get<FiosOrderListInfo>(extra_info).veh->orders);
+					if (std::holds_alternative<VehicleListIdentifier>(this->extra_info)) {
+						data = VehicleListOrdersToJSONString(std::get<VehicleListIdentifier>(this->extra_info));
+					} else if (std::holds_alternative<FiosOrderListInfo>(this->extra_info)) {
+						data = OrderListToJSONString(std::get<FiosOrderListInfo>(this->extra_info).veh->orders);
 					} else {
 						NOT_REACHED();
 					}
@@ -1365,15 +1357,15 @@ static WindowDesc _save_orderlist_dialog_desc(__FILE__, __LINE__,
  * @param abstract_filetype Kind of file to handle.
  * @param fop File operation to perform (load or save).
  */
-void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fop, std::optional<FiosExtraInfo> extra_info)
+void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fop, FiosExtraInfo extra_info)
 {
 	CloseWindowById(WindowClass::SaveLoad, 0);
 
 	if (fop == SaveLoadOperation::Save) {
 		switch (abstract_filetype) {
 			case AbstractFileType::Orderlist:
-				if (extra_info.has_value()) {
-					new SaveLoadWindow(_save_orderlist_dialog_desc, abstract_filetype, fop, extra_info);
+				if (std::holds_alternative<VehicleListIdentifier>(extra_info) || std::holds_alternative<FiosOrderListInfo>(extra_info)) {
+					new SaveLoadWindow(_save_orderlist_dialog_desc, abstract_filetype, fop, std::move(extra_info));
 				}
 				break;
 
@@ -1392,8 +1384,8 @@ void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fo
 				break;
 
 			case AbstractFileType::Orderlist:
-				if (extra_info.has_value()) {
-					new SaveLoadWindow(_load_orderlist_dialog_desc, abstract_filetype, fop, extra_info);
+				if (std::holds_alternative<FiosOrderListInfo>(extra_info)) {
+					new SaveLoadWindow(_load_orderlist_dialog_desc, abstract_filetype, fop, std::move(extra_info));
 				}
 				break;
 
@@ -1409,7 +1401,7 @@ void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fo
  * @param fop File operation to perform (load or save).
  */
 void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fop) {
-	ShowSaveLoadDialog(abstract_filetype, fop, std::nullopt);
+	ShowSaveLoadDialog(abstract_filetype, fop, FiosExtraInfo{});
 }
 
 /**
@@ -1419,7 +1411,7 @@ void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fo
  * @param orderlist_info Extra orderlist information.
  */
 void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fop, FiosOrderListInfo orderlist_info) {
-	ShowSaveLoadDialog(abstract_filetype, fop, FiosExtraInfo {orderlist_info});
+	ShowSaveLoadDialog(abstract_filetype, fop, FiosExtraInfo{orderlist_info});
 }
 
 /**
@@ -1429,5 +1421,5 @@ void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fo
  * @param vehicle_list Extra vehicle list information for orderlist serialisation.
  */
 void ShowSaveLoadDialog(AbstractFileType abstract_filetype, SaveLoadOperation fop, VehicleListIdentifier vehicle_list) {
-	ShowSaveLoadDialog(abstract_filetype, fop, FiosExtraInfo {vehicle_list});
+	ShowSaveLoadDialog(abstract_filetype, fop, FiosExtraInfo{vehicle_list});
 }
