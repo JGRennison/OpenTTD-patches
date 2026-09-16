@@ -626,6 +626,7 @@ STR_NEWS_MENU_DELETE_ALL_MESSAGES                               :Forigi ĉiujn m
 # About menu
 STR_ABOUT_MENU_LAND_BLOCK_INFO                                  :Landkvadrataj informoj
 STR_ABOUT_MENU_HELP                                             :Helpo & manlibroj
+STR_ABOUT_MENU_ENTER_SCREENSAVER_MODE                           :Baskuligi ekrankurtenan reĝimon
 STR_ABOUT_MENU_TOGGLE_CONSOLE                                   :Baskuligi konzolon
 STR_ABOUT_MENU_AI_DEBUG                                         :AI/Ludoskripta sencimigo
 STR_ABOUT_MENU_SCREENSHOT                                       :Ekranfoto
@@ -3195,6 +3196,7 @@ STR_TREES_MODE_FOREST_LG_TOOLTIP                                :{BLACK}Planti g
 # Land generation window (SE)
 STR_TERRAFORM_TOOLBAR_LAND_GENERATION_CAPTION                   :{WHITE}Generado de tero
 STR_TERRAFORM_TOOLTIP_PLACE_ROCKY_AREAS_ON_LANDSCAPE            :{BLACK}Meti rokecajn lokojn en la lando.{}Stir+Klaku por forigi rokecajn lokojn
+STR_TERRAFORM_TOOLTIP_PLACE_ROUGH_AREAS_ON_LANDSCAPE            :{BLACK}Meti malglatajn lokojn en la lando.{}Stir+Klaku por forigi malglatajn lokojn
 STR_TERRAFORM_TOOLTIP_DEFINE_DESERT_AREA                        :{BLACK}Difini dezertan regionon.{}Stir+Klaku por forigi dezertan regionon
 STR_TERRAFORM_TOOLTIP_INCREASE_SIZE_OF_LAND_AREA                :{BLACK}Grandigi landparton por (mal)altigi
 STR_TERRAFORM_TOOLTIP_DECREASE_SIZE_OF_LAND_AREA                :{BLACK}Malgrandigi landparton por (mal)altigi
@@ -3380,6 +3382,8 @@ STR_LAI_WATER_DESCRIPTION_LOCK                                  :Kluzo
 STR_LAI_WATER_DESCRIPTION_RIVER                                 :Rivero
 STR_LAI_WATER_DESCRIPTION_COAST_OR_RIVERBANK                    :Mara aŭ rivera bordo
 STR_LAI_WATER_DESCRIPTION_SHIP_DEPOT                            :Ŝipgaraĝo
+STR_LAI_WATER_DESCRIPTION_WATER_ROCKS                           :Rokoj
+STR_LAI_WATER_DESCRIPTION_COAST_ROCKS                           :Mara aŭ rivera bordo kun rokoj
 
 # Industries come directly from their industry names
 
@@ -3493,6 +3497,9 @@ STR_SAVELOAD_LOAD_BUTTON                                        :{BLACK}Ŝarĝi
 STR_SAVELOAD_LOAD_TOOLTIP                                       :{BLACK}Ŝarĝi la elektitan ludon
 STR_SAVELOAD_LOAD_HEIGHTMAP_TOOLTIP                             :{BLACK}Ŝarĝi la elektitan altecmapon
 STR_SAVELOAD_LOAD_TOWN_DATA_TOOLTIP                             :{BLACK}Ŝarĝi la datumon de elektita urbo
+STR_SAVELOAD_NEW_DIRECTORY_BUTTON                               :{BLACK}Nova dosierujo
+STR_SAVELOAD_NEW_DIRECTORY_TOOLTIP                              :{BLACK}Krei novan dosierujon en la aktuala loko
+STR_SAVELOAD_NEW_DIRECTORY_QUERY_CAPTION                        :{WHITE}Enigu nomon por la nova dosierujo
 STR_SAVELOAD_DETAIL_CAPTION                                     :{BLACK}Detaloj de la ludo
 STR_SAVELOAD_DETAIL_NOT_AVAILABLE                               :{BLACK}Ne disponeblas informoj
 STR_SAVELOAD_DETAIL_COMPANY_INDEX                               :{SILVER}{COMMA}: {WHITE}{STRING}
@@ -5170,6 +5177,11 @@ STR_ERROR_AUTOSAVE_FAILED                                       :Aŭtomata konse
 STR_ERROR_UNABLE_TO_READ_DRIVE                                  :{BLACK}Ne eblas legi diskon
 STR_ERROR_GAME_SAVE_FAILED                                      :Ludkonservado fiaskis...
 STR_ERROR_UNABLE_TO_DELETE_FILE                                 :Ne eblas forviŝi dosieron
+STR_ERROR_CANNOT_CREATE_DIRECTORY                               :Ne povas krei dosierujon...
+STR_ERROR_DIRECTORY_NAME_IN_USE                                 :Dosiero aŭ dosierujo kun tiu nomo ankaŭ ekzistas
+STR_ERROR_DIRECTORY_ILLEGAL_NAME                                :Nomo de dosierujo ne povas enhavi specialajn signojn
+STR_ERROR_DIRECTORY_LEADING_DOT                                 :Nomo de dosierujo ne povas komenci kun punkto
+STR_ERROR_DIRECTORY_PERMISSION_DENIED                           :Vi ne havas permeson krei dosierujon ĉi tie
 STR_ERROR_GAME_LOAD_FAILED                                      :Ludŝarĝado fiaskis...
 STR_GAME_SAVELOAD_ERROR_BROKEN_INTERNAL_ERROR                   :Interna eraro: {STRING}
 STR_GAME_SAVELOAD_ERROR_BROKEN_SAVEGAME                         :Rompa konservludo - {STRING}
