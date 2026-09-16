@@ -472,6 +472,8 @@ private:
 	QueryString filter_editbox; ///< Filter editbox;
 	std::vector<FiosItem *> display_list{}; ///< Filtered display list
 
+	std::string pending_order_list_save_filename; ///< Pending order list save filename (confirmation dialog).
+
 	static void SaveGameConfirmationCallback(Window *, bool confirmed)
 	{
 		/* File name has already been written to _file_to_saveload */
@@ -484,9 +486,16 @@ private:
 		if (confirmed) _switch_mode = SwitchMode::SaveHeightmap;
 	}
 
+	static void SaveOrderListConfirmationCallback(Window *window, bool confirmed)
+	{
+		SaveLoadWindow *save_load_window = static_cast<SaveLoadWindow *>(window);
+		if (confirmed) save_load_window->SaveOrderList(save_load_window->pending_order_list_save_filename);
+		save_load_window->pending_order_list_save_filename.clear();
+	}
+
 	static void DeleteFileConfirmationCallback(Window *window, bool confirmed)
 	{
-		auto *save_load_window = static_cast<SaveLoadWindow*>(window);
+		SaveLoadWindow *save_load_window = static_cast<SaveLoadWindow *>(window);
 
 		assert(save_load_window->selected != nullptr);
 
@@ -1159,18 +1168,13 @@ public:
 			} else if (this->abstract_filetype == AbstractFileType::Orderlist) {
 				assert(std::holds_alternative<VehicleListIdentifier>(this->extra_info) || std::holds_alternative<FiosOrderListInfo>(this->extra_info));
 
-				auto fh = FileHandle::Open(FiosMakeOrderListName(this->filename_editbox.text.GetText().c_str()), "w");
-				if (fh.has_value()) {
-					std::string data;
-					if (std::holds_alternative<VehicleListIdentifier>(this->extra_info)) {
-						data = VehicleListOrdersToJSONString(std::get<VehicleListIdentifier>(this->extra_info));
-					} else if (std::holds_alternative<FiosOrderListInfo>(this->extra_info)) {
-						data = OrderListToJSONString(std::get<FiosOrderListInfo>(this->extra_info).veh->orders);
-					} else {
-						NOT_REACHED();
-					}
-					fwrite(data.data(), 1, data.size(), *fh);
-					this->Close();
+				std::string filename = FiosMakeOrderListName(this->filename_editbox.text.GetText().c_str());
+				if (_settings_client.gui.savegame_overwrite_confirm >= 1 && FioCheckFileExists(filename, Subdirectory::None)) {
+					this->pending_order_list_save_filename = std::move(filename);
+					ShowQuery(GetEncodedString(STR_SAVELOAD_OVERWRITE_TITLE), GetEncodedString(STR_SAVELOAD_OVERWRITE_WARNING),
+							this, SaveLoadWindow::SaveOrderListConfirmationCallback);
+				} else {
+					this->SaveOrderList(filename);
 				}
 				return;
 			} else {
@@ -1185,6 +1189,23 @@ public:
 
 			/* In the editor set up the vehicle engines correctly (date might have changed) */
 			if (_game_mode == GameMode::Editor) StartupEngines();
+		}
+	}
+
+	void SaveOrderList(const std::string &filename)
+	{
+		auto fh = FileHandle::Open(filename, "w");
+		if (fh.has_value()) {
+			std::string data;
+			if (std::holds_alternative<VehicleListIdentifier>(this->extra_info)) {
+				data = VehicleListOrdersToJSONString(std::get<VehicleListIdentifier>(this->extra_info));
+			} else if (std::holds_alternative<FiosOrderListInfo>(this->extra_info)) {
+				data = OrderListToJSONString(std::get<FiosOrderListInfo>(this->extra_info).veh->orders);
+			} else {
+				NOT_REACHED();
+			}
+			fwrite(data.data(), 1, data.size(), *fh);
+			this->Close();
 		}
 	}
 
