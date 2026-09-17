@@ -1455,6 +1455,8 @@ STR_CONFIG_DEPARTURE_VEHICLE_TYPE                               :차량 종류 �
 STR_CONFIG_DEPARTURE_VEHICLE_TYPE_HELPTEXT                      :차량 종류 아이콘을 함께 보이게 할 지 설정합니다
 STR_CONFIG_DEPARTURE_VEHICLE_COLOR                              :차량 종류 아이콘을 회색으로 보이기: {STRING}
 STR_CONFIG_DEPARTURE_VEHICLE_COLOR_HELPTEXT                     :차량 종류 아이콘을 회색으로 보이게 할 지 설정합니다
+STR_CONFIG_DEPARTURE_SCHEDULE_ROUTE_ID                          :차량 경로 ID를 함께 보기: {STRING}
+STR_CONFIG_DEPARTURE_SCHEDULE_ROUTE_ID_HELPTEXT                 :출발/도착 정보에 연결된 차량 경로 ID를 함께 표시할지 설정합니다
 STR_CONFIG_DEPARTURE_LARGER_FONT                                :정차역을 큰 글씨로 보이기: {STRING}
 STR_CONFIG_DEPARTURE_LARGER_FONT_HELPTEXT                       :정차역을 큰 글씨로 보이게 할 지 설정합니다
 STR_CONFIG_DEPARTURE_DESTINATION_TYPE                           :항구나 공항이 목적지일 경우 아이콘 보이기: {STRING}
@@ -1782,6 +1784,7 @@ STR_ORDER_APPEND_REVERSED_ORDER_LIST                            :반전된 경�
 STR_ORDER_DUPLICATE_ORDER                                       :경로 복제
 STR_ORDER_CHANGE_JUMP_TARGET                                    :건너뛰기 번호 변경
 STR_ORDER_EXPORT_ORDER_LIST                                     :경로 목록 내보내기
+STR_ORDER_EXPORT_ORDER_LISTS                                    :경로 목록 내보내기
 STR_ORDER_IMPORT_ORDER_LIST_REPLACE                             :경로 목록 가져오기 (바꾸기)
 STR_ORDER_IMPORT_ORDER_LIST_APPEND                              :경로 목록 가져오기 (추가)
 STR_ORDER_IMPORT_ORDER_LIST_INSERT                              :경로 목록 가져오기 (삽입)
