@@ -6867,8 +6867,6 @@ void SetObjectToPlaceWnd(CursorID icon, PaletteID pal, HighLightStyle mode, Wind
 	SetObjectToPlace(icon, pal, mode, w->window_class, w->window_number, w->GetWindowToken());
 }
 
-#include "table/animcursors.h"
-
 /**
  * Change the cursor and mouse click/drag handling to a mode for performing special operations like tile area selection, object placement, etc.
  * @param icon New shape of the mouse cursor.
