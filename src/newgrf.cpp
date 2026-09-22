@@ -1917,8 +1917,13 @@ static void AfterLoadGRFs()
 		}
 
 		if (railtypes.Any()) {
-			e->VehInfo<RailVehicleInfo>().railtypes = railtypes;
-			e->VehInfo<RailVehicleInfo>().intended_railtypes = railtypes;
+			RailVehicleInfo &rv_info = e->VehInfo<RailVehicleInfo>();
+			rv_info.railtypes = railtypes;
+			rv_info.intended_railtypes = railtypes;
+			if (_settings_game.vehicle.disable_elrails && railtypes.Test(RAILTYPE_ELECTRIC)) {
+				rv_info.railtypes.Reset(RAILTYPE_ELECTRIC);
+				rv_info.railtypes.Set(RAILTYPE_RAIL);
+			}
 		} else {
 			/* Rail type is not available, so disable this engine */
 			e->info.climates = {};
