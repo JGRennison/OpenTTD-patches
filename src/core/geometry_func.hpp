@@ -27,4 +27,11 @@ inline bool IsEmptyRect(const Rect &r)
 
 Rect BoundingRect(const Rect &r1, const Rect &r2);
 
+inline uint EuclideanDistanceSquared(const Point &a, const Point &b)
+{
+	int dx = a.x - b.x;
+	int dy = a.y - b.y;
+	return static_cast<uint>(dx * dx) + static_cast<uint>(dy * dy);
+}
+
 #endif /* GEOMETRY_FUNC_HPP */
