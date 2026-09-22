@@ -2994,6 +2994,8 @@ public:
 				if (sel == INVALID_VEH_ORDER_ID || this->vehicle->owner != _local_company) {
 					/* Deselect clicked order */
 					this->selected_order = -1;
+					this->UpdateButtonState();
+					return;
 				} else if (sel == this->selected_order) {
 					if (sel >= this->vehicle->GetNumOrders()) {
 						this->UpdateButtonState();
@@ -3002,11 +3004,11 @@ public:
 
 					const Order *order = this->vehicle->GetOrder(sel);
 
-					if (order->IsType(OT_LABEL) && order->GetLabelSubType() == OLST_TEXT) {
+					if (order->IsType(OT_LABEL) && order->GetLabelSubType() == OLST_TEXT && click_count > 1) {
 						if (this->IsWidgetActiveInLayout(WID_O_TEXT_LABEL)) this->OnClick({}, WID_O_TEXT_LABEL, click_count);
 						return;
 					}
-					if (this->vehicle->type == VehicleType::Train && order->IsType(OT_GOTO_STATION)) {
+					if (this->vehicle->type == VehicleType::Train && order->IsType(OT_GOTO_STATION) && click_count > 1) {
 						OrderStopLocation osl = static_cast<OrderStopLocation>((to_underlying(order->GetStopLocation()) + 1) % to_underlying(OrderStopLocation::End));
 						if (osl == OrderStopLocation::Through && !_settings_client.gui.show_adv_load_mode_features) {
 							osl = OrderStopLocation::NearEnd;
@@ -3021,26 +3023,28 @@ public:
 							}
 						}
 						this->ModifyOrder(sel, MOF_STOP_LOCATION, to_underlying(osl));
+						return;
 					}
-					if (this->vehicle->type == VehicleType::Road && (order->IsType(OT_GOTO_STATION) || order->IsType(OT_GOTO_WAYPOINT))) {
+					if (this->vehicle->type == VehicleType::Road && (order->IsType(OT_GOTO_STATION) || order->IsType(OT_GOTO_WAYPOINT)) && click_count > 1) {
 						DiagDirection current = order->GetRoadVehTravelDirection();
 						if (_settings_client.gui.show_adv_load_mode_features || current != DiagDirection::Invalid) {
 							uint dir = (to_underlying(current) + 1) & 0xFF;
 							if (dir >= to_underlying(DiagDirection::End)) dir = to_underlying(DiagDirection::Invalid);
 							this->ModifyOrder(sel, MOF_RV_TRAVEL_DIR, dir);
+							return;
 						}
 					}
 				} else {
 					/* Select clicked order */
 					this->selected_order = sel;
-
-					if (this->vehicle->owner == _local_company) {
-						/* Activate drag and drop */
-						SetObjectToPlaceWnd(SPR_CURSOR_MOUSE, PAL_NONE, HT_DRAG, this);
-					}
+					this->UpdateButtonState();
 				}
 
-				this->UpdateButtonState();
+				if (this->vehicle->owner == _local_company) {
+					/* Activate drag and drop */
+					SetObjectToPlaceWnd(SPR_CURSOR_MOUSE, PAL_NONE, HT_DRAG, this);
+				}
+
 				break;
 			}
 
