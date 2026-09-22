@@ -42,6 +42,7 @@
 #include "core/backup_type.hpp"
 #include "core/string_consumer.hpp"
 #include "fios.h"
+#include "time_type.h"
 
 #include "widgets/order_widget.h"
 
@@ -1649,6 +1650,8 @@ private:
 	std::array<int, 4> current_aux_planes{};
 	int current_value_plane = 0;
 	int current_mgmt_plane = 0;
+	Point drag_start_pt{};         ///< Start point for order drags.
+	uint64_t drag_start_time_us{}; ///< Start time for order drags, from MicrosecondsRealtimeTicks().
 
 	/**
 	 * Return the memorised selected order.
@@ -2954,7 +2957,7 @@ public:
 		}
 	}
 
-	void OnClick([[maybe_unused]] Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
+	void OnClick(Point pt, WidgetID widget, [[maybe_unused]] int click_count) override
 	{
 		switch (widget) {
 			case WID_O_ORDER_LIST: {
@@ -3042,6 +3045,8 @@ public:
 
 				if (this->vehicle->owner == _local_company) {
 					/* Activate drag and drop */
+					this->drag_start_pt = pt;
+					this->drag_start_time_us = MicrosecondsRealtimeTicks();
 					SetObjectToPlaceWnd(SPR_CURSOR_MOUSE, PAL_NONE, HT_DRAG, this);
 				}
 
@@ -3974,6 +3979,12 @@ public:
 						Command<Commands::MoveOrder>::Post(STR_ERROR_CAN_T_MOVE_THIS_ORDER, this->vehicle->tile, this->vehicle->index, from_order, to_order, 1)) {
 					this->selected_order = -1;
 					this->UpdateButtonState();
+				}
+				if (from_order == to_order && from_order < this->vehicle->GetNumOrders() && EuclideanDistanceSquared(pt, this->drag_start_pt) <= 40 && (MicrosecondsRealtimeTicks() - this->drag_start_time_us) < 250000) {
+					const Order *order = this->vehicle->GetOrder(from_order);
+					if (order != nullptr && order->IsType(OT_LABEL) && order->GetLabelSubType() == OLST_TEXT) {
+						if (this->IsWidgetActiveInLayout(WID_O_TEXT_LABEL)) this->OnClick({}, WID_O_TEXT_LABEL, 1);
+					}
 				}
 				break;
 			}
