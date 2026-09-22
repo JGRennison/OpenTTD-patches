@@ -3006,7 +3006,7 @@ public:
 						if (this->IsWidgetActiveInLayout(WID_O_TEXT_LABEL)) this->OnClick({}, WID_O_TEXT_LABEL, click_count);
 						return;
 					}
-					if (this->vehicle->type == VehicleType::Train) {
+					if (this->vehicle->type == VehicleType::Train && order->IsType(OT_GOTO_STATION)) {
 						OrderStopLocation osl = static_cast<OrderStopLocation>((to_underlying(order->GetStopLocation()) + 1) % to_underlying(OrderStopLocation::End));
 						if (osl == OrderStopLocation::Through && !_settings_client.gui.show_adv_load_mode_features) {
 							osl = OrderStopLocation::NearEnd;
@@ -3022,7 +3022,7 @@ public:
 						}
 						this->ModifyOrder(sel, MOF_STOP_LOCATION, to_underlying(osl));
 					}
-					if (this->vehicle->type == VehicleType::Road) {
+					if (this->vehicle->type == VehicleType::Road && (order->IsType(OT_GOTO_STATION) || order->IsType(OT_GOTO_WAYPOINT))) {
 						DiagDirection current = order->GetRoadVehTravelDirection();
 						if (_settings_client.gui.show_adv_load_mode_features || current != DiagDirection::Invalid) {
 							uint dir = (to_underlying(current) + 1) & 0xFF;
