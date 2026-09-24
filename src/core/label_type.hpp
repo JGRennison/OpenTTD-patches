@@ -20,7 +20,10 @@ struct BaseLabel : std::array<uint8_t, 4> {
 	 */
 	constexpr inline bool Empty() const
 	{
-		return std::ranges::all_of(*this, [](uint8_t b) { return b == 0; });
+		for (uint8_t b : *this) {
+			if (b != 0) return false;
+		}
+		return true;
 	};
 
 	/**
@@ -49,7 +52,7 @@ struct Label : BaseLabel {
 	/** Create an empty label, i.e. all zeros. */
 	constexpr Label()
 	{
-		std::ranges::fill(*this, 0);
+		this->fill(0);
 	}
 
 	/**
