@@ -36,6 +36,12 @@ struct BaseLabel : std::array<uint8_t, 4> {
 	std::string AsString(bool format_hex = false) const;
 
 	void fmt_format_value(struct format_target &output, bool format_hex = false) const;
+
+	template <typename H>
+	size_t hash(H hasher) const noexcept
+	{
+		return hasher.hash_bytes(this->data(), this->size());
+	}
 };
 
 template <typename Tag>

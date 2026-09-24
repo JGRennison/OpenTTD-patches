@@ -831,19 +831,35 @@ struct hash<T, typename std::enable_if<enable_hash_as_base<T>>::type> {
 
 /* Inline hash method support */
 
-struct hash_method_tag{};
+struct hash_helper {
+    size_t hash_bytes(void const* ptr, size_t len) noexcept
+    {
+        return robin_hood::hash_bytes(ptr, len);
+    }
+
+    size_t hash_int(uint64_t x) noexcept
+    {
+         return robin_hood::hash_int(x);
+    }
+
+    template <typename T>
+    size_t hash_type(const T &obj) noexcept
+    {
+         return robin_hood::hash<T>()(obj);
+    }
+};
 
 template <typename T>
 concept HasHashMethod = requires(const T &obj)
 {
-    { obj.hash(hash_method_tag{}) } -> std::same_as<size_t>;
+    { obj.hash(hash_helper{}) } -> std::same_as<size_t>;
 };
 
 template <typename T> requires HasHashMethod<T>
 struct hash<T> {
-    size_t operator()(const T &obj) const noexcept(noexcept(std::declval<T>().hash(hash_method_tag{})))
+    size_t operator()(const T &obj) const noexcept(noexcept(std::declval<T>().hash(hash_helper{})))
     {
-        return obj.hash(hash_method_tag{});
+        return obj.hash(hash_helper{});
     }
 };
 

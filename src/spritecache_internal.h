@@ -218,9 +218,10 @@ struct RecolourSpriteCacheItem {
 		return memcmp(this->data->data(), other.data->data(), RECOLOUR_SPRITE_SIZE) == 0;
 	}
 
-	size_t hash(robin_hood::hash_method_tag) const noexcept
+	template <typename H>
+	size_t hash(H hasher) const noexcept
 	{
-		return robin_hood::hash_bytes(this->data->data(), RECOLOUR_SPRITE_SIZE);
+		return hasher.hash_bytes(this->data->data(), RECOLOUR_SPRITE_SIZE);
 	}
 };
 
