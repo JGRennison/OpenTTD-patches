@@ -19,7 +19,7 @@ public:
 
 	inline const uint8_t *ReadBytes(size_t size)
 	{
-		if (this->data + size >= this->end) {
+		if (this->data + size > this->end) {
 			/* Put data at the end, as would happen if every byte had been individually read. */
 			this->data = this->end;
 			throw OTTDByteReaderSignal();
