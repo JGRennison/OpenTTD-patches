@@ -139,8 +139,8 @@ void ResetObjects()
 	}
 
 	/* Set class for originals. */
-	_object_specs[OBJECT_LIGHTHOUSE].class_index = ObjectClass::Allocate('LTHS');
-	_object_specs[OBJECT_TRANSMITTER].class_index = ObjectClass::Allocate('TRNS');
+	_object_specs[OBJECT_LIGHTHOUSE].class_index = ObjectClass::Allocate("LTHS");
+	_object_specs[OBJECT_TRANSMITTER].class_index = ObjectClass::Allocate("TRNS");
 
 	/* Reset any overrides that have been set. */
 	_object_mngr.ResetOverride();
@@ -149,8 +149,8 @@ void ResetObjects()
 template <>
 /* static */ void ObjectClass::InsertDefaults()
 {
-	ObjectClass::Get(ObjectClass::Allocate('LTHS'))->name = STR_OBJECT_CLASS_LTHS;
-	ObjectClass::Get(ObjectClass::Allocate('TRNS'))->name = STR_OBJECT_CLASS_TRNS;
+	ObjectClass::Get(ObjectClass::Allocate("LTHS"))->name = STR_OBJECT_CLASS_LTHS;
+	ObjectClass::Get(ObjectClass::Allocate("TRNS"))->name = STR_OBJECT_CLASS_TRNS;
 }
 
 template <>
@@ -251,11 +251,11 @@ static uint32_t GetCountAndDistanceOfClosestInstance(uint32_t local_id, GrfID gr
 			break;
 
 		case 0xFFFFFFFF: // current grf
-			grf_id = grfid;
+			grf_id = FlattenNewGRFLabel(grfid);
 			[[fallthrough]];
 
 		default: // use the grfid specified in register 100h
-			idx = _object_mngr.GetID(local_id, grf_id);
+			idx = _object_mngr.GetID(local_id, UnflattenNewGRFLabel<GrfID>(grf_id));
 			break;
 	}
 

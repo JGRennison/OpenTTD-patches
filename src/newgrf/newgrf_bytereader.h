@@ -10,6 +10,8 @@
 #ifndef NEWGRF_BYTEREADER_H
 #define NEWGRF_BYTEREADER_H
 
+#include "../core/label_type.hpp"
+
 class OTTDByteReaderSignal { };
 
 /** Class to read from a NewGRF file */
@@ -89,6 +91,17 @@ public:
 	inline size_t Remaining() const
 	{
 		return this->end - this->data;
+	}
+
+	/**
+	 * Read a label.
+	 * @return The read label.
+	 */
+	template <typename T> requires std::is_base_of_v<BaseLabel, T>
+	T ReadLabel()
+	{
+		std::span<const uint8_t, 4> label_data{this->ReadBytes(4), 4};
+		return T{label_data};
 	}
 
 	inline bool HasData(size_t count = 1) const

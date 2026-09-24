@@ -142,7 +142,7 @@ enum class TrainFlipReversingAllowed : uint8_t {
 struct DifficultySettings {
 	uint8_t  competitor_start_time;                 ///< Unused value, used to load old savegames.
 	uint8_t  competitor_intelligence;               ///< Unused value, used to load old savegames.
-	uint8_t  line_reverse_mode;                     ///< Unused value, used to load old savegames.
+	bool     line_reverse_mode;                     ///< Unused value, used to load old savegames.
 
 	uint8_t  max_no_competitors;                    ///< the number of competitors (AIs)
 	uint16_t competitors_interval;                  ///< the interval (in minutes) between adding competitors
@@ -529,11 +529,12 @@ enum class PlaylistChoice : uint8_t {
 
 /** Settings related to music. */
 struct MusicSettings {
+	static constexpr size_t PLAYLIST_ITEMS = 33; ///< Number of items in a playlist.
 	PlaylistChoice playlist; ///< The playlist (number) to play
 	uint8_t music_vol;    ///< The requested music volume
 	uint8_t effect_vol;   ///< The requested effects volume
-	uint8_t custom_1[33]; ///< The order of the first custom playlist
-	uint8_t custom_2[33]; ///< The order of the second custom playlist
+	std::array<uint8_t, PLAYLIST_ITEMS> custom_1; ///< The order of the first custom playlist
+	std::array<uint8_t, PLAYLIST_ITEMS> custom_2; ///< The order of the second custom playlist
 	bool playing;      ///< Whether music is playing
 	bool shuffle;      ///< Whether to shuffle the music
 };

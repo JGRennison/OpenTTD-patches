@@ -32,7 +32,7 @@ void NewGRFClass<Tspec, Tindex>::Reset()
  *       second time, this first allocation will be given.
  */
 template <typename Tspec, typename Tindex>
-Tindex NewGRFClass<Tspec, Tindex>::Allocate(uint32_t global_id)
+Tindex NewGRFClass<Tspec, Tindex>::Allocate(GlobalID global_id)
 {
 	auto found = std::ranges::find(NewGRFClass::classes, global_id, &NewGRFClass::global_id);
 
@@ -140,7 +140,7 @@ void NewGRFClass<Tspec, Tindex>::PrepareIndices()
 	for (const auto &cls : NewGRFClass::classes) {
 		for (const auto &spec : cls.spec) {
 			if (spec == nullptr) continue;
-			uint32_t grfid = spec->grf_prop.grffile == nullptr ? 0 : spec->grf_prop.grffile->grfid;
+			GrfID grfid = spec->grf_prop.grffile == nullptr ? GrfID{} : spec->grf_prop.grffile->grfid;
 			NewGRFClass::grf_index[NewGRFClass::GrfHashKey(grfid, spec->grf_prop.local_id)] = spec;
 		}
 	}

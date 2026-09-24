@@ -98,12 +98,12 @@ void GamelogReset()
  * @param md5sum array of md5sum to print, if known
  * @param gc GrfConfig, if known
  */
-static void PrintGrfInfo(format_target &buffer, uint grfid, const MD5Hash *md5sum, const GRFConfig *gc)
+static void PrintGrfInfo(format_target &buffer, GrfID grfid, const MD5Hash *md5sum, const GRFConfig *gc)
 {
 	if (md5sum != nullptr) {
-		buffer.format("GRF ID {:08X}, checksum {}", std::byteswap(grfid), *md5sum);
+		buffer.format("GRF ID {}, checksum {}", grfid, *md5sum);
 	} else {
-		buffer.format("GRF ID {:08X}", std::byteswap(grfid));
+		buffer.format("GRF ID {}", grfid);
 	}
 
 	if (gc != nullptr) {
@@ -144,7 +144,7 @@ struct GRFPresence{
 	GRFPresence(const GRFConfig *gc) : gc(gc), was_missing(false) {}
 	GRFPresence() = default;
 };
-typedef btree::btree_map<uint32_t, GRFPresence> GrfIDMapping;
+typedef btree::btree_map<GrfID, GRFPresence> GrfIDMapping;
 
 /**
  * Prints active gamelog
@@ -277,8 +277,8 @@ void GamelogPrint(format_target &buffer)
 				case GamelogChangeType::GRFMove: {
 					/* The order of NewGRFs got changed, which might cause some other NewGRFs to behave differently. */
 					auto gm = grf_names.find(lc->grfrem.grfid);
-					buffer.format("GRF order changed: {:08X} moved {} places {}",
-						std::byteswap(lc->grfmove.grfid), abs(lc->grfmove.offset), lc->grfmove.offset >= 0 ? "down" : "up" );
+					buffer.format("GRF order changed: {} moved {} places {}",
+						lc->grfmove.grfid, abs(lc->grfmove.offset), lc->grfmove.offset >= 0 ? "down" : "up" );
 					PrintGrfInfo(buffer, lc->grfmove.grfid, nullptr, gm != grf_names.end() ? gm->second.gc : nullptr);
 					if (gm == grf_names.end()) buffer.append(". Gamelog inconsistency: GrfID was never added!");
 					break;
@@ -289,7 +289,7 @@ void GamelogPrint(format_target &buffer)
 					auto gm = grf_names.find(lc->grfrem.grfid);
 					assert (lc->grfbug.bug == GRFBug::VehLength);
 
-					buffer.format("Rail vehicle changes length outside a depot: GRF ID {:08X}, internal ID 0x{:X}", std::byteswap(lc->grfbug.grfid), lc->grfbug.data);
+					buffer.format("Rail vehicle changes length outside a depot: GRF ID {}, internal ID 0x{:X}", lc->grfbug.grfid, lc->grfbug.data);
 					PrintGrfInfo(buffer, lc->grfbug.grfid, nullptr, gm != grf_names.end() ? gm->second.gc : nullptr);
 					if (gm == grf_names.end()) buffer.append(". Gamelog inconsistency: GrfID was never added!");
 					break;

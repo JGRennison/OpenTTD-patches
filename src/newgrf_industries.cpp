@@ -137,12 +137,12 @@ uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(uint8_t p
 			break;
 
 		case 0xFFFFFFFF: // current grf
-			grf_id = GetIndustrySpec(this->industry->type)->grf_prop.grfid;
+			grf_id = FlattenNewGRFLabel(GetIndustrySpec(this->industry->type)->grf_prop.grfid);
 			[[fallthrough]];
 
 		default: // use the grfid specified in register 100h
 			SetBit(param_set_id, 7); // bit 7 means it is not an old type
-			industry_type = MapNewGRFIndustryType(param_set_id, grf_id);
+			industry_type = MapNewGRFIndustryType(param_set_id, UnflattenNewGRFLabel<GrfID>(grf_id));
 			break;
 	}
 

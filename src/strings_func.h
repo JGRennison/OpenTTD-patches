@@ -13,6 +13,7 @@
 #include "strings_type.h"
 #include "string_type.h"
 #include "gfx_type.h"
+#include "newgrf_type.h"
 #include "core/bitmath_func.hpp"
 #include "vehicle_type.h"
 #include <array>
@@ -76,7 +77,7 @@ static inline void PrepareArgsForNextRun(std::span<StringParameter> args)
 [[nodiscard]] std::string_view GetStringPtr(StringID string);
 void AppendStringWithArgsInPlace(struct format_target &result, StringID string, std::span<StringParameter> args);
 void AppendStringWithArgsInPlace(std::string &result, StringID string, std::span<StringParameter> args);
-uint32_t GetStringGRFID(StringID string);
+GrfID GetStringGRFID(StringID string);
 
 uint ConvertKmhishSpeedToDisplaySpeed(uint speed, VehicleType type);
 uint ConvertDisplaySpeedToKmhishSpeed(uint speed, VehicleType type);

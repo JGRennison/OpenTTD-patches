@@ -86,7 +86,7 @@ public:
 		text_buf.append("NewGRFs:\n");
 		if (_game_mode != GameMode::Menu) {
 			for (const auto &c : _grfconfig) {
-				text_buf.format("{:08X} {} {}\n", std::byteswap(c->ident.grfid), c->ident.md5sum, c->filename);
+				text_buf.format("{} {} {}\n", c->ident.grfid, c->ident.md5sum, c->filename);
 			}
 		}
 		text_buf.append("\nCompanies:\n");

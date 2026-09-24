@@ -10,6 +10,7 @@
 #ifndef NEWGRF_CLASS_H
 #define NEWGRF_CLASS_H
 
+#include "core/label_type.hpp"
 #include "newgrf_type.h"
 #include "strings_id_type.h"
 #include "3rdparty/robin_hood/robin_hood.h"
@@ -43,9 +44,9 @@ private:
 	static inline std::vector<NewGRFClass<Tspec, Tindex>> classes;
 	static inline robin_hood::unordered_flat_map<uint64_t, const Tspec *> grf_index;
 
-	static inline uint64_t GrfHashKey(uint32_t grfid, uint16_t local_id)
+	static inline uint64_t GrfHashKey(GrfID grfid, uint16_t local_id)
 	{
-		return (static_cast<uint64_t>(local_id) << 32) | grfid;
+		return (static_cast<uint64_t>(local_id) << 32) | grfid[0] | grfid[1] << 8 | grfid[2] << 16 | grfid[3] << 24;
 	}
 
 	/** Initialise the defaults. */
@@ -54,12 +55,17 @@ private:
 public:
 	using spec_type = Tspec;
 	using index_type = Tindex;
+	using GlobalID = Label<NewGRFClass<Tspec, Tindex>>; ///< Type for the global identifier of the class.
 
-	uint32_t global_id; ///< Global ID for class, e.g. 'DFLT', 'WAYP', etc.
+	GlobalID global_id; ///< Global ID for class, e.g. 'DFLT', 'WAYP', etc.
 	StringID name;      ///< Name of this class.
 
-	/* Public constructor as emplace_back needs access. */
-	NewGRFClass(uint32_t global_id, StringID name) : global_id(global_id), name(name) { }
+	/**
+	 * Create the class.
+	 * @param global_id The globally unique identifier of the class.
+	 * @param name The name of the class.
+	 */
+	NewGRFClass(GlobalID global_id, StringID name) : global_id(global_id), name(name) { }
 
 	/**
 	 * Get read-only span of specs of this class.
@@ -99,7 +105,7 @@ public:
 	bool IsUIAvailable(uint index) const;
 
 	static void Reset();
-	static Tindex Allocate(uint32_t global_id);
+	static Tindex Allocate(GlobalID global_id);
 	static void Assign(Tspec *spec);
 	static uint GetClassCount();
 	static uint GetUIClassCount();

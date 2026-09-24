@@ -232,31 +232,31 @@ static void SkipIf(ByteReader &buf)
 	if (condtype >= 0x0B) {
 		/* Tests that ignore 'param' */
 		switch (condtype) {
-			case 0x0B: result = !IsValidCargoType(GetCargoTypeByLabel(CargoLabel(std::byteswap(cond_val))));
+			case 0x0B: result = !IsValidCargoType(GetCargoTypeByLabel(UnflattenNewGRFLabel<CargoLabel>(cond_val)));
 				break;
-			case 0x0C: result = IsValidCargoType(GetCargoTypeByLabel(CargoLabel(std::byteswap(cond_val))));
+			case 0x0C: result = IsValidCargoType(GetCargoTypeByLabel(UnflattenNewGRFLabel<CargoLabel>(cond_val)));
 				break;
-			case 0x0D: result = GetRailTypeByLabel(std::byteswap(cond_val)) == INVALID_RAILTYPE;
+			case 0x0D: result = GetRailTypeByLabel(UnflattenNewGRFLabel<RailTypeLabel>(cond_val)) == INVALID_RAILTYPE;
 				break;
-			case 0x0E: result = GetRailTypeByLabel(std::byteswap(cond_val)) != INVALID_RAILTYPE;
+			case 0x0E: result = GetRailTypeByLabel(UnflattenNewGRFLabel<RailTypeLabel>(cond_val)) != INVALID_RAILTYPE;
 				break;
 			case 0x0F: {
-				RoadType rt = GetRoadTypeByLabel(std::byteswap(cond_val));
+				RoadType rt = GetRoadTypeByLabel(UnflattenNewGRFLabel<RoadTypeLabel>(cond_val));
 				result = rt == INVALID_ROADTYPE || !RoadTypeIsRoad(rt);
 				break;
 			}
 			case 0x10: {
-				RoadType rt = GetRoadTypeByLabel(std::byteswap(cond_val));
+				RoadType rt = GetRoadTypeByLabel(UnflattenNewGRFLabel<RoadTypeLabel>(cond_val));
 				result = rt != INVALID_ROADTYPE && RoadTypeIsRoad(rt);
 				break;
 			}
 			case 0x11: {
-				RoadType rt = GetRoadTypeByLabel(std::byteswap(cond_val));
+				RoadType rt = GetRoadTypeByLabel(UnflattenNewGRFLabel<RoadTypeLabel>(cond_val));
 				result = rt == INVALID_ROADTYPE || !RoadTypeIsTram(rt);
 				break;
 			}
 			case 0x12: {
-				RoadType rt = GetRoadTypeByLabel(std::byteswap(cond_val));
+				RoadType rt = GetRoadTypeByLabel(UnflattenNewGRFLabel<RoadTypeLabel>(cond_val));
 				result = rt != INVALID_ROADTYPE && RoadTypeIsTram(rt);
 				break;
 			}
@@ -265,7 +265,7 @@ static void SkipIf(ByteReader &buf)
 	} else if (param == 0x88) {
 		/* GRF ID checks */
 
-		GRFConfig *c = GetGRFConfig(cond_val, mask);
+		GRFConfig *c = GetGRFConfig(UnflattenNewGRFLabel<GrfID>(cond_val), std::byteswap(mask));
 
 		if (c != nullptr && c->flags.Test(GRFConfigFlag::Static) && !_cur_gps.grfconfig->flags.Test(GRFConfigFlag::Static) && _networking) {
 			DisableStaticNewGRFInfluencingNonStaticNewGRFs(*c);

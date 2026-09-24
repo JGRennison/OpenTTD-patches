@@ -438,11 +438,11 @@ static void CDECL HandleSavegameLoadCrash(int signum)
 		for (const auto &c : _grfconfig) {
 			if (c->flags.Test(GRFConfigFlag::Compatible)) {
 				const GRFIdentifier &replaced = GetOverriddenIdentifier(*c);
-				buffer.format("NewGRF {:08X} (checksum {}) not found.\n  Loaded NewGRF \"{}\" (checksum {}) with same GRF ID instead.\n",
-						std::byteswap(c->ident.grfid), c->original_md5sum, c->filename, replaced.md5sum);
+				buffer.format("NewGRF {} (checksum {}) not found.\n  Loaded NewGRF \"{}\" (checksum {}) with same GRF ID instead.\n",
+						c->ident.grfid, c->original_md5sum, c->filename, replaced.md5sum);
 			}
 			if (c->status == GRFStatus::NotFound) {
-				buffer.format("NewGRF {:08X} ({}) not found; checksum {}.\n", std::byteswap(c->ident.grfid), c->filename, c->ident.md5sum);
+				buffer.format("NewGRF {} ({}) not found; checksum {}.\n", c->ident.grfid, c->filename, c->ident.md5sum);
 			}
 		}
 	} else {
@@ -1578,17 +1578,17 @@ bool AfterLoadGame()
 		for (RoadType rt : EnumRange(ROADTYPE_END)) {
 			const RoadTypeInfo *rti = GetRoadTypeInfo(rt);
 			if (RoadTypeIsRoad(rt)) {
-				if (rti->label == 'ROAD') {
+				if (rti->label == RoadTypeLabel{"ROAD"}) {
 					road_types[0] = rt;
-				} else if (rti->label == 'ELRD') {
+				} else if (rti->label == RoadTypeLabel{"ELRD"}) {
 					road_types[1] = rt;
 				} else if (next_road_type < 31) {
 					road_types[next_road_type++] = rt;
 				}
 			} else {
-				if (rti->label == 'RAIL') {
+				if (rti->label == RoadTypeLabel{"RAIL"}) {
 					tram_types[0] = rt;
-				} else if (rti->label == 'ELRL') {
+				} else if (rti->label == RoadTypeLabel{"ELRL"}) {
 					tram_types[1] = rt;
 				} else if (next_tram_type < 31) {
 					tram_types[next_tram_type++] = rt;

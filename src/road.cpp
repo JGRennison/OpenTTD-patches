@@ -137,7 +137,7 @@ bool HasRoadTypeAvail(const CompanyID company, RoadType roadtype)
 {
 	if (company == OWNER_DEITY || company == OWNER_TOWN || _game_mode == GameMode::Editor || _generating_world) {
 		const RoadTypeInfo *rti = GetRoadTypeInfo(roadtype);
-		if (rti->label == 0) return false;
+		if (rti->label.Empty()) return false;
 
 		/* Not yet introduced at this date. */
 		if (IsInsideMM(rti->introduction_date, 0, CalTime::MAX_DATE.base()) && rti->introduction_date > CalTime::CurDate()) return false;
@@ -198,7 +198,7 @@ RoadTypes AddDateIntroducedRoadTypes(RoadTypes current, CalTime::Date date)
 	for (RoadType rt : EnumRange(ROADTYPE_END)) {
 		const RoadTypeInfo *rti = GetRoadTypeInfo(rt);
 		/* Unused road type. */
-		if (rti->label == 0) continue;
+		if (rti->label.Empty()) continue;
 
 		/* Not date introduced. */
 		if (!IsInsideMM(rti->introduction_date, 0, CalTime::MAX_DATE.base())) continue;
@@ -282,7 +282,7 @@ RoadTypes GetRoadTypes(bool introduces)
 RoadType GetRoadTypeByLabel(RoadTypeLabel label, bool allow_alternate_labels)
 {
 	extern RoadTypeInfo _roadtypes[ROADTYPE_END];
-	if (label == 0) return INVALID_ROADTYPE;
+	if (label.Empty()) return INVALID_ROADTYPE;
 
 	auto it = std::ranges::find(_roadtypes, label, &RoadTypeInfo::label);
 	if (it == std::end(_roadtypes) && allow_alternate_labels) {

@@ -251,6 +251,8 @@ using TextHandler = bool(*)(GRFLanguage langid, std::string_view str);
  */
 using BranchHandler = bool(*)(ByteReader &buf);
 
+using NodeID = Label<struct NodeIDTag>; ///< Label type of the nodes in the \c AllowedSubtags.
+
 /**
  * Data structure to store the allowed id/type combinations for action 14. The
  * data can be represented as a tree with 3 types of nodes:
@@ -262,7 +264,7 @@ struct AllowedSubtags {
 	/** Custom 'span' of subtags. Required because std::span with an incomplete type is UB. */
 	using Span = std::pair<const AllowedSubtags *, const AllowedSubtags *>;
 
-	uint32_t id; ///< The identifier for this node.
+	NodeID id; ///< The identifier for this node.
 	std::variant<DataHandler, TextHandler, BranchHandler, Span> handler; ///< The handler for this node.
 };
 
@@ -321,13 +323,13 @@ static bool ChangeGRFParamValueNames(ByteReader &buf)
 
 /** Action14 parameter tags */
 static constexpr AllowedSubtags _tags_parameters[] = {
-	AllowedSubtags{'NAME', ChangeGRFParamName},
-	AllowedSubtags{'DESC', ChangeGRFParamDescription},
-	AllowedSubtags{'TYPE', ChangeGRFParamType},
-	AllowedSubtags{'LIMI', ChangeGRFParamLimits},
-	AllowedSubtags{'MASK', ChangeGRFParamMask},
-	AllowedSubtags{'VALU', ChangeGRFParamValueNames},
-	AllowedSubtags{'DFLT', ChangeGRFParamDefault},
+	AllowedSubtags{"NAME", ChangeGRFParamName},
+	AllowedSubtags{"DESC", ChangeGRFParamDescription},
+	AllowedSubtags{"TYPE", ChangeGRFParamType},
+	AllowedSubtags{"LIMI", ChangeGRFParamLimits},
+	AllowedSubtags{"MASK", ChangeGRFParamMask},
+	AllowedSubtags{"VALU", ChangeGRFParamValueNames},
+	AllowedSubtags{"DFLT", ChangeGRFParamDefault},
 };
 
 /**
@@ -365,15 +367,15 @@ static bool HandleParameterInfo(ByteReader &buf)
 
 /** Action14 tags for the INFO node */
 static constexpr AllowedSubtags _tags_info[] = {
-	AllowedSubtags{'NAME', ChangeGRFName},
-	AllowedSubtags{'DESC', ChangeGRFDescription},
-	AllowedSubtags{'URL_', ChangeGRFURL},
-	AllowedSubtags{'NPAR', ChangeGRFNumUsedParams},
-	AllowedSubtags{'PALS', ChangeGRFPalette},
-	AllowedSubtags{'BLTR', ChangeGRFBlitter},
-	AllowedSubtags{'VRSN', ChangeGRFVersion},
-	AllowedSubtags{'MINV', ChangeGRFMinVersion},
-	AllowedSubtags{'PARA', HandleParameterInfo},
+	AllowedSubtags{"NAME", ChangeGRFName},
+	AllowedSubtags{"DESC", ChangeGRFDescription},
+	AllowedSubtags{"URL_", ChangeGRFURL},
+	AllowedSubtags{"NPAR", ChangeGRFNumUsedParams},
+	AllowedSubtags{"PALS", ChangeGRFPalette},
+	AllowedSubtags{"BLTR", ChangeGRFBlitter},
+	AllowedSubtags{"VRSN", ChangeGRFVersion},
+	AllowedSubtags{"MINV", ChangeGRFMinVersion},
+	AllowedSubtags{"PARA", HandleParameterInfo},
 };
 
 
@@ -492,11 +494,11 @@ static bool ChangeGRFFeatureTestSuccessResultValue(size_t len, ByteReader &buf)
 
 /** Action14 tags for the FTST node */
 static constexpr AllowedSubtags _tags_ftst[] = {
-	AllowedSubtags{'NAME', ChangeGRFFeatureTestName},
-	AllowedSubtags{'MINV', ChangeGRFFeatureMinVersion},
-	AllowedSubtags{'MAXV', ChangeGRFFeatureMaxVersion},
-	AllowedSubtags{'SETP', ChangeGRFFeatureSetPlatformVarBit},
-	AllowedSubtags{'SVAL', ChangeGRFFeatureTestSuccessResultValue},
+	AllowedSubtags{"NAME", ChangeGRFFeatureTestName},
+	AllowedSubtags{"MINV", ChangeGRFFeatureMinVersion},
+	AllowedSubtags{"MAXV", ChangeGRFFeatureMaxVersion},
+	AllowedSubtags{"SETP", ChangeGRFFeatureSetPlatformVarBit},
+	AllowedSubtags{"SVAL", ChangeGRFFeatureTestSuccessResultValue},
 };
 
 /**
@@ -964,11 +966,11 @@ static bool ChangePropertyRemapSetOutputParam(size_t len, ByteReader &buf)
 
 /** Action14 tags for the FIDM node */
 static constexpr AllowedSubtags _tags_fidm[] = {
-	AllowedSubtags{'NAME', ChangePropertyRemapName},
-	AllowedSubtags{'FTID', ChangePropertyRemapFeatureId},
-	AllowedSubtags{'FLBK', ChangePropertyRemapSetFallbackMode},
-	AllowedSubtags{'SETT', ChangePropertyRemapSetTTDVerVarBit},
-	AllowedSubtags{'SVAL', ChangePropertyRemapSuccessResultValue},
+	AllowedSubtags{"NAME", ChangePropertyRemapName},
+	AllowedSubtags{"FTID", ChangePropertyRemapFeatureId},
+	AllowedSubtags{"FLBK", ChangePropertyRemapSetFallbackMode},
+	AllowedSubtags{"SETT", ChangePropertyRemapSetTTDVerVarBit},
+	AllowedSubtags{"SVAL", ChangePropertyRemapSuccessResultValue},
 };
 
 /**
@@ -984,13 +986,13 @@ static bool HandleFeatureIDMap(ByteReader &buf)
 
 /** Action14 tags for the A0PM node */
 static constexpr AllowedSubtags _tags_a0pm[] = {
-	AllowedSubtags{'NAME', ChangePropertyRemapName},
-	AllowedSubtags{'FEAT', ChangePropertyRemapFeature},
-	AllowedSubtags{'PROP', ChangePropertyRemapPropertyId},
-	AllowedSubtags{'XPRP', ChangePropertyRemapExtendedPropertyId},
-	AllowedSubtags{'FLBK', ChangePropertyRemapSetFallbackMode},
-	AllowedSubtags{'SETT', ChangePropertyRemapSetTTDVerVarBit},
-	AllowedSubtags{'SVAL', ChangePropertyRemapSuccessResultValue},
+	AllowedSubtags{"NAME", ChangePropertyRemapName},
+	AllowedSubtags{"FEAT", ChangePropertyRemapFeature},
+	AllowedSubtags{"PROP", ChangePropertyRemapPropertyId},
+	AllowedSubtags{"XPRP", ChangePropertyRemapExtendedPropertyId},
+	AllowedSubtags{"FLBK", ChangePropertyRemapSetFallbackMode},
+	AllowedSubtags{"SETT", ChangePropertyRemapSetTTDVerVarBit},
+	AllowedSubtags{"SVAL", ChangePropertyRemapSuccessResultValue},
 };
 
 /**
@@ -1006,15 +1008,15 @@ static bool HandleAction0PropertyMap(ByteReader &buf)
 
 /** Action14 tags for the A2VM node */
 static constexpr AllowedSubtags _tags_a2vm[] = {
-	AllowedSubtags{'NAME', ChangePropertyRemapName},
-	AllowedSubtags{'FEAT', ChangePropertyRemapFeature},
-	AllowedSubtags{'RSFT', ChangePropertyRemapSetInputShift},
-	AllowedSubtags{'RMSK', ChangePropertyRemapSetInputMask},
-	AllowedSubtags{'VSFT', ChangePropertyRemapSetOutputShift},
-	AllowedSubtags{'VMSK', ChangePropertyRemapSetOutputMask},
-	AllowedSubtags{'VPRM', ChangePropertyRemapSetOutputParam},
-	AllowedSubtags{'SETT', ChangePropertyRemapSetTTDVerVarBit},
-	AllowedSubtags{'SVAL', ChangePropertyRemapSuccessResultValue},
+	AllowedSubtags{"NAME", ChangePropertyRemapName},
+	AllowedSubtags{"FEAT", ChangePropertyRemapFeature},
+	AllowedSubtags{"RSFT", ChangePropertyRemapSetInputShift},
+	AllowedSubtags{"RMSK", ChangePropertyRemapSetInputMask},
+	AllowedSubtags{"VSFT", ChangePropertyRemapSetOutputShift},
+	AllowedSubtags{"VMSK", ChangePropertyRemapSetOutputMask},
+	AllowedSubtags{"VPRM", ChangePropertyRemapSetOutputParam},
+	AllowedSubtags{"SETT", ChangePropertyRemapSetTTDVerVarBit},
+	AllowedSubtags{"SVAL", ChangePropertyRemapSuccessResultValue},
 };
 
 /**
@@ -1030,11 +1032,11 @@ static bool HandleAction2VariableMap(ByteReader &buf)
 
 /** Action14 tags for the A5TM node */
 static constexpr AllowedSubtags _tags_a5tm[] = {
-	AllowedSubtags{'NAME', ChangePropertyRemapName},
-	AllowedSubtags{'TYPE', ChangePropertyRemapTypeId},
-	AllowedSubtags{'FLBK', ChangePropertyRemapSetFallbackMode},
-	AllowedSubtags{'SETT', ChangePropertyRemapSetTTDVerVarBit},
-	AllowedSubtags{'SVAL', ChangePropertyRemapSuccessResultValue},
+	AllowedSubtags{"NAME", ChangePropertyRemapName},
+	AllowedSubtags{"TYPE", ChangePropertyRemapTypeId},
+	AllowedSubtags{"FLBK", ChangePropertyRemapSetFallbackMode},
+	AllowedSubtags{"SETT", ChangePropertyRemapSetTTDVerVarBit},
+	AllowedSubtags{"SVAL", ChangePropertyRemapSuccessResultValue},
 };
 
 /**
@@ -1050,22 +1052,22 @@ static bool HandleAction5TypeMap(ByteReader &buf)
 
 /** Action14 root tags */
 static constexpr AllowedSubtags _tags_root_static[] = {
-	AllowedSubtags{'INFO', std::make_pair(std::begin(_tags_info), std::end(_tags_info))},
-	AllowedSubtags{'FTST', SkipInfoChunk},
-	AllowedSubtags{'FIDM', SkipInfoChunk},
-	AllowedSubtags{'A0PM', SkipInfoChunk},
-	AllowedSubtags{'A2VM', SkipInfoChunk},
-	AllowedSubtags{'A5TM', SkipInfoChunk},
+	AllowedSubtags{"INFO", std::make_pair(std::begin(_tags_info), std::end(_tags_info))},
+	AllowedSubtags{"FTST", SkipInfoChunk},
+	AllowedSubtags{"FIDM", SkipInfoChunk},
+	AllowedSubtags{"A0PM", SkipInfoChunk},
+	AllowedSubtags{"A2VM", SkipInfoChunk},
+	AllowedSubtags{"A5TM", SkipInfoChunk},
 };
 
 /** Action14 root tags */
 static constexpr AllowedSubtags _tags_root_feature_tests[] = {
-	AllowedSubtags{'INFO', SkipInfoChunk},
-	AllowedSubtags{'FTST', HandleFeatureTestInfo},
-	AllowedSubtags{'FIDM', HandleFeatureIDMap},
-	AllowedSubtags{'A0PM', HandleAction0PropertyMap},
-	AllowedSubtags{'A2VM', HandleAction2VariableMap},
-	AllowedSubtags{'A5TM', HandleAction5TypeMap},
+	AllowedSubtags{"INFO", SkipInfoChunk},
+	AllowedSubtags{"FTST", HandleFeatureTestInfo},
+	AllowedSubtags{"FIDM", HandleFeatureIDMap},
+	AllowedSubtags{"A0PM", HandleAction0PropertyMap},
+	AllowedSubtags{"A2VM", HandleAction2VariableMap},
+	AllowedSubtags{"A5TM", HandleAction5TypeMap},
 };
 
 
@@ -1115,7 +1117,7 @@ static bool SkipUnknownInfo(ByteReader &buf, uint8_t type)
  * @param subtags Allowed subtags.
  * @return Whether all tags could be handled.
  */
-static bool HandleNode(uint8_t type, uint32_t id, ByteReader &buf, std::span<const AllowedSubtags> subtags)
+static bool HandleNode(uint8_t type, NodeID id, ByteReader &buf, std::span<const AllowedSubtags> subtags)
 {
 	/* Visitor to get a subtag handler's type. */
 	struct type_visitor {
@@ -1154,11 +1156,11 @@ static bool HandleNode(uint8_t type, uint32_t id, ByteReader &buf, std::span<con
 	};
 
 	for (const auto &tag : subtags) {
-		if (tag.id != std::byteswap(id) || std::visit(type_visitor{}, tag.handler) != type) continue;
+		if (tag.id != id || std::visit(type_visitor{}, tag.handler) != type) continue;
 		return std::visit(evaluate_visitor{buf}, tag.handler);
 	}
 
-	GrfMsg(2, "StaticGRFInfo: unknown type/id combination found, type={:c}, id={:x}", type, id);
+	GrfMsg(2, "StaticGRFInfo: unknown type/id combination found, type={:c}, id={}", type, id.AsString());
 	return SkipUnknownInfo(buf, type);
 }
 
@@ -1172,7 +1174,7 @@ static bool HandleNodes(ByteReader &buf, std::span<const AllowedSubtags> subtags
 {
 	uint8_t type = buf.ReadByte();
 	while (type != 0) {
-		uint32_t id = buf.ReadDWord();
+		NodeID id = buf.ReadLabel<NodeID>();
 		if (!HandleNode(type, id, buf, subtags)) return false;
 		type = buf.ReadByte();
 	}

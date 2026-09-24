@@ -58,7 +58,7 @@ void GamelogGRFCompatible(const GRFIdentifier &newg);
 void GamelogTestRevision();
 void GamelogTestMode();
 
-bool GamelogGRFBugReverse(uint32_t grfid, uint16_t internal_id);
+bool GamelogGRFBugReverse(GrfID grfid, uint16_t internal_id);
 
 void GamelogInfo(const std::vector<LoggedAction> &gamelog_actions, uint32_t *last_ottd_rev, uint8_t *ever_modified, bool *removed_newgrfs);
 const char *GamelogGetLastRevision(const std::vector<LoggedAction> &gamelog_actions);

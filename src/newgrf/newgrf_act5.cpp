@@ -205,8 +205,8 @@ static void GraphicsNew(ByteReader &buf)
 		}
 	}
 
-	if (type == 0x04 && ((_cur_gps.grfconfig->ident.grfid & 0x00FFFFFF) == OPENTTD_GRAPHICS_BASE_GRF_ID ||
-			_cur_gps.grfconfig->ident.grfid == std::byteswap<uint32_t>(0xFF4F4701) || _cur_gps.grfconfig->ident.grfid == std::byteswap<uint32_t>(0xFFFFFFFE))) {
+	if (type == 0x04 && (IsOpenTTDGraphicsBaseGrfId(_cur_gps.grfconfig->ident.grfid) ||
+			_cur_gps.grfconfig->ident.grfid == GrfID{"\xFF\x4F\x47\x01"} || _cur_gps.grfconfig->ident.grfid == GrfID{"\xFF\xFF\xFF\xFE"})) {
 		/* Signal graphics action 5: Fill duplicate signal sprite block if this is a baseset GRF or OpenGFX */
 		const SpriteID end = offset + num;
 		for (SpriteID i = offset; i < end; i++) {

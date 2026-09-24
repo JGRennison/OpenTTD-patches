@@ -130,7 +130,7 @@ public:
 class SlGamelogGrfadd : public DefaultSaveLoadHandler<SlGamelogGrfadd, LoggedChange> {
 public:
 	static inline const SaveLoad description[] = {
-		SLE_VAR(LoggedChange, grfadd.grfid,      VarTypes::U32    ),
+		SLE_VAR(LoggedChange, grfadd.grfid,      VarTypes::LABEL),
 		SLE_ARR(LoggedChange, grfadd.md5sum,     VarTypes::U8,  16),
 	};
 	static inline const SaveLoadCompatTable compat_description = _gamelog_grfadd_sl_compat;
@@ -153,7 +153,7 @@ public:
 class SlGamelogGrfrem : public DefaultSaveLoadHandler<SlGamelogGrfrem, LoggedChange> {
 public:
 	static inline const SaveLoad description[] = {
-		SLE_VAR(LoggedChange, grfrem.grfid,      VarTypes::U32),
+		SLE_VAR(LoggedChange, grfrem.grfid,      VarTypes::LABEL),
 	};
 	static inline const SaveLoadCompatTable compat_description = _gamelog_grfrem_sl_compat;
 
@@ -175,7 +175,7 @@ public:
 class SlGamelogGrfcompat : public DefaultSaveLoadHandler<SlGamelogGrfcompat, LoggedChange> {
 public:
 	static inline const SaveLoad description[] = {
-		SLE_VAR(LoggedChange, grfcompat.grfid,   VarTypes::U32    ),
+		SLE_VAR(LoggedChange, grfcompat.grfid,   VarTypes::LABEL),
 		SLE_ARR(LoggedChange, grfcompat.md5sum,  VarTypes::U8,  16),
 	};
 	static inline const SaveLoadCompatTable compat_description = _gamelog_grfcompat_sl_compat;
@@ -198,7 +198,7 @@ public:
 class SlGamelogGrfparam : public DefaultSaveLoadHandler<SlGamelogGrfparam, LoggedChange> {
 public:
 	static inline const SaveLoad description[] = {
-		SLE_VAR(LoggedChange, grfparam.grfid,    VarTypes::U32),
+		SLE_VAR(LoggedChange, grfparam.grfid,    VarTypes::LABEL),
 	};
 	static inline const SaveLoadCompatTable compat_description = _gamelog_grfparam_sl_compat;
 
@@ -220,7 +220,7 @@ public:
 class SlGamelogGrfmove : public DefaultSaveLoadHandler<SlGamelogGrfmove, LoggedChange> {
 public:
 	static inline const SaveLoad description[] = {
-		SLE_VAR(LoggedChange, grfmove.grfid,     VarTypes::U32),
+		SLE_VAR(LoggedChange, grfmove.grfid,     VarTypes::LABEL),
 		SLE_VAR(LoggedChange, grfmove.offset,    VarTypes::I32),
 	};
 	static inline const SaveLoadCompatTable compat_description = _gamelog_grfmove_sl_compat;
@@ -244,7 +244,7 @@ class SlGamelogGrfbug : public DefaultSaveLoadHandler<SlGamelogGrfbug, LoggedCha
 public:
 	static inline const SaveLoad description[] = {
 		SLE_VAR(LoggedChange, grfbug.data,       VarTypes::U64),
-		SLE_VAR(LoggedChange, grfbug.grfid,      VarTypes::U32),
+		SLE_VAR(LoggedChange, grfbug.grfid,      VarTypes::LABEL),
 		SLE_VAR(LoggedChange, grfbug.bug,        VarTypes::U8),
 	};
 	static inline const SaveLoadCompatTable compat_description = _gamelog_grfbug_sl_compat;

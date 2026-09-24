@@ -52,10 +52,10 @@ extern std::array<NewSignalStyle, MAX_NEW_SIGNAL_STYLES> _new_signal_styles;
 extern uint8_t _default_signal_style_lookahead_extra_aspects;
 
 struct NewSignalStyleMapping {
-	uint32_t grfid = 0;
+	GrfID grfid{};
 	uint8_t grf_local_id = 0;
 
-	inline bool operator==(const NewSignalStyleMapping& o) const { return grfid == o.grfid && grf_local_id == o.grf_local_id; }
+	inline bool operator==(const NewSignalStyleMapping &) const = default;
 };
 extern std::array<NewSignalStyleMapping, MAX_NEW_SIGNAL_STYLES> _new_signal_style_mapping;
 extern uint8_t _num_new_signal_styles;

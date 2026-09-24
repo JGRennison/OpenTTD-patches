@@ -12,6 +12,7 @@
 #include "../../company_base.h"
 #include "../../date_func.h"
 #include "../../debug.h"
+#include "../../newgrf.h"
 #include "../../map_func.h"
 #include "../../game/game.hpp"
 #include "../../game/game_info.hpp"
@@ -542,7 +543,7 @@ void DeserializeNetworkGameInfoExtended(Packet &p, NetworkGameInfo &info)
  */
 void SerializeGRFIdentifier(Packet &p, const GRFIdentifier &grf)
 {
-	p.Send_uint32(grf.grfid);
+	p.Send_uint32(std::byteswap(FlattenNewGRFLabel(grf.grfid)));
 	p.Send_bytes(grf.md5sum);
 }
 
@@ -553,7 +554,7 @@ void SerializeGRFIdentifier(Packet &p, const GRFIdentifier &grf)
  */
 void DeserializeGRFIdentifier(Packet &p, GRFIdentifier &grf)
 {
-	grf.grfid = p.Recv_uint32();
+	grf.grfid = UnflattenNewGRFLabel<GrfID>(std::byteswap(p.Recv_uint32()));
 	p.Recv_bytes(grf.md5sum);
 }
 

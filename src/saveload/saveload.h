@@ -648,7 +648,6 @@ enum class VarFileType : uint8_t {
 
 /** The types/structures of data we have in memory. */
 enum class VarMemType : uint8_t {
-	/* 4 bits allocated a maximum of 16 types for NumberType */
 	Bool = 0, ///< A boolean value.
 	I8 = 1, ///< A 8 bit signed int.
 	U8 = 2, ///< A 8 bit unsigned int.
@@ -662,7 +661,7 @@ enum class VarMemType : uint8_t {
 	Str = 12, ///< string pointer
 	StrQ = 13, ///< string pointer enclosed in quotes
 	Name = 14, ///< old custom name to be converted to a string pointer
-	/* 1 more possible memory-primitives */
+	Label = 15, ///< A 4 character \c Label, stored as-is.
 };
 
 /** Container of a variable's characteristics about a variable's storage. */
@@ -734,6 +733,7 @@ struct VarTypes {
 	static constexpr VarType STR{ VarFileType::String, VarMemType::Str }; ///< Store string.
 	static constexpr VarType STRQ{ VarFileType::String, VarMemType::StrQ }; ///< Store a string with quotes.
 	static constexpr VarType NAME{ VarFileType::StringID, VarMemType::Name }; ///< A string stored in the custom string array.
+	static constexpr VarType LABEL{ VarFileType::U32, VarMemType::Label }; ///< Store a \c Label as-is.
 };
 
 /** Type of data saved. */
@@ -822,6 +822,7 @@ inline constexpr size_t SlVarSize(VarMemType type)
 		case VarMemType::Str: return sizeof(std::string);
 		case VarMemType::StrQ: return sizeof(std::string);
 		case VarMemType::Name: return sizeof(std::string);
+		case VarMemType::Label: return sizeof(BaseLabel);
 		default: NOT_REACHED();
 	}
 }
@@ -843,6 +844,9 @@ inline constexpr bool SlCheckPrimitiveTypeVar(VarMemType type)
 		case VarMemType::StrQ:
 		case VarMemType::Name:
 			return std::is_same_v<T, std::string> || std::is_same_v<T, EncodedString>;
+
+		case VarMemType::Label:
+			return std::is_base_of_v<struct BaseLabel, T>;
 
 		default:
 			return std::is_integral_v<T> || std::is_enum_v<T> || SlIsPrimitiveType<T>;

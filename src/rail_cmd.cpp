@@ -258,7 +258,7 @@ void InitRailTypes()
 	for (RailType rt : EnumRange(RAILTYPE_END)) {
 		bool hidden = _railtypes[rt].flags.Test(RailTypeFlag::Hidden);
 		if (hidden) _railtypes_hidden_mask.Set(rt);
-		if (_railtypes[rt].label != 0) {
+		if (!_railtypes[rt].label.Empty()) {
 			_sorted_railtypes.push_back(rt);
 		}
 		size_t accel_type = static_cast<size_t>(_railtypes[rt].acceleration_type);
@@ -310,7 +310,7 @@ void InitRailTypesIndirectCompatibility()
  */
 RailType AllocateRailType(RailTypeLabel label)
 {
-	auto it = std::ranges::find(_railtypes, 0, &RailTypeInfo::label);
+	auto it = std::ranges::find(_railtypes, RailTypeLabel{}, &RailTypeInfo::label);
 	if (it == std::end(_railtypes)) return INVALID_RAILTYPE;
 
 	RailTypeInfo &rti = *it;
@@ -336,7 +336,7 @@ RailType AllocateRailType(RailTypeLabel label)
 	 * before the first (default) rail type. */
 	rti.sorting_order = rt << 4 | 7;
 
-	if (label == 'TELE' || label == 'PIPE' || label == 'WIRE') rti.ctrl_flags.Set(RailTypeCtrlFlag::NoRealisticBraking);
+	if (label == RailTypeLabel{"TELE"} || label == RailTypeLabel{"PIPE"} || label == RailTypeLabel{"WIRE"}) rti.ctrl_flags.Set(RailTypeCtrlFlag::NoRealisticBraking);
 
 	return rt;
 }

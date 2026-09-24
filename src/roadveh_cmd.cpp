@@ -253,7 +253,7 @@ void RoadVehUpdateCache(RoadVehicle *v, bool same_length)
 		if (!(HasBit(u->vcache.cached_vis_effect, VE_ADVANCED_EFFECT) && GB(u->vcache.cached_vis_effect, 0, VE_ADVANCED_EFFECT) == 0 /* VisualEffectSpawnModel::None */)) last_vis_effect = u;
 
 		/* Update cargo aging period. */
-		if (unlikely(v->GetGRFID() == std::byteswap<uint32_t>(0x44450602))) {
+		if (unlikely(v->GetGRFID() == GrfID{"\x44\x45\x06\x02"})) {
 			/* skip callback for known bad GRFs */
 			u->vcache.cached_cargo_age_period = EngInfo(u->engine_type)->cargo_age_period;
 		} else {

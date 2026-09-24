@@ -150,7 +150,7 @@ static uint32_t PerformGRM(std::span<GrfID> grm, uint16_t count, uint8_t op, uin
 	if (op == 6) {
 		/* Return GRFID of set that reserved ID */
 		uint32_t index = _cur_gps.grffile->GetParam(target);
-		if (index < std::size(grm)) return grm[index];
+		if (index < std::size(grm)) return FlattenNewGRFLabel(grm[index]);
 
 		GrfMsg(1, "ParamSet: GRM: Parameter {} refers to invalid {} id {}", target, type, index);
 		return 0;
@@ -160,7 +160,7 @@ static uint32_t PerformGRM(std::span<GrfID> grm, uint16_t count, uint8_t op, uin
 	if (op == 2 || op == 3) start = _cur_gps.grffile->GetParam(target);
 
 	for (uint i = start; i < std::size(grm); i++) {
-		if (grm[i] == 0) {
+		if (grm[i].Empty()) {
 			size++;
 		} else {
 			if (op == 2 || op == 3) break;
@@ -333,8 +333,9 @@ static void ParamSet(ByteReader &buf)
 			}
 		} else {
 			/* Read another GRF File's parameter */
-			const GRFFile *file = GetFileByGRFID(data);
-			GRFConfig *c = GetGRFConfig(data);
+			GrfID grfid = UnflattenNewGRFLabel<GrfID>(data);
+			const GRFFile *file = GetFileByGRFID(grfid);
+			GRFConfig *c = GetGRFConfig(grfid);
 			if (c != nullptr && c->flags.Test(GRFConfigFlag::Static) && !_cur_gps.grfconfig->flags.Test(GRFConfigFlag::Static) && _networking) {
 				/* Disable the read GRF if it is a static NewGRF. */
 				DisableStaticNewGRFInfluencingNonStaticNewGRFs(*c);

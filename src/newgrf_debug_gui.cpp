@@ -298,7 +298,7 @@ public:
 		return {};
 	}
 
-	virtual std::vector<uint32_t> GetPSAGRFIDs(uint index) const
+	virtual std::vector<GrfID> GetPSAGRFIDs(uint index) const
 	{
 		return {};
 	}
@@ -726,10 +726,10 @@ struct NewGRFInspectWindow final : Window {
 
 		if (nih->ShowExtraInfoOnly(index)) return;
 
-		uint32_t grfid = nih->GetGRFID(index);
-		if (grfid) {
+		GrfID grfid = nih->GetGRFID(index);
+		if (!grfid.Empty()) {
 			this->DrawString(r, i++, "GRF:");
-			this->DrawString(r, i++, "  ID: {:08X}", std::byteswap(grfid));
+			this->DrawString(r, i++, "  ID: {}", grfid);
 			GRFConfig *grfconfig = GetGRFConfig(grfid);
 			if (grfconfig) {
 				this->DrawString(r, i++, "  Name: {}", grfconfig->GetName());
@@ -808,12 +808,12 @@ struct NewGRFInspectWindow final : Window {
 			}
 		}
 
-		std::vector<uint32_t> psa_grfids = nih->GetPSAGRFIDs(index);
-		for (const uint32_t grfid : psa_grfids) {
+		std::vector<GrfID> psa_grfids = nih->GetPSAGRFIDs(index);
+		for (const GrfID grfid : psa_grfids) {
 			auto psa = nih->GetPSA(index, grfid);
 			if (!psa.empty()) {
 				if (nih->PSAWithParameter()) {
-					this->DrawString(r, i++, "Persistent storage [{:08X}]:", std::byteswap(grfid));
+					this->DrawString(r, i++, "Persistent storage [{}]:", grfid);
 				} else {
 					this->DrawString(r, i++, "Persistent storage:");
 				}

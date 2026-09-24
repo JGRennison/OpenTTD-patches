@@ -1876,7 +1876,7 @@ static bool RemapNewSignalStyles(const std::array<NewSignalStyleMapping, MAX_NEW
 
 	bool do_remap = false;
 	for (uint i = 0; i < MAX_NEW_SIGNAL_STYLES; i++) {
-		if (old_mapping[i].grfid == 0) {
+		if (old_mapping[i].grfid.Empty()) {
 			remap_table[i + 1] = 0;
 			continue;
 		}

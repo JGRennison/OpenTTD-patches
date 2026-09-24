@@ -357,7 +357,7 @@ static const NamedSaveLoad _town_desc[] = {
 	NSL("", SLE_CONDNULL(4, SLV_3, SLV_85)),                           ///< population, no longer in use
 	NSL("", SLE_CONDNULL(2, SL_MIN_VERSION, SLV_92)),                  ///< num_houses, no longer in use
 
-	NSL("townnamegrfid",   SLE_CONDVAR(Town, townnamegrfid,         SLE_UINT32, SLV_66, SL_MAX_VERSION)),
+	NSL("townnamegrfid",   SLE_CONDVAR(Town, townnamegrfid,         SLE_LABEL, SLV_66, SL_MAX_VERSION)),
 	NSL("townnametype",        SLE_VAR(Town, townnametype,          SLE_UINT16)),
 	NSL("townnameparts",       SLE_VAR(Town, townnameparts,         SLE_UINT32)),
 	NSL("name",            SLE_CONDSTR(Town, name,                  SLE_STR | SLF_ALLOW_CONTROL, 0, SLV_84, SL_MAX_VERSION)),
@@ -505,7 +505,7 @@ static void Load_TOWN()
 		Town *t = Town::CreateAtIndex(TownID(index));
 		SlObjectLoadFiltered(t, slt);
 
-		if (t->townnamegrfid == 0 && !IsInsideMM(t->townnametype, SPECSTR_TOWNNAME_START, SPECSTR_TOWNNAME_END) && GetStringTab(t->townnametype) != TEXT_TAB_OLD_CUSTOM) {
+		if (t->townnamegrfid.Empty() && !IsInsideMM(t->townnametype, SPECSTR_TOWNNAME_START, SPECSTR_TOWNNAME_END) && GetStringTab(t->townnametype) != TEXT_TAB_OLD_CUSTOM) {
 			SlErrorCorrupt("Invalid town name generator");
 		}
 

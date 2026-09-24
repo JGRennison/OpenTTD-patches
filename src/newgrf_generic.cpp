@@ -294,8 +294,8 @@ void DumpGenericCallbackSpriteGroups(GrfSpecFeature feature, SpriteGroupDumper &
 	bool first = true;
 	for (GenericCallbackList::const_reverse_iterator it = _gcl[feature].rbegin(); it != _gcl[feature].rend(); ++it) {
 		if (!first) dumper.Print("");
-		dumper.Print(fmt::format("GRF: {:08X}, town zone cb enabled: {}",
-				std::byteswap(it->file->grfid), HasBit(it->file->observed_feature_tests, GFTOF_TOWN_ZONE_CALLBACK) ? "yes" : "no"));
+		dumper.Print(fmt::format("GRF: {}, town zone cb enabled: {}",
+				it->file->grfid, HasBit(it->file->observed_feature_tests, GFTOF_TOWN_ZONE_CALLBACK) ? "yes" : "no"));
 		first = false;
 		dumper.DumpSpriteGroup(it->group, 0);
 	}

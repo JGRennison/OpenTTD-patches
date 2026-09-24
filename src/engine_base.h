@@ -11,6 +11,7 @@
 #define ENGINE_BASE_H
 
 #include "engine_type.h"
+#include "newgrf.h"
 #include "vehicle_type.h"
 #include "core/alloc_type.hpp"
 #include "core/enum_type.hpp"

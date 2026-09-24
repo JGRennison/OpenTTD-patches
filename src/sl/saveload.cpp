@@ -827,6 +827,9 @@ static inline uint SlCalcConvMemLen(VarMemType mem)
 		case SLE_VAR_STRQ:
 			return SlReadArrayLength();
 
+		case SLE_VAR_LABEL:
+			return sizeof(BaseLabel);
+
 		default:
 			NOT_REACHED();
 	}
@@ -1136,11 +1139,29 @@ static void SlSaveLoadConvGeneric(void *ptr, VarType conv)
 {
 	switch (action) {
 		case SaveLoadAction::Save: {
+			if (conv == SLE_LABEL) {
+				RawMemoryDumper dumper = _sl.dumper->RawWriteBytes(4);
+				const BaseLabel &label = *static_cast<BaseLabel *>(ptr);
+				dumper.RawWriteByte(label[3]);
+				dumper.RawWriteByte(label[2]);
+				dumper.RawWriteByte(label[1]);
+				dumper.RawWriteByte(label[0]);
+				break;
+			}
 			SlSaveValue(ReadValue(ptr, conv.mem), conv);
 			break;
 		}
 		case SaveLoadAction::LoadCheck:
 		case SaveLoadAction::Load: {
+			if (conv == SLE_LABEL) {
+				RawReadBuffer reader = _sl.reader->ReadRawBytes(4);
+				BaseLabel &label = *static_cast<BaseLabel *>(ptr);
+				label[3] = reader.RawReadByte();
+				label[2] = reader.RawReadByte();
+				label[1] = reader.RawReadByte();
+				label[0] = reader.RawReadByte();
+				break;
+			}
 			/* Write The value to the struct. These ARE endian safe. */
 			WriteValue(ptr, conv.mem, SlLoadValue(conv));
 			break;

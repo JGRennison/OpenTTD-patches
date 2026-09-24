@@ -10,6 +10,7 @@
 #include "stdafx.h"
 #include "newgrf_storage.h"
 #include "core/pool_func.hpp"
+#include "string_func.h"
 #include "debug.h"
 #include "3rdparty/cpp-btree/btree_set.h"
 
@@ -91,7 +92,7 @@ void AddChangedPersistentStorage(BasePersistentStorageArray *storage)
 
 	/* Discard all temporary changes */
 	for (auto &it : _changed_storage_arrays) {
-		Debug(desync, 1, "Discarding persistent storage changes: Feature {}, GrfID {:08X}, Tile {}", it->feature, std::byteswap(it->grfid), it->tile);
+		Debug(desync, 1, "Discarding persistent storage changes: Feature {}, GrfID {}, Tile {}", it->feature, it->grfid, it->tile);
 		it->ClearChanges();
 	}
 	_changed_storage_arrays.clear();

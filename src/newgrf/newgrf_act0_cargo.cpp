@@ -136,7 +136,7 @@ static ChangeInfoResult CargoReserveInfo(uint first, uint last, int prop, const 
 				break;
 
 			case 0x17: // Cargo label
-				cs->label = CargoLabel{std::byteswap(buf.ReadDWord())};
+				cs->label = buf.ReadLabel<CargoLabel>();
 				BuildCargoLabelMap();
 				MaybeInstallFallbackCargoLabel(id, last, cs->label);
 				break;

@@ -125,12 +125,12 @@ void AfterLoadStations()
 	/* Update the speclists of all stations to point to the currently loaded custom stations. */
 	for (BaseStation *st : BaseStation::Iterate()) {
 		for (uint i = 0; i < st->speclist.size(); i++) {
-			if (st->speclist[i].grfid == 0) continue;
+			if (st->speclist[i].grfid.Empty()) continue;
 
 			st->speclist[i].spec = StationClass::GetByGrf(st->speclist[i].grfid, st->speclist[i].localidx);
 		}
 		for (uint i = 0; i < st->roadstop_speclist.size(); i++) {
-			if (st->roadstop_speclist[i].grfid == 0) continue;
+			if (st->roadstop_speclist[i].grfid.Empty()) continue;
 
 			st->roadstop_speclist[i].spec = RoadStopClass::GetByGrf(st->roadstop_speclist[i].grfid, st->roadstop_speclist[i].localidx);
 		}
@@ -232,13 +232,13 @@ static Money  _cargo_feeder_share;
 static uint   _cargo_reserved_count;
 
 static const NamedSaveLoad _station_speclist_desc[] = {
-	NSL("grfid",      SLE_CONDVAR(StationSpecList, grfid,    SLE_UINT32, SLV_27, SL_MAX_VERSION)),
+	NSL("grfid",      SLE_CONDVAR(StationSpecList, grfid,    SLE_LABEL,                         SLV_27, SL_MAX_VERSION)),
 	NSL("localidx", SLE_CONDVAR_X(StationSpecList, localidx, SLE_FILE_U8 | SLE_VAR_U16, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_NEWGRF_ENTITY_EXTRA, 0, 1))),
 	NSL("localidx", SLE_CONDVAR_X(StationSpecList, localidx, SLE_UINT16,                SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_NEWGRF_ENTITY_EXTRA, 2))),
 };
 
 static const NamedSaveLoad _roadstop_speclist_desc[] = {
-	NSL("grfid",      SLE_CONDVAR(RoadStopSpecList, grfid,    SLE_UINT32, SL_MIN_VERSION, SL_MAX_VERSION)),
+	NSL("grfid",      SLE_CONDVAR(RoadStopSpecList, grfid,    SLE_LABEL,                 SL_MIN_VERSION, SL_MAX_VERSION)),
 	NSL("localidx", SLE_CONDVAR_X(RoadStopSpecList, localidx, SLE_FILE_U8 | SLE_VAR_U16, SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_GRF_ROADSTOPS, 0, 2))),
 	NSL("localidx", SLE_CONDVAR_X(RoadStopSpecList, localidx, SLE_UINT16,                SL_MIN_VERSION, SL_MAX_VERSION, SlXvFeatureTest(XSLFTO_AND, XSLFI_GRF_ROADSTOPS, 3))),
 };
@@ -1021,7 +1021,7 @@ static void Load_STNN()
 			if (IsSavegameVersionBefore(SLV_161) && !IsSavegameVersionBefore(SLV_145) && st->facilities.Test(StationFacility::Airport)) {
 				/* Store the old persistent storage. The GRFID will be added later. */
 				assert(PersistentStorage::CanAllocateItem());
-				st->airport.psa = PersistentStorage::Create(0, GrfSpecFeature::Invalid, TileIndex{});
+				st->airport.psa = PersistentStorage::Create(GrfID{}, GrfSpecFeature::Invalid, TileIndex{});
 				std::copy(std::begin(_old_st_persistent_storage.storage), std::end(_old_st_persistent_storage.storage), std::begin(st->airport.psa->storage));
 			}
 

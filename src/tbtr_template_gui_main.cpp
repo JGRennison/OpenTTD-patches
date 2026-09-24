@@ -289,7 +289,7 @@ public:
 				for (RailType rt : EnumRange(RAILTYPE_END)) {
 					const RailTypeInfo *rti = GetRailTypeInfo(rt);
 					// Skip rail type if it has no label
-					if (rti->label == 0) continue;
+					if (rti->label.Empty()) continue;
 					d = maxdim(d, GetStringBoundingBox(rti->strings.replace_text));
 				}
 				d.width += padding.width;

@@ -333,7 +333,7 @@ void CrashLog::LogConfiguration(format_target_ctrl &buffer) const
 	if (!_grfconfig_static.empty()) {
 		buffer.append("Static NewGRFs present:\n");
 		for (const auto &c : _grfconfig_static) {
-			buffer.format(" GRF ID: {:08X}, checksum {}, {}", std::byteswap(c->ident.grfid), c->ident.md5sum, c->GetDisplayPath());
+			buffer.format(" GRF ID: {}, checksum {}, {}", c->ident.grfid, c->ident.md5sum, c->GetDisplayPath());
 			const char *name = GetDefaultLangGRFStringFromGRFText(c->name);
 			if (name != nullptr) buffer.format(", '{}'", name);
 			buffer.push_back('\n');

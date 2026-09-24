@@ -720,13 +720,13 @@ void CalcEngineReliability(Engine *e, bool new_month)
 		re = Engine::Get(re->info.variant_id);
 	}
 
-	uint32_t age = re->age;
+	int age = re->age;
 	if (new_month && re->index > e->index && age != INT32_MAX) age++; /* parent variant's age has not yet updated. */
 
 	/* Check for early retirement */
 	if (e->company_avail.Any() && !_settings_game.vehicle.never_expire_vehicles && e->info.base_life != 0xFF) {
 		int retire_early = e->info.retire_early;
-		uint retire_early_max_age = std::max(0, e->duration_phase_1 + e->duration_phase_2 - retire_early * 12);
+		int retire_early_max_age = e->duration_phase_1 + e->duration_phase_2 - retire_early * 12;
 		if (retire_early != 0 && age >= retire_early_max_age) {
 			/* Early retirement is enabled and we're past the date... */
 
@@ -735,15 +735,16 @@ void CalcEngineReliability(Engine *e, bool new_month)
 	}
 
 	if (age < e->duration_phase_1) {
-		uint start = e->reliability_start;
+		int start = e->reliability_start;
 		e->reliability = age * (e->reliability_max - start) / e->duration_phase_1 + start;
 	} else if ((age -= e->duration_phase_1) < e->duration_phase_2 || _settings_game.vehicle.never_expire_vehicles || e->info.base_life == 0xFF) {
 		/* We are at the peak of this engines life. It will have max reliability.
 		 * This is also true if the engines never expire. They will not go bad over time */
 		e->reliability = e->reliability_max;
 	} else if ((age -= e->duration_phase_2) < e->duration_phase_3) {
-		uint max = e->reliability_max;
-		e->reliability = (int)age * (int)(e->reliability_final - max) / e->duration_phase_3 + max;
+		/* Linearly scale remaining age between the maximum and final reliability. */
+		int max = e->reliability_max;
+		e->reliability = age * (e->reliability_final - max) / e->duration_phase_3 + max;
 	} else {
 		e->reliability = e->reliability_final;
 		/* time's up for this engine.
@@ -795,7 +796,7 @@ void StartupOneEngine(Engine *e, const CalTime::YearMonthDay &aging_ymd, const C
 	SetRandomSeed(_settings_game.game_creation.generation_seed ^ seed ^
 	              ei->base_intro.base() ^
 	              to_underlying(e->type) ^
-	              e->GetGRFID());
+	              FlattenNewGRFLabel(e->GetGRFID()));
 	uint32_t r = Random();
 
 	/* Don't randomise the start-date in the first two years after gamestart to ensure availability
@@ -818,7 +819,7 @@ void StartupOneEngine(Engine *e, const CalTime::YearMonthDay &aging_ymd, const C
 	              (re->index.base() << 16) ^ (re->info.base_intro.base() << 12) ^ (re->info.decay_speed << 8) ^
 	              (re->info.lifelength.base() << 4) ^ re->info.retire_early ^
 	              to_underlying(e->type) ^
-	              e->GetGRFID());
+	              FlattenNewGRFLabel(e->GetGRFID()));
 
 	/* Base reliability defined as a percentage of UINT16_MAX. */
 	const uint16_t RELIABILITY_MAX   = UINT16_MAX * _settings_game.difficulty.max_reliability_floor / 100;

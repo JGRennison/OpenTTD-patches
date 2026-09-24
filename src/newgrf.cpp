@@ -18,6 +18,7 @@
 #include "engine_base.h"
 #include "engine_override.h"
 #include "bridge.h"
+#include "string_func.h"
 #include "town.h"
 #include "newgrf_engine.h"
 #include "newgrf_text.h"
@@ -76,7 +77,7 @@
 
 /** List of all loaded GRF files */
 static std::vector<GRFFile> _grf_files;
-static robin_hood::unordered_map<uint32_t, GRFFile *> _grf_file_map;
+static robin_hood::unordered_map<GrfID, GRFFile *> _grf_file_map;
 
 std::span<const GRFFile> GetAllGRFFiles()
 {
@@ -228,12 +229,12 @@ static robin_hood::unordered_flat_map<GrfID, GrfID> _grf_id_overrides;
  */
 void SetNewGRFOverride(GrfID source_grfid, GrfID target_grfid)
 {
-	if (target_grfid == 0) {
+	if (target_grfid.Empty()) {
 		_grf_id_overrides.erase(source_grfid);
-		GrfMsg(5, "SetNewGRFOverride: Removed override of {:X}", std::byteswap(source_grfid));
+		GrfMsg(5, "SetNewGRFOverride: Removed override of {}", FormatArrayAsHex(source_grfid));
 	} else {
 		_grf_id_overrides[source_grfid] = target_grfid;
-		GrfMsg(5, "SetNewGRFOverride: Added override of {:X} to {:X}", std::byteswap(source_grfid), std::byteswap(target_grfid));
+		GrfMsg(5, "SetNewGRFOverride: Added override of {} to {}", FormatArrayAsHex(source_grfid), FormatArrayAsHex(target_grfid));
 	}
 }
 
@@ -271,9 +272,9 @@ Engine *GetNewEngine(const GRFFile *file, VehicleType type, uint16_t internal_id
 			scope_grfid = it->second;
 			const GRFFile *grf_match = GetFileByGRFID(scope_grfid);
 			if (grf_match == nullptr) {
-				GrfMsg(5, "Tried mapping from GRFID {:x} to {:x} but target is not loaded", std::byteswap(file->grfid), std::byteswap(scope_grfid));
+				GrfMsg(5, "Tried mapping from GRFID {} to {} but target is not loaded", FormatArrayAsHex(file->grfid), FormatArrayAsHex(scope_grfid));
 			} else {
-				GrfMsg(5, "Mapping from GRFID {:x} to {:x}", std::byteswap(file->grfid), std::byteswap(scope_grfid));
+				GrfMsg(5, "Mapping from GRFID {} to {}", FormatArrayAsHex(file->grfid), FormatArrayAsHex(scope_grfid));
 			}
 		}
 
@@ -295,7 +296,7 @@ Engine *GetNewEngine(const GRFFile *file, VehicleType type, uint16_t internal_id
 
 		if (!e->grf_prop.HasGrfFile()) {
 			e->grf_prop.SetGRFFile(file);
-			GrfMsg(5, "Replaced engine at index {} for GRFID {:x}, type {}, index {}", e->index, std::byteswap(file->grfid), type, internal_id);
+			GrfMsg(5, "Replaced engine at index {} for GRFID {}, type {}, index {}", e->index, FormatArrayAsHex(file->grfid), type, internal_id);
 		}
 
 		/* Reserve the engine slot */
@@ -341,7 +342,7 @@ Engine *GetNewEngine(const GRFFile *file, VehicleType type, uint16_t internal_id
 		for (RailType rt : e->VehInfo<RailVehicleInfo>().railtypes) _gted[e->index].railtypelabels.push_back(GetRailTypeInfo(rt)->label);
 	}
 
-	GrfMsg(5, "Created new engine at index {} for GRFID {:x}, type {}, index {}", e->index, std::byteswap(file->grfid), type, internal_id);
+	GrfMsg(5, "Created new engine at index {} for GRFID {}, type {}, index {}", e->index, FormatArrayAsHex(file->grfid), type, internal_id);
 
 	return e;
 }
@@ -869,28 +870,22 @@ static void CalculateRefitMasks()
 					_gted[engine].cargo_disallowed = {CargoClass::Liquid};
 				} else if (e->type == VehicleType::Ship) {
 					CargoLabel label = GetActiveCargoLabel(ei->cargo_label);
-					switch (label.base()) {
-						case CT_PASSENGERS.base():
-							/* Ferries */
-							_gted[engine].cargo_allowed = {CargoClass::Passengers};
-							_gted[engine].cargo_disallowed = {};
-							break;
-						case CT_OIL.base():
-							/* Tankers */
-							_gted[engine].cargo_allowed = {CargoClass::Liquid};
-							_gted[engine].cargo_disallowed = {};
-							break;
-						default:
-							/* Cargo ships */
-							if (_settings_game.game_creation.landscape == LandscapeType::Toyland) {
-								/* No tanker in toyland :( */
-								_gted[engine].cargo_allowed = {CargoClass::Mail, CargoClass::Armoured, CargoClass::Express, CargoClass::Bulk, CargoClass::PieceGoods, CargoClass::Liquid};
-								_gted[engine].cargo_disallowed = {CargoClass::Passengers};
-							} else {
-								_gted[engine].cargo_allowed = {CargoClass::Mail, CargoClass::Armoured, CargoClass::Express, CargoClass::Bulk, CargoClass::PieceGoods};
-								_gted[engine].cargo_disallowed = {CargoClass::Liquid, CargoClass::Passengers};
-							}
-							break;
+					if (label == CT_PASSENGERS) {
+						/* Ferries */
+						_gted[engine].cargo_allowed = {CargoClass::Passengers};
+						_gted[engine].cargo_disallowed = {};
+					} else if (label == CT_OIL) {
+						/* Tankers */
+						_gted[engine].cargo_allowed = {CargoClass::Liquid};
+						_gted[engine].cargo_disallowed = {};
+					} else if (_settings_game.game_creation.landscape == LandscapeType::Toyland) {
+						/* No tanker in toyland :( so include liquids in the cargo ships */
+						_gted[engine].cargo_allowed = {CargoClass::Mail, CargoClass::Armoured, CargoClass::Express, CargoClass::Bulk, CargoClass::PieceGoods, CargoClass::Liquid};
+						_gted[engine].cargo_disallowed = {CargoClass::Passengers};
+					} else {
+						/* Cargo ships */
+						_gted[engine].cargo_allowed = {CargoClass::Mail, CargoClass::Armoured, CargoClass::Express, CargoClass::Bulk, CargoClass::PieceGoods};
+						_gted[engine].cargo_disallowed = {CargoClass::Liquid, CargoClass::Passengers};
 					}
 					e->VehInfo<ShipVehicleInfo>().old_refittable = true;
 				} else if (e->type == VehicleType::Train && e->VehInfo<RailVehicleInfo>().railveh_type != RailVehicleType::Wagon) {
@@ -1113,10 +1108,12 @@ void FinaliseCargoArray()
 	for (CargoSpec &cs : CargoSpec::array) {
 		if (cs.town_production_effect == TownProductionEffect::Invalid) {
 			/* Set default town production effect by cargo label. */
-			switch (cs.label.base()) {
-				case CT_PASSENGERS.base(): cs.town_production_effect = TownProductionEffect::Passengers; break;
-				case CT_MAIL.base():       cs.town_production_effect = TownProductionEffect::Mail; break;
-				default:                   cs.town_production_effect = TownProductionEffect::None; break;
+			if (cs.label == CT_PASSENGERS) {
+				cs.town_production_effect = TownProductionEffect::Passengers;
+			} else if (cs.label == CT_MAIL) {
+				cs.town_production_effect = TownProductionEffect::Mail;
+			} else {
+				cs.town_production_effect = TownProductionEffect::None;
 			}
 		}
 		if (!cs.IsValid()) {
@@ -1592,8 +1589,8 @@ void LoadNewGRFFile(GRFConfig &config, GrfLoadingStage stage, Subdirectory subdi
 		SpriteFile &file = OpenCachedSpriteFile(filename, subdir, needs_palette_remap);
 		LoadNewGRFFileFromFile(config, stage, file);
 		if (!config.flags.Test(GRFConfigFlag::System)) file.flags |= SFF_USERGRF;
-		if (config.ident.grfid == std::byteswap<uint32_t>(0xFFFFFFFE)) file.flags |= SFF_OPENTTDGRF;
-		if (config.ident.grfid == std::byteswap<uint32_t>(0xFF4F5432)) file.flags |= SFF_OPENGFX2;
+		if (config.ident.grfid == GrfID{"\xFF\xFF\xFF\xFE"}) file.flags |= SFF_OPENTTDGRF;
+		if (config.ident.grfid == GrfID{"\xFF\x4F\x54\x32"}) file.flags |= SFF_OPENGFX2;
 	}
 }
 
@@ -1784,7 +1781,7 @@ void AddBadgeToSpecs(T &specs, GrfSpecFeature feature, Badge &badge)
 static void FinaliseBadges()
 {
 	for (const auto &file : _grf_files) {
-		Badge *badge = GetBadgeByLabel(fmt::format("newgrf/{:08x}", std::byteswap(file.grfid)));
+		Badge *badge = GetBadgeByLabel(fmt::format("newgrf/{}", FormatArrayAsHex(file.grfid)));
 		if (badge == nullptr) continue;
 
 		for (Engine *e : Engine::Iterate()) {
@@ -1990,7 +1987,7 @@ void LoadNewGRF(SpriteID load_index, uint num_baseset)
 	 */
 	for (const auto &c : _grfconfig) {
 		if (c->status != GRFStatus::NotFound) c->status = GRFStatus::Unknown;
-		if (_settings_client.gui.newgrf_disable_big_gui && (c->ident.grfid == std::byteswap<uint32_t>(0x52577801) || c->ident.grfid == std::byteswap<uint32_t>(0x55464970))) {
+		if (_settings_client.gui.newgrf_disable_big_gui && (c->ident.grfid == GrfID{"\x52\x57\x78\x01"} || c->ident.grfid == GrfID{"\x55\x46\x49\x70"})) {
 			c->status = GRFStatus::Disabled;
 		}
 	}
@@ -2008,10 +2005,10 @@ void LoadNewGRF(SpriteID load_index, uint num_baseset)
 		}
 
 		if (stage == GrfLoadingStage::Reserve) {
-			static const std::pair<uint32_t, uint32_t> default_grf_overrides[] = {
-				{ std::byteswap<uint32_t>(0x44442202), std::byteswap<uint32_t>(0x44440111) }, // UKRS addons modifies UKRS
-				{ std::byteswap<uint32_t>(0x6D620402), std::byteswap<uint32_t>(0x6D620401) }, // DBSetXL ECS extension modifies DBSetXL
-				{ std::byteswap<uint32_t>(0x4D656f20), std::byteswap<uint32_t>(0x4D656F17) }, // LV4cut modifies LV4
+			static const std::pair<GrfID, GrfID> default_grf_overrides[] = {
+				{ GrfID{"\x44\x44\x22\x02"}, GrfID{"\x44\x44\x01\x11"} }, // UKRS addons modifies UKRS
+				{ GrfID{"\x6D\x62\x04\x02"}, GrfID{"\x6D\x62\x04\x01"} }, // DBSetXL ECS extension modifies DBSetXL
+				{ GrfID{"\x4D\x65\x6f\x20"}, GrfID{"\x4D\x65\x6F\x17"} }, // LV4cut modifies LV4
 			};
 			for (const auto &grf_override : default_grf_overrides) {
 				SetNewGRFOverride(grf_override.first, grf_override.second);
@@ -2052,7 +2049,7 @@ void LoadNewGRF(SpriteID load_index, uint num_baseset)
 				c->flags.Set(GRFConfigFlag::Reserved);
 			} else if (stage == GrfLoadingStage::Activation) {
 				c->flags.Reset(GRFConfigFlag::Reserved);
-				assert_msg(GetFileByGRFID(c->ident.grfid) == _cur_gps.grffile, "{:08X}", std::byteswap(c->ident.grfid));
+				assert_msg(GetFileByGRFID(c->ident.grfid) == _cur_gps.grffile, "{}", c->ident.grfid);
 				ClearTemporaryNewGRFData(_cur_gps.grffile);
 				BuildCargoTranslationMap();
 				HandleVarAction2OptimisationPasses();
@@ -2103,25 +2100,6 @@ const char *GetExtendedVariableNameById(int id)
 	}
 
 	return nullptr;
-}
-
-static bool IsLabelPrintable(uint32_t l)
-{
-	for (uint i = 0; i < 4; i++) {
-		if ((l & 0xFF) < 0x20 || (l & 0xFF) > 0x7F) return false;
-		l >>= 8;
-	}
-	return true;
-}
-
-const char *NewGRFLabelDumper::Label(uint32_t label)
-{
-	if (IsLabelPrintable(label)) {
-		format_to_fixed_z::format_to(this->buffer, lastof(this->buffer), "{:c}{:c}{:c}{:c}", label >> 24, label >> 16, label >> 8, label);
-	} else {
-		format_to_fixed_z::format_to(this->buffer, lastof(this->buffer), "0x{:08X}", label);
-	}
-	return this->buffer;
 }
 
 /**

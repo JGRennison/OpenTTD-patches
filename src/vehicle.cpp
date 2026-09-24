@@ -486,7 +486,7 @@ void VehicleLengthChanged(const Vehicle *u)
 	const Engine *engine = u->GetEngine();
 	if (engine->grf_prop.grffile == nullptr) {
 		// This can be reached if an engine is unexpectedly no longer attached to a GRF at all
-		if (GamelogGRFBugReverse(0, engine->grf_prop.local_id)) {
+		if (GamelogGRFBugReverse({}, engine->grf_prop.local_id)) {
 			ShowNewGrfVehicleError(u->engine_type, STR_NEWGRF_BROKEN, STR_NEWGRF_BROKEN_VEHICLE_LENGTH, GRFBug::VehLength, true);
 		}
 		return;

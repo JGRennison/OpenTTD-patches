@@ -318,7 +318,7 @@ static void WriteSavegameInfo(const char *name)
 	buffer.append("NewGRFs:\n");
 	if (_load_check_data.HasNewGrfs()) {
 		for (const auto &c : _load_check_data.grfconfig) {
-			buffer.format("{:08X} {} {}\n", std::byteswap(c->ident.grfid), c->flags.Test(GRFConfigFlag::Compatible) ? c->original_md5sum : c->ident.md5sum, c->filename);
+			buffer.format("{} {} {}\n", c->ident.grfid, c->flags.Test(GRFConfigFlag::Compatible) ? c->original_md5sum : c->ident.md5sum, c->filename);
 		}
 	}
 
@@ -1520,8 +1520,8 @@ void WriteVehicleInfo(format_target &buffer, const Vehicle *u, const Vehicle *v,
 			u->type, u->index, v->index, u->owner, v->unitnumber, length);
 	AppendStringInPlace(buffer, STR_ENGINE_NAME, u->engine_type);
 	GrfID grfid = u->GetGRFID();
-	if (grfid != 0) {
-		buffer.format(", GRF:{:08X}", std::byteswap(grfid));
+	if (!grfid.Empty()) {
+		buffer.format(", GRF:{}", grfid);
 		GRFConfig *grfconfig = GetGRFConfig(grfid);
 		if (grfconfig) {
 			buffer.format(", {}, {}", grfconfig->GetName(), grfconfig->filename);

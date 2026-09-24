@@ -317,6 +317,8 @@ inline constexpr size_t SlVarSize(VarMemType type)
 			return sizeof(int64_t);
 		case SLE_VAR_NAME:
 			return sizeof(std::string);
+		case SLE_VAR_LABEL:
+			return sizeof(BaseLabel);
 		default:
 			return sizeof(void *);
 	}
@@ -336,6 +338,9 @@ inline constexpr bool SlCheckPrimitiveTypeVar(VarMemType type)
 	}
 	if (type == SLE_VAR_CNAME) {
 		return std::is_same_v<T, char *> || std::is_same_v<T, const char *> || std::is_same_v<T, TinyString>;
+	}
+	if (type == SLE_VAR_LABEL) {
+		return std::is_base_of_v<struct BaseLabel, T> && sizeof(T) == 4;
 	}
 	if (!std::is_integral_v<T> && !std::is_enum_v<T> && !SlIsPrimitiveType<T>) return false;
 	return sizeof(T) == SlVarSize(type);

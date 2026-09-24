@@ -98,7 +98,7 @@ static ChangeInfoResult ObjectChangeInfo(uint first, uint last, int prop, const 
 		}
 
 		switch (prop) {
-			case 0x08: { // Class ID
+			case 0x08: // Class ID
 				/* Allocate space for this object. */
 				if (spec == nullptr) {
 					_cur_gps.grffile->objectspec[id] = std::make_unique<ObjectSpec>();
@@ -107,16 +107,12 @@ static ChangeInfoResult ObjectChangeInfo(uint first, uint last, int prop, const 
 					spec->size = OBJECT_SIZE_1X1; // Default for NewGRFs that manage to not set it (1x1)
 				}
 
-				/* Swap classid because we read it in BE. */
-				uint32_t classid = buf.ReadDWord();
-				spec->class_index = ObjectClass::Allocate(std::byteswap(classid));
+				spec->class_index = ObjectClass::Allocate(buf.ReadLabel<ObjectClass::GlobalID>());
 				break;
-			}
 
-			case 0x09: { // Class name
+			case 0x09: // Class name
 				AddStringForMapping(GRFStringID{buf.ReadWord()}, spec, [](StringID str, ObjectSpec *spec) { ObjectClass::Get(spec->class_index)->name = str; });
 				break;
-			}
 
 			case 0x0A: // Object name
 				AddStringForMapping(GRFStringID{buf.ReadWord()}, &spec->name);

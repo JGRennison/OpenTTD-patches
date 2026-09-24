@@ -30,6 +30,7 @@
 #include "fontcache.h"
 #include "screenshot.h"
 #include "genworld.h"
+#include "string_func.h"
 #include "strings_func.h"
 #include "viewport_func.h"
 #include "window_func.h"
@@ -3342,27 +3343,27 @@ static bool ConDumpRoadTypes(std::span<std::string_view> argv)
 	IConsolePrint(CC_DEFAULT, "    T = disallow tunnels");
 	IConsolePrint(CC_DEFAULT, "    c = disallow collisions with trains for vehicles of this type");
 
-	btree::btree_map<uint32_t, const GRFFile *> grfs;
+	btree::btree_map<GrfID, const GRFFile *> grfs;
 	for (RoadType rt : EnumRange(ROADTYPE_END)) {
 		const RoadTypeInfo *rti = GetRoadTypeInfo(rt);
-		if (rti->label == 0) continue;
-		GrfID grfid = 0;
+		if (rti->label.Empty()) continue;
+		GrfID grfid{};
 		const GRFFile *grf = rti->grffile[RoadSpriteType::Ground];
 		if (grf == nullptr) {
-			uint32_t str_grfid = GetStringGRFID(rti->strings.name);
-			if (str_grfid != 0) {
+			GrfID str_grfid = GetStringGRFID(rti->strings.name);
+			if (!str_grfid.Empty()) {
 				extern GRFFile *GetFileByGRFID(GrfID grfid);
-				grf = GetFileByGRFID(grfid);
+				grf = GetFileByGRFID(str_grfid);
 			}
 		}
 		if (grf != nullptr) {
 			grfid = grf->grfid;
-			grfs.insert(std::pair<uint32_t, const GRFFile *>(grfid, grf));
+			grfs.insert(std::pair<GrfID, const GRFFile *>(grfid, grf));
 		}
-		IConsolePrint(CC_DEFAULT, "  {:2} {} {}, Flags: {}{}{}{}{}, Extra Flags: {}{}{}{}, GRF: {:08X},{}",
+		IConsolePrint(CC_DEFAULT, "  {:2} {} {}, Flags: {}{}{}{}{}, Extra Flags: {}{}{}{}, GRF: {},{}",
 				(uint) rt,
 				RoadTypeIsTram(rt) ? "Tram" : "Road",
-				NewGRFLabelDumper().Label(rti->label),
+				rti->label,
 				rti->flags.Test(RoadTypeFlag::Catenary)        ? 'c' : '-',
 				rti->flags.Test(RoadTypeFlag::NoLevelCrossing) ? 'l' : '-',
 				rti->flags.Test(RoadTypeFlag::NoHouses)        ? 'X' : '-',
@@ -3372,12 +3373,12 @@ static bool ConDumpRoadTypes(std::span<std::string_view> argv)
 				rti->extra_flags.Test(RoadTypeExtraFlag::NoTownModification) ? 't' : '-',
 				rti->extra_flags.Test(RoadTypeExtraFlag::NoTunnels)          ? 'T' : '-',
 				rti->extra_flags.Test(RoadTypeExtraFlag::NoTrainCollision)   ? 'c' : '-',
-				std::byteswap(grfid),
+				grfid,
 				GetStringFmtParam(rti->strings.name)
 		);
 	}
 	for (const auto &grf : grfs) {
-		IConsolePrint(CC_DEFAULT, "  GRF: {:08X} = {}", std::byteswap(grf.first), grf.second->filename);
+		IConsolePrint(CC_DEFAULT, "  GRF: {} = {}", grf.first, grf.second->filename);
 	}
 	return true;
 }
@@ -3400,26 +3401,26 @@ static bool ConDumpRailTypes(std::span<std::string_view> argv)
 	IConsolePrint(CC_DEFAULT, "    p = signal graphics callback enabled for programmable pre-signals");
 	IConsolePrint(CC_DEFAULT, "    r = signal graphics callback restricted signal flag enabled");
 
-	btree::btree_map<uint32_t, const GRFFile *> grfs;
+	btree::btree_map<GrfID, const GRFFile *> grfs;
 	for (RailType rt : EnumRange(RAILTYPE_END)) {
 		const RailTypeInfo *rti = GetRailTypeInfo(rt);
-		if (rti->label == 0) continue;
-		GrfID grfid = 0;
+		if (rti->label.Empty()) continue;
+		GrfID grfid{};
 		const GRFFile *grf = rti->grffile[RailSpriteType::Ground];
 		if (grf == nullptr) {
-			uint32_t str_grfid = GetStringGRFID(rti->strings.name);
-			if (str_grfid != 0) {
+			GrfID str_grfid = GetStringGRFID(rti->strings.name);
+			if (!str_grfid.Empty()) {
 				extern GRFFile *GetFileByGRFID(GrfID grfid);
-				grf = GetFileByGRFID(grfid);
+				grf = GetFileByGRFID(str_grfid);
 			}
 		}
 		if (grf != nullptr) {
 			grfid = grf->grfid;
-			grfs.insert(std::pair<uint32_t, const GRFFile *>(grfid, grf));
+			grfs.insert(std::pair<GrfID, const GRFFile *>(grfid, grf));
 		}
-		IConsolePrint(CC_DEFAULT, "  {:2} {}, Flags: {}{}{}{}{}{}, Ctrl Flags: {}{}{}{}{}, GRF: {:08X}, {}",
+		IConsolePrint(CC_DEFAULT, "  {:2} {}, Flags: {}{}{}{}{}{}, Ctrl Flags: {}{}{}{}{}, GRF: {}, {}",
 				(uint) rt,
-				NewGRFLabelDumper().Label(rti->label),
+				rti->label,
 				rti->flags.Test(RailTypeFlag::Catenary)        ? 'c' : '-',
 				rti->flags.Test(RailTypeFlag::NoLevelCrossing) ? 'l' : '-',
 				rti->flags.Test(RailTypeFlag::Hidden)          ? 'h' : '-',
@@ -3431,12 +3432,12 @@ static bool ConDumpRailTypes(std::span<std::string_view> argv)
 				rti->ctrl_flags.Test(RailTypeCtrlFlag::NoRealisticBraking)       ? 'b' : '-',
 				rti->ctrl_flags.Test(RailTypeCtrlFlag::SigSpriteRecolourEnabled) ? 'c' : '-',
 				rti->ctrl_flags.Test(RailTypeCtrlFlag::SigSpriteNoEntry)         ? 'n' : '-',
-				std::byteswap(grfid),
+				grfid,
 				GetStringFmtParam(rti->strings.name)
 		);
 	}
 	for (const auto &grf : grfs) {
-		IConsolePrint(CC_DEFAULT, "  GRF: {:08X} = {}", std::byteswap(grf.first), grf.second->filename);
+		IConsolePrint(CC_DEFAULT, "  GRF: {} = {}", grf.first, grf.second->filename);
 	}
 	return true;
 }
@@ -3454,12 +3455,12 @@ static bool ConDumpBridgeTypes(std::span<std::string_view> argv)
 	IConsolePrint(CC_DEFAULT, "    t = not available to towns");
 	IConsolePrint(CC_DEFAULT, "    s = not available to scripts (AI/GS)");
 
-	btree::btree_set<uint32_t> grfids;
+	btree::btree_set<GrfID> grfids;
 	for (BridgeType bt = 0; bt < MAX_BRIDGES; bt++) {
 		const BridgeSpec *spec = GetBridgeSpec(bt);
 		GrfID grfid = GetStringGRFID(spec->material);
-		if (grfid != 0) grfids.insert(grfid);
-		IConsolePrint(CC_DEFAULT, "  {:2} Year: {:7}, Min: {:3}, Max: {:5}, Flags: {:02X}, Ctrl Flags: {}{}{}{}, Pillars: {:02X} {:02X} {:02X} {:02X} {:02X} {:02X} {:02X} {:02X} {:02X} {:02X} {:02X} {:02X}, GRF: {:08X}, {}",
+		if (!grfid.Empty()) grfids.insert(grfid);
+		IConsolePrint(CC_DEFAULT, "  {:2} Year: {:7}, Min: {:3}, Max: {:5}, Flags: {:02X}, Ctrl Flags: {}{}{}{}, Pillars: {:02X} {:02X} {:02X} {:02X} {:02X} {:02X} {:02X} {:02X} {:02X} {:02X} {:02X} {:02X}, GRF: {}, {}",
 				(uint) bt,
 				spec->avail_year,
 				spec->min_length,
@@ -3481,14 +3482,14 @@ static bool ConDumpBridgeTypes(std::span<std::string_view> argv)
 				spec->pillar_flags[9],
 				spec->pillar_flags[10],
 				spec->pillar_flags[11],
-				std::byteswap(grfid),
+				grfid,
 				GetStringFmtParam(spec->material)
 		);
 	}
 	for (GrfID grfid : grfids) {
 		extern GRFFile *GetFileByGRFID(GrfID grfid);
 		const GRFFile *grffile = GetFileByGRFID(grfid);
-		IConsolePrint(CC_DEFAULT, "  GRF: {:08X} = {}", std::byteswap(grfid), grffile ? (std::string_view)grffile->filename : "????");
+		IConsolePrint(CC_DEFAULT, "  GRF: {} = {}", grfid, grffile ? (std::string_view)grffile->filename : "????");
 	}
 	return true;
 }
@@ -3526,26 +3527,26 @@ static bool ConDumpCargoTypes(std::span<std::string_view> argv)
 
 	static constexpr EnumIndexArray<char, TownAcceptanceEffect, TownAcceptanceEffect::End> tae_char{ '-', 'P', 'M', 'G', 'W', 'F' };
 
-	btree::btree_map<uint32_t, const GRFFile *> grfs;
+	btree::btree_map<GrfID, const GRFFile *> grfs;
 	for (CargoType i{}; i < NUM_CARGO; i++) {
 		const CargoSpec *spec = CargoSpec::Get(i);
-		GrfID grfid = 0;
+		GrfID grfid{};
 		const GRFFile *grf = spec->grffile;
 		if (grf == nullptr) {
 			GrfID str_grfid = GetStringGRFID(spec->name);
-			if (str_grfid != 0) {
+			if (!str_grfid.Empty()) {
 				extern GRFFile *GetFileByGRFID(GrfID grfid);
-				grf = GetFileByGRFID(grfid);
+				grf = GetFileByGRFID(str_grfid);
 			}
 		}
 		if (grf != nullptr) {
 			grfid = grf->grfid;
-			grfs.insert(std::pair<uint32_t, const GRFFile *>(grfid, grf));
+			grfs.insert(std::pair<GrfID, const GRFFile *>(grfid, grf));
 		}
-		IConsolePrint(CC_DEFAULT, "  {:2} Bit: {:2}, Label: {}, Callback mask: 0x{:02X}, Cargo class: {}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}, Town: {}, GRF: {:08X}, {}",
+		IConsolePrint(CC_DEFAULT, "  {:2} Bit: {:2}, Label: {}, Callback mask: 0x{:02X}, Cargo class: {}{}{}{}{}{}{}{}{}{}{}{}{}{}{}{}, Town: {}, GRF: {}, {}",
 				(uint) i,
 				spec->bitnum,
-				NewGRFLabelDumper().Label(spec->label.base()),
+				spec->label,
 				spec->callback_mask,
 				spec->classes.Test(CargoClass::Passengers)   ? 'p' : '-',
 				spec->classes.Test(CargoClass::Mail)         ? 'm' : '-',
@@ -3564,12 +3565,12 @@ static bool ConDumpCargoTypes(std::span<std::string_view> argv)
 				spec->classes.Test(CargoClass::NonPotable)   ? 'i' : '-',
 				spec->classes.Test(CargoClass::Special)      ? 'S' : '-',
 				tae_char[spec->town_acceptance_effect],
-				std::byteswap(grfid),
+				grfid,
 				GetStringFmtParam(spec->name)
 		);
 	}
 	for (const auto &grf : grfs) {
-		IConsolePrint(CC_DEFAULT, "  GRF: {:08X} = {}", std::byteswap(grf.first), grf.second->filename);
+		IConsolePrint(CC_DEFAULT, "  GRF: {} = {}", grf.first, grf.second->filename);
 	}
 	return true;
 }
@@ -3660,17 +3661,17 @@ static bool ConDumpGrfCargoTables(std::span<std::string_view> argv)
 	for (const GRFFile &grf : files) {
 		if (grf.cargo_list.empty()) continue;
 
-		IConsolePrint(CC_DEFAULT, "[{:08X}] {}: {} cargoes", std::byteswap(grf.grfid), grf.filename, grf.cargo_list.size());
+		IConsolePrint(CC_DEFAULT, "[{}] {}: {} cargoes", grf.grfid, grf.filename, grf.cargo_list.size());
 
 		uint i = 0;
 		for (const CargoLabel &cl : grf.cargo_list) {
 			buffer.clear();
 			for (const CargoSpec *cs : CargoSpec::Iterate()) {
 				if (grf.cargo_map[cs->Index()] == i) {
-					buffer.format("{}{:02}[{}]", buffer.size() == 0 ? ": " : ", ", cs->Index(), NewGRFLabelDumper().Label(cs->label.base()));
+					buffer.format("{}{:02}[{}]", buffer.size() == 0 ? ": " : ", ", cs->Index(), cs->label);
 				}
 			}
-			IConsolePrint(CC_DEFAULT, "  {}{}", NewGRFLabelDumper().Label(cl.base()), buffer);
+			IConsolePrint(CC_DEFAULT, "  {}{}", cl, buffer);
 			i++;
 		}
 	}
@@ -3697,18 +3698,18 @@ static bool ConDumpSignalStyles(std::span<std::string_view> argv)
 	IConsolePrint(CC_DEFAULT, "  Extra aspects: {}", _extra_aspects);
 	IConsolePrint(CC_DEFAULT, "  Default style extra aspects: {}", _default_signal_style_lookahead_extra_aspects);
 
-	btree::btree_map<uint32_t, const GRFFile *> grfs;
+	btree::btree_map<GrfID, const GRFFile *> grfs;
 	for (uint8_t i = 0; i < _num_new_signal_styles; i++) {
 		const NewSignalStyle &style = _new_signal_styles[i];
 
-		GrfID grfid = 0;
+		GrfID grfid{};
 		if (style.grffile != nullptr) {
 			grfid = style.grffile->grfid;
-			grfs.insert(std::pair<uint32_t, const GRFFile *>(grfid, style.grffile));
+			grfs.insert(std::pair<GrfID, const GRFFile *>(grfid, style.grffile));
 		}
-		IConsolePrint(CC_DEFAULT, "  {:2}: GRF: {:08X}, Local: {:2}, Extra aspects: {:3}, Flags: {}{}{}{}{}{}{}{}, {}",
+		IConsolePrint(CC_DEFAULT, "  {:2}: GRF: {}, Local: {:2}, Extra aspects: {:3}, Flags: {}{}{}{}{}{}{}{}, {}",
 				(uint) (i + 1),
-				std::byteswap(grfid),
+				grfid,
 				style.grf_local_id,
 				style.lookahead_extra_aspects,
 				HasBit(style.style_flags, NSSF_NO_ASPECT_INC)           ? 'n' : '-',
@@ -3723,7 +3724,7 @@ static bool ConDumpSignalStyles(std::span<std::string_view> argv)
 		);
 	}
 	for (const auto &grf : grfs) {
-		IConsolePrint(CC_DEFAULT, "  GRF: {:08X} = {}", std::byteswap(grf.first), grf.second->filename);
+		IConsolePrint(CC_DEFAULT, "  GRF: {} = {}", grf.first, grf.second->filename);
 	}
 
 	return true;
@@ -4118,7 +4119,7 @@ static bool ConNewGRFProfile(std::span<std::string_view> argv)
 			bool active = selected && profiler->active;
 			TextColour tc = active ? TextColour::LightBlue : selected ? TextColour::Green : CC_INFO;
 			std::string_view statustext = active ? " (active)" : selected ? " (selected)" : "";
-			IConsolePrint(tc, "{}: [{:08X}] {}{}", i, std::byteswap(grf.grfid), grf.filename, statustext);
+			IConsolePrint(tc, "{}: [{}] {}{}", i, FormatArrayAsHex(grf.grfid), grf.filename, statustext);
 			i++;
 		}
 		return true;
@@ -4134,7 +4135,7 @@ static bool ConNewGRFProfile(std::span<std::string_view> argv)
 			}
 			const GRFFile *grf = &files[*grfnum - 1];
 			if (std::any_of(_newgrf_profilers.begin(), _newgrf_profilers.end(), [&](NewGRFProfiler &pr) { return pr.grffile == grf; })) {
-				IConsolePrint(CC_WARNING, "GRF number {} [{:08X}] is already selected for profiling.", *grfnum, std::byteswap(grf->grfid));
+				IConsolePrint(CC_WARNING, "GRF number {} [{}] is already selected for profiling.", *grfnum, FormatArrayAsHex(grf->grfid));
 				continue;
 			}
 			_newgrf_profilers.emplace_back(grf);
@@ -4162,15 +4163,15 @@ static bool ConNewGRFProfile(std::span<std::string_view> argv)
 
 	/* "start" sub-command */
 	if (StrStartsWithIgnoreCase(argv[1], "sta")) {
-		std::string grfids;
+		format_buffer grfids;
 		size_t started = 0;
 		for (NewGRFProfiler &pr : _newgrf_profilers) {
 			if (!pr.active) {
 				pr.Start();
 				started++;
 
-				if (!grfids.empty()) grfids += ", ";
-				fmt::format_to(std::back_inserter(grfids), "[{:08X}]", std::byteswap(pr.grffile->grfid));
+				if (!grfids.empty()) grfids.append(", ");
+				grfids.format("[{}]", pr.grffile->grfid);
 			}
 		}
 		if (started > 0) {

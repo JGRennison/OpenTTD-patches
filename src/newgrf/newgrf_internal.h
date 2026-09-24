@@ -93,8 +93,11 @@ struct GrfActionHandler {
 	static void Activation(ByteReader &buf);
 };
 
-/** Base GRF ID for OpenTTD's base graphics GRFs. */
-static const uint32_t OPENTTD_GRAPHICS_BASE_GRF_ID = std::byteswap<uint32_t>(0xFF4F5400);
+/** Is this a OpenTTD base graphics GRF GRFID. */
+inline bool IsOpenTTDGraphicsBaseGrfId(const GrfID id)
+{
+	return id[0] == 0xFF && id[1] == 0x4F && id[2] == 0x54;
+}
 
 /** Temporary data during loading of GRFs */
 struct GrfProcessingState {

@@ -57,6 +57,7 @@ enum class VarMemType : uint8_t {
 	SLE_VAR_STRQ,  ///< string pointer enclosed in quotes
 	SLE_VAR_NAME,  ///< old custom name to be converted to a std::string
 	SLE_VAR_CNAME, ///< old custom name to be converted to a char pointer
+	SLE_VAR_LABEL, ///< label
 };
 using enum VarMemType;
 
@@ -114,6 +115,7 @@ static constexpr VarType SLE_STRQ         = SLE_FILE_STRING     | SLE_VAR_STRQ;
 static constexpr VarType SLE_NAME         = SLE_FILE_STRINGID   | SLE_VAR_NAME;
 static constexpr VarType SLE_CNAME        = SLE_FILE_STRINGID   | SLE_VAR_CNAME;
 static constexpr VarType SLE_VEHORDERID   = SLE_FILE_VEHORDERID | SLE_VAR_U16;
+static constexpr VarType SLE_LABEL        = SLE_FILE_U32        | SLE_VAR_LABEL;
 
 /** Type of data saved. */
 enum SaveLoadTypes {

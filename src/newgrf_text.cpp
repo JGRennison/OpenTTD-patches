@@ -531,7 +531,7 @@ void AddGRFTextToList(GRFTextWrapper &list, std::string_view text_to_add)
 static StringID AddGRFString(GrfID grfid, GRFStringID stringid, GRFLanguage langid_to_add, bool allow_newlines, std::string_view text_to_add, StringID def_string)
 {
 	StringIndexInTab id{};
-	extern GRFFile *GetFileByGRFIDExpectCurrent(uint32_t grfid);
+	extern GRFFile *GetFileByGRFIDExpectCurrent(GrfID grfid);
 	GRFFile *grf = GetFileByGRFIDExpectCurrent(grfid);
 	if (grf == nullptr) return STR_EMPTY;
 
@@ -559,7 +559,7 @@ static StringID AddGRFString(GrfID grfid, GRFStringID stringid, GRFLanguage lang
 	std::string newtext = TranslateTTDPatchCodes(grfid, langid_to_add, allow_newlines, text_to_add);
 	AddGRFTextToList(_grf_text[id].textholder, langid_to_add, newtext);
 
-	GrfMsg(3, "Added 0x{:X}: grfid {:08X} string 0x{:X} lang 0x{:X} string '{}' ({:X})", id, std::byteswap(grfid), stringid, langid_to_add, newtext, MakeStringID(TEXT_TAB_NEWGRF_START, id));
+	GrfMsg(3, "Added 0x{:X}: grfid {} string 0x{:X} lang 0x{:X} string '{}' ({:X})", id, grfid, stringid, langid_to_add, newtext, MakeStringID(TEXT_TAB_NEWGRF_START, id));
 
 	return MakeStringID(TEXT_TAB_NEWGRF_START, id);
 }
@@ -621,7 +621,7 @@ StringID GetGRFStringID(const GRFFile *grf, GRFStringID stringid)
  */
 StringID GetGRFStringID(GrfID grfid, GRFStringID stringid)
 {
-	extern GRFFile *GetFileByGRFIDExpectCurrent(uint32_t grfid);
+	extern GRFFile *GetFileByGRFIDExpectCurrent(GrfID grfid);
 	const GRFFile *grf = GetFileByGRFIDExpectCurrent(grfid);
 	if (unlikely(grf == nullptr)) {
 		auto it = std::ranges::find_if(_grf_text, [&grfid, &stringid](const GRFTextEntry &grf_text) { return grf_text.grfid == grfid && grf_text.stringid == stringid; });
@@ -704,7 +704,7 @@ const char *GetDefaultLangGRFStringFromGRFText(const GRFTextWrapper &text)
  */
 std::string_view GetGRFStringPtr(StringIndexInTab stringid)
 {
-	if (stringid.base() >= _grf_text.size() || _grf_text[stringid].grfid == 0) {
+	if (stringid.base() >= _grf_text.size() || _grf_text[stringid].grfid.Empty()) {
 		Debug(misc, 0, "Invalid NewGRF string ID: {}", stringid);
 		return "(invalid StringID)";
 	}
@@ -1020,13 +1020,13 @@ char32_t RemapNewGRFStringControlCode(char32_t scc, StringConsumer &consumer)
 	}
 }
 
-uint32_t GetStringGRFID(StringID string)
+GrfID GetStringGRFID(StringID string)
 {
 	switch (GetStringTab(string)) {
 		case TEXT_TAB_NEWGRF_START:
 			return _grf_text[GetStringIndex(string)].grfid;
 		default:
-			return 0;
+			return {};
 	}
 }
 
@@ -1066,7 +1066,7 @@ std::vector<StringParameter> GetGRFStringTextStackParameters(const GRFFile *grff
 
 	if (stack.error) {
 		if (grffile != nullptr) {
-			Debug(misc, 0, "Too many NewGRF string parameters (in {:08X}, {}).", std::byteswap(grffile->grfid), grffile->filename);
+			Debug(misc, 0, "Too many NewGRF string parameters (in {}, {}).", grffile->grfid, grffile->filename);
 		} else {
 			Debug(misc, 0, "Too many NewGRF string parameters.");
 		}

@@ -49,31 +49,31 @@ static const SaveLoad _glog_setting_desc[] = {
 };
 
 static const SaveLoad _glog_grfadd_desc[] = {
-	SLE_VAR(LoggedChange, grfadd.grfid,      SLE_UINT32    ),
+	SLE_VAR(LoggedChange, grfadd.grfid,      SLE_LABEL     ),
 	SLE_ARR(LoggedChange, grfadd.md5sum,     SLE_UINT8,  16),
 };
 
 static const SaveLoad _glog_grfrem_desc[] = {
-	SLE_VAR(LoggedChange, grfrem.grfid,      SLE_UINT32),
+	SLE_VAR(LoggedChange, grfrem.grfid,      SLE_LABEL),
 };
 
 static const SaveLoad _glog_grfcompat_desc[] = {
-	SLE_VAR(LoggedChange, grfcompat.grfid,   SLE_UINT32    ),
+	SLE_VAR(LoggedChange, grfcompat.grfid,   SLE_LABEL     ),
 	SLE_ARR(LoggedChange, grfcompat.md5sum,  SLE_UINT8,  16),
 };
 
 static const SaveLoad _glog_grfparam_desc[] = {
-	SLE_VAR(LoggedChange, grfparam.grfid,    SLE_UINT32),
+	SLE_VAR(LoggedChange, grfparam.grfid,    SLE_LABEL),
 };
 
 static const SaveLoad _glog_grfmove_desc[] = {
-	SLE_VAR(LoggedChange, grfmove.grfid,     SLE_UINT32),
+	SLE_VAR(LoggedChange, grfmove.grfid,     SLE_LABEL),
 	SLE_VAR(LoggedChange, grfmove.offset,    SLE_INT32),
 };
 
 static const SaveLoad _glog_grfbug_desc[] = {
 	SLE_VAR(LoggedChange, grfbug.data,       SLE_UINT64),
-	SLE_VAR(LoggedChange, grfbug.grfid,      SLE_UINT32),
+	SLE_VAR(LoggedChange, grfbug.grfid,      SLE_LABEL),
 	SLE_VAR(LoggedChange, grfbug.bug,        SLE_UINT8),
 };
 

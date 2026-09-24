@@ -10,10 +10,16 @@
 #ifndef NEWGRF_TYPE_H
 #define NEWGRF_TYPE_H
 
+#include "core/label_type.hpp"
+
 struct GRFConfig;
 
-using GrfID = uint32_t; ///< The unique identifier of a NewGRF.
+using GrfID = Label<struct GrfIDTag>; ///< The unique identifier of a NewGRF.
 
-static const GrfID INVALID_GRFID = 0xFFFFFFFF; ///< An invalid NewGRF.
+template <> struct LabelFormatAsHex<struct GrfIDTag> {
+	static constexpr bool value = true;
+};
+
+static const GrfID INVALID_GRFID{"\xFF\xFF\xFF\xFF"}; ///< An invalid NewGRF.
 
 #endif /* NEWGRF_TYPE_H */

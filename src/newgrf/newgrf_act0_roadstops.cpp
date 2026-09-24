@@ -101,16 +101,14 @@ static ChangeInfoResult RoadStopChangeInfo(uint first, uint last, int prop, cons
 			case A0RPI_ROADSTOP_CLASS_ID:
 				if (MappedPropertyLengthMismatch(buf, 4, mapping_entry)) break;
 				[[fallthrough]];
-			case 0x08: { // Road Stop Class ID
+			case 0x08: // Road Stop Class ID
 				if (rs == nullptr) {
 					_cur_gps.grffile->roadstops[id] = std::make_unique<RoadStopSpec>();
 					rs = _cur_gps.grffile->roadstops[id].get();
 				}
 
-				uint32_t classid = buf.ReadDWord();
-				rs->class_index = RoadStopClass::Allocate(std::byteswap(classid));
+				rs->class_index = RoadStopClass::Allocate(buf.ReadLabel<RoadStopClass::GlobalID>());
 				break;
-			}
 
 			case A0RPI_ROADSTOP_STOP_TYPE:
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
