@@ -94,7 +94,7 @@ static void Load_CHTS()
 	if (SlIsTableChunk()) {
 		struct UnknownCheatHandler : public TableHeaderSpecialHandler {
 			bool MissingField(const std::string &key, uint8_t type, std::vector<SaveLoad> &saveloads) override {
-				if (type == SLE_FILE_I8) {
+				if (type == to_underlying(SLE_FILE_I8)) {
 					Debug(sl, 1, "CHTS chunk: Unknown cheat field: '{}'", key);
 					saveloads.push_back(SLEG_VAR(_unknown_cheat_fields[key], SLE_BOOL));
 					return true;

@@ -12,16 +12,9 @@
 
 #include "saveload_common.h"
 #include "extended_ver_sl.h"
+#include "../core/enum_type.hpp"
 
-/**
- * VarTypes is the general bitmasked magic type that tells us
- * certain characteristics about the variable it refers to. For example
- * SLE_FILE_* gives the size(type) as it would be in the savegame and
- * SLE_VAR_* the size(type) as it is in memory during runtime. These are
- * the first 8 bits (0-3 SLE_FILE, 4-7 SLE_VAR).
- * Bits 8-15 are reserved for various flags as explained below
- */
-enum VarTypes {
+enum class VarFileType : uint8_t {
 	/* 4 bits allocated a maximum of 16 types for NumberType */
 	SLE_FILE_END      =  0, ///< Used to mark end-of-header in tables.
 	SLE_FILE_I8       =  1,
@@ -40,53 +33,87 @@ enum VarTypes {
 	SLE_FILE_TABLE_END = 12,
 
 	SLE_FILE_VEHORDERID = 12,
+};
+using enum VarFileType;
 
-	SLE_FILE_TYPE_MASK = 0xF, ///< Mask to get the file-type (and not any flags).
+enum {
+	SLE_FILE_TYPE_MASK = 0xF,           ///< Mask to get the file-type (and not any flags).
 	SLE_FILE_HAS_LENGTH_FIELD = 1 << 4, ///< Bit stored in savegame to indicate field has a length field for each entry.
-
-	/* 4 bits allocated a maximum of 16 types for NumberType */
-	SLE_VAR_BL    =  0 << 4,
-	SLE_VAR_I8    =  1 << 4,
-	SLE_VAR_U8    =  2 << 4,
-	SLE_VAR_I16   =  3 << 4,
-	SLE_VAR_U16   =  4 << 4,
-	SLE_VAR_I32   =  5 << 4,
-	SLE_VAR_U32   =  6 << 4,
-	SLE_VAR_I64   =  7 << 4,
-	SLE_VAR_U64   =  8 << 4,
-	SLE_VAR_NULL  =  9 << 4, ///< useful to write zeros in savegame.
-	SLE_VAR_STR   = 12 << 4, ///< string pointer
-	SLE_VAR_STRQ  = 13 << 4, ///< string pointer enclosed in quotes
-	SLE_VAR_NAME  = 14 << 4, ///< old custom name to be converted to a std::string
-	SLE_VAR_CNAME = 15 << 4, ///< old custom name to be converted to a char pointer
-	/* 0 more possible memory-primitives */
-
-	/* Default combinations of variables. As savegames change, so can variables
-	 * and thus it is possible that the saved value and internal size do not
-	 * match and you need to specify custom combo. The defaults are listed here */
-	SLE_BOOL         = SLE_FILE_I8  | SLE_VAR_BL,
-	SLE_INT8         = SLE_FILE_I8  | SLE_VAR_I8,
-	SLE_UINT8        = SLE_FILE_U8  | SLE_VAR_U8,
-	SLE_INT16        = SLE_FILE_I16 | SLE_VAR_I16,
-	SLE_UINT16       = SLE_FILE_U16 | SLE_VAR_U16,
-	SLE_INT32        = SLE_FILE_I32 | SLE_VAR_I32,
-	SLE_UINT32       = SLE_FILE_U32 | SLE_VAR_U32,
-	SLE_INT64        = SLE_FILE_I64 | SLE_VAR_I64,
-	SLE_UINT64       = SLE_FILE_U64 | SLE_VAR_U64,
-	SLE_STRINGID     = SLE_FILE_STRINGID | SLE_VAR_U32,
-	SLE_STR          = SLE_FILE_STRING   | SLE_VAR_STR,
-	SLE_STRQ         = SLE_FILE_STRING   | SLE_VAR_STRQ,
-	SLE_NAME         = SLE_FILE_STRINGID | SLE_VAR_NAME,
-	SLE_CNAME        = SLE_FILE_STRINGID | SLE_VAR_CNAME,
-	SLE_VEHORDERID   = SLE_FILE_VEHORDERID  | SLE_VAR_U16,
-
-	/* 8 bits allocated for a maximum of 8 flags
-	 * Flags directing saving/loading of a variable */
-	SLF_ALLOW_CONTROL   = 1 << 8, ///< Allow control codes in the strings.
-	SLF_ALLOW_NEWLINE   = 1 << 9, ///< Allow new lines in the strings.
 };
 
-typedef uint32_t VarType;
+/** The types/structures of data we have in memory. */
+enum class VarMemType : uint8_t {
+	SLE_VAR_BL,
+	SLE_VAR_I8,
+	SLE_VAR_U8,
+	SLE_VAR_I16,
+	SLE_VAR_U16,
+	SLE_VAR_I32,
+	SLE_VAR_U32,
+	SLE_VAR_I64,
+	SLE_VAR_U64,
+	SLE_VAR_NULL,  ///< useful to write zeros in savegame.
+	SLE_VAR_STR,   ///< string pointer
+	SLE_VAR_STRQ,  ///< string pointer enclosed in quotes
+	SLE_VAR_NAME,  ///< old custom name to be converted to a std::string
+	SLE_VAR_CNAME, ///< old custom name to be converted to a char pointer
+};
+using enum VarMemType;
+
+enum class VarTypeFlag : uint8_t {
+	SLF_ALLOW_CONTROL, ///< Allow control codes in the strings.
+	SLF_ALLOW_NEWLINE, ///< Allow new lines in the strings.
+};
+using enum VarTypeFlag;
+using VarTypeFlags = EnumBitSet<VarTypeFlag, uint8_t>;
+
+enum class SLRefType : uint8_t;
+
+/** Container of a variable's characteristics about a variable's storage. */
+struct VarType {
+	VarFileType file{};   ///< The way of storing data in the file.
+	VarMemType mem{};     ///< The way of storing data in memory.
+	VarTypeFlags flags{}; ///< Flags (for string handling).
+	SLRefType ref{}; ///< The reference type.
+
+	constexpr VarType() {}
+	constexpr VarType(VarFileType file, VarMemType mem) : file(file), mem(mem) {}
+	constexpr VarType(SLRefType ref) : ref(ref) {}
+
+	constexpr bool operator==(const VarType &other) const = default;
+};
+
+constexpr VarType operator|(VarFileType file, VarMemType mem)
+{
+	return {file, mem};
+}
+
+constexpr VarType operator|(VarMemType mem, VarFileType file)
+{
+	return {file, mem};
+}
+
+constexpr VarType operator|(VarType type, VarTypeFlag flag)
+{
+	type.flags.Set(flag);
+	return type;
+}
+
+static constexpr VarType SLE_BOOL         = SLE_FILE_I8         | SLE_VAR_BL;
+static constexpr VarType SLE_INT8         = SLE_FILE_I8         | SLE_VAR_I8;
+static constexpr VarType SLE_UINT8        = SLE_FILE_U8         | SLE_VAR_U8;
+static constexpr VarType SLE_INT16        = SLE_FILE_I16        | SLE_VAR_I16;
+static constexpr VarType SLE_UINT16       = SLE_FILE_U16        | SLE_VAR_U16;
+static constexpr VarType SLE_INT32        = SLE_FILE_I32        | SLE_VAR_I32;
+static constexpr VarType SLE_UINT32       = SLE_FILE_U32        | SLE_VAR_U32;
+static constexpr VarType SLE_INT64        = SLE_FILE_I64        | SLE_VAR_I64;
+static constexpr VarType SLE_UINT64       = SLE_FILE_U64        | SLE_VAR_U64;
+static constexpr VarType SLE_STRINGID     = SLE_FILE_STRINGID   | SLE_VAR_U32;
+static constexpr VarType SLE_STR          = SLE_FILE_STRING     | SLE_VAR_STR;
+static constexpr VarType SLE_STRQ         = SLE_FILE_STRING     | SLE_VAR_STRQ;
+static constexpr VarType SLE_NAME         = SLE_FILE_STRINGID   | SLE_VAR_NAME;
+static constexpr VarType SLE_CNAME        = SLE_FILE_STRINGID   | SLE_VAR_CNAME;
+static constexpr VarType SLE_VEHORDERID   = SLE_FILE_VEHORDERID | SLE_VAR_U16;
 
 /** Type of data saved. */
 enum SaveLoadTypes {
@@ -204,7 +231,7 @@ inline constexpr SaveLoadStructHandlerFactory MakeSaveLoadStructHandlerFactory()
 
 inline constexpr NamedSaveLoad NSL_STRUCT_COMMON(const char *name, NamedSaveLoadFlags nsl_flags, SaveLoadStructHandlerFactory factory, SaveLoadVersion from, SaveLoadVersion to, SlXvFeatureTest extver)
 {
-	return { name, SaveLoad { true, SL_STRUCT, SLE_FILE_STRUCT, 0, from, to, SLTAG_DEFAULT, { .struct_handler_factory = factory }, { nullptr }, extver }, nsl_flags };
+	return { name, SaveLoad { true, SL_STRUCT, VarType{SLE_FILE_STRUCT, VarMemType{}}, 0, from, to, SLTAG_DEFAULT, { .struct_handler_factory = factory }, { nullptr }, extver }, nsl_flags };
 }
 
 inline constexpr NamedSaveLoad NSL_STRUCT(const char *name, SaveLoadStructHandlerFactory factory, SaveLoadVersion from = SL_MIN_VERSION, SaveLoadVersion to = SL_MAX_VERSION, SlXvFeatureTest extver = {})
@@ -231,7 +258,7 @@ inline constexpr NamedSaveLoad NSLT_STRUCT(const char *name, Args&&... args)
 
 inline constexpr NamedSaveLoad NSLT_STRUCTLIST(const char *name, SaveLoadStructHandlerFactory factory, SaveLoadVersion from = SL_MIN_VERSION, SaveLoadVersion to = SL_MAX_VERSION, SlXvFeatureTest extver = {})
 {
-	return { name, SaveLoad { true, SL_STRUCTLIST, SLE_FILE_STRUCT, 0, from, to, SLTAG_DEFAULT, { .struct_handler_factory = factory }, { nullptr }, extver }, NSLF_TABLE_ONLY };
+	return { name, SaveLoad { true, SL_STRUCTLIST, VarType{SLE_FILE_STRUCT, VarMemType{}}, 0, from, to, SLTAG_DEFAULT, { .struct_handler_factory = factory }, { nullptr }, extver }, NSLF_TABLE_ONLY };
 }
 
 template <typename T>

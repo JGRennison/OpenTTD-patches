@@ -39,7 +39,7 @@ static std::vector<SaveLoad> GetSettingsDesc(bool is_loading)
 		if (!sd->save.ext_feature_test.IsFeaturePresent(_sl_version, sd->save.version_from, sd->save.version_to)) continue;
 
 		VarType new_type{};
-		switch (sd->save.conv & 0x0F) {
+		switch (sd->save.conv.file) {
 			case ::SLE_FILE_I8:
 				new_type.file = VarFileType::I8;
 				break;
@@ -71,9 +71,9 @@ static std::vector<SaveLoad> GetSettingsDesc(bool is_loading)
 				new_type.file = VarFileType::String;
 				break;
 			default:
-				FatalError("Unexpected save conv for {}: 0x{:02X}", sd->name, sd->save.conv);
+				FatalError("Unexpected save conv for {}: file: 0x{:02X}", sd->name, sd->save.conv.file);
 		}
-		switch (sd->save.conv & 0xF0) {
+		switch (sd->save.conv.mem) {
 			case ::SLE_VAR_BL:
 				new_type.mem = VarMemType::Bool;
 				break;
@@ -111,7 +111,7 @@ static std::vector<SaveLoad> GetSettingsDesc(bool is_loading)
 				new_type.mem = VarMemType::StrQ;
 				break;
 			default:
-				FatalError("Unexpected save conv for {}: 0x{:02X}", sd->name, sd->save.conv);
+				FatalError("Unexpected save conv for {}: mem: 0x{:02X}", sd->name, sd->save.conv.mem);
 		}
 
 		/* economy.town_growth_rate is int8_t here, but uint8_t in upstream saves */

@@ -269,7 +269,7 @@ static std::optional<std::vector<uint32_t>> ParseIntList(std::string_view str)
  * @param type the type of elements the array holds (eg INT8, UINT16, etc.)
  * @return return true on success and false on error
  */
-static bool LoadIntList(std::optional<std::string_view> str, void *array, int nelems, VarType type)
+static bool LoadIntList(std::optional<std::string_view> str, void *array, int nelems, VarMemType type)
 {
 	size_t elem_size = SlVarSize(type);
 	std::byte *p = static_cast<std::byte *>(array);
@@ -300,7 +300,7 @@ void ListSettingDesc::FormatValue(format_target &buf, const void *object) const
 	int i, v = 0;
 
 	for (i = 0; i != this->save.length; i++) {
-		switch (GetVarMemType(this->save.conv)) {
+		switch (this->save.conv.mem) {
 			case SLE_VAR_BL:
 			case SLE_VAR_I8:  v = *(const   int8_t *)p; p += 1; break;
 			case SLE_VAR_U8:  v = *(const  uint8_t *)p; p += 1; break;
@@ -531,7 +531,7 @@ void IntSettingDesc::MakeValueValid(int32_t &val) const
 	 * supported. Unsigned 8 and 16-bit variables are safe since they fit into a signed
 	 * 32-bit variable
 	 * TODO: Support 64-bit settings/variables; requires 64 bit over command protocol! */
-	switch (GetVarMemType(this->save.conv)) {
+	switch (this->save.conv.mem) {
 		case SLE_VAR_NULL: return;
 		case SLE_VAR_BL:
 		case SLE_VAR_I8:
@@ -588,7 +588,7 @@ void IntSettingDesc::MakeValueValid(int32_t &val) const
 void IntSettingDesc::Write(const void *object, int32_t val) const
 {
 	void *ptr = GetVariableAddress(object, this->save);
-	WriteValue(ptr, this->save.conv, (int64_t)val);
+	WriteValue(ptr, this->save.conv.mem, (int64_t)val);
 }
 
 /**
@@ -599,7 +599,7 @@ void IntSettingDesc::Write(const void *object, int32_t val) const
 int32_t IntSettingDesc::Read(const void *object) const
 {
 	void *ptr = GetVariableAddress(object, this->save);
-	return (int32_t)ReadValue(ptr, this->save.conv);
+	return (int32_t)ReadValue(ptr, this->save.conv.mem);
 }
 
 /**
@@ -736,13 +736,13 @@ void ListSettingDesc::ParseValue(const IniItem *item, void *object) const
 		str = this->def;
 	}
 	void *ptr = GetVariableAddress(object, this->save);
-	if (!LoadIntList(str, ptr, this->save.length, GetVarMemType(this->save.conv))) {
+	if (!LoadIntList(str, ptr, this->save.length, this->save.conv.mem)) {
 		_settings_error_list.emplace_back(
 			GetEncodedString(STR_CONFIG_ERROR),
 			GetEncodedString(STR_CONFIG_ERROR_ARRAY, this->name));
 
 		/* Use default */
-		LoadIntList(this->def, ptr, this->save.length, GetVarMemType(this->save.conv));
+		LoadIntList(this->def, ptr, this->save.length, this->save.conv.mem);
 	}
 }
 
@@ -834,7 +834,7 @@ void IntSettingDesc::ResetToDefault(void *object) const
 void StringSettingDesc::FormatValue(format_target &buf, const void *object) const
 {
 	const std::string &str = this->Read(object);
-	switch (GetVarMemType(this->save.conv)) {
+	switch (this->save.conv.mem) {
 		case SLE_VAR_STR:
 			buf.append(str);
 			break;
@@ -853,7 +853,7 @@ bool StringSettingDesc::IsSameValue(const IniItem *item, void *object) const
 {
 	/* The ini parsing removes the quotes, which are needed to retain the spaces in STRQs,
 	 * so those values are always different in the parsed ini item than they should be. */
-	if (GetVarMemType(this->save.conv) == SLE_VAR_STRQ) return false;
+	if (this->save.conv.mem == SLE_VAR_STRQ) return false;
 
 	const std::string &str = this->Read(object);
 	return item->value->compare(str) == 0;
@@ -2060,7 +2060,7 @@ bool SetSettingValue(const StringSettingDesc *sd, std::string_view value, bool f
 {
 	assert(sd->flags.Test(SettingFlag::NoNetworkSync));
 
-	if (GetVarMemType(sd->save.conv) == SLE_VAR_STRQ && value == "(null)") {
+	if (sd->save.conv.mem == SLE_VAR_STRQ && value == "(null)") {
 		value = {};
 	}
 
@@ -2570,14 +2570,16 @@ extern const ChunkHandlerTable _setting_chunk_handlers(setting_chunk_handlers);
 
 static bool IsSignedVarMemType(VarType vt)
 {
-	switch (GetVarMemType(vt)) {
+	switch (vt.mem) {
 		case SLE_VAR_I8:
 		case SLE_VAR_I16:
 		case SLE_VAR_I32:
 		case SLE_VAR_I64:
 			return true;
+
+		default:
+			return false;
 	}
-	return false;
 }
 
 void SetupTimeSettings()

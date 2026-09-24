@@ -252,7 +252,7 @@ struct NullStruct {
 using ChunkHandlerTable = std::span<const ChunkHandler>;
 
 /** Type of reference (#SLE_REF, #SLE_CONDREF). */
-enum SLRefType {
+enum class SLRefType : uint8_t {
 	REF_ORDER            =  0,	///< Load/save a reference to an order.
 	REF_VEHICLE          =  1,	///< Load/save a reference to a vehicle.
 	REF_STATION          =  2,	///< Load/save a reference to a station.
@@ -267,34 +267,13 @@ enum SLRefType {
 	REF_LINK_GRAPH_JOB   = 11,	///< Load/save a reference to a link graph job.
 	REF_TEMPLATE_VEHICLE = 12,	///< Load/save a reference to a template vehicle
 };
+using enum SLRefType;
 
 /** Flags for chunk extended headers */
 enum SaveLoadChunkExtHeaderFlags {
 	SLCEHF_BIG_RIFF           = 1 << 0,  ///< This block uses a 60-bit RIFF chunk size
 };
 DECLARE_ENUM_AS_BIT_SET(SaveLoadChunkExtHeaderFlags)
-
-/**
- * Get the NumberType of a setting. This describes the integer type
- * as it is represented in memory
- * @param type VarType holding information about the variable-type
- * @return the SLE_VAR_* part of a variable-type description
- */
-inline constexpr VarType GetVarMemType(VarType type)
-{
-	return type & 0xF0; // GB(type, 4, 4) << 4;
-}
-
-/**
- * Get the FileType of a setting. This describes the integer type
- * as it is represented in a savegame/file
- * @param type VarType holding information about the file-type
- * @return the SLE_FILE_* part of a variable-type description
- */
-inline constexpr VarType GetVarFileType(VarType type)
-{
-	return type & 0xF; // GB(type, 0, 4);
-}
 
 template <class, template <class, class...> class>
 struct sl_is_instance : public std::false_type {};
@@ -319,9 +298,9 @@ public:
  * @param type VarType to get size of.
  * @return size of type in bytes.
  */
-inline constexpr size_t SlVarSize(VarType type)
+inline constexpr size_t SlVarSize(VarMemType type)
 {
-	switch (GetVarMemType(type)) {
+	switch (type) {
 		case SLE_VAR_BL:
 			return sizeof(bool);
 		case SLE_VAR_I8:
@@ -348,14 +327,14 @@ inline constexpr size_t SlVarSize(VarType type)
  * matches with the actual variable size, for primitive types.
  */
 template <typename TYPE>
-inline constexpr bool SlCheckPrimitiveTypeVar(VarType type)
+inline constexpr bool SlCheckPrimitiveTypeVar(VarMemType type)
 {
 	using T = typename std::remove_reference<TYPE>::type;
 
-	if (GetVarMemType(type) == SLE_VAR_NAME) {
+	if (type == SLE_VAR_NAME) {
 		return std::is_same_v<T, std::string>;
 	}
-	if (GetVarMemType(type) == SLE_VAR_CNAME) {
+	if (type == SLE_VAR_CNAME) {
 		return std::is_same_v<T, char *> || std::is_same_v<T, const char *> || std::is_same_v<T, TinyString>;
 	}
 	if (!std::is_integral_v<T> && !std::is_enum_v<T> && !SlIsPrimitiveType<T>) return false;
@@ -367,7 +346,7 @@ inline constexpr bool SlCheckPrimitiveTypeVar(VarType type)
  * matches with the actual variable size, for array types.
  */
 template <typename TYPE>
-inline constexpr bool SlCheckArrayTypeVar(VarType type, size_t length, bool top_level)
+inline constexpr bool SlCheckArrayTypeVar(VarMemType type, size_t length, bool top_level)
 {
 	using T = typename std::remove_reference<TYPE>::type;
 
@@ -390,9 +369,9 @@ inline constexpr bool SlCheckArrayTypeVar(VarType type, size_t length, bool top_
  * matches with the actual variable size.
  */
 template <typename T>
-inline constexpr bool SlCheckVar(SaveLoadType cmd, VarType type, size_t length)
+inline constexpr bool SlCheckVar(SaveLoadType cmd, VarMemType type, size_t length)
 {
-	if (GetVarMemType(type) == SLE_VAR_NULL) return true;
+	if (type == SLE_VAR_NULL) return true;
 
 	switch (cmd) {
 		case SL_VAR:
@@ -458,14 +437,14 @@ inline constexpr bool SlCheckVar(SaveLoadType cmd, VarType type, size_t length)
 	}
 }
 
-template <typename T, SaveLoadType cmd, VarType type, size_t length>
+template <typename T, SaveLoadType cmd, VarMemType type, size_t length>
 inline constexpr void *SlVarWrapper(void *ptr)
 {
 	static_assert(SlCheckVar<T>(cmd, type, length));
 	return ptr;
 }
 
-template <typename T, SaveLoadType cmd, VarType type, size_t length>
+template <typename T, SaveLoadType cmd, VarMemType type, size_t length>
 inline constexpr size_t SlVarWrapper(size_t offset)
 {
 	static_assert(SlCheckVar<T>(cmd, type, length));
@@ -531,7 +510,7 @@ inline constexpr SaveLoadCustomHandlers SlHandlerUnionValue()
  * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
  * @note In general, it is better to use one of the SLE_* macros below.
  */
-#define SLE_GENERAL_X(cmd, base, variable, type, length, from, to, extver) SaveLoad {false, cmd, type, length, from, to, SLTAG_DEFAULT, { .offset = SlVarWrapper<decltype(base::variable), cmd, type, length>(cpp_offsetof(base, variable)) }, { .custom = SlHandlerUnionValue<decltype(base::variable), cmd>() }, extver}
+#define SLE_GENERAL_X(cmd, base, variable, type, length, from, to, extver) SaveLoad {false, cmd, type, length, from, to, SLTAG_DEFAULT, { .offset = SlVarWrapper<decltype(base::variable), cmd, VarType{type}.mem, length>(cpp_offsetof(base, variable)) }, { .custom = SlHandlerUnionValue<decltype(base::variable), cmd>() }, extver}
 #define SLE_GENERAL(cmd, base, variable, type, length, from, to) SLE_GENERAL_X(cmd, base, variable, type, length, from, to, SlXvFeatureTest())
 
 /**
@@ -767,10 +746,10 @@ inline constexpr SaveLoadCustomHandlers SlHandlerUnionValue()
 #define SLE_CONDNULL(length, from, to) SLE_CONDNULL_X(length, from, to, SlXvFeatureTest())
 
 /** Translate values ingame to different values in the savegame and vv. */
-#define SLE_WRITEBYTE(base, variable) SLE_GENERAL(SL_WRITEBYTE, base, variable, 0, 0, SL_MIN_VERSION, SL_MAX_VERSION)
+#define SLE_WRITEBYTE(base, variable) SLE_GENERAL(SL_WRITEBYTE, base, variable, VarType{}, 0, SL_MIN_VERSION, SL_MAX_VERSION)
 
 /** SaveLoad include, for non-table use with SlFilterObject/SlFilterNamedSaveLoadTable. */
-#define SLE_INCLUDE(inc_functor) SaveLoad { false, SL_INCLUDE, 0, 0, SL_MIN_VERSION, SL_MAX_VERSION, SLTAG_DEFAULT, { .include_functor = inc_functor }, { nullptr }, SlXvFeatureTest()}
+#define SLE_INCLUDE(inc_functor) SaveLoad { false, SL_INCLUDE, VarType{}, 0, SL_MIN_VERSION, SL_MAX_VERSION, SLTAG_DEFAULT, { .include_functor = inc_functor }, { nullptr }, SlXvFeatureTest()}
 
 /**
  * Storage of global simple variables, references (pointers), and arrays.
@@ -782,7 +761,7 @@ inline constexpr SaveLoadCustomHandlers SlHandlerUnionValue()
  * @param extver   SlXvFeatureTest to test (along with from and to) which savegames have the field
  * @note In general, it is better to use one of the SLEG_* macros below.
  */
-#define SLEG_GENERAL_X(cmd, variable, type, length, from, to, extver) SaveLoad {true, cmd, type, length, from, to, SLTAG_DEFAULT, { SlVarWrapper<decltype(variable), cmd, type, length>((void*)&variable) }, { .custom = SlHandlerUnionValue<decltype(variable), cmd>() }, extver}
+#define SLEG_GENERAL_X(cmd, variable, type, length, from, to, extver) SaveLoad {true, cmd, type, length, from, to, SLTAG_DEFAULT, { SlVarWrapper<decltype(variable), cmd, VarType{type}.mem, length>((void*)&variable) }, { .custom = SlHandlerUnionValue<decltype(variable), cmd>() }, extver}
 #define SLEG_GENERAL(cmd, variable, type, length, from, to) SLEG_GENERAL_X(cmd, variable, type, length, from, to, SlXvFeatureTest())
 
 /**
@@ -1003,16 +982,6 @@ inline bool SlIsObjectCurrentlyValid(SaveLoadVersion version_from, SaveLoadVersi
 }
 
 /**
- * Check if the given saveload type is a numeric type.
- * @param conv the type to check
- * @return True if it's a numeric type.
- */
-inline bool IsNumericType(VarType conv)
-{
-	return GetVarMemType(conv) <= SLE_VAR_U64;
-}
-
-/**
  * Get the address of the variable. Which one to pick depends on the object
  * pointer. If it is nullptr we are dealing with global variables so the address
  * is taken. If non-null only the offset is stored in the union and we need
@@ -1025,7 +994,7 @@ inline void *GetVariableAddress(const void *object, const SaveLoad &sld)
 
 #ifdef _DEBUG
 	/* Entry is a null-variable, mostly used to read old savegames etc. */
-	if (GetVarMemType(sld.conv) == SLE_VAR_NULL) {
+	if (sld.conv.mem == SLE_VAR_NULL) {
 		assert(sld.offset == 0);
 		return nullptr;
 	}
@@ -1036,8 +1005,8 @@ inline void *GetVariableAddress(const void *object, const SaveLoad &sld)
 	return const_cast<uint8_t *>((const uint8_t *)object + sld.offset);
 }
 
-int64_t ReadValue(const void *ptr, VarType conv);
-void WriteValue(void *ptr, VarType conv, int64_t val);
+int64_t ReadValue(const void *ptr, VarMemType conv);
+void WriteValue(void *ptr, VarMemType conv, int64_t val);
 
 void SlSetArrayIndex(uint index);
 

@@ -205,7 +205,7 @@ NamedSaveLoadTable GetLinkGraphJobDesc()
 		const SettingTable &linkgraph_table = GetLinkGraphSettingTable();
 		for (const auto &desc : linkgraph_table) {
 			SaveLoad sl = desc->save;
-			if (GetVarMemType(sl.conv) != SLE_VAR_NULL) {
+			if (sl.conv.mem != SLE_VAR_NULL) {
 				char *&address = reinterpret_cast<char *&>(sl.address);
 				address -= offset_gamesettings;
 				address += offset_component;
