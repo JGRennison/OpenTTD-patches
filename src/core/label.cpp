@@ -16,20 +16,21 @@
 
 /**
  * Get the label as a \c std::string.
- * If the label is all \c std::isgraph characters, it will return these characters as string,
+ * If the label is all \c std::isgraph characters and format_hex is false, it will return these characters as string,
  * otherwise it will format it as a 8-digit hexadecimal.
+ * @param format_hex Always format as hex.
  * @return The label as string.
  */
-std::string BaseLabel::AsString() const
+std::string BaseLabel::AsString(bool format_hex) const
 {
 	format_buffer_sized<64> buf;
-	this->fmt_format_value(buf);
+	this->fmt_format_value(buf, format_hex);
 	return buf.to_string();
 }
 
-void BaseLabel::fmt_format_value(format_target &output) const
+void BaseLabel::fmt_format_value(format_target &output, bool format_hex) const
 {
-	if (std::ranges::all_of(*this, [](uint8_t c) { return std::isgraph(c); })) {
+	if (!format_hex && std::ranges::all_of(*this, [](uint8_t c) { return std::isgraph(c); })) {
 		output.append(std::string_view{reinterpret_cast<const char *>(this->data()), this->size()});
 	} else {
 		FormatArrayAsHex(output, *this);
