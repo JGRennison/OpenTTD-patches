@@ -3339,7 +3339,7 @@ public:
 
 				int selected = (order->GetConditionValue() & GetBitMaskSC<uint16_t>(ODFLCB_TAG_START, ODFLCB_TAG_COUNT));
 				SB(selected, ODCB_MODE_START, ODCB_MODE_COUNT, OCDM_TAG);
-				ShowDropDownList(this, std::move(list), selected, WID_O_COND_SCHED_VALUE, 0, DropDownOptions{}, DDSF_SHARED);
+				if (!list.empty()) ShowDropDownList(this, std::move(list), selected, WID_O_COND_SCHED_VALUE, 0, DropDownOptions{}, DDSF_SHARED);
 				break;
 			}
 
