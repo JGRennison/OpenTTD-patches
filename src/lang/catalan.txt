@@ -1219,9 +1219,9 @@ STR_RIVERS_MODERATE                                             :Normal
 STR_RIVERS_LOT                                                  :Molts
 
 ###length 3
-STR_DISASTER_NONE                                               :Cap
-STR_DISASTER_REDUCED                                            :Reduït
-STR_DISASTER_NORMAL                                             :Normal
+STR_BREAKDOWNS_NONE                                             :Cap
+STR_BREAKDOWNS_REDUCED                                          :Reduït
+STR_BREAKDOWNS_NORMAL                                           :Normal
 
 ###length 4
 STR_SUBSIDY_X1_5                                                :x1,5
@@ -4731,9 +4731,9 @@ STR_ORDER_DROP_FULL_LOAD_ANY                                    :Carrega del tot
 STR_ORDER_DROP_NO_LOADING                                       :No carreguis
 STR_ORDER_TOOLTIP_FULL_LOAD                                     :{BLACK}Canvia el comportament de càrrega de l'ordre remarcada
 
-STR_ORDER_TOGGLE_UNLOAD                                         :{BLACK}Descarrega tot
+STR_ORDER_TOGGLE_UNLOAD                                         :{BLACK}Força que es descarregui tot
 STR_ORDER_DROP_UNLOAD_IF_ACCEPTED                               :Descarrega si s'accepta
-STR_ORDER_DROP_UNLOAD                                           :Descarrega tot
+STR_ORDER_DROP_UNLOAD                                           :Força la descàrrega fins i tot si no s'accepta
 STR_ORDER_DROP_TRANSFER                                         :Transfereix
 STR_ORDER_DROP_NO_UNLOADING                                     :No descarreguis
 STR_ORDER_TOOLTIP_UNLOAD                                        :{BLACK}Canvia el comportament de descàrrega de l'ordre remarcada
@@ -4836,10 +4836,10 @@ STR_ORDER_IMPLICIT                                              :{SPACE}(Implíc
 STR_ORDER_FULL_LOAD                                             :{SPACE}(Carrega del tot)
 STR_ORDER_FULL_LOAD_ANY                                         :{SPACE}(Carrega del tot qualsevol càrrega)
 STR_ORDER_NO_LOAD                                               :{SPACE}(No carregar)
-STR_ORDER_UNLOAD                                                :{SPACE}(Descarrega i agafa la càrrega)
-STR_ORDER_UNLOAD_FULL_LOAD                                      :{SPACE}(Descarrega i espera carregar del tot)
-STR_ORDER_UNLOAD_FULL_LOAD_ANY                                  :{SPACE}(Descarrega i espera una càrrega completa qualsevol)
-STR_ORDER_UNLOAD_NO_LOAD                                        :{SPACE}(Descarrega i deixa buit)
+STR_ORDER_UNLOAD                                                :{SPACE}(Força la descàrrega i agafa càrrega)
+STR_ORDER_UNLOAD_FULL_LOAD                                      :{SPACE}(Força la descàrrega i espera que es carregui del tot)
+STR_ORDER_UNLOAD_FULL_LOAD_ANY                                  :{SPACE}(Força la descàrrega i espera una càrrega completa qualsevol)
+STR_ORDER_UNLOAD_NO_LOAD                                        :{SPACE}(Força la descàrrega i deixa'l buit)
 STR_ORDER_TRANSFER                                              :{SPACE}(Transfereix i agafa càrrega)
 STR_ORDER_TRANSFER_FULL_LOAD                                    :{SPACE}(Transfereix i espera una càrrega completa)
 STR_ORDER_TRANSFER_FULL_LOAD_ANY                                :{SPACE}(Transfereix i espera qualsevol càrrega completa)
@@ -4852,9 +4852,9 @@ STR_ORDER_NO_UNLOAD_NO_LOAD                                     :{SPACE}(No desc
 STR_ORDER_AUTO_REFIT                                            :{SPACE}(Remodelació a {STRING})
 STR_ORDER_FULL_LOAD_REFIT                                       :{SPACE}(Càrrega completa amb remodelació a {STRING})
 STR_ORDER_FULL_LOAD_ANY_REFIT                                   :{SPACE}(Càrrega completa de qualsevol càrrega amb remodelació a {STRING})
-STR_ORDER_UNLOAD_REFIT                                          :{SPACE}(Descarrega i pren la càrrega amb remodelació a {STRING})
-STR_ORDER_UNLOAD_FULL_LOAD_REFIT                                :{SPACE}(Descarrega i espera fins a càrrega completa amb remodelació a {STRING})
-STR_ORDER_UNLOAD_FULL_LOAD_ANY_REFIT                            :{SPACE}(Descarrega i espera fins a càrrega completa qualsevol amb remodelació a {STRING})
+STR_ORDER_UNLOAD_REFIT                                          :{SPACE}(Força la descàrrega i pren la càrrega amb remodelació a {STRING})
+STR_ORDER_UNLOAD_FULL_LOAD_REFIT                                :{SPACE}(Força la descàrrega i espera fins a càrrega completa amb remodelació a {STRING})
+STR_ORDER_UNLOAD_FULL_LOAD_ANY_REFIT                            :{SPACE}(Força la descàrrega i espera fins a càrrega completa qualsevol amb remodelació a {STRING})
 STR_ORDER_TRANSFER_REFIT                                        :{SPACE}(Transfereix i pren la càrrega amb remodelació a {STRING})
 STR_ORDER_TRANSFER_FULL_LOAD_REFIT                              :{SPACE}(Transfereix i espera a càrrega completa amb remodelació a {STRING})
 STR_ORDER_TRANSFER_FULL_LOAD_ANY_REFIT                          :{SPACE}(Transfereix i espera a càrrega completa qualsevol amb remodelació a {STRING})

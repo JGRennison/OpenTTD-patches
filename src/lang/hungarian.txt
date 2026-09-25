@@ -1282,9 +1282,9 @@ STR_RIVERS_MODERATE                                             :Közepes
 STR_RIVERS_LOT                                                  :Sok
 
 ###length 3
-STR_DISASTER_NONE                                               :Nincs
-STR_DISASTER_REDUCED                                            :Ritka
-STR_DISASTER_NORMAL                                             :Normál
+STR_BREAKDOWNS_NONE                                             :Nincs
+STR_BREAKDOWNS_REDUCED                                          :Ritka
+STR_BREAKDOWNS_NORMAL                                           :Normál
 
 ###length 4
 STR_SUBSIDY_X1_5                                                :1,5x
@@ -4794,9 +4794,9 @@ STR_ORDER_DROP_FULL_LOAD_ANY                                    :Telerakodás b�
 STR_ORDER_DROP_NO_LOADING                                       :Nincs berakodás
 STR_ORDER_TOOLTIP_FULL_LOAD                                     :{BLACK}A kijelölt célponton a berakodási szokások beállítása
 
-STR_ORDER_TOGGLE_UNLOAD                                         :{BLACK}Teljes kirakodás
+STR_ORDER_TOGGLE_UNLOAD                                         :{BLACK}Kényszerített teljes kirakodás
 STR_ORDER_DROP_UNLOAD_IF_ACCEPTED                               :Kirakodás ha fogadott
-STR_ORDER_DROP_UNLOAD                                           :Teljes kirakodás
+STR_ORDER_DROP_UNLOAD                                           :Kényszerített teljes kirakodás, akkor is ha nem fogadott
 STR_ORDER_DROP_TRANSFER                                         :Elszállítás
 STR_ORDER_DROP_NO_UNLOADING                                     :Nincs kirakodás
 STR_ORDER_TOOLTIP_UNLOAD                                        :{BLACK}A kijelölt célponton a kirakodási szokások beállítása
@@ -4899,10 +4899,10 @@ STR_ORDER_IMPLICIT                                              :{SPACE}(Automat
 STR_ORDER_FULL_LOAD                                             :{SPACE}(Telerakodás)
 STR_ORDER_FULL_LOAD_ANY                                         :{SPACE}(Bármiből teljes berakodás)
 STR_ORDER_NO_LOAD                                               :{SPACE}(Nincs berakodás)
-STR_ORDER_UNLOAD                                                :{SPACE}(Kirakodás és rakományfelvétel)
-STR_ORDER_UNLOAD_FULL_LOAD                                      :{SPACE}(Kirakodás és mindenből teljes berakodás)
-STR_ORDER_UNLOAD_FULL_LOAD_ANY                                  :{SPACE}(Kirakodás és bármiből teljes berakodás)
-STR_ORDER_UNLOAD_NO_LOAD                                        :{SPACE}(Kirakodás és üresen indulás)
+STR_ORDER_UNLOAD                                                :{SPACE}(Kinyszerített kirakodás és rakományfelvétel)
+STR_ORDER_UNLOAD_FULL_LOAD                                      :{SPACE}(Kényszerített kirakodás és mindenből teljes berakodás)
+STR_ORDER_UNLOAD_FULL_LOAD_ANY                                  :{SPACE}(Kényszerített kirakodás és bármiből teljes berakodás)
+STR_ORDER_UNLOAD_NO_LOAD                                        :{SPACE}(Kényszerített kirakodás és üresen indulás)
 STR_ORDER_TRANSFER                                              :(Elszállítás és rakományfelvétel)
 STR_ORDER_TRANSFER_FULL_LOAD                                    :{SPACE}(Elszállítás és mindenből teljes berakodás)
 STR_ORDER_TRANSFER_FULL_LOAD_ANY                                :{SPACE}(Elszállítás és bármiből teljes berakodás)
@@ -4915,9 +4915,9 @@ STR_ORDER_NO_UNLOAD_NO_LOAD                                     :{SPACE}(Nincs k
 STR_ORDER_AUTO_REFIT                                            :{SPACE}(Átalakítás {STRING} szállítására)
 STR_ORDER_FULL_LOAD_REFIT                                       :{SPACE}(Mindenből teljes berakodás és átalakítás {STRING} rakományra)
 STR_ORDER_FULL_LOAD_ANY_REFIT                                   :{SPACE}(Bármiből teljes berakodás és átalakítás {STRING} rakományra)
-STR_ORDER_UNLOAD_REFIT                                          :{SPACE}(Kirakodás, rakományfelvétel és átalakítás {STRING} rakományra)
-STR_ORDER_UNLOAD_FULL_LOAD_REFIT                                :{SPACE}(Kirakodás, mindenből teljes berakodás és átalakítás {STRING} rakományra)
-STR_ORDER_UNLOAD_FULL_LOAD_ANY_REFIT                            :{SPACE}(Kirakodás, bármiből teljes berakodás és átalakítás {STRING} rakományra)
+STR_ORDER_UNLOAD_REFIT                                          :{SPACE}(Kényszerített kirakodás, rakományfelvétel és átalakítás {STRING} rakományra)
+STR_ORDER_UNLOAD_FULL_LOAD_REFIT                                :{SPACE}(Kényszerített kirakodás, mindenből teljes berakodás és átalakítás {STRING} rakományra)
+STR_ORDER_UNLOAD_FULL_LOAD_ANY_REFIT                            :{SPACE}(Kényszerített kirakodás, bármiből teljes berakodás és átalakítás {STRING} rakományra)
 STR_ORDER_TRANSFER_REFIT                                        :{SPACE}(Elszállítás, rakományfelvétel és átalakítás {STRING} rakományra)
 STR_ORDER_TRANSFER_FULL_LOAD_REFIT                              :{SPACE}(Elszállítás, bármiből teljes berakodás és átalakítás {STRING} rakományra)
 STR_ORDER_TRANSFER_FULL_LOAD_ANY_REFIT                          :{SPACE}(Elszállítás, mindenből teljes berakodás és átalakítás {STRING} rakományra)

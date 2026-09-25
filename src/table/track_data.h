@@ -97,7 +97,8 @@ extern const CornerIndexArray<TrackBits> _corner_to_trackbits{
 	TRACK_BIT_LEFT, TRACK_BIT_LOWER, TRACK_BIT_RIGHT, TRACK_BIT_UPPER,
 };
 
-extern const TrackdirBits _uphill_trackdirs[] = {
+/** Lookup table to convert tile's slope into corresponding track directions for going uphill. */
+extern const SlopeIndexArray<TrackdirBits> _uphill_trackdirs = {{{
 	TRACKDIR_BIT_NONE                    , ///<  0 SLOPE_FLAT
 	TRACKDIR_BIT_X_SW | TRACKDIR_BIT_Y_NW, ///<  1 SLOPE_W   -> inclined for diagonal track
 	TRACKDIR_BIT_X_SW | TRACKDIR_BIT_Y_SE, ///<  2 SLOPE_S   -> inclined for diagonal track
@@ -129,4 +130,4 @@ extern const TrackdirBits _uphill_trackdirs[] = {
 	TRACKDIR_BIT_NONE                    , ///< 28 invalid
 	TRACKDIR_BIT_X_NE | TRACKDIR_BIT_Y_NW, ///< 29 SLOPE_STEEP_N -> inclined for diagonal track
 	TRACKDIR_BIT_X_NE | TRACKDIR_BIT_Y_SE, ///< 30 SLOPE_STEEP_E -> inclined for diagonal track
-};
+}}};

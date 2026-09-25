@@ -663,7 +663,7 @@ inline bool IsStraightRoadTrackdir(Trackdir dir)
 inline bool IsUphillTrackdir(Slope slope, Trackdir dir)
 {
 	dbg_assert(IsValidTrackdirForRoadVehicle(dir));
-	extern const TrackdirBits _uphill_trackdirs[];
+	extern const SlopeIndexArray<TrackdirBits> _uphill_trackdirs;
 	return HasBit(_uphill_trackdirs[RemoveHalftileSlope(slope)], dir);
 }
 

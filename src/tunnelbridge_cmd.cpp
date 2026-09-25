@@ -74,7 +74,7 @@ static const int BRIDGE_Z_START = 3;
 
 extern void DrawTrackBits(TileInfo *ti, TrackBits track);
 extern void DrawRoadBitsTunnelBridge(TileInfo *ti);
-extern const RoadBits _invalid_tileh_slopes_road[2][15];
+extern const std::array<NonSteepSlopeIndexArray<RoadBits>, 2> _invalid_tileh_slopes_road;
 
 extern CommandCost IsRailStationBridgeAboveOk(TileIndex tile, const StationSpec *statspec, StationType station_type, uint8_t layout, BridgeAboveInfo bridge_above);
 extern CommandCost IsRoadStopBridgeAboveOK(TileIndex tile, const RoadStopSpec *spec, StationType station_type, bool drive_through, DiagDirection entrance, BridgeAboveInfo bridge_above);

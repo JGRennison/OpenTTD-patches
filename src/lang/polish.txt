@@ -1598,9 +1598,9 @@ STR_RIVERS_MODERATE                                             :Średnio
 STR_RIVERS_LOT                                                  :Dużo
 
 ###length 3
-STR_DISASTER_NONE                                               :Brak
-STR_DISASTER_REDUCED                                            :Zredukowane
-STR_DISASTER_NORMAL                                             :Normalne
+STR_BREAKDOWNS_NONE                                             :Brak
+STR_BREAKDOWNS_REDUCED                                          :Zredukowane
+STR_BREAKDOWNS_NORMAL                                           :Normalne
 
 ###length 4
 STR_SUBSIDY_X1_5                                                :x1.5
@@ -5116,9 +5116,9 @@ STR_ORDER_DROP_FULL_LOAD_ANY                                    :Pełny załadun
 STR_ORDER_DROP_NO_LOADING                                       :Nie ładuj
 STR_ORDER_TOOLTIP_FULL_LOAD                                     :{BLACK}Zmień sposób załadunku w zaznaczonym poleceniu
 
-STR_ORDER_TOGGLE_UNLOAD                                         :{BLACK}Rozładuj wszystko
+STR_ORDER_TOGGLE_UNLOAD                                         :{BLACK}Wymuś rozładunek
 STR_ORDER_DROP_UNLOAD_IF_ACCEPTED                               :Rozładuj, jeśli akceptowane
-STR_ORDER_DROP_UNLOAD                                           :Rozładuj wszystko
+STR_ORDER_DROP_UNLOAD                                           :Wymuś rozładunek, nawet nieakceptowane
 STR_ORDER_DROP_TRANSFER                                         :Pozostaw do przeładunku
 STR_ORDER_DROP_NO_UNLOADING                                     :Nie rozładowuj
 STR_ORDER_TOOLTIP_UNLOAD                                        :{BLACK}Zmień sposób rozładunku w zaznaczonym poleceniu
@@ -5221,10 +5221,10 @@ STR_ORDER_IMPLICIT                                              :{SPACE}(Sugerow
 STR_ORDER_FULL_LOAD                                             :{SPACE}(Pełny załadunek)
 STR_ORDER_FULL_LOAD_ANY                                         :{SPACE}(Pełny załadunek czegokolwiek)
 STR_ORDER_NO_LOAD                                               :{SPACE}(Nie ładuj)
-STR_ORDER_UNLOAD                                                :{SPACE}(Rozładuj i zabierz ładunek)
-STR_ORDER_UNLOAD_FULL_LOAD                                      :{SPACE}(Rozładuj i czekaj na pełny załadunek)
-STR_ORDER_UNLOAD_FULL_LOAD_ANY                                  :{SPACE}(Rozładuj i czekaj na pełny załadunek czegokolwiek)
-STR_ORDER_UNLOAD_NO_LOAD                                        :{SPACE}(Rozładuj i pozostaw pusty)
+STR_ORDER_UNLOAD                                                :{SPACE}(Wymuś rozładunek i zabierz ładunek)
+STR_ORDER_UNLOAD_FULL_LOAD                                      :{SPACE}(Wymuś rozładunek i czekaj na pełny załadunek)
+STR_ORDER_UNLOAD_FULL_LOAD_ANY                                  :{SPACE}(Wymuś rozładunek i czekaj na pełny załadunek czegokolwiek)
+STR_ORDER_UNLOAD_NO_LOAD                                        :{SPACE}(Wymuś rozładunek i pozostaw pusty)
 STR_ORDER_TRANSFER                                              :{SPACE}(Pozostaw do przeładunku i załaduj)
 STR_ORDER_TRANSFER_FULL_LOAD                                    :{SPACE}(Pozostaw do przeładunku i czekaj na pełny załadunek)
 STR_ORDER_TRANSFER_FULL_LOAD_ANY                                :{SPACE}(Pozostaw do przeładunku i czekaj na pełny załadunek czegokolwiek)
@@ -5237,9 +5237,9 @@ STR_ORDER_NO_UNLOAD_NO_LOAD                                     :{SPACE}(Nie roz
 STR_ORDER_AUTO_REFIT                                            :{SPACE}(Przebuduj na {STRING.b})
 STR_ORDER_FULL_LOAD_REFIT                                       :{SPACE}(Przebuduj na {STRING.b} i czekaj na pełny załadunek)
 STR_ORDER_FULL_LOAD_ANY_REFIT                                   :{SPACE}(Przebuduj na {STRING.b} i czekaj na pełny załadunek czegokolwiek)
-STR_ORDER_UNLOAD_REFIT                                          :{SPACE}(Rozładuj, przebuduj na {STRING.b} i zabierz ładunek)
-STR_ORDER_UNLOAD_FULL_LOAD_REFIT                                :{SPACE}(Rozładuj, przebuduj na {STRING.b} i czekaj na pełny załadunek)
-STR_ORDER_UNLOAD_FULL_LOAD_ANY_REFIT                            :{SPACE}(Rozładuj, przebuduj na {STRING.b} i czekaj na pełny załadunek czegokolwiek)
+STR_ORDER_UNLOAD_REFIT                                          :{SPACE}(Wymuś rozładunek, przebuduj na {STRING.b} i zabierz ładunek)
+STR_ORDER_UNLOAD_FULL_LOAD_REFIT                                :{SPACE}(Wymuś rozładunek, przebuduj na {STRING.b} i czekaj na pełny załadunek)
+STR_ORDER_UNLOAD_FULL_LOAD_ANY_REFIT                            :{SPACE}(Wymuś rozładunek, przebuduj na {STRING.b} i czekaj na pełny załadunek czegokolwiek)
 STR_ORDER_TRANSFER_REFIT                                        :{SPACE}(Pozostaw do przeładunku, przebuduj na {STRING.b} i załaduj)
 STR_ORDER_TRANSFER_FULL_LOAD_REFIT                              :{SPACE}(Pozostaw do przeładunku, przebuduj na {STRING.b} i czekaj na pełny załadunek)
 STR_ORDER_TRANSFER_FULL_LOAD_ANY_REFIT                          :{SPACE}(Pozostaw do przeładunku, przebuduj na {STRING.b} i czekaj na pełny załadunek czegokolwiek)

@@ -1219,9 +1219,9 @@ STR_RIVERS_MODERATE                                             :적당히
 STR_RIVERS_LOT                                                  :많이
 
 ###length 3
-STR_DISASTER_NONE                                               :고장 안남
-STR_DISASTER_REDUCED                                            :적음
-STR_DISASTER_NORMAL                                             :일반
+STR_BREAKDOWNS_NONE                                             :고장 안남
+STR_BREAKDOWNS_REDUCED                                          :적음
+STR_BREAKDOWNS_NORMAL                                           :일반
 
 ###length 4
 STR_SUBSIDY_X1_5                                                :1.5배 지급
@@ -4731,9 +4731,9 @@ STR_ORDER_DROP_FULL_LOAD_ANY                                    :아무 화물�
 STR_ORDER_DROP_NO_LOADING                                       :싣지 않기
 STR_ORDER_TOOLTIP_FULL_LOAD                                     :{BLACK}선택한 목적지에서 화물을 적재할 방식을 변경합니다
 
-STR_ORDER_TOGGLE_UNLOAD                                         :{BLACK}모든 화물 하차
+STR_ORDER_TOGGLE_UNLOAD                                         :{BLACK}모든 화물 강제 하차
 STR_ORDER_DROP_UNLOAD_IF_ACCEPTED                               :화물을 받는경우 하차
-STR_ORDER_DROP_UNLOAD                                           :모든 화물 하차
+STR_ORDER_DROP_UNLOAD                                           :화물을 받지 않아도 모든 화물 강제 하차
 STR_ORDER_DROP_TRANSFER                                         :환승
 STR_ORDER_DROP_NO_UNLOADING                                     :화물을 하차시키지 않음
 STR_ORDER_TOOLTIP_UNLOAD                                        :{BLACK}선택한 목적지에서 화물을 하차할 방식을 변경합니다
@@ -4836,10 +4836,10 @@ STR_ORDER_IMPLICIT                                              :{SPACE}(자동)
 STR_ORDER_FULL_LOAD                                             :{SPACE}(모든 화물을 가득 싣기)
 STR_ORDER_FULL_LOAD_ANY                                         :{SPACE}(아무 화물이나 가득 싣기)
 STR_ORDER_NO_LOAD                                               :{SPACE}(싣지 않기)
-STR_ORDER_UNLOAD                                                :{SPACE}(화물 하차 후 적재)
-STR_ORDER_UNLOAD_FULL_LOAD                                      :{SPACE}(화물 하차 후 모든 화물을 가득 싣기)
-STR_ORDER_UNLOAD_FULL_LOAD_ANY                                  :{SPACE}(화물 하차 후 아무 화물이나 가득 싣기)
-STR_ORDER_UNLOAD_NO_LOAD                                        :{SPACE}(화물 하차 후 빈 차로 출발)
+STR_ORDER_UNLOAD                                                :{SPACE}(화물 강제 하차 후 적재)
+STR_ORDER_UNLOAD_FULL_LOAD                                      :{SPACE}(화물 강제 하차 후 모든 화물을 가득 싣기)
+STR_ORDER_UNLOAD_FULL_LOAD_ANY                                  :{SPACE}(화물 강제 하차 후 아무 화물이나 가득 싣기)
+STR_ORDER_UNLOAD_NO_LOAD                                        :{SPACE}(화물 강제 하차 후 빈 차로 출발)
 STR_ORDER_TRANSFER                                              :{SPACE}(환승 후 화물 적재)
 STR_ORDER_TRANSFER_FULL_LOAD                                    :{SPACE}(환승 후 모든 화물을 가득 싣기)
 STR_ORDER_TRANSFER_FULL_LOAD_ANY                                :{SPACE}(환승 후 아무 화물이나 가득 싣기)
@@ -4852,9 +4852,9 @@ STR_ORDER_NO_UNLOAD_NO_LOAD                                     :{SPACE}(적재 
 STR_ORDER_AUTO_REFIT                                            :{SPACE}({STRING}{G 0 "으" ""}로 개조)
 STR_ORDER_FULL_LOAD_REFIT                                       :{SPACE}({STRING}{G 0 "으" ""}로 개조하며 모든 화물을 가득 싣기)
 STR_ORDER_FULL_LOAD_ANY_REFIT                                   :{SPACE}({STRING}{G 0 "으" ""}로 개조하며 아무 화물이나 가득 싣기)
-STR_ORDER_UNLOAD_REFIT                                          :{SPACE}({STRING}{G 0 "으" ""}로 개조하며 화물 하차 후 적재)
-STR_ORDER_UNLOAD_FULL_LOAD_REFIT                                :{SPACE}({STRING}{G 0 "으" ""}로 개조하며 화물 하차 후 모든 화물을 가득 싣기)
-STR_ORDER_UNLOAD_FULL_LOAD_ANY_REFIT                            :{SPACE}({STRING}{G 0 "으" ""}로 개조하며 화물 하차 후 아무 화물이나 가득 싣기)
+STR_ORDER_UNLOAD_REFIT                                          :{SPACE}({STRING}{G 0 "으" ""}로 개조하며 화물 강제 하차 후 적재)
+STR_ORDER_UNLOAD_FULL_LOAD_REFIT                                :{SPACE}({STRING}{G 0 "으" ""}로 개조하며 화물 강제 하차 후 모든 화물을 가득 싣기)
+STR_ORDER_UNLOAD_FULL_LOAD_ANY_REFIT                            :{SPACE}({STRING}{G 0 "으" ""}로 개조하며 화물 강제 하차 후 아무 화물이나 가득 싣기)
 STR_ORDER_TRANSFER_REFIT                                        :{SPACE}({STRING}{G 0 "으" ""}로 개조하며 환승 후 화물 적재)
 STR_ORDER_TRANSFER_FULL_LOAD_REFIT                              :{SPACE}({STRING}{G 0 "으" ""}로 개조하며 환승 후 모든 화물을 가득 싣기)
 STR_ORDER_TRANSFER_FULL_LOAD_ANY_REFIT                          :{SPACE}({STRING}{G 0 "으" ""}로 개조하며 환승 후 아무 화물이나 가득 싣기)

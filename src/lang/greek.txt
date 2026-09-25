@@ -1311,9 +1311,9 @@ STR_RIVERS_MODERATE                                             :Μεσαία
 STR_RIVERS_LOT                                                  :Πολλά
 
 ###length 3
-STR_DISASTER_NONE                                               :Καμία
-STR_DISASTER_REDUCED                                            :Μειωμένες
-STR_DISASTER_NORMAL                                             :Κανονικές
+STR_BREAKDOWNS_NONE                                             :Καμία
+STR_BREAKDOWNS_REDUCED                                          :Μειωμένες
+STR_BREAKDOWNS_NORMAL                                           :Κανονικές
 
 ###length 4
 STR_SUBSIDY_X1_5                                                :x1.5
@@ -4831,9 +4831,9 @@ STR_ORDER_DROP_FULL_LOAD_ANY                                    :Πλήρης φ
 STR_ORDER_DROP_NO_LOADING                                       :Δίχως φόρτωση
 STR_ORDER_TOOLTIP_FULL_LOAD                                     :{BLACK}Αλλάξτε τη συμπεριφορά φόρτωσης για την επιλεγμένη εντολή
 
-STR_ORDER_TOGGLE_UNLOAD                                         :{BLACK}Ξεφόρτωμα όλων
+STR_ORDER_TOGGLE_UNLOAD                                         :{BLACK}Αναγκαστικό ξεφόρτωμα όλων
 STR_ORDER_DROP_UNLOAD_IF_ACCEPTED                               :Ξεφόρτωμα εάν είναι αποδεκτά
-STR_ORDER_DROP_UNLOAD                                           :Ξεφόρτωμα όλων
+STR_ORDER_DROP_UNLOAD                                           :Αναγκαστικό ξεφόρτωμα όλων ακόμη και αν το φορτίο δεν είναι αποδεκτό
 STR_ORDER_DROP_TRANSFER                                         :Μεταφορά
 STR_ORDER_DROP_NO_UNLOADING                                     :Δίχως ξεφόρτωση
 STR_ORDER_TOOLTIP_UNLOAD                                        :{BLACK}Αλλάξτε τη συμπεριφορά ξεφόρτωσης για την επιλεγμένη εντολή
@@ -4936,10 +4936,10 @@ STR_ORDER_IMPLICIT                                              :{SPACE}(υπο�
 STR_ORDER_FULL_LOAD                                             :{SPACE}(Πλήρης φόρτωση)
 STR_ORDER_FULL_LOAD_ANY                                         :{SPACE}(Πλήρης φόρτωση οποιουδήποτε εμπορεύματος)
 STR_ORDER_NO_LOAD                                               :{SPACE}(Χωρίς φόρτωση)
-STR_ORDER_UNLOAD                                                :{SPACE}(Ξεφόρτωσε και πάρε φορτίο)
-STR_ORDER_UNLOAD_FULL_LOAD                                      :{SPACE}(Ξεφόρτωμα και αναμονή για πλήρη φόρτωση)
-STR_ORDER_UNLOAD_FULL_LOAD_ANY                                  :{SPACE}(Ξεφόρτωμα και αναμονή για πλήρη φόρτωση οποιουδήποτε)
-STR_ORDER_UNLOAD_NO_LOAD                                        :{SPACE}(Ξεφόρτωμα και φύγε άδειο)
+STR_ORDER_UNLOAD                                                :{SPACE}(Ξεφόρτωσε αναγκαστικά και πάρε φορτίο)
+STR_ORDER_UNLOAD_FULL_LOAD                                      :{SPACE}(Αναγκαστικό ξεφόρτωμα και αναμονή για πλήρη φόρτωση)
+STR_ORDER_UNLOAD_FULL_LOAD_ANY                                  :{SPACE}(Αναγκαστικό ξεφόρτωμα και αναμονή για πλήρη φόρτωση οποιουδήποτε)
+STR_ORDER_UNLOAD_NO_LOAD                                        :{SPACE}(Αναγκαστικό ξεφόρτωμα και φύγε άδειο)
 STR_ORDER_TRANSFER                                              :{SPACE}(Μεταφορά και πάρε φορτίο)
 STR_ORDER_TRANSFER_FULL_LOAD                                    :{SPACE}(Μεταφορά και αναμονή για πλήρης φόρτωση)
 STR_ORDER_TRANSFER_FULL_LOAD_ANY                                :{SPACE}(Μεταφορά και αναμονή για πλήρης φόρτωση οποιοδήποτε φορτίου)
@@ -4952,9 +4952,9 @@ STR_ORDER_NO_UNLOAD_NO_LOAD                                     :{SPACE}(Χωρ�
 STR_ORDER_AUTO_REFIT                                            :{SPACE}(Αυτόματη μετατροπή σε {STRING})
 STR_ORDER_FULL_LOAD_REFIT                                       :{SPACE}(Πλήρης φόρτωση με αυτόματη μετατροπή σε {STRING})
 STR_ORDER_FULL_LOAD_ANY_REFIT                                   :{SPACE}(Πλήρης φόρτωση οποιουδήποτε φορτίου με αυτόματη μετατροπή σε {STRING})
-STR_ORDER_UNLOAD_REFIT                                          :{SPACE}(Εκφόρτωση και λήψη φορτίου με αυτόματη μετατροπή σε {STRING})
-STR_ORDER_UNLOAD_FULL_LOAD_REFIT                                :{SPACE}(Εκφόρτωση και αναμονή πλήρους φόρτωσης με αυτόματη μετατροπή σε {STRING})
-STR_ORDER_UNLOAD_FULL_LOAD_ANY_REFIT                            :{SPACE}(Εκφόρτωση και αναμονή οποιασδήποτε πλήρους φόρτωσης με αυτόματη μετατροπή σε {STRING})
+STR_ORDER_UNLOAD_REFIT                                          :{SPACE}(Αναγκαστικό ξεφόρτωμα και λήψη φορτίου με αυτόματη μετατροπή σε {STRING})
+STR_ORDER_UNLOAD_FULL_LOAD_REFIT                                :{SPACE}(Αναγκαστικό ξεφόρτωμα και αναμονή πλήρους φόρτωσης με αυτόματη μετατροπή σε {STRING})
+STR_ORDER_UNLOAD_FULL_LOAD_ANY_REFIT                            :{SPACE}(Αναγκαστικό ξεφόρτωμα και αναμονή οποιασδήποτε πλήρους φόρτωσης με αυτόματη μετατροπή σε {STRING})
 STR_ORDER_TRANSFER_REFIT                                        :{SPACE}(Μεταφορά και λήψη φορτίου με αυτόματη μετατροπή σε {STRING})
 STR_ORDER_TRANSFER_FULL_LOAD_REFIT                              :{SPACE}(Μεταφορά και αναμονή πλήρους φόρτωσης με αυτόματη μετατροπή σε {STRING})
 STR_ORDER_TRANSFER_FULL_LOAD_ANY_REFIT                          :{SPACE}(Μεταφορά και αναμονή οποιασδήποτε πλήρους φόρτωσης με αυτόματη μετατροπή σε {STRING})
