@@ -1201,11 +1201,8 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 		columns[DepartureColumn::VehicleName] = consume_from_end(_settings_client.gui.departure_show_vehicle ? this->veh_width : 0, true);
 		columns[DepartureColumn::Status] = consume_from_end(cached_status_width, true);
 
-		if (ltr) {
-			columns[DepartureColumn::Destination] = { columns[DepartureColumn::ArrivalTime].right, columns[DepartureColumn::Status].left };
-		} else {
-			columns[DepartureColumn::Destination] = { columns[DepartureColumn::Status].right, columns[DepartureColumn::ArrivalTime].left };
-		}
+		/* Remaining space */
+		columns[DepartureColumn::Destination] = { available_left, available_right };
 	}
 
 	/* Draw each departure. */
