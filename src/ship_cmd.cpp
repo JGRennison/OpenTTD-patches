@@ -456,8 +456,9 @@ static bool CheckShipStayInDepot(Ship *v)
 		return true;
 	}
 
-	assert(v->GetVehicleTrackdir() == TRACKDIR_X_NE || v->GetVehicleTrackdir() == TRACKDIR_Y_NW);
-	v->direction = DiagDirToDir(TrackdirToExitdir(v->GetVehicleTrackdir()));
+	const Trackdir trackdir = v->GetVehicleTrackdir();
+	assert_msg(IsDiagonalTrackdir(trackdir), "{}", trackdir);
+	v->direction = DiagDirToDir(TrackdirToExitdir(trackdir));
 	if (CheckReverseShip(v)) v->direction = ReverseDir(v->direction);
 
 	/* Double-ended always exit a depot with the first end facing forward, consistent with train reversal behaviour. */
