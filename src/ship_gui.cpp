@@ -73,9 +73,7 @@ void DrawShipDetails(const Vehicle *v, const Rect &r)
 
 	if (v->Next() != nullptr) {
 		CargoArray max_cargo{};
-		StringID subtype_text[NUM_CARGO];
-
-		memset(subtype_text, 0, sizeof(subtype_text));
+		StringID subtype_text[NUM_CARGO]{};
 
 		for (const Vehicle *u = v; u != nullptr; u = u->Next()) {
 			max_cargo[u->cargo_type] += u->cargo_cap;

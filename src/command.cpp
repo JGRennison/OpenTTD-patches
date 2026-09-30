@@ -908,7 +908,7 @@ void SerialisePayload(BufferSerialisationRef buffer, const T &payload)
 void SerialisedBaseCommandContainer::Serialise(BufferSerialisationRef buffer) const
 {
 	buffer.Send_uint16(to_underlying(this->cmd));
-	buffer.Send_uint16(this->error_msg);
+	buffer.Send_uint16(this->error_msg.base());
 	buffer.Send_uint32(this->tile.base());
 	SerialisePayload(buffer, this->payload);
 }
@@ -916,7 +916,7 @@ void SerialisedBaseCommandContainer::Serialise(BufferSerialisationRef buffer) co
 void DynBaseCommandContainer::Serialise(BufferSerialisationRef buffer) const
 {
 	buffer.Send_uint16(to_underlying(this->cmd));
-	buffer.Send_uint16(this->error_msg);
+	buffer.Send_uint16(this->error_msg.base());
 	buffer.Send_uint32(this->tile.base());
 	SerialisePayload(buffer, *this->payload);
 }
@@ -927,7 +927,7 @@ const char *DynBaseCommandContainer::Deserialise(DeserialisationBuffer &buffer)
 	if (!IsValidCommand(this->cmd)) return "invalid command";
 	if (GetCommandFlags(this->cmd).Test(CommandFlag::Offline)) return "single-player only command";
 
-	this->error_msg = buffer.Recv_uint16();
+	this->error_msg = static_cast<StringID>(buffer.Recv_uint16());
 	this->tile = TileIndex(buffer.Recv_uint32());
 
 	StringValidationSettings default_settings = (!_network_server && GetCommandFlags(this->cmd).Test(CommandFlag::StrCtrl)) ? StringValidationSettings{StringValidationSetting::AllowControlCode, StringValidationSetting::ReplaceWithQuestionMark} : StringValidationSetting::ReplaceWithQuestionMark;

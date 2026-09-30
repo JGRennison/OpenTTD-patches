@@ -159,9 +159,9 @@ public:
 	void FilterVehicleList();
 	StringID GetCargoFilterLabel(CargoType cargo_type) const;
 	DropDownList BuildCargoDropDownList(bool full) const;
-	Dimension GetActionDropdownSize(bool show_autoreplace, bool show_group, bool show_template_replace, StringID change_order_str = 0);
+	Dimension GetActionDropdownSize(bool show_autoreplace, bool show_group, bool show_template_replace, StringID change_order_str = STR_NULL);
 	DropDownList BuildActionDropdownList(bool show_autoreplace, bool show_group, bool show_template_replace,
-			StringID change_order_str = 0, bool show_create_group = false, bool consider_top_level = false);
+			StringID change_order_str = STR_NULL, bool show_create_group = false, bool consider_top_level = false);
 	bool ShouldShowActionDropdownList() const;
 
 	std::span<const StringID> GetVehicleSorterNames() const;

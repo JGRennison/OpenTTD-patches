@@ -442,7 +442,7 @@ uint32_t StationScopeResolver::GetNearbyStationInfo(uint32_t parameter, StationS
 
 		/* General station variables */
 		case 0x82: return 50;
-		case 0x84: return this->st->string_id;
+		case 0x84: return this->st->string_id.base();
 		case 0x86: return 0;
 		case 0xF0: return this->st->facilities.base();
 		case 0xFA: return ClampTo<uint16_t>(this->st->build_date - CalTime::DAYS_TILL_ORIGINAL_BASE_YEAR);

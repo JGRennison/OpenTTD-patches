@@ -15,6 +15,7 @@
 #include "company_type.h"
 #include "core/enum_type.hpp"
 #include "core/geometry_type.hpp"
+#include "strings_id_type.h"
 
 #include <bitset>
 
@@ -104,5 +105,13 @@ bool FocusedWindowSuppressesTabToFastForward();
 Point GetCaretPosition();
 
 void DumpWindowInfo(struct format_target &buffer, const Window *w);
+
+/**
+ * Adding a window number to a string is a common occurence to get the caption for a vehicle type.
+ * @param string The base string.
+ * @param window_number The window number to add.
+ * @return The resulting \c StringID.
+ */
+constexpr StringID operator+(StringID string, WindowNumber window_number) noexcept { return string + static_cast<int32_t>(window_number); }
 
 #endif /* WINDOW_FUNC_H */

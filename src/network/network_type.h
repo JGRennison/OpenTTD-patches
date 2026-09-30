@@ -10,6 +10,7 @@
 #ifndef NETWORK_TYPE_H
 #define NETWORK_TYPE_H
 
+#include "../strings_id_type.h"
 #include "../window_type_trait.h"
 #include "../core/enum_type.hpp"
 #include "../core/pool_id_type.hpp"
@@ -154,6 +155,8 @@ struct NetworkTextMessageData {
 			: data(data), auxdata(auxdata) { }
 
 	NetworkTextMessageData(ClientID data) : data(to_underlying(data)) {}
+
+	NetworkTextMessageData(StringID data) : data(data.base()) {}
 
 	template <typename T> void recv(T &p) {
 		this->data = p.Recv_uint64();

@@ -1073,8 +1073,8 @@ void WriteValue(void *ptr, VarMemType conv, int64_t val)
 		case SLE_VAR_U32: *(uint32_t*)ptr = val; break;
 		case SLE_VAR_I64: *(int64_t *)ptr = val; break;
 		case SLE_VAR_U64: *(uint64_t*)ptr = val; break;
-		case SLE_VAR_NAME: *reinterpret_cast<std::string *>(ptr) = CopyFromOldName(val); break;
-		case SLE_VAR_CNAME: *(TinyString*)ptr = CopyFromOldName(val); break;
+		case SLE_VAR_NAME: *reinterpret_cast<std::string *>(ptr) = CopyFromOldName(static_cast<StringID>(val)); break;
+		case SLE_VAR_CNAME: *(TinyString*)ptr = CopyFromOldName(static_cast<StringID>(val)); break;
 		case SLE_VAR_NULL: break;
 		default: NOT_REACHED();
 	}
@@ -1111,7 +1111,7 @@ int64_t SlLoadValue(VarType conv)
 		case SLE_FILE_U32: x = (uint32_t)SlReadUint32(); break;
 		case SLE_FILE_I64: x = (int64_t )SlReadUint64(); break;
 		case SLE_FILE_U64: x = (uint64_t)SlReadUint64(); break;
-		case SLE_FILE_STRINGID: x = RemapOldStringID((uint16_t)SlReadUint16()); break;
+		case SLE_FILE_STRINGID: x = RemapOldStringID(static_cast<StringID>(SlReadUint16())).base(); break;
 		case SLE_FILE_VEHORDERID:
 			if (SlXvIsFeaturePresent(XSLFI_MORE_VEHICLE_ORDERS)) {
 				x = (uint16_t)SlReadUint16();

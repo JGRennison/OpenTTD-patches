@@ -10,12 +10,15 @@
 #ifndef STRINGS_ID_TYPE_H
 #define STRINGS_ID_TYPE_H
 
+#include "core/strong_typedef_type.hpp"
+
 /**
  * Numeric value that represents a string, independent of the selected language.
  */
-typedef uint32_t StringID;
-static const StringID STR_NULL          = 0x0;
-static const StringID INVALID_STRING_ID = 0xFFFF; ///< Constant representing an invalid string (16bit in case it is used in savegames)
+struct StringIDTag : public StrongType::TypedefTraits<uint32_t, StrongType::Compare, StrongType::Integer> {};
+using StringID = StrongType::Typedef<StringIDTag>;
+static constexpr StringID STR_NULL{0};
+static constexpr StringID INVALID_STRING_ID{0xFFFF}; ///< Constant representing an invalid string (16bit in case it is used in savegames)
 
 class EncodedString;
 

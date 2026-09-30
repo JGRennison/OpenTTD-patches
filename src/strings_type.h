@@ -60,21 +60,21 @@ static const uint TAB_SIZE_NEWGRF     = TAB_SIZE * 256;
 extern std::string _temp_special_strings[16];
 
 /** The number of builtin generators for town names. */
-static constexpr uint32_t BUILTIN_TOWNNAME_GENERATOR_COUNT = 21;
+static constexpr uint16_t BUILTIN_TOWNNAME_GENERATOR_COUNT = 21;
 
 /** Special strings for town names. The town name is generated dynamically on request. */
-static constexpr StringID SPECSTR_TOWNNAME_START = 0x20C0;
-static constexpr StringID SPECSTR_TOWNNAME_END = SPECSTR_TOWNNAME_START + BUILTIN_TOWNNAME_GENERATOR_COUNT;
+static constexpr uint16_t SPECSTR_TOWNNAME_START = 0x20C0;
+static constexpr uint16_t SPECSTR_TOWNNAME_END = SPECSTR_TOWNNAME_START + BUILTIN_TOWNNAME_GENERATOR_COUNT;
 
 /** Special strings for company names on the form "TownName transport". */
-static constexpr StringID SPECSTR_COMPANY_NAME_START = 0x70EA;
-static constexpr StringID SPECSTR_COMPANY_NAME_END = SPECSTR_COMPANY_NAME_START + BUILTIN_TOWNNAME_GENERATOR_COUNT;
+static constexpr StringID SPECSTR_COMPANY_NAME_START{0x70EA};
+static constexpr StringID SPECSTR_COMPANY_NAME_END{SPECSTR_COMPANY_NAME_START + BUILTIN_TOWNNAME_GENERATOR_COUNT};
 
-static constexpr StringID SPECSTR_SILLY_NAME = 0x70E5; ///< Special string for silly company names.
-static constexpr StringID SPECSTR_ANDCO_NAME = 0x70E6; ///< Special string for Surname & Co company names.
-static constexpr StringID SPECSTR_PRESIDENT_NAME = 0x70E7; ///< Special string for the president's name.
+static constexpr StringID SPECSTR_SILLY_NAME{0x70E5}; ///< Special string for silly company names.
+static constexpr StringID SPECSTR_ANDCO_NAME{0x70E6}; ///< Special string for Surname & Co company names.
+static constexpr StringID SPECSTR_PRESIDENT_NAME{0x70E7}; ///< Special string for the president's name.
 
-static constexpr StringID SPECSTR_TEMP_START = 0x7000; ///< First string ID for _temp_special_strings
+static constexpr StringID SPECSTR_TEMP_START{0x7000}; ///< First string ID for _temp_special_strings
 
 template <typename T>
 concept StringParameterAsBase = T::string_parameter_as_base || false;

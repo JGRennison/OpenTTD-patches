@@ -1256,7 +1256,6 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 
 		if (_settings_client.gui.departure_show_vehicle_type) {
 			StringID type = STR_DEPARTURES_TYPE_TRAIN;
-			int offset = (_settings_client.gui.departure_show_vehicle_color ? 1 : 0);
 
 			switch (d->vehicle->type) {
 				case VehicleType::Train:
@@ -1275,7 +1274,7 @@ void DeparturesWindow::DrawDeparturesListItems(const Rect &r) const
 					break;
 			}
 
-			type += offset;
+			if (_settings_client.gui.departure_show_vehicle_color) type++;
 
 			DrawString(columns[DepartureColumn::VehTypeIcon].left, columns[DepartureColumn::VehTypeIcon].right, y, type);
 		}

@@ -360,7 +360,7 @@ struct HeaderFileWriter : HeaderWriter, FileWriter {
 		}
 
 		if (prev + 1 != stringid) fprintf(*this->fh, "\n");
-		fprintf(*this->fh, "static const StringID %s = 0x%X;\n", name.c_str(), stringid);
+		fprintf(*this->fh, "static constexpr StringID %s{0x%X};\n", name.c_str(), stringid);
 		prev = stringid;
 		total_strings++;
 	}

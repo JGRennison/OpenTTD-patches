@@ -363,7 +363,7 @@ public:
 	 * @param cmd_msg optional failure string as passed to DoCommand
 	 * @return a string summarising the command result
 	 */
-	std::string SummaryMessage(StringID cmd_msg = 0) const;
+	std::string SummaryMessage(StringID cmd_msg = STR_NULL) const;
 
 	bool IsSuccessWithMessage() const
 	{

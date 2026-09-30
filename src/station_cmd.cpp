@@ -222,7 +222,7 @@ enum class StationNaming : uint8_t {
 
 /** Information to handle station action 0 property 24 correctly */
 struct StationNameInformation {
-	std::bitset<STR_SV_STNAME_FALLBACK - STR_SV_STNAME> used_names; ///< Used default station suffixes.
+	std::bitset<(STR_SV_STNAME_FALLBACK - STR_SV_STNAME).base()> used_names; ///< Used default station suffixes.
 	std::bitset<NUM_INDUSTRYTYPES> indtypes; ///< Bit set indicating when an industry type has been found.
 
 	/**
@@ -233,7 +233,7 @@ struct StationNameInformation {
 	bool IsAvailable(StringID str) const
 	{
 		assert(IsInsideMM(str, STR_SV_STNAME, STR_SV_STNAME_FALLBACK));
-		return !this->used_names.test(str - STR_SV_STNAME);
+		return !this->used_names.test((str - STR_SV_STNAME).base());
 	}
 
 	/**
@@ -243,7 +243,7 @@ struct StationNameInformation {
 	void SetUsed(StringID str)
 	{
 		assert(IsInsideMM(str, STR_SV_STNAME, STR_SV_STNAME_FALLBACK));
-		this->used_names.set(str - STR_SV_STNAME);
+		this->used_names.set((str - STR_SV_STNAME).base());
 	}
 };
 
@@ -1443,6 +1443,8 @@ void GetStationLayout(uint8_t *layout, uint numtracks, uint plat_len, const Stat
 /**
  * Find a nearby station that joins this station.
  * @tparam T the class to find a station for
+ * @tparam F the filter functor type
+ * @param error_message the error message when building a station on top of others
  * @param existing_station an existing station we build over
  * @param station_to_join the station to join to
  * @param adjacent whether adjacent stations are allowed

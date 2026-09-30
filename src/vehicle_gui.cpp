@@ -2399,7 +2399,7 @@ private:
 		} else if (VehicleListIdentifier::UnPack(this->window_number).type == VehicleListType::Depot) {
 			return STR_VEHICLE_LIST_CHANGE_ORDER_TRAIN_DEPOT + to_underlying(this->vli.vtype);
 		} else {
-			return 0;
+			return STR_NULL;
 		}
 	}
 

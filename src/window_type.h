@@ -895,15 +895,18 @@ public:
 	template <typename T> requires is_convertible_to_window_number_v<T>
 	WindowNumber(T value) : value(to_underlying(value)) {}
 
-	/* Automatically convert to int32_t. */
-	operator int32_t() const { return value; }
+	/**
+	 * Automatically convert to int32_t.
+	 * @return The window number.
+	 */
+	constexpr operator int32_t() const { return value; }
 
 	constexpr int32_t base() const noexcept { return this->value; }
 	constexpr const int32_t &base_ref() const noexcept { return this->value; }
 
 	/* Automatically convert to any other type that might be requested. */
 	template <typename T> requires (std::is_enum_v<T> || std::is_class_v<T>)
-	operator T() const { return static_cast<T>(value); };
+	constexpr operator T() const { return static_cast<T>(value); };
 
 	constexpr bool operator==(const WindowNumber &rhs) const = default;
 

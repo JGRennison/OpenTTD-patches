@@ -256,6 +256,15 @@ constexpr bool IsInsideBS(const T x, const size_t base, const size_t size)
 }
 
 /**
+ * Specialization of IsInsideBS for #StrongType::Typedef.
+ */
+template <typename T, std::enable_if_t<std::is_base_of<struct StrongTypedefBase, T>::value, int> = 0>
+constexpr bool IsInsideBS(const T x, const T base, const size_t size)
+{
+	return IsInsideBS(x.base(), base.base(), size);
+}
+
+/**
  * Checks if a value is in an interval.
  *
  * Returns true if a value is in the interval of [min, max).
@@ -274,6 +283,12 @@ constexpr bool IsInsideMM(const T x, const size_t min, const size_t max) noexcep
 	} else {
 		return static_cast<size_t>(x - min) < (max - min);
 	}
+}
+
+template <typename T, std::enable_if_t<std::is_base_of<struct StrongTypedefBase, T>::value, int> = 0>
+constexpr bool IsInsideMM(const T x, const T min, const T max) noexcept
+{
+	return static_cast<size_t>(x.base() - min.base()) < static_cast<size_t>(max.base() - min.base());
 }
 
 /** Specialization of IsInsideMM for enums. @copydoc IsInsideMM(const size_t, const size_t, const size_t) */

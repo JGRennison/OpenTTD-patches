@@ -505,7 +505,7 @@ static void Load_TOWN()
 		Town *t = Town::CreateAtIndex(TownID(index));
 		SlObjectLoadFiltered(t, slt);
 
-		if (t->townnamegrfid.Empty() && !IsInsideMM(t->townnametype, SPECSTR_TOWNNAME_START, SPECSTR_TOWNNAME_END) && GetStringTab(t->townnametype) != TEXT_TAB_OLD_CUSTOM) {
+		if (t->townnamegrfid.Empty() && !IsInsideMM(t->townnametype, SPECSTR_TOWNNAME_START, SPECSTR_TOWNNAME_END) && GetStringTab(static_cast<StringID>(t->townnametype)) != TEXT_TAB_OLD_CUSTOM) {
 			SlErrorCorrupt("Invalid town name generator");
 		}
 

@@ -1826,7 +1826,7 @@ static void DrawBridgeRoadBits(TileIndex head_tile, int x, int y, int z, int off
 
 	/* The sprites under the vehicles are drawn as SpriteCombine. StartSpriteCombine() has already been called
 	 * The bounding boxes here are the same as for bridge front/roof */
-	auto draw_back_sprite = [&](StringID spr, bool transparent) {
+	auto draw_back_sprite = [&](SpriteID spr, bool transparent) {
 		if (spr != 0) {
 			AddSortableSpriteToDraw(spr, PAL_NONE, x, y, z, back_bounds[offset], transparent);
 		}

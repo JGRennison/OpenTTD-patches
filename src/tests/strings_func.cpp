@@ -19,16 +19,16 @@ TEST_CASE("AppendStringWithArgsInPlace - format_to_fixed_base")
 {
 	format_buffer buf;
 	buf.append("Name: ");
-	AppendStringInPlace(buf, SPECSTR_TOWNNAME_START + 15, 0x8854AB3D);
+	AppendStringInPlace(buf, StringID{SPECSTR_TOWNNAME_START + 15}, 0x8854AB3D);
 	CHECK((std::string_view)buf == "Name: Prasice nad Labem");
 
 	format_buffer_fixed<100> fixed_big;
 	fixed_big.append("Name: ");
-	AppendStringInPlace(fixed_big, SPECSTR_TOWNNAME_START + 15, 0x8854AB3D);
+	AppendStringInPlace(fixed_big, StringID{SPECSTR_TOWNNAME_START + 15}, 0x8854AB3D);
 	CHECK((std::string_view)fixed_big == "Name: Prasice nad Labem");
 
 	format_buffer_fixed<10> fixed_small;
 	fixed_small.append("Name: ");
-	AppendStringInPlace(fixed_small, SPECSTR_TOWNNAME_START + 15, 0x8854AB3D);
+	AppendStringInPlace(fixed_small, StringID{SPECSTR_TOWNNAME_START + 15}, 0x8854AB3D);
 	CHECK((std::string_view)fixed_small == "Name: Pras");
 }

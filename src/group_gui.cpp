@@ -992,7 +992,7 @@ public:
 
 			case WID_GL_MANAGE_VEHICLES_DROPDOWN: {
 				DropDownList list = this->BuildActionDropdownList(true, Group::IsValidID(this->vli.ToGroupID()), this->vli.vtype == VehicleType::Train,
-						0, false, IsTopLevelGroupID(this->vli.ToGroupID()));
+						STR_NULL, false, IsTopLevelGroupID(this->vli.ToGroupID()));
 				ShowDropDownList(this, std::move(list), -1, WID_GL_MANAGE_VEHICLES_DROPDOWN);
 				break;
 			}

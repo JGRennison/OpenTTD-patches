@@ -1751,9 +1751,9 @@ CommandCost CmdRemoveLongRoad(DoCommandFlags flags, TileIndex end_tile, TileInde
 				had_success = true;
 			} else {
 				/* Some errors are more equal than others. */
-				switch (last_error.GetErrorMessage()) {
-					case STR_ERROR_OWNED_BY:
-					case STR_ERROR_LOCAL_AUTHORITY_REFUSES_TO_ALLOW_THIS:
+				switch (last_error.GetErrorMessage().base()) {
+					case STR_ERROR_OWNED_BY.base():
+					case STR_ERROR_LOCAL_AUTHORITY_REFUSES_TO_ALLOW_THIS.base():
 						break;
 					default:
 						last_error = std::move(ret);
