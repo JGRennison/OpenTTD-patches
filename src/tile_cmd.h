@@ -18,7 +18,7 @@
 #include "cargo_type.h"
 #include "transport_type.h"
 #include "tile_map.h"
-#include "strings_id_type.h"
+#include "strings_type.h"
 
 struct TrackStatus;
 struct Vehicle;
@@ -42,7 +42,7 @@ struct TileInfo : Coord3D<int> {
 /** Tile description for the 'land area information' tool */
 struct TileDesc {
 	StringID str{};                                   ///< Description of the tile
-	std::array<uint64_t, 4> dparam{};                 ///< Parameters of the \a str string
+	std::array<IntegerStringParameter, 4> dparam{};   ///< Parameters of the \a str string
 	std::array<Owner, 4> owner{};                     ///< Name of the owner(s)
 	std::array<StringID, 4> owner_type{};             ///< Type of each owner
 	CalTime::Date build_date = CalTime::INVALID_DATE; ///< Date of construction of tile contents

@@ -79,6 +79,27 @@ static constexpr StringID SPECSTR_TEMP_START = 0x7000; ///< First string ID for 
 template <typename T>
 concept StringParameterAsBase = T::string_parameter_as_base || false;
 
+/** Integer-only string parameter data type. */
+struct IntegerStringParameter {
+	static inline constexpr bool string_parameter_as_base = true;
+
+	uint64_t data{};
+
+	constexpr IntegerStringParameter() = default;
+	constexpr IntegerStringParameter(uint64_t v) : data(v) {};
+
+	template <typename T, std::enable_if_t<StringParameterAsBase<T>, int> = 0>
+	constexpr IntegerStringParameter(const T &v) : data(v.base()) {}
+
+	template <typename T> requires is_scoped_enum_v<T>
+	constexpr IntegerStringParameter(const T &v) : data(static_cast<uint64_t>(to_underlying(v)))
+	{
+		static_assert(is_scoped_enum_convertible_to_string_parameter_v<T>);
+	}
+
+	constexpr uint64_t base() const { return this->data; }
+};
+
 /** This is a separate type instead of just string_view to ensure that it cannot be created by accident. */
 struct StringParameterDataStringView {
 	std::string_view view;
