@@ -43,6 +43,7 @@
 #include "schdispatch.h"
 #include "timetable_cmd.h"
 #include "train_cmd.h"
+#include "train.h"
 
 #include "table/strings.h"
 
@@ -3725,7 +3726,7 @@ VehicleOrderID ProcessConditionalOrder(const Order *order, const Vehicle *v, Pro
 		case OrderConditionVariable::Age:                 skip_order = OrderConditionCompare(occ, DateDeltaToYearDelta(v->age).base(), value); break;
 		case OrderConditionVariable::RequiresService:     skip_order = OrderConditionCompare(occ, v->NeedsServicing(),               value); break;
 		case OrderConditionVariable::RemainingLifetime:   skip_order = OrderConditionCompare(occ, std::max(DateDeltaToYearDelta(v->max_age - v->age + DAYS_IN_LEAP_YEAR - 1).base(), 0), value); break;
-		case OrderConditionVariable::DrivingBackwards:    skip_order = OrderConditionCompare(occ, v->IsDrivingBackwards(), value); break;
+		case OrderConditionVariable::DrivingBackwards:    skip_order = OrderConditionCompare(occ, v->type == VehicleType::Train && (Train::From(v)->tcache.cached_tflags & TCF_NO_DRIVING_CAB), value); break;
 		case OrderConditionVariable::Unconditionally:     skip_order = true; break;
 		case OrderConditionVariable::CargoWaiting: {
 			StationID next_station = order->GetConditionStationID();

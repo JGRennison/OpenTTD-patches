@@ -49,6 +49,7 @@
 #include "core/checksum_func.hpp"
 #include "event_logs.h"
 #include "landscape_cmd.h"
+#include "script/api/script_event_types.hpp"
 #include "3rdparty/cpp-btree/btree_map.h"
 
 #include "table/strings.h"

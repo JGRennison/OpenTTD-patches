@@ -41,6 +41,7 @@
 #include "road_cmd.h"
 #include "newgrf_roadstop.h"
 #include "tile_cmd.h"
+#include "script/api/script_event_types.hpp"
 
 #include "table/strings.h"
 

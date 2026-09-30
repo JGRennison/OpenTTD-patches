@@ -38,6 +38,7 @@
 #include "core/checksum_func.hpp"
 #include "articulated_vehicles.h"
 #include "tile_cmd.h"
+#include "script/api/script_event_types.hpp"
 #include "3rdparty/cpp-ring-buffer/ring_buffer.hpp"
 #include "3rdparty/robin_hood/robin_hood.h"
 

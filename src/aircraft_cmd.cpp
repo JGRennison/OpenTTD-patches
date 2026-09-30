@@ -38,6 +38,9 @@
 #include "framerate_type.h"
 #include "vehicle_cmd.h"
 #include "core/checksum_func.hpp"
+#include "script/api/script_event_types.hpp"
+
+#include "widgets/vehicle_widget.h"
 
 #include "table/strings.h"
 

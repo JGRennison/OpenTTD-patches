@@ -51,7 +51,10 @@
 #include "train_cmd.h"
 #include "vehicle_cmd.h"
 #include "tbtr_template_vehicle_cmd.h"
+#include "script/api/script_event_types.hpp"
 #include "3rdparty/cpp-btree/btree_map.h"
+
+#include "widgets/vehicle_widget.h"
 
 #include "table/strings.h"
 #include "table/train_cmd.h"

@@ -50,6 +50,7 @@
 #include "terraform_cmd.h"
 #include "map_func.h"
 #include "tile_cmd.h"
+#include "script/api/script_event_types.hpp"
 
 #include "table/strings.h"
 #include "table/industry_land.h"

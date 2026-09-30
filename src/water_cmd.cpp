@@ -49,6 +49,7 @@
 #include "newgrf_object.h"
 #include "tile_cmd.h"
 #include "tile_track_func.h"
+#include "script/api/script_event_types.hpp"
 
 #include "table/strings.h"
 

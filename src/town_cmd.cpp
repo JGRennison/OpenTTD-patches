@@ -61,6 +61,7 @@
 #include "map_func.h"
 #include "tile_cmd.h"
 #include "scope.h"
+#include "script/api/script_event_types.hpp"
 #include "3rdparty/robin_hood/robin_hood.h"
 
 #include "table/strings.h"

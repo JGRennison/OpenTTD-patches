@@ -43,6 +43,9 @@
 #include "time_chrono.h"
 #include "timer/timer.h"
 #include "timer/timer_window.h"
+#include "script/api/script_event_types.hpp"
+
+#include "widgets/osk_widget.h"
 
 #include "table/strings.h"
 

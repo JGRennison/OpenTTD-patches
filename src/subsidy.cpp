@@ -26,6 +26,7 @@
 #include "command_func.h"
 #include "string_func.h"
 #include "tile_cmd.h"
+#include "script/api/script_event_types.hpp"
 
 #include "table/strings.h"
 

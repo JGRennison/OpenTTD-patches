@@ -12,6 +12,7 @@
 #include "../debug.h"
 #include "../fileio_func.h"
 #include "../tar_type.h"
+#include "../script/api/script_text.hpp"
 #include "../script/squirrel_class.hpp"
 #include "../strings_func.h"
 #include "game_text.hpp"
@@ -19,6 +20,7 @@
 #include "game_info.hpp"
 
 #include "table/strings.h"
+#include "../table/control_codes.h"
 #include "../table/strgen_tables.h"
 
 #include <memory>
