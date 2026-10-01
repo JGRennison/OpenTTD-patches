@@ -5803,7 +5803,7 @@ bool TrainController(Train *v, Vehicle *nomove, bool reverse)
 					/* Inside depot */
 					gp.x = v->x_pos;
 					gp.y = v->y_pos;
-					first->reverse_distance = 0;
+					if (v->IsMovingFront()) first->reverse_distance = 0;
 				} else {
 					/* Not inside depot */
 
