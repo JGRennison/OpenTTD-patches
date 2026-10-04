@@ -599,7 +599,8 @@ public:
 		if (std::holds_alternative<FiosOrderListInfo>(this->extra_info)) {
 			group = Group::GetIfValid(std::get<FiosOrderListInfo>(this->extra_info).veh->group_id);
 		} else if (std::holds_alternative<VehicleListIdentifier>(this->extra_info)) {
-			group = Group::GetIfValid(std::get<VehicleListIdentifier>(this->extra_info).ToGroupID());
+			const VehicleListIdentifier &vli = std::get<VehicleListIdentifier>(this->extra_info);
+			if (vli.type == VehicleListType::Group) group = Group::GetIfValid(vli.ToGroupID());
 		}
 
 		if (group != nullptr) {
