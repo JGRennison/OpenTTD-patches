@@ -277,7 +277,8 @@ public:
 
 	const FontSizes fontsizes; ///< Font sizes this searcher will try to find.
 	FontSizes missing_fontsizes{}; ///< Font sizes to actually search for.
-	std::vector<char32_t> missing_glyphs{}; ///< Glyphs to search for.
+	std::vector<char32_t> missing_glyphs{}; ///< Glyphs that are missing in the current font.
+	std::vector<char32_t> required_glyphs{}; ///< Glyphs that are required.
 
 	/**
 	 * Determine set of glyphs required for the current language.

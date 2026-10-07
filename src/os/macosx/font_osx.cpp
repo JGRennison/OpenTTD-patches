@@ -301,7 +301,7 @@ public:
 				if (name.starts_with(".") || name.starts_with("LastResort")) continue;
 
 				/* Save result. */
-				result = FontCache::TryFallback(callback->missing_fontsizes, callback->missing_glyphs, std::string{name});
+				result = FontCache::TryFallback(callback->missing_fontsizes, callback->required_glyphs, std::string{name});
 				if (result) {
 					FontCache::AddFallback(callback->missing_fontsizes, name);
 					Debug(fontcache, 2, "CT-Font for {}: {}", language_isocode, name);
@@ -313,7 +313,7 @@ public:
 		if (!result) {
 			/* For some OS versions, the font 'Arial Unicode MS' does not report all languages it
 			 * supports. If we didn't find any other font, just try it, maybe we get lucky. */
-			result = FontCache::TryFallback(callback->missing_fontsizes, callback->missing_glyphs, "Arial Unicode MS");
+			result = FontCache::TryFallback(callback->missing_fontsizes, callback->required_glyphs, "Arial Unicode MS");
 			if (result) {
 				FontCache::AddFallback(callback->missing_fontsizes, "Arial Unicode MS");
 			}

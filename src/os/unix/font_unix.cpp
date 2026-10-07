@@ -195,12 +195,12 @@ bool FontConfigFindFallbackFont(const std::string &language_isocode, MissingGlyp
 		size_t matching_chars = 0;
 		FcCharSet *charset;
 		FcPatternGetCharSet(font, FC_CHARSET, 0, &charset);
-		for (const char32_t &c : callback->missing_glyphs) {
+		for (const char32_t &c : callback->required_glyphs) {
 			if (FcCharSetHasChar(charset, c)) ++matching_chars;
 		}
 
-		if (matching_chars < callback->missing_glyphs.size()) {
-			Debug(fontcache, 1, "Font \"{}\" misses {} glyphs", FromFcString(file), callback->missing_glyphs.size() - matching_chars);
+		if (matching_chars < callback->required_glyphs.size()) {
+			Debug(fontcache, 1, "Font \"{}\" misses {} glyphs", FromFcString(file), callback->required_glyphs.size() - matching_chars);
 			continue;
 		}
 

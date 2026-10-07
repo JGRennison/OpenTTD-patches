@@ -2882,7 +2882,9 @@ void BaseStringMissingGlyphSearcher::DetermineRequiredGlyphs(FontSizes fontsizes
 {
 	this->missing_fontsizes.Reset();
 	this->missing_glyphs.clear();
+	this->required_glyphs.clear();
 	robin_hood::unordered_flat_set<char32_t> missing_glyphs_map;
+	robin_hood::unordered_flat_set<char32_t> required_glyphs_map;
 
 	this->Reset();
 	for (auto text = this->NextString(); text.has_value(); text = this->NextString()) {
@@ -2899,6 +2901,9 @@ void BaseStringMissingGlyphSearcher::DetermineRequiredGlyphs(FontSizes fontsizes
 			if (!IsPrintable(c) || IsTextDirectionChar(c)) continue;
 			if (c != ' ' && (IsWhitespace(c) || IsNonbreakingWhitespace(c))) continue;
 			if (IsInsideMM(c, SCC_SPRITE_START, SCC_SPRITE_END)) continue;
+
+			required_glyphs_map.insert(c);
+
 			if (fc->MapCharToGlyph(c, false) != 0) continue;
 
 			this->missing_fontsizes.Set(fs);
@@ -2909,6 +2914,10 @@ void BaseStringMissingGlyphSearcher::DetermineRequiredGlyphs(FontSizes fontsizes
 	this->missing_glyphs.reserve(missing_glyphs_map.size());
 	for (char32_t c : missing_glyphs_map) {
 		this->missing_glyphs.push_back(c);
+	}
+	this->required_glyphs.reserve(required_glyphs_map.size());
+	for (char32_t c : required_glyphs_map) {
+		this->required_glyphs.push_back(c);
 	}
 }
 
