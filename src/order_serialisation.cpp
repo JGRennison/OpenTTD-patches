@@ -615,7 +615,7 @@ nlohmann::json MakePerOrderListVehicleSet(GroupID group_id, Owner owner, std::op
 	}
 	for (const Vehicle *v : Vehicle::IterateTypeMaskFrontOnly(vt_mask)) {
 		if (v->owner == owner && v->group_id == group_id && v->orders != nullptr && v->IsPrimaryVehicle()) {
-			if (seen_order_lists.insert(v->orders).second) continue;
+			if (!seen_order_lists.insert(v->orders).second) continue;
 
 			auto vehicles_array = nlohmann::json::array();
 			for (const Vehicle *u = v->FirstShared(); u != nullptr; u = u->NextShared()) {
