@@ -791,6 +791,7 @@ void DupSprite(SpriteID old_spr, SpriteID new_spr)
 	scnew->file_pos = scold->file_pos;
 	scnew->id = scold->id;
 	scnew->SetType(scold->GetType());
+	scnew->count = scold->count;
 	scnew->flags = scold->flags;
 	scnew->SetWarned(false);
 	if (scold->GetType() == SpriteType::Recolour) {
