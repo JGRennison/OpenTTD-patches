@@ -376,6 +376,7 @@ SpriteLoaderResult LoadSpriteV2(SpriteLoader::SpriteCollection &sprite, SpriteFi
 					break;
 				}
 
+				if (--count == 0) break;
 				file.SkipBytes(num - 2 - 8);
 				continue;
 			}
