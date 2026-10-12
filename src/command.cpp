@@ -822,7 +822,7 @@ void CommandCost::AllocAuxData()
 			NOT_REACHED();
 
 		case CommandCostInlineType::ExtraMsg:
-			aux_data->extra_message = this->inl.extra_message;
+			aux_data->extra_message = StringID{this->inl.extra_message};
 			break;
 
 		case CommandCostInlineType::Tile:

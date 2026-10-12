@@ -134,7 +134,7 @@ class CommandCost {
 
 	union {
 		CommandResultData result{};
-		StringID extra_message;                 ///< Additional warning message for when success is unset
+		StringID::BaseType extra_message;               ///< Additional warning message for when success is unset
 		uint32_t tile;
 		int64_t additional_cash_required;
 		CommandCostAuxiliaryData *aux_data;
@@ -222,7 +222,7 @@ public:
 	{
 		CommandCost cc(msg);
 		cc.SetInlineType(CommandCostInlineType::ExtraMsg);
-		cc.inl.extra_message = extra_msg;
+		cc.inl.extra_message = extra_msg.base();
 		return cc;
 	}
 
@@ -333,7 +333,7 @@ public:
 	{
 		if (this->Succeeded()) return INVALID_STRING_ID;
 		if (this->GetInlineType() == CommandCostInlineType::ExtraMsg) {
-			return this->inl.extra_message;
+			return StringID{this->inl.extra_message};
 		} else if (this->GetInlineType() == CommandCostInlineType::AuxiliaryData) {
 			return this->inl.aux_data->extra_message;
 		} else {
