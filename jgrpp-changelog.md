@@ -2,6 +2,19 @@
 
 * * *
 
+### v0.73.4 (2026-10-12)
+* Fix crash which could occur with some extra-zoom and/or 32bpp NewGRFs/basesets.
+* Fix crash editing scheduled dispatch tag conditional orders when no tags were usable.
+* Fix crash which could occur after manually sending ships to a specific depot.
+* Fix reversing at a waypoint or behind a signal being removed if the train was partially in a depot.
+* Fix inconsistent handling of reversing at waypoints when the front of the train had already passed the waypoint.
+* Fix column spacing in departures window when arrival times were enabled.
+* Bulk order list export:
+  * Fix crash exporting from non-group vehicle list windows.
+  * Fix missing or duplicated order lists depending on the number of vehicles in the shared order set.
+* Enable dragging the selected order in order list windows.
+* Bump trunk base from commit af60d6b7cd60c8855febb0847bd66169780dd1ef to commit 12208d12048e747cd5c76bada4c5ddaab573efc4.
+
 ### v0.73.3 (2026-09-16)
 * Fix only first 10 items in town action list being clickable.
 * Fix detection of crashed vehicles on signalled tunnels/bridges.
