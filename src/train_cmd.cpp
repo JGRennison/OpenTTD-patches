@@ -232,7 +232,7 @@ void CheckBreakdownFlags(Train *v)
 	v->flags.Reset(VehicleRailFlagsIsBroken);
 
 	for (const Train *w = v; w != nullptr; w = w->Next()) {
-		if (v->IsEngine() || w->IsMultiheaded()) {
+		if (w->IsEngine() || w->IsMultiheaded()) {
 			if (w->breakdown_ctr == 2) {
 				v->flags.Set(VehicleRailFlag::BreakdownBraking);
 			} else if (w->breakdown_ctr == 1) {
