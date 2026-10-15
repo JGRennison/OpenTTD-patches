@@ -307,7 +307,7 @@ inline bool IsLock(TileIndex t)
 inline DiagDirection GetLockDirection(TileIndex t)
 {
 	dbg_assert_tile(IsLock(t), t);
-	return (DiagDirection)GB(_m[t].m5, WBL_LOCK_ORIENT_BEGIN, WBL_LOCK_ORIENT_COUNT);
+	return static_cast<DiagDirection>(GB(_m[t].m5, WBL_LOCK_ORIENT_BEGIN, WBL_LOCK_ORIENT_COUNT));
 }
 
 /**

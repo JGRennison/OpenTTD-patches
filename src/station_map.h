@@ -28,7 +28,7 @@ typedef uint8_t StationGfx; ///< Index of station graphics. @see _station_displa
 inline StationID GetStationIndex(TileIndex t)
 {
 	dbg_assert_tile(IsTileType(t, TileType::Station), t);
-	return (StationID)_m[t].m2;
+	return static_cast<StationID>(_m[t].m2);
 }
 
 
@@ -44,7 +44,7 @@ static const int GFX_TRUCK_BUS_DRIVETHROUGH_OFFSET =  4; ///< The offset for the
 inline StationType GetStationType(TileIndex t)
 {
 	dbg_assert_tile(IsTileType(t, TileType::Station), t);
-	return (StationType)GB(_me[t].m6, 3, 4);
+	return static_cast<StationType>(GB(_me[t].m6, 3, 4));
 }
 
 /**
@@ -619,7 +619,7 @@ inline DiagDirection GetDockDirection(TileIndex t)
 {
 	StationGfx gfx = GetStationGfx(t);
 	dbg_assert_tile(IsDock(t) && gfx < GFX_DOCK_BASE_WATER_PART, t);
-	return (DiagDirection)(gfx);
+	return static_cast<DiagDirection>(gfx);
 }
 
 /**

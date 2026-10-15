@@ -334,7 +334,7 @@ uint32_t StationScopeResolver::GetNearbyStationInfo(uint32_t parameter, StationS
 					uint32_t result = GetNearbyTileInformation(tile, this->ro.grffile->grf_version >= 8, extra.mask);
 					if (extra.mask & SLOPE_EW) {
 						Slope tileh = GetTileSlope(tile);
-						if (this->axis == Axis::Y && HasBit(tileh, CORNER_W) != HasBit(tileh, CORNER_E)) result ^= SLOPE_EW;
+						if (this->axis == Axis::Y && HasBit(tileh, to_underlying(Corner::W)) != HasBit(tileh, to_underlying(Corner::E))) result ^= SLOPE_EW;
 					}
 					return result;
 				}
@@ -397,7 +397,7 @@ uint32_t StationScopeResolver::GetNearbyStationInfo(uint32_t parameter, StationS
 			uint32_t result = GetNearbyTileInformation(tile, this->ro.grffile->grf_version >= 8, extra.mask);
 			if (extra.mask & SLOPE_EW) {
 				Slope tileh = GetTileSlope(tile);
-				if (axis == Axis::Y && HasBit(tileh, CORNER_W) != HasBit(tileh, CORNER_E)) result ^= SLOPE_EW;
+				if (axis == Axis::Y && HasBit(tileh, to_underlying(Corner::W)) != HasBit(tileh, to_underlying(Corner::E))) result ^= SLOPE_EW;
 			}
 			return result;
 		}
@@ -717,7 +717,7 @@ CommandCost PerformStationTileSlopeCheck(TileIndex north_tile, TileIndex cur_til
 	Slope slope = GetTileSlope(cur_tile);
 
 	StationResolverObject object(statspec, nullptr, cur_tile, rt, CBID_STATION_LAND_SLOPE_CHECK,
-			(slope << 4) | (slope ^ (axis == Axis::Y && HasBit(slope, CORNER_W) != HasBit(slope, CORNER_E) ? SLOPE_EW : 0)),
+			(slope << 4) | (slope ^ (axis == Axis::Y && HasBit(slope, to_underlying(Corner::W)) != HasBit(slope, to_underlying(Corner::E)) ? SLOPE_EW : 0)),
 			(numtracks << 24) | (plat_len << 16) | (axis == Axis::Y ? diff.x << 8 | diff.y : diff.y << 8 | diff.x));
 	object.station_scope.axis = axis;
 

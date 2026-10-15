@@ -30,19 +30,19 @@ uint GetPartialPixelZ(int x, int y, Slope corners)
 		/* A foundation is placed on half the tile at a specific corner. This means that,
 		 * depending on the corner, that one half of the tile is at the maximum height. */
 		switch (GetHalftileSlopeCorner(corners)) {
-			case CORNER_W:
+			case Corner::W:
 				if (x > y) return GetSlopeMaxPixelZ(corners);
 				break;
 
-			case CORNER_S:
+			case Corner::S:
 				if (x + y >= (int)TILE_SIZE) return GetSlopeMaxPixelZ(corners);
 				break;
 
-			case CORNER_E:
+			case Corner::E:
 				if (x <= y) return GetSlopeMaxPixelZ(corners);
 				break;
 
-			case CORNER_N:
+			case Corner::N:
 				if (x + y < (int)TILE_SIZE) return GetSlopeMaxPixelZ(corners);
 				break;
 

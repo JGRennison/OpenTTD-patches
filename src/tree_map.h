@@ -57,7 +57,7 @@ enum class TreeGrowthStage : uint8_t {
 inline TreeType GetTreeType(TileIndex t)
 {
 	dbg_assert_tile(IsTileType(t, TileType::Trees), t);
-	return (TreeType)_m[t].m3;
+	return static_cast<TreeType>(_m[t].m3);
 }
 
 /**
@@ -72,7 +72,7 @@ inline TreeType GetTreeType(TileIndex t)
 inline TreeGround GetTreeGround(TileIndex t)
 {
 	dbg_assert_tile(IsTileType(t, TileType::Trees), t);
-	return (TreeGround)GB(_m[t].m2, 6, 3);
+	return static_cast<TreeGround>(GB(_m[t].m2, 6, 3));
 }
 
 /**

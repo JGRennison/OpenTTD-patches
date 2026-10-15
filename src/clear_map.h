@@ -190,7 +190,7 @@ inline void SetFieldType(TileIndex t, uint f)
 inline IndustryID GetIndustryIndexOfField(TileIndex t)
 {
 	dbg_assert_tile(GetClearGround(t) == ClearGround::Fields, t);
-	return(IndustryID) _m[t].m2;
+	return static_cast<IndustryID>(_m[t].m2);
 }
 
 /**

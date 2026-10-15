@@ -599,19 +599,19 @@ Foundation GetRailFoundation(Slope tileh, TrackBits bits)
 
 		Corner track_corner;
 		switch (bits) {
-			case TRACK_BIT_LEFT:  track_corner = CORNER_W; break;
-			case TRACK_BIT_LOWER: track_corner = CORNER_S; break;
-			case TRACK_BIT_RIGHT: track_corner = CORNER_E; break;
-			case TRACK_BIT_UPPER: track_corner = CORNER_N; break;
+			case TRACK_BIT_LEFT:  track_corner = Corner::W; break;
+			case TRACK_BIT_LOWER: track_corner = Corner::S; break;
+			case TRACK_BIT_RIGHT: track_corner = Corner::E; break;
+			case TRACK_BIT_UPPER: track_corner = Corner::N; break;
 
 			case TRACK_BIT_HORZ:
-				if (tileh == SLOPE_N) return HalftileFoundation(CORNER_N);
-				if (tileh == SLOPE_S) return HalftileFoundation(CORNER_S);
+				if (tileh == SLOPE_N) return HalftileFoundation(Corner::N);
+				if (tileh == SLOPE_S) return HalftileFoundation(Corner::S);
 				return (valid_on_leveled ? Foundation::Leveled : Foundation::Invalid);
 
 			case TRACK_BIT_VERT:
-				if (tileh == SLOPE_W) return HalftileFoundation(CORNER_W);
-				if (tileh == SLOPE_E) return HalftileFoundation(CORNER_E);
+				if (tileh == SLOPE_W) return HalftileFoundation(Corner::W);
+				if (tileh == SLOPE_E) return HalftileFoundation(Corner::E);
 				return (valid_on_leveled ? Foundation::Leveled : Foundation::Invalid);
 
 			case TRACK_BIT_X:
@@ -3535,22 +3535,22 @@ struct FenceOffset : SpriteBounds {
 
 /** Offsets for drawing fences */
 static const FenceOffset _fence_offsets[] = {
-	{ CORNER_INVALID,  0,  1, 16,  1 }, // RFO_FLAT_X_NW
-	{ CORNER_INVALID,  1,  0,  1, 16 }, // RFO_FLAT_Y_NE
-	{ CORNER_W,        8,  8,  1,  1 }, // RFO_FLAT_LEFT
-	{ CORNER_N,        8,  8,  1,  1 }, // RFO_FLAT_UPPER
-	{ CORNER_INVALID,  0,  1, 16,  1 }, // RFO_SLOPE_SW_NW
-	{ CORNER_INVALID,  1,  0,  1, 16 }, // RFO_SLOPE_SE_NE
-	{ CORNER_INVALID,  0,  1, 16,  1 }, // RFO_SLOPE_NE_NW
-	{ CORNER_INVALID,  1,  0,  1, 16 }, // RFO_SLOPE_NW_NE
-	{ CORNER_INVALID,  0, 15, 16,  1 }, // RFO_FLAT_X_SE
-	{ CORNER_INVALID, 15,  0,  1, 16 }, // RFO_FLAT_Y_SW
-	{ CORNER_E,        8,  8,  1,  1 }, // RFO_FLAT_RIGHT
-	{ CORNER_S,        8,  8,  1,  1 }, // RFO_FLAT_LOWER
-	{ CORNER_INVALID,  0, 15, 16,  1 }, // RFO_SLOPE_SW_SE
-	{ CORNER_INVALID, 15,  0,  1, 16 }, // RFO_SLOPE_SE_SW
-	{ CORNER_INVALID,  0, 15, 16,  1 }, // RFO_SLOPE_NE_SE
-	{ CORNER_INVALID, 15,  0,  1, 16 }, // RFO_SLOPE_NW_SW
+	{Corner::Invalid, 0, 1, 16, 1}, // RFO_FLAT_X_NW
+	{Corner::Invalid, 1, 0, 1, 16}, // RFO_FLAT_Y_NE
+	{Corner::W, 8, 8, 1, 1}, // RFO_FLAT_LEFT
+	{Corner::N, 8, 8, 1, 1}, // RFO_FLAT_UPPER
+	{Corner::Invalid, 0, 1, 16, 1}, // RFO_SLOPE_SW_NW
+	{Corner::Invalid, 1, 0, 1, 16}, // RFO_SLOPE_SE_NE
+	{Corner::Invalid, 0, 1, 16, 1}, // RFO_SLOPE_NE_NW
+	{Corner::Invalid, 1, 0, 1, 16}, // RFO_SLOPE_NW_NE
+	{Corner::Invalid, 0, 15, 16, 1}, // RFO_FLAT_X_SE
+	{Corner::Invalid, 15, 0, 1, 16}, // RFO_FLAT_Y_SW
+	{Corner::E, 8, 8, 1, 1}, // RFO_FLAT_RIGHT
+	{Corner::S, 8, 8, 1, 1}, // RFO_FLAT_LOWER
+	{Corner::Invalid, 0, 15, 16, 1}, // RFO_SLOPE_SW_SE
+	{Corner::Invalid, 15, 0, 1, 16}, // RFO_SLOPE_SE_SW
+	{Corner::Invalid, 0, 15, 16, 1}, // RFO_SLOPE_NE_SE
+	{Corner::Invalid, 15, 0, 1, 16}, // RFO_SLOPE_NW_SW
 };
 
 /**
@@ -3666,10 +3666,10 @@ void DrawTrackDetails(const TileInfo *ti, const RailTypeInfo *rti, const RailGro
 				track_corner = OppositeCorner(GetHighestSlopeCorner(ComplementSlope(ti->tileh)));
 			}
 			switch (track_corner) {
-				case CORNER_W: DrawTrackFence(ti, psid, num_sprites, RFO_FLAT_LEFT);  break;
-				case CORNER_S: DrawTrackFence(ti, psid, num_sprites, RFO_FLAT_LOWER); break;
-				case CORNER_E: DrawTrackFence(ti, psid, num_sprites, RFO_FLAT_RIGHT); break;
-				case CORNER_N: DrawTrackFence(ti, psid, num_sprites, RFO_FLAT_UPPER); break;
+				case Corner::W: DrawTrackFence(ti, psid, num_sprites, RFO_FLAT_LEFT); break;
+				case Corner::S: DrawTrackFence(ti, psid, num_sprites, RFO_FLAT_LOWER); break;
+				case Corner::E: DrawTrackFence(ti, psid, num_sprites, RFO_FLAT_RIGHT); break;
+				case Corner::N: DrawTrackFence(ti, psid, num_sprites, RFO_FLAT_UPPER); break;
 				default: NOT_REACHED();
 			}
 			break;
@@ -3681,16 +3681,16 @@ void DrawTrackDetails(const TileInfo *ti, const RailTypeInfo *rti, const RailGro
 static const int INF = 1000; ///< Big number compared to tilesprite size.
 /** SubSprite for drawing the track halftile of 'three-corners-raised'-sloped rail sprites. */
 static constexpr CornerIndexArray<SubSprite> _halftile_sub_sprite = {{{
-	{ -INF    , -INF  , 32 - 33, INF     }, // CORNER_W, clip 33 pixels from right
-	{ -INF    ,  0 + 7, INF    , INF     }, // CORNER_S, clip 7 pixels from top
-	{ -31 + 33, -INF  , INF    , INF     }, // CORNER_E, clip 33 pixels from left
-	{ -INF    , -INF  , INF    , 30 - 23 }  // CORNER_N, clip 23 pixels from bottom
+	{ -INF    , -INF  , 32 - 33, INF     }, // Corner::W, clip 33 pixels from right
+	{ -INF    ,  0 + 7, INF    , INF     }, // Corner::S, clip 7 pixels from top
+	{ -31 + 33, -INF  , INF    , INF     }, // Corner::E, clip 33 pixels from left
+	{ -INF    , -INF  , INF    , 30 - 23 }  // Corner::N, clip 23 pixels from bottom
 }}};
 static constexpr CornerIndexArray<SubSprite> _dual_track_halftile_sub_sprite = {{{
-	{ -INF    , -INF  , 32 - 32, INF     }, // CORNER_W, clip 32 pixels from right
-	{ -INF    , 0 + 15, INF    , INF     }, // CORNER_S, clip 15 pixels from top
-	{ -31 + 32, -INF  , INF    , INF     }, // CORNER_E, clip 32 pixels from left
-	{ -INF    , -INF  , INF    , 30 - 15 }  // CORNER_N, clip 15 pixels from bottom
+	{ -INF    , -INF  , 32 - 32, INF     }, // Corner::W, clip 32 pixels from right
+	{ -INF    , 0 + 15, INF    , INF     }, // Corner::S, clip 15 pixels from top
+	{ -31 + 32, -INF  , INF    , INF     }, // Corner::E, clip 32 pixels from left
+	{ -INF    , -INF  , INF    , 30 - 15 }  // Corner::N, clip 15 pixels from bottom
 }}};
 
 static inline void DrawTrackSprite(SpriteID sprite, PaletteID pal, const TileInfo *ti, Slope s, const SubSprite *sub = nullptr)
@@ -3708,9 +3708,9 @@ static RailGroundType GetRailOrBridgeGroundType(TileInfo *ti) {
 
 static void DrawTrackBitsOverlay(TileInfo *ti, TrackBits track, const RailTypeInfo *rti, RailGroundType rgt,  bool is_bridge, Corner halftile_corner, Corner draw_half_tile)
 {
-	if (halftile_corner != CORNER_INVALID) track &= ~CornerToTrackBits(halftile_corner);
+	if (halftile_corner != Corner::Invalid) track &= ~CornerToTrackBits(halftile_corner);
 
-	if (halftile_corner != CORNER_INVALID || draw_half_tile == CORNER_INVALID) {
+	if (halftile_corner != Corner::Invalid || draw_half_tile == Corner::Invalid) {
 		/* Draw ground */
 		if (rgt == RailGroundType::HalfTileWater) {
 			if (track != TRACK_BIT_NONE || IsSteepSlope(ti->tileh)) {
@@ -3732,7 +3732,7 @@ static void DrawTrackBitsOverlay(TileInfo *ti, TrackBits track, const RailTypeIn
 			image += SlopeToSpriteOffset(ti->tileh);
 
 			const SubSprite *sub = nullptr;
-			if (draw_half_tile != CORNER_INVALID) sub = &(_halftile_sub_sprite[draw_half_tile]);
+			if (draw_half_tile != Corner::Invalid) sub = &(_halftile_sub_sprite[draw_half_tile]);
 			DrawGroundSprite(image, PAL_NONE, sub);
 		}
 	}
@@ -3746,7 +3746,7 @@ static void DrawTrackBitsOverlay(TileInfo *ti, TrackBits track, const RailTypeIn
 	}
 
 	const SubSprite *sub = nullptr;
-	if (draw_half_tile != CORNER_INVALID) {
+	if (draw_half_tile != Corner::Invalid) {
 		sub = &(_dual_track_halftile_sub_sprite[draw_half_tile]);
 	}
 
@@ -3827,7 +3827,7 @@ static void DrawTrackBitsOverlay(TileInfo *ti, TrackBits track, const RailTypeIn
 		if (pbs & TRACK_BIT_LEFT)  DrawTrackSprite(overlay + RTO_W, PALETTE_CRASH, ti, SLOPE_W, sub);
 	}
 
-	if (IsValidCorner(halftile_corner) && (draw_half_tile == halftile_corner || draw_half_tile == CORNER_INVALID)) {
+	if (IsValidCorner(halftile_corner) && (draw_half_tile == halftile_corner || draw_half_tile == Corner::Invalid)) {
 		DrawFoundation(ti, HalftileFoundation(halftile_corner));
 		overlay = GetCustomRailSprite(rti, ti->tile, RailSpriteType::Overlay, TileContext::UpperHalftile);
 		ground = GetCustomRailSprite(rti, ti->tile, RailSpriteType::Ground, TileContext::UpperHalftile);
@@ -3905,15 +3905,15 @@ void DrawTrackBits(TileInfo *ti, TrackBits track, RailType rt, RailGroundType rg
 	const SubSprite *sub = nullptr;
 	bool junction = false;
 
-	if (halftile_corner != CORNER_INVALID) {
+	if (halftile_corner != Corner::Invalid) {
 		track &= ~CornerToTrackBits(halftile_corner);
 	}
-	if (draw_half_tile != CORNER_INVALID) {
+	if (draw_half_tile != Corner::Invalid) {
 		sub = &(_dual_track_halftile_sub_sprite[draw_half_tile]);
 	}
 
 	/* Select the sprite to use. */
-	if (track == 0 && draw_half_tile != CORNER_INVALID) {
+	if (track == 0 && draw_half_tile != Corner::Invalid) {
 		image = 0;
 	} else if (track == 0) {
 		/* Clear ground (only track on halftile foundation) */
@@ -4010,7 +4010,7 @@ void DrawTrackBits(TileInfo *ti, TrackBits track, RailType rt, RailGroundType rg
 		if (pbs & TRACK_BIT_RIGHT) DrawGroundSprite(rti->base_sprites.single_e, PALETTE_CRASH, nullptr, 0, ti->tileh & SLOPE_E ? -(int)TILE_HEIGHT : 0);
 	}
 
-	if (IsValidCorner(halftile_corner) && (draw_half_tile == halftile_corner || draw_half_tile == CORNER_INVALID)) {
+	if (IsValidCorner(halftile_corner) && (draw_half_tile == halftile_corner || draw_half_tile == Corner::Invalid)) {
 		DrawFoundation(ti, HalftileFoundation(halftile_corner));
 
 		/* Draw higher halftile-overlay: Use the sloped sprites with three corners raised. They probably best fit the lightning. */
@@ -4037,7 +4037,7 @@ void DrawTrackBits(TileInfo *ti, TrackBits track)
 	const bool is_bridge = IsTileType(ti->tile, TileType::TunnelBridge);
 	RailGroundType rgt = GetRailOrBridgeGroundType(ti);
 	Foundation f = is_bridge ? Foundation::Leveled : GetRailFoundation(ti->tileh, track);
-	Corner halftile_corner = CORNER_INVALID;
+	Corner halftile_corner = Corner::Invalid;
 
 	if (IsNonContinuousFoundation(f)) {
 		/* Save halftile corner */
@@ -4052,7 +4052,7 @@ void DrawTrackBits(TileInfo *ti, TrackBits track)
 	RailType rt1 = GetRailType(ti->tile);
 	RailType rt2 = GetTileSecondaryRailTypeIfValid(ti->tile);
 	if (rt2 == INVALID_RAILTYPE || rt1 == rt2) {
-		DrawTrackBits(ti, track, rt1, rgt, is_bridge, halftile_corner, CORNER_INVALID);
+		DrawTrackBits(ti, track, rt1, rgt, is_bridge, halftile_corner, Corner::Invalid);
 	} else {
 		const bool is_bridge = IsTileType(ti->tile, TileType::TunnelBridge);
 		TrackBits primary_track = track & (is_bridge ? GetAcrossBridgePossibleTrackBits(ti->tile) : TRACK_BIT_RT_1);
@@ -4061,17 +4061,17 @@ void DrawTrackBits(TileInfo *ti, TrackBits track)
 		assert((primary_track & (primary_track - 1)) == 0);
 		Track primary = FindFirstTrack(primary_track);
 
-		// TRACK_UPPER 2 -> CORNER_N 3
-		// TRACK_LOWER 3 -> CORNER_S 1
-		// TRACK_LEFT  4 -> CORNER_W 0
-		// TRACK_RIGHT 5 -> CORNER_E 2
+		// TRACK_UPPER 2 -> Corner::N 3
+		// TRACK_LOWER 3 -> Corner::S 1
+		// TRACK_LEFT  4 -> Corner::W 0
+		// TRACK_RIGHT 5 -> Corner::E 2
 		Corner primary_corner = (Corner) ((0x870 >> (primary * 2)) & 3);
 		if (halftile_corner == primary_corner) {
 			std::swap(primary_track, secondary_track);
 			std::swap(rt1, rt2);
 			primary_corner = OppositeCorner(primary_corner);
 		}
-		if (halftile_corner == CORNER_INVALID) {
+		if (halftile_corner == Corner::Invalid) {
 			// draw ground sprite
 			SpriteID image;
 
@@ -4913,10 +4913,10 @@ static CommandCost TestAutoslopeOnRailTile(TileIndex tile, DoCommandFlags flags,
 
 	Corner track_corner;
 	switch (rail_bits) {
-		case TRACK_BIT_LEFT:  track_corner = CORNER_W; break;
-		case TRACK_BIT_LOWER: track_corner = CORNER_S; break;
-		case TRACK_BIT_RIGHT: track_corner = CORNER_E; break;
-		case TRACK_BIT_UPPER: track_corner = CORNER_N; break;
+		case TRACK_BIT_LEFT:  track_corner = Corner::W; break;
+		case TRACK_BIT_LOWER: track_corner = Corner::S; break;
+		case TRACK_BIT_RIGHT: track_corner = Corner::E; break;
+		case TRACK_BIT_UPPER: track_corner = Corner::N; break;
 
 		/* Surface slope must not be changed */
 		default:
@@ -4964,10 +4964,10 @@ static CommandCost TerraformTile_Rail(TileIndex tile, DoCommandFlags flags, int 
 		/* When there is only a single horizontal/vertical track, one corner can be terraformed. */
 		Corner allowed_corner;
 		switch (rail_bits) {
-			case TRACK_BIT_RIGHT: allowed_corner = CORNER_W; break;
-			case TRACK_BIT_UPPER: allowed_corner = CORNER_S; break;
-			case TRACK_BIT_LEFT:  allowed_corner = CORNER_E; break;
-			case TRACK_BIT_LOWER: allowed_corner = CORNER_N; break;
+			case TRACK_BIT_RIGHT: allowed_corner = Corner::W; break;
+			case TRACK_BIT_UPPER: allowed_corner = Corner::S; break;
+			case TRACK_BIT_LEFT:  allowed_corner = Corner::E; break;
+			case TRACK_BIT_LOWER: allowed_corner = Corner::N; break;
 			default: return autoslope_result;
 		}
 
@@ -4977,7 +4977,7 @@ static CommandCost TerraformTile_Rail(TileIndex tile, DoCommandFlags flags, int 
 		if (tileh_old != SLOPE_NS && tileh_old != SLOPE_EW && IsSpecialRailFoundation(f_old)) return autoslope_result;
 
 		/* Everything is valid, which only changes allowed_corner */
-		for (Corner corner = (Corner)0; corner < CORNER_END; corner = (Corner)(corner + 1)) {
+		for (Corner corner : EnumRange(Corner::End)) {
 			if (allowed_corner == corner) continue;
 			if (z_old + GetSlopeZInCorner(tileh_old, corner) != z_new + GetSlopeZInCorner(tileh_new, corner)) return autoslope_result;
 		}

@@ -475,12 +475,12 @@ void DrawTileZoning(const TileInfo *ti)
 
 			if (IsHalftileSlope(ti->tileh)) {
 				const int INF = 1000;
-				static const SubSprite sub_sprites[4] = {
-					{ -INF    , -INF   , 32 - 33, INF     }, // CORNER_W, clip 33 pixels from right
-					{ -INF    ,  0 + 22, INF    , INF     }, // CORNER_S, clip 22 pixels from top
-					{ -31 + 34, -INF   , INF    , INF     }, // CORNER_E, clip 34 pixels from left
-					{ -INF    , -INF   , INF    , 30 - 8  }  // CORNER_N, clip  8 pixels from bottom
-				};
+				static constexpr CornerIndexArray<SubSprite> sub_sprites = {{{
+					{ -INF    , -INF   , 32 - 33, INF     }, // Corner::W, clip 33 pixels from right
+					{ -INF    ,  0 + 22, INF    , INF     }, // Corner::S, clip 22 pixels from top
+					{ -31 + 34, -INF   , INF    , INF     }, // Corner::E, clip 34 pixels from left
+					{ -INF    , -INF   , INF    , 30 - 8  }  // Corner::N, clip  8 pixels from bottom
+				}}};
 
 				DrawSelectionSprite(sprite, colour, ti, 7 + TILE_HEIGHT, FoundationPart::Halftile, 0, 0, &(sub_sprites[GetHalftileSlopeCorner(ti->tileh)]));
 			} else {

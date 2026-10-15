@@ -1558,7 +1558,7 @@ void DrawTileSelectionRect(const TileInfo *ti, PaletteID pal)
 	SpriteID sel;
 	if (IsHalftileSlope(ti->tileh)) {
 		Corner halftile_corner = GetHalftileSlopeCorner(ti->tileh);
-		SpriteID sel2 = SPR_HALFTILE_SELECTION_FLAT + halftile_corner;
+		SpriteID sel2 = SPR_HALFTILE_SELECTION_FLAT + to_underlying(halftile_corner);
 		DrawSelectionSprite(sel2, pal, ti, 7 + TILE_HEIGHT, FoundationPart::Halftile);
 
 		Corner opposite_corner = OppositeCorner(halftile_corner);
@@ -1567,7 +1567,7 @@ void DrawTileSelectionRect(const TileInfo *ti, PaletteID pal)
 		} else {
 			sel = ((ti->tileh & SlopeWithOneCornerRaised(opposite_corner)) != 0 ? SPR_HALFTILE_SELECTION_UP : SPR_HALFTILE_SELECTION_FLAT);
 		}
-		sel += opposite_corner;
+		sel += to_underlying(opposite_corner);
 	} else {
 		sel = SPR_SELECT_TILE + SlopeToSpriteOffset(ti->tileh);
 	}
@@ -1626,7 +1626,7 @@ static void DrawAutorailSelection(const TileInfo *ti, HighLightStyle highlight_s
 	} else {
 		Slope slope = RemoveHalftileSlope(ti->tileh);
 		if (IsHalftileSlope(ti->tileh)) {
-			static const HighLightStyle _lower_rail[CORNER_END] = { HT_DIR_VR, HT_DIR_HU, HT_DIR_VL, HT_DIR_HL }; // CORNER_W, CORNER_S, CORNER_E, CORNER_N
+			static constexpr CornerIndexArray<HighLightStyle> _lower_rail = { HT_DIR_VR, HT_DIR_HU, HT_DIR_VL, HT_DIR_HL }; // Corner::W, Corner::S, Corner::E, Corner::N
 			Corner halftile_corner = GetHalftileSlopeCorner(ti->tileh);
 			if ((highlight_style & HT_DIR_MASK) != _lower_rail[halftile_corner]) {
 				foundation_part = FoundationPart::Halftile;
@@ -1817,8 +1817,8 @@ static void DrawTileSelection(const TileInfo *ti)
 				}
 				if (IsHalftileSlope(ti->tileh)) {
 					Corner halftile_corner = GetHalftileSlopeCorner(ti->tileh);
-					if ((halftile_corner == CORNER_W) || (halftile_corner == CORNER_E)) z += TILE_HEIGHT;
-					if (halftile_corner != CORNER_S) {
+					if ((halftile_corner == Corner::W) || (halftile_corner == Corner::E)) z += TILE_HEIGHT;
+					if (halftile_corner != Corner::S) {
 						foundation_part = FoundationPart::Halftile;
 						if (IsSteepSlope(ti->tileh)) z -= TILE_HEIGHT;
 					}

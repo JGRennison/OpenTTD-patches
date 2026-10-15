@@ -566,20 +566,20 @@ static bool IsValidNeighbourOfPreviousTile(const TileIndex tile, const TileIndex
 	if (is_non_trivial_foundation(sd) || is_non_trivial_foundation(previous_sd)) {
 		static const Corner test_corners[16] = {
 			// DiagDirection::NE
-			CORNER_N, CORNER_W,
-			CORNER_E, CORNER_S,
+			Corner::N, Corner::W,
+			Corner::E, Corner::S,
 
 			// DiagDirection::SE
-			CORNER_S, CORNER_W,
-			CORNER_E, CORNER_N,
+			Corner::S, Corner::W,
+			Corner::E, Corner::N,
 
 			// DiagDirection::SW
-			CORNER_S, CORNER_E,
-			CORNER_W, CORNER_N,
+			Corner::S, Corner::E,
+			Corner::W, Corner::N,
 
 			// DiagDirection::NW
-			CORNER_N, CORNER_E,
-			CORNER_W, CORNER_S
+			Corner::N, Corner::E,
+			Corner::W, Corner::S
 		};
 		const Corner *corners = test_corners + (to_underlying(forward_direction) * 4);
 		return ((previous_sd.z + GetSlopeZInCorner(previous_sd.slope, corners[0])) == (sd.z + GetSlopeZInCorner(sd.slope, corners[1]))) &&

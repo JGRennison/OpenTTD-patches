@@ -151,7 +151,7 @@ inline RoadBits GetRoadBits(TileIndex t, RoadTramType rtt)
 {
 	dbg_assert_tile(IsNormalRoad(t), t);
 	if (rtt == RoadTramType::Tram) return (RoadBits)GB(_m[t].m3, 0, 4);
-	return (RoadBits)GB(_m[t].m5, 0, 4);
+	return static_cast<RoadBits>(GB(_m[t].m5, 0, 4));
 }
 
 /**
@@ -190,7 +190,7 @@ inline void SetRoadBits(TileIndex t, RoadBits r, RoadTramType rtt)
 inline RoadType GetRoadTypeRoad(TileIndex t)
 {
 	dbg_assert(MayHaveRoad(t));
-	return (RoadType)GB(_m[t].m4, 0, 6);
+	return static_cast<RoadType>(GB(_m[t].m4, 0, 6));
 }
 
 /**
@@ -201,7 +201,7 @@ inline RoadType GetRoadTypeRoad(TileIndex t)
 inline RoadType GetRoadTypeTram(TileIndex t)
 {
 	dbg_assert(MayHaveRoad(t));
-	return (RoadType)GB(_me[t].m8, 6, 6);
+	return static_cast<RoadType>(GB(_me[t].m8, 6, 6));
 }
 
 /**
@@ -301,7 +301,7 @@ inline Owner GetRoadOwner(TileIndex t, RoadTramType rtt)
 
 	/* Trams don't need OWNER_TOWN, and remapping OWNER_NONE
 	 * to OWNER_TOWN makes it use one bit less */
-	Owner o = (Owner)GB(_m[t].m3, 4, 4);
+	Owner o = static_cast<Owner>(GB(_m[t].m3, 4, 4));
 	return o == OWNER_TOWN ? OWNER_NONE : o;
 }
 

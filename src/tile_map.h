@@ -173,7 +173,7 @@ inline Owner GetTileOwner(TileIndex tile)
 	dbg_assert_tile(IsValidTile(tile), tile);
 	dbg_assert_tile(!IsTileType(tile, TileType::House) && !IsTileType(tile, TileType::Industry), tile);
 
-	return (Owner)GB(_m[tile].m1, 0, 5);
+	return static_cast<Owner>(GB(_m[tile].m1, 0, 5));
 }
 
 /**

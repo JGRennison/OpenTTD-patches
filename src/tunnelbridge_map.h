@@ -31,7 +31,7 @@
 inline DiagDirection GetTunnelBridgeDirection(TileIndex t)
 {
 	assert_tile(IsTileType(t, TileType::TunnelBridge), t);
-	return (DiagDirection)GB(_m[t].m5, 0, 2);
+	return static_cast<DiagDirection>(GB(_m[t].m5, 0, 2));
 }
 
 /**
@@ -44,7 +44,7 @@ inline DiagDirection GetTunnelBridgeDirection(TileIndex t)
 inline TransportType GetTunnelBridgeTransportType(TileIndex t)
 {
 	assert_tile(IsTileType(t, TileType::TunnelBridge), t);
-	return (TransportType)GB(_m[t].m5, 2, 2);
+	return static_cast<TransportType>(GB(_m[t].m5, 2, 2));
 }
 
 inline uint8_t GetTunnelBridgeGroundBits(TileIndex t)
