@@ -4768,7 +4768,7 @@ STR_ORDER_CONDITIONAL_REQUIRES_SERVICE                          :Hiahia kia tapi
 STR_ORDER_CONDITIONAL_UNCONDITIONALLY                           :Wā katoa
 STR_ORDER_CONDITIONAL_REMAINING_LIFETIME                        :Wāora e toe ana (tau)
 STR_ORDER_CONDITIONAL_MAX_RELIABILITY                           :Horopū mōrahi
-STR_ORDER_CONDITIONAL_DRIVING_BACKWARDS                         :Whakamuri
+STR_ORDER_CONDITIONAL_DRIVING_BACKWARDS                         :Whakamuri pōturi ake
 ###next-name-looks-similar
 
 STR_ORDER_CONDITIONAL_COMPARATOR_TOOLTIP                        :{BLACK}Me pēwhea te whakataurite te raraunga waka ki te uara kua tukuna

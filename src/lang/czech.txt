@@ -4864,7 +4864,7 @@ STR_ORDER_CONDITIONAL_REQUIRES_SERVICE                          :Vyžaduje údr�
 STR_ORDER_CONDITIONAL_UNCONDITIONALLY                           :Vždy
 STR_ORDER_CONDITIONAL_REMAINING_LIFETIME                        :Zbývající životnost (v letech)
 STR_ORDER_CONDITIONAL_MAX_RELIABILITY                           :Nejvyšší dosažitelná spolehlivost
-STR_ORDER_CONDITIONAL_DRIVING_BACKWARDS                         :Jízda dozadu
+STR_ORDER_CONDITIONAL_DRIVING_BACKWARDS                         :Jízda vzad sníženou rychlostí
 ###next-name-looks-similar
 
 STR_ORDER_CONDITIONAL_COMPARATOR_TOOLTIP                        :{BLACK}Jak porovnat vlastnost vozidla se zadanou hodnotou
@@ -4930,10 +4930,10 @@ STR_ORDER_IMPLICIT                                              :{SPACE}(Implici
 STR_ORDER_FULL_LOAD                                             :{SPACE}(Úplně naložit)
 STR_ORDER_FULL_LOAD_ANY                                         :{SPACE}(Úplně naložit cokoliv)
 STR_ORDER_NO_LOAD                                               :{SPACE}(Nenakládat)
-STR_ORDER_UNLOAD                                                :{SPACE}(Vyložit a vzít náklad)
-STR_ORDER_UNLOAD_FULL_LOAD                                      :{SPACE}(vyložit a plně naložit)
-STR_ORDER_UNLOAD_FULL_LOAD_ANY                                  :{SPACE}(vyložit a plně naložit čímkoliv)
-STR_ORDER_UNLOAD_NO_LOAD                                        :{SPACE}(Vylozit a nechat pradzne)
+STR_ORDER_UNLOAD                                                :{SPACE}(Nuceně vyložit a vzít náklad)
+STR_ORDER_UNLOAD_FULL_LOAD                                      :{SPACE}(Nuceně vyložit a plně naložit)
+STR_ORDER_UNLOAD_FULL_LOAD_ANY                                  :{SPACE}(Nuceně vyložit a plně naložit čímkoliv)
+STR_ORDER_UNLOAD_NO_LOAD                                        :{SPACE}(Vyložit a nechat prázdné)
 STR_ORDER_TRANSFER                                              :{SPACE}(Přeložit a vzít náklad)
 STR_ORDER_TRANSFER_FULL_LOAD                                    :{SPACE}(Přeložit a počkat na úplné naložení)
 STR_ORDER_TRANSFER_FULL_LOAD_ANY                                :{SPACE}(Přeložit a počkat na úplné naložení čehokoliv)
@@ -4947,8 +4947,8 @@ STR_ORDER_AUTO_REFIT                                            :{SPACE}(Přesta
 STR_ORDER_FULL_LOAD_REFIT                                       :{SPACE}(Úplně naložit s přestavbou na {STRING})
 STR_ORDER_FULL_LOAD_ANY_REFIT                                   :{SPACE}(Úplně naložit cokoliv s přestavbou na {STRING})
 STR_ORDER_UNLOAD_REFIT                                          :{SPACE}(Vyložit a naložit náklad s přestavbou na {STRING})
-STR_ORDER_UNLOAD_FULL_LOAD_REFIT                                :{SPACE}(Vyložit a počkat na plné naložení s přestavěním na {STRING})
-STR_ORDER_UNLOAD_FULL_LOAD_ANY_REFIT                            :{SPACE}(Vyložit a počkat na naložení čehokoliv s přestavěním na {STRING})
+STR_ORDER_UNLOAD_FULL_LOAD_REFIT                                :{SPACE}(Nuceně vyložit a počkat na plné naložení s přestavěním na {STRING})
+STR_ORDER_UNLOAD_FULL_LOAD_ANY_REFIT                            :{SPACE}(Nuceně vyložit a počkat na naložení čehokoliv s přestavěním na {STRING})
 STR_ORDER_TRANSFER_REFIT                                        :{SPACE}(Přeložit a naložit náklad s přestavbou na {STRING})
 STR_ORDER_TRANSFER_FULL_LOAD_REFIT                              :{SPACE}(Přeložit a počkat na úplné naložení s přestavbou na {STRING})
 STR_ORDER_TRANSFER_FULL_LOAD_ANY_REFIT                          :{SPACE}(Přeložit a počkat na úplné naložení čehokoliv s přestavbou na {STRING})

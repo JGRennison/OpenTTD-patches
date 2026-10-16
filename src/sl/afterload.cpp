@@ -1709,18 +1709,23 @@ bool AfterLoadGame()
 		}
 	}
 
-	/* Elrails got added in rev 24 */
+	/* Elrails got added in rev 24 but can be disabled since version 38. */
 	if (IsSavegameVersionBefore(SLV_24)) {
-		RailType min_rail = RAILTYPE_ELECTRIC;
+		RailType min_rail = static_cast<RailType>(1); // Monorail was 1 before elrails were introduced.
 
-		for (Train *v : Train::Iterate()) {
-			RailTypes rts = RailVehInfo(v->engine_type)->railtypes;
+		if (!_settings_game.vehicle.disable_elrails) {
+			for (Train *v : Train::Iterate()) {
+				RailTypes rts = RailVehInfo(v->engine_type)->railtypes;
 
-			v->railtypes = rts;
-			if (rts.Test(RAILTYPE_ELECTRIC)) min_rail = RAILTYPE_RAIL;
+				if (rts.Test(RAILTYPE_ELECTRIC)) {
+					min_rail = RAILTYPE_RAIL;
+					break;
+				}
+			}
 		}
 
-		/* .. so we convert the entire map from normal to elrail (so maintain "fairness") */
+		/* We update the entire map to keep monorail and maglev in place. */
+		/* If min_rail == RAILTYPE_RAIL, this will also upgrade normal rail to electric rail. */
 		for (TileIndex t(0); t < map_size; t++) {
 			switch (GetTileType(t)) {
 				case TileType::Railway:
@@ -1752,7 +1757,13 @@ bool AfterLoadGame()
 				SetSecondaryRailType(t, GetRailType(t));
 			}
 		}
+	} else if (IsSavegameVersionBefore(SLV_38)) {
+		/* Since we cannot know the preference of a user, let elrails enabled; it
+		 * can be disabled manually. */
+		_settings_game.vehicle.disable_elrails = false;
 	}
+	/* Do the same as when elrails were enabled/disabled manually just now. */
+	UpdateDisableElrailSettingState(_settings_game.vehicle.disable_elrails, false);
 
 	/* In version 16.1 of the savegame a company can decide if trains, which get
 	 * replaced, shall keep their old length. In all prior versions, just default
@@ -1905,12 +1916,6 @@ bool AfterLoadGame()
 			order->SetRefit(CARGO_NO_REFIT);
 		});
 	}
-
-	/* from version 38 we have optional elrails, since we cannot know the
-	 * preference of a user, let elrails enabled; it can be disabled manually */
-	if (IsSavegameVersionBefore(SLV_38)) _settings_game.vehicle.disable_elrails = false;
-	/* do the same as when elrails were enabled/disabled manually just now */
-	UpdateDisableElrailSettingState(_settings_game.vehicle.disable_elrails, false);
 
 	/* From version 53, the map array was changed for house tiles to allow
 	 * space for newhouses grf features. A new byte, m7, was also added. */

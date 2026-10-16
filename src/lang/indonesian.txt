@@ -4729,9 +4729,9 @@ STR_ORDER_DROP_FULL_LOAD_ANY                                    :Penuhi salah sa
 STR_ORDER_DROP_NO_LOADING                                       :Tidak memuat
 STR_ORDER_TOOLTIP_FULL_LOAD                                     :{BLACK}Ubah model pengangkutan pada tujuan terpilih
 
-STR_ORDER_TOGGLE_UNLOAD                                         :{BLACK}Bongkar semua
+STR_ORDER_TOGGLE_UNLOAD                                         :{BLACK}Bongkar paksa semua muatan
 STR_ORDER_DROP_UNLOAD_IF_ACCEPTED                               :Bongkar jika diterima
-STR_ORDER_DROP_UNLOAD                                           :Bongkar semua
+STR_ORDER_DROP_UNLOAD                                           :Paksa bongkar sekalipun tidak diterima
 STR_ORDER_DROP_TRANSFER                                         :Transfer
 STR_ORDER_DROP_NO_UNLOADING                                     :Tidak membongkar
 STR_ORDER_TOOLTIP_UNLOAD                                        :{BLACK}Ubah model pembongkaran pada tujuan terpilih
@@ -4768,7 +4768,7 @@ STR_ORDER_CONDITIONAL_REQUIRES_SERVICE                          :Waktunya perbai
 STR_ORDER_CONDITIONAL_UNCONDITIONALLY                           :Selalu
 STR_ORDER_CONDITIONAL_REMAINING_LIFETIME                        :Sisa masa pakai (tahun)
 STR_ORDER_CONDITIONAL_MAX_RELIABILITY                           :Keandalan Maximal
-STR_ORDER_CONDITIONAL_DRIVING_BACKWARDS                         :Berkendara mundur
+STR_ORDER_CONDITIONAL_DRIVING_BACKWARDS                         :Berkendara mundur dengan kecepatan yang dikurangi
 ###next-name-looks-similar
 
 STR_ORDER_CONDITIONAL_COMPARATOR_TOOLTIP                        :{BLACK}Jenis perbandingan kondisi dengan nilai yang diberikan

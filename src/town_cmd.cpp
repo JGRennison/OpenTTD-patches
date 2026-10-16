@@ -1413,13 +1413,13 @@ static bool GrowTownWithBridge(const Town *t, const TileIndex tile, const DiagDi
 		}
 	}
 
+	RoadType rt = GetTownRoadType();
 	std::bitset <MAX_BRIDGES> tried;
 	uint n = MAX_BRIDGES;
 	uint8_t bridge_type = RandomRange(n);
 
 	for (;;) {
 		/* Can we actually build the bridge? */
-		RoadType rt = GetTownRoadType();
 		if (MayTownBuildBridgeType(bridge_type) && Command<Commands::BuildBridge>::Do(CommandFlagsToDCFlags(GetCommandFlags<Commands::BuildBridge>()), tile, bridge_tile, TransportType::Road, bridge_type, rt, BuildBridgeFlags::None).Succeeded()) {
 			Command<Commands::BuildBridge>::Do(CommandFlagsToDCFlags(GetCommandFlags<Commands::BuildBridge>()).Set(DoCommandFlag::Execute), tile, bridge_tile, TransportType::Road, bridge_type, rt, BuildBridgeFlags::None);
 			return true;
