@@ -4834,7 +4834,7 @@ STR_ORDER_CONDITIONAL_REQUIRES_SERVICE                          :Javításra szo
 STR_ORDER_CONDITIONAL_UNCONDITIONALLY                           :Mindig
 STR_ORDER_CONDITIONAL_REMAINING_LIFETIME                        :Hátralévő élettartam (év)
 STR_ORDER_CONDITIONAL_MAX_RELIABILITY                           :Maximális megbízhatóság
-STR_ORDER_CONDITIONAL_DRIVING_BACKWARDS                         :Tolatva halad
+STR_ORDER_CONDITIONAL_DRIVING_BACKWARDS                         :Tolatva halad csökkentett sebességgel
 ###next-name-looks-similar
 
 STR_ORDER_CONDITIONAL_COMPARATOR_TOOLTIP                        :{BLACK}Hogyan viszonyul a jármű kiválasztott adata a megadott értékhez

@@ -260,7 +260,7 @@ void PlaceTree(TileIndex tile, uint32_t r, bool keep_density)
 	TreeType tree = GetRandomTreeType(tile, GB(r, 24, 8));
 
 	if (tree != TREE_INVALID) {
-		PlantTreesOnTile(tile, tree, GB(r, 22, 2), static_cast<TreeGrowthStage>(std::min<uint8_t>(GB(r, 16, 3), 6)));
+		PlantTreesOnTile(tile, tree, GB(r, 22, 2), static_cast<TreeGrowthStage>(std::min<uint8_t>(GB(r, 16, 3), to_underlying(TreeGrowthStage::Dead))));
 		MarkTileDirtyByTile(tile);
 
 		/* Maybe keep the existing ground density.*/
@@ -1080,7 +1080,7 @@ void DrawTreeTileOverlay(TileInfo *ti, TreeType tree_type, TreeGrowthStage growt
 
 	/* put the trees to draw in a list */
 	for (uint i = 0; i < trees; i++) {
-		SpriteID sprite = s[0].sprite + (i == trees - 1 ? to_underlying(growth_stage) : 3);
+		SpriteID sprite = s[0].sprite + to_underlying(i == trees - 1 ? growth_stage : TreeGrowthStage::Grown);
 		PaletteID pal;
 		if (flags.Test(DrawTreeTileOverlayFlag::Simulated)) {
 			pal = PALETTE_WHITE_TINT;

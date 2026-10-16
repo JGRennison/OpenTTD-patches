@@ -633,11 +633,13 @@ enum class VarFileType : uint8_t {
 	 * NOTE: the SLE_FILE_NNN values are stored in the savegame! */
 	/* Value 0 is used to mark end-of-header in tables. Do not use here! */
 	I8 = 1, ///< A 8 bit signed int.
+	Bool = I8, ///< A bool is stored in an 8 bit signed integer field.
 	U8 = 2, ///< A 8 bit unsigned int.
 	I16 = 3, ///< A 16 bit signed int.
 	U16 = 4, ///< A 16 bit unsigned int.
 	I32 = 5, ///< A 32 bit signed int.
 	U32 = 6, ///< A 32 bit unsigned int.
+	Label = U32, ///< A label is stored in an 32 bit unsigned integer field.
 	I64 = 7, ///< A 64 bit signed int.
 	U64 = 8, ///< A 64 bit unsigned int.
 	StringID = 9, ///< StringID offset into strings-array.
@@ -720,7 +722,7 @@ constexpr VarType operator|(VarFileType file, VarMemType mem)
 
 /** Container for holding some default \c VarType instances. */
 struct VarTypes {
-	static constexpr VarType BOOL{ VarFileType::I8, VarMemType::Bool }; ///< Store a boolean (as int8).
+	static constexpr VarType BOOL{ VarFileType::Bool, VarMemType::Bool }; ///< Store a boolean (as int8).
 	static constexpr VarType I8{ VarFileType::I8, VarMemType::I8 }; ///< Store a 8 bits signed int.
 	static constexpr VarType U8{ VarFileType::U8, VarMemType::U8 }; ///< Store a 8 bits unsigned int.
 	static constexpr VarType I16{ VarFileType::I16, VarMemType::I16 }; ///< Store a 16 bits signed int.
@@ -733,7 +735,7 @@ struct VarTypes {
 	static constexpr VarType STR{ VarFileType::String, VarMemType::Str }; ///< Store string.
 	static constexpr VarType STRQ{ VarFileType::String, VarMemType::StrQ }; ///< Store a string with quotes.
 	static constexpr VarType NAME{ VarFileType::StringID, VarMemType::Name }; ///< A string stored in the custom string array.
-	static constexpr VarType LABEL{ VarFileType::U32, VarMemType::Label }; ///< Store a \c Label as-is.
+	static constexpr VarType LABEL{ VarFileType::Label, VarMemType::Label }; ///< Store a \c Label as-is.
 };
 
 /** Type of data saved. */

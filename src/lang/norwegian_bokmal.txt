@@ -4733,9 +4733,9 @@ STR_ORDER_DROP_FULL_LOAD_ANY                                    :Full last av mi
 STR_ORDER_DROP_NO_LOADING                                       :Ingen lasting
 STR_ORDER_TOOLTIP_FULL_LOAD                                     :{BLACK}Endre lasterutinene for den merkede ordren
 
-STR_ORDER_TOGGLE_UNLOAD                                         :{BLACK}Loss av alt
+STR_ORDER_TOGGLE_UNLOAD                                         :{BLACK}Tving loss av alt
 STR_ORDER_DROP_UNLOAD_IF_ACCEPTED                               :Losse hvis godtatt
-STR_ORDER_DROP_UNLOAD                                           :Loss av alt
+STR_ORDER_DROP_UNLOAD                                           :Tving loss av alt også uten mottak
 STR_ORDER_DROP_TRANSFER                                         :Overfør
 STR_ORDER_DROP_NO_UNLOADING                                     :Ingen lossing
 STR_ORDER_TOOLTIP_UNLOAD                                        :{BLACK}Endre lossingsrutinene for den merkede ordren
@@ -4772,7 +4772,7 @@ STR_ORDER_CONDITIONAL_REQUIRES_SERVICE                          :Trenger vedlike
 STR_ORDER_CONDITIONAL_UNCONDITIONALLY                           :Alltid
 STR_ORDER_CONDITIONAL_REMAINING_LIFETIME                        :Gjenstående levetid (år)
 STR_ORDER_CONDITIONAL_MAX_RELIABILITY                           :Største pålitelighet
-STR_ORDER_CONDITIONAL_DRIVING_BACKWARDS                         :Kjører baklengs
+STR_ORDER_CONDITIONAL_DRIVING_BACKWARDS                         :Kjører baklengs med redusert hastighet
 ###next-name-looks-similar
 
 STR_ORDER_CONDITIONAL_COMPARATOR_TOOLTIP                        :{BLACK}Hvordan sammenligne kjøretøyets data til den gitte verdi
@@ -4838,10 +4838,10 @@ STR_ORDER_IMPLICIT                                              :{WHITE}(Ubeting
 STR_ORDER_FULL_LOAD                                             :{SPACE}(Full last av alle varetyper)
 STR_ORDER_FULL_LOAD_ANY                                         :{SPACE}(Full last av minst en varetype)
 STR_ORDER_NO_LOAD                                               :{SPACE}(Ingen lasting)
-STR_ORDER_UNLOAD                                                :{SPACE}(Loss av og last på varer)
-STR_ORDER_UNLOAD_FULL_LOAD                                      :{SPACE}(Loss av og vent på full last)
-STR_ORDER_UNLOAD_FULL_LOAD_ANY                                  :{SPACE}(Loss av og vent på første fulle last)
-STR_ORDER_UNLOAD_NO_LOAD                                        :{SPACE}(Loss av og forlat tom)
+STR_ORDER_UNLOAD                                                :{SPACE}(Tving loss av og last på varer)
+STR_ORDER_UNLOAD_FULL_LOAD                                      :{SPACE}(Tving loss av og vent på full last)
+STR_ORDER_UNLOAD_FULL_LOAD_ANY                                  :{SPACE}(Tving loss av og vent på første fulle last)
+STR_ORDER_UNLOAD_NO_LOAD                                        :{SPACE}(Tving loss av og forlat tom)
 STR_ORDER_TRANSFER                                              :{SPACE}(Overfør og last på varer)
 STR_ORDER_TRANSFER_FULL_LOAD                                    :{SPACE}(Overfør og vent på full last)
 STR_ORDER_TRANSFER_FULL_LOAD_ANY                                :{SPACE}(Overfør og vent på første fulle last)
@@ -4854,9 +4854,9 @@ STR_ORDER_NO_UNLOAD_NO_LOAD                                     :{WHITE}(Ingen a
 STR_ORDER_AUTO_REFIT                                            :{WHITE}(Ombygging til {STRING})
 STR_ORDER_FULL_LOAD_REFIT                                       :{SPACE}(Full last med ombygging til {STRING})
 STR_ORDER_FULL_LOAD_ANY_REFIT                                   :{SPACE}(Full last av minst en varetype med ombygging til {STRING})
-STR_ORDER_UNLOAD_REFIT                                          :{SPACE}(Loss av og last på med ombygging til {STRING})
-STR_ORDER_UNLOAD_FULL_LOAD_REFIT                                :{SPACE}(Loss av og vent på full last med ombygging til {STRING})
-STR_ORDER_UNLOAD_FULL_LOAD_ANY_REFIT                            :{SPACE}(Loss av og vent på første fulle last med ombygging til {STRING})
+STR_ORDER_UNLOAD_REFIT                                          :{SPACE}(Tving loss av og last på med ombygging til {STRING})
+STR_ORDER_UNLOAD_FULL_LOAD_REFIT                                :{SPACE}(Tving loss av og vent på full last med ombygging til {STRING})
+STR_ORDER_UNLOAD_FULL_LOAD_ANY_REFIT                            :{SPACE}(Tving loss av og vent på første fulle last med ombygging til {STRING})
 STR_ORDER_TRANSFER_REFIT                                        :{SPACE}(Overfør og last på varer med ombygging til {STRING})
 STR_ORDER_TRANSFER_FULL_LOAD_REFIT                              :{SPACE}(Overfør og vent på full last med ombygging til {STRING})
 STR_ORDER_TRANSFER_FULL_LOAD_ANY_REFIT                          :{SPACE}(Overfør og vent på første fulle last med ombygging til {STRING})
