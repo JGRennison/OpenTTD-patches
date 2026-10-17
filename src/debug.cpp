@@ -480,3 +480,11 @@ void assert_tile_error(int line, const char *file, const char *expr, TileIndex t
 
 	assert_str_error(line, file, expr, out);
 }
+
+[[noreturn]] void NotReachedErrorMsgVFmt(int line, const char *file, fmt::string_view msg, fmt::format_args args)
+{
+	format_buffer out;
+	out.format("NOT_REACHED triggered at line {} of {}: ", line, file);
+	out.vformat(msg, args);
+	FatalErrorI(out.to_string());
+}

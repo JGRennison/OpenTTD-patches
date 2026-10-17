@@ -128,6 +128,12 @@ template <typename... T>
 	[[noreturn]] extern void AssertMsgTileErrorVFmt(int line, const char *file, const char *expr, uint32_t tile, fmt::string_view msg, fmt::format_args args);
 	AssertMsgTileErrorVFmt(line, file, expr, tile, msg, make_preprocessed_format_args(args...));
 }
+template <typename... T>
+[[noreturn]] void NotReachedErrorMsg(int line, const char *file, fmt::format_string<T...> msg, T&&... args)
+{
+	[[noreturn]] extern void NotReachedErrorMsgVFmt(int line, const char *file, fmt::string_view msg, fmt::format_args args);
+	NotReachedErrorMsgVFmt(line, file, msg, make_preprocessed_format_args(args...));
+}
 
 #if !defined(NDEBUG) || defined(WITH_ASSERT)
 #	define assert_msg(expression, ...) do { if (unlikely(!(expression))) AssertMsgError(__LINE__, __FILE__, #expression, __VA_ARGS__); } while (false)
@@ -136,5 +142,7 @@ template <typename... T>
 #	define assert_msg(expression, ...)
 #	define assert_msg_tile(expression, tile, ...)
 #endif
+
+#define NOT_REACHED_MSG(...) NotReachedErrorMsg(__LINE__, __FILE__, __VA_ARGS__);
 
 #endif /* DEBUG_H */
