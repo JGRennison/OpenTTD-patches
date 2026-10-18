@@ -49,6 +49,7 @@
 #include "maintenance_func.h"
 #include "tile_cmd.h"
 #include "road_layout_func.h"
+#include "debug.h"
 
 #include "table/strings.h"
 #include "table/roadtypes.h"
@@ -2855,7 +2856,7 @@ static TrackStatus GetTileTrackStatus_Road(TileIndex tile, TransportType mode, u
 								break;
 
 							default:
-								NOT_REACHED();
+								NOT_REACHED_MSG("{}, {}", tile, rcows);
 						}
 					}
 					break;

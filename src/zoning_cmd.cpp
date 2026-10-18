@@ -28,6 +28,7 @@
 #include "road_map.h"
 #include "animated_tile.h"
 #include "tile_cmd.h"
+#include "debug.h"
 #include "3rdparty/cpp-btree/btree_set.h"
 
 Zoning _zoning;
@@ -314,7 +315,7 @@ inline SpriteID TileZoneCheckOneWayRoadEvaluation(TileIndex tile)
 
 	RoadCachedOneWayState rcows = GetRoadCachedOneWayState(tile);
 	switch (rcows) {
-		default:
+		case RCOWS_NORMAL:
 			return ZONING_INVALID_SPRITE_ID;
 		case RCOWS_NO_ACCESS:
 			return SPR_ZONING_INNER_HIGHLIGHT_RED;
@@ -333,6 +334,8 @@ inline SpriteID TileZoneCheckOneWayRoadEvaluation(TileIndex tile)
 			return SPR_ZONING_INNER_HIGHLIGHT_ORANGE;
 		case RCOWS_SIDE_JUNCTION_NO_EXIT:
 			return SPR_ZONING_INNER_HIGHLIGHT_YELLOW;
+		default:
+			NOT_REACHED_MSG("{}, {}", tile, rcows);
 	}
 }
 
