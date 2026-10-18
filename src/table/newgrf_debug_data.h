@@ -1059,7 +1059,7 @@ class NIHIndustryTile : public NIHelper {
 		if (indts != nullptr) {
 			output.Print("  anim_production: {}, anim_next: {}, anim_state: {}, ", indts->anim_production, indts->anim_next, indts->anim_state);
 			output.Print("  animation: frames: {}, status: {}, speed: {}, triggers: 0x{:X}", indts->animation.frames, indts->animation.status, indts->animation.speed, indts->animation.triggers);
-			output.Print("  special_flags: 0x{:X}, enabled: {}", indts->special_flags, indts->enabled);
+			output.Print("  special_flags: 0x{:X}", indts->special_flags);
 		}
 	}
 

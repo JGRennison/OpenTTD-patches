@@ -178,7 +178,6 @@ struct IndustryTileSpec {
 	IndustryTileCallbackMasks callback_mask;            ///< Bitmask of industry tile callbacks that have to be called
 	AnimationInfo<IndustryAnimationTriggers> animation; ///< Information about the animation (is it looping, how many loops etc)
 	IndustryTileSpecialFlags special_flags; ///< Bitmask of extra flags used by the tile
-	bool enabled;                           ///< entity still available (by default true).newgrf can disable it, though
 	SubstituteGRFFileProps grf_prop;        ///< properties related to the grf file
 	std::vector<BadgeID> badges;
 
