@@ -46,7 +46,7 @@ private:
 
 	static inline uint64_t GrfHashKey(GrfID grfid, uint16_t local_id)
 	{
-		return (static_cast<uint64_t>(local_id) << 32) | grfid[0] | grfid[1] << 8 | grfid[2] << 16 | grfid[3] << 24;
+		return (static_cast<uint64_t>(local_id) << 32) | static_cast<uint64_t>(grfid.FlattenToUint32());
 	}
 
 	/** Initialise the defaults. */
