@@ -561,7 +561,9 @@ static Colours GenerateCompanyColour()
 	}
 
 	/* Sort it according to the values in _colour_sort. */
-	std::ranges::stable_sort(colours, std::greater_equal{}, [](auto &i) { return _colour_sort[i]; });
+	std::stable_sort(colours.begin(), colours.end(), [](Colours a, Colours b) {
+		return _colour_sort[a] > _colour_sort[b];
+	});
 
 	/* Move the colours that look similar to each company's colour to the side */
 	for (const Company *c : Company::Iterate()) {
