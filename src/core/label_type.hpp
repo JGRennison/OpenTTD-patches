@@ -42,6 +42,8 @@ struct BaseLabel : std::array<uint8_t, 4> {
 	{
 		return hasher.hash_bytes(this->data(), this->size());
 	}
+
+	constexpr uint32_t FlattenToUint32() { return (*this)[0] | (*this)[1] << 8 | (*this)[2] << 16 | (*this)[3] << 24; }
 };
 
 template <typename Tag>
@@ -104,6 +106,17 @@ struct Label : BaseLabel {
 	inline void fmt_format_value(struct format_target &output) const
 	{
 		this->BaseLabel::fmt_format_value(output, LabelFormatAsHex<Tag>::value);
+	}
+
+	static constexpr Label UnflattenFromUint32(uint32_t value)
+	{
+		uint8_t buf[]{
+			static_cast<uint8_t>(value & 0xFF),
+			static_cast<uint8_t>((value >> 8) & 0xFF),
+			static_cast<uint8_t>((value >> 16) & 0xFF),
+			static_cast<uint8_t>((value >> 24) & 0xFF),
+		};
+		return buf;
 	}
 };
 
