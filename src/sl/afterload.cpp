@@ -4528,7 +4528,7 @@ bool AfterLoadGame()
 		}
 	}
 
-	if (IsSavegameVersionBefore(SLV_SCRIPT_RANDOMIZER)) {
+	if (IsEffectiveUpstreamSavegameVersionBefore(SLV_SCRIPT_RANDOMIZER)) {
 		ScriptObject::InitializeRandomizers();
 	}
 
