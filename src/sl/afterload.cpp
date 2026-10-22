@@ -4522,7 +4522,7 @@ bool AfterLoadGame()
 		}
 	}
 
-	if (IsSavegameVersionBefore(SLV_MAX_LOAN_FOR_COMPANY)) {
+	if (IsEffectiveUpstreamSavegameVersionBefore(SLV_MAX_LOAN_FOR_COMPANY)) {
 		for (Company *c : Company::Iterate()) {
 			c->max_loan = COMPANY_MAX_LOAN_DEFAULT;
 		}

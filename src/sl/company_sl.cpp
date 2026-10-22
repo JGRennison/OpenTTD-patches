@@ -462,6 +462,7 @@ static const NamedSaveLoad _company_desc[] = {
 
 	NSL("current_loan",                 SLE_CONDVAR(CompanyProperties, current_loan,          SLE_VAR_I64 | SLE_FILE_I32,  SL_MIN_VERSION, SLV_65)),
 	NSL("current_loan",                 SLE_CONDVAR(CompanyProperties, current_loan,          SLE_INT64,                   SLV_65, SL_MAX_VERSION)),
+	NSLT("max_loan",                        SLE_VAR(CompanyProperties, max_loan,              SLE_INT64)),
 
 	NSL("colour",                           SLE_VAR(CompanyProperties, colour,                SLE_UINT8)),
 	NSL("money_fraction",                   SLE_VAR(CompanyProperties, money_fraction,        SLE_UINT8)),
