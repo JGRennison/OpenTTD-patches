@@ -355,6 +355,7 @@ static const std::vector<ChunkHandler> &ChunkHandlers()
 	extern const ChunkHandlerTable _airport_chunk_handlers;
 	extern const ChunkHandlerTable _object_chunk_handlers;
 	extern const ChunkHandlerTable _persistent_storage_chunk_handlers;
+	extern const ChunkHandlerTable _randomizer_chunk_handlers;
 	extern const ChunkHandlerTable _trace_restrict_chunk_handlers;
 	extern const ChunkHandlerTable _signal_chunk_handlers;
 	extern const ChunkHandlerTable _plan_chunk_handlers;
@@ -403,6 +404,7 @@ static const std::vector<ChunkHandler> &ChunkHandlers()
 		_airport_chunk_handlers,
 		_object_chunk_handlers,
 		_persistent_storage_chunk_handlers,
+		_randomizer_chunk_handlers,
 		_trace_restrict_chunk_handlers,
 		_signal_chunk_handlers,
 		_plan_chunk_handlers,

@@ -34,6 +34,7 @@ add_files(
     oldloader_sl.cpp
     order_sl.cpp
     plans_sl.cpp
+    randomizer_sl.cpp
     saveload.cpp
     saveload.h
     saveload_buffer.h

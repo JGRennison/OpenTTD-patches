@@ -4528,7 +4528,7 @@ bool AfterLoadGame()
 		}
 	}
 
-	if (IsEffectiveUpstreamSavegameVersionBefore(SLV_SCRIPT_RANDOMIZER)) {
+	if (IsSavegameVersionBefore(SLV_SCRIPT_RANDOMIZER) && SlXvIsFeatureMissing(XSLFI_SCRIPT_RANDOMIZER)) {
 		ScriptObject::InitializeRandomizers();
 	}
 
