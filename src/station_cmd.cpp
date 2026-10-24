@@ -4961,6 +4961,7 @@ CommandCost CmdMoveStationName(DoCommandFlags flags, StationID station_id, TileI
 		st->MoveSign(tile);
 
 		st->UpdateVirtCoord();
+		st->RecomputeCatchment();
 	}
 	return CommandCost();
 }
