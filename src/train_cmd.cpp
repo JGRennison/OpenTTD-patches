@@ -4988,7 +4988,7 @@ void Train::MarkDirty()
 	} while ((v = v->Next()) != nullptr);
 
 	/* need to update acceleration and cached values since the goods on the train changed. */
-	this->CargoChanged();
+	this->ConsistChanged({});
 	this->UpdateAcceleration();
 }
 

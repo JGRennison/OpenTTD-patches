@@ -105,10 +105,8 @@ static std::vector<SaveLoad> GetSettingsDesc(bool is_loading)
 				new_type.mem = VarMemType::Null;
 				break;
 			case ::SLE_VAR_STR:
-				new_type.mem = VarMemType::Str;
-				break;
 			case ::SLE_VAR_STRQ:
-				new_type.mem = VarMemType::StrQ;
+				new_type.mem = VarMemType::Str;
 				break;
 			default:
 				FatalError("Unexpected save conv for {}: mem: 0x{:02X}", sd->name, sd->save.conv.mem);

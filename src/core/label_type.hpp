@@ -18,7 +18,7 @@ struct BaseLabel : std::array<uint8_t, 4> {
 	 * Check whether the label is empty.
 	 * @return \c true iff the label is empty, i.e. all zeros.
 	 */
-	constexpr inline bool Empty() const
+	constexpr bool Empty() const
 	{
 		for (uint8_t b : *this) {
 			if (b != 0) return false;

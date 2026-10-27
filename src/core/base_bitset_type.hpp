@@ -29,12 +29,12 @@ struct BaseBitSetEnableDirectIteration {
 template <typename Timpl, typename Tvalue_type, typename Tstorage, Tstorage Tmask = std::numeric_limits<Tstorage>::max()>
 class BaseBitSet {
 public:
-	static inline constexpr bool fmt_as_base_hex = true;
-	static inline constexpr bool serialisation_as_base = true;
-	static inline constexpr bool string_parameter_as_base = true;
-	static inline constexpr bool saveload_primitive_type = true;
-	static inline constexpr bool integer_type_hint = true;
-	static inline constexpr bool bitset_as_base = true;
+	static constexpr bool fmt_as_base_hex = true;
+	static constexpr bool serialisation_as_base = true;
+	static constexpr bool string_parameter_as_base = true;
+	static constexpr bool saveload_primitive_type = true;
+	static constexpr bool integer_type_hint = true;
+	static constexpr bool bitset_as_base = true;
 
 	using ValueType = Tvalue_type; ///< Value type of this BaseBitSet.
 	using BaseType = Tstorage; ///< Storage type of this BaseBitSet, be ConvertibleThroughBase
@@ -56,7 +56,7 @@ public:
 	 * Set all bits.
 	 * @returns The bit set
 	 */
-	inline constexpr Timpl &Set()
+	constexpr Timpl &Set()
 	{
 		this->data = Tmask;
 		return static_cast<Timpl&>(*this);
@@ -69,7 +69,7 @@ public:
 	 * @returns The bit set
 	 */
 	template <typename Treturn_type = Timpl> requires std::is_base_of_v<BaseBitSet<Timpl, Tvalue_type, Tstorage, Tmask>, Treturn_type>
-	inline constexpr Treturn_type &Set(Tvalue_type value)
+	constexpr Treturn_type &Set(Tvalue_type value)
 	{
 		this->data |= (1ULL << Timpl::DecayValueType(value));
 		return static_cast<Treturn_type &>(*this);
@@ -80,7 +80,7 @@ public:
 	 * @param other Bitset of values to set.
 	 * @returns The bit set
 	 */
-	inline constexpr Timpl &Set(const Timpl &other)
+	constexpr Timpl &Set(const Timpl &other)
 	{
 		this->data |= other.data;
 		return static_cast<Timpl&>(*this);
@@ -92,7 +92,7 @@ public:
 	 * @param set true if the bit should be set, false if the bit should be reset.
 	 * @returns The EnumBitset
 	 */
-	inline constexpr Timpl &Set(Tvalue_type value, bool set)
+	constexpr Timpl &Set(Tvalue_type value, bool set)
 	{
 		return set ? this->Set(value) : this->Reset(value);
 	}
@@ -101,7 +101,7 @@ public:
 	 * Reset all bits.
 	 * @returns The bit set
 	 */
-	inline constexpr Timpl &Reset()
+	constexpr Timpl &Reset()
 	{
 		this->data = 0;
 		return static_cast<Timpl &>(*this);
@@ -112,7 +112,7 @@ public:
 	 * @param value Bit to reset.
 	 * @returns The bit set
 	 */
-	inline constexpr Timpl &Reset(Tvalue_type value)
+	constexpr Timpl &Reset(Tvalue_type value)
 	{
 		this->data &= ~(1ULL << Timpl::DecayValueType(value));
 		return static_cast<Timpl&>(*this);
@@ -123,7 +123,7 @@ public:
 	 * @param other Bitset of values to reset.
 	 * @returns The bit set
 	 */
-	inline constexpr Timpl &Reset(const Timpl &other)
+	constexpr Timpl &Reset(const Timpl &other)
 	{
 		this->data &= ~other.data;
 		return static_cast<Timpl&>(*this);
@@ -133,7 +133,7 @@ public:
 	 * Flip all bits.
 	 * @returns The bit set
 	 */
-	inline constexpr Timpl &Flip()
+	constexpr Timpl &Flip()
 	{
 		this->data ^= Tmask;
 		return static_cast<Timpl &>(*this);
@@ -144,7 +144,7 @@ public:
 	 * @param value Bit to flip.
 	 * @returns The bit set
 	 */
-	inline constexpr Timpl &Flip(Tvalue_type value)
+	constexpr Timpl &Flip(Tvalue_type value)
 	{
 		if (this->Test(value)) {
 			return this->Reset(value);
@@ -158,7 +158,7 @@ public:
 	 * @param other Bitset of values to flip.
 	 * @returns The bit set
 	 */
-	inline constexpr Timpl &Flip(const Timpl &other)
+	constexpr Timpl &Flip(const Timpl &other)
 	{
 		this->data ^= other.data;
 		return static_cast<Timpl&>(*this);
@@ -169,7 +169,7 @@ public:
 	 * @param value Bit to check.
 	 * @returns true iff the requested bit is set.
 	 */
-	inline constexpr bool Test(Tvalue_type value) const
+	constexpr bool Test(Tvalue_type value) const
 	{
 		return (this->data & (1ULL << Timpl::DecayValueType(value))) != 0;
 	}
@@ -179,7 +179,7 @@ public:
 	 * @param other BitSet of values to test.
 	 * @returns true iff all of the values are set.
 	 */
-	inline constexpr bool All(const Timpl &other) const
+	constexpr bool All(const Timpl &other) const
 	{
 		return (this->data & other.data) == other.data;
 	}
@@ -188,7 +188,7 @@ public:
 	 * Test if all of the values are set.
 	 * @returns true iff all of the values are set.
 	 */
-	inline constexpr bool All() const
+	constexpr bool All() const
 	{
 		return this->data == Tmask;
 	}
@@ -198,7 +198,7 @@ public:
 	 * @param other BitSet of values to test.
 	 * @returns true iff any of the given values are set.
 	 */
-	inline constexpr bool Any(const Timpl &other) const
+	constexpr bool Any(const Timpl &other) const
 	{
 		return (this->data & other.data) != 0;
 	}
@@ -207,7 +207,7 @@ public:
 	 * Test if any of the values are set.
 	 * @returns true iff any of the values are set.
 	 */
-	inline constexpr bool Any() const
+	constexpr bool Any() const
 	{
 		return this->data != 0;
 	}
@@ -216,44 +216,44 @@ public:
 	 * Test if none of the values are set.
 	 * @returns true iff none of the values are set.
 	 */
-	inline constexpr bool None() const
+	constexpr bool None() const
 	{
 		return this->data == 0;
 	}
 
-	inline constexpr Timpl operator |(const Timpl &other) const
+	constexpr Timpl operator |(const Timpl &other) const
 	{
 		return Timpl{static_cast<Tstorage>(this->data | other.data)};
 	}
 
-	inline constexpr Timpl operator &(const Timpl &other) const
+	constexpr Timpl operator &(const Timpl &other) const
 	{
 		return Timpl{static_cast<Tstorage>(this->data & other.data)};
 	}
 
-	inline constexpr Timpl operator ^(const Timpl &other) const
+	constexpr Timpl operator ^(const Timpl &other) const
 	{
 		return Timpl{static_cast<Tstorage>(this->data ^ other.data)};
 	}
 
-	inline constexpr Timpl operator ~() const
+	constexpr Timpl operator ~() const
 	{
 		return Timpl{static_cast<Tstorage>((~this->data) & Tmask)};
 	}
 
-	inline constexpr Timpl &operator |=(const Timpl &other)
+	constexpr Timpl &operator |=(const Timpl &other)
 	{
 		this->data |= other.data;
 		return static_cast<Timpl&>(*this);
 	}
 
-	inline constexpr Timpl &operator &=(const Timpl &other)
+	constexpr Timpl &operator &=(const Timpl &other)
 	{
 		this->data &= other.data;
 		return static_cast<Timpl&>(*this);
 	}
 
-	inline constexpr Timpl &operator ^=(const Timpl &other)
+	constexpr Timpl &operator ^=(const Timpl &other)
 	{
 		this->data ^= other.data;
 		return static_cast<Timpl&>(*this);
@@ -263,18 +263,18 @@ public:
 	 * Retrieve the raw value behind this bit set.
 	 * @returns the raw value.
 	 */
-	inline constexpr Tstorage base() const noexcept
+	constexpr Tstorage base() const noexcept
 	{
 		return this->data;
 	}
 
-	inline constexpr Tstorage &edit_base() { return this->data; }
+	constexpr Tstorage &edit_base() { return this->data; }
 
 	/**
 	 * Test that the raw value of this bit set is valid.
 	 * @returns true iff the no bits outside the masked value are set.
 	 */
-	inline constexpr bool IsValid() const
+	constexpr bool IsValid() const
 	{
 		return (this->base() & Tmask) == this->base();
 	}
@@ -303,7 +303,7 @@ public:
 		return std::nullopt;
 	}
 
-	inline constexpr SetBitIterator<Tvalue_type, Tstorage> IterateSetBits() const { return SetBitIterator<Tvalue_type, Tstorage>(this->data); }
+	constexpr SetBitIterator<Tvalue_type, Tstorage> IterateSetBits() const { return SetBitIterator<Tvalue_type, Tstorage>(this->data); }
 
 	/**
 	 * Returns an iterator to begin of the set bits.

@@ -1419,6 +1419,7 @@ void Aircraft::MarkDirty()
 		GetRotorImage(this, EngineImageType::OnMap, &rotor->sprite_seq);
 		rotor->UpdateSpriteSeqBound();
 	}
+	UpdateAircraftCache(this);
 }
 
 

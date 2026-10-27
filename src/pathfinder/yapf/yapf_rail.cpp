@@ -64,7 +64,7 @@ template <typename Tpf> void DumpState(Tpf &pf1, Tpf &pf2)
 
 template <class Node>
 struct CYapfReserveTrackSafePositionNodes {
-	inline static std::vector<Node *> safe_position_nodes;
+	static inline std::vector<Node *> safe_position_nodes;
 };
 
 template <class Types>

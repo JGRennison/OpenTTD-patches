@@ -443,6 +443,7 @@ void RoadVehicle::MarkDirty()
 		v->InvalidateImageCache();
 		v->UpdateViewport(true, false);
 	}
+	RoadVehUpdateCache(this, true);
 	this->CargoChanged();
 }
 

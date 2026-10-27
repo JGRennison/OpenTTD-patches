@@ -1824,8 +1824,8 @@ struct CheckDeterministicSpriteGroupOutputVarBitsProcedureHandler {
 		std::bitset<256> output_bits;
 		bool done = false;
 	};
-	inline static robin_hood::unordered_node_map<const DeterministicSpriteGroup *, ProcedureRecord> record_map;
-	inline static std::vector<std::pair<const DeterministicSpriteGroup *, ProcedureRecord *>> record_queue;
+	static inline robin_hood::unordered_node_map<const DeterministicSpriteGroup *, ProcedureRecord> record_map;
+	static inline std::vector<std::pair<const DeterministicSpriteGroup *, ProcedureRecord *>> record_queue;
 
 	CheckDeterministicSpriteGroupOutputVarBitsProcedureHandler(const std::bitset<256> &bits)
 			: needed_output_bits(nullptr), output_bits(bits) {}

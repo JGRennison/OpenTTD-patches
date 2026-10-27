@@ -30,7 +30,7 @@
  * @return the height of the tile
  * @pre tile < Map::Size()
  */
-[[debug_inline]] inline static uint TileHeight(TileIndex tile)
+[[debug_inline]] static inline uint TileHeight(TileIndex tile)
 {
 	/* this method is inlined in many places and is performance-critical, drop assertion in non-debug builds */
 #ifdef _DEBUG
@@ -100,7 +100,7 @@ inline uint TilePixelHeightOutsideMap(int x, int y)
  * @return The tiletype of the tile
  * @pre tile < Map::Size()
  */
-[[debug_inline]] inline static TileType GetTileType(TileIndex tile)
+[[debug_inline]] static inline TileType GetTileType(TileIndex tile)
 {
 	/* this method is inlined in many places and is performance-critical, drop assertion in non-debug builds */
 #ifdef _DEBUG
@@ -140,7 +140,7 @@ inline void SetTileType(TileIndex tile, TileType type)
  * @param type The type to check against
  * @return true If the type matches against the type of the tile
  */
-[[debug_inline]] inline static bool IsTileType(TileIndex tile, TileType type)
+[[debug_inline]] static inline bool IsTileType(TileIndex tile, TileType type)
 {
 	return GetTileType(tile) == type;
 }

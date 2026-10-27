@@ -404,13 +404,17 @@ static ChangeInfoResult IndustriesChangeInfo(uint first, uint last, int prop, co
 			}
 
 			case 0x0A: { // Set industry layout(s)
-				const uint8_t new_num_layouts = buf.ReadByte();
+				const uint8_t num_layouts = buf.ReadByte();
 				const uint32_t definition_size = buf.ReadDWord();
 				const uint8_t *definition_end = buf.Data() + definition_size;
-				std::vector<IndustryTileLayout> new_layouts;
+
+				std::vector<IndustryTileLayout> layouts;
+				layouts.reserve(num_layouts);
+
 				IndustryTileLayout layout;
 
-				for (uint8_t j = 0; j < new_num_layouts; j++) {
+				for (uint8_t j = 0; j < num_layouts; j++) {
+					bool invalid_layout = false;
 					layout.clear();
 
 					for (uint k = 0;; k++) {
@@ -462,6 +466,7 @@ static ChangeInfoResult IndustriesChangeInfo(uint first, uint last, int prop, co
 
 							if (tempid == INVALID_INDUSTRYTILE) {
 								GrfMsg(2, "IndustriesChangeInfo: Attempt to use industry tile {} with industry id {}, not yet defined. Ignoring.", local_tile_id, id);
+								invalid_layout = true;
 							} else {
 								/* Declared as been valid, can be used */
 								it.gfx = tempid;
@@ -479,19 +484,24 @@ static ChangeInfoResult IndustriesChangeInfo(uint first, uint last, int prop, co
 							 * For GRF version < 8 we need to emulate the old shifting behaviour.
 							 */
 							if (_cur_gps.grffile->grf_version < 8 && it.ti.x < 0) it.ti.y += 1;
+						} else if (it.gfx >= NEW_INDUSTRYTILEOFFSET) {
+							GrfMsg(2, "IndustriesChangeInfo: Attempt to use invalid industry tile {} with industry id {}. Ignoring.", it.gfx, id);
+							invalid_layout = true;
 						}
 					}
+
+					if (invalid_layout) continue;
 
 					if (!ValidateIndustryLayout(layout)) {
 						/* The industry layout was not valid, so skip this one. */
 						GrfMsg(1, "IndustriesChangeInfo: Invalid industry layout for industry id {}. Ignoring", id);
 					} else {
-						new_layouts.push_back(layout);
+						layouts.push_back(layout);
 					}
 				}
 
 				/* Install final layout construction in the industry spec */
-				indsp->layouts = std::move(new_layouts);
+				indsp->layouts = std::move(layouts);
 				break;
 			}
 

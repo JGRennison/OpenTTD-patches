@@ -41,7 +41,7 @@ jobs:
 
     - name: Setup vcpkg
       id: vcpkg
-      uses: OpenTTD/actions/setup-vcpkg@v6
+      uses: OpenTTD/actions/setup-vcpkg@v7
 
     - name: Install dependencies
       run: |
@@ -88,7 +88,7 @@ jobs:
         echo "::endgroup::"
 
     - name: Initialize CodeQL
-      uses: github/codeql-action/init@v4.37.3
+      uses: github/codeql-action/init@v4.37.9
       with:
         languages: cpp
         config-file: ./.github/codeql/codeql-config.yml
@@ -104,7 +104,7 @@ jobs:
         echo "::endgroup::"
 
     - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v4.37.3
+      uses: github/codeql-action/analyze@v4.37.9
       with:
         category: /language:cpp
         upload: False
@@ -122,6 +122,6 @@ jobs:
         output: sarif-results/cpp.sarif
 
     - name: Upload results
-      uses: github/codeql-action/upload-sarif@v4.37.3
+      uses: github/codeql-action/upload-sarif@v4.37.9
       with:
         sarif_file: sarif-results/cpp.sarif

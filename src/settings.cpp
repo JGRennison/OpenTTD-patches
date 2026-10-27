@@ -834,29 +834,14 @@ void IntSettingDesc::ResetToDefault(void *object) const
 void StringSettingDesc::FormatValue(format_target &buf, const void *object) const
 {
 	const std::string &str = this->Read(object);
-	switch (this->save.conv.mem) {
-		case SLE_VAR_STR:
-			buf.append(str);
-			break;
-
-		case SLE_VAR_STRQ:
-			if (!str.empty()) {
-				buf.format("\"{}\"", str);
-			}
-			break;
-
-		default: NOT_REACHED();
-	}
+	if (!str.empty()) buf.format("\"{}\"", str);
 }
 
 bool StringSettingDesc::IsSameValue(const IniItem *item, void *object) const
 {
-	/* The ini parsing removes the quotes, which are needed to retain the spaces in STRQs,
+	/* The ini parsing removes the quotes. To retain spaces, the string needs to be quoted,
 	 * so those values are always different in the parsed ini item than they should be. */
-	if (this->save.conv.mem == SLE_VAR_STRQ) return false;
-
-	const std::string &str = this->Read(object);
-	return item->value->compare(str) == 0;
+	return false;
 }
 
 bool StringSettingDesc::IsDefaultValue(void *object) const
@@ -2059,6 +2044,8 @@ bool SetSettingValue(const StringSettingDesc *sd, std::string_view value, bool f
 {
 	assert(sd->flags.Test(SettingFlag::NoNetworkSync));
 
+	/* Unclear why the value "(null)" needs to be special-cased, only do this for the few STRQ tagged string settings, for compatibility reasons.
+	 * STRQ is otherwise handled the same as STR. */
 	if (sd->save.conv.mem == SLE_VAR_STRQ && value == "(null)") {
 		value = {};
 	}

@@ -661,7 +661,6 @@ enum class VarMemType : uint8_t {
 	U64 = 8, ///< A 64 bit unsigned int.
 	Null = 9, ///< useful to write zeros in savegame.
 	Str = 12, ///< string pointer
-	StrQ = 13, ///< string pointer enclosed in quotes
 	Name = 14, ///< old custom name to be converted to a string pointer
 	Label = 15, ///< A 4 character \c Label, stored as-is.
 };
@@ -733,7 +732,6 @@ struct VarTypes {
 	static constexpr VarType U64{ VarFileType::U64, VarMemType::U64 }; ///< Store a 64 bits unsigned int.
 	static constexpr VarType STRINGID{ VarFileType::StringID, VarMemType::U32 }; ///< Store a StringID.
 	static constexpr VarType STR{ VarFileType::String, VarMemType::Str }; ///< Store string.
-	static constexpr VarType STRQ{ VarFileType::String, VarMemType::StrQ }; ///< Store a string with quotes.
 	static constexpr VarType NAME{ VarFileType::StringID, VarMemType::Name }; ///< A string stored in the custom string array.
 	static constexpr VarType LABEL{ VarFileType::Label, VarMemType::Label }; ///< Store a \c Label as-is.
 };
@@ -877,7 +875,7 @@ struct SaveLoadCompat {
  * @param type VarType to get size of.
  * @return size of type in bytes.
  */
-inline constexpr size_t SlVarSize(VarMemType type)
+constexpr size_t SlVarSize(VarMemType type)
 {
 	switch (type) {
 		case VarMemType::Bool: return sizeof(bool);
@@ -891,7 +889,6 @@ inline constexpr size_t SlVarSize(VarMemType type)
 		case VarMemType::U64: return sizeof(uint64_t);
 		case VarMemType::Null: return sizeof(void *);
 		case VarMemType::Str: return sizeof(std::string);
-		case VarMemType::StrQ: return sizeof(std::string);
 		case VarMemType::Name: return sizeof(std::string);
 		case VarMemType::Label: return sizeof(BaseLabel);
 		default: NOT_REACHED();
@@ -912,7 +909,6 @@ inline constexpr bool SlCheckPrimitiveTypeVar(VarMemType type)
 
 	switch (type) {
 		case VarMemType::Str:
-		case VarMemType::StrQ:
 		case VarMemType::Name:
 			return std::is_same_v<T, std::string> || std::is_same_v<T, EncodedString>;
 

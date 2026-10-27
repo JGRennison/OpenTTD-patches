@@ -18,6 +18,28 @@
 #include "../safeguards.h"
 
 /**
+ * Validate the airport layout; e.g. to prevent duplicate tiles.
+ * @param layout The layout to check.
+ * @return True if the layout is deemed valid.
+ */
+static bool ValidateAirportLayout(const AirportTileLayout &layout)
+{
+	const size_t size = layout.tiles.size();
+	if (size == 0) return false;
+
+	for (size_t i = 0; i < size - 1; i++) {
+		for (size_t j = i + 1; j < size; j++) {
+			if (layout.tiles[i].ti.x == layout.tiles[j].ti.x &&
+					layout.tiles[i].ti.y == layout.tiles[j].ti.y) {
+				return false;
+			}
+		}
+	}
+
+	return true;
+}
+
+/**
  * Define properties for airports
  * @param first Local ID of the first airport.
  * @param last Local ID of the last airport.
@@ -78,19 +100,29 @@ static ChangeInfoResult AirportChangeInfo(uint first, uint last, int prop, const
 			}
 
 			case 0x0A: { // Set airport layout
-				uint8_t num_layouts = buf.ReadByte();
-				buf.ReadDWord(); // Total size of definition, unneeded.
+				const uint8_t num_layouts = buf.ReadByte();
+				const uint32_t definition_size = buf.ReadDWord();
+				const uint8_t *definition_end = buf.Data() + definition_size;
 				uint8_t size_x = 0;
 				uint8_t size_y = 0;
 
 				std::vector<AirportTileLayout> layouts;
 				layouts.reserve(num_layouts);
 
+				AirportTileLayout layout;
+
 				for (uint8_t j = 0; j != num_layouts; ++j) {
-					auto &layout = layouts.emplace_back();
+					bool invalid_layout = false;
+					layout.tiles.clear();
 					layout.rotation = static_cast<Direction>(buf.ReadByte() & 6); // Rotation can only be DIR_NORTH, DIR_EAST, DIR_SOUTH or DIR_WEST.
 
 					for (;;) {
+						if (definition_end != nullptr && definition_end < buf.Data()) {
+							GrfMsg(3, "AirportChangeInfo: Incorrect size for airport tile layout definition for airport {}.", id);
+							/* Avoid warning twice */
+							definition_end = nullptr;
+						}
+
 						auto &tile = layout.tiles.emplace_back();
 						tile.ti.x = buf.ReadByte();
 						tile.ti.y = buf.ReadByte();
@@ -111,6 +143,7 @@ static ChangeInfoResult AirportChangeInfo(uint first, uint last, int prop, const
 
 							if (tempid == INVALID_AIRPORTTILE) {
 								GrfMsg(2, "AirportChangeInfo: Attempt to use airport tile {} with airport id {}, not yet defined. Ignoring.", local_tile_id, id);
+								invalid_layout = true;
 							} else {
 								/* Declared as been valid, can be used */
 								tile.gfx = tempid;
@@ -118,6 +151,9 @@ static ChangeInfoResult AirportChangeInfo(uint first, uint last, int prop, const
 						} else if (tile.gfx == 0xFF) {
 							tile.ti.x = static_cast<int8_t>(GB(tile.ti.x, 0, 8));
 							tile.ti.y = static_cast<int8_t>(GB(tile.ti.y, 0, 8));
+						} else if (tile.gfx >= NEW_AIRPORTTILE_OFFSET) {
+							GrfMsg(2, "AirportChangeInfo: Attempt to use invalid airport tile {} with airport id {}. Ignoring.", tile.gfx, id);
+							invalid_layout = true;
 						}
 
 						/* Determine largest size. */
@@ -128,6 +164,15 @@ static ChangeInfoResult AirportChangeInfo(uint first, uint last, int prop, const
 							size_x = std::max<uint8_t>(size_x, tile.ti.x + 1);
 							size_y = std::max<uint8_t>(size_y, tile.ti.y + 1);
 						}
+					}
+
+					if (invalid_layout) continue;
+
+					if (!ValidateAirportLayout(layout)) {
+						/* The airport layout was not valid, so skip this one. */
+						GrfMsg(1, "AirportChangeInfo: Invalid airport layout for airport id {}. Ignoring", id);
+					} else {
+						layouts.push_back(layout);
 					}
 				}
 				as->layouts = std::move(layouts);

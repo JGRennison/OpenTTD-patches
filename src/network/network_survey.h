@@ -39,7 +39,7 @@ public:
 	 * Check whether a survey is possible.
 	 * @return \c true.
 	 */
-	constexpr static bool IsSurveyPossible()
+	static constexpr bool IsSurveyPossible()
 	{
 #if !defined(SURVEY_KEY)
 		/* Without a survey key, we cannot send a payload; so we disable the survey. */
