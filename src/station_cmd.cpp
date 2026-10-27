@@ -1675,7 +1675,7 @@ CommandCost CmdBuildRailStation(DoCommandFlags flags, TileIndex tile_org, RailTy
 	ret = BuildStationPart(&st, flags, reuse, new_location, StationNaming::Rail);
 	if (ret.Failed()) return ret;
 
-	if (st != nullptr && st->train_station.tile != INVALID_TILE) {
+	if (st != nullptr && !st->train_station.IsEmpty()) {
 		ret = CanExpandRailStation(st, new_location);
 		if (ret.Failed()) return ret;
 	}
@@ -2011,7 +2011,7 @@ CommandCost RemoveFromRailBaseStation(TileArea ta, std::vector<T *> &affected_st
 		UpdateStationSignCoord(st);
 
 		/* if we deleted the whole station, delete the train facility. */
-		if (st->train_station.tile == INVALID_TILE) {
+		if (st->train_station.IsEmpty()) {
 			st->facilities.Reset(StationFacility::Train);
 			SetWindowClassesDirty(WindowClass::VehicleOrders);
 			SetWindowWidgetDirty(WindowClass::StationView, st->index, WID_SV_TRAINS);
@@ -2047,7 +2047,7 @@ CommandCost CmdRemoveFromRailStation(DoCommandFlags flags, TileIndex start, Tile
 	/* Do all station specific functions here. */
 	for (Station *st : affected_stations) {
 
-		if (st->train_station.tile == INVALID_TILE) SetWindowWidgetDirty(WindowClass::StationView, st->index, WID_SV_TRAINS);
+		if (st->train_station.IsEmpty()) SetWindowWidgetDirty(WindowClass::StationView, st->index, WID_SV_TRAINS);
 		st->MarkTilesDirty(false);
 		st->RecomputeCatchment();
 	}
@@ -2420,7 +2420,7 @@ CommandCost RemoveRoadWaypointStop(TileIndex tile, DoCommandFlags flags, int rep
 			UpdateStationSignCoord(wp);
 
 			/* if we deleted the whole waypoint, delete the road facility. */
-			if (wp->road_waypoint_area.tile == INVALID_TILE) {
+			if (wp->road_waypoint_area.IsEmpty()) {
 				wp->facilities.Reset(StationFacility::BusStop);
 				wp->facilities.Reset(StationFacility::TruckStop);
 				SetWindowWidgetDirty(WindowClass::StationView, wp->index, WID_SV_ROADVEHS);
@@ -2763,7 +2763,7 @@ void UpdateAirportsNoise()
 	for (Town *t : Town::Iterate()) t->noise_reached = 0;
 
 	for (const Station *st : Station::Iterate()) {
-		if (st->airport.tile != INVALID_TILE && st->airport.type != AT_OILRIG) {
+		if (!st->airport.IsEmpty() && st->airport.type != AT_OILRIG) {
 			uint dist;
 			Town *nearest = AirportGetNearestTown(st, dist);
 			nearest->noise_reached += GetAirportNoiseLevelForDistance(st->airport.GetSpec(), dist);
@@ -2863,7 +2863,7 @@ CommandCost CmdBuildAirport(DoCommandFlags flags, TileIndex tile, uint8_t airpor
 		(est != StationID::Invalid()) ? AIRPORT_UPGRADE :
 		(st != nullptr) ? AIRPORT_ADD : AIRPORT_NEW;
 
-	if (action == AIRPORT_ADD && st->airport.tile != INVALID_TILE) {
+	if (action == AIRPORT_ADD && !st->airport.IsEmpty()) {
 		return CommandCost(STR_ERROR_TOO_CLOSE_TO_ANOTHER_AIRPORT);
 	}
 
@@ -3313,8 +3313,7 @@ static CommandCost RemoveDock(TileIndex tile, DoCommandFlags flags)
 		st->rect.AfterRemoveTile(st, tile2);
 
 		MakeShipStationAreaSmaller(st);
-		if (st->ship_station.tile == INVALID_TILE) {
-			st->ship_station.Clear();
+		if (st->ship_station.IsEmpty()) {
 			st->docking_station.Clear();
 			st->docking_tiles.clear();
 			st->facilities.Reset(StationFacility::Dock);
@@ -5200,7 +5199,7 @@ void UpdateStationDockingTiles(Station *st)
 	/* For neutral stations, start with the industry area instead of dock area */
 	const TileArea *area = st->industry != nullptr ? &st->industry->location : &st->ship_station;
 
-	if (area->tile == INVALID_TILE) return;
+	if (area->IsEmpty()) return;
 
 	int x = TileX(area->tile);
 	int y = TileY(area->tile);

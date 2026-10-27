@@ -988,7 +988,7 @@ bool AfterLoadGame()
 			if (st->airport.tile == INVALID_TILE) continue;
 			StringID err = INVALID_STRING_ID;
 			if (st->airport.type == 9) {
-				if (st->ship_station.tile != INVALID_TILE && IsOilRig(st->ship_station.tile)) {
+				if (!st->ship_station.IsEmpty() && IsOilRig(st->ship_station.tile)) {
 					/* this airport is probably an oil rig, not a huge airport */
 				} else {
 					err = STR_GAME_SAVELOAD_ERROR_HUGE_AIRPORTS_PRESENT;
@@ -1014,7 +1014,7 @@ bool AfterLoadGame()
 		 */
 		for (Aircraft *v : Aircraft::Iterate()) {
 			Station *st = GetTargetAirportIfValid(v);
-			if (st != nullptr && ((st->ship_station.tile != INVALID_TILE && IsOilRig(st->ship_station.tile)) || st->airport.type == AT_OILRIG)) {
+			if (st != nullptr && ((!st->ship_station.IsEmpty() && IsOilRig(st->ship_station.tile)) || st->airport.type == AT_OILRIG)) {
 				/* aircraft is on approach to an oil rig, bail out now */
 				SetSaveLoadError(STR_GAME_SAVELOAD_ERROR_HELI_OILRIG_BUG);
 				/* Restore the signals */
@@ -2922,7 +2922,7 @@ bool AfterLoadGame()
 	/* Oilrig was moved from id 15 to 9. */
 	if (IsSavegameVersionBefore(SLV_139)) {
 		for (Station *st : Station::Iterate()) {
-			if (st->airport.tile != INVALID_TILE && st->airport.type == 15) {
+			if (!st->airport.IsEmpty() && st->airport.type == 15) {
 				st->airport.type = AT_OILRIG;
 			}
 		}
@@ -2930,7 +2930,7 @@ bool AfterLoadGame()
 
 	if (IsSavegameVersionBefore(SLV_140)) {
 		for (Station *st : Station::Iterate()) {
-			if (st->airport.tile != INVALID_TILE) {
+			if (!st->airport.IsEmpty()) {
 				st->airport.w = st->airport.GetSpec()->size_x;
 				st->airport.h = st->airport.GetSpec()->size_y;
 			}
@@ -4042,7 +4042,7 @@ bool AfterLoadGame()
 		 * SLV_MULTITILE_DOCKS and SLV_ENDING_YEAR. */
 		/* Placing objects on docking tiles was not updating adjacent station's docking tiles. */
 		for (Station *st : Station::Iterate()) {
-			if (st->ship_station.tile != INVALID_TILE) UpdateStationDockingTiles(st);
+			if (!st->ship_station.IsEmpty()) UpdateStationDockingTiles(st);
 		}
 	}
 

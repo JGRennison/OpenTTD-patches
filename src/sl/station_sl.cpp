@@ -83,7 +83,7 @@ void MoveBuoysToWaypoints()
 		TinyString name    = std::move(st->name);
 		CalTime::Date build_date = st->build_date;
 		/* TTDPatch could use "buoys with rail station" for rail waypoints */
-		bool train         = st->train_station.tile != INVALID_TILE;
+		bool train         = !st->train_station.IsEmpty();
 		TileArea train_st  = st->train_station;
 
 		/* Delete the station, so we can make it a real waypoint. */

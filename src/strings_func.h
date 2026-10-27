@@ -266,16 +266,9 @@ struct GetStringFmtParam {
  */
 class MissingGlyphSearcher {
 public:
-	/**
-	 * Create this glyph searcher.
-	 * @param fontsizes Font sizes to consider.
-	 */
-	MissingGlyphSearcher(FontSizes fontsizes) : fontsizes(fontsizes) {}
-
 	/** Ensure the destructor of the sub classes are called as well. */
 	virtual ~MissingGlyphSearcher() = default;
 
-	const FontSizes fontsizes; ///< Font sizes this searcher will try to find.
 	FontSizes missing_fontsizes{}; ///< Font sizes to actually search for.
 	std::vector<char32_t> missing_glyphs{}; ///< Glyphs that are missing in the current font.
 	std::vector<char32_t> required_glyphs{}; ///< Glyphs that are required.
@@ -290,12 +283,6 @@ public:
 /** Base for missing glyph searchers that look for missing glyphs in strings. */
 class BaseStringMissingGlyphSearcher : public MissingGlyphSearcher {
 public:
-	/**
-	 * Create this string glyph searcher.
-	 * @param fontsizes Font sizes to consider.
-	 */
-	BaseStringMissingGlyphSearcher(FontSizes fontsizes) : MissingGlyphSearcher(fontsizes) {}
-
 	void DetermineRequiredGlyphs(FontSizes fontsizes) override;
 
 	/**
@@ -316,7 +303,7 @@ public:
 	virtual void Reset() = 0;
 };
 
-void CheckForMissingGlyphs(MissingGlyphSearcher *searcher = nullptr);
+void CheckForMissingGlyphs(FontSizes fontsizes = FONTSIZES_REQUIRED, MissingGlyphSearcher *searcher = nullptr);
 
 void AppendWidestTinyOrIsoCalendarDate(struct format_target &result, bool iso, FontSize size = FontSize::Normal);
 
