@@ -2,6 +2,14 @@
 
 * * *
 
+### v0.73.5 (2026-11-01)
+* Fix certain NewGRF station, road stop, object classes being changed to a different type on savegame load.
+* Fix extra movement step after reversing at an end of line, which could cause train crashes or reservation problems.
+* Fix company max loan (as set by game scripts) not being saved/loaded.
+* Fix station catchment increase setting not being applied to the build rail station overlay.
+* Fix click to edit behaviour for label orders.
+* Bump trunk base from commit 12208d12048e747cd5c76bada4c5ddaab573efc4 to commit 141b4e5eecdd8442763b31facfdd3372961bedbf.
+
 ### v0.73.4 (2026-10-12)
 * Fix crash which could occur with some extra-zoom and/or 32bpp NewGRFs/basesets.
 * Fix crash editing scheduled dispatch tag conditional orders when no tags were usable.
