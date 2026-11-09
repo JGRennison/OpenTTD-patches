@@ -2301,7 +2301,7 @@ void CheckVehicleBreakdown(Vehicle *v)
 	/* Decrease reliability. */
 	const int rel_old = v->reliability;
 	const int reliability_dec = (v->reliability_spd_dec << 5) >> (5 - _settings_game.difficulty.reliability_decay_speed);
-	const int rel = std::max(rel_old - reliability_dec, 0);
+	const int rel = Clamp(rel_old - reliability_dec, 0, Engine::Get(v->engine_type)->reliability);
 	v->reliability = rel;
 	if ((rel_old >> 8) != (rel >> 8)) SetWindowDirty(WindowClass::VehicleDetails, v->First()->index);
 
