@@ -169,8 +169,6 @@ public:
 
 	bool operator==(const TileIterator&) const = default;
 	bool operator==(const TileIndex &other) const { return this->tile == other; }
-
-	static std::unique_ptr<TileIterator> Create(TileIndex corner1, TileIndex corner2, bool diagonal);
 };
 
 /** Iterator to iterate over a tile area (rectangle) of the map. */
