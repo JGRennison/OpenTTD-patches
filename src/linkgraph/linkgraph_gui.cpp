@@ -216,7 +216,7 @@ void LinkGraphOverlay::RebuildCache(bool incremental)
 
 	const size_t previous_cached_stations_count = this->cached_stations.size();
 	for (const Station *sta : Station::Iterate()) {
-		if (sta->rect.IsEmpty()) continue;
+		if (sta->spread.IsEmpty()) continue;
 
 		if (incremental && std::binary_search(incremental_station_exclude.begin(), incremental_station_exclude.end(), sta->index)) continue;
 
@@ -242,7 +242,7 @@ void LinkGraphOverlay::RebuildCache(bool incremental)
 
 				/* Show links between stations of selected companies or "neutral" ones like oilrigs. */
 				if (stb->owner != OWNER_NONE && sta->owner != OWNER_NONE && !this->company_mask.Test(stb->owner)) return;
-				if (stb->rect.IsEmpty()) return;
+				if (stb->spread.IsEmpty()) return;
 
 				if (incremental && std::binary_search(incremental_station_exclude.begin(), incremental_station_exclude.end(), to)) return;
 				if (incremental && std::binary_search(incremental_link_exclude.begin(), incremental_link_exclude.end(), std::make_pair(from, to))) return;

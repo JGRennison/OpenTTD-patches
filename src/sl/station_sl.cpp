@@ -108,13 +108,13 @@ void MoveBuoysToWaypoints()
 				if (!IsTileType(t, TileType::Station) || GetStationIndex(t) != index) continue;
 
 				SB(_me[t].m6, 3, 3, to_underlying(StationType::RailWaypoint));
-				wp->rect.BeforeAddTile(t, StationRect::ADD_FORCE);
+				wp->spread.Add(t);
 			}
 
 			wp->train_station = train_st;
 			wp->facilities.Set(StationFacility::Train);
 		} else if (IsBuoyTile(xy) && GetStationIndex(xy) == index) {
-			wp->rect.BeforeAddTile(xy, StationRect::ADD_FORCE);
+			wp->spread.Add(xy);
 			wp->facilities.Set(StationFacility::Dock);
 		}
 	}

@@ -2108,10 +2108,10 @@ class NIHStationStruct : public NIHelper {
 			output.Print("  Local Authority: {} ({})", bst->town->GetCachedName(), bst->town->index);
 		}
 		output.Print("  Tile: {}", bst->xy);
-		if (bst->rect.IsEmpty()) {
-			output.Print("  rect: empty");
+		if (bst->spread.IsEmpty()) {
+			output.Print("  spread: empty");
 		} else {
-			output.Print("  rect: left: {}, right: {}, top: {}, bottom: {}", bst->rect.left, bst->rect.right, bst->rect.top, bst->rect.bottom);
+			output.Print("  spread: tile: {}, width: {}, height: {}", bst->spread.tile, bst->spread.w, bst->spread.h);
 		}
 		const Station *st = Station::GetIfValid(index);
 		if (st != nullptr) {

@@ -955,12 +955,6 @@ public:
 	static void RecomputeCatchmentForAll();
 
 	uint GetCatchmentRadius() const;
-	Rect GetCatchmentRectUsingRadius(uint radius) const;
-	inline Rect GetCatchmentRect() const
-	{
-		return GetCatchmentRectUsingRadius(this->GetCatchmentRadius());
-	}
-
 	bool CatchmentCoversTown(TownID t) const;
 	void AddIndustryToDeliver(Industry *ind, TileIndex tile);
 	void RemoveIndustryToDeliver(Industry *ind);
@@ -1015,11 +1009,6 @@ public:
 			this->OrthogonalTileIterator::operator++();
 		}
 		return *this;
-	}
-
-	std::unique_ptr<TileIterator> Clone() const override
-	{
-		return std::make_unique<AirportTileIterator>(*this);
 	}
 };
 

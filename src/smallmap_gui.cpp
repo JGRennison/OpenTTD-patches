@@ -1780,8 +1780,8 @@ void SmallMapWindow::SmallMapCenterOnCurrentPos()
  */
 Point SmallMapWindow::GetStationMiddle(const Station *st) const
 {
-	int x = (st->rect.right + st->rect.left + 1) * TILE_SIZE / 2;
-	int y = (st->rect.bottom + st->rect.top + 1) * TILE_SIZE / 2;
+	int x = (TileX(st->spread.tile) * TILE_SIZE) + (st->spread.w + 1) * (TILE_SIZE / 2);
+	int y = (TileY(st->spread.tile) * TILE_SIZE) + (st->spread.h + 1) * (TILE_SIZE / 2);
 	Point ret = this->TileToPixel(x, y);
 
 	/* Same magic 3 as in DrawVehicles; that's where I got it from.

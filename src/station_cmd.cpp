@@ -777,7 +777,7 @@ void UpdateStationAcceptance(Station *st, bool show_msg)
 
 	/* And retrieve the acceptance. */
 	CargoArray acceptance{};
-	if (!st->rect.IsEmpty()) {
+	if (!st->spread.IsEmpty()) {
 		std::tie(acceptance, st->always_accepted) = GetAcceptanceAroundStation(st);
 	}
 
@@ -820,13 +820,18 @@ void UpdateStationAcceptance(Station *st, bool show_msg)
 
 static void UpdateStationSignCoord(BaseStation *st)
 {
-	const StationRect *r = &st->rect;
-
-	if (r->IsEmpty()) return; // no tiles belong to this station
+	if (st->spread.IsEmpty()) return; // no tiles belong to this station
 
 	/* clamp sign coord to be inside the station rect */
-	TileIndex new_xy = TileXY(ClampU(TileX(st->xy), r->left, r->right), ClampU(TileY(st->xy), r->top, r->bottom));
-	st->MoveSign(new_xy);
+	if (!st->spread.Contains(st->xy)) {
+		int left = TileX(st->spread.tile);
+		int right = left + st->spread.w - 1;
+		int top = TileY(st->spread.tile);
+		int bottom = top + st->spread.h - 1;
+
+		TileIndex new_xy = TileXY(ClampU(TileX(st->xy), left, right), ClampU(TileY(st->xy), top, bottom));
+		st->MoveSign(new_xy);
+	}
 
 	if (!Station::IsExpected(st)) return;
 	Station *full_station = Station::From(st);
@@ -856,7 +861,7 @@ static CommandCost BuildStationPart(Station **st, DoCommandFlags flags, bool reu
 			return CommandCost(CMD_ERROR);
 		}
 
-		CommandCost ret = (*st)->rect.BeforeAddRect(area.tile, area.w, area.h, StationRect::ADD_TEST);
+		CommandCost ret = CheckStationSpread((*st)->spread, area);
 		if (ret.Failed()) return ret;
 	} else {
 		/* allocate and initialize new station */
@@ -1633,6 +1638,8 @@ CommandCost CmdBuildRailStation(DoCommandFlags flags, TileIndex tile_org, RailTy
 
 	/* these values are those that will be stored in train_tile and station_platforms */
 	TileArea new_location(tile_org, w_org, h_org);
+	ret = CheckStationSpread({}, new_location);
+	if (ret.Failed()) return ret;
 
 	/* Make sure the area below consists of clear tiles. (OR tiles belonging to a certain rail station) */
 	StationID est = StationID::Invalid();
@@ -1699,10 +1706,10 @@ CommandCost CmdBuildRailStation(DoCommandFlags flags, TileIndex tile_org, RailTy
 	}
 
 	if (flags.Test(DoCommandFlag::Execute)) {
-		st->train_station = new_location;
 		st->AddFacility(StationFacility::Train, new_location.tile);
 
-		st->rect.BeforeAddRect(tile_org, w_org, h_org, StationRect::ADD_TRY);
+		st->train_station.Add(new_location);
+		st->spread.Add(new_location);
 
 		if (statspec != nullptr) {
 			/* Include this station spec's animation trigger bitmask
@@ -1878,6 +1885,16 @@ restart:
 	return ta;
 }
 
+/**
+ * Make the spread area of a station as small as possible.
+ * @param st The station.
+ */
+static void MakeStationSpreadAreaSmaller(BaseStation *st)
+{
+	static constexpr auto func = [](BaseStation *st, TileIndex tile) { return IsTileType(tile, TileType::Station) && GetStationIndex(tile) == st->index; };
+	st->spread = MakeStationAreaSmaller(st, st->spread, func);
+}
+
 static bool TileBelongsToRailStation(BaseStation *st, TileIndex tile)
 {
 	return st->TileBelongsToRailStation(tile);
@@ -1990,7 +2007,6 @@ CommandCost RemoveFromRailBaseStation(TileArea ta, std::vector<T *> &affected_st
 			DirtyCompanyInfrastructureWindows(owner);
 
 			st->tile_waiting_random_triggers.erase(tile);
-			st->rect.AfterRemoveTile(st, tile);
 			AddTrackToSignalBuffer(tile, track, owner);
 			YapfNotifyTrackLayoutChange(tile, track);
 
@@ -2008,6 +2024,7 @@ CommandCost RemoveFromRailBaseStation(TileArea ta, std::vector<T *> &affected_st
 		 * if we deleted something at the edges.
 		 * we also need to adjust train_tile. */
 		MakeRailStationAreaSmaller(st);
+		MakeStationSpreadAreaSmaller(st);
 		UpdateStationSignCoord(st);
 
 		/* if we deleted the whole station, delete the train facility. */
@@ -2236,6 +2253,7 @@ CommandCost CmdBuildRoadStop(DoCommandFlags flags, TileIndex tile, uint8_t width
 	if (!IsValidTile(tile) || TileAddWrap(tile, width - 1, length - 1) == INVALID_TILE) return CMD_ERROR;
 
 	TileArea roadstop_area(tile, width, length);
+	if (CommandCost ret = CheckStationSpread({}, roadstop_area); ret.Failed()) return ret;
 
 	if (distant_join && (!_settings_game.station.distant_join_stations || !Station::IsValidID(station_to_join))) return CMD_ERROR;
 
@@ -2329,7 +2347,7 @@ CommandCost CmdBuildRoadStop(DoCommandFlags flags, TileIndex tile, uint8_t width
 			/* Initialize an empty station. */
 			st->AddFacility(is_truck_stop ? StationFacility::TruckStop : StationFacility::BusStop, cur_tile);
 
-			st->rect.BeforeAddTile(cur_tile, StationRect::ADD_TRY);
+			st->spread.Add(cur_tile);
 
 			if (is_drive_through) {
 				/* Update company infrastructure counts. If the current tile is a normal road tile, remove the old
@@ -2408,7 +2426,7 @@ CommandCost RemoveRoadWaypointStop(TileIndex tile, DoCommandFlags flags, int rep
 
 		DoClearSquare(tile);
 
-		wp->rect.AfterRemoveTile(wp, tile);
+		MakeStationSpreadAreaSmaller(wp);
 
 		wp->tile_waiting_random_triggers.erase(tile);
 		wp->RemoveRoadStopTileData(tile);
@@ -2538,7 +2556,7 @@ CommandCost RemoveRoadStop(TileIndex tile, DoCommandFlags flags, int replacement
 			}
 		}
 
-		st->rect.AfterRemoveTile(st, tile);
+		MakeStationSpreadAreaSmaller(st);
 
 		if (replacement_spec_index < 0) st->AfterStationTileSetChange(false, is_truck ? StationType::Truck: StationType::Bus);
 
@@ -2835,9 +2853,8 @@ CommandCost CmdBuildAirport(DoCommandFlags flags, TileIndex tile, uint8_t airpor
 	if (rotation == Direction::E || rotation == Direction::W) std::swap(w, h);
 	TileArea airport_area = TileArea(tile, w, h);
 
-	if (w > _settings_game.station.station_spread || h > _settings_game.station.station_spread) {
-		return CommandCost(STR_ERROR_STATION_TOO_SPREAD_OUT);
-	}
+	ret = CheckStationSpread({}, airport_area);
+	if (ret.Failed()) return ret;
 
 	StationID est = StationID::Invalid();
 	AirportTileTableIterator iter(as->layouts[layout].tiles, tile);
@@ -2950,7 +2967,7 @@ CommandCost CmdBuildAirport(DoCommandFlags flags, TileIndex tile, uint8_t airpor
 				DeleteNewGRFInspectWindow(GrfSpecFeature::AirportTiles, tile_cur.base());
 			}
 
-			st->rect.AfterRemoveRect(st, st->airport);
+			MakeStationSpreadAreaSmaller(st);
 			st->airport.Clear();
 		}
 
@@ -2963,7 +2980,7 @@ CommandCost CmdBuildAirport(DoCommandFlags flags, TileIndex tile, uint8_t airpor
 		st->airport.blocks = {};
 		st->airport.rotation = rotation;
 
-		st->rect.BeforeAddRect(tile, w, h, StationRect::ADD_TRY);
+		st->spread.Add(airport_area);
 
 		for (AirportTileTableIterator iter(as->layouts[layout].tiles, tile); iter != INVALID_TILE; ++iter) {
 			MakeAirport(iter, st->owner, st->index, iter.GetStationGfx(), WaterClass::Invalid);
@@ -3046,7 +3063,7 @@ static CommandCost RemoveAirport(TileIndex tile, DoCommandFlags flags)
 		/* Clear the persistent storage. */
 		delete st->airport.psa;
 
-		st->rect.AfterRemoveRect(st, st->airport);
+		MakeStationSpreadAreaSmaller(st);
 
 		st->airport.Clear();
 		st->facilities.Reset(StationFacility::Airport);
@@ -3200,7 +3217,7 @@ CommandCost CmdBuildDock(DoCommandFlags flags, TileIndex tile, StationID station
 		st->ship_station.Add(flat_tile);
 		st->AddFacility(StationFacility::Dock, tile);
 
-		st->rect.BeforeAddRect(dock_area.tile, dock_area.w, dock_area.h, StationRect::ADD_TRY);
+		st->spread.Add(dock_area);
 
 		/* If the water part of the dock is on a canal, update infrastructure counts.
 		 * This is needed as we've cleared that tile before.
@@ -3309,10 +3326,9 @@ static CommandCost RemoveDock(TileIndex tile, DoCommandFlags flags)
 		MarkTileDirtyByTile(tile1);
 		MakeWaterKeepingClass(tile2, st->owner);
 
-		st->rect.AfterRemoveTile(st, tile1);
-		st->rect.AfterRemoveTile(st, tile2);
-
 		MakeShipStationAreaSmaller(st);
+		MakeStationSpreadAreaSmaller(st);
+
 		if (st->ship_station.IsEmpty()) {
 			st->docking_station.Clear();
 			st->docking_tiles.clear();
@@ -4943,8 +4959,7 @@ CommandCost CmdMoveStationName(DoCommandFlags flags, StationID station_id, TileI
 		if (ret.Failed()) return ret;
 	}
 
-	const StationRect *r = &st->rect;
-	if (!r->PtInExtendedRect(TileX(tile), TileY(tile))) {
+	if (!st->spread.Contains(tile)) {
 		return CommandCost(STR_ERROR_SITE_UNSUITABLE);
 	}
 
@@ -5248,7 +5263,7 @@ void BuildOilRig(TileIndex tile)
 	st->build_date = CalTime::CurDate();
 	UpdateStationDockingTiles(st);
 
-	st->rect.BeforeAddTile(tile, StationRect::ADD_FORCE);
+	st->spread.Add(tile);
 
 	st->UpdateVirtCoord();
 

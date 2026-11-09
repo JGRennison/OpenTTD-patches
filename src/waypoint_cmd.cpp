@@ -225,6 +225,9 @@ CommandCost CmdBuildRailWaypoint(DoCommandFlags flags, TileIndex start_tile, Axi
 
 	if (distant_join && (!_settings_game.station.distant_join_stations || !Waypoint::IsValidID(station_to_join))) return CMD_ERROR;
 
+	TileArea new_location(start_tile, width, height);
+	if (CommandCost ret = CheckStationSpread({}, new_location); ret.Failed()) return ret;
+
 	const StationSpec *spec = StationClass::Get(spec_class)->GetSpec(spec_index);
 	TempBufferST<uint8_t> layout_ptr(count);
 	if (spec == nullptr) {
@@ -258,7 +261,6 @@ CommandCost CmdBuildRailWaypoint(DoCommandFlags flags, TileIndex start_tile, Axi
 	}
 
 	Waypoint *wp = nullptr;
-	TileArea new_location(start_tile, width, height);
 	CommandCost ret = FindJoiningWaypoint(est, station_to_join, adjacent, new_location, &wp, false);
 	if (ret.Failed()) return ret;
 
@@ -271,13 +273,7 @@ CommandCost CmdBuildRailWaypoint(DoCommandFlags flags, TileIndex start_tile, Axi
 		if (HasBit(wp->waypoint_flags, WPF_ROAD)) return CMD_ERROR;
 		if (wp->owner != _current_company) return CommandCost(STR_ERROR_TOO_CLOSE_TO_ANOTHER_WAYPOINT);
 
-		/* Check if we want to expand an already existing waypoint. */
-		if (!wp->train_station.IsEmpty()) {
-			CommandCost ret = CanExpandRailStation(wp, new_location);
-			if (ret.Failed()) return ret;
-		}
-
-		CommandCost ret = wp->rect.BeforeAddRect(start_tile, width, height, StationRect::ADD_TEST);
+		ret = CheckStationSpread(wp->spread, new_location);
 		if (ret.Failed()) return ret;
 	} else {
 		/* Check if we can create a new waypoint. */
@@ -296,13 +292,13 @@ CommandCost CmdBuildRailWaypoint(DoCommandFlags flags, TileIndex start_tile, Axi
 		}
 		wp->owner = GetTileOwner(start_tile);
 
-		wp->rect.BeforeAddRect(start_tile, width, height, StationRect::ADD_TRY);
+		wp->spread.Add(new_location);
+		wp->train_station.Add(new_location);
 
 		wp->delete_ctr = 0;
 		wp->facilities.Set(StationFacility::Train);
 		wp->build_date = CalTime::CurDate();
 		wp->string_id = STR_SV_STNAME_WAYPOINT;
-		wp->train_station = new_location;
 
 		if (wp->town == nullptr) MakeDefaultName(wp);
 
@@ -386,10 +382,9 @@ CommandCost CmdBuildRoadWaypoint(DoCommandFlags flags, TileIndex start_tile, Axi
 
 	if (distant_join && (!_settings_game.station.distant_join_stations || !Waypoint::IsValidID(station_to_join))) return CMD_ERROR;
 
-	/* Check if the first tile and the last tile are valid */
-	if (!IsValidTile(start_tile) || TileAddWrap(start_tile, width - 1, height - 1) == INVALID_TILE) return CMD_ERROR;
-
 	TileArea roadstop_area(start_tile, width, height);
+	if (CommandCost ret = CheckStationSpread({}, roadstop_area); ret.Failed()) return ret;
+
 	/* Total road stop cost. */
 	Money unit_cost;
 	if (spec != nullptr) {
@@ -417,7 +412,7 @@ CommandCost CmdBuildRoadWaypoint(DoCommandFlags flags, TileIndex start_tile, Axi
 		if (!HasBit(wp->waypoint_flags, WPF_ROAD)) return CMD_ERROR;
 		if (wp->owner != _current_company) return CommandCost(STR_ERROR_TOO_CLOSE_TO_ANOTHER_WAYPOINT);
 
-		CommandCost ret = wp->rect.BeforeAddRect(start_tile, width, height, StationRect::ADD_TEST);
+		ret = CheckStationSpread(wp->spread, roadstop_area);
 		if (ret.Failed()) return ret;
 	} else {
 		/* allocate and initialize new waypoint */
@@ -437,7 +432,7 @@ CommandCost CmdBuildRoadWaypoint(DoCommandFlags flags, TileIndex start_tile, Axi
 		}
 		wp->owner = _current_company;
 
-		wp->rect.BeforeAddRect(start_tile, width, height, StationRect::ADD_TRY);
+		wp->spread.Add(roadstop_area);
 
 		if (spec != nullptr) {
 			/* Include this road stop spec's animation trigger bitmask
@@ -479,8 +474,6 @@ CommandCost CmdBuildRoadWaypoint(DoCommandFlags flags, TileIndex start_tile, Axi
 			}
 
 			wp->road_waypoint_area.Add(cur_tile);
-
-			wp->rect.BeforeAddTile(cur_tile, StationRect::ADD_TRY);
 
 			/* Update company infrastructure counts. If the current tile is a normal road tile, remove the old
 			 * bits first. */
@@ -543,7 +536,7 @@ CommandCost CmdBuildBuoy(DoCommandFlags flags, TileIndex tile)
 			wp->xy = tile;
 			InvalidateWindowData(WindowClass::WaypointView, wp->index);
 		}
-		wp->rect.BeforeAddTile(tile, StationRect::ADD_TRY);
+		wp->spread.Add(tile);
 
 		wp->string_id = STR_SV_STNAME_BUOY;
 
@@ -598,7 +591,7 @@ CommandCost RemoveBuoy(TileIndex tile, DoCommandFlags flags)
 		 * remove it and flood the land (if the canal edge is at level 0) */
 		MakeWaterKeepingClass(tile, GetTileOwner(tile));
 
-		wp->rect.AfterRemoveTile(wp, tile);
+		wp->spread.Clear();
 
 		wp->UpdateVirtCoord();
 		wp->delete_ctr = 0;
@@ -674,8 +667,7 @@ CommandCost CmdMoveWaypointName(DoCommandFlags flags, StationID waypoint_id, Til
 		if (ret.Failed()) return ret;
 	}
 
-	const StationRect *r = &wp->rect;
-	if (!r->PtInExtendedRect(TileX(tile), TileY(tile))) {
+	if (!wp->spread.Contains(tile)) {
 		return CommandCost(STR_ERROR_SITE_UNSUITABLE);
 	}
 

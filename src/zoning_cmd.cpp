@@ -71,8 +71,8 @@ bool IsAreaWithinAcceptanceZoneOfStation(TileArea area, Owner owner, StationFaci
 
 	for (const Station *st : morestations.GetStations()) {
 		if (st->owner != owner || !st->facilities.Test(facility_mask)) continue;
-		Rect rect = st->GetCatchmentRect();
-		return TileArea(TileXY(rect.left, rect.top), TileXY(rect.right, rect.bottom)).Intersects(area);
+		TileArea catchment = TileArea{st->spread}.Expand(st->GetCatchmentRadius());
+		return catchment.Intersects(area);
 	}
 
 	return false;
@@ -513,7 +513,7 @@ static uint GetZoningModeDependantStationCoverageRadius(const Station *st, Zonin
  */
 void ZoningMarkDirtyStationCoverageArea(const Station *st, ZoningModeMask mask)
 {
-	if (st->rect.IsEmpty()) return;
+	if (st->spread.IsEmpty()) return;
 
 	uint outer_radius = mask & ZMM_OUTER ? GetZoningModeDependantStationCoverageRadius(st, _zoning.outer) : 0;
 	uint inner_radius = mask & ZMM_INNER ? GetZoningModeDependantStationCoverageRadius(st, _zoning.inner) : 0;
@@ -525,18 +525,25 @@ void ZoningMarkDirtyStationCoverageArea(const Station *st, ZoningModeMask mask)
 	}
 
 	if (radius > 0) {
-		Rect rect = st->GetCatchmentRectUsingRadius(radius);
-		for (int y = rect.top; y <= rect.bottom; y++) {
-			for (int x = rect.left; x <= rect.right; x++) {
+		const int x = TileX(st->spread.tile);
+		const int y = TileY(st->spread.tile);
+
+		const int left = std::max<int>(x - radius, 0);
+		const int right = std::min<int>(x + st->spread.w + radius - 1, Map::SizeX());
+		const int top = std::max<int>(y - radius, 0);
+		const int bottom = std::min<int>(y + st->spread.h + radius - 1, Map::SizeY());
+
+		for (int y = top; y <= bottom; y++) {
+			for (int x = left; x <= right; x++) {
 				MarkTileDirtyByTile(TileXY(x, y), VMDF_NOT_MAP_MODE);
 			}
 		}
 		auto invalidate_cache_rect = [&](btree::btree_set<uint32_t> &cache) {
-			for (int y = rect.top; y <= rect.bottom; y++) {
-				const auto iter = cache.lower_bound(TileXY(rect.left, y).base() << 3);
+			for (int y = top; y <= bottom; y++) {
+				const auto iter = cache.lower_bound(TileXY(left, y).base() << 3);
 				auto end_iter = iter;
 				size_t erase_count = 0;
-				const uint end = (TileXY(rect.right, y).base() + 1) << 3;
+				const uint end = (TileXY(right, y).base() + 1) << 3;
 				while (end_iter != cache.end() && *end_iter < end) {
 					++erase_count;
 					++end_iter;

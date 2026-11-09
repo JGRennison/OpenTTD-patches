@@ -17,8 +17,6 @@
 #include "gfx_type.h"
 #include <variant>
 
-#include "table/strings.h"
-
 /** Ways a FaceVar should be interpreted. */
 enum class FaceVarType : uint8_t {
 	Sprite, ///< FaceVar describes an offset to the given SpriteID.
@@ -34,7 +32,7 @@ struct FaceVar {
 	uint8_t length; ///< Number of bits used in the CompanyManagerFace
 	uint8_t valid_values; ///< The number of valid values
 	std::variant<SpriteID, uint64_t, std::pair<uint64_t, uint64_t>> data; ///< The first sprite
-	StringID name = STR_NULL; ///< Name of the configurable component of the face.
+	StringID name{}; ///< Name of the configurable component of the face.
 
 	/**
 	 * Gets the company manager's face bits.
