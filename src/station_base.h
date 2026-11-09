@@ -1002,7 +1002,7 @@ public:
 		if (!st->TileBelongsToAirport(this->tile)) ++(*this);
 	}
 
-	inline TileIterator& operator ++() override
+	inline AirportTileIterator& operator ++()
 	{
 		this->OrthogonalTileIterator::operator++();
 		while (this->tile != INVALID_TILE && !st->TileBelongsToAirport(this->tile)) {

@@ -2724,7 +2724,7 @@ uint8_t GetAirportNoiseLevelForDistance(const AirportSpec *as, uint distance)
  * @param[out] mindist Minimum distance to town
  * @return nearest town to airport
  */
-Town *AirportGetNearestTown(const AirportSpec *as, Direction rotation, TileIndex tile, TileIterator &&it, uint &mindist)
+Town *AirportGetNearestTown(const AirportSpec *as, Direction rotation, TileIndex tile, GenericTileIteratorRef it, uint &mindist)
 {
 	assert(Town::GetNumItems() > 0);
 

@@ -47,7 +47,7 @@ public:
 	{
 	}
 
-	inline TileIterator& operator ++() override
+	inline AirportTileTableIterator& operator ++()
 	{
 		++this->iter;
 		if (this->iter == std::end(att)) {

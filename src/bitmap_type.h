@@ -174,7 +174,7 @@ public:
 		}
 	}
 
-	inline TileIterator& operator ++() override
+	inline BitmapTileIterator& operator ++()
 	{
 		assert(this->tile != INVALID_TILE);
 		this->advance();

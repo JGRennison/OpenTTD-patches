@@ -233,7 +233,7 @@ bool DiagonalTileArea::Contains(TileIndex tile) const
  * Move ourselves to the next tile in the rectangle on the map.
  * @return Reference to this iterator.
  */
-TileIterator &DiagonalTileIterator::operator++()
+DiagonalTileIterator &DiagonalTileIterator::operator++()
 {
 	dbg_assert(this->tile != INVALID_TILE);
 

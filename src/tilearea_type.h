@@ -141,8 +141,6 @@ protected:
 	}
 
 public:
-	virtual ~TileIterator() = default;
-
 	/**
 	 * Get the tile we are currently at.
 	 * @return The tile we are at, or INVALID_TILE when we're done.
@@ -161,14 +159,57 @@ public:
 		return this->tile;
 	}
 
-	/**
-	 * Move ourselves to the next tile in the rectangle on the map.
-	 * @return Reference to this iterator.
-	 */
-	virtual TileIterator& operator ++() = 0;
+	inline TileIterator& operator ++() = delete;
 
 	bool operator==(const TileIterator&) const = default;
 	bool operator==(const TileIndex &other) const { return this->tile == other; }
+};
+
+class GenericTileIteratorRef {
+	using Incrementer = void(TileIterator &);
+
+	TileIterator &iter;
+	Incrementer *incrementer;
+
+public:
+	template <typename T>
+	GenericTileIteratorRef(T &&iter) : iter(iter)
+	{
+		this->incrementer = [](TileIterator &iter) {
+			++static_cast<T &>(iter);
+		};
+	}
+
+	/**
+	 * Get the tile we are currently at.
+	 * @return The tile we are at, or INVALID_TILE when we're done.
+	 */
+	inline operator TileIndex () const
+	{
+		return *this->iter;
+	}
+
+	/**
+	 * Get the tile we are currently at.
+	 * @return The tile we are at, or INVALID_TILE when we're done.
+	 */
+	inline TileIndex operator *() const
+	{
+		return *this->iter;
+	}
+
+	/**
+	 * Move ourselves to the next tile.
+	 * @return Reference to this iterator.
+	 */
+	inline GenericTileIteratorRef& operator ++()
+	{
+		this->incrementer(this->iter);
+		return *this;
+	}
+
+	bool operator==(const GenericTileIteratorRef &other) const { return *(this->iter) == *(other.iter); }
+	bool operator==(const TileIndex &other) const { return *(this->iter) == other; }
 };
 
 /** Iterator to iterate over a tile area (rectangle) of the map. */
@@ -201,7 +242,7 @@ public:
 	 * Move ourselves to the next tile in the rectangle on the map.
 	 * @return Reference to this iterator.
 	 */
-	inline TileIterator& operator ++() override
+	inline OrthogonalTileIterator& operator ++()
 	{
 		assert(this->tile != INVALID_TILE);
 
@@ -297,7 +338,7 @@ public:
 		*this = DiagonalTileIterator(DiagonalTileArea(corner1, corner2));
 	}
 
-	TileIterator& operator ++() override;
+	DiagonalTileIterator& operator ++();
 };
 
 class OrthogonalOrDiagonalTileIterator {
