@@ -41,14 +41,15 @@ void BuildOwnerLegend();
 
 /** Structure for holding relevant data for legends in small map */
 struct LegendAndColour {
-	StringID legend;           ///< String corresponding to the coloured item.
-	PixelColour colour;        ///< Colour of the item on the map.
-	IndustryType type;         ///< Type of industry. Only valid for industry entries.
-	uint8_t height;            ///< Height in tiles. Only valid for height legend entries.
-	CompanyID company;         ///< Company to display. Only valid for company entries of the owner legend.
-	bool show_on_map;          ///< For filtering industries, if \c true, industry is shown on the map in colour.
-	bool end;                  ///< This is the end of the list.
-	bool col_break;            ///< Perform a column break and go further at the next column.
+	StringID legend{};                        ///< String corresponding to the coloured item.
+	PixelColour colour{};                     ///< Colour of the item on the map.
+	IndustryType industry_type = IT_INVALID;  ///< Type of industry. Only valid for industry entries.
+	CargoType cargo_type = INVALID_CARGO;     ///< Type of cargo. Only valid for cargo entries.
+	uint8_t height = 0;                       ///< Height in tiles. Only valid for height legend entries.
+	CompanyID company = CompanyID::Invalid(); ///< Company to display. Only valid for company entries of the owner legend.
+	bool show_on_map = true;                  ///< For filtering industries, if \c true, industry is shown on the map in colour.
+	bool end = false;                         ///< This is the end of the list.
+	bool col_break = false;                   ///< Perform a column break and go further at the next column.
 };
 
 /** Types of legends in the #WID_SM_LEGEND widget. */

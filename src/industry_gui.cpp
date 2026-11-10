@@ -865,7 +865,7 @@ public:
 
 		this->InitNested(window_number);
 		NWidgetViewport *nvp = this->GetWidget<NWidgetViewport>(WID_IV_VIEWPORT);
-		nvp->InitializeViewport(this, i->location.GetCenterTile().base(), ScaleZoomGUI(ZoomLevel::Industry));
+		nvp->InitializeViewport(this, i->location.GetCentreTile().base(), ScaleZoomGUI(ZoomLevel::Industry));
 
 		if (!i->IsCargoProduced() && !i->IsCargoAccepted()) this->DisableWidget(WID_IV_GRAPH);
 
@@ -1142,9 +1142,9 @@ public:
 			case WID_IV_GOTO: {
 				Industry *i = Industry::Get(this->window_number);
 				if (_ctrl_pressed) {
-					ShowExtraViewportWindow(i->location.GetCenterTile());
+					ShowExtraViewportWindow(i->location.GetCentreTile());
 				} else {
-					ScrollMainWindowToTile(i->location.GetCenterTile());
+					ScrollMainWindowToTile(i->location.GetCentreTile());
 				}
 				break;
 			}
@@ -1174,7 +1174,7 @@ public:
 			NWidgetViewport *nvp = this->GetWidget<NWidgetViewport>(WID_IV_VIEWPORT);
 			nvp->UpdateViewportCoordinates(this);
 
-			ScrollWindowToTile(Industry::Get(this->window_number)->location.GetCenterTile(), this, true); // Re-center viewport.
+			ScrollWindowToTile(Industry::Get(this->window_number)->location.GetCentreTile(), this, true); // Re-center viewport.
 		}
 	}
 

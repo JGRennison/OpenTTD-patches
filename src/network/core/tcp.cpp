@@ -120,7 +120,7 @@ SendPacketsState NetworkTCPSocketHandler::SendPackets(bool closing_down)
 	while (!this->packet_queue.empty()) {
 		Packet &p = *this->packet_queue.front();
 		p.CheckPendingPreSendEncryption();
-		ssize_t res = p.TransferOut(SocketSender{this->sock});
+		std::ptrdiff_t res = p.TransferOut(SocketSender{this->sock});
 		if (res == -1) {
 			NetworkError err = NetworkError::GetLast();
 			if (!err.WouldBlock()) {
@@ -158,8 +158,6 @@ SendPacketsState NetworkTCPSocketHandler::SendPackets(bool closing_down)
  */
 std::unique_ptr<Packet> NetworkTCPSocketHandler::ReceivePacket()
 {
-	ssize_t res;
-
 	if (!this->IsConnected()) return nullptr;
 
 	if (this->packet_recv == nullptr) {
@@ -171,7 +169,7 @@ std::unique_ptr<Packet> NetworkTCPSocketHandler::ReceivePacket()
 	/* Read packet size */
 	if (!p.HasPacketSizeData()) {
 		while (p.RemainingBytesToTransfer() != 0) {
-			res = p.TransferIn(SocketReceiver{this->sock});
+			std::ptrdiff_t res = p.TransferIn(SocketReceiver{this->sock});
 			if (res == -1) {
 				NetworkError err = NetworkError::GetLast();
 				if (!err.WouldBlock()) {
@@ -200,7 +198,7 @@ std::unique_ptr<Packet> NetworkTCPSocketHandler::ReceivePacket()
 
 	/* Read rest of packet */
 	while (p.RemainingBytesToTransfer() != 0) {
-		res = p.TransferIn(SocketReceiver{this->sock});
+		std::ptrdiff_t res = p.TransferIn(SocketReceiver{this->sock});
 		if (res == -1) {
 			NetworkError err = NetworkError::GetLast();
 			if (!err.WouldBlock()) {

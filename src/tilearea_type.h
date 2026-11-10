@@ -77,7 +77,7 @@ struct OrthogonalTileArea {
 	 * Get the center tile.
 	 * @return The tile at the center, or just north of it.
 	 */
-	TileIndex GetCenterTile() const
+	TileIndex GetCentreTile() const
 	{
 		return TileAddXY(this->tile, this->w / 2, this->h / 2);
 	}

@@ -47,7 +47,7 @@ private:
 	 * Get the center tile of the waypoint.
 	 * @return The center tile if the waypoint exists, otherwise the tile with the waypoint name.
 	 */
-	TileIndex GetCenterTile() const
+	TileIndex GetCentreTile() const
 	{
 		if (!this->wp->IsInUse()) return this->wp->xy;
 
@@ -68,7 +68,7 @@ private:
 			default:
 				NOT_REACHED();
 		}
-		return this->wp->GetTileArea(type).GetCenterTile();
+		return this->wp->GetTileArea(type).GetCentreTile();
 	}
 
 public:
@@ -106,7 +106,7 @@ public:
 		this->flags.Set(WindowFlag::DisableVpScroll);
 
 		NWidgetViewport *nvp = this->GetWidget<NWidgetViewport>(WID_W_VIEWPORT);
-		nvp->InitializeViewport(this, this->GetCenterTile().base(), ScaleZoomGUI(ZoomLevel::Viewport));
+		nvp->InitializeViewport(this, this->GetCentreTile().base(), ScaleZoomGUI(ZoomLevel::Viewport));
 
 		this->OnInvalidateData(0);
 	}
@@ -152,9 +152,9 @@ public:
 		switch (widget) {
 			case WID_W_CENTER_VIEW: // scroll to location
 				if (_ctrl_pressed) {
-					ShowExtraViewportWindow(this->GetCenterTile());
+					ShowExtraViewportWindow(this->GetCentreTile());
 				} else {
-					ScrollMainWindowToTile(this->GetCenterTile());
+					ScrollMainWindowToTile(this->GetCentreTile());
 				}
 				break;
 
@@ -244,7 +244,7 @@ public:
 			this->ReInit();
 		}
 
-		ScrollWindowToTile(this->GetCenterTile(), this, true);
+		ScrollWindowToTile(this->GetCentreTile(), this, true);
 	}
 
 	void OnResize() override
@@ -254,7 +254,7 @@ public:
 			nvp->UpdateViewportCoordinates(this);
 			this->wp->UpdateVirtCoord();
 
-			ScrollWindowToTile(this->GetCenterTile(), this, true); // Re-center viewport.
+			ScrollWindowToTile(this->GetCentreTile(), this, true); // Re-center viewport.
 		}
 	}
 

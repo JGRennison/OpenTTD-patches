@@ -50,109 +50,81 @@ static int _smallmap_cargo_count;    ///< Number of cargos in the link stats leg
 /** Link stat colours shown in legenda. */
 static const uint8_t _linkstat_colours_in_legenda[] = {0, 1, 3, 5, 7, 9, 11};
 
-/** Macro for ordinary entry of LegendAndColour */
-#define MK(a, b) {b, a, IT_INVALID, 0, CompanyID::Invalid(), true, false, false}
-
-/** Macro for a height legend entry with configurable colour. */
-#define MC(col_break) {STR_TINY_BLACK_HEIGHT, {}, IT_INVALID, 0, CompanyID::Invalid(), true, false, col_break}
-
-/** Macro for non-company owned property entry of LegendAndColour */
-#define MO(a, b) {b, a, IT_INVALID, 0, CompanyID::Invalid(), true, false, false}
-
-/** Macro used for forcing a rebuild of the owner legend the first time it is used. */
-#define MOEND() {STR_NULL, {}, IT_INVALID, 0, OWNER_NONE, true, true, false}
-
-/** Macro for end of list marker in arrays of LegendAndColour */
-#define MKEND() {STR_NULL, {}, IT_INVALID, 0, CompanyID::Invalid(), true, true, false}
-
-/**
- * Macro for break marker in arrays of LegendAndColour.
- * It will have valid data, though
- */
-#define MS(a, b) {b, a, IT_INVALID, 0, CompanyID::Invalid(), true, false, true}
-
 /** Legend text giving the colours to look for on the minimap */
 static LegendAndColour _legend_land_contours[] = {
-	MK(PC_BLACK,           STR_SMALLMAP_LEGENDA_ROADS),
-	MK(PC_GREY,            STR_SMALLMAP_LEGENDA_RAILROADS),
-	MK(PC_LIGHT_BLUE,      STR_SMALLMAP_LEGENDA_STATIONS_AIRPORTS_DOCKS),
-	MK(PC_DARK_RED,        STR_SMALLMAP_LEGENDA_BUILDINGS_INDUSTRIES),
-	MK(PC_WHITE,           STR_SMALLMAP_LEGENDA_VEHICLES),
+	{.legend = STR_SMALLMAP_LEGENDA_ROADS, .colour = PC_BLACK},
+	{.legend = STR_SMALLMAP_LEGENDA_RAILROADS, .colour = PC_GREY},
+	{.legend = STR_SMALLMAP_LEGENDA_STATIONS_AIRPORTS_DOCKS, .colour = PC_LIGHT_BLUE},
+	{.legend = STR_SMALLMAP_LEGENDA_BUILDINGS_INDUSTRIES, .colour = PC_DARK_RED},
+	{.legend = STR_SMALLMAP_LEGENDA_VEHICLES, .colour = PC_WHITE},
 
 	/* Placeholders for the colours and heights of the legend.
 	 * The following values are set at BuildLandLegend() based
 	 * on each colour scheme and the maximum map height. */
-	MC(true),
-	MC(false),
-	MC(false),
-	MC(false),
-	MC(false),
-	MC(false),
-	MC(true),
-	MC(false),
-	MC(false),
-	MC(false),
-	MC(false),
-	MC(false),
-	MKEND()
+	{.legend = STR_TINY_BLACK_HEIGHT, .col_break = true},
+	{.legend = STR_TINY_BLACK_HEIGHT},
+	{.legend = STR_TINY_BLACK_HEIGHT},
+	{.legend = STR_TINY_BLACK_HEIGHT},
+	{.legend = STR_TINY_BLACK_HEIGHT},
+	{.legend = STR_TINY_BLACK_HEIGHT},
+	{.legend = STR_TINY_BLACK_HEIGHT, .col_break = true},
+	{.legend = STR_TINY_BLACK_HEIGHT},
+	{.legend = STR_TINY_BLACK_HEIGHT},
+	{.legend = STR_TINY_BLACK_HEIGHT},
+	{.legend = STR_TINY_BLACK_HEIGHT},
+	{.legend = STR_TINY_BLACK_HEIGHT},
+	{.end = true},
 };
 
 static const LegendAndColour _legend_vehicles[] = {
-	MK(PC_RED,             STR_SMALLMAP_LEGENDA_TRAINS),
-	MK(PC_YELLOW,          STR_SMALLMAP_LEGENDA_ROAD_VEHICLES),
-	MK(PC_LIGHT_BLUE,      STR_SMALLMAP_LEGENDA_SHIPS),
-	MK(PC_WHITE,           STR_SMALLMAP_LEGENDA_AIRCRAFT),
+	{.legend = STR_SMALLMAP_LEGENDA_TRAINS, .colour = PC_RED},
+	{.legend = STR_SMALLMAP_LEGENDA_ROAD_VEHICLES, .colour = PC_YELLOW},
+	{.legend = STR_SMALLMAP_LEGENDA_SHIPS, .colour = PC_LIGHT_BLUE},
+	{.legend = STR_SMALLMAP_LEGENDA_AIRCRAFT, .colour = PC_WHITE},
 
-	MS(PC_BLACK,           STR_SMALLMAP_LEGENDA_TRANSPORT_ROUTES),
-	MK(PC_DARK_RED,        STR_SMALLMAP_LEGENDA_BUILDINGS_INDUSTRIES),
-	MKEND()
+	{.legend = STR_SMALLMAP_LEGENDA_TRANSPORT_ROUTES, .colour = PC_BLACK, .col_break = true},
+	{.legend = STR_SMALLMAP_LEGENDA_BUILDINGS_INDUSTRIES, .colour = PC_DARK_RED},
+	{.end = true},
 };
 
 static const LegendAndColour _legend_routes[] = {
-	MK(PC_BLACK,           STR_SMALLMAP_LEGENDA_ROADS),
-	MK(PC_GREY,            STR_SMALLMAP_LEGENDA_RAILROADS),
-	MK(PC_DARK_RED,        STR_SMALLMAP_LEGENDA_BUILDINGS_INDUSTRIES),
+	{.legend = STR_SMALLMAP_LEGENDA_ROADS, .colour = PC_BLACK},
+	{.legend = STR_SMALLMAP_LEGENDA_RAILROADS, .colour = PC_GREY},
+	{.legend = STR_SMALLMAP_LEGENDA_BUILDINGS_INDUSTRIES, .colour = PC_DARK_RED},
 
-	MS(PC_VERY_DARK_BROWN, STR_SMALLMAP_LEGENDA_RAILROAD_STATION),
-	MK(PC_ORANGE,          STR_SMALLMAP_LEGENDA_TRUCK_LOADING_BAY),
-	MK(PC_YELLOW,          STR_SMALLMAP_LEGENDA_BUS_STATION),
-	MK(PC_RED,             STR_SMALLMAP_LEGENDA_AIRPORT_HELIPORT),
-	MK(PC_LIGHT_BLUE,      STR_SMALLMAP_LEGENDA_DOCK),
-	MKEND()
+	{.legend = STR_SMALLMAP_LEGENDA_RAILROAD_STATION, .colour = PC_VERY_DARK_BROWN, .col_break = true},
+	{.legend = STR_SMALLMAP_LEGENDA_TRUCK_LOADING_BAY, .colour = PC_ORANGE},
+	{.legend = STR_SMALLMAP_LEGENDA_BUS_STATION, .colour = PC_YELLOW},
+	{.legend = STR_SMALLMAP_LEGENDA_AIRPORT_HELIPORT, .colour = PC_RED},
+	{.legend = STR_SMALLMAP_LEGENDA_DOCK, .colour = PC_LIGHT_BLUE},
+	{.end = true},
 };
 
 static const LegendAndColour _legend_vegetation[] = {
-	MK(PC_ROUGH_LAND,      STR_SMALLMAP_LEGENDA_ROUGH_LAND),
-	MK(PC_GRASS_LAND,      STR_SMALLMAP_LEGENDA_GRASS_LAND),
-	MK(PC_BARE_LAND,       STR_SMALLMAP_LEGENDA_BARE_LAND),
-	MK(PC_RAINFOREST,      STR_SMALLMAP_LEGENDA_RAINFOREST),
-	MK(PC_FIELDS,          STR_SMALLMAP_LEGENDA_FIELDS),
-	MK(PC_TREES,           STR_SMALLMAP_LEGENDA_TREES),
+	{.legend = STR_SMALLMAP_LEGENDA_ROUGH_LAND, .colour = PC_ROUGH_LAND},
+	{.legend = STR_SMALLMAP_LEGENDA_GRASS_LAND, .colour = PC_GRASS_LAND},
+	{.legend = STR_SMALLMAP_LEGENDA_BARE_LAND, .colour = PC_BARE_LAND},
+	{.legend = STR_SMALLMAP_LEGENDA_RAINFOREST, .colour = PC_RAINFOREST},
+	{.legend = STR_SMALLMAP_LEGENDA_FIELDS, .colour = PC_FIELDS},
+	{.legend = STR_SMALLMAP_LEGENDA_TREES, .colour = PC_TREES},
 
-	MS(PC_GREEN,           STR_SMALLMAP_LEGENDA_FOREST),
-	MK(PC_GREY,            STR_SMALLMAP_LEGENDA_ROCKS),
-	MK(PC_ORANGE,          STR_SMALLMAP_LEGENDA_DESERT),
-	MK(PC_LIGHT_BLUE,      STR_SMALLMAP_LEGENDA_SNOW),
-	MK(PC_BLACK,           STR_SMALLMAP_LEGENDA_TRANSPORT_ROUTES),
-	MK(PC_DARK_RED,        STR_SMALLMAP_LEGENDA_BUILDINGS_INDUSTRIES),
-	MKEND()
+	{.legend = STR_SMALLMAP_LEGENDA_FOREST, .colour = PC_GREEN, .col_break = true},
+	{.legend = STR_SMALLMAP_LEGENDA_ROCKS, .colour = PC_GREY},
+	{.legend = STR_SMALLMAP_LEGENDA_DESERT, .colour = PC_ORANGE},
+	{.legend = STR_SMALLMAP_LEGENDA_SNOW, .colour = PC_LIGHT_BLUE},
+	{.legend = STR_SMALLMAP_LEGENDA_TRANSPORT_ROUTES, .colour = PC_BLACK},
+	{.legend = STR_SMALLMAP_LEGENDA_BUILDINGS_INDUSTRIES, .colour = PC_DARK_RED},
+	{.end = true},
 };
 
 LegendAndColour _legend_land_owners[NUM_NO_COMPANY_ENTRIES + MAX_COMPANIES + 1] = {
-	MO(PC_WATER,           STR_SMALLMAP_LEGENDA_WATER),
-	MO({},                 STR_SMALLMAP_LEGENDA_NO_OWNER), // This colour will vary depending on settings.
-	MO(PC_DARK_RED,        STR_SMALLMAP_LEGENDA_TOWNS),
-	MO(PC_DARK_GREY,       STR_SMALLMAP_LEGENDA_INDUSTRIES),
+	{.legend = STR_SMALLMAP_LEGENDA_WATER, .colour = PC_WATER},
+	{.legend = STR_SMALLMAP_LEGENDA_NO_OWNER}, // This colour will vary depending on settings.
+	{.legend = STR_SMALLMAP_LEGENDA_TOWNS, .colour = PC_DARK_RED},
+	{.legend = STR_SMALLMAP_LEGENDA_INDUSTRIES, .colour = PC_DARK_GREY},
 	/* The legend will be terminated the first time it is used. */
-	MOEND(),
+	{.end = true},
 };
-
-#undef MK
-#undef MC
-#undef MS
-#undef MO
-#undef MOEND
-#undef MKEND
 
 /** Legend entries for the link stats view. */
 static LegendAndColour _legend_linkstats[NUM_CARGO + lengthof(_linkstat_colours_in_legenda) + 1];
@@ -191,7 +163,7 @@ void UpdateSmallMapSelectedIndustries()
 	extern const std::bitset<NUM_INDUSTRYTYPES> &GetIndustryLinkDisplayIndustries();
 	const std::bitset<NUM_INDUSTRYTYPES> &displayed_industries = GetIndustryLinkDisplayIndustries();
 	for (int i = 0; i != _smallmap_industry_count; i++) {
-		_legend_from_industries[i].show_on_map = displayed_industries.test(_legend_from_industries[i].type);
+		_legend_from_industries[i].show_on_map = displayed_industries.test(_legend_from_industries[i].industry_type);
 	}
 
 	NotifyAllViewports(VPMT_INDUSTRY);
@@ -214,7 +186,7 @@ void BuildIndustriesLegend()
 		if (indsp->enabled) {
 			_legend_from_industries[j].legend = indsp->name;
 			_legend_from_industries[j].colour = indsp->map_colour;
-			_legend_from_industries[j].type = ind;
+			_legend_from_industries[j].industry_type = ind;
 			_legend_from_industries[j].show_on_map = true;
 			_legend_from_industries[j].col_break = false;
 			_legend_from_industries[j].end = false;
@@ -245,7 +217,7 @@ void BuildLinkStatsLegend()
 
 		_legend_linkstats[i].legend = cs->name;
 		_legend_linkstats[i].colour = cs->legend_colour;
-		_legend_linkstats[i].type = cs->Index();
+		_legend_linkstats[i].cargo_type = cs->Index();
 		_legend_linkstats[i].show_on_map = true;
 	}
 
@@ -985,7 +957,7 @@ void SmallMapWindow::DrawIndustryNames(const DrawPixelInfo *dpi, const int verti
 		const uint16_t &legend_text_width = _industry_to_name_string_width[i->type];
 
 		/* Remap the industry coordinate */
-		const TileIndex &tile = i->location.GetCenterTile();
+		const TileIndex &tile = i->location.GetCentreTile();
 		const Point pt = this->TileToPixel(TileX(tile) * TILE_SIZE, TileY(tile) * TILE_SIZE);
 		const int x = pt.x - (legend_text_width / 2);
 		const int y = pt.y + vertical_padding;
@@ -1354,10 +1326,10 @@ void SmallMapWindow::DrawLegend(const Rect &text, const Rect &icon, bool highlig
 					case SmallMapType::Industries:
 						/* Industry name must be formatted, since it's not in tiny font in the specs.
 						 * So, draw with a parameter and use the STR_SMALLMAP_INDUSTRY string, which is tiny font */
-						if (tbl.show_on_map && tbl.type == _smallmap_industry_highlight) {
+						if (tbl.show_on_map && tbl.industry_type == _smallmap_industry_highlight) {
 							legend_colour = _smallmap_industry_highlight_state ? PC_WHITE : PC_BLACK;
 						}
-						this->DrawLegend(text, icon, tbl.show_on_map, GetString(STR_SMALLMAP_INDUSTRY, tbl.legend, Industry::GetIndustryTypeCount(tbl.type)));
+						this->DrawLegend(text, icon, tbl.show_on_map, GetString(STR_SMALLMAP_INDUSTRY, tbl.legend, Industry::GetIndustryTypeCount(tbl.industry_type)));
 						break;
 
 					case SmallMapType::LinkStats:
@@ -1477,7 +1449,7 @@ void SmallMapWindow::SetOverlayCargoMask()
 {
 	CargoTypes cargo_mask{};
 	for (int i = 0; i != _smallmap_cargo_count; ++i) {
-		if (_legend_linkstats[i].show_on_map) cargo_mask.Set(static_cast<CargoType>(_legend_linkstats[i].type));
+		if (_legend_linkstats[i].show_on_map) cargo_mask.Set(_legend_linkstats[i].cargo_type);
 	}
 	this->overlay->SetCargoMask(cargo_mask);
 }
@@ -1509,7 +1481,7 @@ int SmallMapWindow::GetPositionOnLegend(Point pt)
 	if (widget == WID_SM_LEGEND && this->map_type == SmallMapType::Industries) {
 		int industry_pos = GetPositionOnLegend(pt);
 		if (industry_pos >= 0 && industry_pos < _smallmap_industry_count) {
-			new_highlight = _legend_from_industries[industry_pos].type;
+			new_highlight = _legend_from_industries[industry_pos].industry_type;
 		}
 	}
 	if (new_highlight != _smallmap_industry_highlight) {
