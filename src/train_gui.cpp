@@ -218,11 +218,9 @@ static void TrainDetailsCargoTab(const CargoSummaryItem *item, int left, int rig
 	if (!IsValidCargoType(item->cargo)) {
 		str = GetString(STR_QUANTITY_N_A);
 	} else if (item->amount == 0) {
-		str = GetString(STR_VEHICLE_DETAILS_CARGO_EMPTY);
-	} else if (FreightWagonMult(item->cargo) > 1) {
-		str = GetString(STR_VEHICLE_DETAILS_CARGO_FROM_MULT, item->cargo, item->amount, item->source, _settings_game.vehicle.freight_trains);
+		str = GetString(STR_VEHICLE_DETAILS_TRAIN_CARGO_EMPTY, item->cargo, item->capacity, item->subtype);
 	} else {
-		str = GetString(STR_VEHICLE_DETAILS_CARGO_FROM, item->cargo, item->amount, item->source);
+		str = GetString(STR_VEHICLE_DETAILS_TRAIN_CARGO_FROM, item->cargo, item->amount, item->cargo, item->capacity, item->source, item->subtype);
 	}
 	DrawString(left, right, y, str, TextColour::LightBlue);
 }
@@ -311,28 +309,6 @@ static void TrainDetailsInfoTab(const Train *v, int left, int right, int y, uint
 }
 
 /**
- * Draw the details capacity tab for the given vehicle at the given position
- *
- * @param item  Data to draw
- * @param left  The left most coordinate to draw
- * @param right The right most coordinate to draw
- * @param y     The y coordinate
- */
-static void TrainDetailsCapacityTab(const CargoSummaryItem *item, int left, int right, int y)
-{
-	std::string str;
-	if (!IsValidCargoType(item->cargo)) {
-		/* Draw subtype only */
-		str = GetString(STR_VEHICLE_INFO_NO_CAPACITY, item->subtype);
-	} else if (FreightWagonMult(item->cargo) > 1) {
-		str = GetString(STR_VEHICLE_INFO_CAPACITY_MULT, item->cargo, item->capacity, item->subtype, _settings_game.vehicle.freight_trains);
-	} else {
-		str = GetString(STR_VEHICLE_INFO_CAPACITY, item->cargo, item->capacity, item->subtype);
-	}
-	DrawString(left, right, y, str);
-}
-
-/**
  * Collects the cargo transported
  * @param v Vehicle to process
  * @param summary Space for the result
@@ -397,7 +373,7 @@ int GetTrainDetailsWndVScroll(VehicleID veh_id, TrainDetailsWindowTabs det_tab)
 		}
 
 		num = max_cargo.GetCount();
-		num += 2; // needs two more because first line is description string and we have the feeder share
+		num += 3; // needs three more because the first two are the length and description strings and the last is the feeder share
 	} else if (det_tab == TDW_TAB_PERF) {
 		num = 1; // empty and full weights
 		if (_settings_game.vehicle.train_acceleration_model != AccelerationModel::Original) {
@@ -411,7 +387,7 @@ int GetTrainDetailsWndVScroll(VehicleID veh_id, TrainDetailsWindowTabs det_tab)
 			uint length = GetLengthOfArticulatedVehicle(v);
 			if (length > (uint)ScaleSpriteTrad(TRAIN_DETAILS_MAX_INDENT)) num++;
 		}
-		if (det_tab == 1) num += 2 * Train::Get(veh_id)->tcache.cached_num_engines;
+		if (det_tab == TDW_TAB_INFO) num += 2 * Train::Get(veh_id)->tcache.cached_num_engines;
 	}
 
 	return num;
@@ -433,7 +409,7 @@ void DrawTrainDetails(const Train *v, const Rect &r, int vscroll_pos, uint16_t v
 	int sprite_y_offset = line_height / 2;
 	int text_y_offset = (line_height - GetCharacterHeight(FontSize::Normal)) / 2;
 
-	/* draw the first 3 details tabs */
+	/* draw the first 2 details tabs */
 	if (det_tab != TDW_TAB_TOTALS && det_tab != TDW_TAB_PERF) {
 		Direction dir = rtl ? Direction::E : Direction::W;
 		int x = rtl ? r.right : r.left;
@@ -492,18 +468,10 @@ void DrawTrainDetails(const Train *v, const Rect &r, int vscroll_pos, uint16_t v
 							if (i == 0) TrainDetailsInfoTab(v, dr.left, dr.right, py, line_number);
 							break;
 
-						case TDW_TAB_CAPACITY:
-							if (i < _cargo_summary.size()) {
-								TrainDetailsCapacityTab(&_cargo_summary[i], dr.left, dr.right, py);
-							} else {
-								DrawString(dr.left, dr.right, py, GetString(STR_VEHICLE_INFO_NO_CAPACITY, STR_EMPTY));
-							}
-							break;
-
 						default: NOT_REACHED();
 					}
 				}
-				if (det_tab != 1 || line_number >= (Train::From(v)->IsWagon() ? 0 : 2)) {
+				if (det_tab != TDW_TAB_INFO || line_number >= (Train::From(v)->IsWagon() ? 0 : 2)) {
 					line_number = 0;
 					i++;
 				} else {
@@ -550,6 +518,7 @@ void DrawTrainDetails(const Train *v, const Rect &r, int vscroll_pos, uint16_t v
 			}
 		}
 	} else {
+		/* Draw Totals tab. */
 		int y = r.top;
 		CargoArray act_cargo{};
 		CargoArray max_cargo{};
@@ -561,7 +530,16 @@ void DrawTrainDetails(const Train *v, const Rect &r, int vscroll_pos, uint16_t v
 			feeder_share             += u->cargo.GetFeederShare();
 		}
 
+		/* Draw the total vehicle length. */
 		if (--vscroll_pos < 0 && vscroll_pos >= -vscroll_cap) {
+			uint train_length = CeilDiv(v->gcache.cached_total_length * 10, TILE_SIZE);
+			std::string str = GetString(STR_VEHICLE_DETAILS_TRAIN_LENGTH, train_length, /* digits for DECIMAL */ 1);
+			DrawString(r.left, r.right, y + text_y_offset, str);
+			y += line_height;
+		}
+
+		if (--vscroll_pos < 0 && vscroll_pos >= -vscroll_cap) {
+			/* Draw the header for the total capacity. */
 			DrawString(r.left, r.right, y + text_y_offset, STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY_TEXT);
 			y += line_height;
 		}
@@ -569,14 +547,10 @@ void DrawTrainDetails(const Train *v, const Rect &r, int vscroll_pos, uint16_t v
 		/* Indent the total cargo capacity details */
 		Rect ir = r.Indent(WidgetDimensions::scaled.hsep_indent, rtl);
 		for (const CargoSpec *cs : _sorted_cargo_specs) {
-			CargoType c = cs->Index();
-			if (max_cargo[c] > 0 && --vscroll_pos < 0 && vscroll_pos >= -vscroll_cap) {
+			CargoType cargo_type = cs->Index();
+			if (max_cargo[cargo_type] > 0 && --vscroll_pos < 0 && vscroll_pos >= -vscroll_cap) {
 				format_buffer str;
-				if (FreightWagonMult(c) > 1) {
-					AppendStringInPlace(str, STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY_MULT, c, act_cargo[c], c, max_cargo[c], _settings_game.vehicle.freight_trains);
-				} else {
-					AppendStringInPlace(str, STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY, c, act_cargo[c], c, max_cargo[c]);
-				}
+				AppendStringInPlace(str, STR_VEHICLE_DETAILS_TRAIN_TOTAL_CAPACITY, cargo_type, act_cargo[cargo_type], cargo_type, max_cargo[cargo_type]);
 				DrawString(ir.left, ir.right, y + text_y_offset, str);
 				y += line_height;
 			}

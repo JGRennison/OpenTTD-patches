@@ -1150,6 +1150,9 @@ static CommandCost ClearTile_Trees(TileIndex tile, DoCommandFlags flags)
 	if (flags.Test(DoCommandFlag::Execute)) {
 		DoClearSquare(tile);
 		_tree_placer_memory.erase(tile);
+
+		/* We might want to clear to rocks instead of dirt/grass. */
+		if (flags.Test(DoCommandFlag::ClearToRocks)) MakeClear(tile, ClearGround::Rocks, 3);
 	}
 
 	return CommandCost(ExpensesType::Construction, num * _price[Price::ClearTrees]);

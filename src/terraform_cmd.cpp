@@ -20,6 +20,7 @@
 #include "terraform_cmd.h"
 #include "tile_cmd.h"
 #include "core/backup_type.hpp"
+#include "core/random_func.hpp"
 
 #include "table/strings.h"
 
@@ -277,6 +278,14 @@ CommandCost CmdTerraformLand(DoCommandFlags flags, TileIndex tile, Slope slope, 
 			Backup<bool> old_generating_world(_generating_world, FILE_LINE);
 			if (_game_mode == GameMode::Editor) old_generating_world.Change(true); // used to create green terraformed land
 			DoCommandFlags tile_flags = flags | DoCommandFlag::Auto | DoCommandFlag::ForceClearTile;
+
+			/* If the tile is being lowered, maybe make rocks to simulate excavation/blasting. Higher elevations are more likely to get rocks.
+			 * Only do this if executing the command, as a test run of RandomRange will cause a desync. */
+			if (flags.Test(DoCommandFlag::Execute)) {
+				bool make_rocks = RandomRange(_settings_game.construction.map_height_limit) <= static_cast<uint32_t>(z_max);
+				if (!dir_up && make_rocks) tile_flags = tile_flags | DoCommandFlag::ClearToRocks;
+			}
+
 			if (pass == 0) {
 				tile_flags.Reset(DoCommandFlag::Execute);
 				tile_flags.Set(DoCommandFlag::NoModifyTownRating);

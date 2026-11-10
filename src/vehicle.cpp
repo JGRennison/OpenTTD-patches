@@ -1572,13 +1572,13 @@ void VehicleTickMotion(Vehicle *v, Vehicle *front)
 	v->motion_counter += front->cur_speed;
 	if (_settings_client.sound.vehicle && _settings_client.music.effect_vol != 0) {
 		/* Play a running sound if the motion counter passes 256 (Do we not skip sounds?) */
-		if (GB(v->motion_counter, 0, 8) < front->cur_speed) PlayVehicleSound(v, VSE_RUNNING);
+		if (GB(v->motion_counter, 0, 8) < front->cur_speed) PlayVehicleSound(v, VehicleSoundEvent::Running);
 
 		/* Play an alternating running sound every 16 ticks */
 		if (GB(v->tick_counter, 0, 4) == 0) {
 			/* Play running sound when speed > 0 and not braking */
 			bool running = (front->cur_speed > 0) && !front->vehstatus.Any({VehState::Stopped, VehState::TrainSlowing});
-			PlayVehicleSound(v, running ? VSE_RUNNING_16 : VSE_STOPPED_16);
+			PlayVehicleSound(v, running ? VehicleSoundEvent::Running16 : VehicleSoundEvent::Stopped16);
 		}
 	}
 }
@@ -2403,7 +2403,7 @@ bool Vehicle::HandleBreakdown()
 							if (_settings_game.vehicle.improved_breakdowns) t->flags.Set(VehicleRailFlag::HasHitRoadVehicle);
 						/* FALL THROUGH */
 						case BREAKDOWN_CRITICAL:
-							if (!PlayVehicleSound(this, VSE_BREAKDOWN)) {
+							if (!PlayVehicleSound(this, VehicleSoundEvent::Breakdown)) {
 								SndPlayVehicleFx((_settings_game.game_creation.landscape != LandscapeType::Toyland) ? SND_10_BREAKDOWN_TRAIN_SHIP : SND_3A_BREAKDOWN_TRAIN_SHIP_TOYLAND, this);
 							}
 							if (!this->vehstatus.Test(VehState::Hidden) && !EngInfo(this->engine_type)->misc_flags.Test(EngineMiscFlag::NoBreakdownSmoke) && this->breakdown_delay > 0) {
@@ -2455,7 +2455,7 @@ bool Vehicle::HandleBreakdown()
 			} else {
 				switch (this->breakdown_type) {
 					case BREAKDOWN_CRITICAL:
-						if (!PlayVehicleSound(this, VSE_BREAKDOWN)) {
+						if (!PlayVehicleSound(this, VehicleSoundEvent::Breakdown)) {
 							bool train_or_ship = this->type == VehicleType::Train || this->type == VehicleType::Ship;
 							SndPlayVehicleFx((_settings_game.game_creation.landscape != LandscapeType::Toyland) ?
 								(train_or_ship ? SND_10_BREAKDOWN_TRAIN_SHIP : SND_0F_BREAKDOWN_ROADVEHICLE) :
@@ -4467,7 +4467,7 @@ void Vehicle::ShowVisualEffect(uint max_speed) const
 		if (HasBit(v->vcache.cached_veh_flags, VCF_LAST_VISUAL_EFFECT)) break;
 	} while ((v = v->Next()) != nullptr);
 
-	if (sound) PlayVehicleSound(this, VSE_VISUAL_EFFECT);
+	if (sound) PlayVehicleSound(this, VehicleSoundEvent::VisualEffect);
 }
 
 /**
