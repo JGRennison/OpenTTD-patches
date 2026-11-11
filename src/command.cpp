@@ -535,13 +535,13 @@ void ClearCommandQueue()
 void EnqueueDoCommandPImplementation(Commands cmd, TileIndex tile, const CommandPayloadBase &payload, StringID error_msg, CommandCallback callback, CallbackParameter callback_param, DoCommandIntlFlag intl_flags)
 {
 	/* Do not execute immediately if we are already in DoCommand context or there have already been multiple client commands sent this tick. */
-	if (_docommand_recursive == 0 || _network_client_commands_sent >= 2) {
-		DoCommandPImplementation(cmd, tile, payload, error_msg, callback, callback_param, intl_flags);
-	} else {
+	if (_docommand_recursive != 0 || _network_client_commands_sent >= 2) {
 		CommandQueueItem &item = _command_queue.emplace_back();
 		item.cmd = DynCommandContainer(cmd, error_msg, tile, payload.Clone(), callback, callback_param);
 		item.company = _current_company;
 		item.intl_flags = intl_flags;
+	} else {
+		DoCommandPImplementation(cmd, tile, payload, error_msg, callback, callback_param, intl_flags);
 	}
 }
 
