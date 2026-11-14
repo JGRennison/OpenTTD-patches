@@ -11,6 +11,7 @@
 #define NEWGRF_INTERNAL_VEHICLE_H
 
 #include "../newgrf.h"
+#include "../cargotype.h"
 #include "../engine_base.h"
 #include "../vehicle_func.h"
 #include "../core/typed_container.hpp"

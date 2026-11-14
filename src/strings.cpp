@@ -2977,6 +2977,15 @@ void CheckForMissingGlyphs(FontSizes fontsizes, MissingGlyphSearcher *searcher)
 	searcher->DetermineRequiredGlyphs(fontsizes);
 	bool bad_font = searcher->missing_fontsizes.Any();
 
+	if (bad_font) {
+		Debug(fontcache, 1, "Missing {} glyph(s) in requested fonts", searcher->missing_glyphs.size());
+		if (GetDebugLevel(DebugLevelID::fontcache) >= 3) {
+			for (char32_t c : searcher->missing_glyphs) {
+				Debug(fontcache, 3, "  U+{:04X}", static_cast<uint32_t>(c));
+			}
+		}
+	}
+
 #if defined(WITH_FREETYPE) || defined(_WIN32) || defined(WITH_COCOA)
 	if (bad_font) {
 		/* We found an unprintable character... lets try whether we can find

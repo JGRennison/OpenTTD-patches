@@ -1572,7 +1572,7 @@ struct GameOptionsWindow : Window {
 				ClearAllCachedNames();
 				UpdateAllVirtCoords();
 				CheckBlitter();
-				ReInitAllWindows(false);
+				ReInitAllWindows(true);
 				FlushDeparturesWindowTextCaches();
 				break;
 

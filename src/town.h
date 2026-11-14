@@ -16,7 +16,7 @@
 #include "station_container.h"
 #include "subsidy_type.h"
 #include "newgrf_storage.h"
-#include "cargotype.h"
+#include "cargo_type.h"
 #include "table/strings.h"
 #include "company_func.h"
 #include "settings_type.h"

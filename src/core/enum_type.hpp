@@ -365,6 +365,17 @@ public:
 		}
 	}
 
+	/**
+	 * Construct an EnumBitSet from a span of enum values. Invalid values are skipped.
+	 * @param values Span of enum values.
+	 */
+	EnumBitSet(std::span<const Tenum> values) : BaseClass()
+	{
+		for (const Tenum &value : values) {
+			if (value < Tend_value) this->template Set<BaseClass>(value);
+		}
+	}
+
 	constexpr bool operator==(const EnumBitSet &rhs) const { return this->base() == rhs.base(); }
 	constexpr auto operator<=>(const EnumBitSet &rhs) const { return this->base() <=> rhs.base(); }
 
