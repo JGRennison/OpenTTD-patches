@@ -69,12 +69,6 @@ struct FontState : public Font {
 	FontState(FontSize fontsize, ExtendedTextColour colour) : Font(fontsize, colour) {}
 
 	/**
-	 * Compare with another instance of this class.
-	 * @return The std::strong_ordering of the comparison.
-	 */
-	auto operator<=>(const FontState &) const = default;
-
-	/**
 	 * Switch to new colour \a c.
 	 * @param c New colour to use.
 	 */
