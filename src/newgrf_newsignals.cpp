@@ -68,7 +68,7 @@ uint32_t GetNewSignalsSideVariable()
 		case A2VRI_SIGNALS_SIGNAL_VERTICAL_CLEARANCE: return GetNewSignalsVerticalClearanceInfo(this->tile, this->z);
 	}
 
-	Debug(grf, 1, "Unhandled new signals tile variable 0x{:X}", variable);
+	this->ro.UnhandledVariable(variable);
 
 	extra.available = false;
 	return UINT_MAX;

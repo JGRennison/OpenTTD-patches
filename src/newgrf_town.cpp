@@ -217,7 +217,7 @@ static uint32_t GetNearbyTileInformation(uint8_t parameter, TileIndex tile, bool
 			return TileY(this->t->xy) << 16 | (TileX(this->t->xy) & 0xFFFF);
 	}
 
-	Debug(grf, 1, "Unhandled town variable 0x{:X}", variable);
+	this->ro.UnhandledVariable(variable);
 
 	extra.available = false;
 	return UINT_MAX;
@@ -279,7 +279,7 @@ static uint32_t GetNearbyTileInformation(uint8_t parameter, TileIndex tile, bool
 			return 0;
 	}
 
-	Debug(grf, 1, "Unhandled town variable 0x{:X}", variable);
+	this->ro.UnhandledVariable(variable);
 
 	extra.available = false;
 	return UINT_MAX;

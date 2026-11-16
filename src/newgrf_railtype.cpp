@@ -126,7 +126,7 @@ uint32_t GetTrackTypesRail(RailType railtype, const GRFFile *grffile)
 		}
 	}
 
-	Debug(grf, 1, "Unhandled rail type tile variable 0x{:X}", variable);
+	this->ro.UnhandledVariable(variable);
 
 	extra.available = false;
 	return UINT_MAX;

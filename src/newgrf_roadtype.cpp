@@ -103,7 +103,7 @@ uint32_t GetTrackTypesRoad(TileIndex tile, const GRFFile *grffile)
 		}
 	}
 
-	Debug(grf, 1, "Unhandled road type tile variable 0x{:X}", variable);
+	this->ro.UnhandledVariable(variable);
 
 	extra.available = false;
 	return UINT_MAX;

@@ -7,11 +7,10 @@
 
 /** @file screensaver.cpp Code for automatically following vehicles for a screensaver effect. */
 
-#include "screensaver.h"
-
 #include "stdafx.h"
 
 #include "core/random_func.hpp"
+#include "screensaver.h"
 #include "timer/timer.h"
 #include "timer/timer_game_tick.h"
 #include "company_base.h"

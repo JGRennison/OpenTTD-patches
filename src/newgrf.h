@@ -133,12 +133,11 @@ enum class GrfSpecFeature : uint8_t {
 /** Bitset of \c GrfSpecFeature elements. */
 using GrfSpecFeatures = EnumBitSet<GrfSpecFeature, uint32_t, GrfSpecFeature::End>;
 
+/** Information about a NewGRF goto-label. */
 struct GRFLabel {
-	uint8_t label;
-	uint32_t nfo_line;
-	size_t pos;
-
-	GRFLabel(uint8_t label, uint32_t nfo_line, size_t pos) : label(label), nfo_line(nfo_line), pos(pos) {}
+	uint8_t label; ///< Non-unique label identifier.
+	uint32_t nfo_line; ///< Line within NewGRF of label.
+	size_t pos; ///< Position in file.
 };
 
 enum GRFPropertyMapFallbackMode {
@@ -338,21 +337,21 @@ struct NewSignalStyle;
 
 /** Dynamic data of a loaded NewGRF */
 struct GRFFile {
-	std::string filename{};
-	GrfID grfid{};
-	uint8_t grf_version = 0;
+	std::string filename{};  ///< The filename.
+	GrfID grfid{};           ///< The GRF ID.
+	uint8_t grf_version = 0; ///< GRF version (See https://newgrf-specs.tt-wiki.net/wiki/Version_numbers#GRF_version)
 
-	uint sound_offset = 0;
-	uint16_t num_sounds = 0;
+	uint sound_offset = 0;   ///< Index of first sound.
+	uint16_t num_sounds = 0; ///< Number of sounds.
 
-	std::vector<std::unique_ptr<struct StationSpec>> stations;
-	std::vector<std::unique_ptr<struct HouseSpec>> housespec;
-	std::vector<std::unique_ptr<struct IndustrySpec>> industryspec;
-	std::vector<std::unique_ptr<struct IndustryTileSpec>> indtspec;
-	std::vector<std::unique_ptr<struct ObjectSpec>> objectspec;
-	std::vector<std::unique_ptr<struct AirportSpec>> airportspec;
-	std::vector<std::unique_ptr<struct AirportTileSpec>> airtspec;
-	std::vector<std::unique_ptr<struct RoadStopSpec>> roadstops;
+	std::vector<std::unique_ptr<struct StationSpec>> stations;      ///< Station definitions.
+	std::vector<std::unique_ptr<struct HouseSpec>> housespec;       ///< House definitions.
+	std::vector<std::unique_ptr<struct IndustrySpec>> industryspec; ///< Industry definitions.
+	std::vector<std::unique_ptr<struct IndustryTileSpec>> indtspec; ///< Industry Tile definitions.
+	std::vector<std::unique_ptr<struct ObjectSpec>> objectspec;     ///< Object definitions.
+	std::vector<std::unique_ptr<struct AirportSpec>> airportspec;   ///< Airport definitions.
+	std::vector<std::unique_ptr<struct AirportTileSpec>> airtspec;  ///< Airport Tile definitions.
+	std::vector<std::unique_ptr<struct RoadStopSpec>> roadstops;    ///< RoadStop definitions.
 
 	GRFFeatureMapRemapSet feature_id_remaps{};
 	EnumIndexArray<GRFFilePropertyRemapSet, GrfSpecFeature, GrfSpecFeature::End> action0_property_remaps{};
@@ -361,24 +360,24 @@ struct GRFFile {
 	std::vector<GRFVariableMapEntry> grf_variable_remaps{};
 	std::vector<std::unique_ptr<const char, FreeDeleter>> remap_unknown_property_names{};
 
-	std::vector<uint32_t> param{};
+	std::vector<uint32_t> param{};                      ///< Parameters, initialised by GRFConfig.
 
-	std::vector<GRFLabel> labels{}; ///< List of labels
+	std::vector<GRFLabel> labels{};                     ///< List of labels
 
-	std::vector<CargoLabel> cargo_list{};           ///< Cargo translation table (local ID -> label)
-	std::array<uint8_t, NUM_CARGO> cargo_map{};     ///< Inverse cargo translation table (CargoType -> local ID)
+	std::vector<CargoLabel> cargo_list{};               ///< Cargo translation table (local ID -> label)
+	std::array<uint8_t, NUM_CARGO> cargo_map{};         ///< Inverse cargo translation table (CargoType -> local ID)
 
-	std::vector<BadgeID> badge_list{}; ///< Badge translation table (local index -> global index)
-	btree::btree_map<uint16_t, BadgeID> badge_map{};
+	std::vector<BadgeID> badge_list{};                  ///< Badge translation table (local index -> global index)
+	btree::btree_map<uint16_t, BadgeID> badge_map{};    ///< Mapping from local id to global badge id.
 
-	std::vector<RailTypeLabel> railtype_list{}; ///< Railtype translation table
-	std::array<RailType, RAILTYPE_END> railtype_map{};
+	std::vector<RailTypeLabel> railtype_list{};         ///< Railtype translation table
+	std::array<RailType, RAILTYPE_END> railtype_map{};  ///< Mapping from local id to global rail type id.
 
-	std::vector<RoadTypeLabel> roadtype_list{}; ///< Roadtype translation table (road)
-	std::array<RoadType, ROADTYPE_END> roadtype_map{};
+	std::vector<RoadTypeLabel> roadtype_list{};         ///< Roadtype translation table (road)
+	std::array<RoadType, ROADTYPE_END> roadtype_map{};  ///< Mapping from local id to global road type id.
 
-	std::vector<RoadTypeLabel> tramtype_list{}; ///< Roadtype translation table (tram)
-	std::array<RoadType, ROADTYPE_END> tramtype_map{};
+	std::vector<RoadTypeLabel> tramtype_list{};         ///< Roadtype translation table (tram)
+	std::array<RoadType, ROADTYPE_END> tramtype_map{};  ///< Mapping from local id to global tram type id.
 
 	EnumIndexArray<CanalProperties, CanalFeature, CanalFeature::End> canal_local_properties{}; ///< Canal properties as set by this NewGRF
 
@@ -480,6 +479,7 @@ void LoadNewGRF(SpriteID load_index, uint num_baseset);
 void ReloadNewGRFData(); // in saveload/afterload.cpp
 void ResetNewGRFData();
 void ResetPersistentNewGRFData();
+void ResetUnhandledVariableWarnings();
 
 template <typename... T>
 void GrfMsgIntl(int severity, fmt::format_string<T...> msg, T&&... args)

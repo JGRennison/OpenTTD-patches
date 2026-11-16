@@ -394,7 +394,7 @@ static uint32_t GetCountAndDistanceOfClosestInstance(uint32_t local_id, GrfID gr
 	}
 
 unhandled:
-	Debug(grf, 1, "Unhandled object variable 0x{:X}", variable);
+	this->ro.UnhandledVariable(variable);
 
 	extra.available = false;
 	return UINT_MAX;

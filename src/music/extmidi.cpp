@@ -121,7 +121,7 @@ void MusicDriver_ExtMidi::DoPlay()
 
 				execvp(parameters[0], parameters.data());
 			}
-			_exit(255);
+			std::_Exit(1);
 		}
 
 		case -1:

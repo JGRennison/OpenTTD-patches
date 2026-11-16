@@ -70,7 +70,7 @@ std::vector<const GRFFile *> _new_landscape_rocks_grfs;
 		}
 	}
 
-	Debug(grf, 1, "Unhandled new landscape tile variable 0x{:X}", variable);
+	this->ro.UnhandledVariable(variable);
 
 	extra.available = false;
 	return UINT_MAX;

@@ -67,6 +67,7 @@
 #include "rail_cmd.h"
 #include "tile_cmd.h"
 #include "road_layout_func.h"
+#include "tilearea_airportlayout.h"
 
 #include "widgets/station_widget.h"
 #include "widgets/misc_widget.h"
@@ -1341,9 +1342,13 @@ static CommandCost CheckFlatLandAirport(AirportTileTableIterator tile_iter, DoCo
 
 	for (; tile_iter != INVALID_TILE; ++tile_iter) {
 		const TileIndex tile_cur = tile_iter;
-		CommandCost ret = CheckBuildableTile(tile_cur, {}, allowed_z, true, true);
-		if (ret.Failed()) return ret;
-		cost.AddCost(ret.GetCost());
+		const AirportGfx gfx_cur = tile_iter.GetAirportGfx();
+
+		if (gfx_cur != AIRPORTGFX_CLEARTILE_SPECIALCHECK) {
+			CommandCost ret = CheckBuildableTile(tile_cur, {}, allowed_z, true, true);
+			if (ret.Failed()) return ret;
+			cost.AddCost(ret.GetCost());
+		}
 
 		/* if station is set, then allow building on top of an already
 		 * existing airport, either the one in *station if it is not
@@ -1360,8 +1365,12 @@ static CommandCost CheckFlatLandAirport(AirportTileTableIterator tile_iter, DoCo
 					return CommandCost(STR_ERROR_ADJOINS_MORE_THAN_ONE_EXISTING);
 				}
 			}
+		} else if (gfx_cur == AIRPORTGFX_CLEARTILE_SPECIALCHECK) {
+			if (!IsTileType(tile_cur, TileType::Clear) || !IsTileFlat(tile_cur)) {
+				return CommandCost(STR_ERROR_SITE_UNSUITABLE);
+			}
 		} else {
-			ret = Command<Commands::LandscapeClear>::Do(flags, tile_cur);
+			CommandCost ret = Command<Commands::LandscapeClear>::Do(flags, tile_cur);
 			if (ret.Failed()) return ret;
 			cost.AddCost(ret.GetCost());
 		}
@@ -2857,8 +2866,7 @@ CommandCost CmdBuildAirport(DoCommandFlags flags, TileIndex tile, uint8_t airpor
 	if (ret.Failed()) return ret;
 
 	StationID est = StationID::Invalid();
-	AirportTileTableIterator iter(as->layouts[layout].tiles, tile);
-	CommandCost cost = CheckFlatLandAirport(iter, flags, &est);
+	CommandCost cost = CheckFlatLandAirport(AirportTileTableIterator{as->layouts[layout].tiles, tile, true}, flags, &est);
 	if (cost.Failed()) return cost;
 
 	Station *st = nullptr;
@@ -2889,9 +2897,8 @@ CommandCost CmdBuildAirport(DoCommandFlags flags, TileIndex tile, uint8_t airpor
 	}
 
 	/* The noise level is the noise from the airport and reduce it to account for the distance to the town center. */
-	AirportTileTableIterator nearest_town_iter = iter;
 	uint dist;
-	Town *nearest = AirportGetNearestTown(as, rotation, tile, std::move(nearest_town_iter), dist);
+	Town *nearest = AirportGetNearestTown(as, rotation, tile, AirportTileTableIterator{as->layouts[layout].tiles, tile, false}, dist);
 	uint newnoise_level = nearest->noise_reached + GetAirportNoiseLevelForDistance(as, dist);
 
 	if (action == AIRPORT_UPGRADE) {
@@ -2935,7 +2942,7 @@ CommandCost CmdBuildAirport(DoCommandFlags flags, TileIndex tile, uint8_t airpor
 		cost.AddCost(r.GetCost());
 	}
 
-	for (AirportTileTableIterator iter(as->layouts[layout].tiles, tile); iter != INVALID_TILE; ++iter) {
+	for (AirportTileTableIterator iter{as->layouts[layout].tiles, tile, false}; iter != INVALID_TILE; ++iter) {
 		cost.AddCost(_price[Price::BuildStationAirport]);
 	}
 
@@ -2982,16 +2989,16 @@ CommandCost CmdBuildAirport(DoCommandFlags flags, TileIndex tile, uint8_t airpor
 
 		st->spread.Add(airport_area);
 
-		for (AirportTileTableIterator iter(as->layouts[layout].tiles, tile); iter != INVALID_TILE; ++iter) {
-			MakeAirport(iter, st->owner, st->index, iter.GetStationGfx(), WaterClass::Invalid);
+		for (AirportTileTableIterator iter{as->layouts[layout].tiles, tile, false}; iter != INVALID_TILE; ++iter) {
+			MakeAirport(iter, st->owner, st->index, iter.GetAirportGfx(), WaterClass::Invalid);
 			SetStationTileRandomBits(iter, GB(Random(), 0, 4));
 			st->airport.Add(iter);
 
-			if (AirportTileSpec::Get(GetTranslatedAirportTileID(iter.GetStationGfx()))->animation.status != AnimationStatus::NoAnimation) AddAnimatedTile(iter);
+			if (AirportTileSpec::Get(GetTranslatedAirportTileID(iter.GetAirportGfx()))->animation.status != AnimationStatus::NoAnimation) AddAnimatedTile(iter);
 		}
 
 		/* Only call the animation trigger after all tiles have been built */
-		for (AirportTileTableIterator iter(as->layouts[layout].tiles, tile); iter != INVALID_TILE; ++iter) {
+		for (AirportTileTableIterator iter{as->layouts[layout].tiles, tile, false}; iter != INVALID_TILE; ++iter) {
 			TriggerAirportTileAnimation(st, iter, AirportAnimationTrigger::Built);
 		}
 

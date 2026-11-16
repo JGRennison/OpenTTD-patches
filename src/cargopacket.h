@@ -278,6 +278,20 @@ public:
 		return this->next_hop;
 	}
 
+	/**
+	 * Are the two CargoPackets mergeable.
+	 * @param cp1 First cargo packet to check.
+	 * @param cp2 Second cargo packet to check.
+	 * @return \c true iff they are mergeable.
+	 */
+	static bool AreMergable(const CargoPacket *cp1, const CargoPacket *cp2)
+	{
+		return cp1->source_xy == cp2->source_xy &&
+				cp1->periods_in_transit == cp2->periods_in_transit &&
+				cp1->first_station == cp2->first_station &&
+				cp1->source == cp2->source;
+	}
+
 	static void InvalidateAllFrom(Source src);
 	static void InvalidateAllFrom(StationID sid);
 	static void AfterLoad();
@@ -539,21 +553,6 @@ public:
 	uint Truncate(uint max_move = UINT_MAX);
 	uint Reroute(uint max_move, VehicleCargoList *dest, StationID avoid, StationID avoid2, const GoodsEntry *ge);
 	uint RerouteFromSource(uint max_move, VehicleCargoList *dest, StationID source, StationID avoid, StationID avoid2, const GoodsEntry *ge);
-
-	/**
-	 * Are the two CargoPackets mergeable in the context of
-	 * a list of CargoPackets for a Vehicle?
-	 * @param cp1 First CargoPacket.
-	 * @param cp2 Second CargoPacket.
-	 * @return True if they are mergeable.
-	 */
-	static bool AreMergable(const CargoPacket *cp1, const CargoPacket *cp2)
-	{
-		return cp1->source_xy           == cp2->source_xy &&
-				cp1->periods_in_transit == cp2->periods_in_transit &&
-				cp1->first_station      == cp2->first_station &&
-				cp1->source             == cp2->source;
-	}
 };
 
 typedef MultiMap<StationID, CargoPacket *, CargoPacketList> StationCargoPacketMap;
@@ -672,21 +671,6 @@ public:
 	void LoadSetReservedCount(uint count)
 	{
 		this->reserved_count = count;
-	}
-
-	/**
-	 * Are the two CargoPackets mergeable in the context of
-	 * a list of CargoPackets for a Station?
-	 * @param cp1 First CargoPacket.
-	 * @param cp2 Second CargoPacket.
-	 * @return True if they are mergeable.
-	 */
-	static bool AreMergable(const CargoPacket *cp1, const CargoPacket *cp2)
-	{
-		return cp1->source_xy           == cp2->source_xy &&
-				cp1->periods_in_transit == cp2->periods_in_transit &&
-				cp1->first_station      == cp2->first_station &&
-				cp1->source             == cp2->source;
 	}
 };
 

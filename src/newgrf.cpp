@@ -657,6 +657,7 @@ void ResetNewGRFData()
 	InitializeSoundPool();
 	_spritegroup_pool.CleanPool();
 	ResetCallbacks(false);
+	ResetUnhandledVariableWarnings();
 	_deterministic_sg_shadows.clear();
 	_randomized_sg_shadows.clear();
 	_grfs_loaded_with_sg_shadow_enable = HasBit(_misc_debug_flags, MDF_NEWGRF_SG_SAVE_RAW);

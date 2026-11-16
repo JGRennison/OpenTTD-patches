@@ -830,6 +830,8 @@ public:
 	 */
 	virtual uint32_t GetDebugID() const { return 0; }
 
+	void UnhandledVariable(uint8_t variable) const;
+
 private:
 	/**
 	 * Resets the dynamic state of the resolver object.

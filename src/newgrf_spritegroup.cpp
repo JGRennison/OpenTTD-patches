@@ -23,6 +23,7 @@
 #include "newgrf_engine.h"
 #include "newgrf_dump.h"
 #include "core/format.hpp"
+#include "3rdparty/cpp-btree/btree_set.h"
 #include <bit>
 
 #include "safeguards.h"
@@ -140,7 +141,7 @@ static inline uint32_t GetVariable(const ResolverObject &object, ScopeResolver *
  */
 /* virtual */ uint32_t ScopeResolver::GetVariable(uint16_t variable, uint32_t parameter, GetVariableExtra &extra) const
 {
-	Debug(grf, 1, "Unhandled scope variable 0x{:X}", variable);
+	this->ro.UnhandledVariable(variable);
 	extra.available = false;
 	return UINT_MAX;
 }
@@ -174,6 +175,43 @@ static inline uint32_t GetVariable(const ResolverObject &object, ScopeResolver *
 /* virtual */ ScopeResolver *ResolverObject::GetScope(VarSpriteGroupScope scope, VarSpriteGroupScopeOffset relative)
 {
 	return &this->default_scope;
+}
+
+/** Record of unhandled variables. */
+struct UnhandledVariableItem {
+	GrfID grfid; ///< GRFID of grf.
+	GrfSpecFeature feature; ///< The feature.
+	uint8_t variable; ///< The variable.
+	CallbackID callback; ///< The callback.
+
+	/**
+	 * Compare with another instance of this class.
+	 * @return The std::strong_ordering of the comparison.
+	 */
+	constexpr auto operator<=>(const UnhandledVariableItem &) const = default;
+};
+
+/** Set of unhandled variables that have been seen. */
+btree::btree_set<UnhandledVariableItem> _unhandled_variables;
+
+/**
+ * Reset unhandled variable warnings.
+ */
+void ResetUnhandledVariableWarnings()
+{
+	_unhandled_variables.clear();
+}
+
+/**
+ * Log a message for an unhandled NewGRF variable.
+ * @param variable The variable that is not handled.
+ */
+/* virtual */ void ResolverObject::UnhandledVariable(uint8_t variable) const
+{
+	if (GetDebugLevel(DebugLevelID::grf) < 1) return;
+	if (!_unhandled_variables.emplace(this->grffile->grfid, this->GetFeature(), variable, this->callback).second) return;
+
+	Debug(grf, 1, "[{}:{}] Unhandled feature 0x{:X} variable 0x{:X} during callback 0x{:X}", this->grffile->filename, this->root_spritegroup->nfo_line, this->GetFeature(), variable, this->callback);
 }
 
 /* Evaluate an adjustment for a variable of the given size.

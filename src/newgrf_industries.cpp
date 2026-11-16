@@ -249,7 +249,7 @@ uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(uint8_t p
 			return 0 | 0xFFFF;
 		}
 
-		Debug(grf, 1, "Unhandled variable 0x{:X} (no available industry) in callback 0x{:x}", variable, this->ro.callback);
+		this->ro.UnhandledVariable(variable);
 
 		extra.available = false;
 		return UINT_MAX;
@@ -463,7 +463,7 @@ uint32_t IndustriesScopeResolver::GetCountAndDistanceOfClosestInstance(uint8_t p
 		}
 	}
 
-	Debug(grf, 1, "Unhandled industry variable 0x{:X}", variable);
+	this->ro.UnhandledVariable(variable);
 
 	extra.available = false;
 	return UINT_MAX;

@@ -99,7 +99,7 @@ struct CanalResolverObject : public ResolverObject {
 		case 0x83: return IsTileType(this->tile, TileType::Water) ? GetWaterTileRandomBits(this->tile) : 0;
 	}
 
-	Debug(grf, 1, "Unhandled canal variable 0x{:02X}", variable);
+	this->ro.UnhandledVariable(variable);
 
 	extra.available = false;
 	return UINT_MAX;

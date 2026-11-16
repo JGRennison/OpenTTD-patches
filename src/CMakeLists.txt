@@ -607,6 +607,7 @@ add_files(
     tile_track_func.h
     tile_type.h
     tilearea.cpp
+    tilearea_airportlayout.h
     tilearea_type.h
     tilehighlight_func.h
     tilehighlight_type.h

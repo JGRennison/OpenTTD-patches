@@ -143,7 +143,7 @@ void AddGenericCallback(GrfSpecFeature feature, const GRFFile *file, const Sprit
 		}
 	}
 
-	Debug(grf, 1, "Unhandled generic feature variable 0x{:02X}", variable);
+	this->ro.UnhandledVariable(variable);
 
 	extra.available = false;
 	return UINT_MAX;

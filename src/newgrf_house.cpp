@@ -359,8 +359,7 @@ uint32_t HouseScopeResolver::OtherHouseIDVariable(uint32_t parameter, F func) co
 
 			case 0x7A: return GetBadgeVariableResult(*this->ro.grffile, HouseSpec::Get(this->house_id)->badges, parameter);
 		}
-
-		Debug(grf, 1, "Unhandled house variable 0x{:X}", variable);
+		this->ro.UnhandledVariable(variable);
 		extra.available = false;
 		return UINT_MAX;
 	}
@@ -482,7 +481,7 @@ uint32_t HouseScopeResolver::OtherHouseIDVariable(uint32_t parameter, F func) co
 		case 0x7A: return GetBadgeVariableResult(*this->ro.grffile, HouseSpec::Get(this->house_id)->badges, parameter);
 	}
 
-	Debug(grf, 1, "Unhandled house variable 0x{:X}", variable);
+	this->ro.UnhandledVariable(variable);
 
 	extra.available = false;
 	return UINT_MAX;
@@ -544,7 +543,7 @@ uint32_t HouseScopeResolver::OtherHouseIDVariable(uint32_t parameter, F func) co
 		case 0x67: return 0xFFFFFFFF;
 	}
 
-	Debug(grf, 1, "Unhandled house variable 0x{:X}", variable);
+	this->ro.UnhandledVariable(variable);
 
 	extra.available = false;
 	return UINT_MAX;
