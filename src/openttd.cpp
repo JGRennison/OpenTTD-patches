@@ -439,9 +439,6 @@ static void ShutdownGame()
 	ClearOrderDestinationRefcountMap();
 	TraceRestrictClearRecentSlotsAndCounters();
 
-	/* No NewGRFs were loaded when it was still bootstrapping. */
-	if (_game_mode != GameMode::Bootstrap) ResetNewGRFData();
-
 	FontCache::UninitializeFontCaches();
 
 	ViewportMapClearTunnelCache();

@@ -24,7 +24,6 @@
  */
 struct NewGRFProfiler {
 	NewGRFProfiler(const GRFFile *grffile);
-	~NewGRFProfiler();
 
 	void BeginResolve(const ResolverObject &resolver);
 	void EndResolve(const SpriteGroup *result);

@@ -40,11 +40,6 @@ struct LeagueTableElement : LeagueTableElementPool::PoolItem<&_league_table_elem
 	LeagueTableElement(LeagueTableElementID index) : PoolItemBase(index) { }
 	LeagueTableElement(LeagueTableElementID index, LeagueTableID table, int64_t rating, CompanyID company, const EncodedString &text, const EncodedString &score, const Link &link) :
 		PoolItemBase(index), table(table), rating(rating), company(company), text(text), score(score), link(link) {}
-
-	/**
-	 * (Empty) destructor has to be defined else operator delete might be called with nullptr parameter
-	 */
-	~LeagueTableElement() { }
 };
 
 
@@ -56,11 +51,6 @@ struct LeagueTable : LeagueTablePool::PoolItem<&_league_table_pool> {
 
 	LeagueTable(LeagueTableID index, const EncodedString &title = {}, const EncodedString &header = {}, const EncodedString &footer = {}) :
 		PoolItemBase(index), title(title), header(header), footer(footer) { }
-
-	/**
-	 * (Empty) destructor has to be defined else operator delete might be called with nullptr parameter
-	 */
-	~LeagueTable() { }
 };
 
 #endif /* LEAGUE_BASE_H */

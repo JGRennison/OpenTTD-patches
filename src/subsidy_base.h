@@ -35,11 +35,6 @@ struct Subsidy : SubsidyPool::PoolItem<&_subsidy_pool> {
 		PoolItemBase(index), cargo_type(cargo_type), remaining(remaining), src(src), dst(dst) {}
 
 	/**
-	 * (Empty) destructor has to be defined else operator delete might be called with nullptr parameter
-	 */
-	~Subsidy() {}
-
-	/**
 	 * Tests whether this subsidy has been awarded to someone
 	 * @return is this subsidy awarded?
 	 */

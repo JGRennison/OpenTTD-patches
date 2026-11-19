@@ -20,7 +20,9 @@
  * This version is not yet released. The following changes are not set in stone yet.
  *
  * API additions:
- * \li GSRail.RemoveRailDepot
+ * \li GSRail::RemoveRailDepot
+ * \li GSDepot
+ * \li GSError::ERR_CAT_DEPOT
  *
  * Other changes:
  * \li GSTown::ExpandTown Change to town expansion to match expected behaviour with the 'allow_town_roads' setting

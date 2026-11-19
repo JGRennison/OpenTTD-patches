@@ -20,7 +20,9 @@
  * This version is not yet released. The following changes are not set in stone yet.
  *
  * API additions:
- * \li AIRail.RemoveRailDepot
+ * \li AIRail::RemoveRailDepot
+ * \li AIDepot
+ * \li AIError::ERR_CAT_DEPOT
  *
  * \b 15.0
  *

@@ -1245,9 +1245,6 @@ public:
 		this->Initialize(v);
 	}
 
-	/** Destructor. Invalidates OrderList for re-usage by the pool. */
-	~OrderList() {}
-
 	void CopyOrderListContents(const OrderList &other);
 
 	void Initialize(Vehicle *v);
