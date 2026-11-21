@@ -1500,12 +1500,13 @@ std::pair<const Order *, StateTicks> DepartureListScheduleModeSlotEvaluator::Eva
 	bool travel_time_required = true;
 	CallAt c = CallAt(order, departure_tick);
 	for (uint i = order_iteration_limit; i > 0; --i) {
+		bool stop_found = false;
+
 		/* If we reach the order at which the departure occurs again, then use the departure station as the terminus. */
 		if (order == source_order) {
 			/* If we're not calling anywhere, then skip this departure. */
 			via_state.found_terminus = (d.calling_at.size() > 0);
-			next_state.first = order;
-			break;
+			stop_found = true;
 		}
 
 		/* If the order is a conditional branch, handle it. */
@@ -1541,8 +1542,7 @@ std::pair<const Order *, StateTicks> DepartureListScheduleModeSlotEvaluator::Eva
 			break;
 		}
 
-		bool stop_found = false;
-		if (via_state.CheckOrder(this->v, &d, order, this->source, this->calling_settings)) stop_found = true;
+		if (!stop_found && via_state.CheckOrder(this->v, &d, order, this->source, this->calling_settings)) stop_found = true;
 
 		departure_tick += order->GetTravelTime();
 		if (travel_time_required && order->GetTravelTime() == 0 && !order->IsTravelTimetabled()) {
