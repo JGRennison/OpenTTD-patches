@@ -231,7 +231,7 @@ size_t Packet::RemainingBytesToTransfer() const
 size_t Packet::Recv_bytes(std::span<uint8_t> destination)
 {
 	auto transfer_to_span = [&destination](std::span<const uint8_t> source) {
-		auto to_copy = source.subspan(0, destination.size());
+		auto to_copy = source.subspan(0, std::min(source.size(), destination.size()));
 		std::ranges::copy(to_copy, destination.begin());
 		return to_copy.size();
 	};
