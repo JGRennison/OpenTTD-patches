@@ -460,6 +460,15 @@ bool ClientNetworkContentSocketHandler::ReceiveServerContent(Packet &p)
 		this->cur_info->filesize = p.Recv_uint32();
 		this->cur_info->filename = p.Recv_string(NETWORK_CONTENT_FILENAME_LENGTH);
 
+		/* Check for the server sneaking in '..', '/' or '\'. */
+		if (this->cur_info->filename.find("..") != std::string::npos ||
+				this->cur_info->filename.find('/') != std::string::npos ||
+				this->cur_info->filename.find('\\') != std::string::npos) {
+			Debug(net, 1, "Invalid filename received [{}]", this->cur_info->filename);
+			this->CloseConnection();
+			return false;
+		}
+
 		if (!this->BeforeDownload()) {
 			this->CloseConnection();
 			return false;
@@ -679,6 +688,13 @@ void ClientNetworkContentSocketHandler::OnReceiveData(UniqueBuffer<char> data)
 				auto pos = filename.find_last_of('.');
 				if (pos == std::string::npos) throw std::exception{};
 				filename = filename.substr(0, pos);
+			}
+
+			/* Check for the server sneaking in '..' or '\'. '/' are already removed by the loop above. */
+			if (filename.find("..") != std::string::npos ||
+					filename.find('\\') != std::string::npos) {
+				Debug(net, 1, "Invalid filename received [{}]", filename);
+				throw std::exception{};
 			}
 
 			/* Copy the string, without extension, to the filename. */
