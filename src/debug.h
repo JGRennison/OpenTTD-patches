@@ -55,6 +55,37 @@ enum class DebugLevelID : uint8_t {
 };
 static constexpr uint DebugLevelCount = static_cast<uint>(DebugLevelID::END);
 
+/** Vanilla compat: Debug message severity levels. */
+namespace Severity {
+	static constexpr int8_t Critical = 0;
+	static constexpr int8_t Error    = 1;
+	static constexpr int8_t Warning  = 2;
+	static constexpr int8_t Notice   = 3;
+	static constexpr int8_t Info     = 4;
+};
+
+/** Vanilla compat: Debug facilities. */
+namespace Facility {
+	static constexpr auto Driver    = DebugLevelID::driver;
+	static constexpr auto Grf       = DebugLevelID::grf;
+	static constexpr auto Map       = DebugLevelID::map;
+	static constexpr auto Net       = DebugLevelID::net;
+	static constexpr auto Sprite    = DebugLevelID::sprite;
+	static constexpr auto Oldloader = DebugLevelID::oldloader;
+	static constexpr auto Yapf      = DebugLevelID::yapf;
+	static constexpr auto Fontcache = DebugLevelID::fontcache;
+	static constexpr auto Script    = DebugLevelID::script;
+	static constexpr auto Sl        = DebugLevelID::sl;
+	static constexpr auto Gamelog   = DebugLevelID::gamelog;
+	static constexpr auto Desync    = DebugLevelID::desync;
+	static constexpr auto Console   = DebugLevelID::console;
+};
+
+namespace DebugLevelScope {
+	using enum DebugLevelID;
+	namespace Facility = ::Facility;
+};
+
 extern std::array<int8_t, DebugLevelCount> _debug_levels;
 
 inline int8_t GetDebugLevel(DebugLevelID id) {
@@ -76,7 +107,7 @@ void DebugIntl(DebugLevelID dbg, int8_t level, fmt::format_string<T...> msg, T&&
  * @param level The maximum debug level this message should be shown at. When the debug level for this category is set lower, then the message will not be shown.
  * @param format_string The formatting string of the message.
  */
-#define Debug(name, level, format_string, ...) do { if ((level) == 0 || GetDebugLevel(DebugLevelID::name) >= (level)) DebugIntl(DebugLevelID::name, level, FMT_STRING(format_string) __VA_OPT__(,) __VA_ARGS__); } while (false)
+#define Debug(name, level, format_string, ...) do { if ((level) == 0 || GetDebugLevel(DebugLevelScope::name) >= (level)) DebugIntl(DebugLevelScope::name, level, FMT_STRING(format_string) __VA_OPT__(,) __VA_ARGS__); } while (false)
 
 extern const char *_savegame_DBGL_data;
 extern std::string _loadgame_DBGL_data;
