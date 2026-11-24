@@ -46,7 +46,7 @@ public:
 
 	std::vector<int> GetListOfMonitorRefreshRates() override;
 
-	const char *GetInfoString() const override { return this->driver_info.c_str(); }
+	std::string_view GetInfoString() const override { return this->driver_info; }
 
 	void SetScreensaverInhibited(bool inhibited) override;
 

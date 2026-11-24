@@ -20,7 +20,7 @@ public:
 	void Stop() override;
 
 	void MainLoop() override;
-	const char *GetName() const override { return "allegro"; }
+	std::string_view GetName() const override { return "allegro"; }
 };
 
 /** Factory for the allegro sound driver. */

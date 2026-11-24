@@ -29,7 +29,7 @@ public:
 	bool IsSongPlaying() override;
 
 	void SetVolume(uint8_t vol) override;
-	const char *GetName() const override { return "bemidi"; }
+	std::string_view GetName() const override { return "bemidi"; }
 
 private:
 	BMidiSynthFile *midi_synth_file = nullptr;

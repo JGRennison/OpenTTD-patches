@@ -26,7 +26,7 @@ public:
 	bool IsSongPlaying() override;
 
 	void SetVolume(uint8_t vol) override;
-	const char *GetName() const override { return "win32"; }
+	std::string_view GetName() const override { return "win32"; }
 };
 
 /** Factory for Windows' music player. */

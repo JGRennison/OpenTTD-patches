@@ -18,7 +18,7 @@ public:
 	const char *Start(const StringList &param) override;
 
 	void Stop() override;
-	const char *GetName() const override { return "sdl"; }
+	std::string_view GetName() const override { return "sdl"; }
 };
 
 /** Factory for the SDL sound driver. */

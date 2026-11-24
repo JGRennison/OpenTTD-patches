@@ -18,7 +18,7 @@ public:
 	const char *Start(const StringList &) override { return nullptr; }
 
 	void Stop() override { }
-	const char *GetName() const override { return "null"; }
+	std::string_view GetName() const override { return "null"; }
 	bool HasOutput() const override { return false; }
 };
 

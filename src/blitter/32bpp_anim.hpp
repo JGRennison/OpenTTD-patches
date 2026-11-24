@@ -67,7 +67,7 @@ public:
 	void PaletteAnimate(const Palette &palette) override;
 	Blitter::PaletteAnimation UsePaletteAnimation() override;
 
-	const char *GetName() const override { return "32bpp-anim"; }
+	std::string_view GetName() const override { return "32bpp-anim"; }
 	void PostResize() override;
 
 	/**

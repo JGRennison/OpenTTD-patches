@@ -18,7 +18,7 @@ public:
 	const char *Start(const StringList &param) override;
 
 	void Stop() override;
-	const char *GetName() const override { return "win32"; }
+	std::string_view GetName() const override { return "win32"; }
 };
 
 /** Factory for the sound driver for Windows. */

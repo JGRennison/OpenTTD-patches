@@ -28,7 +28,7 @@ public:
 	bool IsSongPlaying() override;
 
 	void SetVolume(uint8_t vol) override;
-	const char *GetName() const override { return "dmusic"; }
+	std::string_view GetName() const override { return "dmusic"; }
 };
 
 /** Factory for the DirectX music player. */

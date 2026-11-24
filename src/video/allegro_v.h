@@ -33,7 +33,7 @@ public:
 
 	std::vector<int> GetListOfMonitorRefreshRates() override;
 
-	const char *GetName() const override { return "allegro"; }
+	std::string_view GetName() const override { return "allegro"; }
 
 protected:
 	void InputLoop() override;

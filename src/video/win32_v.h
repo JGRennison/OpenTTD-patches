@@ -100,7 +100,7 @@ public:
 
 	bool AfterBlitterChange() override;
 
-	const char *GetName() const override { return "win32"; }
+	std::string_view GetName() const override { return "win32"; }
 
 protected:
 	HBITMAP  dib_sect;      ///< System bitmap object referencing our rendering buffer.
@@ -155,9 +155,9 @@ public:
 
 	void ToggleVsync(bool vsync) override;
 
-	const char *GetName() const override { return "win32-opengl"; }
+	std::string_view GetName() const override { return "win32-opengl"; }
 
-	const char *GetInfoString() const override { return this->driver_info.c_str(); }
+	std::string_view GetInfoString() const override { return this->driver_info; }
 
 protected:
 	HDC    dc;          ///< Window device context.

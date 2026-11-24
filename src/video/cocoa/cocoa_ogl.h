@@ -37,9 +37,9 @@ public:
 
 	bool HasAnimBuffer() override { return true; }
 
-	const char *GetName() const override { return "cocoa-opengl"; }
+	std::string_view GetName() const override { return "cocoa-opengl"; }
 
-	const char *GetInfoString() const override { return this->driver_info.c_str(); }
+	std::string_view GetInfoString() const override { return this->driver_info; }
 
 	void AllocateBackingStore(bool force = false) override;
 

@@ -122,7 +122,7 @@ public:
 	const char *Start(const StringList &param) override;
 	void Stop() override;
 
-	const char *GetName() const override { return "cocoa"; }
+	std::string_view GetName() const override { return "cocoa"; }
 
 	void AllocateBackingStore(bool force = false) override;
 

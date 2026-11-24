@@ -30,7 +30,7 @@ public:
 
 	void ToggleVsync(bool vsync) override;
 
-	const char *GetName() const override { return "sdl-opengl"; }
+	std::string_view GetName() const override { return "sdl-opengl"; }
 
 protected:
 	bool AllocateBackingStore(int w, int h, bool force = false) override;

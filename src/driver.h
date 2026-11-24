@@ -49,7 +49,7 @@ public:
 	 * Get the name of this driver.
 	 * @return The name of the driver.
 	 */
-	virtual const char *GetName() const = 0;
+	virtual std::string_view GetName() const = 0;
 };
 
 /** Base for all driver factories. */

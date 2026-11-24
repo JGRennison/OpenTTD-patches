@@ -30,7 +30,7 @@ public:
 	bool ChangeResolution(int w, int h) override;
 
 	bool ToggleFullscreen(bool fullscreen) override;
-	const char *GetName() const override { return "null"; }
+	std::string_view GetName() const override { return "null"; }
 	bool HasGUI() const override { return false; }
 };
 

@@ -53,7 +53,7 @@ public:
 	{
 		return Blitter_32bppSSE_Base::Encode(sprite_type, sprite, allocator);
 	}
-	const char *GetName() const override { return "32bpp-sse4-anim"; }
+	std::string_view GetName() const override { return "32bpp-sse4-anim"; }
 	using Blitter_32bppSSE2_Anim::LookupColourInPalette;
 };
 

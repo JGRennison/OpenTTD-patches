@@ -34,7 +34,7 @@ public:
 	bool IsSongPlaying() override;
 
 	void SetVolume(uint8_t vol) override;
-	const char *GetName() const override { return "extmidi"; }
+	std::string_view GetName() const override { return "extmidi"; }
 
 	bool IsInFailedState() override { return this->failed; }
 };
