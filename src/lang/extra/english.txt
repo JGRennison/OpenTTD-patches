@@ -762,9 +762,6 @@ STR_CONFIG_SETTING_ALLOW_CONVERT_TOWN_ROAD_NO_HOUSES_HELPTEXT   :Whether to allo
 STR_CONFIG_SETTING_PURCHASED_LAND_CLEAR_GROUND                  :Use clear ground tile for purchased land: {STRING2}
 STR_CONFIG_SETTING_PURCHASED_LAND_CLEAR_GROUND_HELPTEXT         :If enabled, purchased land is shown using the same ground type as clear ground tiles, i.e. bare ground to grass, coast, snow, desert, etc.
 
-STR_CONFIG_SETTING_SPAWN_PRIMARY_INDUSTRY_ONLY                  :Only generate primary industries: {STRING2}
-STR_CONFIG_SETTING_SPAWN_PRIMARY_INDUSTRY_ONLY_HELPTEXT         :If enabled, only primary industries are generated during game play and map generation.
-
 STR_CONFIG_SETTING_INDUSTRY_EVENT_RATE                          :Industry event rate: {STRING2}
 STR_CONFIG_SETTING_INDUSTRY_EVENT_RATE_HELPTEXT                 :Scale the rate of industry events per economic time period in wallclock timekeeping mode, or per month/year in calendar timekeeping mode. This includes industry production changes, opening and closing.
 

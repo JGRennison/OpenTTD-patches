@@ -114,7 +114,7 @@ static ChangeInfoResult RoadStopChangeInfo(uint first, uint last, int prop, cons
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
 				[[fallthrough]];
 			case 0x09: // Road stop type
-				rs->stop_type = (RoadStopAvailabilityType)buf.ReadByte();
+				rs->stop_type = RoadStopAvailabilityType{buf.ReadByte()};
 				break;
 
 			case A0RPI_ROADSTOP_STOP_NAME:
@@ -134,7 +134,7 @@ static ChangeInfoResult RoadStopChangeInfo(uint first, uint last, int prop, cons
 			case A0RPI_ROADSTOP_DRAW_MODE:
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
 				[[fallthrough]];
-			case 0x0C: // The draw mode
+			case 0x0C: // The draw modes
 				rs->draw_mode = RoadStopDrawModes{buf.ReadByte()};
 				break;
 
@@ -150,7 +150,7 @@ static ChangeInfoResult RoadStopChangeInfo(uint first, uint last, int prop, cons
 				[[fallthrough]];
 			case 0x0E: // Animation info
 				rs->animation.frames = buf.ReadByte();
-				rs->animation.status = static_cast<AnimationStatus>(buf.ReadByte());
+				rs->animation.status = AnimationStatus{buf.ReadByte()};
 				break;
 
 			case A0RPI_ROADSTOP_ANIMATION_SPEED:
@@ -164,21 +164,21 @@ static ChangeInfoResult RoadStopChangeInfo(uint first, uint last, int prop, cons
 				if (MappedPropertyLengthMismatch(buf, 2, mapping_entry)) break;
 				[[fallthrough]];
 			case 0x10: // Animation triggers
-				rs->animation.triggers = static_cast<StationAnimationTriggers>(buf.ReadWord());
+				rs->animation.triggers = StationAnimationTriggers{buf.ReadWord()};
 				break;
 
 			case A0RPI_ROADSTOP_CALLBACK_MASK:
 				if (MappedPropertyLengthMismatch(buf, 1, mapping_entry)) break;
 				[[fallthrough]];
 			case 0x11: // Callback mask
-				rs->callback_mask = static_cast<RoadStopCallbackMasks>(buf.ReadByte());
+				rs->callback_mask = RoadStopCallbackMasks{buf.ReadByte()};
 				break;
 
 			case A0RPI_ROADSTOP_GENERAL_FLAGS:
 				if (MappedPropertyLengthMismatch(buf, 4, mapping_entry)) break;
 				[[fallthrough]];
 			case 0x12: // General flags
-				rs->flags = static_cast<RoadStopSpecFlags>(buf.ReadDWord()); // Future-proofing, size this as 4 bytes, but we only need two byte's worth of flags at present
+				rs->flags = static_cast<RoadStopSpecFlags>(buf.ReadDWord()); // Future-proofing, size this as 4 bytes, but we only need one byte's worth of flags at present
 				break;
 
 			case A0RPI_ROADSTOP_MIN_BRIDGE_HEIGHT:

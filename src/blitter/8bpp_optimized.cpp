@@ -104,7 +104,6 @@ void Blitter_8bppOptimized::Draw(Blitter::BlitterParams *bp, BlitterMode mode, Z
 				case BlitterMode::Transparent:
 				case BlitterMode::TransparentRemap: {
 					const uint8_t *remap = bp->remap;
-					src += pixels;
 					do {
 						*dst = remap[*dst];
 						dst++;
@@ -114,7 +113,7 @@ void Blitter_8bppOptimized::Draw(Blitter::BlitterParams *bp, BlitterMode mode, Z
 
 				default:
 					MemCpyT(dst, src, pixels);
-					dst += pixels; src += pixels;
+					dst += pixels;
 					break;
 			}
 		}

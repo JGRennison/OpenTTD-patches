@@ -28,7 +28,7 @@
 
 /** Colour scheme of the smallmap. */
 struct SmallMapColourScheme {
-	std::vector<uint32_t> height_colours; ///< Cached colours for each level in a map.
+	std::array<uint32_t, MAX_TILE_HEIGHT + 1> height_colours{}; ///< Cached colours for each level in a map.
 	std::span<const uint32_t> height_colours_base; ///< Base table for determining the colours
 	uint32_t default_colour;             ///< Default colour of the land.
 };

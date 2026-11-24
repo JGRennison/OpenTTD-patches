@@ -307,7 +307,7 @@ static bool ChangeGRFParamValueNames(ByteReader &buf)
 			continue;
 		}
 
-		GRFLanguage langid = static_cast<GRFLanguage>(buf.ReadByte());
+		GRFLanguage langid{buf.ReadByte()};
 		std::string_view name_string = buf.ReadString();
 
 		auto it = std::ranges::lower_bound(_cur_parameter->value_names, id, std::less{}, &GRFParameterInfo::ValueName::first);
@@ -1140,7 +1140,7 @@ static bool HandleNode(uint8_t type, NodeID id, ByteReader &buf, std::span<const
 
 		bool operator()(const TextHandler &handler)
 		{
-			GRFLanguage langid = static_cast<GRFLanguage>(buf.ReadByte());
+			GRFLanguage langid{buf.ReadByte()};
 			return handler(langid, buf.ReadString());
 		}
 

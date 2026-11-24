@@ -260,7 +260,7 @@ SmallMapColourScheme _heightmap_schemes[] = {
 void BuildLandLegend()
 {
 	/* The smallmap window has never been initialized, so no need to change the legend. */
-	if (_heightmap_schemes[0].height_colours.empty()) return;
+	if (_heightmap_schemes[0].height_colours.back() == 0) return;
 
 	/*
 	 * The general idea of this function is to fill the legend with an appropriate evenly spaced
@@ -1167,7 +1167,7 @@ void SmallMapWindow::RebuildColourIndexIfNecessary()
 	for (auto &heightmap_scheme : _heightmap_schemes) {
 		/* The heights go from 0 up to and including maximum. */
 		size_t heights = _settings_game.construction.map_height_limit + 1;
-		heightmap_scheme.height_colours.resize(heights);
+		heightmap_scheme.height_colours.fill(heightmap_scheme.height_colours_base.back());
 
 		for (size_t z = 0; z < heights; z++) {
 			size_t access_index = (heightmap_scheme.height_colours_base.size() * z) / heights;

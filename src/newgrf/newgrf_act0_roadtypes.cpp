@@ -98,7 +98,7 @@ static ChangeInfoResult RoadTypeChangeInfo(uint first, uint last, int prop, cons
 			}
 
 			case 0x10: // Road Type flags
-				rti->flags = static_cast<RoadTypeFlags>(buf.ReadByte());
+				rti->flags = RoadTypeFlags{buf.ReadByte()};
 				break;
 
 			case 0x13: // Construction cost factor

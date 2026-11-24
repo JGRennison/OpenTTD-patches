@@ -5,7 +5,7 @@ if(NOT BINARY_NAME)
 endif()
 
 project(${BINARY_NAME}
-    VERSION 16.0
+    VERSION 17.0
 )
 
 if(CMAKE_SOURCE_DIR STREQUAL CMAKE_BINARY_DIR)
@@ -129,6 +129,7 @@ endif()
 if(NOT OPTION_DEDICATED)
     if(WIN32)
         find_package(Xaudio2)
+        find_package(D3D11)
     else()
         find_package(Allegro)
         if(NOT APPLE)

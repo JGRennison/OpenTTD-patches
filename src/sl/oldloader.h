@@ -128,6 +128,6 @@ inline uint32_t ReadUint32(LoadgameState &ls)
 #define OCL_ASSERT(type, size)               { OC_ASSERT | type,     1, nullptr, size,                             nullptr }
 #define OCL_NULL(amount)        OCL_CNULL((OldChunkType)0, amount)
 /** Load another proc to load a part of the savegame, 'amount' times. */
-#define OCL_CHUNK(amount, proc) OCL_CCHUNK((OldChunkType)0, amount, proc)
+#define OCL_CHUNK(amount, proc) OCL_CCHUNK(OldChunkType{}, amount, proc)
 
 #endif /* SL_OLDLOADER_H */

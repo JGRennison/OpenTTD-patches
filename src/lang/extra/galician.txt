@@ -704,9 +704,6 @@ STR_CONFIG_SETTING_ALLOW_CONVERT_TOWN_ROAD_NO_HOUSES_HELPTEXT   :Se se permite a
 STR_CONFIG_SETTING_PURCHASED_LAND_CLEAR_GROUND                  :Usar cadro de terreo limpo para terreo comprado: {STRING}
 STR_CONFIG_SETTING_PURCHASED_LAND_CLEAR_GROUND_HELPTEXT         :Se está habilitado, o terreo comprado é mostrado usando o mesmo tipo de terreo que os cadros de terreo limpo, isto é, terra nu a herba, costa, neve, deserto, etc.
 
-STR_CONFIG_SETTING_SPAWN_PRIMARY_INDUSTRY_ONLY                  :Xerar só industrias primarias: {STRING}
-STR_CONFIG_SETTING_SPAWN_PRIMARY_INDUSTRY_ONLY_HELPTEXT         :Se está habilitado, só se xeran industrias primarias durante o xogo e a xeración de mapas.
-
 STR_CONFIG_SETTING_INDUSTRY_EVENT_RATE                          :Ratio de eventos industriais: {STRING}
 STR_CONFIG_SETTING_INDUSTRY_EVENT_RATE_HELPTEXT                 :Escala a frecuencia dos eventos industriais por período económico en modo de cronometraxe en tempo real ou por mes/ano en modo de cronometraxe en calendario. Isto inclúe cambios na produción industrial, apertura e peche.
 

@@ -823,9 +823,9 @@ static void DeleteEntriesFromSpriteCache(size_t target)
 		uint32_t size;
 		LowZoomLevels missing_zoom_levels;
 
-		bool operator<(const SpriteInfo &other) const
+		auto operator<=>(const SpriteInfo &other) const noexcept
 		{
-			return this->lru < other.lru;
+			return this->lru <=> other.lru;
 		}
 	};
 	std::vector<SpriteInfo> candidates;
@@ -1001,7 +1001,8 @@ void *GetRawSprite(SpriteID sprite, SpriteType type, LowZoomLevels zoom_levels, 
 
 	if (sc->GetType() != type) return HandleInvalidSpriteRequest(sprite, type, sc, allocator, encoder);
 
-	if (allocator == nullptr && encoder == nullptr) {
+	if (allocator == nullptr) {
+		assert(encoder == nullptr);
 		/* Load sprite into/from spritecache */
 		CacheSpriteAllocator cache_allocator;
 
@@ -1034,6 +1035,7 @@ void *GetRawSprite(SpriteID sprite, SpriteType type, LowZoomLevels zoom_levels, 
 
 		return sc->GetPtr();
 	} else {
+		assert(encoder != nullptr);
 		/* Do not use the spritecache, but a different allocator. */
 		return ReadSprite(sc, sprite, type, *allocator, encoder, LOW_ZOOM_ALL_BITS);
 	}

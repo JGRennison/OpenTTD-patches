@@ -641,7 +641,7 @@ static CommandCost ReplaceFreeUnit(Vehicle **single_unit, DoCommandFlags flags, 
 	Train *old_v = Train::From(*single_unit);
 	assert(!old_v->IsArticulatedPart() && !old_v->IsRearDualheaded());
 
-	CommandCost cost = CommandCost(ExpensesType::NewVehicles, 0);
+	CommandCost cost = CommandCost(ExpensesType::NewVehicles);
 
 	/* Build and refit replacement vehicle */
 	Vehicle *new_v = nullptr;
@@ -715,7 +715,7 @@ static CommandCost ReplaceChain(Vehicle **chain, DoCommandFlags flags, bool wago
 	Vehicle *old_head = *chain;
 	assert(old_head->IsPrimaryVehicle());
 
-	CommandCost cost = CommandCost(ExpensesType::NewVehicles, 0);
+	CommandCost cost = CommandCost(ExpensesType::NewVehicles);
 
 	if (old_head->type == VehicleType::Train) {
 		/* Store the length of the old vehicle chain, rounded up to whole tiles */
@@ -969,7 +969,7 @@ CommandCost CmdAutoreplaceVehicle(DoCommandFlags flags, VehicleID veh_id, bool s
 		w = (!free_wagon && w->type == VehicleType::Train ? Train::From(w)->GetNextUnit() : nullptr);
 	}
 
-	CommandCost cost = CommandCost(ExpensesType::NewVehicles, 0);
+	CommandCost cost = CommandCost(ExpensesType::NewVehicles);
 	bool nothing_to_do = true;
 
 	if (any_replacements) {

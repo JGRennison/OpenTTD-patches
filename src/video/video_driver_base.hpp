@@ -133,6 +133,15 @@ public:
 	}
 
 	/**
+	 * Get the animation buffer pitch in uint8_t elements per row.
+	 * @return The animation buffer pitch.
+	 */
+	inline int GetAnimBufferPitch() const
+	{
+		return this->anim_pitch;
+	}
+
+	/**
 	 * An edit box lost the input focus. Abort character compositing if necessary.
 	 */
 	virtual void EditBoxLostFocus() {}
@@ -178,6 +187,7 @@ public:
 
 protected:
 	uint8_t *anim_buffer = nullptr; ///< Animation buffer, (not used by all drivers, here because it is accessed very frequently)
+	int anim_pitch = 0; ///< Pitch of the animation buffer if supported/used.
 };
 
 #endif /* VIDEO_VIDEO_DRIVER_BASE_HPP */

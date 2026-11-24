@@ -655,9 +655,6 @@ STR_CONFIG_SETTING_ALLOW_CONVERT_TOWN_ROAD_NO_HOUSES_HELPTEXT   :Могут ли
 STR_CONFIG_SETTING_PURCHASED_LAND_CLEAR_GROUND                  :Использовать чистую клетку грунта для приобретенной земли: {STRING}
 STR_CONFIG_SETTING_PURCHASED_LAND_CLEAR_GROUND_HELPTEXT         :Если эта функция включена, то купленная земля будет отображаться с использованием того же типа грунта, что и клетки чистой земли, то емть голая земля - трава, побережье, снег, пустыня и так далее.
 
-STR_CONFIG_SETTING_SPAWN_PRIMARY_INDUSTRY_ONLY                  :Генерировать только сырьевые предприятия: {STRING}
-STR_CONFIG_SETTING_SPAWN_PRIMARY_INDUSTRY_ONLY_HELPTEXT         :Если включено, то при создании карты и во время игры будут появляться только сырьевые предприятия.
-
 STR_CONFIG_SETTING_INDUSTRY_EVENT_RATE                          :Частота событий на предприятиях: {STRING}
 STR_CONFIG_SETTING_INDUSTRY_EVENT_RATE_HELPTEXT                 :Установите количество событий на предприятиях за экономический период времени в системе отчёта времени «Реальное время», или за месяц/год в системе отчёта времени «Календарь». Это включает в себя изменения в производстве, открытие и закрытие предприятий.
 

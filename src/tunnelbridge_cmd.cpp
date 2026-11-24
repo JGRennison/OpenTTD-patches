@@ -2350,7 +2350,7 @@ static void DrawTile_TunnelBridge(TileInfo *ti, DrawTileProcParams params)
 			if (_game_mode != GameMode::Menu && _settings_client.gui.show_track_reservation && HasTunnelReservation(ti->tile)) {
 				if (rti->UsesOverlay()) {
 					SpriteID overlay = GetCustomRailSprite(rti, ti->tile, RailSpriteType::Overlay);
-					DrawGroundSprite(overlay + RTO_X + to_underlying(DiagDirToAxis(tunnelbridge_direction)), PALETTE_CRASH);
+					DrawGroundSprite(overlay + RailTrackOffset::X + to_underlying(DiagDirToAxis(tunnelbridge_direction)), PALETTE_CRASH);
 				} else {
 					DrawGroundSprite(DiagDirToAxis(tunnelbridge_direction) == Axis::X ? rti->base_sprites.single_x : rti->base_sprites.single_y, PALETTE_CRASH);
 				}
@@ -2515,9 +2515,9 @@ static void DrawTile_TunnelBridge(TileInfo *ti, DrawTileProcParams params)
 				SpriteID surface = rti->UsesOverlay() ? GetCustomRailSprite(rti, ti->tile, RailSpriteType::Bridge) : rti->base_sprites.bridge_deck;
 				if (surface != 0) {
 					if (HasBridgeFlatRamp(ti->tileh, DiagDirToAxis(tunnelbridge_direction))) {
-						AddSortableSpriteToDraw(surface + ((DiagDirToAxis(tunnelbridge_direction) == Axis::X) ? RTBO_X : RTBO_Y), PAL_NONE, *ti, {{0, 0, TILE_HEIGHT}, {TILE_SIZE, TILE_SIZE, 0}, {}});
+						AddSortableSpriteToDraw(surface + ((DiagDirToAxis(tunnelbridge_direction) == Axis::X) ? RailTrackBridgeOffset::X : RailTrackBridgeOffset::Y), PAL_NONE, *ti, {{0, 0, TILE_HEIGHT}, {TILE_SIZE, TILE_SIZE, 0}, {}});
 					} else {
-						AddSortableSpriteToDraw(surface + RTBO_SLOPE + to_underlying(tunnelbridge_direction), PAL_NONE, *ti, {{}, {TILE_SIZE, TILE_SIZE, TILE_HEIGHT}, {}});
+						AddSortableSpriteToDraw(surface + RailTrackBridgeOffset::Slope + to_underlying(tunnelbridge_direction), PAL_NONE, *ti, {{}, {TILE_SIZE, TILE_SIZE, TILE_HEIGHT}, {}});
 					}
 				}
 			}
@@ -2527,9 +2527,9 @@ static void DrawTile_TunnelBridge(TileInfo *ti, DrawTileProcParams params)
 				if (rti->UsesOverlay()) {
 					SpriteID overlay = GetCustomRailSprite(rti, ti->tile, RailSpriteType::Overlay);
 					if (HasBridgeFlatRamp(ti->tileh, DiagDirToAxis(tunnelbridge_direction))) {
-						AddSortableSpriteToDraw(overlay + RTO_X + to_underlying(DiagDirToAxis(tunnelbridge_direction)), PALETTE_CRASH, *ti, {{0, 0, TILE_HEIGHT}, {TILE_SIZE, TILE_SIZE, 0}, {}});
+						AddSortableSpriteToDraw(overlay + RailTrackOffset::X + to_underlying(DiagDirToAxis(tunnelbridge_direction)), PALETTE_CRASH, *ti, {{0, 0, TILE_HEIGHT}, {TILE_SIZE, TILE_SIZE, 0}, {}});
 					} else {
-						AddSortableSpriteToDraw(overlay + RTO_SLOPE_NE + to_underlying(tunnelbridge_direction), PALETTE_CRASH, *ti, {{}, {TILE_SIZE, TILE_SIZE, TILE_HEIGHT}, {}});
+						AddSortableSpriteToDraw(overlay + RailTrackOffset::SlopeNE + to_underlying(tunnelbridge_direction), PALETTE_CRASH, *ti, {{}, {TILE_SIZE, TILE_SIZE, TILE_HEIGHT}, {}});
 					}
 				} else {
 					if (HasBridgeFlatRamp(ti->tileh, DiagDirToAxis(tunnelbridge_direction))) {
@@ -2731,7 +2731,7 @@ void DrawBridgeMiddle(const TileInfo *ti)
 				&& !IsTunnelBridgeWithSignalSimulation(rampnorth) && (HasAcrossBridgeReservation(rampnorth) || HasAcrossBridgeReservation(rampsouth))) {
 			if (rti->UsesOverlay()) {
 				SpriteID overlay = GetCustomRailSprite(rti, rampnorth, RailSpriteType::Overlay, TileContext::OnBridge);
-				AddSortableSpriteToDraw(overlay + RTO_X + to_underlying(axis), PALETTE_CRASH, ti->x, ti->y, bridge_z, {{}, {TILE_SIZE, TILE_SIZE, 0}, {}}, IsTransparencySet(TransparencyOption::Bridges));
+				AddSortableSpriteToDraw(overlay + RailTrackOffset::X + to_underlying(axis), PALETTE_CRASH, ti->x, ti->y, bridge_z, {{}, {TILE_SIZE, TILE_SIZE, 0}, {}}, IsTransparencySet(TransparencyOption::Bridges));
 			} else {
 				AddSortableSpriteToDraw(axis == Axis::X ? rti->base_sprites.single_x : rti->base_sprites.single_y, PALETTE_CRASH, ti->x, ti->y, bridge_z, {{}, {TILE_SIZE, TILE_SIZE, 0}, {}}, IsTransparencySet(TransparencyOption::Bridges));
 			}

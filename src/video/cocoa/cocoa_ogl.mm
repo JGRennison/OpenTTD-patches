@@ -97,14 +97,14 @@ static bool _allowSoftware;
 	CGLPixelFormatAttribute attribs[] = {
 		kCGLPFAOpenGLProfile, (CGLPixelFormatAttribute)kCGLOGLPVersion_3_2_Core,
 		kCGLPFAColorSize, (CGLPixelFormatAttribute)24,
-		kCGLPFAAlphaSize, (CGLPixelFormatAttribute)0,
-		kCGLPFADepthSize, (CGLPixelFormatAttribute)0,
+		kCGLPFAAlphaSize, CGLPixelFormatAttribute{},
+		kCGLPFADepthSize, CGLPixelFormatAttribute{},
 		kCGLPFADoubleBuffer,
 		kCGLPFAAllowOfflineRenderers,
 		kCGLPFASupportsAutomaticGraphicsSwitching,
 		kCGLPFANoRecovery,
-		_allowSoftware ? (CGLPixelFormatAttribute)0 : kCGLPFAAccelerated,
-		(CGLPixelFormatAttribute)0
+		_allowSoftware ? CGLPixelFormatAttribute{} : kCGLPFAAccelerated,
+		CGLPixelFormatAttribute{}
 	};
 
 	CGLPixelFormatObj pxfmt = nullptr;
@@ -294,6 +294,7 @@ void *VideoDriver_CocoaOpenGL::GetVideoPointer()
 	CGLSetCurrentContext(this->gl_context);
 	if (BlitterFactory::GetCurrentBlitter()->NeedsAnimationBuffer()) {
 		this->anim_buffer = OpenGLBackend::Get()->GetAnimBuffer();
+		this->anim_pitch = _screen.pitch;
 	}
 	return OpenGLBackend::Get()->GetVideoBuffer();
 }
@@ -307,6 +308,7 @@ void VideoDriver_CocoaOpenGL::ReleaseVideoPointer()
 	this->dirty_rect = {};
 	_screen.dst_ptr = nullptr;
 	this->anim_buffer = nullptr;
+	this->anim_pitch = 0;
 }
 
 void VideoDriver_CocoaOpenGL::Paint()

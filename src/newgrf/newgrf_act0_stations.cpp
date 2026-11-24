@@ -130,7 +130,7 @@ static ChangeInfoResult StationChangeInfo(uint first, uint last, int prop, const
 			}
 
 			case 0x0B: // Callback mask
-				statspec->callback_mask = static_cast<StationCallbackMasks>(buf.ReadByte());
+				statspec->callback_mask = StationCallbackMasks{buf.ReadByte()};
 				break;
 
 			case 0x0C: // Disallowed number of platforms
@@ -198,7 +198,7 @@ static ChangeInfoResult StationChangeInfo(uint first, uint last, int prop, const
 				if (_cur_gps.grffile->grf_version >= 7) {
 					statspec->cargo_triggers = TranslateRefitMask(buf.ReadDWord());
 				} else {
-					statspec->cargo_triggers = (CargoTypes)buf.ReadDWord();
+					statspec->cargo_triggers = static_cast<CargoTypes>(buf.ReadDWord());
 				}
 				break;
 
@@ -234,7 +234,7 @@ static ChangeInfoResult StationChangeInfo(uint first, uint last, int prop, const
 
 			case 0x16: // Animation info
 				statspec->animation.frames = buf.ReadByte();
-				statspec->animation.status = static_cast<AnimationStatus>(buf.ReadByte());
+				statspec->animation.status = AnimationStatus{buf.ReadByte()};
 				break;
 
 			case 0x17: // Animation speed
@@ -242,7 +242,7 @@ static ChangeInfoResult StationChangeInfo(uint first, uint last, int prop, const
 				break;
 
 			case 0x18: // Animation triggers
-				statspec->animation.triggers = static_cast<StationAnimationTriggers>(buf.ReadWord());
+				statspec->animation.triggers = StationAnimationTriggers{buf.ReadWord()};
 				break;
 
 			/* 0x19 road routing (not implemented) */

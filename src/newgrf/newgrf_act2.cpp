@@ -70,7 +70,7 @@ TileLayoutFlags ReadSpriteLayoutSprite(ByteReader &buf, bool read_flags, bool in
 {
 	grf_sprite->sprite = buf.ReadWord();
 	grf_sprite->pal = buf.ReadWord();
-	TileLayoutFlags flags = read_flags ? (TileLayoutFlags)buf.ReadWord() : TLF_NOTHING;
+	TileLayoutFlags flags = read_flags ? static_cast<TileLayoutFlags>(buf.ReadWord()) : TLF_NOTHING;
 
 	MapSpriteMappingRecolour(grf_sprite);
 

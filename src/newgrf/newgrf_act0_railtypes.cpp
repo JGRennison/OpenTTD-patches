@@ -99,7 +99,7 @@ static ChangeInfoResult RailTypeChangeInfo(uint first, uint last, int prop, cons
 			}
 
 			case 0x10: // Rail Type flags
-				rti->flags = static_cast<RailTypeFlags>(buf.ReadByte());
+				rti->flags = RailTypeFlags{buf.ReadByte()};
 				break;
 
 			case 0x11: // Curve speed advantage
@@ -119,7 +119,7 @@ static ChangeInfoResult RailTypeChangeInfo(uint first, uint last, int prop, cons
 				break;
 
 			case 0x15: // Acceleration model
-				rti->acceleration_type = static_cast<VehicleAccelerationModel>(Clamp(buf.ReadByte(), 0, 2));
+				rti->acceleration_type = VehicleAccelerationModel{Clamp<uint8_t>(buf.ReadByte(), 0, 2)};
 				break;
 
 			case 0x16: // Map colour

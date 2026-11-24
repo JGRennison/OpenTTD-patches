@@ -21,7 +21,7 @@ namespace upstream_sl {
 /** Temporary storage of cargo monitoring data for loading or saving it. */
 struct TempStorage {
 	CargoMonitorID number;
-	uint32_t amount;
+	OverflowSafeInt32 amount;
 };
 
 /** Description of the #TempStorage structure for the purpose of load and save. */
