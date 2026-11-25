@@ -15,16 +15,16 @@
 @class OTTD_OpenGLView;
 
 class VideoDriver_CocoaOpenGL : public VideoDriver_Cocoa {
-	CGLContextObj gl_context;
+	CGLContextObj gl_context = nullptr; ///< The OpenGL context.
 
 	std::string driver_info; ///< Information string about selected driver.
 
-	const char *AllocateContext(bool allow_software);
+	std::optional<std::string_view> AllocateContext(bool allow_software);
 
 public:
-	VideoDriver_CocoaOpenGL() : VideoDriver_Cocoa(true), gl_context(nullptr), driver_info(this->GetName()) {}
+	VideoDriver_CocoaOpenGL() : VideoDriver_Cocoa(true), driver_info(this->GetName()) {}
 
-	const char *Start(const StringList &param) override;
+	std::optional<std::string_view> Start(const StringList &param) override;
 	void Stop() override;
 
 	bool HasEfficient8Bpp() const override { return true; }

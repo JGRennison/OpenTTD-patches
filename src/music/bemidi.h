@@ -18,7 +18,7 @@
 /** The midi player for BeOS. */
 class MusicDriver_BeMidi : public MusicDriver {
 public:
-	const char *Start(const StringList &param) override;
+	std::optional<std::string_view> Start(const StringList &param) override;
 
 	void Stop() override;
 

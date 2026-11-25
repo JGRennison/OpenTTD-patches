@@ -487,9 +487,9 @@ void SetupDebugOutput()
  * Create and initialize the singleton back-end class.
  * @param get_proc Callback to get an OpenGL function from the OS driver.
  * @param screen_res Current display resolution.
- * @return nullptr on success, error message otherwise.
+ * @return std::nullopt on success, error message otherwise.
  */
-/* static */ const char *OpenGLBackend::Create(GetOGLProcAddressProc get_proc, const Dimension &screen_res)
+/* static */ std::optional<std::string_view> OpenGLBackend::Create(GetOGLProcAddressProc get_proc, const Dimension &screen_res)
 {
 	if (OpenGLBackend::instance != nullptr) OpenGLBackend::Destroy();
 
@@ -554,9 +554,9 @@ static std::tuple<uint8_t, uint8_t> DecodeVersion(std::string_view ver)
 /**
  * Check for the needed OpenGL functionality and allocate all resources.
  * @param screen_res Current display resolution.
- * @return Error string or nullptr if successful.
+ * @return Error string or std::nullopt if successful.
  */
-const char *OpenGLBackend::Init(const Dimension &screen_res)
+std::optional<std::string_view> OpenGLBackend::Init(const Dimension &screen_res)
 {
 	if (!BindBasicInfoProcs()) return "OpenGL not supported";
 
@@ -761,7 +761,7 @@ const char *OpenGLBackend::Init(const Dimension &screen_res)
 	this->PrepareContext();
 	(void)_glGetError(); // Clear errors.
 
-	return nullptr;
+	return std::nullopt;
 }
 
 void OpenGLBackend::PrepareContext()

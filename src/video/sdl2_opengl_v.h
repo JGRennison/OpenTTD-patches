@@ -12,9 +12,9 @@
 /** The OpenGL video driver for windows. */
 class VideoDriver_SDL_OpenGL : public VideoDriver_SDL_Base {
 public:
-	VideoDriver_SDL_OpenGL() : VideoDriver_SDL_Base(true), gl_context(nullptr) {}
+	VideoDriver_SDL_OpenGL() : VideoDriver_SDL_Base(true) {}
 
-	const char *Start(const StringList &param) override;
+	std::optional<std::string_view> Start(const StringList &param) override;
 
 	void Stop() override;
 
@@ -40,9 +40,9 @@ protected:
 	bool CreateMainWindow(uint w, uint h, uint flags) override;
 
 private:
-	void  *gl_context;  ///< OpenGL context.
+	void *gl_context = nullptr;  ///< OpenGL context.
 
-	const char *AllocateContext();
+	std::optional<std::string_view> AllocateContext();
 	void DestroyContext();
 };
 

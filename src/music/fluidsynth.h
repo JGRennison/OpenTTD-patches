@@ -15,7 +15,7 @@
 /** Music driver making use of FluidSynth. */
 class MusicDriver_FluidSynth : public MusicDriver {
 public:
-	const char *Start(const StringList &param) override;
+	std::optional<std::string_view> Start(const StringList &param) override;
 
 	void Stop() override;
 

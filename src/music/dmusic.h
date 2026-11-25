@@ -17,7 +17,7 @@ class MusicDriver_DMusic : public MusicDriver {
 public:
 	~MusicDriver_DMusic() override;
 
-	const char *Start(const StringList &param) override;
+	std::optional<std::string_view> Start(const StringList &param) override;
 
 	void Stop() override;
 

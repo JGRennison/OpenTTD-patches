@@ -15,7 +15,7 @@
 /** The allegro video driver. */
 class VideoDriver_Allegro : public VideoDriver {
 public:
-	const char *Start(const StringList &param) override;
+	std::optional<std::string_view> Start(const StringList &param) override;
 
 	void Stop() override;
 

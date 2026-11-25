@@ -25,9 +25,9 @@ public:
 	/**
 	 * Start this driver.
 	 * @param parm Parameters passed to the driver.
-	 * @return nullptr if everything went okay, otherwise an error message.
+	 * @return std::nullopt if everything went okay, otherwise an error message.
 	 */
-	virtual const char *Start(const StringList &parm) = 0;
+	virtual std::optional<std::string_view> Start(const StringList &parm) = 0;
 
 	/**
 	 * Stop this driver.

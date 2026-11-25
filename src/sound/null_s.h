@@ -15,7 +15,7 @@
 /** Implementation of the null sound driver. */
 class SoundDriver_Null : public SoundDriver {
 public:
-	const char *Start(const StringList &) override { return nullptr; }
+	std::optional<std::string_view> Start(const StringList &) override { return std::nullopt; }
 
 	void Stop() override { }
 	std::string_view GetName() const override { return "null"; }

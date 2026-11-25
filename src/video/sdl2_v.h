@@ -24,7 +24,7 @@ public:
 	 */
 	VideoDriver_SDL_Base(bool uses_hardware_acceleration = false) : VideoDriver(uses_hardware_acceleration) {}
 
-	const char *Start(const StringList &param) override;
+	std::optional<std::string_view> Start(const StringList &param) override;
 
 	void Stop() override;
 
@@ -96,7 +96,7 @@ protected:
 private:
 	void LoopOnce();
 	bool CreateMainSurface(uint w, uint h, bool resize);
-	const char *Initialize();
+	std::optional<std::string_view> Initialize();
 
 #ifdef __EMSCRIPTEN__
 	/* Convert a constant pointer back to a non-constant pointer to a member function. */

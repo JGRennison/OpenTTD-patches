@@ -96,7 +96,7 @@ void DriverFactoryBase::SelectDriver(const std::string &name, Driver::Type type)
 	if (!DriverFactoryBase::SelectDriverImpl(name, type)) {
 		name.empty() ?
 			UserError("Failed to autoprobe {} driver", GetDriverTypeName(type)) :
-			UserError("Failed to select requested {} driver '{}'", GetDriverTypeName(type), name.c_str());
+			UserError("Failed to select requested {} driver '{}'", GetDriverTypeName(type), name);
 	}
 }
 
@@ -147,15 +147,15 @@ bool DriverFactoryBase::SelectDriverImpl(const std::string &name, Driver::Type t
 				auto oldd = std::move(GetActiveDriver(type));
 				auto newd = d->CreateInstance();
 
-				const char *err = newd->Start({});
-				if (err == nullptr) {
+				auto err = newd->Start({});
+				if (!err) {
 					Debug(driver, 1, "Successfully probed {} driver '{}'", GetDriverTypeName(type), d->name);
 					GetActiveDriver(type) = std::move(newd);
 					return true;
 				}
 
 				GetActiveDriver(type) = std::move(oldd);
-				Debug(driver, 1, "Probing {} driver '{}' failed with error: {}", GetDriverTypeName(type), d->name, err);
+				Debug(driver, 1, "Probing {} driver '{}' failed with error: {}", GetDriverTypeName(type), d->name, *err);
 
 				if (type == Driver::Type::Video && _video_hw_accel && d->UsesHardwareAcceleration()) {
 					_video_hw_accel = false;
@@ -189,8 +189,8 @@ bool DriverFactoryBase::SelectDriverImpl(const std::string &name, Driver::Type t
 
 			/* Found our driver, let's try it */
 			auto newd = d->CreateInstance();
-			const char *err = newd->Start(parms);
-			if (err != nullptr) {
+			auto err = newd->Start(parms);
+			if (err) {
 				UserError("Unable to load driver '{}'. The error was: {}", d->name, *err);
 			}
 
@@ -247,13 +247,11 @@ DriverFactoryBase::DriverFactoryBase(Driver::Type type, int priority, const char
 	type(type), priority(priority), name(name), description(description)
 {
 	/* Prefix the name with driver type to make it unique */
-	char buf[32];
-	strecpy(buf, GetDriverTypeName(type), lastof(buf));
-	strecpy(buf + 5, name, lastof(buf));
+	std::string typed_name = fmt::format("{}{}", GetDriverTypeName(type), name);
 
 	Drivers &drivers = GetDrivers();
-	assert(drivers.find(buf) == drivers.end());
-	drivers.insert(Drivers::value_type(buf, this));
+	assert(drivers.find(typed_name) == drivers.end());
+	drivers.insert(Drivers::value_type(typed_name, this));
 }
 
 /**
@@ -262,11 +260,9 @@ DriverFactoryBase::DriverFactoryBase(Driver::Type type, int priority, const char
 DriverFactoryBase::~DriverFactoryBase()
 {
 	/* Prefix the name with driver type to make it unique */
-	char buf[32];
-	strecpy(buf, GetDriverTypeName(type), lastof(buf));
-	strecpy(buf + 5, this->name, lastof(buf));
+	std::string typed_name = fmt::format("{}{}", GetDriverTypeName(type), name);
 
-	Drivers::iterator it = GetDrivers().find(buf);
+	Drivers::iterator it = GetDrivers().find(typed_name);
 	assert(it != GetDrivers().end());
 
 	GetDrivers().erase(it);

@@ -15,7 +15,7 @@
 /** Allegro's music player. */
 class MusicDriver_Allegro : public MusicDriver {
 public:
-	const char *Start(const StringList &param) override;
+	std::optional<std::string_view> Start(const StringList &param) override;
 
 	void Stop() override;
 

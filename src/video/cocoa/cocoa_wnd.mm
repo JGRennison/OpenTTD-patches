@@ -390,7 +390,7 @@ void CocoaDialog(std::string_view title, std::string_view message, std::string_v
 	bool wasstarted = _cocoa_video_started;
 	if (VideoDriver::GetInstance() == nullptr) {
 		CocoaSetupApplication(); // Setup application before showing dialog
-	} else if (!_cocoa_video_started && VideoDriver::GetInstance()->Start({}) != nullptr) {
+	} else if (!_cocoa_video_started && VideoDriver::GetInstance()->Start({}).has_value()) {
 		fmt_print_no_system_error(stderr, "{}: {}\n", title, message);
 		return;
 	}

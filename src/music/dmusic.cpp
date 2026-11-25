@@ -909,7 +909,7 @@ static void * DownloadArticulationData(int base_offset, void *data, const std::v
 	return std::copy_n(artic.begin(), artic.size(), reinterpret_cast<CONNECTION *>(con_list + 1));
 }
 
-static const char *LoadDefaultDLSFile(std::optional<std::string_view> user_dls)
+static std::optional<std::string_view> LoadDefaultDLSFile(std::optional<std::string_view> user_dls)
 {
 	DMUS_PORTCAPS caps{};
 	caps.dwSize = sizeof(DMUS_PORTCAPS);
@@ -1121,11 +1121,11 @@ static const char *LoadDefaultDLSFile(std::optional<std::string_view> user_dls)
 		download_port->Release();
 	}
 
-	return nullptr;
+	return std::nullopt;
 }
 
 
-const char *MusicDriver_DMusic::Start(const StringList &parm)
+std::optional<std::string_view> MusicDriver_DMusic::Start(const StringList &parm)
 {
 	/* Initialize COM */
 	if (FAILED(CoInitializeEx(nullptr, COINIT_MULTITHREADED))) return "COM initialization failed";
@@ -1193,8 +1193,8 @@ const char *MusicDriver_DMusic::Start(const StringList &parm)
 	if (FAILED(_music->CreateMusicBuffer(&desc, &_buffer, nullptr))) return "Failed to create music buffer";
 
 	/* On soft-synths (e.g. the default DirectMusic one), we might need to load a wavetable set to get music. */
-	const char *dls = LoadDefaultDLSFile(GetDriverParam(parm, "dls"));
-	if (dls != nullptr) return dls;
+	auto dls = LoadDefaultDLSFile(GetDriverParam(parm, "dls"));
+	if (dls.has_value()) return dls;
 
 	/* Create playback thread and synchronization primitives. */
 	_playback.thread_event = CreateEvent(nullptr, FALSE, FALSE, nullptr);
@@ -1202,7 +1202,7 @@ const char *MusicDriver_DMusic::Start(const StringList &parm)
 
 	if (!StartNewThread(&_playback.dmusic_thread, "ottd:dmusic", &MidiThreadProc)) return "Can't create MIDI output thread";
 
-	return nullptr;
+	return std::nullopt;
 }
 
 

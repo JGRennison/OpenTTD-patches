@@ -19,7 +19,7 @@
 /** Base class for Windows video drivers. */
 class VideoDriver_Win32Base : public VideoDriver {
 public:
-	VideoDriver_Win32Base(bool uses_hardware_acceleration = false) : VideoDriver(uses_hardware_acceleration), main_wnd(nullptr), fullscreen(false), buffer_locked(false) {}
+	VideoDriver_Win32Base(bool uses_hardware_acceleration = false) : VideoDriver(uses_hardware_acceleration) {}
 
 	void Stop() override;
 
@@ -38,8 +38,8 @@ public:
 	std::vector<int> GetListOfMonitorRefreshRates() override;
 
 protected:
-	HWND main_wnd;          ///< Handle to system window.
-	bool fullscreen;        ///< Whether to use (true) fullscreen mode.
+	HWND main_wnd = nullptr; ///< Handle to system window.
+	bool fullscreen = false; ///< Whether to use (true) fullscreen mode.
 	bool has_focus = false; ///< Does our window have system focus?
 	Rect dirty_rect;        ///< Region of the screen that needs redrawing.
 	int width = 0;          ///< Width in pixels of our display surface.
@@ -56,7 +56,7 @@ protected:
 	void CheckPaletteAnim() override;
 	bool PollEvent() override;
 
-	const char *Initialize();
+	std::optional<std::string_view> Initialize();
 	bool MakeWindow(bool full_screen, bool resize = true);
 	void ClientSizeChanged(int w, int h, bool force = false);
 
@@ -94,7 +94,7 @@ class VideoDriver_Win32GDI : public VideoDriver_Win32Base {
 public:
 	VideoDriver_Win32GDI() : dib_sect(nullptr), gdi_palette(nullptr), buffer_bits(nullptr) {}
 
-	const char *Start(const StringList &param) override;
+	std::optional<std::string_view> Start(const StringList &param) override;
 
 	void Stop() override;
 
@@ -133,9 +133,9 @@ public:
 /** The OpenGL video driver for windows. */
 class VideoDriver_Win32OpenGL : public VideoDriver_Win32Base {
 public:
-	VideoDriver_Win32OpenGL() : VideoDriver_Win32Base(true), dc(nullptr), gl_rc(nullptr), driver_info(this->GetName()) {}
+	VideoDriver_Win32OpenGL() : VideoDriver_Win32Base(true), driver_info(this->GetName()) {}
 
-	const char *Start(const StringList &param) override;
+	std::optional<std::string_view> Start(const StringList &param) override;
 
 	void Stop() override;
 
@@ -160,8 +160,8 @@ public:
 	std::string_view GetInfoString() const override { return this->driver_info; }
 
 protected:
-	HDC    dc;          ///< Window device context.
-	HGLRC  gl_rc;       ///< OpenGL context.
+	HDC dc = nullptr;        ///< Window device context.
+	HGLRC gl_rc = nullptr;   ///< OpenGL context.
 	std::string driver_info; ///< Information string about selected driver.
 
 	uint8_t GetFullscreenBpp() override { return 32; } // OpenGL is always 32 bpp.
@@ -173,7 +173,7 @@ protected:
 	void ReleaseVideoPointer() override;
 	void PaletteChanged(HWND) override {}
 
-	const char *AllocateContext();
+	std::optional<std::string_view> AllocateContext();
 	void DestroyContext();
 };
 

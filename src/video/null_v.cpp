@@ -24,7 +24,7 @@ static FVideoDriver_Null iFVideoDriver_Null;
 
 extern std::atomic<bool> _exit_game;
 
-const char *VideoDriver_Null::Start(const StringList &parm)
+std::optional<std::string_view> VideoDriver_Null::Start(const StringList &parm)
 {
 #ifdef _MSC_VER
 	/* Disable the MSVC assertion message box. */
@@ -45,7 +45,7 @@ const char *VideoDriver_Null::Start(const StringList &parm)
 	/* Do not render, nor blit */
 	Debug(misc, 1, "Forcing blitter 'null'...");
 	BlitterFactory::SelectBlitter("null");
-	return nullptr;
+	return std::nullopt;
 }
 
 void VideoDriver_Null::Stop() { }

@@ -15,7 +15,7 @@
 /** The Windows music player. */
 class MusicDriver_Win32 : public MusicDriver {
 public:
-	const char *Start(const StringList &param) override;
+	std::optional<std::string_view> Start(const StringList &param) override;
 
 	void Stop() override;
 

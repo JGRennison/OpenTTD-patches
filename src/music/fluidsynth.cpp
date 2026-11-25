@@ -73,7 +73,7 @@ static void load_and_execute_config_file(fluid_cmd_handler_t *cmd_handler, const
 	}
 }
 
-const char *MusicDriver_FluidSynth::Start(const StringList &param)
+std::optional<std::string_view> MusicDriver_FluidSynth::Start(const StringList &param)
 {
 	std::lock_guard<std::mutex> lock{_midi.synth_mutex};
 
@@ -148,7 +148,7 @@ const char *MusicDriver_FluidSynth::Start(const StringList &param)
 
 	_midi.player = nullptr;
 
-	return nullptr;
+	return std::nullopt;
 }
 
 void MusicDriver_FluidSynth::Stop()
