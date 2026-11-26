@@ -77,6 +77,7 @@ enum class CmdTypeID : uint8_t {
 	Uint64,
 	Int64,
 	Bool,
+	TileIndex,
 	String,
 	EncodedString,
 	Invalid,
@@ -88,6 +89,8 @@ constexpr CmdTypeID GetCmdType()
 	/* See: Recv_generic */
 	if constexpr (std::is_same_v<T, bool>) {
 		return CmdTypeID::Bool;
+	} else if constexpr (std::is_same_v<T, TileIndex>) {
+		return CmdTypeID::TileIndex;
 	} else if constexpr (std::is_same_v<T, std::string>) {
 		return CmdTypeID::String;
 	} else if constexpr (std::is_same_v<T, EncodedString>) {
@@ -377,6 +380,10 @@ struct SimpleDescriptorHelper {
 				visitor.template Exec<bool>();
 				break;
 
+			case CmdTypeID::TileIndex:
+				visitor.template Exec<TileIndex>();
+				break;
+
 			case CmdTypeID::Uint16:
 				visitor.template Exec<uint16_t>();
 				break;
@@ -443,6 +450,8 @@ static CommandPayloadBaseUniquePtr SimpleCloner(const CommandPayloadBase *ptr)
 
 			case CmdTypeID::Uint32:
 			case CmdTypeID::Int32:
+			case CmdTypeID::TileIndex:
+				static_assert(sizeof(TileIndex) == sizeof(uint32_t));
 				cch.Exec<uint32_t>();
 				break;
 
@@ -595,6 +604,8 @@ template <typename T>
 constexpr bool CommandFormatDebugUsingDescriptorIsValid()
 {
 	if constexpr (std::is_same_v<T, bool>) {
+		return true;
+	} else if constexpr (std::is_same_v<T, TileIndex>) {
 		return true;
 	} else if constexpr (std::is_integral_v<T>) {
 		return sizeof(T) >= 1 && sizeof(T) <= 8;
