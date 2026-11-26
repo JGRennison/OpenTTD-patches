@@ -1395,7 +1395,7 @@ static void TriggerIndustryProduction(Industry *i)
 
 			for (auto &prod : i->Produced()) {
 				if (prod.cargo == INVALID_CARGO) continue;
-				prod.waiting = ClampTo<uint16_t>(prod.waiting + (acc.waiting * indspec->input_cargo_multiplier[&acc - i->accepted.get()][&prod - i->produced.get()] / 256));
+				prod.waiting = ClampTo<uint16_t>(prod.waiting + (acc.waiting * indspec->input_cargo_multiplier.Get(&acc - i->accepted.get(), &prod - i->produced.get()) / 256));
 			}
 
 			acc.waiting = 0;

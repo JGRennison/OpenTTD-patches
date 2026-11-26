@@ -20,6 +20,7 @@
 #include "newgrf_badge_type.h"
 #include "newgrf_callbacks.h"
 #include "newgrf_commons.h"
+#include "3rdparty/svector/svector.h"
 #include <array>
 #include <vector>
 #include <variant>
@@ -110,6 +111,61 @@ struct IndustryTileLayoutTile {
 /** A complete tile layout for an industry is a list of tiles */
 using IndustryTileLayout = std::vector<IndustryTileLayoutTile>;
 
+struct IndustryCargoMultipliers {
+	struct Record {
+		uint8_t in;
+		uint8_t out;
+		uint16_t multiplier;
+	};
+
+	ankerl::svector<Record, 3> multipliers;
+
+	IndustryCargoMultipliers() = default;
+
+	/* Constructor used for _origin_industry_specs table. */
+	IndustryCargoMultipliers(uint16_t m1, uint16_t m2, uint16_t m3)
+	{
+		if (m1 != 0) this->multipliers.push_back({ 0, 0, m1 });
+		if (m2 != 0) this->multipliers.push_back({ 1, 0, m2 });
+		if (m3 != 0) this->multipliers.push_back({ 2, 0, m3 });
+	}
+
+	uint16_t Get(uint8_t in, uint8_t out) const
+	{
+		for (const Record &r : this->multipliers) {
+			if (r.in == in && r.out == out) return r.multiplier;
+		}
+		return 0;
+	}
+
+	/* Requires that this multiplier is not already present. */
+	void Append(uint8_t in, uint8_t out, uint16_t multiplier)
+	{
+		if (multiplier != 0) this->multipliers.push_back({ in, out, multiplier });
+	}
+
+	void Set(uint8_t in, uint8_t out, uint16_t multiplier)
+	{
+		for (Record &r : this->multipliers) {
+			if (r.in == in && r.out == out) {
+				if (multiplier == 0) {
+					r = this->multipliers.back();
+					this->multipliers.pop_back();
+				} else {
+					r.multiplier = multiplier;
+				}
+				return;
+			}
+		}
+		this->Append(in, out, multiplier);
+	}
+
+	void Clear()
+	{
+		this->multipliers.clear();
+	}
+};
+
 /**
  * Defines the data structure for constructing industry.
  */
@@ -129,7 +185,7 @@ struct IndustrySpec {
 	 */
 	uint8_t minimal_cargo;
 	std::array<CargoType, INDUSTRY_NUM_INPUTS> accepts_cargo{}; ///< 16 accepted cargoes.
-	uint16_t input_cargo_multiplier[INDUSTRY_NUM_INPUTS][INDUSTRY_NUM_OUTPUTS]; ///< Input cargo multipliers (multiply amount of incoming cargo for the produced cargoes)
+	IndustryCargoMultipliers input_cargo_multiplier; ///< Input cargo multipliers (multiply amount of incoming cargo for the produced cargoes)
 	IndustryLifeTypes life_type;                ///< This is also known as Industry production flag, in newgrf specs
 	LandscapeTypes climate_availability;        ///< Bitmask, giving landscape enums as bit position
 	IndustryBehaviours behaviour;               ///< How this industry will behave, and how others entities can use it

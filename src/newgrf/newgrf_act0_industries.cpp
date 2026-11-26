@@ -590,8 +590,8 @@ static ChangeInfoResult IndustriesChangeInfo(uint first, uint last, int prop, co
 			case 0x1D:
 			case 0x1E: {
 					uint32_t multiples = buf.ReadDWord();
-					indsp->input_cargo_multiplier[prop - 0x1C][0] = GB(multiples, 0, 16);
-					indsp->input_cargo_multiplier[prop - 0x1C][1] = GB(multiples, 16, 16);
+					indsp->input_cargo_multiplier.Set(prop - 0x1C, 0, GB(multiples, 0, 16));
+					indsp->input_cargo_multiplier.Set(prop - 0x1C, 1, GB(multiples, 16, 16));
 					break;
 				}
 
@@ -688,11 +688,11 @@ static ChangeInfoResult IndustriesChangeInfo(uint first, uint last, int prop, co
 					error->param_value[1] = prop;
 					return ChangeInfoResult::Disabled;
 				}
-				for (uint i = 0; i < std::size(indsp->accepts_cargo); i++) {
-					for (uint j = 0; j < std::size(indsp->produced_cargo); j++) {
-						uint16_t mult = 0;
-						if (i < num_inputs && j < num_outputs) mult = buf.ReadWord();
-						indsp->input_cargo_multiplier[i][j] = mult;
+				IndustryCargoMultipliers &multipliers = indsp->input_cargo_multiplier;
+				multipliers.Clear();
+				for (uint8_t i = 0; i < num_inputs; i++) {
+					for (uint8_t j = 0; j < num_outputs; j++) {
+						multipliers.Append(i, j, buf.ReadWord());
 					}
 				}
 				break;
