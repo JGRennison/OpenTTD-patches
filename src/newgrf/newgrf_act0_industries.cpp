@@ -552,7 +552,7 @@ static ChangeInfoResult IndustriesChangeInfo(uint first, uint last, int prop, co
 			case 0x15: { // Random sound effects
 				uint8_t num_sounds = buf.ReadByte();
 
-				std::vector<uint8_t> sounds;
+				ankerl::svector<uint8_t, 1> sounds;
 				sounds.reserve(num_sounds);
 				for (uint8_t j = 0; j < num_sounds; ++j) {
 					sounds.push_back(buf.ReadByte());

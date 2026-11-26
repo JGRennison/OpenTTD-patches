@@ -202,7 +202,7 @@ struct IndustrySpec {
 	IndustryCallbackMasks callback_mask;        ///< Bitmask of industry callbacks that have to be called
 	bool enabled;                               ///< entity still available (by default true).newgrf can disable it, though
 	SubstituteGRFFileProps grf_prop;            ///< properties related to the grf file
-	std::vector<uint8_t> random_sounds;         ///< Random sounds;
+	ankerl::svector<uint8_t, 1> random_sounds;  ///< Random sounds;
 	std::vector<BadgeID> badges;
 
 	std::array<std::variant<CargoLabel, MixedCargoType>, INDUSTRY_ORIGINAL_NUM_OUTPUTS> produced_cargo_label; ///< Cargo labels of produced cargo for default industries.
