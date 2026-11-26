@@ -17,6 +17,7 @@
 #include "settings_type.h"
 #include "thread.h"
 #include "core/mem_func.hpp"
+#include "3rdparty/robin_hood/robin_hood.h"
 
 #include "table/palettes.h"
 
@@ -63,8 +64,11 @@ const uint PALETTE_BITS_OR = (1U << (PALETTE_SHIFT - 1));
 
 /** @{
  * Palette lookup table. */
-using PaletteLookup = std::array<uint8_t, 1U << (PALETTE_BITS * 3)>;
-static PaletteLookup _palette_lookup{};
+//using PaletteLookup = std::array<uint8_t, 1U << (PALETTE_BITS * 3)>;
+//static PaletteLookup _palette_lookup{};
+
+/* The fixed size array above is needlessly large and rarely actually needed, just use a hashmap. */
+static robin_hood::unordered_flat_map<uint32_t, uint8_t> _palette_lookup;
 /** @} */
 
 /** @{
@@ -177,8 +181,10 @@ static uint8_t FindNearestColourReshadeIndex(uint8_t b)
 uint8_t GetNearestColourIndex(uint8_t r, uint8_t g, uint8_t b)
 {
 	uint32_t key = (r >> PALETTE_SHIFT) | (g >> PALETTE_SHIFT) << PALETTE_BITS | (b >> PALETTE_SHIFT) << (PALETTE_BITS * 2);
-	if (_palette_lookup[key] == 0) _palette_lookup[key] = FindNearestColourIndex(r, g, b);
-	return _palette_lookup[key];
+
+	auto res = _palette_lookup.try_emplace(key);
+	if (res.second) res.first->second = FindNearestColourIndex(r, g, b);
+	return res.first->second;
 }
 
 /**
