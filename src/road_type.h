@@ -17,8 +17,8 @@ extern uint32_t _road_layout_change_counter;
 
 using RoadTypeLabel = Label<struct RoadTypeLabelTag>;
 
-static const RoadTypeLabel ROADTYPE_LABEL_ROAD{"ROAD"};
-static const RoadTypeLabel ROADTYPE_LABEL_TRAM{"ELRL"};
+static constexpr RoadTypeLabel ROADTYPE_LABEL_ROAD{"ROAD"};
+static constexpr RoadTypeLabel ROADTYPE_LABEL_TRAM{"ELRL"};
 
 /**
  * The different roadtypes we support

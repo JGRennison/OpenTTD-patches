@@ -15,10 +15,10 @@
 
 using RailTypeLabel = Label<struct RailTypeLabelTag>;
 
-static const RailTypeLabel RAILTYPE_LABEL_RAIL{"RAIL"};
-static const RailTypeLabel RAILTYPE_LABEL_ELECTRIC{"ELRL"};
-static const RailTypeLabel RAILTYPE_LABEL_MONO{"MONO"};
-static const RailTypeLabel RAILTYPE_LABEL_MAGLEV{"MGLV"};
+static constexpr RailTypeLabel RAILTYPE_LABEL_RAIL{"RAIL"};
+static constexpr RailTypeLabel RAILTYPE_LABEL_ELECTRIC{"ELRL"};
+static constexpr RailTypeLabel RAILTYPE_LABEL_MONO{"MONO"};
+static constexpr RailTypeLabel RAILTYPE_LABEL_MAGLEV{"MGLV"};
 
 /**
  * Enumeration for all possible railtypes.
