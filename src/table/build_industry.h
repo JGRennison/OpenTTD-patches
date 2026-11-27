@@ -10,6 +10,8 @@
 #ifndef BUILD_INDUSTRY_H
 #define BUILD_INDUSTRY_H
 
+#include "common.h"
+
 static const IndustryTileLayout _tile_table_coal_mine_0 {
 	{{1, 1}, 0},
 	{{1, 2}, 2},
@@ -1505,7 +1507,7 @@ extern const IndustrySpec _origin_industry_specs[NEW_INDUSTRYOFFSET] = {
 };
 #undef MI
 
-static const IndustryTileSpec _origin_industry_tile_specs[NEW_INDUSTRYTILEOFFSET] = {
+static CONSTINIT_TABLE const IndustryTileSpec _origin_industry_tile_specs[NEW_INDUSTRYTILEOFFSET] = {
 	/* Coal Mine */
 	{0, CT_INVALID, 0, CT_INVALID, false},
 	{0, CT_INVALID, 0, CT_INVALID, true},

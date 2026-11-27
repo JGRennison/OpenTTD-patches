@@ -10,11 +10,13 @@
 #ifndef AIRPORTTILES_H
 #define AIRPORTTILES_H
 
+#include "common.h"
+
 /**
  * All default airport tiles.
  * @see AirportTiles for a list of names.
  */
-static const AirportTileSpec _origin_airporttile_specs[] = {
+static CONSTINIT_TABLE const AirportTileSpec _origin_airporttile_specs[] = {
 	/* 0..9 */
 	{},
 	{},

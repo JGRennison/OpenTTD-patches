@@ -7,6 +7,8 @@
 
 /** @file town_land.h Sprites to use and how to display them for town tiles. */
 
+#include "common.h"
+
 /**
  * Writes the data into the Town Tile Drawing Struct
  * @param s1 The first sprite of the building, mostly the ground sprite
@@ -1817,7 +1819,7 @@ static_assert(lengthof(_town_draw_tile_data) == (NEW_HOUSE_OFFSET) * 4 * 4);
 	bf, ba, true, SubstituteGRFFileProps(INVALID_HOUSE_ID), HouseCallbackMasks{}, {Colours::Begin, Colours::Begin, Colours::Begin, Colours::Begin}, \
 	16, HouseExtraFlags{}, HCF_NONE, HOUSE_NO_CLASS, AnimationInfo<void>{}, 0, 0, CargoTypes{}, {}, {cg1, cg2, cg3}}
 /** House specifications from original data */
-extern const HouseSpec _original_house_specs[] = {
+extern CONSTINIT_TABLE const HouseSpec _original_house_specs[] = {
 	/**
 	 *                                                                              remove_rating_decrease
 	 *                                                                              |    mail_generation
