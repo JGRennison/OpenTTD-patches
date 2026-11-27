@@ -55,8 +55,8 @@ struct DrawTileSeqStruct : SpriteBounds {
 struct DrawTileSprites {
 	PalSpriteID ground{}; ///< Palette and sprite for the ground
 
-	DrawTileSprites(PalSpriteID ground) : ground(ground) {}
-	DrawTileSprites() = default;
+	constexpr DrawTileSprites(PalSpriteID ground) : ground(ground) {}
+	constexpr DrawTileSprites() = default;
 
 	virtual ~DrawTileSprites() = default;
 
@@ -75,8 +75,8 @@ struct DrawTileSprites {
 struct DrawTileSpriteSpan : DrawTileSprites {
 	std::span<const DrawTileSeqStruct> seq; ///< Child sprites,
 
-	DrawTileSpriteSpan(PalSpriteID ground, std::span<const DrawTileSeqStruct> seq) : DrawTileSprites(ground), seq(seq) {}
-	DrawTileSpriteSpan(PalSpriteID ground) : DrawTileSprites(ground) {};
+	constexpr DrawTileSpriteSpan(PalSpriteID ground, std::span<const DrawTileSeqStruct> seq) : DrawTileSprites(ground), seq(seq) {}
+	constexpr DrawTileSpriteSpan(PalSpriteID ground) : DrawTileSprites(ground) {};
 	DrawTileSpriteSpan() = default;
 
 	std::span<const DrawTileSeqStruct> GetSequence() const override { return this->seq; }
