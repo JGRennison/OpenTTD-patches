@@ -558,7 +558,7 @@ public:
     using reverse_iterator = std::reverse_iterator<iterator>;
     using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-    svector() {
+    constexpr svector() {
         set_direct_and_size(0);
     }
 
